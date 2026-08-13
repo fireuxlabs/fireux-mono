@@ -65,7 +65,7 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     targetOutcome: computed(() => unref(options.targetOutcome)),
     getId: (data) => options.getId(data.value),
     getType: (data) => data.type,
-    enforcedTargetId: options.enforcedTargetId ?? undefined,
+    enforcedTargetId: options.enforcedTargetId,
   })
   const selectedTarget = computed<TTarget | null>(
     () => selectedData.value?.value ?? null
@@ -125,6 +125,7 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     },
     runtime: {
       appId: firestore.appId,
+      ecosystem: computed(() => consoleRoot.ecosystem),
       canonicalRootCollection: firestore.rootCollection,
       collectionPath: firestore.collectionPath,
       isTenantOwned: firestore.isTenantOwned,

@@ -56,7 +56,7 @@ export function showExperienceDraftCard(item: ExperienceItem): boolean {
       (draft.name ||
         draft.formatted_address ||
         draft.short_address ||
-        draft.assets?.image)
+        draft.image_url)
   )
 }
 

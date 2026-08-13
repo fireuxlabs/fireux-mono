@@ -8,7 +8,7 @@
         :multiple="multiple"
         :card="focusCard"
       >
-        <ConsoleAppScope :entity="focus.entity" />
+        <ConsoleManagement :entity="focus.entity" />
       </ConsoleOverviewFocus>
       <ConsoleOverviewMultiple
         entity-label="Property"

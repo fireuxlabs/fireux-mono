@@ -1,7 +1,10 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../app/FireUXConfig'
-import { normalizeFireuxAppScopeState } from '../../../../utils/app-scope-state'
-import type { FireuxAppScopeState } from '../../../../models/utils/scope.model'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from '../../../../utils/entity-management'
+import type { FireuxEntityManagement } from '../../../../models/utils/scope.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
@@ -26,52 +29,45 @@ export type PublicScopedRecordsOptions<TEntity> = {
   pending?: MaybeRef<boolean>
 }
 
-export type PublicAppScopedTarget = {
-  app_scope?: unknown
-  app_scope_state?: unknown
-  app_scope_app_id?: unknown
+export type FireuxManagedEntity = { management?: unknown }
+
+export type FireuxEntityManagementTarget = {
+  mode: FireuxEntityManagement['mode'] | ''
+  appId: string
+  hasDedicatedApp: boolean
 }
 
-export type PublicAppScopedSource = {
-  state: FireuxAppScopeState | ''
-  sourceAppId: string
-  hasTenantApp: boolean
-}
-
-export function resolvePublicAppScopedSource(
-  target?: PublicAppScopedTarget | null,
-  fallbackAppId?: unknown
-): PublicAppScopedSource {
-  const appScope = record(target?.app_scope)
-  const state = normalizeFireuxAppScopeState(
-    text(appScope.state) ||
-    text(target?.app_scope_state)
-  )
-  const sourceAppId =
-    text(appScope.app_id) ||
-    text(target?.app_scope_app_id) ||
-    text(fallbackAppId)
+export function resolveFireuxEntityManagementTarget(
+  target?: FireuxManagedEntity | null,
+  fallbackAppId?: unknown,
+  ecosystem?: unknown
+): FireuxEntityManagementTarget {
+  const management = readFireuxEntityManagement(target?.management)
+  const mode = management?.mode || ''
+  const appId = management
+    ? resolveFireuxEntityManagementAppId(management, text(ecosystem))
+    : text(fallbackAppId)
 
   return {
-    state,
-    sourceAppId,
-    hasTenantApp: state === 'tenant_app',
+    mode,
+    appId,
+    hasDedicatedApp: mode === 'app',
   }
 }
 
-export function usePublicAppScopedSource(
-  target: MaybeRef<PublicAppScopedTarget | null | undefined>
+export function useFireuxEntityManagementTarget(
+  target: MaybeRef<FireuxManagedEntity | null | undefined>
 ) {
-  const { appId } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
   const source = computed(() =>
-    resolvePublicAppScopedSource(unref(target), appId)
+    resolveFireuxEntityManagementTarget(unref(target), appId, ecosystem)
   )
 
   return {
     source,
-    state: computed(() => source.value.state),
-    sourceAppId: computed(() => source.value.sourceAppId),
-    hasTenantApp: computed(() => source.value.hasTenantApp),
+    mode: computed(() => source.value.mode),
+    appId: computed(() => source.value.appId),
+    hasDedicatedApp: computed(() => source.value.hasDedicatedApp),
   }
 }
 

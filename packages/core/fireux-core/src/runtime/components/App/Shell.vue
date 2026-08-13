@@ -40,7 +40,7 @@
 
               <UTooltip :text="mediaSyncTooltip" :popper="{ placement: 'top' }">
                 <UButton
-                  aria-label="Sync App assets"
+                  aria-label="Sync App media"
                   size="xs"
                   variant="ghost"
                   :color="mediaSyncColor"
@@ -123,7 +123,7 @@
         :dismissible="false"
         prevent-close
         title="🚫 Blocked"
-        description="This app needs to be initialized."
+        :description="setupDescription"
       >
         <template #body>
           <AppInitializeSystem :state="initialization" />
@@ -142,7 +142,7 @@ import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppInitialization } from '../../composables/fireux/app/utils/useAppInitialization'
-import { syncAppAssetsToStorage } from '../../composables/fireux/firestore/core/app/utils/appAssetsSync'
+import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
@@ -160,10 +160,10 @@ const copiedNotes = ref(false)
 const mediaSyncPending = ref(false)
 const mediaSyncState = ref<'idle' | 'success' | 'error'>('idle')
 const mediaSyncTooltip = computed(() => {
-  if (mediaSyncPending.value) return 'Syncing App assets'
-  if (mediaSyncState.value === 'success') return 'App assets synced'
-  if (mediaSyncState.value === 'error') return 'App asset sync failed'
-  return 'Sync App assets'
+  if (mediaSyncPending.value) return 'Syncing App media'
+  if (mediaSyncState.value === 'success') return 'App media synced'
+  if (mediaSyncState.value === 'error') return 'App media sync failed'
+  return 'Sync App media'
 })
 const mediaSyncColor = computed(() => {
   if (mediaSyncState.value === 'success') return 'success' as const
@@ -189,7 +189,13 @@ const {
   pending: appStatusPending,
   error: appStatusError,
   refresh: refreshAppStatus,
-} = useFetch<{ ok: true; appId: string; initialized: boolean }>(
+} = useFetch<{
+  ok: true
+  appId: string
+  initialized: boolean
+  mediaReady: boolean
+  paletteReady: boolean
+}>(
   '/api/public/app/status',
   { server: false, lazy: true }
 )
@@ -197,10 +203,22 @@ const isResolved = computed(
   () =>
     !appStatusPending.value &&
     !appStatusError.value &&
-    typeof appStatus.value?.initialized === 'boolean'
+    typeof appStatus.value?.initialized === 'boolean' &&
+    typeof appStatus.value?.mediaReady === 'boolean' &&
+    typeof appStatus.value?.paletteReady === 'boolean'
 )
 const isInitialized = computed(
-  () => appStatus.value?.initialized === true
+  () =>
+    appStatus.value?.initialized === true &&
+    appStatus.value?.mediaReady === true &&
+    appStatus.value?.paletteReady === true
+)
+const setupDescription = computed(() =>
+  appStatus.value?.initialized && !appStatus.value?.mediaReady
+    ? 'This App needs its five canonical Storage assets.'
+    : appStatus.value?.initialized && !appStatus.value?.paletteReady
+      ? 'This App needs its complete semantic palette.'
+    : 'This App needs to be initialized.'
 )
 
 const showOnboardingModal = computed(
@@ -227,14 +245,14 @@ async function syncRuntimeMedia() {
   mediaSyncPending.value = true
   mediaSyncState.value = 'idle'
   try {
-    const result = await syncAppAssetsToStorage()
+    const result = await syncAppMediaToStorage()
     mediaSyncState.value = result.failed.length ? 'error' : 'success'
     if (result.failed.length) {
-      console.error('[AppShell] App asset sync failed', result.failed)
+      console.error('[AppShell] App media sync failed', result.failed)
     }
   } catch (error) {
     mediaSyncState.value = 'error'
-    console.error('[AppShell] App asset sync failed', error)
+    console.error('[AppShell] App media sync failed', error)
   } finally {
     mediaSyncPending.value = false
   }

@@ -59,26 +59,11 @@
 				</div>
 
 				<div class="rounded-lg border border-default p-4">
-					<div class="space-y-3">
-						<div class="flex items-center justify-between gap-3">
-							<div>
-								<p class="text-xs font-medium uppercase tracking-wide text-dimmed">
-									Transparent-media backdrop
-								</p>
-								<p class="text-sm text-dimmed">
-									Base colour inherited by Place children for their transparent brand media.
-								</p>
-							</div>
-						</div>
-
-						<div class="flex flex-wrap items-center gap-2">
-							<input v-model="backdropDraft" type="color" class="h-9 w-12 rounded border border-default bg-transparent p-1">
-							<UInput v-model="backdropDraft" class="w-36" placeholder="#ffffff" @blur="updateBackdrop" @keyup.enter="updateBackdrop" />
-							<UButton size="xs" color="neutral" variant="ghost" :disabled="isUpdatingBackdrop || !mediaBackdropColor" @click="clearBackdrop">
-								Clear
-							</UButton>
-						</div>
-					</div>
+					<PlaceEditBackdrop
+						:place="place"
+						:mutation-authority="mutationAuthority"
+						:can-write="canEditImage"
+					/>
 				</div>
 			</div>
 
@@ -98,7 +83,7 @@
 				</p>
 				<p v-else-if="canEditImage" class="text-xs text-dimmed">
 					{{ hasImage ? 'Current Place image.' : 'No Place image yet.' }}
-					Use a square Place image at least 1024 × 1024 px.
+					Recommended: 1024 × 1024 px, transparent PNG for logos.
 				</p>
 				<p v-else-if="!canEditImage" class="text-xs text-warning">
 					Only admins or the claimant can change this image.
@@ -133,7 +118,6 @@ import {
 } from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../../models/place.model'
-import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
 const props = defineProps<{
 	place: Place | null
@@ -148,9 +132,7 @@ const claimedUserId = computed(() => place.value?.claimed_by || '')
 const { user: claimedUser } = usePublicUserIdentity(claimedUserId)
 const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
-const imageUrl = computed(() => place.value?.assets.image || '')
-const mediaBackdropColor = computed(() => place.value?.assets.backdrop_color || '')
-const backdropDraft = ref(mediaBackdropColor.value)
+const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')
 const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {
 	const claimedBy = place.value?.claimed_by
@@ -175,13 +157,11 @@ const avatarInitials = computed(() => {
 })
 
 const avatarUploading = ref(false)
-const isUpdatingBackdrop = ref(false)
 const isClaiming = ref(false)
 const isDropping = ref(false)
 const { uploadImage } = useImageStorage()
 const {
 	updateClaimedBy,
-	updateMediaBackdropColor,
 	updatePlaceImage,
 } = usePlaceUpdate({ authority: () => props.mutationAuthority })
 const toast = useToastify()
@@ -191,7 +171,7 @@ async function handleAvatarUpload(file: File) {
 	if (!placeId.value) return
 	avatarUploading.value = true
 	try {
-		const url = await uploadImage(`places/${placeId.value}/image`, file)
+		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
 		await updatePlaceImage(url, { id: placeId.value })
 		toast.success('Image updated')
 	} catch (error) {
@@ -201,31 +181,6 @@ async function handleAvatarUpload(file: File) {
 	} finally {
 		avatarUploading.value = false
 	}
-}
-
-async function updateBackdrop() {
-	if (!placeId.value || !canEditImage.value || isUpdatingBackdrop.value) return
-	const color = normalizeHexColor(backdropDraft.value)
-	if (color === null) {
-		toast.error('Use a 6-digit hex colour.')
-		return
-	}
-	isUpdatingBackdrop.value = true
-	try {
-		await updateMediaBackdropColor(color || '', { id: placeId.value })
-		toast.success('Media backdrop updated')
-	} catch (error) {
-		const msg = error instanceof Error ? error.message : 'Please try again.'
-		toast.error(`Failed to update media backdrop: ${msg}`)
-		throw error
-	} finally {
-		isUpdatingBackdrop.value = false
-	}
-}
-
-async function clearBackdrop() {
-	backdropDraft.value = ''
-	await updateBackdrop()
 }
 
 async function onClaim() {

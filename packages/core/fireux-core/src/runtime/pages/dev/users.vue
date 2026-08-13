@@ -132,7 +132,7 @@ const users = computed<User[]>(() => {
         id: user.id,
         display_name: user.displayName,
         bio: user.bio,
-        assets: user.assets,
+        avatar: user.avatar,
         handle: user.handle,
       }) as User
   )

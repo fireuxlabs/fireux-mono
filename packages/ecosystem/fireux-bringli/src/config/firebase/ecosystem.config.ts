@@ -4,7 +4,6 @@ export const ecosystemConfig = {
   id: 'fireux-bringli',
   name: 'bringli',
   description: 'FireUX Bringli - Local producer delivery marketplace ecosystem',
-
   firebase: {
     apiKey: 'AIzaSyCiSkdVYeyM3vb5hbXPSaGWaHSI3FXngIc',
     authDomain: 'bringli-b0517.firebaseapp.com',

@@ -9,7 +9,6 @@ import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
 } from '../../models/place-onboarding.model'
-import { readPlaceAssets } from '../../utils/place-spine'
 import {
   canConfigure,
   context,
@@ -50,7 +49,7 @@ export async function previewPlaceOnboarding(
     const current = currentDefaults(place)
     const timezone = current.timezone || (await resolveTimezone(event, place))
     const suggested = suggestions(place, timezone)
-    const image = storedHttpsImage(readPlaceAssets(place).image)
+    const imageUrl = storedHttpsImage(place.image_url)
     const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
@@ -59,7 +58,7 @@ export async function previewPlaceOnboarding(
       requires_defaults: !current.default_currency_code || !current.timezone,
       ...(Object.keys(current).length ? { current } : {}),
       ...(Object.keys(suggested).length ? { suggestions: suggested } : {}),
-      ...(image ? { assets: { image } } : {}),
+      ...(imageUrl ? { image_url: imageUrl } : {}),
       ...(Object.keys(brandPalette).length
         ? { brand_palette: brandPalette }
         : {}),
@@ -112,9 +111,7 @@ export async function completePlaceOnboarding(
       mutations.create(places, requested.id, {
         ...provider,
         ...requested.defaults,
-        ...('assets' in requested
-          ? { assets: requested.assets }
-          : {}),
+        ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -130,7 +127,7 @@ export async function completePlaceOnboarding(
         created: true,
         configured: true,
         defaults: requested.defaults,
-        ...('assets' in requested ? { assets: requested.assets } : {}),
+        ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -139,15 +136,15 @@ export async function completePlaceOnboarding(
 
     const place = snapshot.data || {}
     const current = currentDefaults(place)
-    const storedImage = storedHttpsImage(readPlaceAssets(place).image)
+    const storedImage = storedHttpsImage(place.image_url)
     const currentBrandPalette = storedBrandPalette(place)
     const patch: Record<string, unknown> = {}
     if (!current.default_currency_code) {
       patch.default_currency_code = requested.defaults.default_currency_code
     }
     if (!current.timezone) patch.timezone = requested.defaults.timezone
-    if (!storedImage && 'assets' in requested) {
-      patch['assets.image'] = requested.assets?.image
+    if (!storedImage && 'imageUrl' in requested) {
+      patch.image_url = requested.imageUrl
     }
     if (
       !Object.keys(currentBrandPalette).length &&
@@ -188,9 +185,9 @@ export async function completePlaceOnboarding(
         timezone: current.timezone || requested.defaults.timezone,
       },
       ...(storedImage
-        ? { assets: { image: storedImage } }
-        : 'assets' in requested
-          ? { assets: requested.assets }
+        ? { image_url: storedImage }
+        : 'imageUrl' in requested
+          ? { image_url: requested.imageUrl }
           : {}),
       ...(Object.keys(currentBrandPalette).length
         ? { brand_palette: currentBrandPalette }

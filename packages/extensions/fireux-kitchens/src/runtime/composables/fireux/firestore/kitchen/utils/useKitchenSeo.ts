@@ -8,7 +8,7 @@ const excerpt = (value: unknown) => clean(value).slice(0, 180)
 export function buildKitchenJsonLd(kitchen: Partial<Kitchen> | null | undefined) {
   const entry = kitchen as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
   const name = clean(entry?.display_name || entry?.name)
-  if (!entry?.show || !clean(entry.slug) || !name) return null
+  if (entry?.visibility !== true || !clean(entry.slug) || !name) return null
 
   return {
     '@context': 'https://schema.org',
@@ -26,7 +26,9 @@ export function useKitchenSeo(kitchen: MaybeRefOrGetter<Partial<Kitchen> | null 
     () => entry.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
   )
   const slug = computed(() => clean(entry.value?.slug))
-  const isPublic = computed(() => Boolean(entry.value?.show === true && slug.value))
+  const isIndexable = computed(() =>
+    Boolean(entry.value?.visibility === true && slug.value)
+  )
 
   return useSeo({
     title: computed(() => {
@@ -50,7 +52,7 @@ export function useKitchenSeo(kitchen: MaybeRefOrGetter<Partial<Kitchen> | null 
       )
     }),
     path: computed(() => (slug.value ? `/kitchens/${encodeURIComponent(slug.value)}` : '')),
-    robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
+    robots: computed(() => (isIndexable.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildKitchenJsonLd(entry.value)),
   })
 }

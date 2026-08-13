@@ -1,4 +1,4 @@
-// Shared sparse brand-palette contract.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: define one shared sparse brand-palette contract.
 /**
  * Runtime models canon: docs/ai/gpt-context.md
  *
@@ -31,6 +31,16 @@ export const BRAND_PALETTE_KEYS = [
 
 export type BrandPaletteKey = (typeof BRAND_PALETTE_KEYS)[number]
 export type SparseBrandPalette = Partial<BrandPalette>
+
+export type {
+  AppPalette,
+  AppPaletteLayer,
+  AppTheme,
+  AppThemeLayer,
+  AppTypography,
+  ConsolePalette,
+  ConsoleTheme,
+} from '../../../types/theme'
 
 export type PageStyle = BrandPalette & {
   background_color_light: string

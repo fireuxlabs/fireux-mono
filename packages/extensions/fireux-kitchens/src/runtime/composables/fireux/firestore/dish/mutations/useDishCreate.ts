@@ -22,6 +22,7 @@ type DishCreateDraft = {
   description?: string
   item_kind?: string
   is_deal?: boolean
+  is_flagship?: boolean
 }
 
 export type DishCreateResult = {
@@ -44,6 +45,7 @@ function buildDishPayload(
     description,
     item_kind: normalizeDishItemKind(draft.item_kind),
     is_deal: normalizeDishDealFlag(draft.is_deal),
+    is_flagship: false,
     image: '',
     kitchen_id: kitchenId,
   }

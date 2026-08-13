@@ -67,27 +67,27 @@
 // Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: describe the trusted Console transaction.
 import { computed } from 'vue'
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import SupplierCreateWrite from './Write.vue'
 
 const props = defineProps<{
-  mode?: ConsoleCreateMode
-  create?: () => Promise<ConsoleCreateResult>
+  mode?: FireuxEntityCreateMode
+  create?: () => Promise<FireuxEntityCreateResult>
   returnTo?: string
   cancelTo?: string
 }>()
 
 defineEmits<{
-  (e: 'created', payload: ConsoleCreateResult): void
+  (e: 'created', payload: FireuxEntityCreateResult): void
   (e: 'error', error: unknown): void
 }>()
 
 const { notesVisible } = useDevUi()
 
-const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
 const create = computed(() => props.create)
 const returnTo = computed(() => String(props.returnTo || '').trim())
 const cancelTo = computed(() => String(props.cancelTo || '').trim())

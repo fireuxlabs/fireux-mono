@@ -2717,7 +2717,7 @@ export async function run(ctx) {
       : ''
 
   if (
-    powerCardKitchenProjection.includes('scenario.place.assets.image') ||
+    powerCardKitchenProjection.includes('scenario.place.image_url') ||
     /\bimageUrl\s*:/.test(powerCardKitchenProjection)
   ) {
     violations.push(

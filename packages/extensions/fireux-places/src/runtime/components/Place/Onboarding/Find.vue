@@ -24,18 +24,6 @@
       title="We could not use this place"
       :description="error"
     />
-
-    <div class="flex justify-center border-t border-default pt-4">
-      <UButton
-        type="button"
-        color="neutral"
-        variant="link"
-        icon="i-lucide-pencil-line"
-        @click="emit('manual')"
-      >
-        Can’t find it? Enter manually
-      </UButton>
-    </div>
   </section>
 </template>
 
@@ -50,6 +38,5 @@ defineProps<{
 const emit = defineEmits<{
   (event: 'selected', selection: PlaceOnboardingSelection): void
   (event: 'cleared'): void
-  (event: 'manual'): void
 }>()
 </script>

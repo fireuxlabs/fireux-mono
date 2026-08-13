@@ -158,11 +158,11 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
   )
-  assert.match(consoleTargets, /useCurrentAppContext/)
+  assert.match(consoleTargets, /useConsoleTargetRequest/)
   assert.doesNotMatch(
     consoleTargets,
-    /useUserFetch/,
-    'Generic Console targets must consume the bounded membership projection directly.'
+    /useUserFetch|useCurrentAppContext/,
+    'Generic Console targets must consume the authenticated family projection directly.'
   )
 
   const routeAuthGuard = read(

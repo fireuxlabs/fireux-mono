@@ -52,9 +52,9 @@ export function projectPublicEcosystem(
     status: asStatus(source.status),
     name: asTrimmedString(source.name) || id,
     description: asTrimmedString(source.description),
-    assets: {
-      image: asTrimmedString(asRecord(source.assets).image),
-    },
-    website_url: asTrimmedString(source.website_url),
+    image_url: asTrimmedString(source.image_url),
+    // Temporary read-only migration adapter. New writes use website_url.
+    website_url:
+      asTrimmedString(source.website_url) || asTrimmedString(source.source_url),
   }
 }

@@ -326,7 +326,9 @@ done < <(
     git ls-files --others --exclude-standard
   } | sort -u
 )
-report_mixed_scope "${scope_changes[@]}"
+if [[ -n "${scope_changes[*]-}" ]]; then
+  report_mixed_scope "${scope_changes[@]}"
+fi
 
 if has_upstream; then
   counts="$(ahead_behind_counts)"

@@ -45,10 +45,10 @@ export const ConversationAccessStorage = {
 } as const
 
 export type ConversationKind =
+  | 'property_enquiry'
   | 'guest_support'
   | 'provider_lead'
   | 'general'
-  | (string & {})
 
 export type ConversationStatus = 'open' | 'pending' | 'closed' | 'archived'
 export type ConversationParticipantType = 'admin' | 'user' | 'guest' | 'system'

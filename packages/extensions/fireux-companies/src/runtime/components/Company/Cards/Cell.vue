@@ -12,6 +12,7 @@
         :alt="name"
         size="md"
         icon="i-lucide-image"
+        :class="avatarShadeClass"
         class="shrink-0"
       />
 
@@ -58,6 +59,7 @@
         :alt="name"
         size="md"
         icon="i-lucide-image"
+        :class="avatarShadeClass"
         class="shrink-0"
       />
 
@@ -97,7 +99,7 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { CompanyCard } from '../../../composables/fireux/company/useCompanyInterface'
 
-type Props = Pick<CompanyCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
+type Props = Pick<CompanyCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'> & {
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
@@ -123,6 +125,14 @@ const props = withDefaults(defineProps<Props>(), {
 const resolvedAddress = computed(() => props.formattedAddress || '')
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

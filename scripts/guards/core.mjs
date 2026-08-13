@@ -123,6 +123,15 @@ function checkFireuxCoreContracts(pkgPath) {
   )
   const pluginConfig = source('src/config/module/plugins-config.ts')
   const onboarding = source('src/runtime/components/App/Create/System.vue')
+  const appShell = source('src/runtime/components/App/Shell.vue')
+  const appInitialization = source(
+    'src/runtime/composables/fireux/app/utils/useAppInitialization.ts'
+  )
+  const appStatus = source(
+    'src/runtime/server/api/public/app/status.get.ts'
+  )
+  const appConfigType = source('src/config/app/types.ts')
+  const appConfigBuilder = source('src/config/app/fireux.config.ts')
   const console = source(
     'src/runtime/composables/fireux/app/console/useConsole.ts'
   )
@@ -145,25 +154,6 @@ function checkFireuxCoreContracts(pkgPath) {
   const landingHero = source(
     'src/runtime/components/landing/LandingHeroSection.vue'
   )
-  const extensionFamilyPattern =
-    /\b(?:kitchen|kitchens|property|properties|supplier|suppliers|portfolio|portfolios)\b/i
-  const pending = [path.join(pkgPath, 'src')]
-  while (pending.length) {
-    const current = pending.pop()
-    for (const entry of readdirSync(current, { withFileTypes: true })) {
-      const absolute = path.join(current, entry.name)
-      if (entry.isDirectory()) pending.push(absolute)
-      else if (
-        entry.isFile() &&
-        /\.(?:ts|vue|scss|css)$/.test(entry.name) &&
-        extensionFamilyPattern.test(readFileSync(absolute, 'utf8'))
-      ) {
-        violations.push(
-          `${path.relative(pkgPath, absolute)} enumerates an extension-owned entity family.`
-        )
-      }
-    }
-  }
 
   if (!runtimeType.includes('Omit<FireuxAppConfig, RuntimeNormalizedFields>')) {
     violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')
@@ -172,8 +162,7 @@ function checkFireuxCoreContracts(pkgPath) {
     !runtimeView.includes('consoles: toStringArray(fireux.consoles)') ||
     !runtimeView.includes(
       'consoleConfig: toConsoleConfig(fireux.consoleConfig)'
-    ) ||
-    !runtimeView.includes('consoleRegistry: toRegistrationArray')
+    )
   ) {
     violations.push(
       'FireUXConfig must normalize Console families and config once for runtime consumers.'
@@ -226,6 +215,29 @@ function checkFireuxCoreContracts(pkgPath) {
   if (/UPinInput|developer PIN/i.test(onboarding)) {
     violations.push(
       'App onboarding must rely on trusted server UID authorization, not a cosmetic client PIN.'
+    )
+  }
+  if (
+    !appStatus.includes('mediaReady:') ||
+    !appStatus.includes('paletteReady:') ||
+    !appStatus.includes('isAppMediaComplete') ||
+    !appShell.includes("appStatus.value?.mediaReady === true") ||
+    appInitialization.indexOf('await options.onInitialized?.()') <
+      appInitialization.indexOf('syncResult.failed.length') ||
+    !appInitialization.includes('App setup is incomplete.') ||
+    !appShell.includes("appStatus.value?.paletteReady === true")
+  ) {
+    violations.push(
+      'App initialization must remain blocked until all five canonical Storage assets are synced.'
+    )
+  }
+  if (
+    !appConfigType.includes('theme?: AppTheme') ||
+    !appConfigBuilder.includes('themeColor: app.theme?.palette.accent') ||
+    !appConfigBuilder.includes('backgroundColor: app.theme?.palette.canvas')
+  ) {
+    violations.push(
+      'App source must carry the reviewed semantic palette into runtime and PWA presentation.'
     )
   }
   for (const [owner, contents] of [

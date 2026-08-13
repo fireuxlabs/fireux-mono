@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Property selection only after membership and collection outcomes are composed.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: request the explicit root-with-App-support read shape.
 // Concurrent edit — 2026-07-21 22:31 CEST — Console family alignment: make Property core own target ids and membership outcome.
-import { computed, isRef, type Ref } from 'vue'
+import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
@@ -9,6 +9,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import { useConsoleFamilyRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleFamilyRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
@@ -16,17 +17,9 @@ import {
 } from '../../../../../models/property.model'
 import {
   usePropertyCollection,
-  type PropertyCollectionFilter,
 } from '../../../firestore/property/fetch/usePropertyCollection'
 import type { PropertySurface } from '../../../firestore/property/utils/view/usePropertyInterface'
 import { usePropertyConsoleDemoData } from './usePropertyConsoleDemoData'
-
-type UsePropertyConsoleOptions = {
-  filter?:
-    | PropertyCollectionFilter
-    | Ref<PropertyCollectionFilter | null | undefined>
-    | null
-}
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -40,21 +33,16 @@ type UsePropertyConsoleOptions = {
  * This file adapts Property root/app authority sources into the private /console/property selected runtime.
  * It should not become a Portfolio management seam or a public property info page helper.
  */
-export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
+function createPropertyConsole() {
   const consoleRoot = useConsole('property')
   const consoleTargets = useConsoleTargets({ family: 'property' })
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
-  const targetFilter = computed<PropertyCollectionFilter>(() => {
-    const explicitFilter = isRef(options.filter)
-      ? (options.filter.value ?? {})
-      : (options.filter ?? {})
-
-    if (consoleRoot.source.value === 'demo') return explicitFilter
-    return {
-      ...explicitFilter,
+  const targetFilter = computed(() => {
+    if (consoleRoot.source.value === 'demo') return {}
+    return consoleTargets.filter({
       operatorId: userId.value,
-    }
+    })
   })
   const liveCollection = usePropertyCollection({
     source: consoleRoot.source,
@@ -151,4 +139,8 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     runtime: entity.runtime,
     actions,
   }
+}
+
+export function usePropertyConsole() {
+  return useConsoleFamilyRuntime('property', createPropertyConsole)
 }

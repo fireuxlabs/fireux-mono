@@ -73,7 +73,7 @@ function buildCard(target?: EcosystemInterfaceInput | null): EcosystemInterfaceC
   return {
     id,
     to: text(target.href) || `/ecosystems/${encodeURIComponent(id)}`,
-    imageUrl: text(target.src) || text(target.assets?.image),
+    imageUrl: text(target.src) || text(target.image_url),
     avatarText: text(target.text) || name || id,
     title: name || id,
     subtitle: id,

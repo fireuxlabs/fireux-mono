@@ -45,7 +45,7 @@ export function useKitchenConsoleDemoData(
             kitchen: scenario.kitchen,
             place: scenario.place,
             scope: scenario.appSupport,
-            console: { mode: 'demo' },
+            routeScope: 'demo',
           })
           if (!kitchen) return items
 

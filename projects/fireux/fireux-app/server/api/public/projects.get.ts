@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
           id: document.id,
           name: text(data.name),
           description: text(data.description),
-          assets: { image: text(data.assets?.image) },
+          image_url: text(data.image_url),
           status: 'active' as const,
         },
       ]

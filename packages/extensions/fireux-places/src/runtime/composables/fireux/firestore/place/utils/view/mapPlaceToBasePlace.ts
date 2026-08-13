@@ -1,5 +1,4 @@
-import type { BasePlace, PlaceSource } from '../../../../../../models/place.model'
-import { readPlaceAssets } from '../../../../../../utils/place-spine'
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../../models/place.model'
 import { canonicalPlaceId } from '../../fetch/google/usePlacesGoogle'
 import type { BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
 
@@ -7,6 +6,12 @@ function toSource(value: unknown): PlaceSource {
   const v = String(value ?? '').toLowerCase().trim()
   if (v === 'google' || v === 'manual' || v === 'fireux') return v
   return 'fireux'
+}
+
+function toShade(value: unknown): PlaceImageShade {
+  const v = String(value ?? 'none').toLowerCase().trim()
+  if (v === 'light' || v === 'dark' || v === 'none') return v
+  return 'none'
 }
 
 function toNumber(value: unknown): number {
@@ -32,8 +37,9 @@ export const mapPlaceToBasePlace = (): MapToBasePlace => {
       short_address: toString(p?.short_address).trim(),
       lat: toNumber(p?.lat),
       lng: toNumber(p?.lng),
-      assets: readPlaceAssets(p),
+      image_url: toString(p?.image_url ?? p?.place_image).trim(),
       claimed_by: toString(p?.claimed_by).trim(),
+      image_shade: toShade(p?.image_shade),
       source,
       slug: toString(p?.slug).trim(),
     }

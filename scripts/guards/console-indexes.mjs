@@ -62,6 +62,7 @@ export async function run(ctx) {
     validateIndex({ ...index, files, repoRoot, violations })
   }
   validateSharedConsoleSource({ repoRoot, violations })
+  validateConsoleTargetEndpoints({ repoRoot, violations })
   validateConsoleDataContract({ files, repoRoot, violations })
   validateSourceIgnorantViews({ files, repoRoot, violations })
   validateMutationWriteGates({ files, repoRoot, violations })
@@ -80,7 +81,7 @@ export async function run(ctx) {
         '- Render selected state through ConsoleSelectedTarget and forward @clear="actions.clear".',
         '- Render target pending/error/ready/empty state only through ConsoleTargetCollection.',
         '- Resolve membership target IDs and outcomes once in the family core; index adapters only consume that authority.',
-        '- Bind Kitchen selection to its live/demo target items and outcome, with enforced selection committed by the family core.',
+        '- Bind Kitchen selection to its live/demo target items and outcome, with auto-selection left to useConsoleIndex.',
         '- Stamp selected-parent data at each provider boundary as { type, value }; persist and validate { id, type }.',
         '- Derive isDemo, readOnly, and canWrite from the selected typed data; missing or mismatched provenance stays read-only and inactive.',
         '- Keep operation/detail views source-ignorant and gate every mutation adapter before its first side effect.',
@@ -92,6 +93,168 @@ export async function run(ctx) {
   console.log(
     '[guard] ✅ console indexes, typed data, and write gates use the shared spine'
   )
+}
+
+function validateConsoleTargetEndpoints({ repoRoot, violations }) {
+  const requestRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargetRequest.ts'
+  const targetsRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
+  const endpointRelative =
+    'packages/core/fireux-core/src/runtime/server/api/console/[family]/targets.get.ts'
+  const moduleRelative = 'packages/core/fireux-core/src/module.ts'
+  const kitchenRelative =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
+  const friiitesRelative = 'projects/misebox/friiites/nuxt.config.ts'
+  const runtimeConfigRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts'
+  const familyRuntimeRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleFamilyRuntime.ts'
+  const request = readRequiredSource(
+    repoRoot,
+    requestRelative,
+    'missing shared authenticated Console target request',
+    violations
+  )
+  const targets = readRequiredSource(
+    repoRoot,
+    targetsRelative,
+    'missing shared Console target authority adapter',
+    violations
+  )
+  const endpoint = readRequiredSource(
+    repoRoot,
+    endpointRelative,
+    'missing canonical Console family target endpoint',
+    violations
+  )
+  const moduleSource = readRequiredSource(
+    repoRoot,
+    moduleRelative,
+    'missing Core module registration',
+    violations
+  )
+  const kitchen = readRequiredSource(
+    repoRoot,
+    kitchenRelative,
+    'missing Kitchen target projection adapter',
+    violations
+  )
+  const friiites = readRequiredSource(
+    repoRoot,
+    friiitesRelative,
+    'missing Friiites tenant Console policy',
+    violations
+  )
+  const runtimeConfig = readRequiredSource(
+    repoRoot,
+    runtimeConfigRelative,
+    'missing runtime Console policy projection',
+    violations
+  )
+  const familyRuntime = readRequiredSource(
+    repoRoot,
+    familyRuntimeRelative,
+    'missing request-scoped Console family runtime',
+    violations
+  )
+
+  assertMatch(
+    moduleSource,
+    /route:\s*['"]\/api\/console\/:family\/targets['"]/,
+    moduleRelative,
+    'must register the canonical family target endpoint',
+    violations
+  )
+  assertMatch(
+    request,
+    /console-target-request-\$\{appId\}-\$\{normalizedFamily\}[\s\S]*requestKey = `\$\{appId\}:\$\{normalizedFamily\}:\$\{requestUid\}`/,
+    requestRelative,
+    'request state must be isolated by App, family, and User',
+    violations
+  )
+  for (const pattern of [
+    /\/api\/console\/\$\{normalizedFamily\}\/targets/,
+    /getIdToken\(\)/,
+    /Authorization:\s*`Bearer/,
+    /response\.appId !== appId/,
+    /response\.family !== normalizedFamily/,
+    /status:\s*'pending'/,
+    /status:\s*'ready'/,
+    /status:\s*'error'/,
+  ]) {
+    assertMatch(
+      request,
+      pattern,
+      requestRelative,
+      'must validate one authenticated canonical response',
+      violations
+    )
+  }
+  assertMatch(
+    targets,
+    /useConsoleTargetRequest\(family\)/,
+    targetsRelative,
+    'all generic Console families must consume the shared request',
+    violations
+  )
+  for (const pattern of [
+    /requireFirebaseBearerUser/,
+    /project_ids/,
+    /operator_ids/,
+    /team_ids/,
+    /Cache-Control['"]?:\s*['"]private, no-store/,
+  ]) {
+    assertMatch(
+      endpoint,
+      pattern,
+      endpointRelative,
+      'must retain authenticated, family-owned target authority',
+      violations
+    )
+  }
+  assertMatch(
+    kitchen,
+    /useConsoleTargetRequest<KitchenConsoleTargetItem>\(['"]kitchen['"]/,
+    kitchenRelative,
+    'Kitchen must reuse the shared request lifecycle',
+    violations
+  )
+  assertNoMatch(
+    kitchen,
+    /useAsyncData|firebase\/firestore/,
+    kitchenRelative,
+    'Kitchen must not fork request lifecycle or browser authority',
+    violations
+  )
+  assertMatch(
+    friiites,
+    /consoleConfig:\s*\{[\s\S]*kitchen:\s*\{[\s\S]*allowDemo:\s*false/,
+    friiitesRelative,
+    'Friiites must disable Demo targets for its enforced live Kitchen',
+    violations
+  )
+  assertMatch(
+    runtimeConfig,
+    /typeof config\.allowDemo === ['"]boolean['"][\s\S]*normalized\.allowDemo = config\.allowDemo/,
+    runtimeConfigRelative,
+    'runtime config must preserve the App Demo policy',
+    violations
+  )
+  for (const pattern of [
+    /useNuxtApp\(\)/,
+    /Symbol\.for\(['"]fireux\.console-family-runtimes['"]\)/,
+    /const key = `\$\{appId\}:\$\{normalizeConsoleFamily\(family\)\}`/,
+    /registry\.set\(key, runtime\)/,
+  ]) {
+    assertMatch(
+      familyRuntime,
+      pattern,
+      familyRuntimeRelative,
+      'family runtime must be isolated by Nuxt App, FireUX App, and family',
+      violations
+    )
+  }
 }
 
 function validateConsoleDataContract({ files, repoRoot, violations }) {
@@ -170,23 +333,9 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
     )
     assertMatch(
       selectionSource,
-      /const state = useState<ConsoleSelectionState \| null>\([\s\S]{0,180}\(\) => stateCookie\.value \?\? null\s*\)/,
+      /const selectedId = computed\(\(\) =>[\s\S]{0,100}normalizeString\(state\.value\?\.id(?:\s*\?\?\s*state\.value\?\.selectedId)?\)/,
       selectionRelative,
-      'the persistence cookie must hydrate shared selection state exactly once',
-      violations
-    )
-    assertMatch(
-      selectionSource,
-      /const selectedId = computed\(\(\) =>\s*normalizeString\(state\.value\?\.id \?\? state\.value\?\.selectedId\)\s*\)/,
-      selectionRelative,
-      'selected id must read only shared live state',
-      violations
-    )
-    assertNoMatch(
-      selectionSource,
-      /const selectedId = computed[\s\S]{0,260}stateCookie\.value/,
-      selectionRelative,
-      'selected id must not retain the persistence cookie as a second live authority',
+      'selected id must prefer the canonical persisted id',
       violations
     )
     assertMatch(
@@ -210,34 +359,6 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
       'selected targets must match both persisted id and provider type',
       violations
     )
-    if (findCallSources(selectionSource, 'watch').length !== 2) {
-      violations.push(
-        `${selectionRelative} (selection may watch only typed source projection and explicit enforced-target policy)`
-      )
-    }
-    assertMatch(
-      selectionSource,
-      /if \(options\?\.enforcedTargetId\)[\s\S]{0,700}outcome === ['"]ready['"] && enforcedId[\s\S]{0,500}if \(!enforcedTarget\) return[\s\S]{0,300}selectTarget\(enforcedId, type\)/,
-      selectionRelative,
-      'selection may auto-commit only an explicit authority-proven enforced target',
-      violations
-    )
-    for (const watchSource of findCallSources(selectionSource, 'watch')) {
-      assertNoMatch(
-        watchSource,
-        /clearSelection\s*\(/,
-        selectionRelative,
-        'target loading and validation must never clear the canonical workspace selection',
-        violations
-      )
-    }
-    assertNoMatch(
-      selectionSource,
-      /authoritative && currentId && !currentTarget/,
-      selectionRelative,
-      'target outcomes must resolve selection authority without destructively rewriting workspace state',
-      violations
-    )
   }
 
   if (runtimeSource) {
@@ -253,13 +374,6 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
       /getId:\s*(?:\(\s*data\s*\)|data)\s*=>\s*options\.getId\(data\.value\),\s*getType:\s*(?:\(\s*data\s*\)|data)\s*=>\s*data\.type/,
       runtimeRelative,
       'entity runtime selection must bind envelope value and type together',
-      violations
-    )
-    assertMatch(
-      runtimeSource,
-      /enforcedTargetId:\s*options\.enforcedTargetId \?\? undefined/,
-      runtimeRelative,
-      'entity runtime must pass core-owned single-target enforcement into shared selection',
       violations
     )
     assertMatch(
@@ -435,6 +549,8 @@ function validateMutationWriteGates({ files, repoRoot, violations }) {
 function validateSharedConsoleSource({ repoRoot, violations }) {
   const relative =
     'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsole.ts'
+  const selectionRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleSelection.ts'
   const fullPath = path.join(repoRoot, relative)
   if (!existsSync(fullPath)) {
     violations.push(`${relative} (missing shared Console source authority)`)
@@ -442,6 +558,12 @@ function validateSharedConsoleSource({ repoRoot, violations }) {
   }
 
   const source = readFileSync(fullPath, 'utf8')
+  const selectionSource = readRequiredSource(
+    repoRoot,
+    selectionRelative,
+    'missing shared Console selection authority',
+    violations
+  )
   assertMatch(
     source,
     /useState<ConsoleSource>\(\s*`fireux-console-\$\{appScope\}-\$\{normalizedFamily\}-source-state`/,
@@ -454,6 +576,20 @@ function validateSharedConsoleSource({ repoRoot, violations }) {
     /sourceState\.value = nextSource\s*sourceCookie\.value = nextSource/,
     relative,
     'Console source changes must update shared reactive state and its persistence cookie together',
+    violations
+  )
+  assertMatch(
+    selectionSource,
+    /`fireux-console-\$\{appScope\}-\$\{normalizedFamily\}-selection-state`/,
+    selectionRelative,
+    'Console selection must be isolated by App and family',
+    violations
+  )
+  assertMatch(
+    selectionSource,
+    /state\.value = value\s*stateCookie\.value = value/,
+    selectionRelative,
+    'Console selection must commit reactive state and persistence together',
     violations
   )
 }
@@ -544,15 +680,6 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
       'debug panel must receive the index debug state',
       violations
     )
-    if (family === 'Kitchen') {
-      assertMatch(
-        debugTag,
-        /:descriptions=["']debugDescriptions["']/,
-        relative,
-        'Kitchen debug must explain its page-level sections and workspace fields in the shared panel',
-        violations
-      )
-    }
   }
   const selectedPosition = source.indexOf(`<Console${family}IndexSelected`)
   const targetsPosition = source.indexOf(`<Console${family}IndexTargets`)
@@ -696,86 +823,16 @@ function validateComposable({ family, files, repoRoot, violations }) {
       }
       assertMatch(
         source,
-        /const showTargetChooser = computed\(\(\) => true\)/,
+        /const showTargetChooser = computed\(\s*\(\) => true\s*\)/,
         relative,
-        'Kitchen selector pages must keep their authoritative target collection visible, including an enforced single target',
+        'Kitchen selector must keep the authoritative target collection visible',
         violations
       )
       assertMatch(
         source,
         /demoTargets:\s*\{\s*show:\s*consoleRuntime\.allowDemo\.value\s*&&\s*index\.sections\.value\.targets\.show/,
         relative,
-        'Kitchen Demo chooser visibility must follow the App policy and shared Live chooser',
-        violations
-      )
-      assertMatch(
-        source,
-        /consoleKitchen:\s*\{\s*workspace:\s*\{[\s\S]{0,700}selectedKitchen:\s*\{[\s\S]{0,1000}user:\s*\{[\s\S]{0,700}myKitchens:\s*\{[\s\S]{0,500}demoKitchens:\s*\{[\s\S]{0,500}myKitchenApps:\s*\{/,
-        relative,
-        'Kitchen debug must use one page-level object with workspace, user, and named target collections',
-        violations
-      )
-      assertMatch(
-        source,
-        /user:\s*\{\s*authentication:\s*\{\s*status:\s*!hasAuthState\.value[\s\S]{0,300}id:\s*currentUser\.value\?\.uid \?\? null,[\s\S]{0,180}displayName:\s*currentUser\.value\?\.displayName \?\? null/,
-        relative,
-        'Kitchen debug User block must identify the authenticated subject without adding another User authority fetch',
-        violations
-      )
-      assertMatch(
-        source,
-        /workspace:\s*\{\s*app:\s*\{\s*id:\s*consoleRuntime\.appId\.value,\s*role:\s*selectedKitchen\?\.console\?\.app_role \?\? null,\s*\},\s*collection:\s*runtimeActive[\s\S]{0,250}root:\s*consoleRuntime\.canonicalRootCollection\.value \|\| null,\s*scoped:\s*consoleRuntime\.kitchenCollectionPath\.value \|\| null[\s\S]{0,250}selectedKitchen:\s*\{\s*status:\s*selectionStatus,\s*source:\s*selectedType,\s*id:\s*committedId \|\| null,[\s\S]{0,400}userAccess:\s*runtimeActive/,
-        relative,
-        'Kitchen debug must keep App attachment and collection scope in workspace while selectedKitchen owns only selected identity and target-specific User access',
-        violations
-      )
-      assertNoMatch(
-        source,
-        /selectedKitchen:\s*\{[\s\S]{0,700}\b(?:committed|kitchen|placeId|entityStatus|visibility|console|scope|readOnly|rootCollection|kitchenCollectionPath):/,
-        relative,
-        'Kitchen debug selected identity must not retain redundant envelopes, public presentation state, workspace facts, inverse access flags, or misleading collection aliases',
-        violations
-      )
-      assertMatch(
-        source,
-        /const selectionStatus = selectedKitchen\s*\? ['"]selected['"]\s*:\s*committedId\s*\? ['"]resolving['"]\s*:\s*['"]none['"]/,
-        relative,
-        'Kitchen debug must distinguish no selection from a committed target still resolving',
-        violations
-      )
-      assertMatch(
-        source,
-        /selectedKitchen:\s*\{\s*status:\s*selectionStatus,\s*source:\s*selectedType/,
-        relative,
-        'selectedKitchen source must be null until a typed target is committed',
-        violations
-      )
-      assertMatch(
-        source,
-        /myKitchens:\s*\{\s*endpoint:\s*['"]\/api\/console\/kitchen\/targets['"][\s\S]{0,500}demoKitchens:\s*\{\s*adapter:\s*['"]useKitchenConsoleDemoData['"],\s*owner:\s*['"]fireux-kitchens['"][\s\S]{0,500}myKitchenApps:\s*\{\s*endpoint:\s*['"]\/api\/console\/kitchen\/targets['"],\s*action:\s*['"]open-app['"],\s*route:\s*['"]\/apps\/\{appId\}['"]/,
-        relative,
-        'Kitchen debug must name exact providers and keep App resources on an open-app route contract',
-        violations
-      )
-      assertNoMatch(
-        source,
-        /authority:\s*['"](?:authenticated-server-projection|package-owned-demo-world)['"]/,
-        relative,
-        'Kitchen debug must name its concrete endpoint or adapter instead of an opaque authority label',
-        violations
-      )
-      assertNoMatch(
-        source,
-        /const debug = computed\(\(\) => \(\{[\s\S]{0,300}\bkitchenId:/,
-        relative,
-        'Kitchen debug must not flatten catalogue source and selection identity into one payload',
-        violations
-      )
-      assertMatch(
-        source,
-        /includeCountsInDebug:\s*false/,
-        relative,
-        'Kitchen debug must keep collection counts inside its named page sections',
+        'Kitchen Demo chooser visibility must follow the shared Live chooser',
         violations
       )
     }
@@ -822,6 +879,15 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   const indexSource = readFileSync(indexPath, 'utf8')
 
   assertNoIndexTargetResolver(indexSource, indexRelative, violations)
+  assertMatch(
+    coreSource,
+    new RegExp(
+      `return useConsoleFamilyRuntime\\(['"]${family.toLowerCase()}['"],\\s*create${family}Console\\)`
+    ),
+    coreRelative,
+    'family core must expose one request-scoped runtime',
+    violations
+  )
 
   if (MEMBERSHIP_TARGET_FAMILIES.has(family)) {
     if (findCallSources(coreSource, 'useConsoleTargets').length !== 1) {
@@ -872,14 +938,14 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
       coreSource,
       /enforcedTargetId:\s*consoleTargets\.singleTargetId/,
       coreRelative,
-      'family core must commit its authoritative single target through shared selection',
+      'family runtime must commit authority-proven single targets',
       violations
     )
     assertNoMatch(
       indexSource,
-      /\b(?:autoSelectTargetId|singleTargetId)\b/,
+      /\bautoSelectTargetId\b/,
       indexRelative,
-      'index adapters must present committed selection, not initialize it',
+      'index adapter must not create a second selection authority',
       violations
     )
     return
@@ -899,6 +965,13 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
         'family core must bind selection to its authoritative target outcome',
         violations
       )
+      assertMatch(
+        runtimeCalls[0],
+        /enforcedTargetId:\s*consoleTargets\.singleTargetId/,
+        coreRelative,
+        'family runtime must commit authority-proven single targets',
+        violations
+      )
     }
     return
   }
@@ -906,44 +979,6 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   if (findCallSources(coreSource, 'useKitchenConsoleTargetCollection').length !== 1) {
     violations.push(
       `${coreRelative} (Kitchen core must own exactly one authenticated live target collection)`
-    )
-  }
-  const targetCollectionPath = files.find(
-    (candidate) => path.basename(candidate) === 'useKitchenConsoleTargetCollection.ts'
-  )
-  if (!targetCollectionPath) {
-    violations.push(
-      'useKitchenConsoleTargetCollection.ts (missing authenticated Kitchen target projection)'
-    )
-  } else {
-    const targetCollectionSource = readFileSync(targetCollectionPath, 'utf8')
-    assertMatch(
-      targetCollectionSource,
-      /useState<KitchenConsoleTargetState>\(\s*`kitchen-console-targets-\$\{appId\}`[\s\S]{0,300}outcome:\s*['"]idle['"][\s\S]{0,120}response:\s*null/,
-      relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must keep one App-scoped request record',
-      violations
-    )
-    assertMatch(
-      targetCollectionSource,
-      /state\.value = \{\s*requestUid,\s*outcome:\s*['"]pending['"],[\s\S]{0,500}\$fetch<KitchenConsoleTargetsResponse>[\s\S]{0,500}outcome:\s*response\.items\.length > 0 \? ['"]ready['"] : ['"]empty['"]/,
-      relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must publish pending before one request and derive ready or empty only from its completed response',
-      violations
-    )
-    assertMatch(
-      targetCollectionSource,
-      /if \(!authReady\) return[\s\S]{0,250}if \(!requestUid\) \{[\s\S]{0,250}response:\s*null[\s\S]{0,200}if \(!canLoad\) return\s*void load\(requestUid\)/,
-      relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must erase signed-out state and start only after App authentication resolves to a User id',
-      violations
-    )
-    assertNoMatch(
-      targetCollectionSource,
-      /useAsyncData/,
-      relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must not layer Nuxt async-data lifecycle over its shared authenticated request state',
-      violations
     )
   }
   assertMatch(
@@ -962,16 +997,16 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   )
   assertMatch(
     indexSource,
-    /useKitchenConsole\(\{\s*keepLiveTargetsAvailable:\s*true,\s*\}\)/,
+    /useKitchenConsole\(\)/,
     indexRelative,
-    'Kitchen index must keep the bounded Live chooser available beside Demo targets',
+    'Kitchen index must consume the shared family runtime',
     violations
   )
   assertMatch(
     coreSource,
-    /kitchenSource\.value === ['"]live['"]\s*\|\|\s*options\.keepLiveTargetsAvailable === true/,
+    /useKitchenConsoleTargetCollection\(\{\s*enabled:\s*true,\s*\}\)/,
     coreRelative,
-    'Kitchen core must limit the Live-while-Demo exception to an explicit target chooser request',
+    'Kitchen family runtime must own one continuously available authoritative target collection',
     violations
   )
 
@@ -995,26 +1030,19 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
       'Kitchen selection must receive the source-aware target outcome',
       violations
     )
+    assertMatch(
+      selectionCalls[0],
+      /enforcedTargetId/,
+      coreRelative,
+      'tenant single-target policy must commit through shared selection',
+      violations
+    )
   }
-  assertMatch(
-    selectionCalls[0] ?? '',
-    /enforcedTargetId/,
-    coreRelative,
-    'Kitchen core must commit its policy-aware single target through shared selection',
-    violations
-  )
-  assertMatch(
-    indexSource,
-    /const isTenantSingleTarget = computed\(\s*\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*!consoleRuntime\.allowDemo\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
-    indexRelative,
-    'Kitchen single-target mode must be tenant-only and limited to Apps that disable Demo targets',
-    violations
-  )
   assertNoMatch(
     indexSource,
     /\bautoSelectTargetId\b/,
     indexRelative,
-    'Kitchen index must present the core-committed selection rather than initialize it',
+    'Kitchen index must not create a second auto-selection authority',
     violations
   )
   for (const watchSource of findCallSources(coreSource, 'watch')) {

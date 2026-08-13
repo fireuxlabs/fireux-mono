@@ -84,7 +84,7 @@ export const supplierRoot = (
 ): Supplier => ({
   ...SupplierDefaults,
   id: input.id,
-  console: { app_id: appId, app_role: 'parent' },
+  management: { mode: 'console' },
   company_id: input.companyId,
   slug: input.id,
   supplier_organization_name: input.name,

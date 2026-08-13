@@ -7,16 +7,17 @@ import {
   type GuardedServerTransaction,
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  supplierRootTarget,
   serverAppSuppliersTarget,
+  serverAppUsersTarget,
   serverSupplierItemsTarget,
-} from './firestore-targets'
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 type SupplierItemAction = 'create' | 'update' | 'delete'
 
@@ -76,12 +77,20 @@ async function authority(event: H3Event, supplierId: string) {
   const { uid } = await requireFirebaseBearerUser(event)
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
-  const suppliers = supplierRootTarget
+  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
   const supports = serverAppSuppliersTarget(appId)
   const memberships = serverAppUsersTarget(appId)
   const items = serverSupplierItemsTarget(supplierId)
 
-  return { uid, appId, suppliers, supports, memberships, items }
+  return {
+    uid,
+    appId,
+    ecosystem: fireux.ecosystem,
+    suppliers,
+    supports,
+    memberships,
+    items,
+  }
 }
 
 async function assertOperator(
@@ -95,11 +104,11 @@ async function assertOperator(
     mutations.read<Record<string, unknown>>(context.memberships, context.uid),
   ])
   if (!supplier.exists || !support.exists) fail(404, 'Supplier not found.')
-  const console = supplier.data?.console
-  const consoleAppId = console && typeof console === 'object' && !Array.isArray(console)
-    ? text((console as Record<string, unknown>).app_id)
+  const management = readFireuxEntityManagement(supplier.data?.management)
+  const managementAppId = management
+    ? resolveFireuxEntityManagementAppId(management, context.ecosystem)
     : ''
-  if (consoleAppId !== context.appId) {
+  if (management?.mode === 'root' || managementAppId !== context.appId) {
     fail(409, 'Supplier belongs to another App scope.')
   }
   const isAdmin = membership.exists && text(membership.data?.role) === 'admin'

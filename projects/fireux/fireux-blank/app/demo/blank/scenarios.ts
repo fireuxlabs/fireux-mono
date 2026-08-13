@@ -36,8 +36,7 @@ export const blankDemoScenarios: BlankDemoScenario[] = [
       name: 'Blank Demo Target',
       slug: 'blank-demo-target',
       status: 'active',
-      app_scope_state: 'parent_app',
-      app_scope_app_id: appId,
+      management: { mode: 'console' },
       created,
       updated,
     },
@@ -68,8 +67,7 @@ for (const scenario of blankDemoScenarios) {
   const supportKeys = Object.keys(scenario.appSupport).sort()
   if (
     !scenario.appId ||
-    scenario.blank.app_scope_state !== 'parent_app' ||
-    scenario.blank.app_scope_app_id !== scenario.appId ||
+    scenario.blank.management.mode !== 'console' ||
     scenario.blank.created.app_id !== scenario.appId ||
     scenario.appSupport.id !== scenario.blank.id ||
     scenario.appSupport.blank_id !== scenario.blank.id ||

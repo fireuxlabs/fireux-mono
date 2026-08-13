@@ -32,7 +32,7 @@
           <div>
             <h3 class="text-sm font-medium text-highlighted">Cover image</h3>
             <p class="mt-1 text-xs text-muted">
-              Current Place cover. Use 16:9 at 1280 × 720 px or larger.
+              Current Place cover. Recommended: 1280 × 720 px.
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -86,8 +86,8 @@
           <div>
             <h3 class="text-sm font-medium text-highlighted">Gallery</h3>
             <p class="mt-1 text-xs text-muted">
-              Current Place gallery. Up to 24 square images at
-              1200 × 1200 px or larger.
+              Current Place gallery. Up to 24 images; recommended:
+              1200 × 1200 px.
             </p>
           </div>
           <UButton
@@ -163,10 +163,10 @@ const props = defineProps<{
   mutationAuthority?: PlaceMutationAuthority | null
 }>()
 const placeId = computed(() => String(props.place?.id || '').trim())
-const coverImage = computed(() => String(props.place?.assets.cover || '').trim())
+const coverImage = computed(() => String(props.place?.cover_image || '').trim())
 const galleryImages = computed(() =>
-  Array.isArray(props.place?.assets.gallery)
-    ? props.place.assets.gallery.map(image => String(image || '').trim()).filter(Boolean)
+  Array.isArray(props.place?.gallery_images)
+    ? props.place.gallery_images.map(image => String(image || '').trim()).filter(Boolean)
     : []
 )
 const toast = useToastify()

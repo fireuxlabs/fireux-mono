@@ -17,7 +17,7 @@ import type { FireuxStamped } from './stamps.model'
  * - User is the only public identity truth; profile roots contain only their
  *   domain presentation/capability fields and use the matching uid.
  * - App profile records are overlays for app-specific presentation or capability state.
- * - Identity profile overlays do not use FireuxAppScope because they are not root-plus-app operational targets.
+ * - Identity profile overlays do not use entity management because they are not root-plus-App operational targets.
  * - This file defines the shared base shapes so individual profile files stay aligned.
  * - If the identity rule changes later, update the models README first, then this file.
  */
@@ -83,7 +83,7 @@ export type AppProfileBase = FireuxStamped & ProfileRecord
  * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {
-  /** Lowercase extension-owned profile identifier. */
+  /** Lowercase identifier like 'chef', 'supplier', 'agent', 'professional' */
   id: string
 
   /** Firestore collection name */

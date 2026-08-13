@@ -41,7 +41,6 @@ export const SupplierItemRecord = defineFireuxEntity({
   authority: 'parent',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   console: false,
   parent: 'Supplier',
   scoped: SupplierItemStorage.path,

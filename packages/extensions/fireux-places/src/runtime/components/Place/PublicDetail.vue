@@ -70,12 +70,11 @@
         <PublicEntityHero
           :title="place.name"
           eyebrow="Place"
-          :cover-url="place.assets.cover"
+          :cover-url="place.cover_image"
           cover-alt=""
-          :image-url="heroIdentityUrl"
-          :image-alt="heroIdentityAlt"
-          :image-fit="heroIdentityFit"
-          :media-background="heroMediaBackground"
+          :image-url="place.image_url"
+          image-alt=""
+          image-fit="cover"
           :initials="initials"
           :description="place.brand_tagline"
           :location="place.short_address"
@@ -112,22 +111,36 @@
         </PublicEntityHero>
 
         <section
-          v-if="place.assets.logo || place.assets.wordmark"
-          class="place-public__brand"
-          aria-label="Place identity"
+          v-if="place.logo_image || place.wordmark_image"
+          class="place-public__identity-media"
+          aria-labelledby="place-identity-title"
         >
-          <img
-            v-if="place.assets.wordmark"
-            :src="place.assets.wordmark"
-            :alt="`${place.name} wordmark`"
-            class="place-public__wordmark"
-          >
-          <img
-            v-else-if="place.assets.logo"
-            :src="place.assets.logo"
-            :alt="`${place.name} logo`"
-            class="place-public__logo"
-          >
+          <div class="place-public__section-heading">
+            <p class="fx-type-label">Identity</p>
+            <h2 id="place-identity-title" class="fx-type-section-title">
+              {{ place.short_name || place.name }}
+            </h2>
+          </div>
+          <div class="place-public__identity-assets">
+            <img
+              v-if="place.logo_image"
+              :src="place.logo_image"
+              :alt="`${place.name} logo`"
+              class="place-public__identity-logo"
+              loading="lazy"
+              decoding="async"
+              @error="hideFailedImage"
+            />
+            <img
+              v-if="place.wordmark_image"
+              :src="place.wordmark_image"
+              :alt="`${place.name} wordmark`"
+              class="place-public__identity-wordmark"
+              loading="lazy"
+              decoding="async"
+              @error="hideFailedImage"
+            />
+          </div>
         </section>
 
         <div
@@ -146,7 +159,7 @@
             </section>
 
             <section
-              v-if="place.assets.gallery.length"
+              v-if="place.gallery_images?.length"
               class="place-public__gallery-section"
               aria-labelledby="place-gallery-title"
             >
@@ -158,7 +171,7 @@
               </div>
               <div class="place-public__gallery">
                 <figure
-                  v-for="(image, index) in place.assets.gallery"
+                  v-for="(image, index) in place.gallery_images"
                   :key="image"
                 >
                   <div class="place-public__media-fallback" aria-hidden="true">
@@ -267,32 +280,6 @@
                     </div>
                   </dl>
                 </section>
-
-                <section v-if="socialActions.length" class="place-public__info-section">
-                  <div class="place-public__utility-heading">
-                    <span>
-                      <UIcon name="i-lucide-at-sign" aria-hidden="true" />
-                    </span>
-                    <div>
-                      <p class="fx-type-label">Around the web</p>
-                      <h2 class="fx-type-card-heading">Follow this place</h2>
-                    </div>
-                  </div>
-
-                  <div class="place-public__socials">
-                    <UButton
-                      v-for="social in socialActions"
-                      :key="social.key"
-                      :label="social.label"
-                      :to="social.to"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      color="neutral"
-                      variant="soft"
-                      size="sm"
-                    />
-                  </div>
-                </section>
               </div>
             </UCard>
           </aside>
@@ -303,11 +290,6 @@
           v-if="relatedOperationsComponent"
           :place-id="place.id"
           :place-name="place.name"
-        />
-
-        <PlaceAssetsLibrary
-          v-if="isAdmin || showDebug"
-          :place="place"
         />
 
         <PlaceDelete :place="place" />
@@ -341,6 +323,7 @@ if (import.meta.server && detail.missing.value) {
 }
 
 const {
+  locator,
   place,
   outcome,
   refresh,
@@ -349,16 +332,12 @@ const {
   relatedOperationsComponent,
   initials,
   detailStyle,
-  heroIdentityUrl,
-  heroIdentityFit,
-  heroIdentityAlt,
-  heroMediaBackground,
   placeTypeLabel,
+  mapUrl,
   primaryActions,
   websiteLabel,
   hasVisitDetails,
   facts,
-  socialActions,
   hoursRows,
   hasEditorialContent,
   editTo,

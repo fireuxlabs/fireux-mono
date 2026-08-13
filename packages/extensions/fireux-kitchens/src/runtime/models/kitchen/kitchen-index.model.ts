@@ -3,7 +3,6 @@
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: project server-authorized write capability with resolved Menu style.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
-  KitchenConsoleConfig,
   KitchenFulfilmentConfig,
   KitchenMediaBackdropColor,
   KitchenMenusConfig,
@@ -11,7 +10,8 @@ import type {
   KitchenTablesConfig,
 } from '../kitchen.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { PublicAppDto } from 'fireux-core/runtime/server/utils/public-projection/public-dto.types'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
@@ -22,7 +22,8 @@ export type PublicKitchenIndexItem = {
   id: string
   name: string
   slug: string
-  visibility: boolean
+  visible: boolean
+  management_mode: FireuxEntityManagement['mode']
   short_name?: string
   brand_tagline?: string
   formatted_address?: string
@@ -39,11 +40,8 @@ export type PublicKitchenIndexPage = {
 }
 
 export type PublicKitchenDetail = PublicKitchenIndexItem & {
-  console: {
-    mode: 'live'
-    app_id: string
-    app_role: 'parent' | 'tenant'
-  }
+  management_app_id?: string
+  route_scope: 'live'
   display_name: string
   sproochli?: Pick<
     SproochliAttachmentConfig,
@@ -85,14 +83,9 @@ export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
 export type KitchenConsoleTargetItem = {
   id: string
   can_write: boolean
-  console: KitchenConsoleConfig & {
-    mode: 'live'
-    app_id: string
-    app_role: 'parent' | 'tenant'
-  }
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   place_id: string
   slug: string
-  status: 'active' | 'paused' | 'archived'
   visibility: boolean
   identity: {
     display_name: string
@@ -106,12 +99,11 @@ export type KitchenConsoleTargetItem = {
     gallery: string[]
   }
   menus: KitchenMenusConfig
+  console_theme?: ConsoleTheme
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig
   sproochli: SproochliAttachmentConfig
-  show: boolean
-  active: boolean
   display_name: string
   name: string
   tagline?: string
@@ -120,7 +112,6 @@ export type KitchenConsoleTargetItem = {
   formatted_address?: string
   short_address?: string
   image_url?: string
-  logo_image_url?: string
   media_backdrop_color?: KitchenMediaBackdropColor
   food_gallery?: string[]
   currency_code?: string
@@ -130,19 +121,12 @@ export type KitchenConsoleTargetItem = {
   phone?: string
   lat?: number
   lng?: number
+  route_scope: 'live'
 }
 
 export type KitchenConsoleTargetsResponse = {
   ok: true
   appId: string
+  family: 'kitchen'
   items: KitchenConsoleTargetItem[]
-  appItems: KitchenConsoleAppTargetItem[]
-}
-
-export type KitchenConsoleAppTargetItem = {
-  app: PublicAppDto
-  kitchens: Array<Pick<
-    KitchenConsoleTargetItem,
-    'id' | 'name' | 'slug' | 'logo_image_url'
-  >>
 }

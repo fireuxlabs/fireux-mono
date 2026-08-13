@@ -126,12 +126,7 @@ export function useMenuCreate(
     )
     if (!kitchenSnap.exists()) throw new Error('Kitchen not found.')
 
-    const placeId = normalizeString(kitchenSnap.data()?.place_id)
-    if (!placeId) {
-      throw new Error('Link this Kitchen to a Place before creating menus.')
-    }
-
-    const placeSnap = await getDoc(doc(db, PlaceStorage.collection, placeId))
+    const placeSnap = await getDoc(doc(db, PlaceStorage.collection, kitchenId))
     if (!readPlaceCurrencyCode(placeSnap.data())) {
       throw new Error('Set the linked Place currency before creating menus.')
     }

@@ -20,8 +20,8 @@ Current scoped context entrypoints:
 - Apps That Slap: `docs/ai/apps-that-slap-context.md`
 - BuenoHost: `docs/ai/buenohost-context.md`
 - Identity and product literature: `docs/ai/identity-literature-context.md`
-- Landing templates: `docs/ai/templates-context.md`
 - Misebox: `docs/ai/misebox-context.md`
+- Landing templates: `docs/ai/templates-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 - Firestore mutations: `docs/ai/firestore-mutations-context.md`
 
@@ -30,12 +30,6 @@ Cross-family composition follows the one-way, domain-owned layers in
 composables, provided workflow contexts, and structural shells; do not infer a
 universal `useX` umbrella or a universal entity component API from visual
 similarity.
-
-Theming and branded presentation start at `docs/concepts/theming.md`. Keep
-generic FireUX theme primitives, ordinary Kitchen theming, tenant App-brand
-systems, entity-owned media, and presentation templates as distinct ownership
-layers; do not infer a stored App-brand catalogue or operational template
-entity before current source establishes one.
 
 Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
 shape rules. Do not copy implementation details into AI context when current
@@ -509,24 +503,20 @@ Before each task:
   authenticated `/api/internal/user/avatar` server Storage boundary before it
   writes the canonical User. Browser Storage Rules are not the provisioning
   path, and a local `/img/...` placeholder is never the persisted avatar.
-- Canonical asset-bearing roots isolate entity-owned file URLs beneath
-  `assets`: User uses `assets.avatar`; App uses `assets.thumbnail`, `logo`,
-  `wordmark`, `wordmark_light`, `wordmark_dark`, and `cover`; Ecosystem and
-  Project use `assets.image`. Storage uses the same roles directly beneath the
-  entity id, without `current`, `media`, or URL suffixes.
-- A canonical domain root is independently valid before App attachment.
-  Kitchen represents this by omitting its root `console` locator until an
-  explicit attachment workflow runs; other families retain their declared
-  equivalent. App support never substitutes for or relocates root truth.
-- Live App Console projections query bounded entity App-support authority and
-  expose no partial attached pair when a root, same-id support record, App
-  attachment, stored authority shape, or caller access is invalid.
-- Production App attachment for those families is a fixed-runtime
-  authenticated domain endpoint. One trusted transaction records the root App
-  attachment and completes same-id App support with the caller's operator/team
-  authority. A convenience funnel may create a missing root first, but base
-  root creation remains App-ignorant. Operators may mutate; team members have
-  target/read membership only; current App admins are the explicit override.
+- Live root/App-support families query bounded entity App-support authority and
+  expose no partial pair when a root, same-id support record,
+  management host, stored authority shape, or caller access is invalid.
+- Production onboarding for those families is a fixed-runtime authenticated
+  domain endpoint. One trusted transaction creates or attaches the canonical
+  root and completes the same-id App support record with the caller's
+  operator/team authority. Operators may mutate; team members have target/read
+  membership only; current App admins are the explicit override.
+- Console-capable roots use the shared cumulative management contract:
+  `{ mode: 'root' }`, `{ mode: 'console' }`, or
+  `{ mode: 'app', app_id }`. `console` resolves through the ecosystem package's
+  conventional `<ecosystem>-app`, while only `app` stores an App id. Core must not
+  enumerate extension Console families or own a generic domain-root factory;
+  each domain owns validation and its trusted root/support transaction.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
   domain deltas, not alternate target or onboarding spines.
@@ -603,23 +593,29 @@ Before each task:
   server consumers do not reparse raw Console config, and Core does not cache a
   partially compared App shape globally. Core `resolveConsoleCanCreate` owns
   the shared explicit override and non-tenant fallback.
-- Core never enumerates extension-owned entity or Console families. Each
-  extension registers its family, root/App-support collections, developer-note
-  support, optional App-onboarding hand-off, and any declarative membership
-  cleanup through the generic runtime registration seam. Core consumes those
-  registrations for routing and authority cleanup without importing domain
-  models or collection names. An App primary-entity reference is an opaque
-  `{ family, id }` pair; the extension owns root validation and attachment.
 - App initialization is protected by authenticated server UID authorization
   and existing-admin checks. Do not recreate a cosmetic client developer PIN
   or present one as a security boundary.
 - App initialization creates or verifies the canonical named-database App and
   first Admin membership, then idempotently maintains the matching local
-  `(default)` AppMeta projection. App asset sync and App-admin presentation
+  `(default)` AppMeta projection. App media sync and App-admin presentation
   edits use the same projection seam. The second database write is retryable,
   not falsely described as part of the named-database transaction.
+- App source declares the complete reviewed eight-role semantic palette. App
+  initialization persists that source when no lower theme layer exists and
+  backfills only an absent canonical palette. Domain-owned App attachment may
+  derive a missing four-role Console palette from the complete source, then
+  compacts canonical `App.theme.palette` to only roles that extend or override
+  Console. Existing Console colours are preserved; renderers resolve the full
+  palette from Console plus App rather than storing duplicates. The same setup
+  action validates, uploads and records all five canonical App Storage masters.
+  Root entities never receive App presentation.
+- App theme typography is limited to `display_family` and `body_family`.
+  Domain identity editors may expose those fields only for an entity whose
+  canonical management is a dedicated App, and must write the owning App rather
+  than the currently running ecosystem App. Template treatments remain readers.
 - App initialization requires a fully valid environment, live Firebase
-  Storage reachability, and App-owned asset check. Dev mode is not authority to
+  Storage reachability, and App-owned media check. Dev mode is not authority to
   bypass required configuration, infrastructure, or asset validation.
 
 ## Financial fact ownership

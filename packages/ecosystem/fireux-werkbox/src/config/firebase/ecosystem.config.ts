@@ -5,7 +5,6 @@ export const ecosystemConfig = {
   id: 'fireux-werkbox',
   name: 'werkbox',
   description: 'FireUX Werkbox - Practical work ecosystem',
-
   firebase: {
     apiKey: 'AIzaSyBr8HyfrjHGdWA6EAbBddpLL-c4qddMh4A',
     authDomain: 'cleanbox-f15bc.firebaseapp.com',

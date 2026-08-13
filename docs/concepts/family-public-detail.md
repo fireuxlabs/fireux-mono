@@ -1,7 +1,7 @@
 # Public detail family
 
-Updated: 2026-08-08
-Ref: d4506e91b
+Updated: 2026-08-11
+Ref: a4729c0f2
 Role: map, not canon
 
 ## Purpose
@@ -30,8 +30,10 @@ Every public detail route should:
   of public DTOs unless the public contract explicitly requires a safe field.
 - Delegate domain display to named domain components.
 - Keep operator/private actions separate from the public identity and content.
-- Expose one useful dev debug surface only when needed, with fetched objects
-  separated from derived route/render state.
+- Expose useful dev debug at each responsible page or component surface, with
+  fetched objects separated from derived route/render state. Multiple panels
+  are valid when the page composes independently owned domains; do not hoist
+  child internals solely to manufacture one route-wide debug object.
 - Keep pending/ready/missing/error state in the owning entity reader. Do not
   create a cross-entity detail engine solely to remove a small repeated state
   machine.
@@ -53,8 +55,8 @@ Every public detail route should:
   story, gallery, and hours while Kitchen retains brand identity, menus, and
   operational children.
 - When the Kitchen capability is installed, Place detail composes the
-  Kitchen-owned `KitchenPlacePublicOperations` extension. It exact-filters
-  published Kitchens by canonical `Kitchen.place_id`, then resolves each
+  Kitchen-owned `KitchenPlacePublicOperations` extension. It exact-loads the
+  same-id Kitchen for the Place, then resolves each
   Kitchen's published Menu doorways through the existing Kitchen-scoped public
   Menu endpoint. Place owns neither the relationship copy nor a denormalized
   Kitchen/Menu list, and Apps do not add venue-specific exceptions.
@@ -67,7 +69,8 @@ The preferred order is:
 2. Identity or profile.
 3. Main public content.
 4. Operator/actions surface when relevant.
-5. Dev debug.
+5. Route-owned dev debug. Component-owned debug remains beside the component
+   surface it diagnoses.
 
 This order is a recommendation, not yet a guard-backed contract. Align detail
 pages opportunistically when they are touched; do not perform a blind

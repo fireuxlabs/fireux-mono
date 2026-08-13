@@ -20,9 +20,7 @@
           size="sm"
           color="neutral"
           variant="ghost"
-          :icon="
-            variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'
-          "
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
           :aria-label="
             variant === 'pill'
               ? 'Switch to card view'
@@ -52,7 +50,7 @@
     <CollectionDirectoryState
       v-else-if="outcome === 'error'"
       title="Kitchens unavailable"
-      description="Published kitchens could not be loaded. Please try again."
+      description="Kitchens could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
       role="alert"
       aria-live="assertive"
@@ -70,26 +68,37 @@
     </CollectionDirectoryState>
 
     <div v-else-if="cardsFiltered.length" class="kitchen-directory__results">
-      <KitchenCollectionList
-        :cards="cardsFiltered"
-        :variant="variant"
+      <section
+        v-for="group in kitchenGroups"
+        :key="group.mode"
+        class="kitchen-directory__group"
       >
-        <template #pill="{ card }">
-          <KitchenCardsPill
-            v-bind="card"
-            :link="linkEnabled"
-            :show-badges="showBadges || privilegedPreview"
-          />
-        </template>
-        <template #cell="{ card }">
-          <KitchenCardsCell
-            v-bind="card"
-            :link="linkEnabled"
-            :show-badges="showBadges || privilegedPreview"
-            directory
-          />
-        </template>
-      </KitchenCollectionList>
+        <header class="kitchen-directory__group-header">
+          <div>
+            <p>{{ group.label }}</p>
+            <h2>{{ group.title }}</h2>
+          </div>
+          <span>{{ group.cards.length }}</span>
+        </header>
+
+        <KitchenCollectionList :cards="group.cards" :variant="variant">
+          <template #pill="{ card }">
+            <KitchenCardsPill
+              v-bind="card"
+              :link="linkEnabled"
+              :show-badges="showBadges"
+            />
+          </template>
+          <template #cell="{ card }">
+            <KitchenCardsCell
+              v-bind="card"
+              :link="linkEnabled"
+              :show-badges="showBadges"
+              directory
+            />
+          </template>
+        </KitchenCollectionList>
+      </section>
 
       <UAlert
         v-if="loadMoreError"
@@ -115,9 +124,11 @@
       <CollectionDirectoryState
         icon="i-lucide-utensils"
         :title="query ? 'No matching kitchens' : 'No kitchens yet'"
-        :description="query
-          ? 'Try a different kitchen name or location.'
-          : 'Published kitchens will appear here when they are ready.'"
+        :description="
+          query
+            ? 'Try a different kitchen name or location.'
+            : 'Kitchens will appear here when they are added.'
+        "
       />
 
       <div v-if="hasMore && !query" class="kitchen-directory__more">
@@ -152,9 +163,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-import {
-  computed,
-} from 'vue'
+import { computed } from 'vue'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -176,7 +185,7 @@ const props = withDefaults(
     devJsonContext?: string
   }>(),
   {
-    title: 'Kitchen directory',
+    title: 'Kitchen collection',
     description: '',
     searchPlaceholder: 'Search kitchens…',
     showSearch: true,
@@ -195,7 +204,6 @@ const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
-const privilegedPreview = computed(() => fetched.privilegedPreview.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
@@ -205,16 +213,15 @@ const loadMore = async () => {
 const refreshCollection = async () => {
   await fetched.refresh()
 }
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collectionSurface)
-const title = computed(() => String(props.title || 'Kitchen directory'))
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collectionSurface)
+const title = computed(() => String(props.title || 'Kitchen collection'))
 const description = computed(() =>
   String(
-    props.description || (fetched.privilegedPreview.value
-      ? 'Admin preview of all Kitchens. Hidden Kitchens are not listed publicly.'
-      : 'Choose a kitchen to explore its public profile and menus.')
+    props.description || 'Choose a Kitchen to view its profile and menus.'
   ).trim()
 )
 const searchPlaceholder = computed(() =>
@@ -224,8 +231,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
-const showBadges = computed(() =>
-  props.showBadges !== false || fetched.privilegedPreview.value
+const showBadges = computed(
+  () => props.showBadges !== false || fetched.canViewHidden.value
 )
 const devJsonTitle = computed(() =>
   String(props.devJsonTitle || 'Kitchens (JSON)').trim()
@@ -242,8 +249,9 @@ const {
 } = useKitchenInterface()
 
 const collection = computed<KitchenCollectionItem[]>(() =>
-  collectionSurface.value
-    .filter((row): row is KitchenCollectionItem => Boolean(makeCard(row)))
+  collectionSurface.value.filter((row): row is KitchenCollectionItem =>
+    Boolean(makeCard(row))
+  )
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
@@ -264,6 +272,29 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
   makeCell,
 })
 
+const groupDefinitions = [
+  { mode: 'root', label: 'Root', title: 'Root kitchens' },
+  { mode: 'console', label: 'Console', title: 'Console kitchens' },
+  { mode: 'app', label: 'App', title: 'App kitchens' },
+] as const
+
+const kitchenModeById = computed(
+  () =>
+    new Map(
+      visibleItems.value.map((kitchen) => [kitchen.id, kitchen.management_mode])
+    )
+)
+const kitchenGroups = computed(() =>
+  groupDefinitions
+    .map((group) => ({
+      ...group,
+      cards: cardsFiltered.value.filter(
+        (card) => kitchenModeById.value.get(card.id) === group.mode
+      ),
+    }))
+    .filter((group) => group.cards.length)
+)
+
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && !hasMore.value && totalCount.value > 15
@@ -279,6 +310,43 @@ const countLabel = computed(() =>
 .kitchen-directory__results {
   display: grid;
   gap: calc(var(--spacing) * 6);
+}
+
+.kitchen-directory__group {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+}
+
+.kitchen-directory__group-header {
+  display: flex;
+  gap: calc(var(--spacing) * 4);
+  align-items: end;
+  justify-content: space-between;
+  padding-bottom: calc(var(--spacing) * 2);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.kitchen-directory__group-header p,
+.kitchen-directory__group-header h2 {
+  margin: 0;
+}
+
+.kitchen-directory__group-header p {
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.kitchen-directory__group-header h2 {
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-xl);
+}
+
+.kitchen-directory__group-header > span {
+  color: var(--ui-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .kitchen-directory__more {

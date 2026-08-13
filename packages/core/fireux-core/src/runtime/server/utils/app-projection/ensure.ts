@@ -20,28 +20,22 @@ function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function assets(value: unknown) {
+function media(value: unknown) {
   const source =
     value && typeof value === 'object' && !Array.isArray(value)
       ? (value as Record<string, unknown>)
       : {}
   return {
-    thumbnail: text(source.thumbnail),
-    logo: text(source.logo),
-    wordmark: text(source.wordmark),
-    wordmark_light: text(source.wordmark_light),
-    wordmark_dark: text(source.wordmark_dark),
-    cover: text(source.cover),
+    thumbnail_url: text(source.thumbnail_url),
+    logo_url: text(source.logo_url),
+    wordmark_light_url: text(source.wordmark_light_url),
+    wordmark_dark_url: text(source.wordmark_dark_url),
+    cover_url: text(source.cover_url),
   }
 }
 
 function consoleFamilies(config: Readonly<FireUXConfig>): AppConsoleFamily[] {
-  const families = [...new Set(config.consoles.map(family => family.trim().toLowerCase()))]
-  const invalid = families.filter(family => !/^[a-z][a-z0-9-]{0,62}$/.test(family))
-  if (invalid.length) {
-    throw new Error(`Invalid App console families: ${invalid.join(', ')}`)
-  }
-  return families.sort()
+  return [...new Set(config.consoles.map(text).filter(Boolean))].sort()
 }
 
 function projectionPayload(
@@ -79,7 +73,7 @@ function projectionPayload(
     name,
     short_name: shortName,
     description: text(app.description),
-    assets: assets(app.assets),
+    media: media(app.media),
     database_id: input.appDatabaseId,
     website_url: websiteUrl,
     console_families: consoleFamilies(config),

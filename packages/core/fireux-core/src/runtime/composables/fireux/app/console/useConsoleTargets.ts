@@ -2,13 +2,13 @@
 // Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: preserve App membership errors in target outcomes.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
-import { useCurrentAppContext } from '../useCurrentAppContext'
 import {
   normalizeConsoleFamily,
   useConsole,
   type ConsoleAppMode,
 } from './useConsole'
 import type { ConsoleTargetOutcome } from './useConsoleIndex'
+import { useConsoleTargetRequest } from './useConsoleTargetRequest'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 
@@ -23,13 +23,13 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const family = normalizeConsoleFamily(options.family)
   const consoleRoot = useConsole(options.family)
   const mode: ConsoleAppMode = consoleRoot.mode
-  const appContext = useCurrentAppContext()
-  const membershipPending = computed(() => Boolean(appContext.pending.value))
-  const membershipError = computed<unknown>(
-    () => appContext.error.value ?? null
-  )
+  const request = useConsoleTargetRequest(family)
   const globalTargetIds = computed(() =>
-    uniqueStrings(options.globalTargetIds ? unref(options.globalTargetIds) : [])
+    uniqueStrings(
+      options.globalTargetIds
+        ? unref(options.globalTargetIds)
+        : request.items.value.map(item => item.id)
+    )
   )
   const targetIds = computed(() => uniqueStrings(globalTargetIds.value))
   const canCreate = computed(() => consoleRoot.canCreateTarget())
@@ -43,12 +43,14 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     ...base,
     ids: targetIds.value,
   })
-  const pending = computed(() => Boolean(membershipPending.value))
-  const error = computed<unknown>(() => membershipError.value)
+  const pending = request.pending
+  const error = request.error
   const resolveOutcome = (sourceOutcome: ValueRef<ConsoleTargetOutcome>) =>
     computed<ConsoleTargetOutcome>(() => {
       if (pending.value) return 'pending'
       if (error.value) return 'error'
+      if (request.outcome.value === 'empty') return 'empty'
+      if (request.outcome.value !== 'ready') return request.outcome.value
       return unref(sourceOutcome)
     })
   const debug = computed(() => ({
@@ -56,8 +58,9 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     appMode: mode,
     globalTargetIds: globalTargetIds.value,
     targetIds: targetIds.value,
-    membershipPending: pending.value,
-    membershipError: error.value,
+    endpoint: `/api/console/${family}/targets`,
+    targetPending: pending.value,
+    targetError: error.value,
     canCreate: canCreate.value,
     isSingleTarget: isSingleTarget.value,
     isSingleTenantTarget: isSingleTenantTarget.value,
@@ -79,6 +82,7 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     pending,
     error,
     resolveOutcome,
+    refresh: request.refresh,
     debug,
   }
 }

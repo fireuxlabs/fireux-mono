@@ -23,15 +23,7 @@ export function mapPublicUserIdentity(
   return {
     id: snapshot.id,
     display_name: displayName,
-    assets: {
-      avatar: resolveUserAvatarSource(asRecord(data.assets).avatar),
-    },
+    avatar: resolveUserAvatarSource(data.avatar),
     handle,
   }
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
 }

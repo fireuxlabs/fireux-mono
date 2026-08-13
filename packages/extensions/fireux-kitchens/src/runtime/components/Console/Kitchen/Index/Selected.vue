@@ -6,7 +6,6 @@
     :description="kitchenName"
     :target="targetCard"
     :outcome="outcome"
-    :clearable="clearable"
     icon="i-lucide-chef-hat"
     @clear="emit('clear')"
   />
@@ -26,14 +25,12 @@ const props = withDefaults(
     kitchenId?: string
     source?: KitchenFetchSource
     outcome?: ConsoleTargetOutcome
-    clearable?: boolean
   }>(),
   {
     kitchen: null,
     kitchenId: '',
     source: 'live',
     outcome: 'ready',
-    clearable: true,
   }
 )
 

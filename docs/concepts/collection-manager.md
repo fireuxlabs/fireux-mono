@@ -68,10 +68,9 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   Company root is a stamps-only same-id role marker; Place remains the display
   authority and no Place fields are copied onto Company.
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
-  rows stay sparse and no longer copy shared Place fields. Only published
-  Kitchens with a slug and an existing explicit Place reference enter the
-  projection; invalid App scope never selects an App support record. Kitchen
-  has no persisted test subtype or visibility flag.
+  rows stay sparse and no longer copy shared Place fields. Only published,
+  non-test Kitchens with a slug and an existing explicit Place reference enter
+  the projection; invalid App scope never selects an App support record.
 - `App` receives one named controller: owning Ecosystem projection or FireUX
   platform directory projection.
 - `Ecosystem` receives the FireUX platform directory controller.
@@ -232,7 +231,7 @@ Root Projected Collection Managers
 
 | Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                 |
 | -------------- | ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join explicit `place_id` and canonical App scope without copied snapshots or client N+1 reads.                  |
+| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join the same-id Place and canonical App support without copied snapshots or client N+1 reads.                  |
 | `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents.                 |
 | `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                      |
 | `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                     |

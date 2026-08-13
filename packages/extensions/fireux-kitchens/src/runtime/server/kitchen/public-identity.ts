@@ -13,18 +13,16 @@ import {
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
 import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
   FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  kitchenRootTarget,
-  serverAppKitchensTarget,
-} from './firestore-targets'
 import type {
   KitchenPublicIdentityEdit,
   KitchenPublicIdentityEditResponse,
@@ -32,7 +30,7 @@ import type {
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import { readKitchenIdentity } from '../../utils/kitchen-spine.ts'
 import {
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
 import { readKitchenByRouteSlug } from './route-identity.ts'
@@ -97,14 +95,14 @@ function canonicalIdentityMedia(
     card_image_url: identity.card_image_url
       ? requireFirebaseStorageDownloadUrl(identity.card_image_url, {
           bucketName,
-          objectPath: `kitchens/${kitchenId}/image`,
+          objectPath: `kitchens/${kitchenId}/identity/card/current`,
           label: 'Kitchen card image',
         })
       : '',
     logo_image_url: identity.logo_image_url
       ? requireFirebaseStorageDownloadUrl(identity.logo_image_url, {
           bucketName,
-          objectPath: `kitchens/${kitchenId}/logo`,
+          objectPath: `kitchens/${kitchenId}/identity/logo/current`,
           label: 'Kitchen logo',
         })
       : '',
@@ -153,6 +151,7 @@ async function requestAuthority(event: H3Event) {
   return {
     uid,
     runtimeAppId,
+    ecosystem: fireux.ecosystem,
     ecosystemId,
     runtimeRole: fireux.role,
     isDeveloper:
@@ -174,10 +173,14 @@ async function assertAuthority(
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
 
-  const scope = readKitchenOnboardingScope(root.data() || {})
+  const management = readKitchenOnboardingManagement(root.data() || {})
+  const ownerAppId = resolveFireuxEntityManagementAppId(
+    management,
+    context.ecosystem
+  )
   if (
-    (scope.state !== 'parent_app' && scope.state !== 'tenant_app') ||
-    !isFirestoreDocumentId(scope.appId)
+    management.mode === 'root' ||
+    !isFirestoreDocumentId(ownerAppId)
   ) {
     throw createError({
       statusCode: 409,
@@ -186,16 +189,16 @@ async function assertAuthority(
   }
   if (
     context.runtimeRole !== 'global' &&
-    scope.appId !== context.runtimeAppId
+    ownerAppId !== context.runtimeAppId
   ) {
     forbidden('This Kitchen belongs to another App.')
   }
 
   const authorityRefs = [
     db.doc(`apps/${context.runtimeAppId}/users/${context.uid}`),
-    db.doc(`apps/${scope.appId}`),
+    db.doc(`apps/${ownerAppId}`),
     db.doc(
-      `apps/${scope.appId}/${AppKitchenStorage.collection}/${kitchenId}`
+      `apps/${ownerAppId}/${AppKitchenStorage.collection}/${kitchenId}`
     ),
   ] as const
   const [runtimeMembership, ownerApp, support] = await db.getAll(
@@ -226,7 +229,7 @@ async function assertAuthority(
     })
   }
 
-  return { root, ownerAppId: scope.appId }
+  return { root, ownerAppId }
 }
 
 async function assertTransactionAuthority(
@@ -237,7 +240,7 @@ async function assertTransactionAuthority(
 ) {
   const memberships = serverAppUsersTarget(context.runtimeAppId)
   const root = await transaction.read(
-    kitchenRootTarget,
+    FIRESTORE_MUTATION_TARGETS.kitchens,
     kitchenId
   )
   const rootData = root.data || {}
@@ -245,10 +248,14 @@ async function assertTransactionAuthority(
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
 
-  const scope = readKitchenOnboardingScope(rootData)
+  const management = readKitchenOnboardingManagement(rootData)
+  const ownerAppId = resolveFireuxEntityManagementAppId(
+    management,
+    context.ecosystem
+  )
   if (
-    (scope.state !== 'parent_app' && scope.state !== 'tenant_app') ||
-    !isFirestoreDocumentId(scope.appId)
+    management.mode === 'root' ||
+    !isFirestoreDocumentId(ownerAppId)
   ) {
     throw createError({
       statusCode: 409,
@@ -257,15 +264,15 @@ async function assertTransactionAuthority(
   }
   if (
     context.runtimeRole !== 'global' &&
-    scope.appId !== context.runtimeAppId
+    ownerAppId !== context.runtimeAppId
   ) {
     forbidden('This Kitchen belongs to another App.')
   }
 
   const [runtimeMembership, ownerApp, support] = await Promise.all([
     transaction.read(memberships, context.uid),
-    transaction.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, scope.appId),
-    transaction.read(serverAppKitchensTarget(scope.appId), kitchenId),
+    transaction.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, ownerAppId),
+    transaction.read(serverAppKitchensTarget(ownerAppId), kitchenId),
   ])
   const isAdmin =
     runtimeMembership.exists && text(runtimeMembership.data?.role) === 'admin'
@@ -289,7 +296,7 @@ async function assertTransactionAuthority(
     })
   }
 
-  return { ownerAppId: scope.appId }
+  return { ownerAppId }
 }
 
 export async function readKitchenPublicIdentity(
@@ -326,18 +333,18 @@ export async function updateKitchenPublicIdentity(
       kitchen.slug
     )
     const patch: UpdateData<DocumentData> = {
-      'identity.name': requested.display_name || FieldValue.delete(),
+      'identity.display_name': requested.display_name || FieldValue.delete(),
       'identity.tagline': requested.tagline || FieldValue.delete(),
-      'assets.image':
+      'identity.card_image_url':
         requested.card_image_url || FieldValue.delete(),
-      'assets.logo':
+      'identity.logo_image_url':
         requested.logo_image_url || FieldValue.delete(),
       updated: serverAuditStamp({
         by: context.uid,
         appId: authority.ownerAppId,
       }),
     }
-    mutations.update(kitchenRootTarget, kitchen.id, patch)
+    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchen.id, patch)
   })
 
   return {

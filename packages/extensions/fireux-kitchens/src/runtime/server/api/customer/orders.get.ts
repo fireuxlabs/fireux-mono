@@ -294,10 +294,7 @@ async function customerKitchenHydration(
   for (const link of links) {
     const kitchenId = text(link.kitchen_id)
     if (!kitchenId) continue
-    const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
-    const placeId = text(rootData.place_id)
-    if (!placeId) continue
-    const placeRef = db.doc(`${PlaceStorage.collection}/${placeId}`)
+    const placeRef = db.doc(`${PlaceStorage.collection}/${kitchenId}`)
     placeReferences.set(placeRef.path, placeRef)
   }
   if (placeReferences.size) {
@@ -320,10 +317,9 @@ async function customerKitchenHydration(
       const appData = appId
         ? dataByPath.get(`apps/${appId}/kitchens/${kitchenId}`) || {}
         : {}
-      const placeId = text(rootData.place_id)
-      const placeData = placeId
-        ? dataByPath.get(`${PlaceStorage.collection}/${placeId}`) || {}
-        : {}
+      const placeData = dataByPath.get(
+        `${PlaceStorage.collection}/${kitchenId}`
+      ) || {}
       const identity = menuKitchenIdentity(rootData, appData, placeData)
       const slug = text(rootData.slug) || text(appData.slug)
 

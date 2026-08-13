@@ -112,7 +112,7 @@ html:not(.dark) .friiites-scene--hero {
 
 .friiites-scene--hero > [data-scene-layer='background']::before {
   opacity: 0.58;
-  background-image: url('/img/app/hero/charcoal-texture.webp');
+  background-image: url('/img/template-one/charcoal-texture.webp');
   background-position: center;
   background-size: cover;
   mix-blend-mode: soft-light;

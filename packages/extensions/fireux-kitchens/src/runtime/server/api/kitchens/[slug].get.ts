@@ -43,6 +43,7 @@ export default defineEventHandler(
           statusMessage: 'Kitchen could not be read.',
         })
       })
+    const data = kitchen?.data || {}
     if (!kitchen) {
       throw createError({
         statusCode: 404,
@@ -52,21 +53,25 @@ export default defineEventHandler(
 
     const document = {
       id: kitchen.id,
-      data: kitchen.data,
+      data,
     }
-    const dataByPath = await hydrateKitchenPublicDocuments(db, [document])
-      .catch(() => {
-        throw createError({
-          statusCode: 503,
-          statusMessage: 'Kitchen relationships could not be read.',
-        })
-      })
     const fireux = useFireUXConfig()
     const directoryScope: KitchenPublicDirectoryScope = {
       appId: fireux.appId,
       ecosystemId: text(fireux.ecosystemId || fireux.ecosystem),
       role: fireux.role,
+      ecosystem: fireux.ecosystem,
     }
+    const dataByPath = await hydrateKitchenPublicDocuments(
+      db,
+      [document],
+      directoryScope
+    ).catch(() => {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Kitchen relationships could not be read.',
+      })
+    })
     const item = projectPublicKitchenDetail(
       document,
       dataByPath,

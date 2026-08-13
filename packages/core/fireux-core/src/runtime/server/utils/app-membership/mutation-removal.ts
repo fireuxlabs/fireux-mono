@@ -1,11 +1,7 @@
-import {
-  FieldValue,
-  type DocumentData,
-  type UpdateData,
-} from 'firebase-admin/firestore'
+import { FieldValue } from 'firebase-admin/firestore'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppChildTarget,
+  serverAppDriversTarget,
   serverAppJoinRequestsTarget,
   serverAppMembershipBlocksTarget,
   serverAppUsersTarget,
@@ -18,7 +14,7 @@ import {
   isAdminMembership,
   readTargetAuthorityRevocations,
   requireAdmin,
-  deactivateArrayObjects,
+  revokedDriverLinks,
   stamp,
   type MembershipTransactionState,
   type TransactionOutcome,
@@ -44,29 +40,12 @@ export async function handleRemoveMember(
 
   const joins = serverAppJoinRequestsTarget(appId)
   const blocks = serverAppMembershipBlocksTarget(appId)
-  const cleanupTargets = context.membershipCleanupRegistry.map(registration => ({
-    registration,
-    target: serverAppChildTarget(
-      appId,
-      `apps.membership-cleanup.${registration.collection}`,
-      registration.collection
-    ),
-  }))
-  const [join, block, authority, cleanupRecords] = await Promise.all([
+  const drivers = serverAppDriversTarget(appId)
+  const [join, block, driver, authority] = await Promise.all([
     mutations.read(joins, userId),
     mutations.read(blocks, userId),
-    readTargetAuthorityRevocations(
-      mutations,
-      appId,
-      userId,
-      context.authorityCollections
-    ),
-    Promise.all(
-      cleanupTargets.map(async entry => ({
-        ...entry,
-        record: await mutations.read(entry.target, userId),
-      }))
-    ),
+    mutations.read(drivers, userId),
+    readTargetAuthorityRevocations(mutations, appId, userId),
   ])
   if (target.exists) mutations.delete(memberships, userId)
   if (join.exists) mutations.delete(joins, userId)
@@ -76,15 +55,12 @@ export async function handleRemoveMember(
       team_ids: FieldValue.arrayRemove(userId),
       updated: stamp(actorUid),
     })
-  for (const { registration, target: cleanupTarget, record } of cleanupRecords) {
-    if (!record.exists) continue
-    const patch: UpdateData<DocumentData> = { updated: stamp(actorUid) }
-    for (const field of registration.clearArrayFields || []) patch[field] = []
-    for (const field of registration.deactivateArrayObjectFields || []) {
-      patch[field] = deactivateArrayObjects(record.data?.[field])
-    }
-    mutations.update(cleanupTarget, userId, patch)
-  }
+  if (driver.exists)
+    mutations.update(drivers, userId, {
+      active_kitchen_ids: [],
+      kitchen_links: revokedDriverLinks(driver.data ?? {}),
+      updated: stamp(actorUid),
+    })
   if (userId !== actorUid) {
     const payload = { user_id: userId, blocked: stamp(actorUid) }
     if (block.exists) mutations.update(blocks, userId, payload)

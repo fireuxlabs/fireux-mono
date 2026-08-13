@@ -1,5 +1,5 @@
 <template>
-  <!-- Shared sparse inherited colour control. -->
+  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: provide one sparse inherited colour control. -->
   <!-- Concurrent edit — 2026-07-22 13:22 CEST — Shared palette picker: replace native colour inputs with the Nuxt UI chooser. -->
   <section class="form-stack-sm">
     <UFormField
@@ -31,7 +31,7 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-rotate-ccw"
-          :aria-label="`${resetLabel} ${field.label.toLowerCase()}`"
+          :aria-label="`Use inherited ${field.label.toLowerCase()}`"
           @click="resetColor(field.key)"
         />
       </UFieldGroup>
@@ -52,13 +52,11 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   activeLabel?: string
   inheritLabel?: string
-  resetLabel?: string
 }>(), {
   inherited: () => ({}),
   disabled: false,
   activeLabel: 'Selected',
   inheritLabel: 'Inherited',
-  resetLabel: 'Use inherited',
 })
 
 const emit = defineEmits<{

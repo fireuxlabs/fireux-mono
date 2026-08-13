@@ -7,6 +7,7 @@ import {
   type Property,
   type PropertyManual,
 } from '../../../../../../models/property.model'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'
@@ -44,7 +45,7 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     'slug',
     'portfolio_id',
     'place_id',
-    'console',
+    'management',
     'identity',
     'status',
     'publication_state',
@@ -62,13 +63,13 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
   const id = source.id.trim()
   const slug = source.slug.trim()
   const placeId = source.place_id.trim()
-  const console = asRecord(source.console)
+  const management = readFireuxEntityManagement(source.management)
   const identity = asRecord(source.identity)
   const propertyType = identity?.property_type
   const status = source.status
   const publicationState = source.publication_state
 
-  if (!id || !slug || !placeId || !identity) return null
+  if (!id || !slug || !placeId || !identity || !management) return null
   if (!hasOnlyKeys(identity, [
     'name',
     'image_url',
@@ -88,12 +89,6 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
   ) return null
   if (!validStamp(source.created, ['at', 'by', 'app_id'])) return null
   if (!validStamp(source.updated, ['at', 'by'])) return null
-  if (console && (
-    !hasOnlyKeys(console, ['app_id', 'app_role']) ||
-    typeof console.app_id !== 'string' ||
-    !console.app_id.trim() ||
-    (console.app_role !== 'parent' && console.app_role !== 'tenant')
-  )) return null
   if (!['residential', 'commercial', 'mixed'].includes(propertyType)) return null
   if (status !== 'active' && status !== 'inactive') return null
   if (!['draft', 'published', 'retired'].includes(publicationState)) return null
@@ -108,12 +103,7 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     slug,
     portfolio_id: source.portfolio_id.trim(),
     place_id: placeId,
-    ...(console ? {
-      console: {
-        app_id: String(console.app_id).trim(),
-        app_role: console.app_role as 'parent' | 'tenant',
-      },
-    } : {}),
+    management,
     identity: {
       name: identity.name.trim(),
       image_url: identity.image_url.trim(),

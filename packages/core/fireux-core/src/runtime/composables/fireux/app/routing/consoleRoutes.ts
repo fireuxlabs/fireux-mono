@@ -4,10 +4,33 @@ export const CONSOLE_ROOT = '/console'
 
 export type ConsoleFamily = string
 
+const CONSOLE_FAMILY_ALIASES: Record<string, string> = {
+  project: 'project',
+  projects: 'project',
+  property: 'property',
+  properties: 'property',
+  kitchen: 'kitchen',
+  kitchens: 'kitchen',
+  portfolio: 'portfolio',
+  portfolios: 'portfolio',
+  supplier: 'supplier',
+  suppliers: 'supplier',
+}
+
+const CONSOLE_FAMILY_ROUTE_SEGMENTS: Record<string, string> = {
+  project: 'project',
+  property: 'property',
+  kitchen: 'kitchen',
+  portfolio: 'portfolio',
+  supplier: 'supplier',
+}
+
 export function normalizeConsoleFamily(value: unknown): ConsoleFamily | '' {
-  return String(value || '')
+  const normalized = String(value || '')
     .trim()
     .toLowerCase()
+
+  return CONSOLE_FAMILY_ALIASES[normalized] || normalized
 }
 
 export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
@@ -16,7 +39,9 @@ export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
 
 export function toConsoleFamilyPath(family: ConsoleFamily | string) {
   const normalized = normalizeConsoleFamily(family) || String(family || '').trim().toLowerCase()
-  return `${CONSOLE_ROOT}/${normalized}`
+  const routeSegment = CONSOLE_FAMILY_ROUTE_SEGMENTS[normalized] || normalized
+
+  return `${CONSOLE_ROOT}/${routeSegment}`
 }
 
 export function toConsoleFamilyLabel(key: ConsoleFamily | string) {

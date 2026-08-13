@@ -1,78 +1,48 @@
 <template>
-  <section
-    class="friiites-scene friiites-scene--hero-mock"
-    aria-labelledby="friiites-title"
-    data-landing-scene="hero"
-    data-friiites-scene="hero"
-  >
-    <div aria-hidden="true" data-scene-layer="background" />
-    <div class="friiites-scene-content" data-scene-layer="content">
-      <img
-        class="friiites-hero-mock"
-        src="/img/app/hero/scene-one-mock-v2.webp"
-        alt=""
-        width="1536"
-        height="1024"
-        aria-hidden="true"
-      >
-      <div class="sr-only">
-        <h1 id="friiites-title">Friiites</h1>
-        <p>Hand-cut. Brined. Triple-fried in beef tallow.</p>
-      </div>
-      <a class="friiites-hero-mock__order" href="#menu" aria-label="View the menu" />
-      <a class="friiites-hero-mock__scroll" href="#menu" aria-label="Scroll to the menu" />
-    </div>
-    <div aria-hidden="true" data-scene-layer="foreground" />
-  </section>
+  <TemplateOneSceneOne
+    name="Friiites"
+    wordmark-src="/img/app/wordmark-dark.png"
+    place-primary-color="#0b0b0a"
+    identity-alignment="left"
+    :tagline="['Hand-cut.', 'Brined.', 'Triple-fried', 'in beef tallow.']"
+    :palette="palette"
+    :typography="typography"
+    :flagship-dish="flagshipResult?.dish || null"
+    :product-crop="productCrop"
+    :requirements="requirements"
+    :show-action="false"
+    :show-scroll-cue="false"
+  />
 </template>
 
-<style scoped>
-.friiites-scene--hero-mock {
-  display: block;
-  min-height: 0;
-  padding: 0;
-  color: var(--friiites-cream);
-  background: var(--friiites-black);
-}
+<script setup lang="ts">
+import TemplateOneSceneOne from 'fireux-misebox/runtime/TemplateOneSceneOne.vue'
+import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/server/dish/flagship-projection'
 
-.friiites-scene--hero-mock .friiites-scene-content {
-  display: block;
+const { data: flagshipResult } = await useFetch<KitchenFlagshipDishResult>(
+  '/api/kitchens/5dGJgdjDv7Zi0tjva61O/flagship-dish',
+  { query: { appId: 'friiites' } }
+)
+const palette = {
+  canvas: '#181817', surface: '#242321', canvas_inverted: '#f3e9d2',
+  text: '#f3e9d2', text_muted: '#bdb6a5', ink: '#181817',
+  accent: '#d99a22', accent_contrast: '#181817',
 }
-
-.friiites-hero-mock {
-  display: block;
-  width: 100%;
-  height: auto;
+const typography = {
+  display_family: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
+  body_family: "'Arial Narrow', Arial, sans-serif",
 }
-
-.friiites-hero-mock__order,
-.friiites-hero-mock__scroll {
-  position: absolute;
+const productCrop = {
+  visibleAspect: 857 / 445,
+  scale: 1200 / 857,
+  offsetX: -(178 / 857) * 100,
+  offsetY: -(387 / 445) * 100,
 }
-
-.friiites-hero-mock__order {
-  bottom: 13.3%;
-  left: 6.5%;
-  width: 18.9%;
-  height: 6.9%;
-}
-
-.friiites-hero-mock__scroll {
-  bottom: 3.7%;
-  left: 3.6%;
-  width: 15.4%;
-  height: 5.9%;
-}
-
-.friiites-hero-mock__order:focus-visible,
-.friiites-hero-mock__scroll:focus-visible {
-  outline: 2px solid var(--friiites-cream);
-  outline-offset: 4px;
-}
-
-@media (min-width: 48rem) {
-  .friiites-scene--hero-mock {
-    padding: 0;
-  }
-}
-</style>
+const requirements = computed(() => ({
+  wordmark: true,
+  palette: true,
+  typography: true,
+  flagshipDish: flagshipResult.value?.ready === true,
+  pattern: 'unapproved' as const,
+}))
+</script>

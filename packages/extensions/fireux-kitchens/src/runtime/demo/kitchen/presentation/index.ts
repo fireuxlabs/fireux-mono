@@ -35,7 +35,7 @@ const priceLabel = (price: number, currencyCode: string) =>
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...scenario.kitchenMenu.ordering,
   order_types: scenario.kitchenMenu.ordering.order_types.map((config) => {
-    const paymentMethods = scenario.appSupport.console.fulfilment?.payment_methods || []
+    const paymentMethods = scenario.kitchen.fulfilment.payment_methods
       .filter(policy => policy.order_types.includes(config.type))
       .map(policy => policy.method)
 
@@ -135,14 +135,14 @@ export function kitchenDemoManifest(
     },
     presentation: {
       currencyCode: clean(scenario.place.default_currency_code) || 'CHF',
-      currencyFormat: scenario.appSupport.console.menus?.currency_format || 'dash',
-      showCurrency: scenario.appSupport.console.menus?.show_currency !== false,
-      kitchenImageShade: imageShade('none'),
-      kitchenImageUrl: clean(scenario.place.assets.cover || scenario.place.assets.image),
-      kitchenLogoImageUrl: clean(scenario.kitchen.assets.logo),
-      kitchenName: scenario.kitchen.identity.name || scenario.place.name,
-      kitchenWordmarkImageUrl: clean(scenario.kitchen.assets.wordmark),
-      pageStyle: scenario.appSupport.console.menus?.style,
+      currencyFormat: scenario.kitchen.menus.currency_format,
+      showCurrency: scenario.kitchen.menus.show_currency,
+      kitchenImageShade: imageShade(scenario.kitchen.identity.image_shade),
+      kitchenImageUrl: clean(scenario.place.cover_image || scenario.place.image_url),
+      kitchenLogoImageUrl: clean(scenario.kitchen.identity.logo_image_url),
+      kitchenName: scenario.kitchen.identity.display_name || scenario.place.name,
+      kitchenWordmarkImageUrl: clean(scenario.kitchen.identity.wordmark_image_url),
+      pageStyle: scenario.kitchen.menus.style,
     },
     source: {
       appId: scenario.appId,

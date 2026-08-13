@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
-// last_used: 2026-08-11
+// last_used: 2026-08-08
 // usage_note: plan or explicitly copy legacy User avatars into their canonical owned Firebase Storage paths without deleting source objects.
 
 import { createHash, randomUUID } from 'node:crypto'
@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { deleteApp, initializeApp } from 'firebase-admin/app'
-import { FieldValue, getFirestore } from 'firebase-admin/firestore'
+import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import sharp from 'sharp'
 import { APP_REGISTRY } from './_lib/app-registry.mjs'
@@ -44,7 +44,7 @@ for (const key of Object.keys(args)) {
 }
 if (args.help) {
   console.log(`
-Move existing User avatars to users/{uid}/avatar and assets.avatar.
+Copy legacy User avatars to users/{uid}/avatar/current.
 
 Dry run:
   pnpm align:user-avatars -- --all --summary
@@ -205,7 +205,7 @@ function canonicalAvatarOwned(value, uid) {
   const avatar = text(value)
   if (!avatar.startsWith('https://')) return false
   try {
-    return decodeURIComponent(avatar).includes(`users/${uid}/avatar`)
+    return decodeURIComponent(avatar).includes(`users/${uid}/avatar/current`)
   } catch {
     return false
   }
@@ -260,8 +260,6 @@ async function buildPlan(sessions) {
   const operations = []
   const blockers = []
   const sources = new Map()
-  let usersScanned = 0
-  let ownedAvatars = 0
   for (const session of sessions) {
     const bucket = getStorage(session.app).bucket(session.storageBucket)
     const [bucketExists] = await bucket.exists().catch(() => [false])
@@ -269,12 +267,8 @@ async function buildPlan(sessions) {
       .collection('users')
       .get()
     for (const user of users.docs) {
-      usersScanned += 1
-      const avatar = text(user.get('assets.avatar')) || text(user.get('avatar'))
-      if (canonicalAvatarOwned(avatar, user.id)) {
-        ownedAvatars += 1
-        continue
-      }
+      const avatar = text(user.get('avatar'))
+      if (canonicalAvatarOwned(avatar, user.id)) continue
       const key = `${session.projectId}/${user.id}`
       if (!bucketExists) {
         blockers.push({
@@ -295,7 +289,7 @@ async function buildPlan(sessions) {
           storageBucket: session.storageBucket,
           userId: user.id,
           userPath: user.ref.path,
-          objectPath: `users/${user.id}/avatar`,
+          objectPath: `users/${user.id}/avatar/current`,
           sourceKind: source.kind,
           sourceSha256: sha256(source.bytes),
           sourceBytes: source.bytes.length,
@@ -322,8 +316,6 @@ async function buildPlan(sessions) {
       mode: 'dry-run',
       generatedAt: new Date().toISOString(),
       planSha256,
-      usersScanned,
-      ownedAvatars,
       operations,
       blockers,
     },
@@ -343,8 +335,6 @@ function summarize(plan) {
   return {
     mode: plan.mode,
     planSha256: plan.planSha256,
-    usersScanned: plan.usersScanned,
-    ownedAvatars: plan.ownedAvatars,
     avatars: plan.operations.length,
     sourceKinds: Object.fromEntries(
       ['https', 'fallback'].map((kind) => [
@@ -441,12 +431,7 @@ async function applyOperations(sessions, operations, sources) {
         },
       })
     await mcpSkillUpdate(session.app, userTarget(operation), operation.userId, {
-      'assets.avatar': downloadUrl(
-        operation.storageBucket,
-        operation.objectPath,
-        token
-      ),
-      avatar: FieldValue.delete(),
+      avatar: downloadUrl(operation.storageBucket, operation.objectPath, token),
     })
   }
 }
@@ -464,7 +449,7 @@ async function verifyOperations(sessions, operations) {
       .file(operation.objectPath)
     const bytes = (await file.download())[0]
     if (
-      !canonicalAvatarOwned(user.get('assets.avatar'), operation.userId) ||
+      !canonicalAvatarOwned(user.get('avatar'), operation.userId) ||
       sha256(bytes) !== operation.sourceSha256
     ) {
       failures.push(operation.userPath)

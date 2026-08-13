@@ -4,6 +4,7 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   BasePlace,
+  PlaceImageShade,
   Place as PlaceShape,
   PlaceSocialLinks,
   PlaceSource,
@@ -22,6 +23,7 @@ export namespace PlaceCard {
     formattedAddress: string
     shortAddress: string
     imageUrl: string
+    imageShade?: PlaceImageShade
     source?: PlaceSource
     collection?: string
     claimedBy?: string
@@ -32,7 +34,7 @@ type PlaceExtras = Partial<PlaceShape>
 type PlacePill = PlaceCard.Card
 type PlaceCellResolved = Pick<
   PlaceCard.Card,
-  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'
+  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
   source?: PlaceSource
   prop?: string
@@ -40,6 +42,7 @@ type PlaceCellResolved = Pick<
 
 type PlacePreview = {
   imageUrl: string
+  imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
   source?: PlaceSource
@@ -85,12 +88,11 @@ const formatPlaceTypeList = (values?: string[]) =>
 export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
-    const slug = safeString(place.slug).trim()
     const name = safeString(place.name)
     const shortName = safeString((place as any)?.short_name)
     const address = safeString((place as any)?.formatted_address)
     const shortAddress = sanitizeShortAddress((place as any)?.short_address)
-    const image = safeString(place.assets.image)
+    const image = safeString((place as any)?.image_url)
     const entityFamilies = Array.isArray((place as any)?.entity_families)
       ? (place as any).entity_families
           .map((entry: unknown) => safeString(entry).trim())
@@ -99,8 +101,8 @@ export function usePlaceInterface() {
 
     return {
       id,
-      to: slug
-        ? `/${PlaceStorage.collection}/${encodeURIComponent(slug)}`
+      to: id
+        ? `/${PlaceStorage.collection}/${encodeURIComponent(id)}`
         : '',
       title: name,
       subtitle: shortAddress || address,
@@ -112,6 +114,7 @@ export function usePlaceInterface() {
       formattedAddress: address,
       shortAddress,
       imageUrl: image,
+      imageShade: place.image_shade ?? 'none',
       source: place.source,
       claimedBy: safeString((place as any)?.claimed_by),
     }
@@ -148,6 +151,7 @@ export function usePlaceInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress || base.shortAddress,
       imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       source: (target as any)?.source,
       prop: (target as any)?.brand_tagline,
     }
@@ -160,6 +164,7 @@ export function usePlaceInterface() {
     if (!base || !target) return null
     return {
       imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress || base.shortAddress,
       source: (target as any)?.source as PlaceSource | undefined,
@@ -192,10 +197,12 @@ export function usePlaceInterface() {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      imageUrl: target.assets.image,
+      imageUrl: (target as any)?.image_url,
       prop: (target as any)?.brand_tagline,
-      coverImage: target.assets.cover,
-      galleryImages: target.assets.gallery.slice(0, 3),
+      coverImage: (target as any)?.cover_image,
+      galleryImages: (
+        (target as any)?.gallery_images as string[] | undefined
+      )?.slice(0, 3),
       about: (target as any)?.about,
       priceLevel: (target as any)?.price_level,
       tags: formatPlaceTypeList(tags),

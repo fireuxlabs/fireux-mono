@@ -5,11 +5,11 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  compactBrandPalette,
-  parseBrandPalette,
+  readConsolePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import { kitchenRootTarget } from './firestore-targets'
+import type { ConsolePalette } from 'fireux-core/types/theme'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { parseMenuPageStyleInput } from '../menu/payload/page-style.ts'
 import {
   readKitchenMutationActor,
@@ -30,34 +30,44 @@ function request(value: unknown) {
     badRequest('Kitchen theme request must be an object.')
   }
   const source = value as Record<string, unknown>
-  const allowed = new Set(['kitchen_id', 'style'])
+  const allowed = new Set(['kitchen_id', 'style', 'palette'])
   const unsupported = Object.keys(source).find((key) => !allowed.has(key))
   if (unsupported)
     badRequest(`Kitchen theme contains unsupported field: ${unsupported}.`)
-  const style = parseMenuPageStyleInput(source.style)
-  if ('error' in style) badRequest(style.error)
+  const hasStyle = Object.hasOwn(source, 'style')
+  const style = hasStyle ? parseMenuPageStyleInput(source.style) : null
+  if (style && 'error' in style) badRequest(style.error)
+  const hasPalette = Object.hasOwn(source, 'palette')
+  const palette = hasPalette ? readConsolePalette(source.palette) : null
+  if (hasPalette && !palette) {
+    badRequest('Console palette must provide exactly four valid colours.')
+  }
+  if (!hasStyle && !hasPalette) badRequest('Kitchen theme has no changes.')
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
-    style: style.value,
+    style: style && 'value' in style ? style.value : null,
+    palette,
   }
 }
 
-function splitKitchenTheme(
-  style: Partial<PageStyle>,
-  placePalette: unknown
-): { brandPalette: Partial<PageStyle>; menuStyle: Partial<PageStyle> } {
-  const brandPalette = compactBrandPalette(style, placePalette)
-  const menuStyle = { ...style }
-  delete menuStyle.primary_color
-  delete menuStyle.secondary_color
+function compactConsoleStyle(style: Partial<PageStyle>): Partial<PageStyle> {
+  const next = { ...style }
+  delete next.background_color_light
+  delete next.background_color_dark
+  delete next.font_color_light
+  delete next.font_color_dark
+  delete next.title_color_light
+  delete next.title_color_dark
+  delete next.primary_color
+  delete next.secondary_color
 
-  if (menuStyle.font_source === 'system' && !menuStyle.font_family) {
-    delete menuStyle.font_source
+  if (next.font_source === 'system' && !next.font_family) {
+    delete next.font_source
   }
-  if (menuStyle.title_font_source === 'system' && !menuStyle.title_font_family) {
-    delete menuStyle.title_font_source
+  if (next.title_font_source === 'system' && !next.title_font_family) {
+    delete next.title_font_source
   }
-  return { brandPalette, menuStyle }
+  return next
 }
 
 export async function updateKitchenTheme(event: H3Event, input: unknown) {
@@ -72,41 +82,48 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         requested.kitchenId
       )
 
-      const placePalette = parseBrandPalette(current.placeData.brand_palette)
-      if (!placePalette.ok) {
-        throw createError({
-          statusCode: 409,
-          statusMessage: 'The linked Place brand palette needs repair.',
-        })
+      const compact = requested.style
+        ? compactConsoleStyle(requested.style)
+        : null
+      const supportPatch: Record<string, unknown> = {
+        ...(requested.palette
+          ? { 'console.theme.palette': requested.palette as ConsolePalette }
+          : {}),
+        ...(compact
+          ? {
+              'console.menus.style': Object.keys(compact).length
+                ? compact
+                : FieldValue.delete(),
+            }
+          : {}),
+        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
       }
-      const theme = splitKitchenTheme(requested.style, placePalette.value)
-      const rootPatch: Record<string, unknown> = {
-        brand_palette: Object.keys(theme.brandPalette).length
-          ? theme.brandPalette
-          : FieldValue.delete(),
-        updated: serverAuditStamp({
-          by: actor.uid,
-          appId: current.ownerAppId,
-        }),
-      }
-      mutations.update<DocumentData>(
-        kitchenRootTarget,
-        requested.kitchenId,
-        rootPatch
-      )
+      mutations.update(current.supports, requested.kitchenId, supportPatch)
 
-      mutations.update(current.supports, requested.kitchenId, {
-        'console.menus.style': Object.keys(theme.menuStyle).length
-          ? theme.menuStyle
-          : FieldValue.delete(),
-        updated: serverAuditStamp({
-          by: actor.uid,
-          appId: current.ownerAppId,
-        }),
-      })
+      const rootPatch: Record<string, unknown> = {}
+      if (Object.hasOwn(current.rootData, 'menu_style')) {
+        rootPatch.menu_style = FieldValue.delete()
+      }
+      if (Object.hasOwn(current.rootData, 'menus')) {
+        const rootMenus = record(current.rootData.menus)
+        if (Object.hasOwn(rootMenus, 'style')) {
+          rootPatch['menus.style'] = FieldValue.delete()
+        }
+      }
+      if (Object.keys(rootPatch).length) {
+        mutations.update<DocumentData>(
+          FIRESTORE_MUTATION_TARGETS.kitchens,
+          requested.kitchenId,
+          {
+            ...rootPatch,
+            updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
+          }
+        )
+      }
       return {
         appId: current.ownerAppId,
-        style: { ...theme.menuStyle, ...theme.brandPalette },
+        style: compact,
+        palette: requested.palette,
       }
     }
   )
@@ -115,6 +132,9 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
     ok: true as const,
     app_id: result.appId,
     kitchen_id: requested.kitchenId,
-    ...(Object.keys(result.style).length ? { style: result.style } : {}),
+    ...(result.style && Object.keys(result.style).length
+      ? { style: result.style }
+      : {}),
+    ...(result.palette ? { palette: result.palette } : {}),
   }
 }

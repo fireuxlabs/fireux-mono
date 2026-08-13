@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import {
-  usePublicAppScopedSource,
+  useFireuxEntityManagementTarget,
   usePublicScopedRecords,
 } from 'fireux-core/runtime/composables/fireux/public/scoped/usePublicScopedEntity'
 import { useKitchenFetch } from '../../firestore/kitchen/useKitchen'
@@ -26,10 +26,10 @@ export function useKitchenMenuScope() {
   const menuId = computed(() => text(route.params.menuId))
   const { kitchen, pending: kitchenPending } = useKitchenFetch(kitchenSlug)
   const kitchenId = computed(() => text(kitchen.value?.id))
-  const appScope = usePublicAppScopedSource(kitchen)
+  const managementTarget = useFireuxEntityManagementTarget(kitchen)
   const kitchenCollectionPath = computed(() =>
-    appScope.sourceAppId.value
-      ? `apps/${appScope.sourceAppId.value}/kitchens`
+    managementTarget.appId.value
+      ? `apps/${managementTarget.appId.value}/kitchens`
       : ''
   )
   const menuRead = useKitchenMenuCollection(kitchenId, {
@@ -73,9 +73,9 @@ export function useKitchenMenuScope() {
     },
     menuLookup: {
       kitchenId: kitchenId.value,
-      sourceAppId: appScope.sourceAppId.value,
-      appScopeState: appScope.state.value,
-      hasTenantApp: appScope.hasTenantApp.value,
+      managementAppId: managementTarget.appId.value,
+      managementMode: managementTarget.mode.value,
+      hasDedicatedApp: managementTarget.hasDedicatedApp.value,
       collectionPath: menuRead.collectionPath.value,
       pending: menuRead.pending.value,
       rawCount: (menuRead.menus.value ?? []).length,
@@ -94,7 +94,7 @@ export function useKitchenMenuScope() {
     kitchen,
     menus: publishedMenus.records,
     menu: publishedMenus.record,
-    appScope,
+    managementTarget,
     kitchenCollectionPath,
     menuCollectionPath: menuRead.collectionPath,
     pending,

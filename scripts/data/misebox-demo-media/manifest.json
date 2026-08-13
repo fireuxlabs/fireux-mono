@@ -11,6 +11,26 @@
     "download_token": "f71ae1d8-4b0e-4d0c-8b65-cc99580a6c60"
   },
   "sources": {
+    "apps/deanos/img/app/logo.png": {
+      "bytes": 328321,
+      "content_type": "image/png",
+      "sha256": "10bc589984a7f1b3744622f9bc07943dbb76b827a5da530eee4ba63712a4c722"
+    },
+    "apps/deanos/img/app/wordmark-light.png": {
+      "bytes": 117885,
+      "content_type": "image/png",
+      "sha256": "9492db95004798da7162fffac48363ae0026117c4fa8f45f9654329f9007a93e"
+    },
+    "apps/deanos/img/app/cover.png": {
+      "bytes": 2993491,
+      "content_type": "image/png",
+      "sha256": "a6e15dc5182e376d09fb5a225b49ed258fb4b8b6a215330edf30ddc64458ef84"
+    },
+    "apps/deanos/img/app/thumbnail.png": {
+      "bytes": 1598231,
+      "content_type": "image/png",
+      "sha256": "6f122e1d85a6757e1e2659ed08701677758bd5cf70fffa1edabeb17be08ed9b7"
+    },
     "kitchens/deanos/logo.png": {
       "bytes": 627643,
       "content_type": "image/png",
@@ -353,6 +373,11 @@
     }
   },
   "objects": {
+    "apps/deanos/img/app/logo.png": "apps/deanos/img/app/logo.png",
+    "apps/deanos/img/app/wordmark-light.png": "apps/deanos/img/app/wordmark-light.png",
+    "apps/deanos/img/app/wordmark-dark.png": "apps/deanos/img/app/wordmark-light.png",
+    "apps/deanos/img/app/cover.png": "apps/deanos/img/app/cover.png",
+    "apps/deanos/img/app/thumbnail.png": "apps/deanos/img/app/thumbnail.png",
     "kitchens/deanos/logo.png": "kitchens/deanos/logo.png",
     "kitchens/deanos/menu/cherry-vanilla-shake.jpg": "kitchens/deanos/menu/cherry-vanilla-shake.jpg",
     "kitchens/deanos/menu/crispy-cauliflower.jpg": "kitchens/deanos/menu/crispy-cauliflower.jpg",

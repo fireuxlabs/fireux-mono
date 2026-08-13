@@ -181,8 +181,8 @@ const tagline = computed(() =>
 )
 const imageUrl = computed(() =>
   String(
-    place.value?.assets.image ||
-      place.value?.assets.cover ||
+    place.value?.image_url ||
+      place.value?.cover_image ||
       kitchen.value?.display_image_url ||
       kitchen.value?.image_url ||
       ''

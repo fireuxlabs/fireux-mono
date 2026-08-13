@@ -1,23 +1,27 @@
 import { computed } from 'vue'
 import { useRoute, useState } from '#imports'
-import { useFireUXConfig } from '../FireUXConfig'
 
 export function useDevUi() {
   const route = useRoute()
-  const { consoleRegistry } = useFireUXConfig()
   const panelOpen = useState('fireux_dev_panel_open', () => false)
   const notesVisible = useState('fireux_dev_notes_visible', () => true)
-  const supportsInlineNotes = computed(() => {
-    const paths = consoleRegistry
-      .filter(registration => registration.supportsInlineNotes === true)
-      .flatMap(registration => [
-        `/${registration.rootCollection}`,
-        `/${registration.rootCollection}/create`,
-        `/console/${registration.family}`,
-        `/console/${registration.family}/create`,
-      ])
-    return paths.includes(route.path)
-  })
+  const supportsInlineNotes = computed(() =>
+    [
+      '/kitchens',
+      '/kitchens/create',
+      '/console/kitchen',
+      '/console/kitchen/create',
+      '/portfolios',
+      '/portfolios/create',
+      '/console/portfolio',
+      '/console/portfolio/create',
+      '/suppliers',
+      '/suppliers/create',
+      '/console/supplier',
+      '/console/supplier/create',
+      '/console/project',
+    ].includes(route.path)
+  )
 
   const togglePanel = () => {
     panelOpen.value = !panelOpen.value

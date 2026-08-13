@@ -208,16 +208,12 @@ export async function assertKitchenMenuCurrencyCode(
   const rootSnap = await db
     .doc(`${KitchenStorage.collection}/${kitchenId}`)
     .get()
-  const placeId = text(rootSnap.data()?.place_id)
-  if (!placeId) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Link this Kitchen to a Place before creating menus.',
-    })
+  if (!rootSnap.exists) {
+    throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
   const placeSnap = await db
     .collection(PlaceStorage.collection)
-    .doc(placeId)
+    .doc(kitchenId)
     .get()
   const currencyCode = readPlaceCurrencyCode(placeSnap.data())
 

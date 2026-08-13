@@ -34,22 +34,6 @@ const typeFields = (source, typeName) => {
     .sort()
 }
 
-const interfaceFields = (source, interfaceName) => {
-  const marker = `export interface ${interfaceName} {`
-  const start = source.indexOf(marker)
-  assert.notEqual(start, -1, `Missing ${interfaceName} contract.`)
-  const bodyStart = start + marker.length
-  const end = source.indexOf('\n}', bodyStart)
-  assert.notEqual(end, -1, `Unclosed ${interfaceName} contract.`)
-  return [
-    ...source
-      .slice(bodyStart, end)
-      .matchAll(/^  ([A-Za-z][A-Za-z0-9_]*)\??:/gm),
-  ]
-    .map((match) => match[1])
-    .sort()
-}
-
 const PROJECT_MODEL =
   'packages/core/fireux-core/src/runtime/models/system/project.model.ts'
 const APP_MODEL =
@@ -92,6 +76,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.deepEqual(utilityModelFiles, [
     'console-entity.model.ts',
     'directory.ts',
+    'entity-create.model.ts',
     'entity.model.ts',
     'profile.model.ts',
     'scope.model.ts',
@@ -120,12 +105,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenLogoEditor = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Logo.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Logo.vue'
   )
-  assert.match(placeModel, /backdrop_color/)
+  const kitchenIdentityEditor = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Identity.vue'
+  )
+  const kitchenConsoleIdentity = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue'
+  )
+  assert.match(placeModel, /media_backdrop_color/)
   assert.match(kitchenModel, /backdrop_color/)
   assert.match(kitchenLogoEditor, /type="color"/)
   assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
+  assert.match(kitchenConsoleIdentity, /<KitchenEditIdentity/)
+  assert.match(kitchenIdentityEditor, /<KitchenEditFields/)
+  assert.doesNotMatch(kitchenIdentityEditor, /updateCoverImage|updateGalleryImages|places\//)
   const appModel = read(repoRoot, APP_MODEL)
   const ecosystemModel = read(repoRoot, ECOSYSTEM_MODEL)
   const projectModel = read(repoRoot, PROJECT_MODEL)
@@ -142,10 +138,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       [
         'export type AppUserRole',
         'export interface UserIdentity',
-        'export interface UserAssets',
         'export interface AppUser',
         'export const UserStorage',
-        'export const UserAssetsStorage',
         'export const UserEntity',
         'export const UserIdentityDefaults',
         'export type UserCreateInput',
@@ -156,11 +150,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       appModel,
       [
         'export type AppStatus',
-        'export interface AppAssets',
         'export interface AppIdentity',
         'export interface AppMeta',
         'export const AppStorage',
-        'export const AppAssetsStorage',
         'export const AppEntity',
         'export const AppIdentityDefaults',
         'export type AppCreateInput',
@@ -172,10 +164,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       [
         'export type EcosystemStatus',
         'export interface EcosystemIdentity',
-        'export interface EcosystemAssets',
         'export interface EcosystemMeta',
         'export const EcosystemStorage',
-        'export const EcosystemAssetsStorage',
         'export const EcosystemEntity',
         'export const EcosystemIdentityDefaults',
         'export type EcosystemCreateInput',
@@ -187,10 +177,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       [
         'export type ProjectStatus',
         'export interface ProjectIdentity',
-        'export interface ProjectAssets',
         'export interface ProjectMeta',
         'export const ProjectStorage',
-        'export const ProjectAssetsStorage',
         'export const ProjectEntity',
         'export const ProjectIdentityDefaults',
         'export type ProjectCreateInput',
@@ -240,14 +228,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /AppCanonicalStorage|AppFieldGroups|WidenLiteral|models\/utils\/app/
   )
   assert.doesNotMatch(appModel, /^  (team|ecosystem):/m)
-  assert.match(
-    appModel,
-    /assets:\s*AppAssets[\s\S]*thumbnail:[\s\S]*logo:[\s\S]*wordmark:[\s\S]*wordmark_light:[\s\S]*wordmark_dark:[\s\S]*cover:/
-  )
-  assert.doesNotMatch(
-    appModel,
-    /\bmedia:\s*AppMedia|(thumbnail|logo|wordmark_light|wordmark_dark|cover)_url:\s*string/
-  )
 
   assert.match(ecosystemModel, /project_id:\s*''/)
   assert.match(
@@ -277,8 +257,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(ecosystemModel, /EcosystemCanonicalStorage|WidenLiteral/)
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
-  assert.match(ecosystemModel, /assets:\s*EcosystemAssets/)
-  assert.doesNotMatch(ecosystemModel, /image_url/)
 
   assert.match(
     projectModel,
@@ -298,13 +276,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(projectModel, /WidenLiteral|^  slug:/m)
   assert.match(projectModel, /AppProjectDefaults/)
-  assert.match(projectModel, /FireuxAppAccessRecordDefaults/)
+  assert.match(projectModel, /FireuxAppAccessRecordModel/)
   assert.doesNotMatch(
     projectModel,
     /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|console_endpoint_url|project_type|primary_project):/m
   )
-  assert.match(projectModel, /assets:\s*ProjectAssets/)
-  assert.doesNotMatch(projectModel, /image_url/)
   assert.match(
     userModel,
     /UserTargetsStorage[\s\S]*users\/\{userId\}\/private\/targets/
@@ -323,11 +299,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /app_ids|project_ids|kitchen_ids|console_enabled|profiles\??:\s*string\[\]/
   )
   assert.doesNotMatch(userModel, /UserAccount|UserNotification|rootCollection/)
-  assert.match(userModel, /assets:\s*UserAssets/)
-  assert.deepEqual(interfaceFields(userModel, 'UserPresentation'), [
-    'bio',
-    'display_name',
-  ])
 
   assert.doesNotMatch(
     read(repoRoot, PROFILE_PROVISIONING_MODEL),
@@ -547,12 +518,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.deepEqual(typeFields(directoryModel, 'AppDirectoryEntry'), [
     'app_name',
     'app_short_name',
-    'assets',
     'derived',
     'description',
     'detail_url',
     'ecosystem_id',
     'id',
+    'media',
     'role',
     'short_bio',
     'slug',
@@ -561,10 +532,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ])
   assert.deepEqual(typeFields(directoryModel, 'EcosystemDirectoryEntry'), [
     'app_count',
-    'assets',
     'description',
     'detail_url',
     'id',
+    'image_url',
     'name',
     'status',
     'website_url',
@@ -934,22 +905,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
   )
-  const placeAssetsMutation = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/server/place/assets.ts'
-  )
-  const placeSpine = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/utils/place-spine.ts'
-  )
-  const placeAssetRequirements = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/models/place-assets.model.ts'
-  )
-  const placeAssetLibrary = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/components/Place/AssetsLibrary.vue'
-  )
   const placeMutationAuthority = read(
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutation-authority.ts'
@@ -957,37 +912,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(
     placeMutationAuthority,
-    /Object\.hasOwn\(kitchen,\s*['"]app_scope_state['"]\)/
+    /readFireuxEntityManagement\(kitchen\.management\)/
   )
   assert.match(
     placeMutationAuthority,
-    /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
+    /resolveFireuxEntityManagementAppId\(management, ecosystem\)/
   )
-  assert.match(placeMediaMutation, /readRootKitchenAppScope\(rootKitchen\)/)
-  assert.match(placeModel, /export type PlaceAssets\s*=\s*\{/)
-  assert.match(
-    placeModel,
-    /assets:\s*\{[\s\S]*image:[\s\S]*cover:[\s\S]*gallery:[\s\S]*logo:[\s\S]*wordmark:[\s\S]*backdrop_color:/
-  )
-  assert.match(placeSpine, /export const readPlaceAssets\s*=/)
-  for (const target of [
-    'places/{placeId}/image',
-    'places/{placeId}/cover',
-    'places/{placeId}/gallery/{imageId}',
-    'places/{placeId}/logo',
-    'places/{placeId}/wordmark',
-  ]) {
-    assert.ok(placeAssetRequirements.includes(target))
-  }
-  assert.match(placeAssetLibrary, /PLACE_ASSET_REQUIREMENTS/)
-  assert.match(placeAssetLibrary, /Storage path/)
-  assert.match(placeAssetLibrary, /Matches criteria/)
-  assert.match(placeAssetsMutation, /patch\[`assets\.\$\{role\}`\]/)
-  assert.match(placeAssetsMutation, /patch\[['"]assets\.gallery['"]\]/)
-  assert.match(placeAssetsMutation, /patch\[['"]assets\.backdrop_color['"]\]/)
+  assert.match(placeMediaMutation, /readRootKitchenManagement\(/)
   assert.match(
     placeMediaMutation,
-    /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
+    /rootKitchenManagement\?\.appId\s*===\s*kitchenAuthority\.appId/
   )
   assert.match(
     placeMediaMutation,
@@ -995,7 +929,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     placeMutationAuthority,
-    /appScope\.app_id\s*\|\|\s*kitchen\.app_scope_app_id/
+    /app_scope|app_scope_state|app_scope_app_id/
   )
 
   assert.deepEqual(typeFields(jobModel, 'Job'), [
@@ -1207,13 +1141,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     placePublicStoryEditor,
     /Cover image URL|Gallery image URL|type="url"/
   )
-  assert.match(placeAssetsMutation, /requireFirebaseStorageDownloadUrl/)
-  assert.match(placeAssetsMutation, /places\/\$\{target\.placeId\}\/\$\{role\}/)
-  assert.match(placeAssetsMutation, /places\/\$\{target\.placeId\}\/gallery\//)
+  assert.match(placeMediaMutation, /requireFirebaseStorageDownloadUrl/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/image/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/logo/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/wordmark/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/cover/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/gallery\//)
   assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [
-    'assets',
     'brand_tagline',
     'id',
+    'image_shade',
+    'image_url',
+    'media_backdrop_color',
     'name',
     'place_type',
     'short_address',
@@ -1223,12 +1162,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ])
   assert.doesNotMatch(
     publicPlaceModel,
-    /^  (?:assets|brand_tagline|short_address|short_name|slug|verified)\?:/m,
+    /^  (?:brand_tagline|image_shade|image_url|short_address|short_name|slug|verified)\?:/m,
     'Public Place collection rows must serialize one exact key set.'
   )
   assert.match(
     publicPlaceNormalizer,
-    /return \{\s*id,\s*name,\s*place_type:\s*type,\s*short_name:[\s\S]*brand_tagline:[\s\S]*short_address:[\s\S]*assets:[\s\S]*verified:[\s\S]*slug:/,
+    /return \{\s*id,\s*name,\s*place_type:\s*type,\s*short_name:[\s\S]*brand_tagline:[\s\S]*short_address:[\s\S]*image_url:[\s\S]*image_shade:[\s\S]*verified:[\s\S]*slug:/,
     'The shared Place normalizer must materialize every public collection-row key.'
   )
   assert.match(

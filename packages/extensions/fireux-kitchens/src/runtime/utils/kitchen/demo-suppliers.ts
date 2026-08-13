@@ -145,7 +145,7 @@ export function buildKitchenDemoSuppliersOperation(
     const name = clean(scenario.supplier.supplier_organization_name)
     const companyPlaceId = clean(scenario.supplier.company_place?.id)
     const logoImageUrl = clean(scenario.supplier.supplier_image)
-    const placeImageUrl = clean(scenario.supplier.company_place?.assets.image)
+    const placeImageUrl = clean(scenario.supplier.company_place?.image_url)
     const headquartersLabel =
       clean(scenario.supplier.company_place?.short_address)
       || clean(scenario.supplier.company_place?.name)

@@ -14,25 +14,22 @@ import {
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
+  requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
+  normalizeHexColor,
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
 import {
   placeAuthorityIds,
-  readRootKitchenAppScope,
+  readRootKitchenManagement,
 } from './mutation-authority'
-import { createdByCurrentApp } from './onboarding-context'
-import {
-  dependentAppKitchenTarget,
-  dependentKitchenRootTarget,
-} from './dependent-targets'
-import { normalizePlaceAssetsPatch } from './assets'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -53,6 +50,10 @@ const optionalTextFields = new Map<string, number>([
   ['formatted_address', 500],
   ['short_address', 240],
   ['search_term', 1_000],
+  ['image_url', 2_048],
+  ['cover_image', 2_048],
+  ['logo_image', 2_048],
+  ['wordmark_image', 2_048],
   ['phone', 120],
   ['email', 320],
   ['website', 2_048],
@@ -70,7 +71,8 @@ const allowedPatchKeys = new Set([
   ...optionalTextFields.keys(),
   'lat',
   'lng',
-  'assets',
+  'media_backdrop_color',
+  'gallery_images',
   'social_links',
   'default_currency_code',
   'timezone',
@@ -122,6 +124,29 @@ function normalizedSocialLinks(value: unknown) {
   return Object.keys(links).length ? links : FieldValue.delete()
 }
 
+function normalizedGallery(
+  value: unknown,
+  target: { bucketName: string; placeId: string }
+) {
+  if (value === null || value === undefined) return FieldValue.delete()
+  if (!Array.isArray(value)) badRequest('Gallery images must be a list.')
+
+  const images = Array.from(new Set(value.map(text).filter(Boolean)))
+  if (images.length > 24) badRequest('Gallery images are limited to 24 items.')
+  if (images.some((image) => image.length > 2_048)) {
+    badRequest('A gallery image URL is too long.')
+  }
+  return images.length
+    ? images.map((image) =>
+        requireFirebaseStorageDownloadUrl(image, {
+          bucketName: target.bucketName,
+          objectPrefix: `places/${target.placeId}/gallery/`,
+          label: 'Place gallery image',
+        })
+      )
+    : FieldValue.delete()
+}
+
 function normalizedNumber(key: 'lat' | 'lng', value: unknown) {
   if (value === null || value === undefined || text(value) === '') {
     return FieldValue.delete()
@@ -159,15 +184,48 @@ function normalizePatch(
     }
     if (optionalTextFields.has(key)) {
       const normalized = deleteOrText(value, optionalTextFields.get(key) || 240)
-      patch[key] = normalized
+      if (
+        (key === 'image_url' || key === 'cover_image' ||
+          key === 'logo_image' || key === 'wordmark_image') &&
+        typeof normalized === 'string'
+      ) {
+        patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+          bucketName: target.bucketName,
+          objectPath:
+            key === 'image_url'
+              ? `places/${target.placeId}/image`
+              : key === 'cover_image'
+                ? `places/${target.placeId}/cover`
+                : key === 'logo_image'
+                  ? `places/${target.placeId}/logo`
+                  : `places/${target.placeId}/wordmark`,
+          label: key === 'image_url'
+            ? 'Place image'
+            : key === 'cover_image'
+              ? 'Place cover'
+              : key === 'logo_image'
+                ? 'Place logo'
+                : 'Place wordmark',
+        })
+      } else {
+        patch[key] = normalized
+      }
       continue
     }
     if (key === 'lat' || key === 'lng') {
       patch[key] = normalizedNumber(key, value)
       continue
     }
-    if (key === 'assets') {
-      Object.assign(patch, normalizePlaceAssetsPatch(value, target))
+    if (key === 'media_backdrop_color') {
+      const color = normalizeHexColor(value)
+      if (color === null) {
+        badRequest('Media backdrop must be a 6-digit hex colour.')
+      }
+      patch.media_backdrop_color = color || FieldValue.delete()
+      continue
+    }
+    if (key === 'gallery_images') {
+      patch.gallery_images = normalizedGallery(value, target)
       continue
     }
     if (key === 'social_links') {
@@ -229,6 +287,7 @@ export async function mutatePlace(
         }
       : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
+  const ecosystem = text(useRuntimeConfig(event).public?.fireux?.ecosystem)
   const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
@@ -244,9 +303,9 @@ export async function mutatePlace(
   const memberships = isFirestoreDocumentId(runtimeAppId)
     ? serverAppUsersTarget(runtimeAppId)
     : null
-  const kitchens = dependentKitchenRootTarget
+  const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
   const kitchenSupports = kitchenAuthority
-    ? dependentAppKitchenTarget(kitchenAuthority.appId)
+    ? serverAppKitchensTarget(kitchenAuthority.appId)
     : null
 
   await runGuardedServerTransaction(places.database, async (mutations) => {
@@ -280,25 +339,25 @@ export async function mutatePlace(
 
     const place = placeSnapshot.data || {}
     const runtimeAdmin = runtimeMembershipSnapshot?.data?.role === 'admin'
-    const creatorAccess = Boolean(
-      runtimeAppId && createdByCurrentApp(place, uid, runtimeAppId)
-    )
     const rootKitchen = rootKitchenSnapshot?.data || {}
-    const rootKitchenScope = readRootKitchenAppScope(rootKitchen)
+    const rootKitchenManagement = readRootKitchenManagement(
+      rootKitchen,
+      ecosystem
+    )
     const scopedKitchen = scopedKitchenSnapshot?.data || {}
     const kitchenAccess = Boolean(
       kitchenAuthority &&
         rootKitchenSnapshot?.exists &&
         scopedKitchenSnapshot?.exists &&
         text(rootKitchen.place_id) === id &&
-        rootKitchenScope?.appId === kitchenAuthority.appId &&
+        rootKitchenManagement?.appId === kitchenAuthority.appId &&
         placeAuthorityIds(scopedKitchen.operator_ids).includes(uid)
     )
-    if (!runtimeAdmin && !creatorAccess && !kitchenAccess) {
+    if (!runtimeAdmin && !kitchenAccess) {
       throw createError({
         statusCode: 403,
         statusMessage:
-          'Creating App user, App admin, or linked Kitchen operator access is required.',
+          'App admin or linked Kitchen operator access is required.',
       })
     }
 

@@ -1,8 +1,8 @@
-<!-- App assets use one status-led source-to-Storage workflow. -->
+<!-- Concurrent edit — 2026-07-21 20:23 CEST — Developer Dashboard cleanup: reduce App media to one status-led source-to-Storage workflow. -->
 <template>
   <ClientOnly>
     <UPageCard
-      title="App assets"
+      title="App media"
       description="Review repository assets and sync them to the canonical App record."
       icon="i-lucide-images"
       variant="subtle"
@@ -13,7 +13,7 @@
           <div>
             <p class="text-sm font-medium text-highlighted">Storage status</p>
             <p class="mt-0.5 text-xs text-muted">
-              {{ syncedCount }} of {{ syncableItems.length }} App assets are
+              {{ syncedCount }} of {{ syncableItems.length }} media assets are
               available.
             </p>
           </div>
@@ -150,7 +150,7 @@
         <p class="text-xs leading-5 text-dimmed">
           Source files live in <span class="font-mono">/public/img/app</span>.
           Sync validates dimensions, writes to
-          <span class="font-mono">apps/{appId}/{assetRole}</span>, and updates the
+          <span class="font-mono">apps/{appId}/media/*</span>, and updates the
           App record.
         </p>
       </div>
@@ -163,11 +163,11 @@ import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import {
-  APP_SYNCABLE_IMAGE_REQUIREMENTS,
   appImageLocalPublicPath,
+  appImageRequirement,
   appPublicAssetRequirement,
   type AppImageKind,
-} from '../../../../composables/fireux/firestore/core/app/utils/appAssets'
+} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
 import type { App } from '../../../../models/core/app.model'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
@@ -190,6 +190,9 @@ type ImageItemBase = {
 
 type SyncedImageKind = AppImageKind
 
+const validatedRequirement = (kind: SyncedImageKind) =>
+  appImageRequirement(kind).requirementsHtml
+
 type SyncedImageItem = ImageItemBase & {
   syncKind: SyncedImageKind
 }
@@ -198,21 +201,48 @@ type ResolvedSyncedImageItem = SyncedImageItem & {
   url: string
 }
 
-const syncedItems: SyncedImageItem[] = APP_SYNCABLE_IMAGE_REQUIREMENTS.map(
-  (requirement) => ({
-    key: requirement.key,
-    label: requirement.label,
-    path: requirement.localPublicPath,
-    requirements: requirement.requirementsHtml,
-    shape:
-      requirement.syncKind === 'logo'
-        ? 'square'
-        : requirement.syncKind.startsWith('wordmark')
-          ? 'wordmark'
-          : 'wide',
-    syncKind: requirement.syncKind,
-  })
-)
+const syncedItems: SyncedImageItem[] = [
+  {
+    key: 'logo',
+    label: 'Logo',
+    path: appImageLocalPublicPath('logo'),
+    requirements: validatedRequirement('logo'),
+    shape: 'square',
+    syncKind: 'logo',
+  },
+  {
+    key: 'wordmark-light',
+    label: 'Wordmark (light)',
+    path: appImageLocalPublicPath('wordmarkLight'),
+    requirements: validatedRequirement('wordmarkLight'),
+    shape: 'wordmark',
+    syncKind: 'wordmarkLight',
+  },
+  {
+    key: 'wordmark-dark',
+    label: 'Wordmark (dark)',
+    path: appImageLocalPublicPath('wordmarkDark'),
+    requirements: validatedRequirement('wordmarkDark'),
+    shape: 'wordmark',
+    syncKind: 'wordmarkDark',
+  },
+  {
+    key: 'thumbnail',
+    label: 'Thumbnail',
+    path: appImageLocalPublicPath('thumbnail'),
+    requirements: validatedRequirement('thumbnail'),
+    shape: 'wide',
+    syncKind: 'thumbnail',
+  },
+  {
+    key: 'cover',
+    label: 'Cover',
+    path: appImageLocalPublicPath('cover'),
+    requirements: validatedRequirement('cover'),
+    shape: 'wide',
+    syncKind: 'cover',
+  },
+]
 
 const requiredOnlyItems: ImageItemBase[] = [
   {
@@ -243,7 +273,6 @@ const saving = ref<SyncedImageKind | null>(null)
 const kindToLocalPath: Record<SyncedImageKind, string> = {
   thumbnail: appImageLocalPublicPath('thumbnail'),
   logo: appImageLocalPublicPath('logo'),
-  wordmark: appImageLocalPublicPath('wordmark'),
   wordmarkLight: appImageLocalPublicPath('wordmarkLight'),
   wordmarkDark: appImageLocalPublicPath('wordmarkDark'),
   cover: appImageLocalPublicPath('cover'),
@@ -252,7 +281,6 @@ const kindToLocalPath: Record<SyncedImageKind, string> = {
 const kindLabel: Record<SyncedImageKind, string> = {
   thumbnail: 'thumbnail',
   logo: 'logo',
-  wordmark: 'wordmark',
   wordmarkLight: 'wordmark (light)',
   wordmarkDark: 'wordmark (dark)',
   cover: 'cover',
@@ -261,17 +289,15 @@ const kindLabel: Record<SyncedImageKind, string> = {
 function mediaUrlForKind(value: App | null | undefined, kind: AppImageKind) {
   switch (kind) {
     case 'thumbnail':
-      return value?.assets?.thumbnail || ''
+      return value?.media?.thumbnail_url || ''
     case 'logo':
-      return value?.assets?.logo || ''
-    case 'wordmark':
-      return value?.assets?.wordmark || ''
+      return value?.media?.logo_url || ''
     case 'wordmarkLight':
-      return value?.assets?.wordmark_light || ''
+      return value?.media?.wordmark_light_url || ''
     case 'wordmarkDark':
-      return value?.assets?.wordmark_dark || ''
+      return value?.media?.wordmark_dark_url || ''
     case 'cover':
-      return value?.assets?.cover || ''
+      return value?.media?.cover_url || ''
   }
 }
 

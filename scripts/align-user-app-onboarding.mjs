@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
-// last_used: 2026-08-11
+// last_used: 2026-08-09
 // usage_note: plan or explicitly apply non-destructive canonical User, Ecosystem, Project, local metadata projection, AppUser, and App onboarding repairs across registered ecosystems.
 
 import { createHash } from 'node:crypto'
@@ -44,7 +44,6 @@ const LEGACY_APP_FIELDS = [
   'wordmark_dark_url',
   'wordmark_light_url',
   'wordmark_url',
-  'media',
 ]
 const LEGACY_MEMBERSHIP_FIELDS = [
   'console_enabled',
@@ -60,7 +59,7 @@ const APP_META_FIELDS = [
   'name',
   'short_name',
   'description',
-  'assets',
+  'media',
   'database_id',
   'website_url',
   'console_families',
@@ -71,7 +70,7 @@ const ECOSYSTEM_META_FIELDS = [
   'status',
   'name',
   'description',
-  'assets',
+  'image_url',
   'website_url',
   'database_id',
   'updated',
@@ -81,7 +80,7 @@ const PROJECT_META_FIELDS = [
   'status',
   'name',
   'description',
-  'assets',
+  'image_url',
   'database_id',
   'updated',
 ]
@@ -110,8 +109,6 @@ ProjectMeta and AppMeta projections, AppUser lifecycle defaults, and redundant l
 fields. The command never creates legal acceptance, Users, canonical
 Ecosystems, App memberships, canonical Apps, admin roles, Auth identities, or
 Storage objects.
-
-User avatar Storage ownership is audited separately by pnpm align:user-avatars.
 
 ${firebaseAdminCredentialHelp()}
 `)
@@ -297,6 +294,16 @@ function stableJson(value) {
 
 function sha256(value) {
   return createHash('sha256').update(stableJson(value)).digest('hex')
+}
+
+function canonicalAvatarOwned(avatar, uid) {
+  const value = text(avatar)
+  if (!value.startsWith('https://')) return false
+  try {
+    return decodeURIComponent(value).includes(`users/${uid}/avatar/current`)
+  } catch {
+    return false
+  }
 }
 
 function appSiteUrl(entry) {
@@ -487,14 +494,10 @@ async function planEcosystem(session, operations, issues, blockers) {
   const data = canonical.data() || {}
   const set = {}
   const deleteFields = []
-  if (!data.assets?.image && text(data.image_url)) {
-    set.assets = { image: text(data.image_url) }
-  }
-  if ('image_url' in data) deleteFields.push('image_url')
   const appData = globalCanonicalApp.data() || {}
   const appMetaData = globalAppMeta.data() || {}
-  const appAssets = appData.assets || {}
-  const appMetaAssets = appMetaData.assets || {}
+  const appMedia = appData.media || {}
+  const appMetaMedia = appMetaData.media || {}
   const presentationSource = {
     name:
       text(appData.name) ||
@@ -508,7 +511,7 @@ async function planEcosystem(session, operations, issues, blockers) {
       text(appData.description) ||
       text(appMetaData.description) ||
       text(session.sourceDescription),
-    assets: { image: text(appAssets.logo) || text(appMetaAssets.logo) },
+    image_url: text(appMedia.logo_url) || text(appMetaMedia.logo_url),
     website_url: appPublicSiteUrl(globalApp, appMetaData),
   }
   if (!text(data.project_id)) set.project_id = ecosystemProjectId
@@ -533,7 +536,13 @@ async function planEcosystem(session, operations, issues, blockers) {
   }
   if ('source_url' in data) deleteFields.push('source_url')
   const logicalRename = ecosystemId !== session.ecosystemKey
-  for (const field of ['status', 'name', 'description', 'website_url']) {
+  for (const field of [
+    'status',
+    'name',
+    'description',
+    'image_url',
+    'website_url',
+  ]) {
     const value = field in set ? set[field] : data[field]
     const sourceValue = presentationSource[field]
     if (
@@ -555,20 +564,6 @@ async function planEcosystem(session, operations, issues, blockers) {
       )
     }
   }
-  const sourceImage = text(presentationSource.assets.image)
-  const storedImage = text(set.assets?.image) || text(data.assets?.image)
-  if (sourceImage && (!storedImage || (logicalRename && storedImage !== sourceImage))) {
-    set.assets = { image: sourceImage }
-  } else if (!storedImage) {
-    issues.push(
-      issue(
-        session,
-        'ECOSYSTEM_PRESENTATION_INCOMPLETE',
-        canonical.ref.path,
-        'assets.image'
-      )
-    )
-  }
   if (Object.keys(set).length || deleteFields.length) {
     operations.push(
       operation(session, session.identityDatabaseId, 'ecosystems', canonical, {
@@ -586,7 +581,7 @@ async function planEcosystem(session, operations, issues, blockers) {
     status: text(nextData.status),
     name: text(nextData.name),
     description: text(nextData.description),
-    assets: { image: text(nextData.assets?.image) },
+    image_url: text(nextData.image_url),
     website_url: text(nextData.website_url),
     database_id: session.identityDatabaseId,
     updated: stableValue(nextData.updated || {}),
@@ -688,19 +683,12 @@ async function planProjects(sessions, operations, issues, blockers) {
 
     const ecosystemData = ecosystem.data() || {}
     const canonicalData = canonical.data() || {}
-    const existingProjectImage =
-      text(canonicalData.assets?.image) || text(canonicalData.image_url)
     const expected = {
       id: projectId,
       status: text(ecosystemData.status) || 'draft',
       name: text(ecosystemData.name),
       description: text(ecosystemData.description),
-      assets: {
-        image:
-          publicHttpsUrl(ecosystemData.assets?.image) ||
-          publicHttpsUrl(ecosystemData.image_url) ||
-          publicHttpsUrl(existingProjectImage),
-      },
+      image_url: publicHttpsUrl(ecosystemData.image_url),
     }
     const set = {}
     if (text(canonicalData.id) && text(canonicalData.id) !== projectId) {
@@ -716,38 +704,33 @@ async function planProjects(sessions, operations, issues, blockers) {
     }
     for (const [field, value] of Object.entries(expected)) {
       const requiredIdentity = field === 'id' || field === 'status'
-      const comparableValue = field === 'assets' ? value.image : value
-      const comparableStored =
-        field === 'assets' ? canonicalData.assets?.image : canonicalData[field]
       if (
-        (requiredIdentity || text(comparableValue)) &&
-        stableJson(comparableStored) !== stableJson(comparableValue)
+        (requiredIdentity || text(value)) &&
+        stableJson(canonicalData[field]) !== stableJson(value)
       ) {
         set[field] = value
       }
-      if (field !== 'id' && !text(comparableValue)) {
+      if (field !== 'id' && !text(value)) {
         issues.push(
           issue(
             session,
             'PROJECT_PRESENTATION_INCOMPLETE',
             canonical.ref.path,
-            field === 'assets' && text(ecosystemData.assets?.image)
-              ? `assets.image source is not a deployable HTTPS URL: ${text(ecosystemData.assets?.image)}`
+            field === 'image_url' && text(ecosystemData.image_url)
+              ? `image_url source is not a deployable HTTPS URL: ${text(ecosystemData.image_url)}`
               : field
           )
         )
       }
     }
-    const projectDeleteFields =
-      'image_url' in canonicalData ? ['image_url'] : []
-    if (Object.keys(set).length || projectDeleteFields.length) {
+    if (Object.keys(set).length) {
       operations.push(
         operation(
           controlSession,
           controlSession.identityDatabaseId,
           'projects',
           canonical,
-          { verb: 'update', set, deleteFields: projectDeleteFields }
+          { verb: 'update', set }
         )
       )
     }
@@ -758,7 +741,7 @@ async function planProjects(sessions, operations, issues, blockers) {
       status: text(nextCanonical.status),
       name: text(nextCanonical.name),
       description: text(nextCanonical.description),
-      assets: { image: text(nextCanonical.assets?.image) },
+      image_url: text(nextCanonical.image_url),
       database_id: session.identityDatabaseId,
       updated: stableValue(nextCanonical.updated || {}),
     }
@@ -843,6 +826,9 @@ async function planUsers(session, operations, issues, blockers) {
         blockers.push(issue(session, 'USER_ID_CONFLICT', user.ref.path))
       } else deleteFields.push('id')
     }
+    if (!canonicalAvatarOwned(data.avatar, user.id)) {
+      issues.push(issue(session, 'USER_AVATAR_REHOME_REQUIRED', user.ref.path))
+    }
     const account = await user.ref.collection('private').doc('account').get()
     if (!account.exists) {
       issues.push(issue(session, 'USER_ACCOUNT_MISSING', account.ref.path))
@@ -889,19 +875,6 @@ async function planApps(session, operations, issues, blockers) {
     const authored = appSource(entry)
     const appSet = {}
     const deleteFields = []
-    if (!data.assets || typeof data.assets !== 'object') {
-      const media = data.media || {}
-      appSet.assets = {
-        thumbnail: text(media.thumbnail_url) || text(data.thumbnail_url),
-        logo: text(media.logo_url) || text(data.logo_url),
-        wordmark: text(data.wordmark_url),
-        wordmark_light:
-          text(media.wordmark_light_url) || text(data.wordmark_light_url),
-        wordmark_dark:
-          text(media.wordmark_dark_url) || text(data.wordmark_dark_url),
-        cover: text(media.cover_url) || text(data.cover_url),
-      }
-    }
     for (const field of ['project_id', 'role']) {
       if (text(data[field]) !== authored[field]) {
         blockers.push(
@@ -988,7 +961,7 @@ async function planApps(session, operations, issues, blockers) {
       name: text(nextData.name),
       short_name: text(nextData.short_name),
       description: text(nextData.description),
-      assets: nextData.assets || {},
+      media: nextData.media || {},
       database_id: databaseId,
       website_url: websiteUrl,
       console_families: [...new Set(entry.consoles || [])].sort(),

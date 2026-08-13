@@ -208,8 +208,8 @@ const appCard = computed(() => appToCard(app.value ?? null))
 const resolvedAppUser = computed(() => appUser.value ?? null)
 const hasCustomAvatar = computed(
   () =>
-    Boolean(coreUser.value?.assets.avatar) &&
-    coreUser.value?.assets.avatar !== USER_ECOSYSTEM_AVATAR_SRC
+    Boolean(coreUser.value?.avatar) &&
+    coreUser.value?.avatar !== USER_ECOSYSTEM_AVATAR_SRC
 )
 
 const privateOutcome = computed<DashboardOverviewOutcome>(() => {

@@ -65,7 +65,7 @@ Explain workspace/package command context.
 - `pnpm build:packages`
 - `pnpm build:nuxt-baseline`
 - `pnpm audit:scripts`
-- `pnpm audit:app-assets -- --ecosystem <key>`
+- `pnpm audit:app-media -- --ecosystem <key>`
 - `pnpm firebase:rules:render` (read-only drift check; pass `--write` only for
   an intentional local artifact regeneration)
 - `pnpm sync:misebox-public-card-snapshots -- --project <id> --database <id>`

@@ -849,7 +849,7 @@ export async function run(ctx) {
         'normalizePublicPlaceProjection',
         'hasExactPublicPlaceProjectionShape',
         'item.publicCompany.id !== placeId',
-        '!item.place.assets?.image',
+        '!item.place.image_url',
         'companyId !== placeId',
         'Object.keys(item.company)',
         'companyDemoTargets',
@@ -868,7 +868,7 @@ export async function run(ctx) {
       ],
       markers: [
         'appSupport: AppSupplier',
-        "console: { app_id: appId, app_role: 'parent' }",
+        "management: { mode: 'console' }",
         'company_id: input.companyId',
         'supplier_image: input.logoImageUrl',
         '!scenario.supplier.supplier_image',
@@ -1128,8 +1128,8 @@ export async function run(ctx) {
       ([left], [right]) => left.localeCompare(right)
     )
     if (
-      sourceEntries.length !== 68 ||
-      objectEntries.length !== 73 ||
+      sourceEntries.length !== 72 ||
+      objectEntries.length !== 78 ||
       sourceEntries.some(([relativePath, descriptor]) => {
         const expectedContentType = relativePath.endsWith('.png')
           ? 'image/png'
@@ -1162,11 +1162,11 @@ export async function run(ctx) {
       ...objectEntries.map(([relativePath]) => relativePath)
     )
     if (
-      expectedDemoMediaObjects.length !== 73 ||
+      expectedDemoMediaObjects.length !== 78 ||
       new Set(expectedDemoMediaObjects).size !==
         expectedDemoMediaObjects.length ||
       new Set(sourceEntries.map(([, descriptor]) => descriptor.sha256)).size !==
-        68 ||
+        72 ||
       new Set(objectEntries.map(([, sourcePath]) => sourcePath)).size !==
         sourceEntries.length
     ) {
@@ -1215,7 +1215,7 @@ export async function run(ctx) {
     violations.push({
       code: 'demo-media-manifest',
       file: demoMediaManifestFile,
-      message: `Demo media requires one exact Storage-authoritative 73-object/68-payload Misebox manifest and create-only external-source publisher. ${
+      message: `Demo media requires one exact Storage-authoritative 78-object/72-payload Misebox manifest and create-only external-source publisher. ${
         error instanceof Error ? error.message : String(error)
       }`,
     })
@@ -1292,7 +1292,7 @@ export async function run(ctx) {
   }
 
   if (
-    expectedDemoMediaObjects.length === 73 &&
+    expectedDemoMediaObjects.length === 78 &&
     existsSync(familyScenarioJitiExecutable)
   ) {
     const checkDirectory = mkdtempSync(
@@ -1334,14 +1334,16 @@ export async function run(ctx) {
         'for (const scenario of kitchenDemoScenarios) {',
         '  const kitchenId = String(scenario.kitchen.id || "")',
         '  const placeId = String(scenario.place.id || "")',
-        '  objectPath(scenario.kitchen.assets.logo, `kitchens/${kitchenId}/`)',
+        '  objectPath(scenario.kitchen.identity.logo_image_url, `kitchens/${kitchenId}/`)',
         '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
-        '  for (const value of [scenario.place.assets.image, scenario.place.assets.cover, ...(scenario.place.assets.gallery || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
+        '  for (const value of [scenario.place.image_url, scenario.place.cover_image, ...(scenario.place.gallery_images || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
         '}',
         'for (const scenario of supplierDemoScenarios) objectPath(scenario.supplier.supplier_image, `suppliers/${scenario.supplier.id}/`)',
-        'for (const target of companyDemoTargets) objectPath(target.place.assets.image, `places/${target.place.id}/`)',
+        'for (const target of companyDemoTargets) objectPath(target.place.image_url, `places/${target.place.id}/`)',
+        'const templateAssets = ["apps/deanos/img/app/logo.png", "apps/deanos/img/app/wordmark-light.png", "apps/deanos/img/app/wordmark-dark.png", "apps/deanos/img/app/cover.png", "apps/deanos/img/app/thumbnail.png"]',
+        'for (const value of templateAssets) found.push(value)',
         'const actual = new Set(found)',
-        'if (found.length !== 75 || actual.size !== 73 || actual.size !== expected.size || [...actual].some(value => !expected.has(value))) throw new Error(`Demo media fixture inventory mismatch: ${found.length}/${actual.size}/${expected.size}`)',
+        'if (found.length !== 80 || actual.size !== 78 || actual.size !== expected.size || [...actual].some(value => !expected.has(value))) throw new Error(`Demo media fixture inventory mismatch: ${found.length}/${actual.size}/${expected.size}`)',
       ].join('\n'),
       'utf8'
     )
@@ -2010,7 +2012,7 @@ export async function run(ctx) {
     ? readFileSync(kitchenConsoleTargetPath, 'utf8')
     : ''
   if (
-    !/enabled:\s*computed\(\s*\(\)\s*=>\s*kitchenSource\.value === ['"]live['"]\s*\|\|\s*options\.keepLiveTargetsAvailable === true\s*,?\s*\)/.test(
+    !/useKitchenConsoleTargetCollection\(\{\s*enabled:\s*true,\s*\}\)/.test(
       kitchenConsoleCoreSource
     ) ||
     !kitchenConsoleCoreSource.includes("consoleData('live', kitchen)") ||
@@ -2018,13 +2020,13 @@ export async function run(ctx) {
     !kitchenConsoleTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
     ) ||
-    !kitchenConsoleTargetSource.includes('!enabled.value ||')
+    !kitchenConsoleTargetSource.includes('enabled: options.enabled')
   ) {
     violations.push({
       code: 'kitchen-demo-live-target',
       file: kitchenConsoleCoreFile,
       message:
-        'Kitchen Demo must use typed target providers and keep Live requests off except for the explicit bounded target chooser.',
+        'Kitchen Demo and Live targets must feed one shared family runtime without creating page-specific target providers.',
     })
   }
 

@@ -3,10 +3,10 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
 // Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Console creation through the trusted transaction.
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-  ConsoleRootCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+  FireuxRootCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { SupplierOnboardingCompleteResult } from '../../../../../models/supplier/supplier-onboarding.model'
@@ -20,7 +20,7 @@ export type SupplierCreateOptions = {
 }
 
 export type SupplierCreateModeOptions = {
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   existingRootId?: string | null
   organizationName?: string | null
   companyId?: string | null
@@ -46,19 +46,19 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
 
   async function createTestSupplier(
     _input: SupplierTestCreateInput = {}
-  ): Promise<ConsoleRootCreateResult> {
+  ): Promise<FireuxRootCreateResult> {
     throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
   }
 
   async function createSupplier(
     options: SupplierCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     return createSupplierConsole(options)
   }
 
   async function createSupplierConsole(
     options: SupplierCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
     const organizationName = normalizeString(options.organizationName)

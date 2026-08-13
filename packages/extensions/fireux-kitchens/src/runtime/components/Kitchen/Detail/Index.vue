@@ -52,14 +52,6 @@
         />
 
         <KitchenDetailOperatorPanel :kitchen="displayKitchen" />
-
-        <DevJson
-          v-if="showDebug"
-          title="Kitchen (Public Projection)"
-          context="Kitchen detail page · kitchens/[slug] · bounded public projection"
-          :data="displayKitchen"
-          :default-open="false"
-        />
       </div>
     </UPageBody>
   </UPage>
@@ -124,10 +116,9 @@ const { isAdmin, isDeveloper } = useUser()
 const canEditIdentity = computed(() =>
   Boolean(
     (isAdmin.value || isDeveloper.value) &&
-      (role === 'global' || props.kitchen?.console?.app_id === appId)
+      (role === 'global' || props.kitchen?.management_app_id === appId)
   )
 )
-const showDebug = import.meta.dev
 const applyIdentity = (identity: KitchenPublicIdentityEdit) => {
   identityOverride.value = identity
   emit('refresh')

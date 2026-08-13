@@ -11,7 +11,6 @@ import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
 import type {
   KitchenOnboardingCompleteResult,
-  KitchenOnboardingPlaceOption,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model'
 import { useKitchenCreate } from '../firestore/kitchen/mutations/useKitchenCreate'
@@ -38,7 +37,7 @@ function errorMessage(error: unknown) {
   return 'Unable to prepare this Kitchen right now.'
 }
 
-export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
+export function useKitchenOnboarding() {
   const place = ref<PublicPlaceDetailProjection | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const displayName = ref('')
@@ -46,29 +45,11 @@ export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
   const selectionPending = ref(false)
   const selectionError = ref('')
   const completion = ref<KitchenOnboardingCompleteResult | null>(null)
-  const placeOptions = ref<KitchenOnboardingPlaceOption[]>([])
-  const placeOptionsPending = ref(false)
-  const placeOptionsError = ref('')
   let selectionSequence = 0
   const {
     completeKitchenOnboarding,
-    completeKitchenRootOnboarding,
-    listKitchenOnboardingPlaces,
     previewKitchenOnboarding,
   } = useKitchenCreate()
-
-  async function loadPlaceOptions() {
-    placeOptionsPending.value = true
-    placeOptionsError.value = ''
-    try {
-      placeOptions.value = await listKitchenOnboardingPlaces()
-    } catch (error) {
-      placeOptions.value = []
-      placeOptionsError.value = errorMessage(error)
-    } finally {
-      placeOptionsPending.value = false
-    }
-  }
 
   const canEditIdentity = computed(() => preview.value?.existing !== true)
   const effectiveName = computed(() =>
@@ -134,7 +115,7 @@ export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
     }
 
     try {
-      const payload = {
+      const result = await completeKitchenOnboarding({
             place_id: currentPreview.place_id,
             ...(currentPreview.existing
               ? { kitchen_id: currentPreview.kitchen_id }
@@ -145,16 +126,7 @@ export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
             ...(canEditPalette.value && Object.keys(paletteOverride.value).length
               ? { palette_override: paletteOverride.value }
               : {}),
-      }
-      const rootResult = !currentPreview.existing
-        ? await completeKitchenRootOnboarding(payload)
-        : null
-      const result = options.rootOnly
-        ? rootResult!
-        : await completeKitchenOnboarding({
-            place_id: currentPreview.place_id,
-            kitchen_id: rootResult?.kitchen_id || currentPreview.kitchen_id,
-          })
+      })
       if (
         result?.ok !== true ||
         result.kitchen_id !== currentPreview.kitchen_id ||
@@ -162,9 +134,7 @@ export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
       ) {
         throw new Error('Kitchen onboarding completion was invalid.')
       }
-      completion.value = rootResult && !options.rootOnly
-        ? { ...result, created_root: true }
-        : result
+      completion.value = result
       return true
     } catch (error) {
       throw new Error(errorMessage(error))
@@ -268,11 +238,7 @@ export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
     displayName,
     effectiveName,
     inheritedPalette,
-    loadPlaceOptions,
     place,
-    placeOptions,
-    placeOptionsError,
-    placeOptionsPending,
     paletteOverride,
     preview,
     selectKitchen,

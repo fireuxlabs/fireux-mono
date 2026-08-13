@@ -17,6 +17,7 @@ import {
   stamp,
 } from '../app-membership/mutation-contract'
 import { ensureRuntimeAppMeta } from '../app-projection/ensure'
+import { readAppPaletteLayer } from '../../../utils/brand-palette'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -39,14 +40,14 @@ function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
     name: config.appName,
     short_name: config.appShortName,
     description: '',
-    assets: {
-      thumbnail: '',
-      logo: '',
-      wordmark: '',
-      wordmark_light: '',
-      wordmark_dark: '',
-      cover: '',
+    media: {
+      thumbnail_url: '',
+      logo_url: '',
+      wordmark_light_url: '',
+      wordmark_dark_url: '',
+      cover_url: '',
     },
+    ...(config.theme ? { theme: config.theme } : {}),
     self_join_enabled: config.selfJoinEnabled,
     created: { at: now, by: uid },
     updated: { at: now, by: uid },
@@ -117,6 +118,9 @@ export async function initializeRuntimeApp(
         assertExistingAppMatchesRuntime(app.data ?? {}, config)
       }
 
+      const storedTheme = app.data?.theme as Record<string, unknown> | undefined
+      const storedPalette = readAppPaletteLayer(storedTheme?.palette)
+
       if (!isAdminMembership(membership.data)) {
         const adminCount = await countTransactionAdmins(mutations, config.appId)
         if (adminCount > 0) {
@@ -126,6 +130,11 @@ export async function initializeRuntimeApp(
 
       if (!app.exists) {
         mutations.create(apps, config.appId, appPayload(config, uid))
+      } else if (config.theme && !storedPalette) {
+        mutations.update(apps, config.appId, {
+          theme: config.theme,
+          updated: stamp(uid),
+        })
       }
 
       if (!membership.exists) {

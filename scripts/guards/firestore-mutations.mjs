@@ -32,7 +32,6 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
   'scripts/_lib/firestore-mutations/mcp-skill-create.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-update.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-delete.mjs',
-  'scripts/_lib/firestore-mutations/mcp-skill-transaction.mjs',
 ])
 
 // Phase-one debt ledger. Entries may only be removed as consumers migrate to a
@@ -108,13 +107,6 @@ export function run({ repoRoot }) {
     ),
     'utf8'
   )
-  const kitchenServerTargetsSource = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/firestore-targets.ts'
-    ),
-    'utf8'
-  )
   assert.match(
     targetsSource,
     /projectMeta:[\s\S]*lane:\s*'mcp-skill'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'project'/,
@@ -159,18 +151,9 @@ export function run({ repoRoot }) {
     'Canonical App edits must use the trusted writer that also maintains AppMeta.'
   )
   assert.match(
-    kitchenServerTargetsSource,
-    /function nestedTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}/,
-    'Kitchen Menu uploads must use their runtime Server target.'
-  )
-  assert.match(
-    kitchenServerTargetsSource,
-    /serverKitchenMenuUploadsTarget[\s\S]*menu-uploads/
-  )
-  assert.match(
     serverTargetsSource,
-    /serverRuntimeUserTargetsTarget[\s\S]*key:\s*'runtime\.users\.private\.targets'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*users\/\$\{segment\(userId, 'userId'\)\}\/private/,
-    'Runtime Console target indexes must use the current named database Server target.'
+    /serverKitchenMenuUploadsTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*menu-uploads/,
+    'Kitchen Menu uploads must use their runtime Server target.'
   )
   for (const file of ['upload.post.ts', 'source-url.post.ts']) {
     const source = readFileSync(

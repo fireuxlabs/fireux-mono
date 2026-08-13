@@ -31,29 +31,7 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
-      <KitchenOnboardingPlace
-        v-if="!addingPlace"
-        :options="placeOptions"
-        :pending="placeOptionsPending"
-        :error="placeOptionsError"
-        @add="addingPlace = true"
-        @refresh="loadPlaceOptions"
-        @select="selectPlace"
-      />
-
-      <template v-else>
-        <PlaceOnboarding require-defaults @created="onPlaceReady" />
-
-        <UButton
-          type="button"
-          color="neutral"
-          variant="ghost"
-          icon="i-lucide-arrow-left"
-          @click="showPlaceChoices"
-        >
-          Back to available Places
-        </UButton>
-      </template>
+      <PlaceOnboarding @created="onPlaceReady" />
 
       <UButton
         v-if="resolvedCancelTo"
@@ -94,7 +72,7 @@
         </h1>
         <p class="mt-3 text-sm leading-6 text-muted">
           Connect the Kitchen to its Place, confirm its identity, and review
-          the canonical root before creation.
+          access before creation.
         </p>
       </template>
 
@@ -175,7 +153,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
-import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenConsoleSelection } from '../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
@@ -184,7 +162,7 @@ import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboa
 
 const props = withDefaults(
   defineProps<{
-    mode?: ConsoleCreateMode
+    mode?: FireuxEntityCreateMode
     existingRootId?: string
     placeId?: string
     returnTo?: string
@@ -220,13 +198,9 @@ const {
   isFirstStep,
   isLastStep,
   inheritedPalette,
-  loadPlaceOptions,
   next,
   pending,
   place,
-  placeOptions,
-  placeOptionsError,
-  placeOptionsPending,
   paletteOverride,
   preview,
   progress,
@@ -238,7 +212,7 @@ const {
   setPaletteOverride,
   stepCount,
   stepNumber,
-} = useKitchenOnboarding({ rootOnly: props.mode === 'public' })
+} = useKitchenOnboarding()
 
 const shellStage = computed(() => ({
   id: activeStepId.value,
@@ -250,7 +224,6 @@ const shellStage = computed(() => ({
 }))
 
 const initialLoaded = ref(false)
-const addingPlace = ref(false)
 const existingRootId = computed(() =>
   String(props.existingRootId || route.query.existingRootId || '').trim()
 )
@@ -304,13 +277,7 @@ const backLabel = computed(() => {
 })
 
 async function onPlaceReady(result: PlaceOnboardingResult) {
-  addingPlace.value = false
   await selectPlace(result.id)
-}
-
-async function showPlaceChoices() {
-  addingPlace.value = false
-  await loadPlaceOptions()
 }
 
 async function onBack() {
@@ -320,7 +287,6 @@ async function onBack() {
   }
   if (canChangePlace.value) {
     clearSelection()
-    await loadPlaceOptions()
     return
   }
   await router.push(resolvedCancelTo.value)
@@ -329,22 +295,10 @@ async function onBack() {
 async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
-  if (props.mode === 'console') {
-    setKitchenConsoleSelection({ kitchenId: completion.value.kitchen_id })
-  }
+  setKitchenConsoleSelection({ kitchenId: completion.value.kitchen_id })
   emit('created', completion.value)
-  const returnFamily = String(route.query.returnEntityFamily || '').trim()
-  const destination = returnFamily
-    ? {
-        path: resolvedReturnTo.value,
-        query: {
-          primaryEntityFamily: returnFamily,
-          primaryEntityId: completion.value.kitchen_id,
-        },
-      }
-    : resolvedReturnTo.value
-  if (route.path !== resolvedReturnTo.value || returnFamily) {
-    await router.push(destination)
+  if (route.path !== resolvedReturnTo.value) {
+    await router.push(resolvedReturnTo.value)
   }
 }
 
@@ -355,7 +309,6 @@ async function loadRouteSelection() {
     await selectPlace(initialPlaceId.value)
   } else {
     clearSelection()
-    await loadPlaceOptions()
   }
 }
 

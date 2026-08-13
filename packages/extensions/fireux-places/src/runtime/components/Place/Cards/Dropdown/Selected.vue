@@ -12,6 +12,7 @@
         :src="imageUrl || undefined"
         :alt="name || ''"
         size="xs"
+        :class="avatarClass"
       />
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-medium">
@@ -26,19 +27,30 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaceSource } from '../../../../models/place.model'
+import { computed } from 'vue'
+import type { PlaceImageShade, PlaceSource } from '../../../../models/place.model'
 
 type Props = {
   name: string
   address: string
   imageUrl?: string
+  imageShade?: PlaceImageShade
   source?: PlaceSource
   loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   imageUrl: '',
+  imageShade: 'none',
   loading: false,
 })
 
+const avatarClass = computed(() => {
+  if (props.source === 'google') return ''
+  const shade = props.imageShade as PlaceImageShade | undefined
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 </script>

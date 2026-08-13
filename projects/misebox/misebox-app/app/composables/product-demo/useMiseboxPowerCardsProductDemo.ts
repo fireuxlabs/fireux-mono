@@ -9,7 +9,7 @@ import type {
 import type {
   PublicMenuIndexItem,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
-import type { KitchenImageShade } from 'fireux-kitchens/runtime/models/kitchen.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import {
   projectSupplierDemoWorld,
 } from 'fireux-suppliers/runtime/utils/supplier-demo-world'
@@ -27,7 +27,7 @@ export type MiseboxPowerCardsProductDemo = {
       name: string
       shortAddress: string
       imageUrl: string
-      imageShade: KitchenImageShade
+      imageShade: PlaceImageShade
       prop: string
     }[]
     menu: PublicMenuIndexItem
@@ -138,7 +138,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         kitchen: scenario.kitchen,
         place: scenario.place,
         scope: scenario.appSupport,
-        console: { mode: 'demo' },
+        routeScope: 'demo',
       }))
       if (!kitchenCell) {
         throw new Error(

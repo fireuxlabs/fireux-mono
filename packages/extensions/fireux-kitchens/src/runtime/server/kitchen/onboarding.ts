@@ -1,44 +1,70 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
-import { FieldValue, type Firestore } from 'firebase-admin/firestore'
+import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
   serverAppUsersTarget,
-  serverRuntimeUserTargetsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  kitchenRootTarget,
-  serverAppKitchensTarget,
-} from './firestore-targets'
-import {
+  appPaletteLayersEqual,
+  compactBrandPalette,
+  compactAppPalette,
+  consolePaletteFromApp,
   parseBrandPalette,
+  readAppPalette,
+  readAppPaletteLayer,
   readBrandPalette,
+  readConsolePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../models/kitchen-onboarding.model'
-import { KITCHEN_CONSOLE_TARGET_LIMIT } from '../../models/kitchen/kitchen-index.model'
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model'
 import {
   assertKitchenOnboardingPlaceDefaults,
-  assertKitchenOnboardingScope,
+  assertKitchenOnboardingManagement,
   assertKitchenOnboardingSupportCapacity,
   kitchenOnboardingAccessDecision,
-  isKitchenOnboardingPlaceOwnedByApp,
   onboardingRecord as record,
   onboardingText as text,
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
   requireOnboardingMemberRole as memberRole,
+  type KitchenOnboardingMemberRole as MemberRole,
 } from './onboarding-policy'
-import { resolveKitchenOnboardingActor } from './onboarding-context'
+
+type Firestore = ReturnType<typeof getRuntimeFirestore>
+
+type RuntimePolicy = {
+  appId: string
+  appRole: string
+  ecosystem: string
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
+  canCreate: boolean
+  configuredAppPalette: ReturnType<typeof readAppPalette>
+}
+
+type Actor = RuntimePolicy & {
+  uid: string
+  db: Firestore
+  membershipRef: ReturnType<Firestore['doc']>
+}
 
 type Locator = {
   placeId: string
@@ -63,6 +89,48 @@ function request(value: unknown, allowed: readonly string[]) {
   return source
 }
 
+function runtimePolicy(event: H3Event): RuntimePolicy {
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const appRole = fireux.role
+  const ecosystem = requireFirestoreDocumentId(
+    fireux.ecosystem,
+    'Ecosystem key'
+  )
+  const management = resolveFireuxEntityManagementForApp(
+    appRole,
+    appId,
+    ecosystem
+  )
+
+  const canCreate = resolveConsoleCanCreate(
+    appRole,
+    fireux.consoleConfig,
+    'kitchen'
+  )
+  const configuredAppPalette = readAppPalette(fireux.theme?.palette)
+  return {
+    appId,
+    appRole,
+    ecosystem,
+    management,
+    canCreate,
+    configuredAppPalette,
+  }
+}
+
+async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
+  const { uid } = await requireFirebaseBearerUser(event)
+  const policy = runtimePolicy(event)
+  const db = getRuntimeFirestore()
+  const membershipRef = db.doc(
+    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
+  )
+  const membership = await membershipRef.get()
+  const role = memberRole(membership.exists, membership.get('role'))
+  return { ...policy, uid, db, membershipRef, role }
+}
+
 async function kitchenForPlace(
   db: Firestore,
   placeId: string
@@ -70,26 +138,8 @@ async function kitchenForPlace(
   const collection = db.collection(KitchenStorage.collection)
   const exact = await collection.doc(placeId).get()
   const exactData = exact.exists ? exact.data() || {} : null
-  if (exactData && text(exactData.place_id) === placeId) {
-    return { placeId, kitchenId: exact.id, kitchen: exactData }
-  }
-
-  const matches = await collection
-    .where('place_id', '==', placeId)
-    .limit(2)
-    .get()
-  if (matches.size > 1) {
-    fail(409, 'More than one Kitchen references this Place.')
-  }
-  if (matches.size === 1) {
-    const match = matches.docs[0]!
-    fail(
-      409,
-      `Kitchen ${match.id} must be migrated to the linked Place id ${placeId}.`
-    )
-  }
   if (exactData) {
-    fail(409, 'The deterministic Kitchen id belongs to another Place.')
+    return { placeId, kitchenId: exact.id, kitchen: exactData }
   }
   return { placeId, kitchenId: placeId, kitchen: null }
 }
@@ -110,10 +160,7 @@ async function resolveLocator(
       .get()
     if (!snapshot.exists) fail(404, 'Kitchen not found.')
     const kitchen = snapshot.data() || {}
-    const placeId = requireFirestoreDocumentId(
-      kitchen.place_id,
-      'Kitchen Place id'
-    )
+    const placeId = kitchenId
     const requestedPlaceId = text(value.place_id)
     if (requestedPlaceId && requestedPlaceId !== placeId) {
       fail(409, 'Kitchen and Place do not match.')
@@ -130,10 +177,14 @@ export async function previewKitchenOnboarding(
   input: unknown
 ): Promise<KitchenOnboardingPreview> {
   const body = request(input, ['place_id', 'kitchen_id'])
-  const current = await resolveKitchenOnboardingActor(event)
+  const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   if (locator.kitchen)
-    assertKitchenOnboardingScope(locator.kitchen, current.appId)
+    assertKitchenOnboardingManagement(
+      locator.kitchen,
+      current.appId,
+      current.ecosystem
+    )
 
   const [place, support] = await Promise.all([
     current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
@@ -144,12 +195,6 @@ export async function previewKitchenOnboarding(
       .get(),
   ])
   if (!place.exists) fail(409, 'The linked Place does not exist.')
-  if (
-    !locator.kitchen && current.role !== 'admin' &&
-    !isKitchenOnboardingPlaceOwnedByApp(place.data() || {}, current.appId)
-  ) {
-    fail(403, 'Choose a Place owned by this App.')
-  }
   assertKitchenOnboardingPlaceDefaults(place.data() || {})
   if (!locator.kitchen && support.exists) {
     fail(409, 'Kitchen access exists without its canonical root.')
@@ -166,9 +211,7 @@ export async function previewKitchenOnboarding(
   })
   const slug = text(locator.kitchen?.slug)
   const identity = record(locator.kitchen?.identity)
-  const displayName = text(
-    identity.name
-  )
+  const displayName = text(identity.name)
   const published = locator.kitchen?.visibility === true
   const paletteOverride = readBrandPalette(locator.kitchen?.brand_palette)
   return {
@@ -200,39 +243,30 @@ export async function completeKitchenOnboarding(
   if (displayName.length > 120) fail(400, 'Kitchen name is too long.')
   const requestedPalette = parseBrandPalette(body.palette_override)
   if ('error' in requestedPalette) fail(400, requestedPalette.error)
-  const current = await resolveKitchenOnboardingActor(event)
+  const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
   const supports = serverAppKitchensTarget(current.appId)
-  const userTargets = serverRuntimeUserTargetsTarget(current.uid)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, place, root, support, targets] = await Promise.all([
+    const [membership, app, place, root, support] = await Promise.all([
       mutations.read(memberships, current.uid),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
-      mutations.read(kitchenRootTarget, locator.kitchenId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
       mutations.read(supports, locator.kitchenId),
-      mutations.read(userTargets, 'targets'),
     ])
     const role = memberRole(membership.exists, membership.data?.role)
     if (!place.exists) fail(409, 'The linked Place no longer exists.')
-    if (
-      !root.exists && role !== 'admin' &&
-      !isKitchenOnboardingPlaceOwnedByApp(place.data || {}, current.appId)
-    ) {
-      fail(403, 'Choose a Place owned by this App.')
-    }
     assertKitchenOnboardingPlaceDefaults(place.data || {})
 
     const rootData = root.exists ? root.data || {} : null
-    if (!rootData) {
-      fail(409, 'Create the canonical Kitchen root before attaching it to an App.')
-    }
     if (rootData) {
-      if (text(rootData.place_id) !== locator.placeId) {
-        fail(409, 'Kitchen and Place no longer match.')
-      }
-      assertKitchenOnboardingScope(rootData, current.appId)
+      assertKitchenOnboardingManagement(
+        rootData,
+        current.appId,
+        current.ecosystem
+      )
     } else if (!current.canCreate) {
       fail(403, 'Kitchen creation is disabled for this App.')
     }
@@ -256,26 +290,62 @@ export async function completeKitchenOnboarding(
       assertKitchenOnboardingSupportCapacity(supportAuthority, current.uid)
     }
 
-    const createdRoot = false
+    const createdRoot = !root.exists
     const createdAppSupport = !support.exists
-    const slug = text(rootData?.slug)
-    if (Object.keys(requestedPalette.value).length) {
+    const placeName = text(place.data?.name)
+    const slug = text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
+    const placePalette = readBrandPalette(place.data?.brand_palette)
+    const paletteOverride = compactBrandPalette(
+      requestedPalette.value,
+      placePalette
+    )
+    const storedAppPaletteValue = record(record(app.data?.theme).palette)
+    const appPalette = current.configuredAppPalette ||
+      readAppPalette(storedAppPaletteValue)
+    const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
+    const storedConsole = record(supportData?.console)
+    const storedTheme = record(storedConsole.theme)
+    const existingConsolePalette = readConsolePalette(storedTheme.palette)
+    const maySeedConsole = createdAppSupport || role === 'admin'
+    const consolePalette = existingConsolePalette ||
+      (appPalette && maySeedConsole ? consolePaletteFromApp(appPalette) : null)
+    const inheritedConsoleTheme = appPalette
+      ? { palette: consolePaletteFromApp(appPalette) }
+      : null
+    const compactAppLayer = appPalette && consolePalette
+      ? compactAppPalette(appPalette, consolePalette)
+      : null
+
+    if (!createdRoot && Object.keys(requestedPalette.value).length) {
       fail(409, 'Existing Kitchen colours are preserved during onboarding.')
     }
 
-    const scope = readKitchenOnboardingScope(rootData || {})
-    if (scope.state === 'root_only') {
-      mutations.update(kitchenRootTarget, locator.kitchenId, {
-        console: {
-          app_id: current.appId,
-          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+    if (createdRoot) {
+      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+        slug,
+        visibility: false,
+        management: current.management,
+        identity: {
+          name: displayName && displayName !== placeName ? displayName : '',
+          tagline: '',
         },
+        assets: {
+          image: '',
+          logo: '',
+          wordmark: '',
+          backdrop_color: '',
+        },
+        ...(Object.keys(paletteOverride).length
+          ? { brand_palette: paletteOverride }
+          : {}),
+        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
-    } else if (
-      scope.state !== current.appScopeState || scope.appId !== current.appId
-    ) {
-      fail(409, 'Kitchen Console attachment does not match this App.')
+    } else {
+      const management = readKitchenOnboardingManagement(rootData || {})
+      if (JSON.stringify(management) !== JSON.stringify(current.management)) {
+        fail(409, 'Kitchen management does not match this App.')
+      }
     }
 
     if (createdAppSupport) {
@@ -283,7 +353,7 @@ export async function completeKitchenOnboarding(
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
-        console: {},
+        console: inheritedConsoleTheme ? { theme: inheritedConsoleTheme } : {},
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -291,32 +361,21 @@ export async function completeKitchenOnboarding(
       mutations.update(supports, locator.kitchenId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
+        ...(inheritedConsoleTheme && !readConsolePalette(storedTheme.palette)
+          ? { 'console.theme': inheritedConsoleTheme }
+          : {}),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
-    const currentKitchenIds = targets.exists
-      ? targets.data?.kitchen_ids
-      : []
     if (
-      !Array.isArray(currentKitchenIds) ||
-      currentKitchenIds.some(id => !text(id) || text(id).includes('/'))
+      compactAppLayer &&
+      (!storedAppPaletteLayer ||
+        !appPaletteLayersEqual(storedAppPaletteLayer, compactAppLayer))
     ) {
-      fail(409, 'Kitchen target index has an invalid stored shape.')
-    }
-    const nextKitchenIds = new Set(currentKitchenIds.map(text))
-    nextKitchenIds.add(locator.kitchenId)
-    if (nextKitchenIds.size > KITCHEN_CONSOLE_TARGET_LIMIT) {
-      fail(409, 'Kitchen console targets exceed the supported limit.')
-    }
-    if (targets.exists) {
-      mutations.update(userTargets, 'targets', {
-        kitchen_ids: FieldValue.arrayUnion(locator.kitchenId),
-      })
-    } else {
-      mutations.create(userTargets, 'targets', {
-        project_ids: [],
-        kitchen_ids: [locator.kitchenId],
+      mutations.update(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId, {
+        'theme.palette': compactAppLayer,
+        updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
@@ -333,6 +392,9 @@ export async function completeKitchenOnboarding(
       created_root: createdRoot,
       created_app_support: createdAppSupport,
       ...(slug ? { slug } : {}),
+      ...(createdRoot && Object.keys(paletteOverride).length
+        ? { palette_override: paletteOverride }
+        : {}),
     }
   })
 }

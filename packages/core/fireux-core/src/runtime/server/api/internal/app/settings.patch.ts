@@ -15,13 +15,12 @@ const TEXT_FIELDS = {
   short_name: 40,
   description: 500,
 } as const
-const ASSET_FIELDS = new Set([
-  'assets.thumbnail',
-  'assets.logo',
-  'assets.wordmark',
-  'assets.wordmark_light',
-  'assets.wordmark_dark',
-  'assets.cover',
+const MEDIA_FIELDS = new Set([
+  'media.thumbnail_url',
+  'media.logo_url',
+  'media.wordmark_light_url',
+  'media.wordmark_dark_url',
+  'media.cover_url',
 ])
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -35,9 +34,9 @@ function cleanUrl(value: unknown): string {
   try {
     url = new URL(text)
   } catch {
-    return fail(400, 'App assets must use a valid HTTPS URL.')
+    return fail(400, 'App media must use a valid HTTPS URL.')
   }
-  if (url.protocol !== 'https:') fail(400, 'App assets must use HTTPS.')
+  if (url.protocol !== 'https:') fail(400, 'App media must use HTTPS.')
   return url.toString()
 }
 
@@ -59,7 +58,7 @@ function normalizePatch(body: unknown): DocumentData {
       patch[field] = text
       continue
     }
-    if (ASSET_FIELDS.has(field)) {
+    if (MEDIA_FIELDS.has(field)) {
       patch[field] = cleanUrl(value)
       continue
     }
@@ -90,6 +89,13 @@ export default defineEventHandler(async (event) => {
 
     mutations.update(apps, config.appId, {
       ...patch,
+      wordmark_url: FieldValue.delete(),
+      avatar_url: FieldValue.delete(),
+      thumbnail_url: FieldValue.delete(),
+      logo_url: FieldValue.delete(),
+      wordmark_light_url: FieldValue.delete(),
+      wordmark_dark_url: FieldValue.delete(),
+      cover_url: FieldValue.delete(),
       updated: { at: FieldValue.serverTimestamp(), by: uid },
     })
   })

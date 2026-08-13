@@ -83,15 +83,6 @@
             :description="selectedPlacementCard.description"
           />
 
-          <AppCreatePrimaryEntity
-            :options="policy.primary_entity_options"
-            :selected="appTypeSelected"
-            :family="draft.primary_entity_family"
-            :entity-id="draft.primary_entity_id"
-            @select="selectAppType"
-            @update:entity-id="setPrimaryEntityId"
-          />
-
           <UCard>
             <template #header>
               <div>
@@ -195,18 +186,6 @@
                 <dt class="text-muted">Description</dt>
                 <dd class="mt-1 text-highlighted">{{ draft.description }}</dd>
               </div>
-              <div class="sm:col-span-2">
-                <dt class="text-muted">App type</dt>
-                <dd class="mt-1 text-highlighted">
-                  {{ selectedPrimaryEntityOption?.label || 'General App' }}
-                </dd>
-              </div>
-              <div v-if="selectedPrimaryEntityOption" class="sm:col-span-2">
-                <dt class="text-muted">Primary entity</dt>
-                <dd class="mt-1 font-mono text-highlighted">
-                  {{ draft.primary_entity_family }} / {{ draft.primary_entity_id }}
-                </dd>
-              </div>
             </dl>
 
             <template #footer>
@@ -236,7 +215,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
 import { computed, reactive, ref } from 'vue'
 import type {
   AppOnboardingDraft,
@@ -278,7 +256,6 @@ const placementContent: Record<
 }
 
 const config = useFireUXConfig()
-const route = useRoute()
 const policy = resolveAppOnboardingPolicy(config)
 const { hasAuthState, isAuthenticated } = useAuth()
 const { coreUser, isLoading: userPending } = useUser()
@@ -288,12 +265,7 @@ const draft = reactive<AppOnboardingDraft>({
   slug: '',
   description: '',
   placement: policy.locked_placement || '',
-  primary_entity_family: String(route.query.primaryEntityFamily || '').trim(),
-  primary_entity_id: String(route.query.primaryEntityId || '').trim(),
 })
-const appTypeSelected = ref(
-  Boolean(draft.primary_entity_family && draft.primary_entity_id)
-)
 const slugEdited = ref(false)
 const reviewing = ref(false)
 
@@ -309,18 +281,11 @@ const selectedOption = computed(() =>
 const selectedPlacementCard = computed(() =>
   placementCards.value.find((option) => option.id === draft.placement)
 )
-const selectedPrimaryEntityOption = computed(() =>
-  policy.primary_entity_options.find(
-    option => option.family === draft.primary_entity_family
-  )
-)
 const canReview = computed(
   () =>
-    appTypeSelected.value &&
     Boolean(selectedOption.value) &&
     Boolean(draft.name.trim()) &&
-    Boolean(draft.slug.trim()) &&
-    (!selectedPrimaryEntityOption.value || Boolean(draft.primary_entity_id.trim()))
+    Boolean(draft.slug.trim())
 )
 
 function onNameInput(value: unknown) {
@@ -337,18 +302,6 @@ function onSlugInput(value: unknown) {
 
 function selectPlacement(placement: AppOnboardingPlacement) {
   draft.placement = placement
-  reviewing.value = false
-}
-
-function selectAppType(family: string) {
-  appTypeSelected.value = true
-  draft.primary_entity_family = family
-  draft.primary_entity_id = ''
-  reviewing.value = false
-}
-
-function setPrimaryEntityId(value: string) {
-  draft.primary_entity_id = value.trim()
   reviewing.value = false
 }
 </script>

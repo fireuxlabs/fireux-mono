@@ -1578,36 +1578,35 @@ function canonicalAppPayload({
     }
     payload.social_links = socialLinks
   }
-  const assets = exactStringMap(snapshot.get('assets'), [
-    'thumbnail',
-    'logo',
-    'wordmark',
-    'wordmark_light',
-    'wordmark_dark',
-    'cover',
+  const media = exactStringMap(snapshot.get('media'), [
+    'thumbnail_url',
+    'logo_url',
+    'wordmark_light_url',
+    'wordmark_dark_url',
+    'cover_url',
   ])
-  if (source.assets != null && !assets) {
+  if (source.media != null && !media) {
     blockers.push(
       blocker(
-        'APP_ASSETS_INVALID',
-        `${path}.assets`,
-        'Existing App assets must be a string map.'
+        'APP_MEDIA_INVALID',
+        `${path}.media`,
+        'Existing App media must be a string map.'
       )
     )
   }
-  if (assets) {
-    for (const [key, value] of Object.entries(assets)) {
+  if (media) {
+    for (const [key, value] of Object.entries(media)) {
       if (value && !isHttpsUrl(value)) {
         blockers.push(
           blocker(
-            'APP_ASSET_URL_INVALID',
-            `${path}.assets.${key}`,
-            'App asset URLs must be empty or HTTPS.'
+            'APP_MEDIA_URL_INVALID',
+            `${path}.media.${key}`,
+            'App media URLs must be empty or HTTPS.'
           )
         )
       }
     }
-    payload.assets = assets
+    payload.media = media
   }
   return payload
 }

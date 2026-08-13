@@ -3,6 +3,7 @@ import {
   sanitizeShortAddress,
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import type { CompanyView } from '../../../../../../models/company-public.model'
 import { CompanyStorage } from '../../../../../../models/company.model'
 
@@ -26,6 +27,9 @@ export namespace CompanyCard {
     // Media (empty string means unset)
     imageUrl: string
 
+    // Image tone metadata
+    imageShade?: PlaceImageShade
+
     // Search collection (optional)
     collection?: string
 
@@ -39,6 +43,7 @@ export type CompanyProfile = {
   title: string
   subtitle: string
   imageUrl?: string
+  imageShade?: PlaceImageShade
   prop?: string
   website?: string
   address?: string
@@ -55,11 +60,12 @@ export function useCompanyInterface() {
 
   type CompanyCell = Pick<
     CompanyCard.Card,
-    'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'
+    'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
   > & { prop?: string }
 
   type CompanyPreview = {
     imageUrl: string
+    imageShade?: PlaceImageShade
     name: string
     formattedAddress: string
     prop?: string
@@ -74,7 +80,7 @@ export function useCompanyInterface() {
     const displayTitle =
       shortName ||
       stripLocationFromTitle(name, shortAddress || formattedAddress)
-    const imageUrl = safeString(company.assets.image)
+    const imageUrl = safeString(company.image_url)
 
     return {
       id,
@@ -92,6 +98,7 @@ export function useCompanyInterface() {
 
       imageUrl,
 
+      imageShade: company.image_shade ?? 'none',
       claimedBy: '',
     }
   }
@@ -129,6 +136,7 @@ export function useCompanyInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress,
       imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       prop: target.brand_tagline,
     }
   }
@@ -140,6 +148,7 @@ export function useCompanyInterface() {
     if (!base || !target) return null
     return {
       imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
       prop: target.brand_tagline,
@@ -157,11 +166,12 @@ export function useCompanyInterface() {
       title: base.title,
       subtitle: base.subtitle,
       imageUrl: base.imageUrl,
+      imageShade: base.imageShade,
       prop: target.brand_tagline,
       website: target.website,
       address,
-      coverImage: target.assets.cover,
-      galleryImages: target.assets.gallery.slice(0, 3),
+      coverImage: target.cover_image,
+      galleryImages: target.gallery_images?.slice(0, 3),
       about: target.about,
       verified: target.verified,
     }

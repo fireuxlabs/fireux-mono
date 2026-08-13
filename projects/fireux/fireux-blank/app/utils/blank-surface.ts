@@ -1,4 +1,7 @@
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import type {
   AppBlank,
   Blank,
@@ -15,12 +18,13 @@ export function composeBlankSurface(parts: {
   blank?: Blank | null
   appSupport?: AppBlank | null
   appId?: string
+  ecosystem?: string
 }): BlankSurface | null {
   const blank = parts.blank
   const appSupport = parts.appSupport
   const id = text(blank?.id)
   const appId = text(parts.appId)
-  const scope = normalizeFireuxAppScopeState(blank?.app_scope_state)
+  const management = readFireuxEntityManagement(blank?.management)
 
   if (
     !blank ||
@@ -28,8 +32,13 @@ export function composeBlankSurface(parts: {
     !id ||
     text(appSupport.id) !== id ||
     text(appSupport.blank_id) !== id ||
-    (scope !== 'parent_app' && scope !== 'tenant_app') ||
-    (appId && text(blank.app_scope_app_id) !== appId)
+    !management ||
+    management.mode === 'root' ||
+    (appId &&
+      resolveFireuxEntityManagementAppId(
+        management,
+        text(parts.ecosystem)
+      ) !== appId)
   ) {
     return null
   }

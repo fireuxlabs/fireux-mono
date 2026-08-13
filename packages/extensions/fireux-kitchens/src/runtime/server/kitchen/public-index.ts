@@ -1,4 +1,4 @@
-import { FieldPath, Filter } from 'firebase-admin/firestore'
+import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -75,16 +75,11 @@ export async function readPublicKitchenIndexPage(
   const collection = db.collection('kitchens')
   let kitchenQuery = requestedPlaceId
     ? collection
-        .where('place_id', '==', requestedPlaceId)
+        .where(FieldPath.documentId(), '==', requestedPlaceId)
         .orderBy(FieldPath.documentId())
         .limit(limit + 1)
     : collection
-        .where(
-          Filter.or(
-            Filter.where('visibility', '==', true),
-            Filter.where('show', '==', true)
-          )
-        )
+        .where('visibility', '==', true)
         .orderBy(FieldPath.documentId())
         .limit(limit + 1)
   if (cursor) kitchenQuery = kitchenQuery.startAfter(cursor)
@@ -115,7 +110,7 @@ export async function readPublicKitchenIndexPage(
     .map((document) =>
       projectPublicKitchenIndexItem(document, dataByPath, directoryScope)
     )
-    .filter((item): item is PublicKitchenIndexItem => Boolean(item?.visibility))
+    .filter((item): item is PublicKitchenIndexItem => Boolean(item?.visible))
   const nextCursor =
     hasMore && pageDocs.length
       ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')

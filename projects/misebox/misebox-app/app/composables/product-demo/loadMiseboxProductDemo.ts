@@ -84,7 +84,7 @@ export async function loadMiseboxProductDemo(
   const consoleKitchenPill = projectKitchenPill(projectKitchenSurface({
     kitchen: consoleScenario.kitchen,
     place: consoleScenario.place,
-    console: { mode: 'demo' },
+    routeScope: 'demo',
   }))
   if (!consoleKitchenPill) {
     throw new Error('Product Demo Kitchen pill is incomplete.')

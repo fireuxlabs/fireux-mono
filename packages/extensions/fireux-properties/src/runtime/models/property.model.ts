@@ -4,7 +4,9 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordDefaults } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -47,7 +49,6 @@ export const PropertyEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'projection',
-  status: 'confirmed',
   console: true,
   root: PropertyStorage.root,
   appSupportPath: PropertyStorage.appSupport,
@@ -163,16 +164,12 @@ export const PropertyManualModel = {
 
 export type PropertyPublicationState = 'draft' | 'published' | 'retired'
 
-export type PropertyConsoleAttachment = {
-  app_id: string
-  app_role: 'parent' | 'tenant'
-}
-
 export const PropertyModel = {
   id: '' as string,
   slug: '' as string,
   portfolio_id: '' as string,
   place_id: '' as string,
+  management: FireuxEntityManagementDefaults,
   identity: PropertyIdentityModel,
   status: 'active' as 'active' | 'inactive',
   publication_state: 'draft' as PropertyPublicationState,
@@ -193,12 +190,13 @@ export type PropertyManual = WidenLiteral<typeof PropertyManualModel>
 
 export type PropertyManualRecord = PropertyManual & FireuxStamped
 
-export type Property = WidenLiteral<typeof PropertyModel> & {
-  console?: PropertyConsoleAttachment
-}
+export type Property = Omit<
+  WidenLiteral<typeof PropertyModel>,
+  'management'
+> & { management: FireuxEntityManagement }
 
-export const AppPropertyDefaults = {
-  ...FireuxAppAccessRecordDefaults,
+export const AppPropertyModel = {
+  ...FireuxAppAccessRecordModel,
 } as const
 
 export type AppProperty = FireuxAppAccessRecord

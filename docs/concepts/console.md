@@ -30,6 +30,8 @@ Map the shared console system and domain adapters.
 - `useConsoleEntityRuntime`
 - `useConsoleDemoData`
 - `useConsoleTargets`
+- `useConsoleTargetRequest`
+- `useConsoleFamilyRuntime`
 - `useConsoleIndex`
 - `ConsoleSelectedTarget`
 - `ConsoleTargetCollection`
@@ -52,6 +54,13 @@ Map the shared console system and domain adapters.
   then directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header
   slot, and a body slot inside it. Do not hide that route shell in a generic
   component.
+- Console routes disable the global `out-in` page transition so the persistent
+  Console layout and family runtime remain responsive while route content
+  changes.
+- The Console layout does not key its content boundary by the full route.
+  Established Firebase authentication is read synchronously during navigation;
+  an auth observer is reserved for initial hydration when no current User is
+  available yet.
 - In the shared `UDashboardGroup` flex layout, the neutral route wrapper uses
   `flex min-h-full min-w-0 flex-1`; a bare block wrapper can stop
   `UDashboardPanel` from filling the remaining Console width.
@@ -70,6 +79,9 @@ Map the shared console system and domain adapters.
 - Authentication and role requirements also live at top-level page meta; `nav` must not become a second access contract.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
+- Overview navigation cards do not initialize child operation workspaces to
+  calculate counts. A future count belongs to one bounded overview summary;
+  each operation loads its records only when its own route opens.
 - Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
 - The console-pages guard enforces the real DOM root plus the explicit
   panel/navbar/body contract for visible leaf pages. Redirects, nested routers,
@@ -108,19 +120,30 @@ Map the shared console system and domain adapters.
 - `ConsoleXIndex` renders selected and targets sections.
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
 - `useXConsole` owns target candidate resolution, the authoritative collection
-  outcome, and selected-target resolution. Index and overview composables consume that
+  outcome, and selection validity. Index and overview composables consume that
   core result; they do not call `useConsoleTargets` again or overlay another
   membership outcome.
+- `useXConsole` resolves through `useConsoleFamilyRuntime`, which creates one
+  family runtime per Nuxt App request/client instance. Selector, Overview,
+  Identity, Team, and Operations consume that same object; repeated composable
+  calls must not recreate target reads, selection watchers, or entity runtime.
 - Named selected wrappers map domain identity into `ConsoleSelectedTarget`;
   Core owns the selected/empty card anatomy and Clear action presentation, and
   the family index forwards `actions.clear`. A family may project its existing
   entity card through the shared selected-content slot; it must not replace the
   shared empty state or Clear behavior.
-- A family policy may explicitly enforce one authority-proven target, such as a
-  tenant App with one Kitchen and Demo disabled.
+- Tenant apps can auto-select a single persisted authorized target.
+- Authority-proven single targets are committed inside the family runtime;
+  index adapters never add a second auto-selection path.
 - Every Live App sources target relationships and operator/team access from
   the owning entity family's persisted App-support records. AppUser does not
   carry Console target IDs.
+- Every family loads its authenticated chooser candidates through
+  `/api/console/{family}/targets`. Core owns the App-, family-, and User-scoped
+  request lifecycle; the family endpoint owns authority and the family core
+  maps the returned IDs or projections into domain cards. Project retains its
+  private control-plane authority, and Kitchen retains its richer joined
+  projection, without forking the request contract.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
   it is the sole target-state authority, with no count or pending fallback.
   Named `ConsoleXIndexTargets` wrappers require that outcome and use
@@ -130,35 +153,32 @@ Map the shared console system and domain adapters.
 - Target wrappers must not add an `isMounted`, local pending flag, or direct
   state card in front of that outcome. Multi-source families render one shared
   target presenter per source from the first paint.
-- Domain wrappers retain entity-to-card mapping, selected-target resolution, copy,
+- Domain wrappers retain entity-to-card mapping, selection validation, copy,
   card components, and actions. A multi-source family such as Kitchen composes
   one shared target presenter per source rather than flattening source state.
 - The Kitchen index keeps its bounded authenticated Live target chooser and
   lazy Demo target chooser available together, even while a Demo Kitchen is
   selected. This is a navigation exception only: selected Live target and
   operation providers remain inactive in Demo mode.
-- Target reads resolve whether persisted selection is currently available, but
-  never rewrite it. Only explicit select/clear actions or enforced family policy
-  change the typed workspace selection.
+- Persisted selection is validated only against a successful target read.
+  Pending or failed target reads must not clear a saved selection.
 - Selected-target routes distinguish persistence from hydration. The persisted
   family selection ID decides whether a target is selected; the asynchronously
   loaded target object decides whether target content is ready. A missing
   object while an ID exists is a loading state, never a false "select first"
   empty state.
-- A Console family has one App-and-family-keyed reactive source and selection
-  state shared by every composable instance. Persistence keys include the App
-  id because browser cookies are shared across localhost ports; a Kitchen
-  selected in one tenant App must never hydrate another tenant App. Cookies
-  persist state, but are not a second live authority. Source changes update
-  state and persistence together so selection cannot race between `live`,
-  `demo`, and `test`.
+- A Console family has one App-and-family-keyed reactive source state shared by every
+  composable instance. Its cookie is persistence, not a second live source
+  authority; source changes update both together so source-aware selection
+  cannot race between `live`, `demo`, and `test`.
 - Global target adapters compose AppUser membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
 - Entity App-support operator/team records bound live reads. Exact
   root and same-id App-support reads must fail the complete outcome on a missing
-  half, wrong App scope, malformed support authority, or unauthorized indexed
+  half, wrong management host, malformed support authority, or unauthorized indexed
   id; they never leave an unused full-root listener behind client filtering.
-- Kitchen live targets use the authenticated `/api/console/kitchen/targets`
+- Kitchen live targets use the canonical authenticated
+  `/api/console/kitchen/targets`
   projection. The fixed-runtime server derives candidate IDs, exact-loads and
   authorizes every canonical root/App-support/Place join, and the selected live
   Kitchen reuses that projected root instead of starting a second raw browser
@@ -166,27 +186,19 @@ Map the shared console system and domain adapters.
   browser AppUser target read, and share the keyed request across selected/index
   consumers. Missing pairs and scope drift remain errors, never partial target
   lists.
-- On the global Misebox Kitchen index, `Your kitchens` remains the selector for
-  Kitchens attached to the current App. `My Kitchen Apps` is a separate doorway
-  collection: the server starts from the signed-in User's canonical Kitchen
-  target index, resolves each Kitchen's owning tenant App, and verifies that
-  App's scoped membership before projecting it. Tenant Kitchen Apps never leak
-  into or become selectable from the global Kitchen collection.
 - Demo target adapters use `useConsoleDemoData` and a dynamic import. The
   loader stays untouched while inactive, successful local data is cached, and
   its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
   same index contract as a live read.
 
-## Production attachment
+## Production onboarding
 
-- A canonical root may be created independently with no `console` attachment
-  and no App Console target. App attachment runs through the family's own
-  fixed-runtime authenticated server endpoint; the caller cannot choose the
+- A root/App-support console family creates or attaches through its own
+  fixed-runtime authenticated server endpoint. The caller cannot choose the
   App, database, collection path, or App-support id.
-- One attachment transaction owns the root `console: { app_id, app_role }`
-  change, same-id complete App
-  support, and caller operator/team authority. Missing or conflicting halves
-  fail before a partial chooser row can be created.
+- One Firestore transaction owns root management, same-id complete App support,
+  and caller operator/team authority. Missing or conflicting halves fail before a
+  partial chooser row can be created.
 - `operator_ids` is mutation authority. `team_ids` is target/read membership,
   not write authority. Current App admins remain the explicit administrative
   override; UI `canWrite` still does not replace server or Rules enforcement.
@@ -195,6 +207,10 @@ Map the shared console system and domain adapters.
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
   family and has no root/App-support onboarding.
+- Console-capable roots use `management.mode`: `root` has no Console host;
+  `console` uses the ecosystem App by convention; `app` names its
+  dedicated Console App with `app_id`. Core resolves this vocabulary without
+  enumerating domain families.
 
 ## Operations
 

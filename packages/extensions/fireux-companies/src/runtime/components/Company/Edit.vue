@@ -33,16 +33,6 @@ const company = computed(() => props.company)
 const { isAdmin } = useUser()
 const canEdit = computed(() => Boolean(isAdmin.value))
 const placeForEdit = computed<Place | null>(() =>
-  company.value
-    ? {
-        ...PlaceDefaults,
-        ...company.value,
-        assets: { ...PlaceDefaults.assets, ...company.value.assets },
-        social_links: {
-          ...PlaceDefaults.social_links,
-          ...company.value.social_links,
-        },
-      }
-    : null
+  company.value ? { ...PlaceDefaults, ...company.value } : null
 )
 </script>

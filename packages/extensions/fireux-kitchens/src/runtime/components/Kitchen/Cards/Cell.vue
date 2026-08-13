@@ -9,7 +9,7 @@
     image-alt=""
     :media-fit="imageKind === 'brand' ? 'contain' : 'cover'"
     :media-background="imageKind === 'brand' ? mediaBackdropColor : ''"
-    fallback-label="Venue photo not published"
+    fallback-label="Venue photo unavailable"
     fallback-icon="i-lucide-image-off"
     @action="emit('action')"
   >
@@ -31,7 +31,7 @@
         :class="{ 'kitchen-card-cell__address--empty': !resolvedAddress }"
       >
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
-        <span>{{ resolvedAddress || 'Location not published' }}</span>
+        <span>{{ resolvedAddress || 'Location unavailable' }}</span>
       </p>
     </template>
 

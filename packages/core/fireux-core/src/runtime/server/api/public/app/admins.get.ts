@@ -51,9 +51,7 @@ function mapUser(
     id: uid,
     displayName: displayName || 'Admin profile unavailable',
     handle,
-    avatar: resolveUserAvatarSource(
-      (data.assets as Record<string, unknown> | undefined)?.avatar
-    ),
+    avatar: resolveUserAvatarSource(data.avatar),
     profiles: [],
     ...(!displayName ? { unavailable: true } : {}),
   }

@@ -99,11 +99,10 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: moduleNames,
       consoles: app.consoles || [],
       consoleConfig: app.consoleConfig || {},
-      consoleRegistry: [],
-      membershipCleanupRegistry: [],
       domains: app.domains || [],
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,
+      ...(app.theme ? { theme: app.theme } : {}),
       navHiddenKeys: app.navHiddenKeys || [],
       navOverrides: app.navOverrides || {},
     },
@@ -122,8 +121,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   configPwa(nuxt, {
     name: app.name,
     shortName: app.shortName,
-    themeColor: '#000000',
-    backgroundColor: '#000000',
+    themeColor: app.theme?.palette.accent || '#000000',
+    backgroundColor: app.theme?.palette.canvas || '#000000',
     lang: 'en',
   })
 

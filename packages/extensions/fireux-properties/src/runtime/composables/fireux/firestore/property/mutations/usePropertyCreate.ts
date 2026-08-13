@@ -3,10 +3,10 @@
 // Concurrent edit — 2026-07-21 22:30 CEST — Console alignment — Property: route console attachment through one trusted atomic transaction.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-  ConsoleRootCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+  FireuxRootCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
@@ -30,7 +30,7 @@ import {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export type PropertyCreateModeOptions = {
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   existingRootId?: string | null
   manual?: PropertyManual
 }
@@ -42,7 +42,7 @@ export function usePropertyCreate() {
 
   async function createPropertyRootResult(
     input: PropertyCreateInput
-  ): Promise<ConsoleRootCreateResult> {
+  ): Promise<FireuxRootCreateResult> {
     const plan = buildPropertyCreateRoot(input)
     const { id } = plan
 
@@ -75,7 +75,7 @@ export function usePropertyCreate() {
 
   async function createProperty(
     input: PropertyCreateInput
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     const root = await createPropertyRootResult(input)
     return {
       id: root.id,
@@ -87,7 +87,7 @@ export function usePropertyCreate() {
   async function createPropertyConsole(
     input: PropertyCreateInput,
     options: PropertyCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     const existingRootId = normalizeString(options.existingRootId)
     const user = await useRequireUser()
     const token = await user.getIdToken()
@@ -105,7 +105,7 @@ export function usePropertyCreate() {
       throw new Error('[fireux-properties] Property onboarding completion was invalid.')
     }
 
-    const result: ConsoleCreateResult = {
+    const result: FireuxEntityCreateResult = {
       id: response.property_id,
       createdRoot: response.created_root,
       createdAppSupport: response.created_app_support,

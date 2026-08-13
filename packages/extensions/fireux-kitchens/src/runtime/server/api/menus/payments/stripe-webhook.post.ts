@@ -7,7 +7,7 @@ import {
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenOrdersTarget } from '../../../kitchen/firestore-targets'
+import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   isKitchenOrderPostPaymentStatus,
   isKitchenOrderStatus,

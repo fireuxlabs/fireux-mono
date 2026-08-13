@@ -10,6 +10,24 @@
     />
 
     <UAlert
+      v-else-if="!selectedKitchen && targetOutcome === 'error'"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      title="Kitchen unavailable"
+      description="The selected kitchen could not be loaded."
+    />
+
+    <UAlert
+      v-else-if="!selectedKitchen && targetOutcome === 'empty'"
+      color="warning"
+      variant="soft"
+      icon="i-lucide-store"
+      title="Kitchen unavailable"
+      description="The selected kitchen is not available in this App."
+    />
+
+    <UAlert
       v-else-if="!selectedKitchen"
       color="neutral"
       variant="soft"
@@ -34,8 +52,8 @@
                   <h2 class="text-xl font-semibold text-highlighted">
                     {{ kitchenTitle }}
                   </h2>
-                  <UBadge :color="publicBadgeColor" variant="soft">
-                    {{ publicBadgeLabel }}
+                  <UBadge :color="visibilityBadgeColor" variant="soft">
+                    {{ visibilityBadgeLabel }}
                   </UBadge>
                 </div>
                 <p v-if="kitchenSubtitle" class="mt-1 text-sm text-dimmed">
@@ -151,7 +169,7 @@
             :key="card.key"
             :ui="{ body: 'space-y-3' }"
           >
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
               <div class="min-w-0">
                 <div class="flex items-center gap-2 text-sm font-semibold text-highlighted">
                   <UIcon :name="card.icon" class="size-4 text-dimmed" />
@@ -160,9 +178,6 @@
                 <p class="mt-1 text-xs text-dimmed">
                   {{ card.detail }}
                 </p>
-              </div>
-              <div class="text-2xl font-semibold text-highlighted">
-                {{ card.pending ? '…' : card.count }}
               </div>
             </div>
 
@@ -196,14 +211,15 @@ import { useKitchenConsoleOverview } from '../../../../composables/fireux/consol
 const {
   selectedKitchen,
   kitchenId,
+  targetOutcome,
   kitchenTitle,
   kitchenSubtitle,
   identityImage,
   imageInitials,
   kitchenPill,
   detailItems,
-  publicBadgeLabel,
-  publicBadgeColor,
+  visibilityBadgeLabel,
+  visibilityBadgeColor,
   identityPercent,
   readOnly,
   missingIdentityFields,

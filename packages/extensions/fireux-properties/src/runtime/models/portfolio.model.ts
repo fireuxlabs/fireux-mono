@@ -4,7 +4,9 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordDefaults } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -56,7 +58,6 @@ export const PortfolioEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'to-confirm',
-  status: 'confirmed',
   console: true,
   root: PortfolioStorage.root,
   appSupportPath: PortfolioStorage.appSupport,
@@ -71,13 +72,9 @@ export const AppPortfolioStorage = {
 } as const
 
 export type PortfolioStatus = 'active' | 'archived'
-export type PortfolioConsoleAttachment = {
-  app_id: string
-  app_role: 'parent' | 'tenant'
-}
-
 export const PortfolioModel = {
   id: '',
+  management: FireuxEntityManagementDefaults,
 
   name: '',
   tagline: '',
@@ -100,12 +97,13 @@ export const PortfolioModel = {
   },
 } as const
 
-export type Portfolio = WidenLiteral<typeof PortfolioModel> & {
-  console?: PortfolioConsoleAttachment
-}
+export type Portfolio = Omit<
+  WidenLiteral<typeof PortfolioModel>,
+  'management'
+> & { management: FireuxEntityManagement }
 
-export const AppPortfolioDefaults = {
-  ...FireuxAppAccessRecordDefaults,
+export const AppPortfolioModel = {
+  ...FireuxAppAccessRecordModel,
 } as const
 
 export type AppPortfolio = FireuxAppAccessRecord
@@ -115,7 +113,7 @@ export type PortfolioCreateInput = Omit<
   | 'id'
   | 'created'
   | 'updated'
-  | 'console'
+  | 'management'
   | 'tagline'
   | 'image_url'
   | 'status'
@@ -137,6 +135,6 @@ export type PortfolioUpdateInput = Partial<
     | 'id'
     | 'created'
     | 'updated'
-    | 'console'
+    | 'management'
   >
 >

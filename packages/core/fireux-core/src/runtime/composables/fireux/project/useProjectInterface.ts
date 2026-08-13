@@ -15,7 +15,7 @@ export type ProjectSurface = {
   id?: string
   name?: string
   description?: string
-  assets?: { image: string }
+  image_url?: string
   status?: ProjectStatus
   created?: Project['created']
   updated?: Project['updated']
@@ -56,7 +56,7 @@ function surface<TProject extends object = Partial<Project>>(
     id,
     name: text(raw.name),
     description: text(raw.description),
-    assets: { image: text(raw.assets?.image) },
+    image_url: text(raw.image_url),
   }
 }
 
@@ -69,7 +69,7 @@ function card(target?: ProjectSurface | null): ProjectInterfaceCard | null {
     id,
     // Project has no public detail route. Console selection owns navigation.
     to: '',
-    imageUrl: text(target.assets?.image),
+    imageUrl: text(target.image_url),
     title: text(target.name) || id,
     subtitle: description,
     meta: description,
@@ -87,7 +87,7 @@ function profile(
     id,
     name: text(item.name) || id,
     description: text(item.description),
-    imageUrl: text(item.assets?.image),
+    imageUrl: text(item.image_url),
     status: text(item.status),
   }
 }

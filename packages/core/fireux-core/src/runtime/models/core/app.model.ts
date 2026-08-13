@@ -1,17 +1,17 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
+import type { AppThemeLayer } from '../../../types/theme'
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type AppRole = 'global' | 'tenant' | 'standalone'
 
-export interface AppAssets {
-  thumbnail: string
-  logo: string
-  wordmark: string
-  wordmark_light: string
-  wordmark_dark: string
-  cover: string
+export interface AppMedia {
+  thumbnail_url: string
+  logo_url: string
+  wordmark_light_url: string
+  wordmark_dark_url: string
+  cover_url: string
 }
 
 /** Directory transport metadata; not part of canonical App storage. */
@@ -31,7 +31,6 @@ export interface AppDerived {
   user_count: number
 }
 
-/** Extension-owned Console identifier projected from runtime registration. */
 export type AppConsoleFamily = string
 
 export interface AppIdentity {
@@ -42,29 +41,22 @@ export interface AppIdentity {
   status: AppStatus
 }
 
-/** Opaque extension-owned root relationship; Core never enumerates families. */
-export interface AppPrimaryEntityReference {
-  family: string
-  id: string
-}
-
 export interface AppPresentation {
   name: string
   short_name: string
   description: string
+  media: AppMedia
 }
 
 export interface App extends FireuxStamped, AppIdentity, AppPresentation {
-  assets: AppAssets
+  theme?: AppThemeLayer
   self_join_enabled: boolean
-  primary_entity?: AppPrimaryEntityReference
 }
 
 export interface AppMeta
   extends AppIdentity,
     AppPresentation,
     Pick<FireuxStamped, 'updated'> {
-  assets: AppAssets
   database_id: string
   website_url: string
   console_families: AppConsoleFamily[]
@@ -76,17 +68,6 @@ export const AppStorage = {
   path: 'apps/{appId}',
   collection: 'apps',
   idParam: 'appId',
-} as const
-
-export const AppAssetsStorage = {
-  shape: 'entity-assets',
-  root: 'apps/{appId}',
-  thumbnail: 'apps/{appId}/thumbnail',
-  logo: 'apps/{appId}/logo',
-  wordmark: 'apps/{appId}/wordmark',
-  wordmarkLight: 'apps/{appId}/wordmark-light',
-  wordmarkDark: 'apps/{appId}/wordmark-dark',
-  cover: 'apps/{appId}/cover',
 } as const
 
 export const AppMetaStorage = {
@@ -106,7 +87,6 @@ export const AppEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   root: AppStorage.path,
 })
 
@@ -122,21 +102,19 @@ export const AppPresentationDefaults: AppPresentation = {
   name: '',
   short_name: '',
   description: '',
-}
-
-export const AppAssetsDefaults: AppAssets = {
-  thumbnail: '',
-  logo: '',
-  wordmark: '',
-  wordmark_light: '',
-  wordmark_dark: '',
-  cover: '',
+  media: {
+    thumbnail_url: '',
+    logo_url: '',
+    wordmark_light_url: '',
+    wordmark_dark_url: '',
+    cover_url: '',
+  },
 }
 
 export const AppDefaults: App = {
   ...AppIdentityDefaults,
   ...AppPresentationDefaults,
-  assets: AppAssetsDefaults,
+  theme: undefined,
   self_join_enabled: false,
   created: {
     at: {} as FirebaseTimestamp,
@@ -152,7 +130,6 @@ export const AppDefaults: App = {
 export const AppMetaDefaults: AppMeta = {
   ...AppIdentityDefaults,
   ...AppPresentationDefaults,
-  assets: AppAssetsDefaults,
   database_id: '',
   website_url: '',
   console_families: [],

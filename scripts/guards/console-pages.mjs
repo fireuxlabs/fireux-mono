@@ -14,6 +14,10 @@ const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const PAGE_MARKER = '/pages/console/'
 const CONSOLE_LAYOUT =
   'packages/core/fireux-core/src/runtime/layouts/console.vue'
+const CONSOLE_MIDDLEWARE =
+  'packages/core/fireux-core/src/runtime/middleware/fireux-console.global.ts'
+const ROUTE_AUTH_GUARD =
+  'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
 const KITCHEN_MENUS_COMPONENT_ROOT =
   'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus'
 const KITCHEN_RECIPES_COMPONENT_ROOT =
@@ -115,6 +119,7 @@ export async function run(ctx) {
   const seenPages = new Set()
 
   validateConsoleLayout(repoRoot, violations)
+  validateConsoleNavigationLifecycle(repoRoot, violations)
   validateConsoleOperationContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
   validateKitchenRecipesWorkspace(repoRoot, violations)
@@ -152,6 +157,48 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ console pages use the explicit page contract')
+}
+
+function validateConsoleNavigationLifecycle(repoRoot, violations) {
+  const pagesConfigRelative =
+    'packages/core/fireux-core/src/config/module/pages-config.ts'
+  const overviewRelative =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleOverview.ts'
+  const pagesConfig = readFileSync(path.join(repoRoot, pagesConfigRelative), 'utf8')
+  const overview = readFileSync(path.join(repoRoot, overviewRelative), 'utf8')
+  const layout = readFileSync(path.join(repoRoot, CONSOLE_LAYOUT), 'utf8')
+  const middleware = readFileSync(path.join(repoRoot, CONSOLE_MIDDLEWARE), 'utf8')
+  const authGuard = readFileSync(path.join(repoRoot, ROUTE_AUTH_GUARD), 'utf8')
+
+  if (
+    !/startsWith\(['"]\/console['"]\)[\s\S]*pageTransition:\s*false/.test(
+      pagesConfig
+    )
+  ) {
+    violations.push(
+      `${pagesConfigRelative} (Console navigation must not inherit the global out-in page transition)`
+    )
+  }
+  if (/useKitchenConsole(?:Menus|Ingredients|Dishes|Recipes|Suppliers|Stations|Mise|Orders|Tables)/.test(overview)) {
+    violations.push(
+      `${overviewRelative} (Kitchen Overview must not initialize operation workspaces for summary counts)`
+    )
+  }
+  if (/<NuxtErrorBoundary[^>]*:key=["']route\.fullPath/.test(layout)) {
+    violations.push(
+      `${CONSOLE_LAYOUT} (route changes must not recreate the persistent Console boundary)`
+    )
+  }
+  if (!/isConsolePath\(path\)[\s\S]*to\.meta\.pageTransition = false/.test(middleware)) {
+    violations.push(
+      `${CONSOLE_MIDDLEWARE} (every Console navigation must disable the global page transition)`
+    )
+  }
+  if (!/const currentUid = auth\.currentUser\?\.uid[\s\S]*if \(currentUid\)[\s\S]*return \{[\s\S]*isAuthenticated: !auth\.currentUser\?\.isAnonymous/.test(authGuard)) {
+    violations.push(
+      `${ROUTE_AUTH_GUARD} (established authentication must not install another navigation-time observer)`
+    )
+  }
 }
 
 function validateConsoleOperationContracts(repoRoot, violations) {
@@ -340,9 +387,7 @@ function validateConsoleLayout(repoRoot, violations) {
   const source = readFileSync(fullPath, 'utf8')
   const hasDirectSlot = /<slot\b[^>]*\bv-else\b/.test(source)
   const hasGuardedSlot =
-    /<div\b[^>]*\bv-show=["']!selectionBlocked["'][^>]*>[\s\S]*?<NuxtErrorBoundary\b/.test(
-      source
-    ) &&
+    /<NuxtErrorBoundary\b[^>]*\bv-else\b/.test(source) &&
     /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(
       source
     ) &&
@@ -351,26 +396,6 @@ function validateConsoleLayout(repoRoot, violations) {
   if (!hasDirectSlot && !hasGuardedSlot) {
     violations.push(
       `${CONSOLE_LAYOUT} (must consume the AppShell route through a direct or failure-isolated slot)`
-    )
-  }
-  if (/<(?:slot|NuxtErrorBoundary)\b[^>]*\bv-else\b/.test(source)) {
-    violations.push(
-      `${CONSOLE_LAYOUT} (selection guards must keep the family page mounted behind the blocked presentation so authoritative target readers can commit enforced selection)`
-    )
-  }
-  if (
-    !/<DevFireuxDebugPanel\b[\s\S]{0,300}:data=["']consolePageDebug["']/.test(
-      source
-    ) ||
-    !/const activeSelectionId = consoleNav\.activeSelectionId[\s\S]{0,120}const activeSelectionType = consoleNav\.activeSelectionType/.test(
-      source
-    ) ||
-    !/\[consoleDebugKey\.value\]:\s*\{\s*workspace:\s*\{\s*\[selectedDebugKey\.value\]:\s*\{\s*id:\s*activeSelectionId\.value \|\| null,\s*source:\s*activeSelectionType\.value/.test(
-      source
-    )
-  ) {
-    violations.push(
-      `${CONSOLE_LAYOUT} (blocked pages must expose their canonical selected entity under the family Console workspace debug shape)`
     )
   }
   if (/<NuxtPage\b/.test(source)) {

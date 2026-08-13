@@ -27,7 +27,7 @@ export function usePortfolioConsoleProperties(
   )
   const debug = computed(() => ({
     portfolioId: runtimePortfolio.id.value,
-    consoleAppId: runtimePortfolio.consoleAppId.value,
+    ecosystem: runtimePortfolio.ecosystem.value,
     rootCollection: runtimePortfolio.rootCollection.value,
     portfolioCollectionPath: runtimePortfolio.collectionPath.value,
     collectionPath: collectionPath.value,

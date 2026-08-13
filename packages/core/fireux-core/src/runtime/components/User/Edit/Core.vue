@@ -131,7 +131,7 @@ const coreProfile = userUpdate.core.profile
 
 const user = computed(() => props.user)
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.assets.avatar ?? '')
+const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
 const avatarInitials = computed(() => {
   const name = user.value?.display_name || user.value?.handle || user.value?.id || 'U'
   const trimmed = name.trim()

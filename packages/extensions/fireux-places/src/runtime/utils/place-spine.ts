@@ -5,7 +5,6 @@ import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
   MediaBackdropColor,
-  PlaceAssets,
 } from '../models/place.model'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
@@ -63,10 +62,16 @@ const stringArray = (value: unknown) =>
     : []
 
 export const readMediaBackdropColor = (
-  value: unknown
+  value: unknown,
+  legacyShade?: unknown
 ): MediaBackdropColor | '' => {
   const color = normalizeHexColor(value)
-  return color ? color as MediaBackdropColor : ''
+  if (color) return color as MediaBackdropColor
+  // Read-only compatibility until the bounded audit/migration is approved.
+  const shade = text(legacyShade).toLowerCase()
+  if (shade === 'light') return '#111827'
+  if (shade === 'dark') return '#ffffff'
+  return ''
 }
 
 const time = (value: unknown) => {
@@ -145,27 +150,12 @@ export const readPlaceBusinessHours = (value: unknown) => {
     : null
 }
 
-/** Read the one canonical Place asset shape. */
-export const readPlaceAssets = (value: unknown): PlaceAssets => {
-  const assets = record(record(value).assets)
-
-  return {
-    image: text(assets.image),
-    cover: text(assets.cover),
-    gallery: stringArray(assets.gallery),
-    logo: text(assets.logo),
-    wordmark: text(assets.wordmark),
-    backdrop_color: readMediaBackdropColor(assets.backdrop_color),
-  }
-}
-
 /**
  * Canonical Place-owned presentation used by Place-backed entity projections.
  * Kitchen and App support records must not duplicate these fields.
  */
 export const readPlacePresentation = (value: unknown) => {
   const source = record(value)
-  const assets = readPlaceAssets(source)
 
   return {
     name: text(source.name),
@@ -174,12 +164,21 @@ export const readPlacePresentation = (value: unknown) => {
     about: text(source.about),
     formattedAddress: text(source.formatted_address),
     shortAddress: text(source.short_address),
-    imageUrl: assets.image,
-    coverImage: assets.cover,
-    gallery: assets.gallery,
-    logoUrl: assets.logo,
-    wordmarkUrl: assets.wordmark,
-    mediaBackdropColor: assets.backdrop_color,
+    imageUrl: text(source.image_url),
+    coverImage: text(source.cover_image),
+    gallery: stringArray(source.gallery_images),
+    logoImage: text(source.logo_image),
+    wordmarkImage: text(source.wordmark_image),
+    mediaBackdropColor: readMediaBackdropColor(
+      source.media_backdrop_color,
+      source.image_shade
+    ),
+    /** @deprecated Compatibility projection only. */
+    imageShade: text(source.image_shade).toLowerCase() === 'light'
+      ? 'light'
+      : text(source.image_shade).toLowerCase() === 'dark'
+        ? 'dark'
+        : 'none',
     phone: text(source.phone),
     website: text(source.website),
     googleMapsUrl: text(source.google_maps_url),

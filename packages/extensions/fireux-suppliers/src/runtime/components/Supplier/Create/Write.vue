@@ -87,21 +87,21 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useSupplierConsoleSelection } from '../../../composables/fireux/console/supplier/core/useSupplierConsoleSelection'
 import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
-  mode?: ConsoleCreateMode
-  create?: (() => Promise<ConsoleCreateResult>) | undefined
+  mode?: FireuxEntityCreateMode
+  create?: (() => Promise<FireuxEntityCreateResult>) | undefined
   returnTo?: string
   cancelTo?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'created', payload: ConsoleCreateResult): void
+  (e: 'created', payload: FireuxEntityCreateResult): void
   (e: 'error', error: unknown): void
 }>()
 
@@ -114,7 +114,7 @@ const errorMessage = ref<string | null>(null)
 const organizationName = ref('')
 const companyId = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
-const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
 const isConsoleMode = computed(() => resolvedMode.value === 'console')
 
 function onCompanyReady(payload: { id: string }) {

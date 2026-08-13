@@ -7,6 +7,7 @@
           :alt="name"
           size="xl"
           icon="i-lucide-image"
+          :class="avatarShadeClass"
         />
         <div class="fx-card__content">
           <div class="fx-card__header">
@@ -69,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
 
 type CompanyPreviewDetail = {
@@ -78,6 +80,7 @@ type CompanyPreviewDetail = {
 
 type Props = {
   imageUrl: string
+  imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
   source?: 'google' | 'fireux' | 'manual'
@@ -94,6 +97,14 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

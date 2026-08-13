@@ -66,16 +66,16 @@
 
 <script setup lang="ts">
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { usePortfolioConsoleSelection } from '../../../composables/fireux/console/portfolio/core/usePortfolioConsoleSelection'
 import { usePortfolioCreate } from '../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   returnTo?: string
   cancelTo?: string
 }>(), {
@@ -85,7 +85,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (event: 'created', result: ConsoleCreateResult): void
+  (event: 'created', result: FireuxEntityCreateResult): void
 }>()
 
 const route = useRoute()
@@ -106,7 +106,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return props.mode === 'public' ? '/portfolios' : '/console/portfolio'
+  return props.mode === 'root' ? '/portfolios' : '/console/portfolio'
 })
 
 const submit = async () => {

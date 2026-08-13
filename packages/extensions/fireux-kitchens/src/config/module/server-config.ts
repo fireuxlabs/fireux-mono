@@ -51,14 +51,14 @@ const baseServerHandlers = [
     handler: './runtime/server/api/kitchens/index.get',
   },
   {
+    route: '/api/kitchens/:id/flagship-dish',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/[id]/flagship-dish.get',
+  },
+  {
     route: '/sitemaps/kitchens.xml',
     method: 'get',
     handler: './runtime/server/sitemaps/kitchens.xml.get',
-  },
-  {
-    route: '/api/kitchens/onboarding/places',
-    method: 'get',
-    handler: './runtime/server/api/kitchens/onboarding/places.get',
   },
   {
     route: '/api/kitchens/onboarding/preview',
@@ -69,11 +69,6 @@ const baseServerHandlers = [
     route: '/api/kitchens/onboarding/complete',
     method: 'post',
     handler: './runtime/server/api/kitchens/onboarding/complete.post',
-  },
-  {
-    route: '/api/kitchens/onboarding/root/complete',
-    method: 'post',
-    handler: './runtime/server/api/kitchens/onboarding/root/complete.post',
   },
   {
     route: '/api/internal/profiles/chef',
@@ -166,6 +161,12 @@ const baseServerHandlers = [
     method: 'post',
     handler:
       './runtime/server/api/console/kitchen/dishes/[dishId]/image.post',
+  },
+  {
+    route: '/api/console/kitchen/dishes/:dishId/flagship',
+    method: 'patch',
+    handler:
+      './runtime/server/api/console/kitchen/dishes/[dishId]/flagship.patch',
   },
   {
     route: '/api/console/kitchen/menus/upload',

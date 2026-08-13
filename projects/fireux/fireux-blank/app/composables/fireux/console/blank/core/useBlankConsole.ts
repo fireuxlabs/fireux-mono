@@ -8,6 +8,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import { useConsoleFamilyRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleFamilyRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
@@ -23,7 +24,7 @@ import { useBlankConsoleDemoData } from './useBlankConsoleDemoData'
  * Blank has a root-target create/list seam so the console lifecycle can be
  * tested without domain operations or child records.
  */
-export function useBlankConsole() {
+function createBlankConsole() {
   const consoleRoot = useConsole('blank')
   const consoleTargets = useConsoleTargets({ family: 'blank' })
   const {
@@ -114,4 +115,8 @@ export function useBlankConsole() {
     runtime,
     actions,
   }
+}
+
+export function useBlankConsole() {
+  return useConsoleFamilyRuntime('blank', createBlankConsole)
 }

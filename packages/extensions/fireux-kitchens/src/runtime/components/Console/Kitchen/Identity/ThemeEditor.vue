@@ -5,10 +5,10 @@
         <UIcon name="i-lucide-palette" class="mt-1 size-5 shrink-0 text-muted" />
         <div class="space-y-1">
           <div class="text-base font-semibold text-highlighted">
-            Menu Theme
+            Console typography
           </div>
           <p class="text-sm text-dimmed">
-            Choose the portable tokens used by this kitchen's food menus.
+            Choose the optional title and body families used by Console menus.
           </p>
         </div>
       </div>
@@ -87,66 +87,6 @@
         </div>
       </MoleculesDisclosurePanel>
 
-      <MoleculesDisclosurePanel
-        v-for="group in colorGroups"
-        :key="group.title"
-        :title="group.title"
-        :description="group.description"
-        :default-open="false"
-      >
-        <section class="mt-3 grid gap-3 rounded-md border border-default p-3">
-            <div
-              v-for="field in group.fields"
-              :key="field.key"
-              class="theme-color-row"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-sm font-medium text-highlighted">
-                    {{ field.label }}
-                  </p>
-                  <p class="text-xs text-dimmed">
-                    Selected {{ style[field.key] }}
-                  </p>
-                </div>
-                <UBadge
-                  v-if="isDefaultColor(field.key)"
-                  size="sm"
-                  color="neutral"
-                  variant="soft"
-                >
-                  Default
-                </UBadge>
-                <UBadge
-                  v-else
-                  size="sm"
-                  color="primary"
-                  variant="soft"
-                >
-                  Custom
-                </UBadge>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <input
-                  class="size-9 shrink-0 rounded-md border border-default bg-default"
-                  type="color"
-                  :value="colorInputValue(style[field.key])"
-                  :disabled="!canWrite"
-                  @input="updateField(field.key, ($event.target as HTMLInputElement).value)"
-                >
-                <UInput
-                  :model-value="style[field.key]"
-                  :placeholder="field.placeholder"
-                  :disabled="!canWrite"
-                  class="w-full"
-                  @update:model-value="updateField(field.key, $event)"
-                />
-              </div>
-            </div>
-        </section>
-      </MoleculesDisclosurePanel>
-
       <UAlert
         v-if="!canWrite"
         color="neutral"
@@ -169,16 +109,10 @@ import { computed } from 'vue'
 import {
   menuThemeFontFromId,
   menuThemeFontOptions,
-  menuThemeDefaultPageStyle,
   resolveMenuPageStyle,
   resolveMenuFont,
   resolveMenuTitleFont,
 } from '../../../../composables/fireux/menu/useMenuTheme'
-
-type ColorStyleKey = Exclude<
-  keyof PageStyle,
-  'title_font_source' | 'title_font_family' | 'font_source' | 'font_family'
->
 
 const props = defineProps<{
   style: Partial<PageStyle>
@@ -189,41 +123,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:style': [style: Partial<PageStyle>]
 }>()
-
-type ColorField = {
-  key: ColorStyleKey
-  label: string
-  placeholder: string
-}
-
-const colorGroups: { title: string, description: string, fields: ColorField[] }[] = [
-  {
-    title: 'Light mode colors',
-    description: 'Used when the menu is viewed in light mode.',
-    fields: [
-      { key: 'background_color_light', label: 'Background', placeholder: '#f8fafc' },
-      { key: 'font_color_light', label: 'Text', placeholder: '#0f172a' },
-      { key: 'title_color_light', label: 'Title', placeholder: '#0f172a' },
-    ],
-  },
-  {
-    title: 'Dark mode colors',
-    description: 'Used when the menu is viewed in dark mode.',
-    fields: [
-      { key: 'background_color_dark', label: 'Background', placeholder: '#0f172a' },
-      { key: 'font_color_dark', label: 'Text', placeholder: '#f8fafc' },
-      { key: 'title_color_dark', label: 'Title', placeholder: '#f8fafc' },
-    ],
-  },
-  {
-    title: 'Menu accents',
-    description: 'Portable accent colors for menu labels, actions, and highlighted details.',
-    fields: [
-      { key: 'primary_color', label: 'Primary accent', placeholder: '#0f766e' },
-      { key: 'secondary_color', label: 'Secondary accent', placeholder: '#64748b' },
-    ],
-  },
-]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 // Theme editor spine: keep fields aligned with PageStyle and useMenuThemeSurface; full tenant app chrome stays outside this editor.
@@ -277,13 +176,6 @@ useHead({
   link: fontStylesheetLinks,
 })
 
-function updateField(key: ColorStyleKey, value: unknown) {
-  emit('update:style', {
-    ...style.value,
-    [key]: normalizeString(value),
-  })
-}
-
 function updateTitleFont(id: string) {
   const font = menuThemeFontFromId(id)
 
@@ -304,14 +196,6 @@ function updateMenuFont(id: string) {
   }))
 }
 
-function colorInputValue(value: unknown) {
-  const color = normalizeString(value)
-  return /^#[0-9a-f]{6}$/i.test(color) ? color : '#ffffff'
-}
-
-function isDefaultColor(key: ColorStyleKey) {
-  return normalizeString(style.value[key]) === normalizeString(resolveMenuPageStyle(menuThemeDefaultPageStyle)[key])
-}
 </script>
 
 <style scoped>
@@ -319,12 +203,4 @@ function isDefaultColor(key: ColorStyleKey) {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ui-primary) 44%, transparent);
 }
 
-.theme-color-row {
-  display: grid;
-  gap: calc(var(--spacing) * 3);
-  padding: calc(var(--spacing) * 3);
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 12%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 3);
-  background: color-mix(in srgb, var(--ui-primary) 3%, transparent);
-}
 </style>

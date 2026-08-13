@@ -5,10 +5,10 @@
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: make existing-root attachment ID-only.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-  ConsoleRootCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+  FireuxRootCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
@@ -30,7 +30,7 @@ export type PortfolioCreateOptions = {
 }
 
 export type PortfolioCreateModeOptions = {
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   existingRootId?: string | null
 }
 
@@ -66,7 +66,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
   async function createTestPortfolio(
     _input: PortfolioTestCreateInput = {}
-  ): Promise<ConsoleRootCreateResult> {
+  ): Promise<FireuxRootCreateResult> {
     throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
   }
 
@@ -90,6 +90,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
     const payload: Portfolio = {
       id: slug,
+      management: { mode: 'root' },
       name,
       tagline: normalizeString(input?.tagline),
       image_url: normalizeString(input?.image_url),
@@ -122,7 +123,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   async function createPortfolioRootResult(
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
-  ): Promise<ConsoleRootCreateResult> {
+  ): Promise<FireuxRootCreateResult> {
     requireCanonicalWriteSource()
     const requestedRootId = normalizeString(createOptions.existingRootId)
     const requestedName = normalizeString(input?.name)
@@ -145,6 +146,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
     const payload: Portfolio = {
       id: slug,
+      management: { mode: 'root' },
       name,
       tagline: normalizeString(input?.tagline),
       image_url: normalizeString(input?.image_url),
@@ -177,7 +179,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   async function createPortfolio(
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     const root = await createPortfolioRootResult(input, createOptions)
     return {
       id: root.id,
@@ -189,7 +191,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   async function createPortfolioConsole(
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
-  ): Promise<ConsoleCreateResult> {
+  ): Promise<FireuxEntityCreateResult> {
     requireCanonicalWriteSource()
 
     const user = await useRequireUser()

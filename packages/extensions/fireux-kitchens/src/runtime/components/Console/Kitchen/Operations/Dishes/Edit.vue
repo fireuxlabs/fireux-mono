@@ -49,6 +49,17 @@
       </UFormField>
 
       <div class="grid gap-4">
+        <UFormField label="Flagship dish">
+          <USwitch
+            :model-value="dishFlagship"
+            :disabled="!canWrite || flagshipSaving"
+            @update:model-value="handleFlagship"
+          />
+          <p class="mt-1 text-xs text-dimmed">
+            Templates feature the one flagship Dish selected for this Kitchen.
+          </p>
+        </UFormField>
+
         <MoleculesFormsFirestoreSimpleField
           label="Name"
           :firebase-value="dishName"
@@ -78,6 +89,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
 import { useDishImageUpload } from '../../../../../composables/fireux/firestore/dish/mutations/useDishImageUpload'
@@ -94,17 +106,20 @@ const {
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
+const { currentUser } = useAuth()
 const { updateDish } = useDishUpdate({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
 const { uploadDishImage } = useDishImageUpload()
 const imageUploading = ref(false)
+const flagshipSaving = ref(false)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const dishName = computed(() => normalizeString(dish.value?.name))
 const dishDescription = computed(() => normalizeString(dish.value?.description))
 const dishImageUrl = computed(() => normalizeString(dish.value?.image))
+const dishFlagship = computed(() => dish.value?.is_flagship === true)
 const imageInitials = computed(() => {
   const parts = dishName.value.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
@@ -155,6 +170,36 @@ const handleDescription = async (value: string) =>
     'Dish description updated',
     'Could not update dish description'
   )
+
+const handleFlagship = async (value: boolean) => {
+  if (!canWrite.value || !dishId.value || !kitchenId.value) return
+  flagshipSaving.value = true
+  try {
+    const token = await currentUser.value?.getIdToken()
+    if (!token) throw new Error('Sign in before updating the flagship Dish.')
+    await $fetch(`/api/console/kitchen/dishes/${dishId.value}/flagship`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+      query: { kitchenId: kitchenId.value },
+      body: { is_flagship: value },
+    })
+    toast.add({
+      title: value ? 'Flagship Dish selected' : 'Flagship Dish cleared',
+      color: 'success',
+      icon: 'i-lucide-star',
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Could not update flagship Dish',
+      description: (error as any)?.data?.statusMessage || 'Please try again.',
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
+    throw error
+  } finally {
+    flagshipSaving.value = false
+  }
+}
 
 const handleImageUpload = async (file: File) => {
   if (!canWrite.value || !dishId.value || !kitchenId.value) return

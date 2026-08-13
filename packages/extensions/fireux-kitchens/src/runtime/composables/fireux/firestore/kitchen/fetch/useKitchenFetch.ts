@@ -20,7 +20,7 @@ import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
 export type KitchenFetchDoc = Partial<Kitchen> & {
   id?: string
-  console?: { mode: 'live' | 'demo' }
+  route_scope?: 'live' | 'demo' | 'test'
 }
 export type KitchenFetchSource = 'live' | 'test' | 'demo'
 
@@ -109,7 +109,7 @@ export function useKitchenFetch(
 
   const placeId = computed(() => {
     const entry = sourceEntry.value
-    return String(entry?.place_id || '').trim()
+    return String(entry?.id || '').trim()
   })
   const placeQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()
@@ -165,7 +165,10 @@ export function useKitchenFetch(
     return surface({
       place,
       kitchen: entry,
-      console: { mode: sourceRef.value === 'live' ? 'live' : 'demo' },
+      routeScope:
+        sourceRef.value === 'demo' || sourceRef.value === 'test'
+          ? sourceRef.value
+          : (entry as any)?.route_scope,
     }) as KitchenFetchDoc | null
   })
 

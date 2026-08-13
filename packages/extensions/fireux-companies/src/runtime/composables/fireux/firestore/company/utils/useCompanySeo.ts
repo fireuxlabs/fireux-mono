@@ -16,7 +16,7 @@ export function buildCompanyJsonLd(company: Partial<CompanyView> | null | undefi
     '@type': 'Organization',
     name,
     description: excerpt(company?.about || company?.brand_tagline || company?.short_address),
-    image: clean(company?.assets?.image || company?.assets?.cover) || undefined,
+    image: clean(company?.image_url || company?.cover_image) || undefined,
     address: clean(company?.short_address) || undefined,
     url: clean(company?.website) || undefined,
   }
@@ -30,7 +30,7 @@ export function useCompanySeo(company: MaybeRefOrGetter<Partial<CompanyView> | n
   return useSeo({
     title: computed(() => clean(entry.value?.name) || 'Company'),
     description: computed(() => excerpt(entry.value?.about || entry.value?.brand_tagline || entry.value?.short_address || entry.value?.website || 'Company details.')),
-    image: computed(() => clean(entry.value?.assets?.image || entry.value?.assets?.cover)),
+    image: computed(() => clean(entry.value?.image_url || entry.value?.cover_image)),
     path: computed(() =>
       id.value ? `/${CompanyStorage.collection}/${encodeURIComponent(id.value)}` : ''
     ),

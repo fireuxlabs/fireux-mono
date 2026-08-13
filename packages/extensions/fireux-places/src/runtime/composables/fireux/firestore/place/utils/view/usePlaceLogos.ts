@@ -48,7 +48,8 @@ export function usePlaceLogoState(
       isLoading.value = false
       error.value = null
       const logoCandidate =
-        (next as any)?.assets?.image ??
+        (next as any)?.image_url ??
+        (next as any)?.place_image ??
         (next as any)?.imageUrl ??
         null
       const sanitized = sanitizeLogoAvatar(logoCandidate)

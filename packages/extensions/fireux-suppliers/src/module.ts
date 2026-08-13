@@ -9,7 +9,6 @@ import type {
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
-import { registerFireuxConsole } from 'fireux-core/config/module/runtime-config'
 
 export type FireuxSuppliersModuleOptions = {
   /**
@@ -35,12 +34,6 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
     const ownsSupplierProduct = options.mode === 'owner'
 
     if (ownsSupplierProduct) {
-      registerFireuxConsole(nuxt, {
-        family: 'supplier',
-        rootCollection: 'suppliers',
-        appSupportCollection: 'suppliers',
-        supportsInlineNotes: true,
-      })
       registerReservedRootRouteKeys(['suppliers'])
       nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
         ctx.addHub('/suppliers')

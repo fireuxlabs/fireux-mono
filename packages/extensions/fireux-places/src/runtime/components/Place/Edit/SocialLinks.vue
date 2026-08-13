@@ -19,7 +19,7 @@
 				:firebase-value="socialLinks.instagram"
 				placeholder="https://instagram.com/example"
 				:maxlength="240"
-				:update-function="(value: string) => handleSocialLink('instagram', value)"
+				:update-function="(value) => handleSocialLink('instagram', value)"
 			/>
 			<MoleculesFormsFirestoreSimpleField
 				label="Facebook"
@@ -27,7 +27,7 @@
 				:firebase-value="socialLinks.facebook"
 				placeholder="https://facebook.com/example"
 				:maxlength="240"
-				:update-function="(value: string) => handleSocialLink('facebook', value)"
+				:update-function="(value) => handleSocialLink('facebook', value)"
 			/>
 			<MoleculesFormsFirestoreSimpleField
 				label="TikTok"
@@ -35,7 +35,7 @@
 				:firebase-value="socialLinks.tiktok"
 				placeholder="https://tiktok.com/@example"
 				:maxlength="240"
-				:update-function="(value: string) => handleSocialLink('tiktok', value)"
+				:update-function="(value) => handleSocialLink('tiktok', value)"
 			/>
 			<MoleculesFormsFirestoreSimpleField
 				label="LinkedIn"
@@ -43,7 +43,7 @@
 				:firebase-value="socialLinks.linkedin"
 				placeholder="https://linkedin.com/company/example"
 				:maxlength="240"
-				:update-function="(value: string) => handleSocialLink('linkedin', value)"
+				:update-function="(value) => handleSocialLink('linkedin', value)"
 			/>
 			<MoleculesFormsFirestoreSimpleField
 				label="YouTube"
@@ -51,7 +51,7 @@
 				:firebase-value="socialLinks.youtube"
 				placeholder="https://youtube.com/@example"
 				:maxlength="240"
-				:update-function="(value: string) => handleSocialLink('youtube', value)"
+				:update-function="(value) => handleSocialLink('youtube', value)"
 			/>
 		</div>
 	</UCard>

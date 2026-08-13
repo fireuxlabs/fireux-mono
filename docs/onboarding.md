@@ -86,8 +86,8 @@ This is the practical playbook for shared Core entity onboarding journeys.
 ### Avatar defaults
 
 - If the provisioning payload does not include an explicit avatar URL (or if the field is empty), the user creation flow now uploads the local default image (`/img/ecosystem/avatar.png`) into Firebase Storage at:
-  - `users/{uid}/avatar`
-- The saved Firebase Storage URL is then written to the canonical User document (`users/{uid}.assets.avatar`).
+  - `users/{uid}/avatar/current`
+- The saved Firebase Storage URL is then written to the canonical user document (`users/{uid}.avatar`).
 - If you clear/reset a user avatar in profile-edit flows, the same storage default is re-applied rather than writing the local `/img/...` fallback directly.
 
 ## Notes for next session
@@ -121,10 +121,10 @@ What to verify next (in order):
 1. `/users` collection public projection
    - `handle` should be present (`testudo` or similar)
    - `displayName` should match what you set (or sensible fallback from auth)
-   - `assets.avatar` should be a real URL (not missing/empty)
+   - `avatar` should be a real URL (not missing/empty)
 2. `users/{uid}` canonical record
    - should exist in the Firestore identity database
-   - should contain `handle`, `display_name`, `bio`, `assets.avatar`, and stamps
+   - should contain `handle`, `display_name`, `bio`, `avatar`, and stamps
 3. `users/{uid}/private/account`
    - should contain term acceptance + preferences record after onboarding
 4. App membership (for current app only)
@@ -140,7 +140,7 @@ Successful User onboarding creates or confirms these owned records:
 1. `users/{uid}` — the canonical public User identity.
 2. `users/{uid}/private/account` — private preferences and current legal
    acceptance evidence.
-3. `users/{uid}/avatar` — the User-owned Storage object for either the
+3. `users/{uid}/avatar/current` — the User-owned Storage object for either the
    supplied avatar or the default.
 4. `apps/{appId}/users/{uid}` — only when the active App permits self-service
    membership or a separate authorized App action creates it.
@@ -233,7 +233,7 @@ configuration lacks its canonical record. Its green environment checks mean
 new App. Initialization authenticates the configured developer and atomically
 creates the fixed runtime App plus its first App-admin membership in the named
 database through the Server mutation lane. It then idempotently creates or
-updates that App's bounded `(default)` AppMeta projection. App asset sync and
+updates that App's bounded `(default)` AppMeta projection. App media sync and
 App-admin identity edits maintain both records through the same projection
 seam. The browser cannot choose an App id, database, or path, and Firestore
 Rules do not need to grant tenant-App creation to clients.
@@ -243,7 +243,7 @@ mode does not bypass required Firebase configuration, live Storage
 reachability, or the App-owned media contract; fix the reported requirement
 before creating the canonical App and first administrator membership.
 
-`pnpm audit:app-assets -- --all` audits every registered App against the same
+`pnpm audit:app-media -- --all` audits every registered App against the same
 five-asset source, Storage, URL, and dimension contract. It records unavailable
 ecosystems as blockers, continues through the fleet, and exits unsuccessfully
 while any App is warning, failing, or blocked.

@@ -1,4 +1,8 @@
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import type { Ref } from 'vue'
 import {
   SupplierStorage,
@@ -53,7 +57,13 @@ export function resolveSupplierId(
 
 export function supplierRootBelongsToApp(
   supplier: SupplierRootDoc,
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
-  return normalizeString(supplier.console?.app_id) === appId
+  const management = readFireuxEntityManagement(supplier.management)
+  return Boolean(
+    management &&
+    management.mode !== 'root' &&
+    resolveFireuxEntityManagementAppId(management, ecosystem) === appId
+  )
 }

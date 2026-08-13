@@ -5,8 +5,8 @@
 import type { AppStatus } from '../../../models/core/app.model'
 import type { EcosystemStatus } from '../../../models/core/ecosystem.model'
 import type {
-  AppAssets,
   AppDerived,
+  AppMedia,
   AppRole,
   AppSocialLinks,
 } from '../../../models/core/app.model'
@@ -27,13 +27,13 @@ export type PublicUserDto = PublicSeoDto & {
   handle: string
   displayName: string
   bio: string
-  assets: { avatar: string }
+  avatar: string
 }
 
 export type PublicUserIdentityDto = {
   id: string
   display_name: string
-  assets: { avatar: string }
+  avatar: string
   handle: string
 }
 
@@ -100,7 +100,7 @@ export type PublicProfileDto<
  * App storage also contains build, moderation, and join-request fields. Those
  * fields must never reach a public response through object spreading.
  * App membership and role identities remain private AppUser concerns. Project
- * ownership and ambiguous team data remain private control-plane data.
+ * ownership and ambiguous legacy team data remain private control-plane data.
  */
 export type PublicAppDto = {
   id: string
@@ -116,7 +116,7 @@ export type PublicAppDto = {
   long_bio: string
   social_links: AppSocialLinks
   derived: AppDerived
-  assets: AppAssets
+  media: AppMedia
   created?: { at: FirebaseTimestamp }
 }
 
@@ -126,7 +126,7 @@ export type PublicEcosystemDto = {
   status: EcosystemStatus
   name: string
   description: string
-  assets: { image: string }
+  image_url: string
   website_url: string
 }
 

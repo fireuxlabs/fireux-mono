@@ -23,7 +23,6 @@ export const MenuEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   root: MenuStorage.root,
   notes: [
     'Menu owns stable public identity and publication state.',

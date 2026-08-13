@@ -17,7 +17,7 @@ export function buildEcosystemJsonLd(
     '@type': 'Organization',
     name,
     description: excerpt(ecosystem?.description),
-    image: text(ecosystem?.assets?.image) || undefined,
+    image: text(ecosystem?.image_url) || undefined,
     sameAs: text(ecosystem?.website_url) || undefined,
   }
 }
@@ -34,7 +34,7 @@ export function useEcosystemSeo(
   return useSeo({
     title: computed(() => text(entry.value?.name) || 'Ecosystem'),
     description: computed(() => excerpt(entry.value?.description || 'FireUX ecosystem.')),
-    image: computed(() => text(entry.value?.assets?.image)),
+    image: computed(() => text(entry.value?.image_url)),
     path: computed(() => id.value ? `/ecosystems/${encodeURIComponent(id.value)}` : ''),
     robots: computed(() => isIndexable.value ? 'index, follow' : 'noindex, nofollow'),
     jsonLd: computed(() => buildEcosystemJsonLd(entry.value)),

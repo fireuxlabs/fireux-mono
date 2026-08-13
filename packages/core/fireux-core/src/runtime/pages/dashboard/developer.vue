@@ -12,7 +12,7 @@
           <UPageHeader
             headline="Developer workspace"
             :title="`Build and verify ${appDisplayName}`"
-            description="Manage App assets and verify the build connection for this environment."
+            description="Manage App media and verify the build connection for this environment."
           >
             <template #links>
               <UButton

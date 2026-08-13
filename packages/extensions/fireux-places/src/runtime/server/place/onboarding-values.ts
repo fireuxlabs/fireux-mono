@@ -70,7 +70,7 @@ export function httpsImage(value: unknown, placeId: string) {
   if (candidate.length > 2_048) badRequest('Place logo URL is too long.')
   return requireFirebaseStorageDownloadUrl(candidate, {
     bucketName: runtimeStorageBucketName(),
-    objectPath: `places/${placeId}/image`,
+    objectPath: `places/${placeId}/avatar`,
     label: 'Place logo',
   })
 }
@@ -105,7 +105,7 @@ export function completeInput(value: unknown) {
     'id',
     'default_currency_code',
     'timezone',
-    'assets',
+    'image_url',
     'brand_palette',
   ])
   const unsupported = Object.keys(source).find((key) => !allowed.has(key))
@@ -123,10 +123,7 @@ export function completeInput(value: unknown) {
   if (!timezone) {
     badRequest('Confirm a valid IANA timezone, such as Europe/Zurich.')
   }
-  const assetInput = record(source.assets)
-  const unsupportedAsset = Object.keys(assetInput).find(key => key !== 'image')
-  if (unsupportedAsset) badRequest(`Unsupported onboarding asset: ${unsupportedAsset}.`)
-  const image = httpsImage(assetInput.image, id)
+  const imageUrl = httpsImage(source.image_url, id)
   const brandPaletteResult = parseBrandPalette(source.brand_palette)
   if (!brandPaletteResult.ok) badRequest(brandPaletteResult.error)
   const brandPalette = brandPaletteResult.value
@@ -136,7 +133,7 @@ export function completeInput(value: unknown) {
       default_currency_code: defaultCurrencyCode,
       timezone,
     },
-    ...(image ? { assets: { image } } : {}),
+    ...(imageUrl ? { imageUrl } : {}),
     ...(Object.keys(brandPalette).length ? { brandPalette } : {}),
   }
 }

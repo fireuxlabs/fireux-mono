@@ -4,7 +4,7 @@ import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uplo
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
 import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
-import { serverKitchenMenuUploadsTarget } from '../../../../kitchen/firestore-targets'
+import { serverKitchenMenuUploadsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   assertKitchenMenuUploadAccess,
   assertKitchenMenuUploadAvailable,

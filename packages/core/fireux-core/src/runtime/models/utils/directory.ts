@@ -1,6 +1,6 @@
 import type {
-  AppAssets,
   AppDerived,
+  AppMedia,
   AppRole,
   AppStatus,
 } from '../core/app.model'
@@ -25,7 +25,14 @@ export type AppDirectoryEntry = {
   short_bio: string
   detail_url: string
   derived: Pick<AppDerived, 'user_count'>
-  assets: AppAssets
+  media: Pick<
+    AppMedia,
+    | 'logo_url'
+    | 'thumbnail_url'
+    | 'wordmark_light_url'
+    | 'wordmark_dark_url'
+    | 'cover_url'
+  >
 }
 
 export type EcosystemDirectoryEntry = {
@@ -33,7 +40,7 @@ export type EcosystemDirectoryEntry = {
   status: EcosystemStatus
   name: string
   description: string
-  assets: { image: string }
+  image_url: string
   website_url: string
   detail_url: string
   app_count: number

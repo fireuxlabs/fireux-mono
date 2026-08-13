@@ -15,18 +15,10 @@ export interface UserIdentity {
 export interface UserPresentation {
   display_name: string
   bio: string
-}
-
-export interface UserAssets {
   avatar: string
 }
 
-export interface User
-  extends FireuxStamped,
-    UserIdentity,
-    UserPresentation {
-  assets: UserAssets
-}
+export interface User extends FireuxStamped, UserIdentity, UserPresentation {}
 
 export interface AppUser extends FireuxStamped {
   id: string
@@ -38,7 +30,7 @@ export interface AppUser extends FireuxStamped {
 /** Console targets assigned to one User. */
 export interface UserTargets {
   project_ids: string[]
-  [targetIds: string]: string[]
+  kitchen_ids: string[]
 }
 
 export const UserStorage = {
@@ -47,12 +39,6 @@ export const UserStorage = {
   path: 'users/{userId}',
   collection: 'users',
   idParam: 'userId',
-} as const
-
-export const UserAssetsStorage = {
-  shape: 'entity-assets',
-  root: 'users/{userId}',
-  avatar: 'users/{userId}/avatar',
 } as const
 
 export const AppUserStorage = {
@@ -80,7 +66,6 @@ export const UserEntity = defineFireuxEntity({
   authority: 'identity-database',
   appSupport: 'membership-record',
   publicRead: 'projection',
-  status: 'confirmed',
   root: UserStorage.path,
   appSupportPath: AppUserStorage.path,
 })
@@ -93,16 +78,12 @@ export const UserIdentityDefaults: UserIdentity = {
 export const UserPresentationDefaults: UserPresentation = {
   display_name: '',
   bio: '',
-}
-
-export const UserAssetsDefaults: UserAssets = {
   avatar: USER_ECOSYSTEM_AVATAR_SRC,
 }
 
 export const UserDefaults: User = {
   ...UserIdentityDefaults,
   ...UserPresentationDefaults,
-  assets: UserAssetsDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -131,6 +112,7 @@ export const AppUserDefaults: AppUser = {
 
 export const UserTargetsDefaults: UserTargets = {
   project_ids: [],
+  kitchen_ids: [],
 }
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>

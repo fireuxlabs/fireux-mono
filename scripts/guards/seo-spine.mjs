@@ -438,12 +438,17 @@ export async function run({ repoRoot }) {
   if (!kitchensServerConfig.includes("route: '/sitemaps/kitchens.xml'")) {
     violations.push('Kitchens must register its sitemap XML handler.')
   }
-  for (const source of [kitchensApi, kitchensSitemap]) {
-    if (!source.includes('readPublicKitchenIndexPage')) {
+  if (!kitchensSitemap.includes('readPublicKitchenIndexPage')) {
+    violations.push('Kitchen sitemap must use the bounded discovery reader.')
+  }
+  for (const gate of [
+    'hydrateKitchenPublicDocuments',
+    'projectPublicKitchenIndexItem',
+  ]) {
+    if (!kitchensApi.includes(gate)) {
       violations.push(
-        'Kitchen JSON and sitemap transport must share the bounded public index reader.'
+        `Kitchen collection transport must retain the ${gate} root projection.`
       )
-      break
     }
   }
   for (const gate of [

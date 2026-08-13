@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Console creation through trusted onboarding.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: own Kitchen preview and completion transport in the create seam.
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type {
@@ -14,7 +14,6 @@ import type {
 import type {
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
-  KitchenOnboardingPlacesResult,
   KitchenOnboardingPreview,
 } from '../../../../../models/kitchen-onboarding.model'
 
@@ -30,7 +29,7 @@ type KitchenCreateDraft = KitchenCreateInput & {
   place?: KitchenPlaceDraft
 }
 
-export type KitchenCreateResult = ConsoleCreateResult & {
+export type KitchenCreateResult = FireuxEntityCreateResult & {
   slug?: string
 }
 export type KitchenCreateOptions = {
@@ -38,7 +37,7 @@ export type KitchenCreateOptions = {
 }
 
 export type KitchenCreateModeOptions = {
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   existingRootId?: string | null
 }
 
@@ -72,14 +71,6 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     return result
   }
 
-  async function listKitchenOnboardingPlaces() {
-    const result = await $fetch<KitchenOnboardingPlacesResult>(
-      '/api/kitchens/onboarding/places',
-      { headers: await authHeaders() }
-    )
-    return Array.isArray(result?.items) ? result.items : []
-  }
-
   async function completeKitchenOnboarding(
     input: KitchenOnboardingCompleteInput
   ) {
@@ -93,23 +84,6 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     )
     if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
       throw new Error('Kitchen onboarding completion was invalid.')
-    }
-    return result
-  }
-
-  async function completeKitchenRootOnboarding(
-    input: KitchenOnboardingCompleteInput
-  ) {
-    const result = await $fetch<KitchenOnboardingCompleteResult>(
-      '/api/kitchens/onboarding/root/complete',
-      {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: input,
-      }
-    )
-    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
-      throw new Error('Kitchen root onboarding completion was invalid.')
     }
     return result
   }
@@ -154,11 +128,9 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
 
   return {
     completeKitchenOnboarding,
-    completeKitchenRootOnboarding,
     createPlan: KitchenCreatePlan,
     createKitchen,
     createKitchenConsole,
-    listKitchenOnboardingPlaces,
     previewKitchenOnboarding,
   }
 }

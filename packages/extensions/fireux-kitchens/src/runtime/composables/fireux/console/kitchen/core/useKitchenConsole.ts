@@ -7,6 +7,7 @@
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: keep projected Menu config and write capability authoritative over App support.
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import { useConsoleFamilyRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleFamilyRuntime'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
@@ -35,10 +36,6 @@ import { useKitchenConsoleDemoTargets } from './useKitchenConsoleDemoTargets'
 
 type KitchenConsoleEntity = KitchenSurface
 
-type UseKitchenConsoleOptions = {
-  keepLiveTargetsAvailable?: boolean
-}
-
 const normalizeSource = (value: unknown): KitchenFetchSource => {
   const source = normalizeString(value)
   if (source === 'demo' || source === 'test') return source
@@ -57,6 +54,7 @@ const composeConsoleKitchen = (
 
   const projected = publicKitchen as KitchenConsoleEntity & {
     menus?: Record<string, unknown>
+    console_theme?: Record<string, unknown>
   }
   return {
     ...composed,
@@ -65,6 +63,9 @@ const composeConsoleKitchen = (
           menus: projected.menus,
           menu_style: projected.menu_style,
         }
+      : {}),
+    ...(projected.console_theme
+      ? { console_theme: projected.console_theme }
       : {}),
   }
 }
@@ -82,7 +83,7 @@ const composeConsoleKitchen = (
  * Index pages own Kitchen target collection reads.
  * It should not own Kitchen child operation records; those live under console/kitchen/operations.
  */
-export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
+function createKitchenConsole() {
   /*
    * Input:
    * - runtime app config
@@ -109,11 +110,7 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
       : normalizeSource(consoleRoot.source.value)
   )
   const liveTargetCollection = useKitchenConsoleTargetCollection({
-    enabled: computed(
-      () =>
-        kitchenSource.value === 'live' ||
-        options.keepLiveTargetsAvailable === true
-    ),
+    enabled: true,
   })
   const demoTargets = useKitchenConsoleDemoTargets(
     computed(() => allowDemo.value && kitchenSource.value === 'demo')
@@ -332,4 +329,8 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     runtime,
     actions,
   }
+}
+
+export function useKitchenConsole() {
+  return useConsoleFamilyRuntime('kitchen', createKitchenConsole)
 }

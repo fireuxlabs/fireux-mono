@@ -3,12 +3,12 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 export const resolveKitchenPath = (target: {
   id?: string
   slug?: string
-  console?: { mode?: 'live' | 'demo' }
+  route_scope?: 'live' | 'demo' | 'test'
 }) => {
   const slug = safeString(target.slug)
   if (!slug) return ''
 
-  if (target.console?.mode === 'demo') {
+  if (target.route_scope === 'demo' || target.route_scope === 'test') {
     return ''
   }
 
@@ -39,7 +39,10 @@ export const placeBaselineKeys = [
   'lat',
   'lng',
   'timezone',
-  'assets',
+  'image_url',
+  'cover_image',
+  'gallery_images',
+  'image_shade',
   'phone',
   'email',
   'website',

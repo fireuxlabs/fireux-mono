@@ -12,10 +12,6 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  dependentKitchenRootTarget,
-  dependentPropertyRootTarget,
-} from './dependent-targets'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -67,13 +63,13 @@ export async function removePlace(event: H3Event, placeId: string) {
         FIRESTORE_MUTATION_TARGETS.companies,
         id
       ),
-      mutations.query(dependentKitchenRootTarget, {
+      mutations.query(FIRESTORE_MUTATION_TARGETS.kitchens, {
         field: 'place_id',
         op: '==',
         value: id,
         limit: 1,
       }),
-      mutations.query(dependentPropertyRootTarget, {
+      mutations.query(FIRESTORE_MUTATION_TARGETS.properties, {
         field: 'place_id',
         op: '==',
         value: id,
@@ -104,20 +100,17 @@ export async function removePlace(event: H3Event, placeId: string) {
     mutations.delete(places, id)
   })
 
-  for (const objectPath of [
-    `places/${id}/image`,
-    `places/${id}/cover`,
-    `places/${id}/logo`,
-    `places/${id}/wordmark`,
-  ]) {
-    await deleteStorageFileIfExists({ objectPath }).catch((error) => {
-      console.warn('[places/delete] Place removed but an image could not be cleaned up.', {
-        placeId: id,
-        objectPath,
-        error: error instanceof Error ? error.message : String(error),
-      })
-    })
-  }
+  await deleteStorageFileIfExists({ objectPath: `places/${id}/avatar` }).catch(
+    (error) => {
+      console.warn(
+        '[places/delete] Place removed but its avatar could not be cleaned up.',
+        {
+          placeId: id,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      )
+    }
+  )
 
   return { id, deleted: true }
 }

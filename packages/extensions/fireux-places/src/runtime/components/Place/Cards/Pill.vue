@@ -10,6 +10,7 @@
         :src="imageUrl || undefined"
         :alt="displayTitle || ''"
         size="sm"
+        :class="avatarClass"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -39,6 +40,7 @@
         :src="imageUrl || undefined"
         :alt="displayTitle || ''"
         size="sm"
+        :class="avatarClass"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -62,6 +64,7 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { PlaceCard } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import type { PlaceImageShade } from '../../../models/place.model'
 
 defineOptions({ inheritAttrs: false })
 
@@ -69,6 +72,7 @@ type PillProps = Partial<Pick<
   PlaceCard.Card,
   'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges' | 'shortName'
 >> & {
+  imageShade?: PlaceImageShade
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -90,6 +94,14 @@ const props = withDefaults(defineProps<PillProps>(), {
   showBadges: true,
   link: false,
   action: false,
+})
+
+const avatarClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
 })
 
 const displayTitle = computed(() => props.shortName || props.title)

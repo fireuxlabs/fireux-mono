@@ -78,8 +78,8 @@
               aria-hidden="true"
             />
             <img
-              v-if="ecosystem.assets.image"
-              :src="ecosystem.assets.image"
+              v-if="ecosystem.image_url"
+              :src="ecosystem.image_url"
               :alt="`${ecosystem.name} logo`"
               width="56"
               height="56"

@@ -19,8 +19,8 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <UBadge :color="publicStatusColor" variant="soft">
-            {{ publicStatusLabel }}
+          <UBadge :color="visibilityStatusColor" variant="soft">
+            {{ visibilityStatusLabel }}
           </UBadge>
           <UBadge v-if="hasLinkedPlace" color="neutral" variant="soft">
             Place linked
@@ -146,11 +146,11 @@ const websiteTo = computed(() => {
   return /^https?:\/\//.test(website.value) ? website.value : `https://${website.value}`
 })
 const hasLinkedPlace = computed(() => Boolean(clean(source.value.place_id)))
-const publicStatusLabel = computed(() =>
-  source.value.show === true ? 'Public' : 'Draft'
+const visibilityStatusLabel = computed(() =>
+  source.value.visibility === true ? 'Visible' : 'Hidden'
 )
-const publicStatusColor = computed(() =>
-  source.value.show === true ? 'success' : 'neutral'
+const visibilityStatusColor = computed(() =>
+  source.value.visibility === true ? 'success' : 'neutral'
 )
 const profileFacts = computed(() =>
   [

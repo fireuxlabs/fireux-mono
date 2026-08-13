@@ -98,7 +98,7 @@ export default defineEventHandler(async (event: H3Event) => {
     .get()
     .catch(() => null)
   const appData = appDoc?.exists ? asRecord(appDoc.data()) : {}
-  const assets = asRecord(appData.assets)
+  const media = asRecord(appData.media)
   const socialLinks = asRecord(appData.social_links)
   const derived = asRecord(appData.derived)
   const siteOrigin =
@@ -110,10 +110,10 @@ export default defineEventHandler(async (event: H3Event) => {
   const ecosystemSlug = normalizeSlug(cfg.ecosystemId)
   const appSlug = normalizeSlug(appData.slug) || appSlugFromId(cfg.appId)
   const logoUrl =
-    toAbsoluteUrl(assets.logo, siteOrigin) ||
+    toAbsoluteUrl(media.logo_url, siteOrigin) ||
     toAbsoluteUrl(brandAssets.logo, siteOrigin)
   const thumbnailUrl =
-    toAbsoluteUrl(assets.thumbnail, siteOrigin) ||
+    toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
     toAbsoluteUrl(brandAssets.thumbnail, siteOrigin)
   const ecosystemName =
     ecosystemSlug && cfg.isGlobal && appSlug === ecosystemSlug
@@ -164,15 +164,14 @@ export default defineEventHandler(async (event: H3Event) => {
       derived: {
         user_count: asNonNegativeInt(derived.user_count),
       },
-      assets: {
-        thumbnail: thumbnailUrl || '',
-        logo: logoUrl || '',
-        wordmark: toAbsoluteUrl(assets.wordmark, siteOrigin) || '',
-        wordmark_light:
-          toAbsoluteUrl(assets.wordmark_light, siteOrigin) || '',
-        wordmark_dark:
-          toAbsoluteUrl(assets.wordmark_dark, siteOrigin) || '',
-        cover: toAbsoluteUrl(assets.cover, siteOrigin) || '',
+      media: {
+        thumbnail_url: thumbnailUrl || '',
+        logo_url: logoUrl || '',
+        wordmark_light_url:
+          toAbsoluteUrl(media.wordmark_light_url, siteOrigin) || '',
+        wordmark_dark_url:
+          toAbsoluteUrl(media.wordmark_dark_url, siteOrigin) || '',
+        cover_url: toAbsoluteUrl(media.cover_url, siteOrigin) || '',
       },
     },
     now: new Date().toISOString(),

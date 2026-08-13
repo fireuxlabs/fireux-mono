@@ -39,14 +39,8 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     source: 'manual',
     formatted_address: `${seed.postalCode} ${seed.city}, Switzerland`,
     short_address: seed.city,
-    assets: {
-      image: seed.imageUrl,
-      cover: '',
-      gallery: [],
-      logo: '',
-      wordmark: '',
-      backdrop_color: '',
-    },
+    image_url: seed.imageUrl,
+    image_shade: 'dark',
     verified: false,
     address: {
       street: '',
@@ -134,7 +128,7 @@ for (const item of companyDemoTargets) {
     item.publicCompany.id !== placeId ||
     !hasExactPublicPlaceProjectionShape({ ...item.publicCompany }) ||
     !item.place.name ||
-    !item.place.assets?.image ||
+    !item.place.image_url ||
     item.place.place_type !== 'physical' ||
     item.place.source !== 'manual' ||
     Object.keys(item.company)

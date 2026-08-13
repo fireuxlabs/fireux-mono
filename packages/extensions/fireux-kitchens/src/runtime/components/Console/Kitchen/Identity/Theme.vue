@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="selectedKitchen" class="space-y-6">
+    <div v-if="selectedKitchen && !placePending && rootComplete" class="space-y-6">
       <UCard variant="subtle">
         <div class="flex items-start gap-3">
           <UIcon
@@ -39,12 +39,21 @@
       </UCard>
 
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <ConsoleKitchenIdentityThemeEditor
-          :style="draftPageStyle"
-          :can-write="canWrite"
-          :save-state="saveState"
-          @update:style="setDraftPageStyle"
-        />
+        <div class="space-y-4">
+          <ConsoleKitchenIdentityConsolePaletteEditor
+            :palette="consolePalette"
+            :can-write="canWriteConsolePalette"
+            :saving="paletteSaving"
+            :save-state="paletteSaveState"
+            @save="saveConsolePalette"
+          />
+          <ConsoleKitchenIdentityThemeEditor
+            :style="draftPageStyle"
+            :can-write="canWrite"
+            :save-state="saveState"
+            @update:style="setDraftPageStyle"
+          />
+        </div>
 
         <ConsoleKitchenIdentityMenuPreview
           :kitchen-name="kitchenName"
@@ -56,12 +65,31 @@
       </div>
     </div>
 
+    <UCard v-else-if="selectedKitchen && !placePending">
+      <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-lucide-lock-keyhole"
+        title="Complete Kitchen identity first"
+        description="Console theme unlocks when the Place and Kitchen identity sections are complete."
+      >
+        <template #actions>
+          <UButton to="/console/kitchen/identity" color="neutral" variant="soft">
+            Return to identity
+          </UButton>
+        </template>
+      </UAlert>
+    </UCard>
+
     <MoleculesStateCard v-else entity="kitchen theme" kind="document" loading />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { useKitchenThemeEditor } from './useKitchenThemeEditor'
+import { useKitchenConsolePaletteEditor } from './useKitchenConsolePaletteEditor'
+import { useKitchenIdentityProgression } from '../../../../composables/fireux/console/kitchen/identity/useKitchenIdentityProgression'
+const { rootComplete, placePending } = useKitchenIdentityProgression()
 const {
   selectedKitchen,
   kitchenId,
@@ -114,4 +142,11 @@ const {
   hasOutstandingThemeSave,
   flushThemeSave,
 } = useKitchenThemeEditor()
+const {
+  palette: consolePalette,
+  canSave: canWriteConsolePalette,
+  saving: paletteSaving,
+  saveState: paletteSaveState,
+  save: saveConsolePalette,
+} = useKitchenConsolePaletteEditor()
 </script>

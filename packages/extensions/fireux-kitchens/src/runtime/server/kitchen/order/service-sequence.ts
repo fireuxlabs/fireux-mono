@@ -7,11 +7,9 @@ import {
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverCustomerOrdersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
   serverKitchenOrderServiceTarget,
   serverKitchenOrdersTarget,
-} from '../firestore-targets'
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 export type KitchenOrderServiceSequence = {
   id: string

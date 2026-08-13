@@ -61,7 +61,6 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `authority`  | owning App database, identity database, ecosystem identity database, FireUX control plane, parent, to-confirm | Who owns lifecycle truth?                      |
 | `appSupport` | none, access record, membership record, operational record, profile delta, to-confirm                         | What non-identity App record may accompany it? |
 | `publicRead` | none, direct root, projection, to-confirm                                                                     | How, if at all, may public readers see it?     |
-| `status`     | confirmed, to-confirm                                                                                         | Has the current classification been reviewed?  |
 | `console`    | boolean                                                                                                       | Is it a Console Entity?                        |
 | `parent`     | optional Entity name                                                                                          | Which Entity owns a parent-scoped declaration? |
 
@@ -119,7 +118,8 @@ separate same-id App access record. The App record may contain bounded access
 such as `operator_ids`, `team_ids`, and join requests. It is not a second Entity
 identity and must not become a copied profile.
 
-Joined reads require both valid halves and correct App scope. Missing or
+Joined reads require both valid halves and a management relationship that
+resolves to the current App. Missing or
 mismatched support must fail closed rather than produce a selectable partial
 target.
 
@@ -288,8 +288,7 @@ Kitchen root identity, its required Place, same-id AppKitchen access, and User
 Console target pointers are verified by
 `scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
 operational identity; authored public slugs resolve through the bounded Kitchen
-server route seam. The protected one-time root/Console split is encoded by
-`scripts/migrate-misebox-kitchen-console-shape.mjs`. Confirmed inert AppKitchen access ids are planned and
+server route seam. Confirmed inert AppKitchen access ids are planned and
 preimage-protected by `scripts/migrate-misebox-kitchen-authority.mjs`; the
 script requires an explicit confirmation hash before changing data.
 
@@ -304,6 +303,9 @@ script requires an explicit confirmation hash before changing data.
   not create ownership.
 - App support records must use declared support paths and contain only their
   allowed non-identity delta.
+- Console-capable roots store the generic `management` relationship, never a
+  domain-enumerated Core type: `root`, `console`, or `app` with `app_id` only
+  in the final mode. App support remains access/operations, not root identity.
 - Cross-root relationships prefer canonical ids over copied Entity objects or
   inverse child arrays unless a separate projection owns that optimization.
 
@@ -317,7 +319,7 @@ Public Index and Public Detail family maps.
 | -------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Existing domain concepts exceed the executable matrix          | `drift`      | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                      |
 | Place plus same-id Company role                                | `accepted`   | Place owns shared location identity; Company remains an exact stamps-only role marker and public reads reuse the Place projection                                   |
-| Kitchen root + Place + AppKitchen composition                  | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/lifecycle, Place owns location presentation, and AppKitchen owns access plus Console configuration |
+| Kitchen root + Place + App support composition                 | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only        |
 | Supplier and Portfolio public-read contracts are unresolved    | `to-confirm` | Define bounded public DTOs before claiming public family parity                                                                                                     |
 | Recipe and Dish Kitchen ownership                              | `accepted`   | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                         |

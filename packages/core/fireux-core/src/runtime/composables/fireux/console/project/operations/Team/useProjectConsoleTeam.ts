@@ -1,9 +1,7 @@
 import { useAsyncData } from '#imports'
-import type { AsyncData, NuxtError } from 'nuxt/app'
-import { computed, type ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { useAuth } from '../../../../firebase/useAuth'
 import { useProjectConsole } from '../../core/useProjectConsole'
-import type { ProjectSurface } from '../../../../project/useProjectInterface'
 
 export type ProjectTeamMember = {
   id: string
@@ -19,20 +17,7 @@ type ProjectTeamResponse = {
   members: ProjectTeamMember[]
 }
 
-type ProjectTeamControls = Pick<
-  AsyncData<unknown, NuxtError<unknown>>,
-  'error' | 'refresh'
->
-
-export type UseProjectConsoleTeamReturn = ProjectTeamControls & {
-  selectedProject: ComputedRef<ProjectSurface | null>
-  projectId: ComputedRef<string>
-  members: ComputedRef<ProjectTeamMember[]>
-  count: ComputedRef<number>
-  pending: ComputedRef<boolean>
-}
-
-export function useProjectConsoleTeam(): UseProjectConsoleTeamReturn {
+export function useProjectConsoleTeam() {
   const { selection, runtime } = useProjectConsole()
   const { currentUser, hasAuthState } = useAuth()
   const requestKey = computed(

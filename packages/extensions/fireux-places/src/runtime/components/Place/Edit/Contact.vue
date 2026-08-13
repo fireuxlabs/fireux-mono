@@ -21,13 +21,6 @@
 				:update-function="handleShortName"
 			/>
 			<MoleculesFormsFirestoreSimpleField
-				label="Public location"
-				:firebase-value="place?.short_address"
-				placeholder="Interlaken, BE, CH"
-				:maxlength="240"
-				:update-function="handleShortAddress"
-			/>
-			<MoleculesFormsFirestoreSimpleField
 				label="Phone"
 				:firebase-value="place?.phone"
 				placeholder="+41 ..."
@@ -91,7 +84,6 @@ const {
 	updateEmail,
 	updatePhone,
 	updateShortName,
-	updateShortAddress,
 	updateTimezone,
 	updateWebsite,
 } = usePlaceUpdate({ authority: () => props.mutationAuthority })
@@ -117,14 +109,6 @@ async function handleShortName(value: string) {
 		() => updateShortName(value, { id: placeId.value }),
 		'Short name updated',
 		'Failed to update short name'
-	)
-}
-
-async function handleShortAddress(value: string) {
-	await updatePlace(
-		() => updateShortAddress(value, { id: placeId.value }),
-		'Public location updated',
-		'Failed to update public location'
 	)
 }
 

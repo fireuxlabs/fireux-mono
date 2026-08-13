@@ -55,7 +55,7 @@ type ConfigureFireuxSeoOptions = {
 
 /**
  * FireUX hook contract:
- * Extensions can contribute SEO surfaces without Core knowing their families.
+ * Extensions (jobs/kitchens/blogs/etc.) can contribute SEO surfaces without core knowing anything about them.
  *
  * Usage in an extension module setup():
  *   nuxt.hook('fireux:seo:extend', (ctx) => {

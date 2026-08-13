@@ -1,6 +1,6 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/utils/public-place-projection'
-import type { KitchenConsoleConfig } from '../../../models/kitchen.model'
+import type { Kitchen } from '../../../models/kitchen.model'
 import {
   deanosKitchenDemoIdentity,
   deanosKitchenDemoTeamMemberIds,
@@ -51,12 +51,16 @@ const deanosMenuStyle = {
   font_family: 'Inter',
   title_font_source: 'google',
   title_font_family: 'Space Grotesk',
-} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
+} satisfies NonNullable<Kitchen['menus']['style']>
 
 export const deanosKitchenDemoTarget = target(
   deanosKitchenDemoIdentity,
   kitchen({
     identity: deanosKitchenDemoIdentity,
+    management: {
+      mode: 'app',
+      app_id: deanosKitchenDemoIdentity.appId,
+    },
     name: 'Deanos Smash Burger',
     tagline: 'Smashed to order. Served fast.',
     logoImageUrl: deanosKitchenMedia('logo.png'),
@@ -108,6 +112,7 @@ export const deanosKitchenDemoTarget = target(
     imageUrl: deanosProfileImage,
     coverImage: deanosCoverImage,
     galleryImages: deanosGalleryImages,
+    imageShade: 'none',
     businessHours: {
       windows: [
         {
@@ -149,12 +154,13 @@ const pizzaTheActionMenuStyle = {
   font_family: 'Inter',
   title_font_source: 'google',
   title_font_family: 'Montserrat',
-} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
+} satisfies NonNullable<Kitchen['menus']['style']>
 
 export const pizzaTheActionKitchenDemoTarget = target(
   pizzaTheActionKitchenDemoIdentity,
   kitchen({
     identity: pizzaTheActionKitchenDemoIdentity,
+    management: { mode: 'console' },
     name: 'Pizza the Action',
     tagline: 'Big flavour. Zero drama.',
     logoImageUrl: kitchenDemoMediaUrl(
@@ -207,12 +213,13 @@ const miseboxRestaurantMenuStyle = {
   font_family: 'Lora',
   title_font_source: 'google',
   title_font_family: 'Cormorant Garamond',
-} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
+} satisfies NonNullable<Kitchen['menus']['style']>
 
 export const miseboxRestaurantKitchenDemoTarget = target(
   miseboxRestaurantKitchenDemoIdentity,
   kitchen({
     identity: miseboxRestaurantKitchenDemoIdentity,
+    management: { mode: 'console' },
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
     logoImageUrl: kitchenDemoMediaUrl(
@@ -255,15 +262,13 @@ const targetIds = new Set<string>()
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
-  const logoImageUrl = String(
-    item.kitchen.assets.logo ?? ''
-  ).trim()
+  const logoImageUrl = String(item.kitchen.identity.logo_image_url ?? '').trim()
   const placeMedia = [
-    item.place.assets.image,
-    item.place.assets.cover,
-    ...item.place.assets.gallery,
+    item.place.image_url,
+    item.place.cover_image,
+    ...item.place.gallery_images,
   ]
-    .map(value => String(value ?? '').trim())
+    .map((value) => String(value ?? '').trim())
     .filter(Boolean)
   const teamIds = item.appSupport.team_ids
   const operatorIds = item.appSupport.operator_ids
@@ -273,10 +278,9 @@ for (const item of kitchenDemoTargets) {
     targetIds.has(kitchenId) ||
     kitchenId !== item.identity.kitchenId ||
     placeId !== item.identity.placeId ||
-    item.kitchen.place_id !== placeId ||
     !item.place.entity_families.includes('kitchen') ||
     String(item.place.name ?? '').trim() !==
-      String(item.kitchen.identity.name ?? '').trim() ||
+      String(item.kitchen.identity.display_name ?? '').trim() ||
     item.appId !== item.identity.appId ||
     item.appSupport.id !== kitchenId ||
     item.publicPlace.id !== placeId ||

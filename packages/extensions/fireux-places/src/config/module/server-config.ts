@@ -46,19 +46,9 @@ const serverHandlers = [
     handler: './runtime/server/api/places/onboarding/complete.post',
   },
   {
-    route: '/api/places/onboarding/manual',
-    method: 'post',
-    handler: './runtime/server/api/places/onboarding/manual.post',
-  },
-  {
     route: '/api/places/:placeId',
     method: 'get',
     handler: './runtime/server/api/places/[placeId].get',
-  },
-  {
-    route: '/api/places/:placeId/edit-authority',
-    method: 'get',
-    handler: './runtime/server/api/places/[placeId]/edit-authority.get',
   },
   {
     route: '/api/places/:placeId',

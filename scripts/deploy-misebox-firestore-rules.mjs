@@ -1333,15 +1333,15 @@ async function buildSecurityTests() {
   }
   const rootKitchenProbePath = 'kitchens/security-rules-probe'
   const rootKitchenProbeData = {
-    console: {
+    app_scope: {
+      state: 'tenant_app',
       app_id: 'security-rules-tenant',
-      app_role: 'tenant',
     },
   }
   const parentRootKitchenProbeData = {
-    console: {
+    app_scope: {
+      state: 'parent_app',
       app_id: 'misebox-app',
-      app_role: 'parent',
     },
   }
   const appKitchenProbePath =
@@ -2129,7 +2129,7 @@ async function buildSecurityTests() {
       })
     ),
     ...[
-      ['root-only Kitchen', { place_id: 'security-rules-probe' }],
+      ['root-only scope', { app_scope: { state: 'root_only' } }],
       [
         'flat legacy scope',
         {
@@ -2140,27 +2140,27 @@ async function buildSecurityTests() {
       [
         'dedicated-App scope',
         {
-          console: {
+          app_scope: {
+            state: 'dedicated_app',
             app_id: 'security-rules-tenant',
-            app_role: 'dedicated',
           },
         },
       ],
       [
         'malformed App id',
         {
-          console: {
+          app_scope: {
+            state: 'tenant_app',
             app_id: 'invalid/app',
-            app_role: 'tenant',
           },
         },
       ],
       [
         'extra App-scope keys',
         {
-          console: {
+          app_scope: {
+            state: 'tenant_app',
             app_id: 'security-rules-tenant',
-            app_role: 'tenant',
             forged: true,
           },
         },
@@ -2168,9 +2168,9 @@ async function buildSecurityTests() {
       [
         'conflicting nested and flat scope',
         {
-          console: {
+          app_scope: {
+            state: 'tenant_app',
             app_id: 'security-rules-tenant',
-            app_role: 'tenant',
           },
           app_scope_state: 'parent_app',
           app_scope_app_id: 'misebox-app',
@@ -3784,7 +3784,7 @@ async function buildSecurityTests() {
       strangerId,
       {
         display_name: 'Attacker',
-        assets: { avatar: '/img/ecosystem/avatar.png' },
+        avatar: '/img/ecosystem/avatar.png',
         handle: 'security-rules-attacker',
         created: {},
         updated: {},
@@ -3797,10 +3797,7 @@ async function buildSecurityTests() {
       publicUserData,
       {
         ...publicUserData,
-        assets: {
-          ...publicUserData.assets,
-          avatar: 'https://example.invalid/avatars/rules-user.jpg',
-        },
+        avatar: 'https://example.invalid/avatars/rules-user.jpg',
         updated: { at: updateTime, by: publicUserId },
       },
       updateTime
@@ -3817,7 +3814,7 @@ async function buildSecurityTests() {
         publicUserData,
         {
           ...publicUserData,
-          assets: { ...publicUserData.assets, avatar },
+          avatar,
           updated: { at: updateTime, by: publicUserId },
         }
       )

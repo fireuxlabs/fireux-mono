@@ -4,7 +4,6 @@ export const ecosystemConfig = {
   id: 'fireux-granite',
   name: 'granite',
   description: 'FireUX Granite - Portfolio landlord operating system ecosystem',
-
   firebase: {
     apiKey: 'AIzaSyBdwxKKCXn3aXu5jy-RzLKVX0PYShGh1aI',
     authDomain: 'granite-ecosystem.firebaseapp.com',

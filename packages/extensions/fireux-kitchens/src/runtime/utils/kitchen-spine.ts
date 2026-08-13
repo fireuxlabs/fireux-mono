@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { CurrencyDisplayFormat } from '../models/shared/currency-display.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { ConsolePalette } from 'fireux-core/types/theme'
+import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
@@ -19,6 +21,10 @@ import {
   readPlaceBusinessHours,
 } from 'fireux-places/runtime/utils/place-spine'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import {
   kitchenOrderTypes,
   readDeliveryZones,
@@ -115,24 +121,21 @@ export const kitchenPaymentMethodsForOrderType = (
   .filter(policy => policy.order_types.includes(orderType))
   .map(policy => policy.method)
 export const composeKitchenScopedSurface = (
-  rootKitchen: KitchenSpineRecord,
+  publicKitchen: KitchenSpineRecord,
   scopedKitchen: KitchenSpineRecord
 ) => {
-  const rootRecord = record(rootKitchen)
+  const publicRecord = record(publicKitchen)
   const scopedRecord = record(scopedKitchen)
 
-  if (!hasKeys(rootRecord)) return null
-  if (!hasKeys(scopedRecord)) return rootRecord
-
-  const attachment = record(rootRecord.console)
-  const config = record(scopedRecord.console)
+  if (!hasKeys(publicRecord)) return null
+  if (!hasKeys(scopedRecord)) return publicRecord
 
   const composed: Record<string, unknown> = {
-    ...rootRecord,
+    ...publicRecord,
     console: {
-      ...attachment,
+      ...record(publicRecord.console),
       mode: 'live',
-      ...config,
+      ...record(scopedRecord.console),
     },
     ...(Array.isArray(scopedRecord.operator_ids)
       ? { operator_ids: scopedRecord.operator_ids }
@@ -144,27 +147,29 @@ export const composeKitchenScopedSurface = (
       ? { join_requests: scopedRecord.join_requests }
       : {}),
   }
+  if (Object.hasOwn(publicRecord, 'sproochli')) {
+    composed.sproochli = readSproochliAttachmentConfig(publicRecord.sproochli)
+  } else {
+    delete composed.sproochli
+  }
 
   return composed
 }
 
-export const readKitchenAppScope = (
-  value: KitchenSpineRecord
+export const readKitchenManagementTarget = (
+  value: KitchenSpineRecord,
+  ecosystem = ''
 ) => {
   const source = record(value)
-  const console = record(source.console)
-  const appRole = text(console.app_role)
-  const state = appRole === 'tenant'
-    ? 'tenant_app'
-    : appRole === 'parent'
-      ? 'parent_app'
-      : 'root_only'
-  const appId = text(console.app_id)
+  const management = readFireuxEntityManagement(source.management) || {
+    mode: 'root' as const,
+  }
+  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
 
   return {
-    state,
+    mode: management.mode,
     appId,
-    hasTenantApp: state === 'tenant_app' && Boolean(appId),
+    hasDedicatedApp: management.mode === 'app',
   }
 }
 
@@ -190,11 +195,7 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
 
 export const readKitchenVisibility = (value: KitchenSpineRecord) => {
   const source = record(value)
-
-  return {
-    show: source.visibility === true,
-    active: text(source.status) === 'active',
-  }
+  return source.visibility === true
 }
 
 export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
@@ -222,6 +223,14 @@ export const readKitchenSproochliConfig = (
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
 
+export const readKitchenConsolePalette = (
+  value: KitchenSpineRecord
+): ConsolePalette | null => {
+  const console = record(record(value).console)
+  const theme = record(console.theme)
+  return readConsolePalette(theme.palette)
+}
+
 /** Read-only projection helper. Canonical currency is owned by linked Place. */
 export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
   const source = record(value)
@@ -230,7 +239,9 @@ export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
 }
 
 export const readKitchenTableCount = (value: KitchenSpineRecord) => {
-  const count = Number(record(record(record(value).console).tables).count)
+  const source = record(value)
+  const tables = record(record(source.console).tables)
+  const count = Number(tables.count)
 
   return Number.isSafeInteger(count) && count > 0
     ? Math.min(count, 500)

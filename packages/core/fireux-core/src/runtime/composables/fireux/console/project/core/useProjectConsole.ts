@@ -4,23 +4,16 @@ import { normalizeString } from '../../../../../utils/string'
 import { useConsole, type ConsoleSource } from '../../../app/console/useConsole'
 import { consoleData } from '../../../app/console/useConsoleData'
 import { useConsoleEntityRuntime } from '../../../app/console/useConsoleEntityRuntime'
+import { useConsoleFamilyRuntime } from '../../../app/console/useConsoleFamilyRuntime'
+import { useConsoleTargets } from '../../../app/console/useConsoleTargets'
 import {
   useProjectCollection,
-  type ProjectCollectionFilter,
 } from '../../../project/useProjectCollection'
 import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { ProjectStorage } from '../../../../../models/system/project.model'
-import type { Ref } from 'vue'
 import { useProjectConsoleDemoTargets } from './useProjectConsoleDemoTargets'
 
 type ProjectConsoleEntity = ProjectSurface
-
-type UseProjectConsoleOptions = {
-  filter?:
-    | ProjectCollectionFilter
-    | Ref<ProjectCollectionFilter | null | undefined>
-    | null
-}
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -35,11 +28,13 @@ type UseProjectConsoleOptions = {
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
  */
-export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
+function createProjectConsole() {
   const consoleRoot = useConsole('project')
+  const consoleTargets = useConsoleTargets({ family: 'project' })
+  const targetFilter = computed(() => consoleTargets.filter({}))
   const liveCollection = useProjectCollection({
     source: consoleRoot.source,
-    filter: options.filter,
+    filter: targetFilter,
   })
   const demoTargets = useProjectConsoleDemoTargets(
     computed(() => consoleRoot.source.value === 'demo')
@@ -68,10 +63,16 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
       ? demoTargets.error.value
       : liveCollection.error.value
   )
-  const targetsOutcome = computed(() =>
+  const sourceTargetsOutcome = computed(() =>
     consoleRoot.source.value === 'demo'
       ? demoTargets.outcome.value
       : liveCollection.outcome.value
+  )
+  const liveTargetsOutcome = consoleTargets.resolveOutcome(sourceTargetsOutcome)
+  const targetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? sourceTargetsOutcome.value
+      : liveTargetsOutcome.value
   )
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
@@ -81,11 +82,7 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
     readOnly: true,
-    enforcedTargetId: computed(() =>
-      targetsOutcome.value === 'ready' && targetProjects.value.length === 1
-        ? normalizeString(targetProjects.value[0]?.id)
-        : ''
-    ),
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(
     () => entity.selection.selectedTarget.value
@@ -124,8 +121,13 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
 
   return {
     projects,
+    targeting: consoleTargets,
     selection,
     runtime,
     actions,
   }
+}
+
+export function useProjectConsole() {
+  return useConsoleFamilyRuntime('project', createProjectConsole)
 }

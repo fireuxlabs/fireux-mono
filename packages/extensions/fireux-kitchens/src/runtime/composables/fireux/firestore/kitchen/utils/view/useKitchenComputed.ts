@@ -20,10 +20,10 @@ export function useKitchenComputed(
   const hasMissingSlug = computed(() =>
     !String(kitchen?.value?.slug || '').trim()
   )
-  const isPublic = computed(() => visibility.value.show === true)
-  const isHidden = computed(() => visibility.value.show === false)
+  const isVisible = computed(() => visibility.value)
+  const isHidden = computed(() => !visibility.value)
   const displayStatus = computed(() =>
-    isPublic.value ? 'Public' : isHidden.value ? 'Hidden' : 'Unknown'
+    isVisible.value ? 'Visible' : 'Hidden'
   )
   const displayName = computed(() =>
     String(
@@ -53,7 +53,7 @@ export function useKitchenComputed(
     hasKitchen,
     hasMissingName,
     hasMissingSlug,
-    isPublic,
+    isVisible,
     isHidden,
     displayStatus,
     displayName,

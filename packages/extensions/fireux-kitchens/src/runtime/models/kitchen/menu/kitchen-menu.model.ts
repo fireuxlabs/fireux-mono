@@ -34,7 +34,6 @@ export const KitchenMenuEntity = defineFireuxEntity({
   authority: 'parent',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   parent: 'Kitchen',
   scoped: KitchenMenuStorage.path,
   notes: [

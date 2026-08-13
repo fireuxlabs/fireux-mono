@@ -6,15 +6,13 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppPortfoliosTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  portfolioRootTarget,
-  serverAppPortfoliosTarget,
-} from '../firestore-targets'
-import {
   assertOnboardingAuthority,
-  assertScope,
+  assertManagement,
   assertSupportCapacity,
   readSupport,
   requireMemberRole,
@@ -57,7 +55,7 @@ export async function completePortfolioOnboarding(
   const current = await actor(event)
 
   const memberships = serverAppUsersTarget(current.appId)
-  const portfolios = portfolioRootTarget
+  const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
   const supports = serverAppPortfoliosTarget(current.appId)
 
   return runGuardedServerTransaction(portfolios.database, async (mutations) => {
@@ -78,7 +76,9 @@ export async function completePortfolioOnboarding(
     if (existingRootId && !rootData) {
       fail(404, 'Portfolio not found.')
     }
-    const scope = rootData ? assertScope(rootData, current.appId) : null
+    const management = rootData
+      ? assertManagement(rootData, current.appId, current.ecosystem)
+      : null
     const supportData = support.exists ? support.data || {} : null
     if (!rootData && supportData) {
       fail(409, 'Portfolio access exists without its canonical root.')
@@ -120,10 +120,7 @@ export async function completePortfolioOnboarding(
       if (!draft)
         fail(409, 'Portfolio creation input changed during onboarding.')
       mutations.create(portfolios, portfolioId, {
-        console: {
-          app_id: current.appId,
-          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
-        },
+        management: current.management,
         name: draft.name,
         tagline: draft.tagline,
         image_url: draft.imageUrl,
@@ -137,16 +134,12 @@ export async function completePortfolioOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      if (!scope) fail(500, 'Portfolio scope validation did not complete.')
-      if (
-        scope.state !== current.appScopeState ||
-        scope.appId !== current.appId
-      ) {
+      if (!management) {
+        fail(500, 'Portfolio management validation did not complete.')
+      }
+      if (JSON.stringify(management) !== JSON.stringify(current.management)) {
         mutations.update(portfolios, portfolioId, {
-          console: {
-            app_id: current.appId,
-            app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
-          },
+          management: current.management,
           updated: serverAuditStamp({ by: current.uid }),
         })
       }

@@ -154,13 +154,13 @@ export function projectPublicJob(
     company: {
       name: company.name,
       ...(company.short_name ? { short_name: company.short_name } : {}),
-      ...(company.assets.image ? { image_url: company.assets.image } : {}),
+      ...(company.image_url ? { image_url: company.image_url } : {}),
     },
     place: {
       name: place.name,
       ...(place.short_name ? { short_name: place.short_name } : {}),
       ...(place.short_address ? { short_address: place.short_address } : {}),
-      ...(place.assets.image ? { image_url: place.assets.image } : {}),
+      ...(place.image_url ? { image_url: place.image_url } : {}),
     },
     contract_type: job.contract_type,
     management_mode: job.management_mode,

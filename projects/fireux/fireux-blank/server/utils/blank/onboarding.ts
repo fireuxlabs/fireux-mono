@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep access out of Blank root and reject coerced target ids.
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -71,8 +71,11 @@ export async function completeBlankOnboarding(
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const role = fireux.role
-  const scopeState = resolveFireuxAppScopeStateForRole(role)
-  if (!scopeState) fail(403, 'This App cannot own a Blank console.')
+  const management = resolveFireuxEntityManagementForApp(
+    role,
+    appId,
+    fireux.ecosystem
+  )
 
   const canCreate = resolveConsoleCanCreate(role, fireux.consoleConfig, 'blank')
   if (!canCreate) fail(403, 'Blank creation is disabled for this App.')
@@ -94,8 +97,7 @@ export async function completeBlankOnboarding(
 
     const slug = normalizeSlug(`${name}-${rootRef.id.slice(0, 6)}`)
     transaction.create(rootRef, {
-      app_scope_state: scopeState,
-      app_scope_app_id: appId,
+      management,
       name,
       slug,
       status: 'active',

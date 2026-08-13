@@ -2,10 +2,11 @@
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   Property,
-  PropertyConsoleAttachment,
   PropertyCreateInput,
   PropertyIdentity,
 } from '../models/property.model.ts'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -42,7 +43,7 @@ export type PropertyCreateRootPlan = {
 
 export function buildPropertyCreateRoot(
   input: PropertyCreateInput,
-  console?: PropertyConsoleAttachment
+  management: FireuxEntityManagement = { mode: 'root' }
 ): PropertyCreateRootPlan {
   const identity = normalizeIdentity(input?.identity)
   const placeId = text(input?.place_id)
@@ -59,9 +60,9 @@ export function buildPropertyCreateRoot(
     throw new Error('[fireux-properties] property id and slug are required.')
   }
 
-  if (console && (!text(console.app_id) ||
-    (console.app_role !== 'parent' && console.app_role !== 'tenant'))) {
-    throw new Error('[fireux-properties] Property App scope is invalid.')
+  const canonicalManagement = readFireuxEntityManagement(management)
+  if (!canonicalManagement) {
+    throw new Error('[fireux-properties] Property management is invalid.')
   }
 
   return {
@@ -70,7 +71,7 @@ export function buildPropertyCreateRoot(
       slug,
       portfolio_id: text(input?.portfolio_id),
       place_id: placeId,
-      ...(console ? { console: { ...console, app_id: text(console.app_id) } } : {}),
+      management: canonicalManagement,
       identity,
       status: input?.status === 'inactive' ? 'inactive' : 'active',
       publication_state: 'draft',

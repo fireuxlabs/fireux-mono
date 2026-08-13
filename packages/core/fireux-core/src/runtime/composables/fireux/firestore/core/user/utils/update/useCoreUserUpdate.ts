@@ -16,6 +16,23 @@ import { useUserHandleUpdate } from '../../mutations/useUserHandleUpdate'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from '../../../../../../../utils/user-avatar'
 
+function avatarFileExtension(source: File | Blob): string {
+  const name =
+    typeof File !== 'undefined' && source instanceof File ? source.name : ''
+  const fromName = name.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase()
+  if (fromName === 'jpg' || fromName === 'jpeg') return 'jpg'
+  if (fromName === 'png' || fromName === 'webp' || fromName === 'gif') {
+    return fromName
+  }
+
+  const mime = source.type.toLowerCase()
+  if (mime === 'image/jpeg') return 'jpg'
+  if (mime === 'image/png') return 'png'
+  if (mime === 'image/webp') return 'webp'
+  if (mime === 'image/gif') return 'gif'
+  return 'jpg'
+}
+
 export function useCoreUserUpdate(user: UserRefs) {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const { DisplayName, Bio, AvatarUrl, Handle } =
@@ -76,7 +93,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       const resolved = formatted
         ? formatted
         : await ensureAvatarUrl(
-            `${UserStorage.collection}/${requireCoreId()}/avatar`,
+            `${UserStorage.collection}/${requireCoreId()}/avatar/current`,
             [USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
             true,
             {
@@ -84,12 +101,13 @@ export function useCoreUserUpdate(user: UserRefs) {
             }
           )
       await updateCorePublicIdentity({
-        assets: { avatar: resolved },
+        avatar: resolved,
       })
     },
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
-      const path = `${UserStorage.collection}/${id}/avatar`
+      const extension = avatarFileExtension(source)
+      const path = `${UserStorage.collection}/${id}/avatar/${Date.now()}.${extension}`
       const { uploadImage } = useImageStorage()
       const url = await uploadImage(path, source)
       const formatted = formatAndValidate(
@@ -97,7 +115,7 @@ export function useCoreUserUpdate(user: UserRefs) {
         url,
         'Avatar upload did not return a valid HTTPS URL'
       )
-      await updateCorePublicIdentity({ assets: { avatar: formatted } })
+      await updateCorePublicIdentity({ avatar: formatted })
       return formatted
     },
     setHandle: async (handle: string) => {

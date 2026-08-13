@@ -37,7 +37,6 @@ export const PlaceEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   console: false,
   root: PlaceStorage.path,
   notes: [
@@ -58,6 +57,8 @@ export type PlaceType = 'physical' | 'non_physical'
 
 /** Explicit backdrop behind transparent entity-owned brand media. */
 export type MediaBackdropColor = `#${string}`
+/** @deprecated Read-only compatibility for unmigrated records and consumers. */
+export type PlaceImageShade = 'light' | 'dark' | 'none'
 
 export type PlaceSocialLinks = {
   website: string
@@ -95,16 +96,6 @@ export type PlaceBusinessHours = {
   windows: PlaceBusinessHoursWindow[]
 }
 
-/** Canonical Place-owned assets. Each key names the same role in Storage. */
-export type PlaceAssets = {
-  image: string
-  cover: string
-  gallery: string[]
-  logo: string
-  wordmark: string
-  backdrop_color: MediaBackdropColor | ''
-}
-
 /** Resolved runtime defaults. Firestore Place documents remain sparse. */
 export const PlaceDefaults = {
   id: '' as string,
@@ -129,15 +120,15 @@ export const PlaceDefaults = {
   lng: 0 as number,
   timezone: '' as string,
 
-  // Entity-owned assets
-  assets: {
-    image: '',
-    cover: '',
-    gallery: [],
-    logo: '',
-    wordmark: '',
-    backdrop_color: '',
-  } as PlaceAssets,
+  // Media
+  image_url: '' as string,
+  cover_image: '' as string,
+  gallery_images: [] as string[],
+  logo_image: '' as string,
+  wordmark_image: '' as string,
+  media_backdrop_color: '' as MediaBackdropColor | '',
+  /** @deprecated Never write; migrate to media_backdrop_color. */
+  image_shade: 'none' as PlaceImageShade,
 
   // Portable brand colours inherited by Place-backed roles.
   brand_palette: {} as SparseBrandPalette,
@@ -211,7 +202,8 @@ export type BasePlace = Pick<
   | 'short_address'
   | 'lat'
   | 'lng'
-  | 'assets'
+  | 'image_url'
+  | 'image_shade'
   | 'claimed_by'
   | 'source'
   | 'slug'

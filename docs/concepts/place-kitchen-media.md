@@ -1,17 +1,18 @@
 # Place and Kitchen media
 
-Updated: 2026-08-10
+Updated: 2026-08-04
 Ref: d232cc731
 Role: map, not canon
 
 ## Ownership
 
-Place is the physical venue and owns its base identity and location media:
-`assets.image`, `assets.cover`, `assets.gallery`, `assets.logo`, and
-`assets.wordmark`.
-Kitchen is the food operation at that Place and
-may own sparse identity overrides only when its operational identity genuinely
-differs from the Place base.
+Place is the physical venue and owns location photography: `image_url`,
+`cover_image`, and `gallery_images`. Place may also own its venue identity
+media through sparse `logo_image` and `wordmark_image` references when exact
+approved artwork exists. Kitchen is the food operation at that Place and owns
+sparse operational overrides in `assets.logo`, `assets.wordmark`, and the
+optional `assets.image` card override. Place media is never copied into those
+Kitchen fields.
 
 Kitchen cards resolve the Kitchen card override, then Place cover, then Place
 image. They never copy Place media into Kitchen.
@@ -30,9 +31,9 @@ guess from file names, aspect ratios, colours, or individual records.
 
 ## Transparent-media backdrop
 
-`Place.assets.backdrop_color` is an optional validated six-digit hex base for
+`Place.media_backdrop_color` is an optional validated six-digit hex base for
 transparent brand media used by Place-backed children. A Kitchen persists
-`identity.media_backdrop_color` only when it needs a different colour.
+`assets.backdrop_color` only when it needs a different colour.
 Resolution is Kitchen override, then Place base, then unset.
 
 The resolved colour may appear behind a transparent Kitchen logo, either
@@ -42,17 +43,39 @@ media.
 
 Writers accept files and persist canonical Firebase Storage download URLs for
 the exact entity-owned targets. Colour writers accept only `#rrggbb`.
-`place-assets.model.ts` owns the Place asset labels, Storage paths, and
-optimized source dimensions shown by the operator asset library. App runtime
-asset requirements remain a separate App-owned family.
 
-## Asset roles
+The cross-owner target is one asset-role language through
+`Place → Kitchen → App`: a role retains the same filename and relative path,
+while only its entity prefix changes. Apps now prove that shape with
+`apps/<appId>/img/app/<filename>` and the matching bundled
+`public/img/app/<filename>`. Existing Place and Kitchen Storage targets predate
+that convention. They remain readable compatibility paths until an explicit
+guarded Storage migration moves the objects and updates their recorded URLs;
+new presentation code must not treat those legacy paths as a second permanent
+asset system.
 
-Firestore and Storage use the same role vocabulary. The canonical targets are
-`places/{placeId}/image`, `/cover`, `/gallery/{imageId}`, `/logo`, and
-`/wordmark`; no version suffix or identity sub-tree changes those meanings.
-Bounded DTOs preserve the same `assets` object so consumers do not translate a
-second Place media schema. `assets.backdrop_color` has no Storage object.
+The bounded Misebox migration from the retired Place `assets` object to these
+canonical sparse Place fields is owned by
+`scripts/migrate-misebox-place-assets.mjs`. It verifies every referenced
+Storage object, preserves complete protected pre-images, and promotes exact
+Place logo and wordmark references into their canonical sparse Place fields.
+The one-time guarded recovery at
+`scripts/restore-misebox-place-identity.mjs` restores exact approved identity
+references from that protected pre-image when an earlier migration plan
+classified them as unsupported.
+
+## Compatibility and migration
+
+The pre-release `image_shade` values remain read-only compatibility input:
+`light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. New
+writes use only `media_backdrop_color`. Run
+`scripts/audit-place-kitchen-media-backdrops.mjs` to produce the bounded Live
+checklist. Asset-specific review annotations live in
+`scripts/data/misebox-media-backdrop-audit.json`; they may mark an opaque asset
+as requiring no backdrop or defer colour authority until a temporary asset is
+replaced. Any migration is a separate, explicitly approved production write;
+after all records are migrated, remove the compatibility decoder and legacy
+consumer types.
 
 ## Verification
 

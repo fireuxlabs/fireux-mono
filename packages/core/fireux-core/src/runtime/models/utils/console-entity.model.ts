@@ -1,34 +1,51 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './stamps.model'
 
-export interface FireuxConsoleAccess {
-  operator_ids: string[]
+export const FireuxConsoleEntityVisibilityModel = {
+  show: false as boolean,
+  active: true as boolean,
+  is_test: false as boolean,
+} as const
+
+export type FireuxConsoleEntityVisibility = {
+  [K in keyof typeof FireuxConsoleEntityVisibilityModel]: (typeof FireuxConsoleEntityVisibilityModel)[K]
 }
 
-export interface FireuxAppAccessRecord
-  extends FireuxStamped,
-    FireuxConsoleAccess {
-  id: string
-  team_ids: string[]
-  join_requests: string[]
+export const FireuxConsoleEntityIdentityModel = {
+  display_name: '' as string,
+  tagline: '' as string,
+  image_url: '' as string,
+  gallery: [] as string[],
+} as const
+
+export type FireuxConsoleEntityIdentity = {
+  [K in keyof typeof FireuxConsoleEntityIdentityModel]: (typeof FireuxConsoleEntityIdentityModel)[K]
 }
 
-export const FireuxConsoleAccessDefaults: FireuxConsoleAccess = {
-  operator_ids: [],
+export const FireuxConsoleAccessModel = {
+  operator_ids: [] as string[],
+} as const
+
+export type FireuxConsoleAccess = {
+  [K in keyof typeof FireuxConsoleAccessModel]: (typeof FireuxConsoleAccessModel)[K]
 }
 
-export const FireuxAppAccessRecordDefaults: FireuxAppAccessRecord = {
-  id: '',
-  ...FireuxConsoleAccessDefaults,
-  team_ids: [],
-  join_requests: [],
+export const FireuxAppAccessRecordModel = {
+  id: '' as string,
+  ...FireuxConsoleAccessModel,
+  team_ids: [] as string[],
+  join_requests: [] as string[],
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
-    app_id: undefined,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type FireuxAppAccessRecord = {
+  [K in keyof typeof FireuxAppAccessRecordModel]: (typeof FireuxAppAccessRecordModel)[K]
 }

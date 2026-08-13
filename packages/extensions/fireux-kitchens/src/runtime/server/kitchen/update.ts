@@ -3,7 +3,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { kitchenRootTarget } from './firestore-targets'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { readKitchenByRouteSlug } from './route-identity.ts'
 import {
   readKitchenMutationActor,
@@ -23,15 +23,15 @@ function request(value: unknown) {
   if (unsupported) throw createError({ statusCode: 400, statusMessage: `Kitchen update contains unsupported request field: ${unsupported}.` })
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
-    patches: parseKitchenUpdate(source.patch),
+    patch: parseKitchenUpdate(source.patch),
   }
 }
 
 export async function updateKitchen(event: H3Event, input: unknown) {
   const requested = request(input)
   const actor = await readKitchenMutationActor(event)
-  const slug = typeof requested.patches.root.slug === 'string'
-    ? requested.patches.root.slug
+  const slug = typeof requested.patch.slug === 'string'
+    ? requested.patch.slug
     : ''
   if (slug) {
     const conflict = await readKitchenByRouteSlug(getRuntimeFirestore(), slug)
@@ -47,20 +47,13 @@ export async function updateKitchen(event: H3Event, input: unknown) {
     const current = await requireKitchenMutationAuthority(
       mutations,
       actor,
-      requested.kitchenId
+      requested.kitchenId,
+      { allowRoot: true }
     )
-    if (Object.keys(requested.patches.root).length) {
-      mutations.update(kitchenRootTarget, requested.kitchenId, {
-        ...requested.patches.root,
-        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
-      })
-    }
-    if (Object.keys(requested.patches.console).length) {
-      mutations.update(current.supports, requested.kitchenId, {
-        ...requested.patches.console,
-        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
-      })
-    }
+    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
+      ...requested.patch,
+      updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
+    })
   })
   return { ok: true as const, kitchen_id: requested.kitchenId }
 }

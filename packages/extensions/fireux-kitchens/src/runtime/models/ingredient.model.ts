@@ -41,7 +41,6 @@ export const IngredientEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   console: false,
   root: IngredientStorage.path,
 })

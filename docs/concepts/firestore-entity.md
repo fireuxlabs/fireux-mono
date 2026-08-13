@@ -144,6 +144,15 @@ Example Firestore stack names, not automatic entity proof:
 - The root owns identity, lifecycle, domain truth, and child-owned relationship
   ids. It does not contain App access arrays. Property root also excludes its
   guest manual and references Place and optional Portfolio by id.
+- Every Console-capable root declares one exact `management` relationship:
+  `{ mode: 'root' }`, `{ mode: 'console' }`, or
+  `{ mode: 'app', app_id }`. The ladder is cumulative: Console implies root;
+  App implies Console and root. `console` always resolves to the ecosystem App
+  (`<ecosystem>-app`); neither configuration nor the root duplicates that id.
+  Only a dedicated App relationship stores `app_id`.
+- The management relationship selects the App support/operations host. It does
+  not relocate root truth, grant access, or replace the same-id App support
+  record.
 
 ## Model source contract
 
@@ -161,7 +170,7 @@ Example Firestore stack names, not automatic entity proof:
   Collection adapters type it as the named `App<Entity>` record, require the
   root, and project allowlisted fields instead of spreading it over identity.
   Supplier, Portfolio, Property, and Kitchen enforce that join. Kitchen also
-  requires its linked Place: Place owns physical identity and location media,
+  requires its same-id Place: Place owns physical identity and location media,
   Kitchen owns operational identity/configuration, and AppKitchen owns access
   only.
 - Property manual credentials live separately at
@@ -169,9 +178,10 @@ Example Firestore stack names, not automatic entity proof:
   queries never download that private support record.
 - ID-targeted Supplier, Portfolio, and Property joins exact-load requested App
   documents by id before composing the root surface. They do not list every App
-  record and filter in browser memory. The root must name the current App scope;
-  only complete, same-id root/App pairs enter the target collection.
-- A missing pair half, dangling App document, or root/App scope mismatch is an
+  record and filter in browser memory. The root management relationship must
+  resolve to the current App; only complete, same-id root/App pairs enter the
+  target collection.
+- A missing pair half, dangling App document, or root/App management mismatch is an
   error outcome, not a support-only entity, selectable stale row, or empty
   collection result.
 - A physically present but schema-invalid Property root is also an error in
@@ -183,26 +193,25 @@ Example Firestore stack names, not automatic entity proof:
   validation.
 - Root and App create/read seams have fixed paths and one shared id. Independent
   root/App deletes and generic App access mutation helpers are withheld until a
-  trusted lifecycle can maintain the family-owned root Console attachment and App-support access
+  trusted lifecycle can maintain root management and App-support access
   indexes together.
-- Shared console attachment re-reads the root returned by an idempotent create
-  before it checks App ownership. This closes accidental slug-collision attach
-  drift but is not a security or transaction boundary.
+- Console attachment remains domain-owned. Core defines and resolves management
+  modes but contains no registry or create factory for Kitchen, Supplier,
+  Property, Portfolio, or future Console families.
 - Property-to-Portfolio membership is `Property.portfolio_id`. The former
   nested full-Property reader under an App Portfolio is retired. The client
   query activates only after the selected Portfolio has been resolved through
-  its App access record, constrains `console.app_id` to that App, and then
-  exact-validates the returned Console attachment; owner-database Rules still have to
-  enforce that inheritance contract.
+  its App access record and then exact-validates each returned management
+  relationship; owner-database Rules still have to enforce that inheritance
+  contract.
 - Public Property browse uses the bounded server `/api/properties` projection;
   the browser never binds raw Property roots. Creation defaults publication to
   `draft`, and the projection emits only active, explicitly `published` roots.
   Browse cards stay unlinked until a bounded public detail read exists.
 - Current source: Supplier, Supplier Item, Product, Ingredient, Portfolio, and
   Property model/fetch/mutation stacks.
-  Shape guard: `scripts/guards/root-app-support-authority.mjs`.
-  Protected existing-root alignment:
-  `scripts/migrate-console-root-attachments.mjs`.
+  Shape guards: `scripts/guards/root-app-support-authority.mjs` and
+  `scripts/guards/entity-management.mjs`.
 
 ## Migration and drift register
 
@@ -232,9 +241,7 @@ Example Firestore stack names, not automatic entity proof:
 
 - Keep ordinary entity stacks boring: root seam plus `fetch`, `mutations`,
   `seo`, and `utils` only when used.
-- Preserve explicit read outcomes. App Console projections require complete
-  root/App-support pairs; an unattached canonical root remains independently
-  valid outside that projection.
+- Preserve explicit read outcomes and complete root/App-support pairs.
 
 ### Next
 

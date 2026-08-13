@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: define the bounded preview and atomic completion contract.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: define a sparse root override over Place colours.
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
-import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model'
 
 export type KitchenOnboardingAction =
   | 'create'
@@ -39,14 +38,4 @@ export type KitchenOnboardingCompleteResult = {
   created_app_support: boolean
   slug?: string
   palette_override?: SparseBrandPalette
-}
-
-export type KitchenOnboardingPlaceOption = {
-  place: PublicPlaceProjection
-  kitchen_id?: string
-  existing_kitchen: boolean
-}
-
-export type KitchenOnboardingPlacesResult = {
-  items: KitchenOnboardingPlaceOption[]
 }

@@ -26,6 +26,7 @@ const app = initializeApp(
   `kitchen-authority-${ecosystem}-${databaseId}`
 )
 const db = getFirestore(app, databaseId)
+const ecosystemAppId = `${ecosystem}-app`
 
 const text = value => String(value ?? '').trim()
 const record = value =>
@@ -36,6 +37,26 @@ const exactKeys = (value, keys) => {
   return actual.length === expected.length &&
     actual.every((key, index) => key === expected[index])
 }
+const readManagement = value => {
+  const management = record(value)
+  if (!management) return null
+  if (
+    (management.mode === 'root' || management.mode === 'console') &&
+    exactKeys(management, ['mode'])
+  ) return management
+  if (
+    management.mode === 'app' &&
+    exactKeys(management, ['mode', 'app_id']) &&
+    text(management.app_id)
+  ) return management
+  return null
+}
+const managementAppId = management =>
+  management?.mode === 'console'
+    ? ecosystemAppId
+    : management?.mode === 'app'
+      ? text(management.app_id)
+      : ''
 const ids = (value, limit) => {
   if (!Array.isArray(value) || value.length > limit) return null
   const normalized = value.map(text)
@@ -44,17 +65,6 @@ const ids = (value, limit) => {
 }
 const issue = (kind, context) => issues.push({ kind, ...context })
 const issues = []
-const storageObjectPath = (value) => {
-  const url = text(value)
-  if (!url) return ''
-  try {
-    const parsed = new URL(url)
-    const encoded = parsed.pathname.match(/\/o\/([^/]+)$/)?.[1] || ''
-    return decodeURIComponent(encoded)
-  } catch {
-    return '<invalid-url>'
-  }
-}
 
 const [appSnapshot, kitchenSnapshot, placeSnapshot, userSnapshot] = await Promise.all([
   db.collection('apps').get(),
@@ -78,7 +88,6 @@ for (const appDoc of appSnapshot.docs) {
   for (const doc of supportSnapshot.docs) {
     const key = `${appDoc.id}/${doc.id}`
     const data = doc.data() || {}
-    const consoleConfig = record(data.console)
     appSupports.set(key, data)
     const operatorIds = ids(data.operator_ids, 50)
     const teamIds = ids(data.team_ids, 100)
@@ -88,16 +97,15 @@ for (const appDoc of appSnapshot.docs) {
       teamSnapshot.docs.map(member => text(member.data().user_id)).filter(Boolean)
     )
     if (
-      !exactKeys(data, ['operator_ids', 'team_ids', 'join_requests', 'console', 'created', 'updated']) ||
-      !operatorIds || !teamIds || !joinRequests ||
-      !consoleConfig ||
-      Object.keys(consoleConfig).some(key => ![
-        'menus',
-        'orders',
-        'tables',
-        'fulfilment',
-        'integrations',
-      ].includes(key))
+      !exactKeys(data, [
+        'console',
+        'operator_ids',
+        'team_ids',
+        'join_requests',
+        'created',
+        'updated',
+      ]) ||
+      !operatorIds || !teamIds || !joinRequests
     ) {
       issue('malformed_app_kitchen_support', {
         app_id: appDoc.id,
@@ -123,62 +131,36 @@ for (const appDoc of appSnapshot.docs) {
   }
 }
 
-const kitchensByPlace = new Map()
 for (const [kitchenId, kitchen] of kitchens) {
   const context = { kitchen_id: kitchenId }
-  const placeId = text(kitchen.place_id)
-  const scope = record(kitchen.console)
-  const appRole = text(scope?.app_role)
-  const appId = text(scope?.app_id)
-  const published = kitchen.visibility === true && text(kitchen.status) === 'active'
+  const management = readManagement(kitchen.management)
+  const appId = managementAppId(management)
+  const published = kitchen.visibility === true
   const slug = text(kitchen.slug)
 
   if (
-    !scope ||
-    !exactKeys(scope, ['app_id', 'app_role']) ||
-    !['parent', 'tenant'].includes(appRole) ||
-    !appId ||
+    !management ||
+    Object.hasOwn(kitchen, 'app_scope') ||
     Object.hasOwn(kitchen, 'app_scope_state') ||
     Object.hasOwn(kitchen, 'app_scope_app_id') ||
-    Object.hasOwn(kitchen, 'app_id')
+    Object.hasOwn(kitchen, 'console')
   ) {
-    issue('invalid_kitchen_console_attachment', {
+    issue('invalid_kitchen_management', {
       ...context,
-      console: scope,
-      legacy_keys: ['app_scope_state', 'app_scope_app_id', 'app_id']
+      management,
+      retired_keys: ['app_scope', 'app_scope_state', 'app_scope_app_id', 'console']
         .filter(key => Object.hasOwn(kitchen, key)),
     })
   }
-  const assets = record(kitchen.assets) || {}
-  for (const role of ['image', 'logo', 'wordmark']) {
-    const objectPath = storageObjectPath(assets[role])
-    if (objectPath && objectPath !== `kitchens/${kitchenId}/${role}`) {
-      issue('noncanonical_kitchen_asset_path', {
-        ...context,
-        role,
-        object_path: objectPath,
-        expected_path: `kitchens/${kitchenId}/${role}`,
-      })
-    }
-  }
   if (appId && !apps.has(appId)) issue('missing_kitchen_app', { ...context, app_id: appId })
-  if (!placeId || !places.has(placeId)) {
-    issue('missing_kitchen_place', { ...context, place_id: placeId })
-  } else {
-    if (kitchenId !== placeId) {
-      issue('kitchen_place_id_mismatch', { ...context, place_id: placeId })
-    }
-    const placeIds = kitchensByPlace.get(placeId) || []
-    placeIds.push(kitchenId)
-    kitchensByPlace.set(placeId, placeIds)
-  }
+  if (!places.has(kitchenId)) issue('missing_same_id_kitchen_place', context)
   if (appId && !appSupports.has(`${appId}/${kitchenId}`)) {
     issue('missing_same_id_app_kitchen_support', { ...context, app_id: appId })
   }
   for (const supportKey of appSupports.keys()) {
     const [supportAppId, supportKitchenId] = supportKey.split('/')
-    if (supportKitchenId === kitchenId && appId && supportAppId !== appId) {
-      issue('app_kitchen_support_scope_mismatch', {
+    if (supportKitchenId === kitchenId && supportAppId !== appId) {
+      issue('app_kitchen_support_management_mismatch', {
         ...context,
         app_id: appId,
         support_app_id: supportAppId,
@@ -198,39 +180,6 @@ for (const [kitchenId, kitchen] of kitchens) {
   ) {
     issue('kitchen_root_contains_access_authority', { ...context })
   }
-  const rootConsoleFields = [
-    'menus',
-    'orders',
-    'tables',
-    'fulfilment',
-    'sproochli',
-  ].filter(key => Object.hasOwn(kitchen, key))
-  if (rootConsoleFields.length) {
-    issue('kitchen_root_contains_console_config', {
-      ...context,
-      fields: rootConsoleFields,
-    })
-  }
-  if (
-    typeof kitchen.visibility !== 'boolean' ||
-    !['active', 'paused', 'archived'].includes(text(kitchen.status)) ||
-    !exactKeys(kitchen.identity, ['name', 'tagline']) ||
-    !exactKeys(kitchen.assets, ['image', 'logo', 'wordmark', 'backdrop_color'])
-  ) {
-    issue('invalid_kitchen_root_shape', {
-      ...context,
-      status: kitchen.status,
-      visibility: kitchen.visibility,
-      identity_keys: Object.keys(record(kitchen.identity) || {}).sort(),
-      asset_keys: Object.keys(record(kitchen.assets) || {}).sort(),
-    })
-  }
-}
-
-for (const [placeId, kitchenIds] of kitchensByPlace) {
-  if (kitchenIds.length > 1) {
-    issue('multiple_kitchens_for_place', { place_id: placeId, kitchen_ids: kitchenIds.sort() })
-  }
 }
 
 for (const [slug, kitchenIds] of kitchensBySlug) {
@@ -241,6 +190,7 @@ for (const [slug, kitchenIds] of kitchensBySlug) {
 
 let userTargetDocuments = 0
 let kitchenTargetIds = 0
+const targetedKitchenIds = new Set()
 for (const userDoc of userSnapshot.docs) {
   const target = await userDoc.ref.collection('private').doc('targets').get()
   if (!target.exists) continue
@@ -254,8 +204,9 @@ for (const userDoc of userSnapshot.docs) {
   }
   kitchenTargetIds += targetIds.length
   for (const kitchenId of targetIds) {
+    targetedKitchenIds.add(kitchenId)
     const kitchen = kitchens.get(kitchenId)
-    const appId = text(record(kitchen?.console)?.app_id)
+    const appId = managementAppId(readManagement(kitchen?.management))
     const support = appSupports.get(`${appId}/${kitchenId}`)
     const authorized = new Set([
       ...(ids(support?.operator_ids, 50) || []),
@@ -268,6 +219,28 @@ for (const userDoc of userSnapshot.docs) {
         app_id: appId,
       })
     }
+  }
+}
+
+const targetKitchens = [...targetedKitchenIds]
+  .sort()
+  .map(kitchenId => {
+    const kitchen = kitchens.get(kitchenId) || {}
+    const place = places.get(kitchenId) || {}
+    return {
+      id: kitchenId,
+      name: text(record(kitchen.identity)?.name || place.name),
+      management: readManagement(kitchen.management),
+    }
+  })
+
+for (const [kitchenId, kitchen] of kitchens) {
+  const management = readManagement(kitchen.management)
+  if (management?.mode !== 'root' && !targetedKitchenIds.has(kitchenId)) {
+    issue('managed_kitchen_without_console_target', {
+      kitchen_id: kitchenId,
+      management,
+    })
   }
 }
 
@@ -285,6 +258,7 @@ console.log(JSON.stringify({
     kitchen_target_ids: kitchenTargetIds,
     issues: issues.length,
   },
+  target_kitchens: targetKitchens,
   issues,
 }, null, 2))
 

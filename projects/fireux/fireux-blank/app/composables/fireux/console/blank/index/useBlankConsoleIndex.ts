@@ -42,6 +42,7 @@ export function useBlankConsoleIndex() {
 
   return useConsoleIndex({
     selection,
+    selectedId: computed(() => consoleSelection.blankId.value),
     runtime,
     targets: blanks.targets,
     outcome: blanks.outcome,

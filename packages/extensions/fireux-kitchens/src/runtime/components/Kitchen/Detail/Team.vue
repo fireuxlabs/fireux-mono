@@ -126,7 +126,7 @@ const claimedBy = computed(() => clean(props.kitchen?.claimed_by))
 const ownerFetch = useUserFetch(claimedBy)
 const { pill } = useUserInterface()
 const ownerCard = computed(() => pill(ownerFetch.user.value))
-const operatorAppId = computed(() => clean(props.kitchen?.console?.app_id))
+const operatorAppId = computed(() => clean(props.kitchen?.management_app_id))
 const operatorCollectionPath = computed(() =>
   operatorAppId.value
     ? resolveKitchenScopeCollectionPath(operatorAppId.value)

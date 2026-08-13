@@ -120,7 +120,7 @@ const featured = computed(() =>
         id,
         name: clean(entry.name) || id,
         description: clean(entry.description),
-        imageUrl: clean(entry.assets?.image || entry.src),
+        imageUrl: clean(entry.image_url || entry.src),
         sourceUrl: clean(entry.website_url),
         appCount: countApps(entry.appCount),
         to: id ? `/ecosystems/${encodeURIComponent(id)}` : '',

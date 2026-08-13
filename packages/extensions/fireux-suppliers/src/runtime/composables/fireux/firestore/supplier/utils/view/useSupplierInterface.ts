@@ -28,7 +28,7 @@ export namespace SupplierCard {
     avatarUrl: string
     logoImageUrl: string
     placeImageUrl: string
-    imageShade: 'light' | 'dark' | 'none'
+    imageShade: PublicCompanyProjection['image_shade']
     title: string
     subtitle: string
     badges: string[]
@@ -121,7 +121,7 @@ export function useSupplierInterface(
     const headline = safeString(target.supplier_headline)
     const summary = safeString(target.summary)
     const logoImageUrl = safeString(target.supplier_image)
-    const placeImageUrl = safeString(target.company_place?.assets.image)
+    const placeImageUrl = safeString(target.company_place?.image_url)
     const imageUrl = placeImageUrl || logoImageUrl
     const headquartersLabel =
       safeString(target.company_place?.short_address) ||
@@ -136,7 +136,7 @@ export function useSupplierInterface(
       avatarUrl: logoImageUrl || imageUrl,
       logoImageUrl,
       placeImageUrl,
-      imageShade: 'none',
+      imageShade: target.company_place?.image_shade || 'none',
       title: organizationName,
       subtitle: headline,
       badges,

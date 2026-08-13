@@ -2,7 +2,7 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
 import {
-  FireuxAppAccessRecordDefaults,
+  FireuxAppAccessRecordModel,
   type FireuxAppAccessRecord,
 } from '../utils/console-entity.model'
 
@@ -16,25 +16,19 @@ export interface ProjectIdentity {
 export interface ProjectPresentation {
   name: string
   description: string
-}
-
-export interface ProjectAssets {
-  image: string
+  image_url: string
 }
 
 export interface Project
   extends FireuxStamped,
     ProjectIdentity,
-    ProjectPresentation {
-  assets: ProjectAssets
-}
+    ProjectPresentation {}
 
 /** Local `(default)` projection for this Firebase project's Project. */
 export interface ProjectMeta
   extends ProjectIdentity,
     ProjectPresentation,
     Pick<FireuxStamped, 'updated'> {
-  assets: ProjectAssets
   database_id: string
 }
 
@@ -46,12 +40,6 @@ export const ProjectStorage = {
   path: 'projects/{projectId}',
   collection: 'projects',
   idParam: 'projectId',
-} as const
-
-export const ProjectAssetsStorage = {
-  shape: 'entity-assets',
-  root: 'projects/{projectId}',
-  image: 'projects/{projectId}/image',
 } as const
 
 export const ProjectMetaStorage = {
@@ -80,7 +68,6 @@ export const ProjectEntity = defineFireuxEntity({
   authority: 'fireux-control-plane',
   appSupport: 'access-record',
   publicRead: 'projection',
-  status: 'confirmed',
   console: true,
   root: ProjectStorage.path,
   appSupportPath: AppProjectStorage.path,
@@ -94,16 +81,12 @@ export const ProjectIdentityDefaults: ProjectIdentity = {
 export const ProjectPresentationDefaults: ProjectPresentation = {
   name: '',
   description: '',
-}
-
-export const ProjectAssetsDefaults: ProjectAssets = {
-  image: '',
+  image_url: '',
 }
 
 export const ProjectDefaults: Project = {
   ...ProjectIdentityDefaults,
   ...ProjectPresentationDefaults,
-  assets: ProjectAssetsDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -118,7 +101,6 @@ export const ProjectDefaults: Project = {
 export const ProjectMetaDefaults: ProjectMeta = {
   ...ProjectIdentityDefaults,
   ...ProjectPresentationDefaults,
-  assets: ProjectAssetsDefaults,
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,
@@ -127,12 +109,12 @@ export const ProjectMetaDefaults: ProjectMeta = {
 }
 
 export const AppProjectDefaults: AppProject = {
-  ...FireuxAppAccessRecordDefaults,
+  ...FireuxAppAccessRecordModel,
 }
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &
-  Partial<Pick<Project, 'description' | 'assets' | 'status'>>
+  Partial<Pick<Project, 'description' | 'image_url' | 'status'>>
 export type ProjectUpdateInput = Partial<
-  Pick<Project, 'name' | 'description' | 'assets' | 'status'>
+  Pick<Project, 'name' | 'description' | 'image_url' | 'status'>
 >
 export type ProjectMetaInput = Omit<ProjectMeta, 'updated'>

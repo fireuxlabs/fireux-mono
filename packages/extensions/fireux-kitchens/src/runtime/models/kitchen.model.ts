@@ -3,8 +3,11 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { CurrencyDisplayFormat } from './shared/currency-display.model'
-import type { PageStyle, SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './kitchen/order.model'
@@ -22,19 +25,18 @@ type WidenLiteral<T> =
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Domain
- * Storage: canonical root plus App-scoped Console attachment
+ * Storage: root canonical record plus app-scoped record
  * Root path: /kitchens/<kitchenId>
  * App path: /apps/<appId>/kitchens/<kitchenId>
  * Child scope: /apps/<appId>/kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Kitchen is one domain entity with a canonical root and an optional App-hosted Console attachment.
- * - The root stays thin: Place dependency, route identity, lifecycle, sparse presentation, and an optional Console locator.
- * - AppKitchen carries access and Console configuration. Operational records live beneath it.
- * - Browse depth is a bounded projection and never changes root or Console ownership.
+ * - Kitchen is one domain entity with a canonical root and an App-hosted access record.
+ * - The root record stays thin and canonical; the app-scoped record carries governance and private operational state.
+ * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
  * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
  * - App authority stays user-based in the app-scoped record; Chef is an optional presentation/authorship layer, not the ownership model.
- * - Kitchen-owned operational children live beneath the AppKitchen attachment.
+ * - Kitchen-owned operational children should live beneath the app-hosted record.
  * - If that rule changes later, update the models README first, then this file.
  */
 export const KitchenStorage = {
@@ -74,20 +76,12 @@ export type KitchenMediaBackdropColor = `#${string}`
 /** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type KitchenImageShade = 'light' | 'dark' | 'none'
 
-export type KitchenStatus = 'active' | 'paused' | 'archived'
-
-export type KitchenConsoleAttachment = {
-  app_id: string
-  app_role: 'parent' | 'tenant'
-}
-
 export type KitchenIdentity = {
   /** Sparse override; empty means inherit the linked Place name. */
   name: string
   tagline: string
 }
 
-/** Sparse Kitchen-owned overrides. Empty roles inherit from the linked Place. */
 export type KitchenAssets = {
   image: string
   logo: string
@@ -152,6 +146,7 @@ export type KitchenFulfilmentConfig = {
 }
 
 export type KitchenConsoleConfig = {
+  theme?: ConsoleTheme
   menus?: KitchenMenusConfig
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig
@@ -169,7 +164,6 @@ export const KitchenEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'projection',
-  status: 'confirmed',
   console: true,
   root: KitchenStorage.path,
   appSupportPath: AppKitchenStorage.path,
@@ -177,10 +171,9 @@ export const KitchenEntity = defineFireuxEntity({
 
 export const KitchenDefaults = {
   id: '',
-  place_id: '',
   slug: '',
-  status: 'active' as KitchenStatus,
   visibility: false,
+  management: FireuxEntityManagementDefaults,
 
   identity: {
     name: '',
@@ -193,8 +186,6 @@ export const KitchenDefaults = {
     wordmark: '',
     backdrop_color: '',
   } as KitchenAssets,
-
-  brand_palette: {} as SparseBrandPalette,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -214,7 +205,7 @@ export type Kitchen = Omit<
   {
     identity: KitchenIdentity
     assets: KitchenAssets
-    console?: KitchenConsoleAttachment
+    management: FireuxEntityManagement
   }
 
 export type AppKitchen = {
@@ -222,9 +213,9 @@ export type AppKitchen = {
   operator_ids: string[]
   team_ids: string[]
   join_requests: string[]
-  console: KitchenConsoleConfig
   created: FireuxStamped['created']
   updated: FireuxStamped['updated']
+  console: KitchenConsoleConfig
 }
 
 export const AppKitchenDefaults: AppKitchen = {
@@ -248,20 +239,17 @@ export type KitchenCreateInput = Partial<
   Pick<
     Kitchen,
     | 'id'
-    | 'place_id'
     | 'slug'
     | 'identity'
     | 'assets'
-    | 'brand_palette'
-    | 'status'
-    | 'visibility'
+    | 'management'
   >
 >
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
-    'slug' | 'identity' | 'assets' | 'brand_palette' | 'status' | 'visibility'
+    'slug' | 'identity' | 'assets' | 'visibility' | 'management'
   >
 > & {
   'identity.name'?: string
@@ -270,18 +258,4 @@ export type KitchenUpdateInput = Partial<
   'assets.logo'?: string
   'assets.wordmark'?: string
   'assets.backdrop_color'?: string
-}
-
-export type AppKitchenConsoleUpdateInput = {
-  'menus.currency_format'?: CurrencyDisplayFormat
-  'menus.show_currency'?: boolean
-  'menus.available'?: boolean
-  'orders.modes'?: string[]
-  'orders.default_lead_time_minutes'?: number
-  'orders.acceptance_required'?: boolean
-  'orders.operation_hours'?: WeekdayTimeWindowsConfig | null
-  'orders.printing'?: KitchenOrdersConfig['printing'] | null
-  'tables.count'?: number
-  fulfilment?: KitchenFulfilmentConfig
-  sproochli?: SproochliAttachmentConfig | null
 }

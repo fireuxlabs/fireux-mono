@@ -51,9 +51,6 @@ export function useConsoleSelection<TTarget = never>(
     `fireux-console-${appScope}-${normalizedFamily}-selection-state`,
     () => stateCookie.value ?? null
   )
-  // Commit shared session state and persistence together. `useCookie()` refs
-  // are local to each composable instance, so watcher-based synchronization can
-  // lag behind navigation into a selection-gated route.
   const commitSelection = (value: ConsoleSelectionState | null) => {
     state.value = value
     stateCookie.value = value
@@ -125,8 +122,6 @@ export function useConsoleSelection<TTarget = never>(
   )
 
   if (options?.enforcedTargetId) {
-    // A family policy may explicitly commit one authority-proven target. This
-    // is the only target-outcome-driven selection mutation.
     watch(
       () => ({
         enforcedId: normalizeString(unref(options.enforcedTargetId)),

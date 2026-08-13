@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <PortfolioCreateSystem mode="public" :cancel-to="cancelTo" :return-to="returnTo" />
+      <PortfolioCreateSystem mode="root" :cancel-to="cancelTo" :return-to="returnTo" />
     </UPageBody>
   </UPage>
 </template>

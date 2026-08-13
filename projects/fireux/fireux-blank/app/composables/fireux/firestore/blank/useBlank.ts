@@ -16,7 +16,10 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import {
   BlankStorage,
   type AppBlank,
@@ -43,7 +46,7 @@ export function blankAppCollectionPath(appId: string) {
 }
 
 export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
-  const { appId } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
   const { uid } = useAuth()
   const db = useFirestore()
   const { firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
@@ -115,6 +118,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
         blank: { ...blank, id },
         appSupport,
         appId: text(appId),
+        ecosystem,
       })
       return surface ? [surface] : []
     })
@@ -168,10 +172,12 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       ) {
         failures.push(`${id}: current user lacks support access`)
       }
-      const scopeState = normalizeFireuxAppScopeState(root.app_scope_state)
+      const management = readFireuxEntityManagement(root.management)
       if (
-        (scopeState !== 'parent_app' && scopeState !== 'tenant_app') ||
-        text(root.app_scope_app_id) !== text(appId)
+        !management ||
+        management.mode === 'root' ||
+        resolveFireuxEntityManagementAppId(management, ecosystem) !==
+          text(appId)
       ) {
         failures.push(`${id}: root/App scope mismatch`)
       }

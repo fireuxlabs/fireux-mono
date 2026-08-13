@@ -1,0 +1,182 @@
+{
+  "format": "fireux-misebox-level-one-identity-manifest/1",
+  "brief_status": "designer-locked",
+  "scope": "Level One identity inputs for Friiites and Deano's Smash",
+  "policy": {
+    "required_roles_per_brand": ["wordmark-on-light", "wordmark-on-dark"],
+    "required_format": "PNG",
+    "background": "transparent",
+    "preferred_master_canvas": { "width": 1600, "height": 500, "qualification": "where approved geometry permits" },
+    "geometry_contract": [
+      "Both surface roles preserve identical geometry, spacing, typography, scale, aspect ratio, visible bounds, and internal padding.",
+      "Surface variants change only approved colour treatment required for contrast.",
+      "No recreated lettering, substitute font, approximate trace, effect, mockup background, shadow, crop, or extra padding.",
+      "One file may satisfy both surface roles only after explicit designer confirmation recorded in this manifest.",
+      "A vector master is accepted only when it genuinely exists and all lettering and marks are outlined paths; SVG text and linked raster images are rejected."
+    ],
+    "excluded_level_one_work": [
+      "food photography",
+      "packaging variants",
+      "scene mockups",
+      "image generation",
+      "identity reconstruction"
+    ],
+    "missing_asset_rule": "A role without an explicitly approved matching file is blocked; no substitute or fallback may be fabricated."
+  },
+  "brands": [
+    {
+      "brand": "Friiites",
+      "invariants": [
+        "The wordmark reads FR + exactly III + TES.",
+        "The three III strikes retain the approved gold signature accent.",
+        "No fourth bar, missing bar, altered spelling, or rearranged lockup is permitted."
+      ],
+      "same_file_for_both_roles": {
+        "allowed": false,
+        "designer_confirmation": null,
+        "status": "not requested because distinct existing surface candidates are available"
+      },
+      "vector_master": {
+        "status": "blocked",
+        "approved_filename": null,
+        "finding": "No qualifying outlined vector master is confirmed.",
+        "rejected_candidates": [
+          {
+            "filename": "projects/misebox/friiites/public/img/app/brand/logo-wordmark-master.svg",
+            "reason": "Contains live SVG text and font declarations; it is not outlined artwork."
+          },
+          {
+            "filename": "projects/misebox/friiites/public/img/app/brand/wordmark-light-clean-alternate.svg",
+            "reason": "Contains live SVG text and font declarations; it is not outlined artwork."
+          },
+          {
+            "filename": "projects/misebox/friiites/public/img/app/brand/wordmark-dark-clean-alternate.svg",
+            "reason": "Contains live SVG text and font declarations; it is not outlined artwork."
+          }
+        ],
+        "requirement": "Supply the original approved vector master with all geometry converted to outlined paths, or retain PNG-only authority."
+      },
+      "roles": [
+        {
+          "brand": "Friiites",
+          "role": "wordmark-on-light",
+          "intended_surface": "light",
+          "required_filename": "wordmark-on-light.png",
+          "approval_status": "blocked-pending-explicit-designer-approval",
+          "master_filename": "projects/misebox/friiites/public/img/app/wordmark-light.png",
+          "candidate_status": "existing source-backed PNG candidate",
+          "dimensions": { "width": 1600, "height": 500 },
+          "visible_bounds": { "width": 1472, "height": 444, "left": 64, "top": 28, "right": 64, "bottom": 28 },
+          "transparent_background": true,
+          "sha256": "c0f55dcf54ead608ab80635c439d47982f8d33a9800b1208c61d061d03a46be1",
+          "geometry_match_group": "friiites-wordmark-1600x500-v1",
+          "usage_notes": "Dark lettering with the approved gold III accent for light surfaces. Use for horizontal headers and wide Hero identity where the complete wordmark remains legible.",
+          "minimum_size_notes": "Designer must approve the minimum rendered width after checking the FR, three gold strikes, and TES remain distinct; no repository minimum is asserted before approval.",
+          "blocker": "The file meets the dimensional and visible-bounds brief, but the manifest contains no explicit designer approval record for its geometry."
+        },
+        {
+          "brand": "Friiites",
+          "role": "wordmark-on-dark",
+          "intended_surface": "dark",
+          "required_filename": "wordmark-on-dark.png",
+          "approval_status": "blocked-pending-explicit-designer-approval",
+          "master_filename": "projects/misebox/friiites/public/img/app/wordmark-dark.png",
+          "candidate_status": "existing source-backed PNG candidate",
+          "dimensions": { "width": 1600, "height": 500 },
+          "visible_bounds": { "width": 1472, "height": 444, "left": 64, "top": 28, "right": 64, "bottom": 28 },
+          "transparent_background": true,
+          "sha256": "6fec7a86b9f7b5c2c0cf9ad8ea340b4ab47d2a10f0e272177193851a630171b4",
+          "geometry_match_group": "friiites-wordmark-1600x500-v1",
+          "usage_notes": "Warm-cream lettering with the approved gold III accent for dark surfaces. Use for horizontal headers and wide Hero identity where the complete wordmark remains legible.",
+          "minimum_size_notes": "Designer must approve the minimum rendered width after checking the FR, three gold strikes, and TES remain distinct; no repository minimum is asserted before approval.",
+          "blocker": "The file meets the dimensional and visible-bounds brief, but the manifest contains no explicit designer approval record for its geometry."
+        }
+      ],
+      "pair_qa": {
+        "matching_canvas": true,
+        "matching_aspect_ratio": true,
+        "matching_visible_bounds": true,
+        "matching_internal_padding": true,
+        "matching_scale": true,
+        "distinct_surface_files": true,
+        "approved_geometry": false,
+        "status": "blocked"
+      }
+    },
+    {
+      "brand": "Deano's Smash",
+      "invariants": [
+        "The current burger artwork remains a combined logo lockup unless a designer classifies it differently.",
+        "A dedicated horizontal wordmark is required for headers and wide Hero use when the burger lockup remains combined.",
+        "No lettering, burger illustration, underline, banner, colour treatment, or spacing may be reconstructed from the combined lockup."
+      ],
+      "current_identity_finding": {
+        "source": "demo/misebox-app/kitchens/deanos/logo.png",
+        "dimensions": { "width": 768, "height": 768 },
+        "sha256": "0ee89b5a31f586a47c40da25f58205ee073a3426f7f2f16996a73fef4847d4b8",
+        "classification": "combined logo lockup",
+        "evidence": "Square artwork combines a burger illustration, burst, DEANOS lettering, and SMASH BURGER banner.",
+        "wordmark_qualification": "does not qualify as the dedicated horizontal Level One wordmark",
+        "approval_status": "existing Demo identity asset; dedicated wordmark approval not established"
+      },
+      "same_file_for_both_roles": {
+        "allowed": false,
+        "designer_confirmation": null,
+        "status": "blocked; no dedicated horizontal wordmark file exists"
+      },
+      "vector_master": {
+        "status": "blocked",
+        "approved_filename": null,
+        "finding": "No original approved outlined vector wordmark master is present in the current source or Demo media manifest.",
+        "requirement": "Designer supplies an original approved horizontal wordmark vector with outlined paths, if one genuinely exists; otherwise PNG masters remain authority."
+      },
+      "roles": [
+        {
+          "brand": "Deano's Smash",
+          "role": "wordmark-on-light",
+          "intended_surface": "light",
+          "required_filename": "wordmark-on-light.png",
+          "approval_status": "blocked-missing-approved-file",
+          "master_filename": null,
+          "dimensions": null,
+          "usage_notes": "Dedicated horizontal wordmark for headers and wide Hero identity on light surfaces; it must not include the burger illustration or mockup background unless the designer explicitly reclassifies and approves a horizontal combined lockup.",
+          "minimum_size_notes": "Designer supplies the approved minimum rendered width with the final master.",
+          "blocker": "The only current identity source is a square combined burger logo lockup. No dedicated approved horizontal light-surface wordmark is available."
+        },
+        {
+          "brand": "Deano's Smash",
+          "role": "wordmark-on-dark",
+          "intended_surface": "dark",
+          "required_filename": "wordmark-on-dark.png",
+          "approval_status": "blocked-missing-approved-file",
+          "master_filename": null,
+          "dimensions": null,
+          "usage_notes": "Dedicated horizontal wordmark for headers and wide Hero identity on dark surfaces; it must not include the burger illustration or mockup background unless the designer explicitly reclassifies and approves a horizontal combined lockup.",
+          "minimum_size_notes": "Designer supplies the approved minimum rendered width with the final master.",
+          "blocker": "The only current identity source is a square combined burger logo lockup. No dedicated approved horizontal dark-surface wordmark is available."
+        }
+      ],
+      "pair_qa": {
+        "matching_canvas": false,
+        "matching_aspect_ratio": false,
+        "matching_visible_bounds": false,
+        "matching_internal_padding": false,
+        "matching_scale": false,
+        "distinct_surface_files": false,
+        "approved_geometry": false,
+        "status": "blocked"
+      }
+    }
+  ],
+  "acceptance_qa": [
+    "Both required PNG files exist for each brand and carry explicit designer approval.",
+    "Each PNG has a transparent background and no mockup, texture, shadow, or environmental effect.",
+    "The light- and dark-surface files have matching canvas dimensions, aspect ratio, scale, visible bounds, and internal padding.",
+    "An overlay test shows identical silhouettes and placement except for approved surface colour changes.",
+    "Friiites reads FR + exactly III + TES and preserves the gold signature accent.",
+    "Deano's files are dedicated horizontal wordmarks, or an explicit designer decision reclassifies and approves a horizontal combined lockup for these roles.",
+    "Any supplied vector master contains outlined paths only and no SVG text, font dependency, linked image, or embedded raster.",
+    "Metadata records brand, role, intended surface, approval status, master filename, dimensions, usage notes, and minimum-size notes.",
+    "No Level One acceptance depends on food photography, packaging, or scene imagery."
+  ]
+}

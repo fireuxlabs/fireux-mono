@@ -211,7 +211,7 @@ export function useDevKitchenCollection(
   const testPlaceIds = computed(() =>
     sourceRef.value === 'test'
       ? rootDocs.value
-        .map(kitchen => normalize(kitchen.place_id))
+        .map(kitchen => normalize(kitchen.id))
         .filter(Boolean)
       : []
   )
@@ -239,12 +239,12 @@ export function useDevKitchenCollection(
       return undefined
     }
     const invalid = rootDocs.value.find(kitchen => {
-      const placeId = normalize(kitchen.place_id)
+      const placeId = normalize(kitchen.id)
       return !placeId || !testPlacesById.value.has(placeId)
     })
     return invalid
       ? new Error(
-          `Simulation Kitchen ${normalize(invalid.id) || '(unknown)'} is missing its canonical Place.`
+          `Test Kitchen ${normalize(invalid.id) || '(unknown)'} is missing its canonical Place.`
         )
       : undefined
   })
@@ -259,7 +259,7 @@ export function useDevKitchenCollection(
           if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
         }
         const testPlace = sourceRef.value === 'test'
-          ? testPlacesById.value.get(normalize(kitchen.place_id)) ?? null
+          ? testPlacesById.value.get(normalize(kitchen.id)) ?? null
           : null
         if (sourceRef.value === 'test' && !testPlace) return null
 
@@ -269,7 +269,10 @@ export function useDevKitchenCollection(
             ...kitchen,
             id,
           },
-          console: { mode: sourceRef.value === 'live' ? 'live' : 'demo' },
+          routeScope:
+            sourceRef.value === 'demo' || sourceRef.value === 'test'
+              ? sourceRef.value
+              : kitchen.route_scope,
         })
       })
       .filter(Boolean) as KitchenCollectionDoc[]

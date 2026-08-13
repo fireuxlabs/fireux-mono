@@ -12,28 +12,9 @@ import type {
 export function resolveAppOnboardingPolicy(
   config: Readonly<FireUXConfig>
 ): AppOnboardingPolicy {
-  const primary_entity_options = config.consoleRegistry.flatMap(
-    registration => {
-      const onboarding = registration.appOnboarding
-      if (
-        !onboarding ||
-        onboarding.primaryEntity !== 'required' ||
-        !onboarding.label.trim() ||
-        !onboarding.description.trim() ||
-        !onboarding.rootOnboardingPath.startsWith('/')
-      ) return []
-      return [{
-        family: registration.family,
-        label: onboarding.label.trim(),
-        description: onboarding.description.trim(),
-        root_onboarding_path: onboarding.rootOnboardingPath,
-      }]
-    }
-  )
   const base = {
     host_app_id: config.appId,
     host_app_name: config.appName,
-    primary_entity_options,
   }
 
   if (!config.isGlobal) {

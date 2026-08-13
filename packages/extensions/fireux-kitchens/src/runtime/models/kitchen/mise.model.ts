@@ -33,7 +33,6 @@ export const KitchenMiseTaskRecord = defineFireuxEntity({
   authority: 'parent',
   appSupport: 'none',
   publicRead: 'none',
-  status: 'confirmed',
   console: false,
   parent: 'Kitchen',
   scoped: KitchenMiseTaskStorage.path,

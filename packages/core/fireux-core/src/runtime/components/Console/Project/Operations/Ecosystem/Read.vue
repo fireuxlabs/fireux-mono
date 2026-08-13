@@ -96,7 +96,7 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
   return ecosystems.value.map((value) => ({
     ...value,
     href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
-    src: value.assets.image,
+    src: value.image_url,
     text: value.name,
     key: value.id,
   }))

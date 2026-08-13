@@ -26,7 +26,7 @@
           class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
-            :src="app.assets.logo || app.assets.thumbnail"
+            :src="app.media.logo_url || app.media.thumbnail_url"
             :alt="app.app_name"
             :text="app.app_short_name"
             size="xs"
@@ -38,7 +38,7 @@
           class="inline-flex items-center gap-2 rounded-full border border-default bg-default/70 px-2.5 py-1.5 text-sm font-medium shadow-sm"
         >
           <UAvatar
-            :src="app.assets.logo || app.assets.thumbnail"
+            :src="app.media.logo_url || app.media.thumbnail_url"
             :alt="app.app_name"
             :text="app.app_short_name"
             size="xs"

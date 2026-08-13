@@ -11,7 +11,7 @@ import {
   fetchPlaceDetails,
 } from '../firestore/place/fetch/google/usePlacesGoogle'
 import { usePlaceCreate } from '../firestore/place/mutations/usePlaceCreate'
-import { PlaceDefaults, type PlaceUpsertInput } from '../../../models/place.model'
+import type { PlaceUpsertInput } from '../../../models/place.model'
 import type { PlaceOnboardingPreview } from '../../../models/place-onboarding.model'
 import {
   normalizePlaceCurrencyCode,
@@ -87,13 +87,13 @@ export function usePlaceOnboarding() {
   const canAddBrand = computed(() => Boolean(
     preview.value &&
     canConfigure.value &&
-    (!preview.value.assets?.image || !preview.value.brand_palette)
+    (!preview.value.image_url || !preview.value.brand_palette)
   ))
   const needsEnrichment = computed(() => Boolean(
     needsDefaults.value || canAddBrand.value
   ))
   const canEditImage = computed(() => Boolean(
-    canAddBrand.value && !preview.value?.assets?.image
+    canAddBrand.value && !preview.value?.image_url
   ))
   const canEditBrandPalette = computed(() => Boolean(
     canAddBrand.value && !preview.value?.brand_palette
@@ -208,12 +208,12 @@ export function usePlaceOnboarding() {
 
         if (imageFile.value) {
           const imageUrl = await uploadImage(
-            `places/${id}/image`,
+            `places/${id}/avatar`,
             imageFile.value
           )
           await completePlaceOnboarding({
             ...defaults,
-            assets: { image: imageUrl },
+            image_url: imageUrl,
           })
         }
       }
@@ -291,14 +291,8 @@ export function usePlaceOnboarding() {
         ...(current.timezone || suggestions.timezone
           ? { timezone: current.timezone || suggestions.timezone }
           : {}),
-        ...(resolvedPreview.assets?.image
-          ? {
-              assets: {
-                ...PlaceDefaults.assets,
-                ...draft.value?.assets,
-                image: resolvedPreview.assets.image,
-              },
-            }
+        ...(resolvedPreview.image_url
+          ? { image_url: resolvedPreview.image_url }
           : {}),
         ...(resolvedPreview.brand_palette
           ? { brand_palette: resolvedPreview.brand_palette }

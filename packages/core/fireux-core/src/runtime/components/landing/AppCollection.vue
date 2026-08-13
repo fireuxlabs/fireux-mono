@@ -220,17 +220,17 @@ function portableMediaUrl(value: unknown): string {
 function mediaUrl(app: AppDirectoryEntry): string {
   return (
     portableMediaUrl(props.mediaOverrides[app.id]?.coverUrl) ||
-    portableMediaUrl(app.assets?.cover) ||
-    portableMediaUrl(app.assets?.thumbnail) ||
-    portableMediaUrl(app.assets?.logo)
+    portableMediaUrl(app.media?.cover_url) ||
+    portableMediaUrl(app.media?.thumbnail_url) ||
+    portableMediaUrl(app.media?.logo_url)
   )
 }
 
 function logoUrl(app: AppDirectoryEntry): string {
   return (
     portableMediaUrl(props.mediaOverrides[app.id]?.logoUrl) ||
-    portableMediaUrl(app.assets?.logo) ||
-    portableMediaUrl(app.assets?.thumbnail)
+    portableMediaUrl(app.media?.logo_url) ||
+    portableMediaUrl(app.media?.thumbnail_url)
   )
 }
 

@@ -153,9 +153,8 @@ export async function fetchGoogle(
           short_address: toShortAddress(formattedAddress),
           lat: 0,
           lng: 0,
-          assets: {
-            image: '', cover: '', gallery: [], logo: '', wordmark: '', backdrop_color: '',
-          },
+          image_url: '',
+          image_shade: 'none',
           claimed_by: '',
           source: 'google',
           slug: '',
@@ -166,9 +165,9 @@ export async function fetchGoogle(
       query,
       total: places.length,
       immediateLogoIds: places
-        .filter((place) => Boolean(place.assets.image))
+        .filter((place) => Boolean(place.image_url))
         .map((place) => place.id),
-      pendingCount: places.filter((place) => !place.assets.image).length,
+      pendingCount: places.filter((place) => !place.image_url).length,
     })
 
     if (import.meta.dev) {
@@ -318,9 +317,8 @@ export function mapDetailsToGooglePlace(
     lat: numberValue(location?.lat),
     lng: numberValue(location?.lng),
     source: 'google',
-    assets: {
-      image: '', cover: '', gallery: [], logo: '', wordmark: '', backdrop_color: '',
-    },
+    image_url: '',
+    image_shade: 'none',
     claimed_by: '',
     slug: '',
     website: typeof result?.website === 'string' ? result.website : '',

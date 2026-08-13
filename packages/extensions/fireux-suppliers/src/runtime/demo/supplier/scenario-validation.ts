@@ -30,8 +30,7 @@ export const validateSupplierDemoScenario = (
     !scenario.supplier.company_id ||
     !scenario.supplier.supplier_image ||
     'place_id' in scenario.supplier ||
-    scenario.supplier.console?.app_role !== 'parent' ||
-    scenario.supplier.console.app_id !== scenario.appId ||
+    scenario.supplier.management?.mode !== 'console' ||
     scenario.supplier.created.app_id !== scenario.appId ||
     scenario.appSupport.id !== supplierId ||
     scenario.appSupport.created.app_id !== scenario.appId ||

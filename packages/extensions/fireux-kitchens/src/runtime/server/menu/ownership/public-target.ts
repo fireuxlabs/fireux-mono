@@ -5,7 +5,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import {
-  readKitchenAppScope,
+  readKitchenManagementTarget,
   readKitchenSproochliConfig,
 } from '../../../utils/kitchen-spine.ts'
 import { menuSourceFromData } from '../payload/source.ts'
@@ -76,15 +76,17 @@ const configurationError = (statusMessage: string) =>
 
 const runtimeApp = () =>
   record((useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>)
-
 export const currentPublicMenuAppId = () => text(runtimeApp().id)
 
 export const isTenantPublicMenuApp = () => text(runtimeApp().role) === 'tenant'
 
 const explicitKitchenSourceAppId = (kitchenData: Record<string, unknown>) => {
-  const scope = readKitchenAppScope(kitchenData)
+  const scope = readKitchenManagementTarget(
+    kitchenData,
+    text(runtimeApp().ecosystem)
+  )
 
-  return scope.state === 'parent_app' || scope.state === 'tenant_app'
+  return scope.mode === 'console' || scope.mode === 'app'
     ? text(scope.appId)
     : ''
 }
@@ -220,14 +222,14 @@ const scopedTarget = async (
   const [appKitchenData, menuData, placeData] = await Promise.all([
     readAppMenuKitchenData(input.appId, input.kitchenId),
     publishedMenuData(input.appId, input.kitchenId, menuId),
-    readMenuKitchenPlaceData(input.rootKitchenData),
+    readMenuKitchenPlaceData(input.kitchenId),
   ])
   const identity = menuKitchenIdentity(
     input.rootKitchenData,
     appKitchenData,
     placeData
   )
-  const kitchenPlaceId = readRecordString(input.rootKitchenData, 'place_id')
+  const kitchenPlaceId = input.kitchenId
   const fulfilment = menuKitchenFulfilment(
     input.rootKitchenData,
     appKitchenData
@@ -237,10 +239,7 @@ const scopedTarget = async (
     appKitchenData,
     placeData
   )
-  const sproochli = readKitchenSproochliConfig({
-    ...input.rootKitchenData,
-    console: record(appKitchenData.console),
-  })
+  const sproochli = readKitchenSproochliConfig(input.rootKitchenData)
 
   return {
     kind,

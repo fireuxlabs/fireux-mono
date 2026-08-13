@@ -110,6 +110,13 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'runtime' },
     collectionPath: 'places',
   }),
+  kitchens: defineFirestoreMutationTarget({
+    key: 'project.kitchens',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'runtime' },
+    collectionPath: 'kitchens',
+  }),
   ingredients: defineFirestoreMutationTarget({
     key: 'project.ingredients',
     lane: 'server',
@@ -130,6 +137,27 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     verbs: allVerbs,
     database: { kind: 'runtime' },
     collectionPath: 'menus',
+  }),
+  properties: defineFirestoreMutationTarget({
+    key: 'project.properties',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'runtime' },
+    collectionPath: 'properties',
+  }),
+  portfolios: defineFirestoreMutationTarget({
+    key: 'project.portfolios',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'runtime' },
+    collectionPath: 'portfolios',
+  }),
+  suppliers: defineFirestoreMutationTarget({
+    key: 'project.suppliers',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'runtime' },
+    collectionPath: 'suppliers',
   }),
   jobs: defineFirestoreMutationTarget({
     key: 'project.jobs',

@@ -24,7 +24,8 @@
           v-for="template in landingTemplates"
           :key="template.slug"
           class="template-card"
-          :to="`/templates/${template.slug}`"
+          :to="`http://localhost:3001/templates/${template.slug}`"
+          external
         >
           <div class="template-card__preview" aria-hidden="true">
             <span>FR</span><i /><i /><i /><span>TES</span>
@@ -48,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { landingTemplates } from '../../content/landing-templates'
+import { landingTemplates } from 'fireux-misebox/runtime/template-one-fixtures'
 import {
   buildPublicPageJsonLd,
   useSeo,
@@ -71,7 +72,7 @@ useSeo({
       title: context.title,
       items: landingTemplates.map((template) => ({
         name: template.name,
-        url: context.absoluteUrl(`/templates/${template.slug}`),
+        url: `http://localhost:3001/templates/${template.slug}`,
       })),
     }),
 })

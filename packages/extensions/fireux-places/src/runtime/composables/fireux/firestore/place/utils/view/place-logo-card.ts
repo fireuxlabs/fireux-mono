@@ -12,7 +12,8 @@ export function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
     (place as any).shortAddress ?? (place as any).short_address ?? ''
   const imageUrl =
     (place as any).imageUrl ??
-    (place as any).assets?.image ??
+    (place as any).image_url ??
+    (place as any).place_image ??
     ''
 
   return {

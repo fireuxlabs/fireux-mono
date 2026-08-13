@@ -1,13 +1,13 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { PlaceStored } from 'fireux-places/runtime/models/place.model'
 import {
-  AppPortfolioDefaults,
+  AppPortfolioModel,
   PortfolioModel,
   type AppPortfolio,
   type Portfolio,
 } from '../../models/portfolio.model'
 import {
-  AppPropertyDefaults,
+  AppPropertyModel,
   PropertyModel,
   type AppProperty,
   type Property,
@@ -92,7 +92,7 @@ const alpineProperty: Property = {
   slug: 'alpine-residence',
   portfolio_id: 'alpine-portfolio',
   place_id: alpineResidencePlace.id,
-  console: { app_id: graniteAppId, app_role: 'parent' },
+  management: { mode: 'console' },
   identity: {
     name: 'Alpine Residence',
     image_url: '',
@@ -118,7 +118,7 @@ const alpineStay: Property = {
   slug: 'alpine-stay',
   portfolio_id: '',
   place_id: alpineStayPlace.id,
-  console: { app_id: buenohostAppId, app_role: 'parent' },
+  management: { mode: 'console' },
   identity: {
     name: 'Alpine Stay',
     image_url: '',
@@ -140,7 +140,7 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
       portfolio: {
         ...PortfolioModel,
         id: 'alpine-portfolio',
-        console: { app_id: graniteAppId, app_role: 'parent' },
+        management: { mode: 'console' },
         name: 'Alpine Residential Portfolio',
         tagline: 'A focused residential asset portfolio',
         slug: 'alpine-portfolio',
@@ -152,7 +152,7 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
         updated,
       },
       appSupport: appSupport(
-        AppPortfolioDefaults,
+        AppPortfolioModel,
         'alpine-portfolio',
         graniteAppId
       ),
@@ -162,7 +162,7 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
         property: alpineProperty,
         place: alpineResidencePlace,
         appSupport: appSupport(
-          AppPropertyDefaults,
+          AppPropertyModel,
           alpineProperty.id,
           graniteAppId
         ),
@@ -177,7 +177,7 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
         property: alpineStay,
         place: alpineStayPlace,
         appSupport: appSupport(
-          AppPropertyDefaults,
+          AppPropertyModel,
           alpineStay.id,
           buenohostAppId
         ),
@@ -202,8 +202,7 @@ const validateSupport = (
 ) => {
   const keys = Object.keys(support).sort()
   if (
-    root.console?.app_role !== 'parent' ||
-    root.console.app_id !== scenario.appId ||
+    root.management.mode !== 'console' ||
     root.created.app_id !== scenario.appId ||
     support.id !== root.id ||
     support.created.app_id !== scenario.appId ||

@@ -11,6 +11,7 @@
         :name="selectedCell.name"
         :address="selectedCell.subtitle"
         :image-url="selectedImageUrl"
+        :image-shade="selectedCell.imageShade"
         :source="selectedCell.source"
         :loading="selectedLogoLoading"
       />
@@ -53,7 +54,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: emit sparse Place onboarding drafts instead of blank placeholders.
 import { computed, nextTick, ref, watch } from 'vue'
-import { usePlaceSearch, type PlaceSearchCell } from '../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
+import { usePlaceSearch } from '../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
 import { usePlaceCreate } from '../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import {
     sanitizeLogoAvatar,
@@ -62,6 +63,7 @@ import {
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type {
     BasePlace,
+    PlaceImageShade,
     PlaceSource,
     PlaceUpsertInput,
 } from '../../../models/place.model'
@@ -159,12 +161,18 @@ if (import.meta.dev && props.type === 'kitchen') {
     console.log('[kitchens][search] status', { isSearching: value })
   })
 
-  watch(results, (value: PlaceSearchCell[]) => {
+  watch(results, (value: BasePlace[]) => {
     console.log('[kitchens][search] results', {
       count: Array.isArray(value) ? value.length : 0,
       ids: Array.isArray(value) ? value.map((row) => row.id) : [],
     })
   })
+}
+
+function toShade(value: unknown): PlaceImageShade {
+  const v = String(value ?? 'none').toLowerCase().trim()
+  if (v === 'light' || v === 'dark' || v === 'none') return v
+  return 'none'
 }
 
 function toDraft(
@@ -177,7 +185,7 @@ function toDraft(
   const existingSearchTerm = String((place as any)?.search_term ?? '').trim()
 
   const sanitizedPlaceImage =
-    sanitizeLogoAvatar(String((place as any)?.assets?.image ?? '')) ?? ''
+    sanitizeLogoAvatar(String((place as any)?.image_url ?? (place as any)?.place_image ?? '')) ?? ''
 
   // Prefer an explicit discovered logo; otherwise store an empty image.
   let resolvedLogo =
@@ -198,14 +206,11 @@ function toDraft(
     address: (place as any)?.address,
     lat: Number((place as any)?.lat ?? 0),
     lng: Number((place as any)?.lng ?? 0),
-    assets: {
-      image: resolvedLogo,
-      cover: '',
-      gallery: [],
-      logo: '',
-      wordmark: '',
-      backdrop_color: '',
-    },
+    image_shade:
+      toShade((place as any)?.image_shade) === 'none'
+        ? undefined
+        : toShade((place as any)?.image_shade),
+    image_url: resolvedLogo,
     claimed_by: String((place as any)?.claimed_by ?? '').trim(),
     website: String((place as any)?.website ?? '').trim(),
     phone: String((place as any)?.phone ?? '').trim(),
@@ -243,7 +248,7 @@ async function onConfirmClick() {
       console.log('[places][confirm] start', {
         placeId,
         source: selectedSource.value,
-        image: (place as any)?.assets?.image ?? '',
+        image_url: (place as any)?.image_url ?? (place as any)?.place_image ?? '',
         selected_logo_state: selectedLogo.value ?? '',
         selected_cell_image: selectedCell.value?.imageUrl ?? '',
       })
@@ -268,7 +273,8 @@ async function onConfirmClick() {
       console.log('[places][confirm] draft', {
         placeId,
         source: draft.source,
-        draft_image: draft.assets?.image,
+        draft_image: draft.image_url,
+        draft_shade: draft.image_shade,
       })
     }
 
@@ -278,7 +284,7 @@ async function onConfirmClick() {
         console.log('[places][confirm] ensurePlaceExists', {
           placeId,
           ok,
-          draft_image: draft.assets?.image,
+          draft_image: draft.image_url,
         })
       }
       if (!ok) return

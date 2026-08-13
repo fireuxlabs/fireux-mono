@@ -1,6 +1,10 @@
 import type { Ref } from 'vue'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
+import {
   PortfolioStorage,
   type Portfolio,
 } from '../../../../../models/portfolio.model'
@@ -45,7 +49,13 @@ export function resolvePortfolioId(
 
 export function portfolioRootBelongsToApp(
   portfolio: PortfolioCollectionDoc,
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
-  return normalizeString(portfolio.console?.app_id) === appId
+  const management = readFireuxEntityManagement(portfolio.management)
+  return Boolean(
+    management &&
+    management.mode !== 'root' &&
+    resolveFireuxEntityManagementAppId(management, ecosystem) === appId
+  )
 }

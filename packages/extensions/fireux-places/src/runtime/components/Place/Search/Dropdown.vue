@@ -15,6 +15,7 @@
         :short-name="cell.shortName"
         :address="resolveAddress(cell)"
         :image-url="resolveImageUrl(cell)"
+        :image-shade="cell.imageShade"
         :source="cell.source || 'fireux'"
         @select="onSelect(cell)"
       />
@@ -35,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { PlaceCard } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface';
-import type { BasePlace, PlaceSource } from '../../../models/place.model';
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../models/place.model';
 
 
 const props = withDefaults(
@@ -81,9 +82,8 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     short_address: card.shortAddress || '',
     lat: (card as any).lat ?? 0,
     lng: (card as any).lng ?? 0,
-    assets: {
-      image: resolveImageUrl(card), cover: '', gallery: [], logo: '', wordmark: '', backdrop_color: '',
-    },
+    image_url: resolveImageUrl(card),
+    image_shade: (card.imageShade as PlaceImageShade) ?? 'none',
     claimed_by: (card.claimedBy as string) ?? '',
     slug: String((card as any).slug || ''),
     source: (card.source as PlaceSource) ?? 'fireux',

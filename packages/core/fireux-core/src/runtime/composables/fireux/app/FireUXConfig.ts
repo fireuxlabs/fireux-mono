@@ -4,8 +4,7 @@ import type { RuntimeApp } from '../../../../config/app/runtime'
 import type {
   FireuxAppRole,
   FireuxConsoleConfig,
-  FireuxConsoleRegistration,
-  FireuxMembershipCleanupRegistration,
+  FireuxConsoleFamilyConfig,
 } from '../../../../config/app/types'
 
 export type FireUXRole = FireuxAppRole
@@ -69,43 +68,25 @@ function toStringArray(v: unknown): string[] {
 function toConsoleConfig(v: unknown): FireuxConsoleConfig {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
 
-  return Object.fromEntries(
-    Object.entries(v as AnyRecord)
-      .map(([family, value]) => {
-        const key = family.trim().toLowerCase()
-        const config =
-          value && typeof value === 'object' && !Array.isArray(value)
-            ? (value as AnyRecord)
-            : {}
-        if (!key) return null
-        const familyConfig: FireuxConsoleFamilyConfig = {}
-        if (typeof config.canCreate === 'boolean') {
-          familyConfig.canCreate = config.canCreate
-        }
-        if (typeof config.allowDemo === 'boolean') {
-          familyConfig.allowDemo = config.allowDemo
-        }
-        if (Object.keys(familyConfig).length === 0) return null
-        return [key, familyConfig] as const
-      })
-      .filter(
-        (entry): entry is readonly [string, FireuxConsoleFamilyConfig] =>
-          entry !== null
-      )
-  )
-}
+  const entries: Array<[string, FireuxConsoleFamilyConfig]> = []
+  for (const [family, value] of Object.entries(v as AnyRecord)) {
+    const key = family.trim().toLowerCase()
+    const config =
+      value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as AnyRecord)
+        : {}
+    if (!key) continue
 
-function toRegistrationArray<T extends Record<string, unknown>>(
-  value: unknown,
-  fields: readonly string[]
-): T[] {
-  if (!Array.isArray(value)) return []
-  return value.flatMap((entry) => {
-    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return []
-    const source = entry as AnyRecord
-    if (fields.some(field => !isNonEmptyString(source[field]))) return []
-    return [{ ...source } as T]
-  })
+    const normalized: FireuxConsoleFamilyConfig = {}
+    if (typeof config.canCreate === 'boolean') {
+      normalized.canCreate = config.canCreate
+    }
+    if (typeof config.allowDemo === 'boolean') {
+      normalized.allowDemo = config.allowDemo
+    }
+    if (Object.keys(normalized).length) entries.push([key, normalized])
+  }
+  return Object.fromEntries(entries)
 }
 
 function reqRole(src: AnyRecord): FireUXRole {
@@ -147,18 +128,10 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
     consoleConfig: toConsoleConfig(fireux.consoleConfig),
-    consoleRegistry: toRegistrationArray<FireuxConsoleRegistration>(
-      fireux.consoleRegistry,
-      ['family', 'rootCollection']
-    ),
-    membershipCleanupRegistry:
-      toRegistrationArray<FireuxMembershipCleanupRegistration>(
-        fireux.membershipCleanupRegistry,
-        ['collection']
-      ),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
+    theme: optRecord(fireux, 'theme') as FireUXConfig['theme'],
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
     navOverrides: (optRecord(fireux, 'navOverrides') ||
       {}) as FireUXConfig['navOverrides'],

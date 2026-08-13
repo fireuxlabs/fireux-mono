@@ -37,17 +37,14 @@ remain real data even when a Demo record links to them.
   `Supplier.company_id -> Company`, where Company and its canonical Place have
   the same id. Property directly references a sparse canonical Place through
   `place_id`.
-- Every Kitchen Demo target includes one same-id AppKitchen fixture containing
-  access authority and Console configuration
+- Every Kitchen Demo target includes one same-id access-only AppKitchen fixture
   and one linked Demo Place. Demo Kitchen roots never duplicate Place media or
   location presentation, and their App scope names the same parent App as that
   support fixture. Each target also derives the same exact bounded
   `PublicPlaceProjection` key set as the Live Place collection without
-  flattening its full Demo Place root. Writable simulation setup atomically
-  creates the equivalent Kitchen, Place, and App support pair in the simulation
-  database; simulation is a data-source boundary, not a Kitchen subtype. The
-  composed Kitchen surface exposes `console.mode: 'demo' | 'live'`; internal
-  simulation-source selection never leaks into the Kitchen DTO.
+  flattening its full Demo Place root. Writable Test Kitchen creation
+  atomically creates the equivalent Kitchen, Test Place, and App support pair
+  in the simulation database.
 - Supplier Demo targets pair the Supplier root with same-id access-only
   `AppSupplier` support, link an independently identified Company through
   `company_id`, and keep Ingredients, Items, and Catalogues Supplier-owned.
@@ -98,12 +95,12 @@ remain real data even when a Demo record links to them.
   Canonical Ingredient images and shared App/brand media never move into this
   Demo prefix merely because a Demo surface displays them. Live-owned media
   stays in its owning Live publication or storage path, never in `demo/`.
-- The reviewed Misebox media inventory has 68 unique payload hashes and 73
+- The reviewed Misebox media inventory has 72 unique payload hashes and 78
   owner-relative objects: 62 Kitchen-owned images, three Supplier logos, three
   Supplier-company Place photos, and five Place-owned object identities for
   Deanos presentation fields that reuse reviewed bytes. The repository keeps
   only the exact metadata manifest under `scripts/data/misebox-demo-media/`:
-  68 source descriptors record path, hash, byte count, and MIME type, while 73
+  72 source descriptors record path, hash, byte count, and MIME type, while 78
   object-to-source mappings preserve each owner identity. It does not mirror
   Demo image binaries. The manual
   `scripts/publish-misebox-demo-media.mjs` workflow audits Storage directly.
@@ -256,7 +253,7 @@ remain real data even when a Demo record links to them.
   public read projection; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
-- Kitchen simulation remains a source-backed writable data boundary. Supplier,
+- Kitchen is the current source-backed writable Test family. Supplier,
   Portfolio, and Property Test sources fail closed until an atomic
   simulation-database producer exists for each family's canonical root/support
   contract; the retired default-database `test-*` collections are not valid

@@ -1,8 +1,11 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
-import { readPlaceAssets, readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
-import type { Kitchen, KitchenImageShade } from '../../../../../../models/kitchen.model'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 import {
+  readKitchenManagementTarget,
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
@@ -26,6 +29,7 @@ export type {
 } from './kitchen-interface.types'
 
 export function useKitchenInterface() {
+  const fireux = useFireUXConfig()
   type KitchenIdentity = KitchenCard.Card
   type KitchenPill = KitchenCard.Card
   type KitchenProfile = KitchenCard.Profile
@@ -46,7 +50,7 @@ export function useKitchenInterface() {
 
   type KitchenPreview = {
     imageUrl: string
-    imageShade?: KitchenImageShade
+    imageShade?: PlaceImageShade
     name: string
     formattedAddress: string
     shortAddress?: string
@@ -71,11 +75,8 @@ export function useKitchenInterface() {
     if (!kitchen) return null
 
     const place = meaningfulSurfaceDelta(parts.place)
-    const placeAssets = readPlaceAssets(parts.place)
     const kitchenDelta = meaningfulSurfaceDelta(kitchen)
     const scopeDelta = meaningfulSurfaceDelta(parts.scope)
-    const rootConsole = meaningfulSurfaceDelta(kitchenDelta.console)
-    const scopedConsole = meaningfulSurfaceDelta(scopeDelta.console)
     const merged = {
       ...place,
       ...kitchenDelta,
@@ -85,11 +86,6 @@ export function useKitchenInterface() {
       ...(Array.isArray(scopeDelta.team_ids)
         ? { team_ids: scopeDelta.team_ids }
         : {}),
-      console: {
-        ...rootConsole,
-        ...scopedConsole,
-        mode: parts.console?.mode ?? 'live',
-      },
     } as TKitchen & KitchenSurface
     for (const key of placeBaselineKeys) {
       if (Object.hasOwn(place, key)) {
@@ -99,11 +95,11 @@ export function useKitchenInterface() {
     const identityDelta = {
       ...meaningfulSurfaceDelta(kitchenDelta.identity),
     }
-    if (placeAssets.image) {
+    if (Object.hasOwn(place, 'image_url')) {
       delete merged.display_image_url
       delete identityDelta.image_url
     }
-    if (placeAssets.gallery.length) {
+    if (Object.hasOwn(place, 'gallery_images')) {
       delete merged.food_gallery
       delete identityDelta.gallery
     }
@@ -112,8 +108,8 @@ export function useKitchenInterface() {
     } else {
       delete (merged as Record<string, unknown>).identity
     }
-    if (placeAssets.gallery.length) {
-      merged.food_gallery = placeAssets.gallery
+    if (Array.isArray(place.gallery_images)) {
+      merged.food_gallery = place.gallery_images as string[]
     }
     const placeCurrencyCode = readPlaceCurrencyCode(parts.place)
     delete merged.currency_code
@@ -121,6 +117,7 @@ export function useKitchenInterface() {
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenIdentity(merged)
+    const managementTarget = readKitchenManagementTarget(merged, fireux.ecosystem)
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -128,18 +125,22 @@ export function useKitchenInterface() {
     return {
       ...merged,
       id,
-      show: visibility.show,
-      active: visibility.active,
+      management: merged.management,
+      management_app_id: managementTarget.appId || undefined,
+      visibility,
       display_name: identity.displayName || safeString(place.name),
       tagline: identity.tagline || safeString(place.brand_tagline),
-      display_image_url: safeString(placeAssets.image),
+      display_image_url: safeString(place.image_url),
       image_shade: identity.imageShade || merged.image_shade,
-      food_gallery: placeAssets.gallery,
+      food_gallery: Array.isArray(place.gallery_images)
+        ? place.gallery_images as string[]
+        : [],
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,
       menu_style: menus.style,
       menu_available: menus.available,
       sproochli,
+      route_scope: parts.routeScope ?? merged.route_scope,
     }
   }
 
@@ -164,12 +165,14 @@ export function useKitchenInterface() {
         kitchen.logo_image_url
     )
 
-    const isVisible = kitchen.visibility !== false
-    const badges = isVisible ? [] : ['Hidden']
+    const visible = kitchen.visible !== false
+    const badges = visible
+      ? []
+      : ['Hidden']
 
     return {
       id,
-      to: resolveKitchenPath({ id, slug, console: kitchen.console }),
+      to: resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
 
       title: name,
       subtitle: shortAddress,
@@ -251,7 +254,7 @@ export function useKitchenInterface() {
     const title = displayName || 'Kitchen'
     const card: KitchenCard.Card = {
       id,
-      to: resolveKitchenPath({ id, slug, console: target.console }),
+      to: resolveKitchenPath({ id, slug, route_scope: target.route_scope }),
       title,
       subtitle: tagline,
       badges,

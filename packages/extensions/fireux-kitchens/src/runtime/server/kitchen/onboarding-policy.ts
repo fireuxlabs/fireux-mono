@@ -1,9 +1,11 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -44,99 +46,48 @@ export function requireOnboardingMemberRole(
   return role
 }
 
-export function readKitchenOnboardingScope(value: Record<string, unknown>) {
+export function readKitchenOnboardingManagement(
+  value: Record<string, unknown>
+): FireuxEntityManagement {
   if (
     Object.hasOwn(value, 'app_scope') ||
     Object.hasOwn(value, 'app_scope_state') ||
     Object.hasOwn(value, 'app_scope_app_id') ||
-    Object.hasOwn(value, 'app_id')
+    Object.hasOwn(value, 'app_id') ||
+    Object.hasOwn(value, 'console')
   ) {
-    fail(409, 'Kitchen contains retired App scope fields.')
+    fail(409, 'Kitchen contains retired management fields.')
   }
-  if (!Object.hasOwn(value, 'console')) {
-    return { state: 'root_only' as FireuxAppScopeState, appId: '' }
-  }
-
-  const console = onboardingRecord(value.console)
-  const keys = Object.keys(console).sort()
-  const appId = onboardingText(console.app_id)
-  const appRole = onboardingText(console.app_role)
-  if (
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'app_role' ||
-    !appId ||
-    (appRole !== 'parent' && appRole !== 'tenant')
-  ) {
-    fail(409, 'Kitchen Console attachment is missing or invalid.')
-  }
-
-  return {
-    state: (appRole === 'tenant' ? 'tenant_app' : 'parent_app') as FireuxAppScopeState,
-    appId,
-  }
+  const management = readFireuxEntityManagement(value.management)
+  if (!management) fail(409, 'Kitchen management is missing or invalid.')
+  return management
 }
 
-export function assertKitchenOnboardingScope(
+export function assertKitchenOnboardingManagement(
   kitchen: Record<string, unknown>,
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
-  const scope = readKitchenOnboardingScope(kitchen)
-  if (scope.state !== 'root_only' && scope.appId !== appId) {
+  const management = readKitchenOnboardingManagement(kitchen)
+  const managementAppId = resolveFireuxEntityManagementAppId(
+    management,
+    ecosystem
+  )
+  if (management.mode !== 'root' && managementAppId !== appId) {
     fail(409, 'This Kitchen is already attached to another App.')
   }
-  return scope
+  return management
 }
 
 export function assertKitchenOnboardingPlaceDefaults(
   place: Record<string, unknown>
 ) {
-  if (!isKitchenOnboardingPlaceReady(place)) {
+  if (
+    !normalizePlaceCurrencyCode(place.default_currency_code) ||
+    !normalizePlaceTimezone(place.timezone)
+  ) {
     fail(409, 'Finish the Place currency and timezone before adding a Kitchen.')
   }
-}
-
-export function isKitchenOnboardingPlaceReady(
-  place: Record<string, unknown>
-) {
-  return Boolean(
-    normalizePlaceCurrencyCode(place.default_currency_code) &&
-    normalizePlaceTimezone(place.timezone)
-  )
-}
-
-export function isKitchenOnboardingPlaceOwnedByApp(
-  place: Record<string, unknown>,
-  appId: string
-) {
-  return onboardingText(onboardingRecord(place.created).app_id) === appId
-}
-
-export function kitchenOnboardingSlugCandidates(
-  placeName: string,
-  kitchenId: string
-) {
-  const base = normalizeSlug(placeName, { maxLength: 60 })
-  const suffix = normalizeSlug(kitchenId, { maxLength: 40 })
-  const candidates = [
-    base,
-    `${base}-${suffix.slice(0, 8)}`,
-    `${base}-${suffix}`,
-  ]
-  const unique = new Set<string>()
-
-  for (const candidate of candidates) {
-    const result = validatePublicSlug(candidate, {
-      label: 'Kitchen slug',
-      namespace: 'Kitchens',
-      reservedScope: 'entity',
-      minLength: 2,
-      maxLength: 120,
-    })
-    if (result.isValid && result.slug) unique.add(result.slug)
-  }
-  if (!unique.size) fail(409, 'The Place name cannot create a Kitchen route.')
-  return [...unique]
 }
 
 export function readKitchenOnboardingSupport(
@@ -147,26 +98,13 @@ export function readKitchenOnboardingSupport(
     'operator_ids',
     'team_ids',
     'join_requests',
-    'console',
     'created',
     'updated',
+    'console',
   ])
   const unsupported = Object.keys(value).find(key => !allowedKeys.has(key))
   if (unsupported) {
     fail(409, `Kitchen App support contains unsupported field: ${unsupported}.`)
-  }
-  const console = onboardingRecord(value.console)
-  const consoleKeys = new Set([
-    'menus',
-    'orders',
-    'tables',
-    'fulfilment',
-    'integrations',
-  ])
-  const unsupportedConsoleKey = Object.keys(console)
-    .find(key => !consoleKeys.has(key))
-  if (unsupportedConsoleKey) {
-    fail(409, `Kitchen Console contains unsupported field: ${unsupportedConsoleKey}.`)
   }
 
   return {
@@ -177,7 +115,6 @@ export function readKitchenOnboardingSupport(
       100,
       'Kitchen join requests'
     ),
-    console,
   }
 }
 

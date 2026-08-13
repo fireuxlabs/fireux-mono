@@ -1,9 +1,10 @@
-import { useRuntimeConfig } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   readSproochliAttachmentConfig,
@@ -11,7 +12,7 @@ import {
 } from 'fireux-sproochli/runtime/sproochli'
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import {
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
 import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
@@ -74,8 +75,9 @@ function memberRole(
 
 export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   const requested = request(input)
+  const fireux = useFireUXConfig(event)
   const runtimeAppId = requireFirestoreDocumentId(
-    useRuntimeConfig(event).public?.fireux?.id,
+    fireux.appId,
     'Runtime App id'
   )
   const { uid } = await requireFirebaseBearerUser(
@@ -115,15 +117,15 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       })
     }
 
-    const scope = readKitchenOnboardingScope(root.data() || {})
-    if (scope.state !== 'parent_app' && scope.state !== 'tenant_app') {
+    const management = readKitchenOnboardingManagement(root.data() || {})
+    if (management.mode === 'root') {
       throw createError({
         statusCode: 409,
         statusMessage: 'The Kitchen is not attached to an App.',
       })
     }
     const ownerAppId = requireFirestoreDocumentId(
-      scope.appId,
+      resolveFireuxEntityManagementAppId(management, fireux.ecosystem),
       'Kitchen owner App id'
     )
     const ownerMembershipRef = db.doc(`apps/${ownerAppId}/users/${uid}`)
@@ -158,9 +160,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       })
     }
 
-    const current = readSproochliAttachmentConfig(
-      support.get('console.integrations.sproochli')
-    )
+    const current = readSproochliAttachmentConfig(root.get('sproochli'))
     const sproochli = readSproochliAttachmentConfig(
       requested.enabled
         ? {
@@ -170,12 +170,17 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
           }
         : undefined
     )
-    transaction.update(supportRef, {
-      'console.integrations.sproochli': requested.enabled
-        ? sproochli
-        : FieldValue.delete(),
+    transaction.update(rootRef, {
+      sproochli: requested.enabled ? sproochli : FieldValue.delete(),
       updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
     })
+
+    if (Object.hasOwn(support.data() || {}, 'sproochli')) {
+      transaction.update(supportRef, {
+        sproochli: FieldValue.delete(),
+        updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
+      })
+    }
 
     return { appId: ownerAppId, sproochli }
   })

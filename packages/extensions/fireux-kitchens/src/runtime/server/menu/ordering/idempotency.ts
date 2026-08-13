@@ -4,11 +4,9 @@ import { createError } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverCustomerOrdersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
   serverKitchenOrderIdempotencyTarget,
   serverKitchenOrdersTarget,
-} from '../../kitchen/firestore-targets'
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   applyKitchenOrderServiceSequence,
   applyKitchenOrderServiceSequenceToResponse,

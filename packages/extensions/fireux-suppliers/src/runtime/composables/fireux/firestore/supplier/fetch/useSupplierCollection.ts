@@ -41,7 +41,7 @@ export function useSupplierCollection(
   const db = useFirestore()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
-  const { appId } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
   const { surface } = useSupplierInterface()
   const {
     sourceMode,
@@ -188,7 +188,7 @@ export function useSupplierCollection(
         !appSupport ||
         !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
-        !supplierRootBelongsToApp(root, resolvedAppId.value)
+        !supplierRootBelongsToApp(root, resolvedAppId.value, ecosystem)
       )
         continue
 
@@ -294,7 +294,8 @@ export function useSupplierCollection(
     return findRootScopeError(
       liveRootDocs.docs.value ?? [],
       appSupportSource.value,
-      resolvedAppId.value
+      resolvedAppId.value,
+      ecosystem
     )
   })
 

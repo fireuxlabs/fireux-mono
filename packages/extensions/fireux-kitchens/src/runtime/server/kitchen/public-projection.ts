@@ -13,8 +13,11 @@ import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../utils/kitchen-spine.ts'
-import { readKitchenOnboardingSupport } from './onboarding-policy.ts'
 import { menuKitchenIdentity } from '../menu/ownership/kitchen-scope.ts'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 
 export type KitchenPublicDocument = {
   id: string
@@ -25,29 +28,32 @@ export type KitchenPublicDirectoryScope = {
   appId: string
   ecosystemId: string
   role: 'global' | 'tenant' | 'standalone'
+  ecosystem: string
+  includeHidden?: boolean
 }
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 
-type CanonicalKitchenAppScope = {
-  state: 'parent_app' | 'tenant_app'
+type CanonicalKitchenManagementTarget = {
+  mode: 'console' | 'app'
   appId: string
 }
 
 type PublicKitchenProjectionParts = {
   document: KitchenPublicDocument
-  appScope: CanonicalKitchenAppScope
+  managementTarget: CanonicalKitchenManagementTarget | null
+  supportData: Record<string, unknown>
   placeData: Record<string, unknown>
   identity: ReturnType<typeof menuKitchenIdentity>
   rootIdentity: ReturnType<typeof readKitchenIdentity>
   place: ReturnType<typeof readPlacePresentation>
-  publiclyVisible: boolean
+  visible: boolean
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const number = (value: unknown) => {
   if (value === null || value === undefined || value === '') return null
@@ -55,71 +61,60 @@ const number = (value: unknown) => {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-function canonicalKitchenAppScope(
-  data: Record<string, unknown>
-): CanonicalKitchenAppScope | null {
-  const console = record(data.console)
-  const keys = Object.keys(console).sort()
-  const appRole = console.app_role
-  const appId = text(console.app_id)
+function canonicalKitchenManagementTarget(
+  data: Record<string, unknown>,
+  ecosystem: string
+): CanonicalKitchenManagementTarget | null {
   const hasRetiredScope = [
     'app_scope',
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
-  ].some(key => Object.hasOwn(data, key))
+    'console',
+  ].some((key) => Object.hasOwn(data, key))
+  const management = readFireuxEntityManagement(data.management)
 
-  if (
-    hasRetiredScope ||
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'app_role' ||
-    (appRole !== 'parent' && appRole !== 'tenant') ||
-    !isFirestoreDocumentId(appId)
-  ) {
-    return null
-  }
+  if (hasRetiredScope || !management || management.mode === 'root') return null
+  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
+  if (!isFirestoreDocumentId(appId)) return null
 
-  return {
-    state: appRole === 'tenant' ? 'tenant_app' : 'parent_app',
-    appId,
-  }
+  return { mode: management.mode, appId }
 }
 
 export function isPublishedKitchen(data: Record<string, unknown>) {
-  return data.visibility === true && readRecordString(data, 'status') === 'active'
+  return readKitchenVisibility(data)
 }
 
 export async function hydrateKitchenPublicDocuments(
   db: RuntimeFirestore,
-  documents: KitchenPublicDocument[]
+  documents: KitchenPublicDocument[],
+  directoryScope: KitchenPublicDirectoryScope
 ) {
   const references = new Map<string, ReturnType<typeof db.doc>>()
 
   for (const document of documents) {
-    const placeId = readRecordString(document.data, 'place_id')
-    if (isFirestoreDocumentId(placeId)) {
-      const placeRef = db.collection(PlaceStorage.collection).doc(placeId)
+    if (isFirestoreDocumentId(document.id)) {
+      const placeRef = db.collection(PlaceStorage.collection).doc(document.id)
       references.set(placeRef.path, placeRef)
     }
 
-    const appScope = canonicalKitchenAppScope(document.data)
-    if (appScope) {
-      const appRef = db.collection('apps').doc(appScope.appId)
-      references.set(appRef.path, appRef)
-      const appKitchenRef = db
-        .collection(`apps/${appScope.appId}/kitchens`)
-        .doc(document.id)
-      references.set(appKitchenRef.path, appKitchenRef)
-    }
+    const managementTarget = canonicalKitchenManagementTarget(
+      document.data,
+      directoryScope.ecosystem
+    )
+    if (!managementTarget) continue
+    const appKitchenRef = db
+      .collection(`apps/${managementTarget.appId}/kitchens`)
+      .doc(document.id)
+    references.set(appKitchenRef.path, appKitchenRef)
   }
 
   if (!references.size) return new Map<string, Record<string, unknown>>()
   const snapshots = await db.getAll(...references.values())
   return new Map(
     snapshots
-      .filter(snapshot => snapshot.exists)
-      .map(snapshot => [snapshot.ref.path, snapshot.data() || {}])
+      .filter((snapshot) => snapshot.exists)
+      .map((snapshot) => [snapshot.ref.path, snapshot.data() || {}])
   )
 }
 
@@ -129,51 +124,38 @@ function publicKitchenProjectionParts(
   directoryScope: KitchenPublicDirectoryScope
 ): PublicKitchenProjectionParts | null {
   const rootData = document.data
-  const placeId = readRecordString(rootData, 'place_id')
+  const placeId = document.id
   if (!isFirestoreDocumentId(placeId)) return null
 
   const placeData = dataByPath.get(`${PlaceStorage.collection}/${placeId}`)
   if (!placeData) return null
 
-  const appScope = canonicalKitchenAppScope(rootData)
-  if (!appScope) return null
-  if (
-    directoryScope.role !== 'global' &&
-    appScope.appId !== directoryScope.appId
-  ) {
-    return null
-  }
-
-  const app = dataByPath.get(`apps/${appScope.appId}`)
-  const appData = dataByPath.get(
-    `apps/${appScope.appId}/kitchens/${document.id}`
+  const managementTarget = canonicalKitchenManagementTarget(
+    rootData,
+    directoryScope.ecosystem
   )
-  if (
-    !app ||
-    readRecordString(app, 'ecosystem_id') !== directoryScope.ecosystemId ||
-    !appData
-  ) {
-    return null
-  }
-  try {
-    if (!readKitchenOnboardingSupport(appData)) return null
-  } catch {
-    return null
-  }
+  const supportData = managementTarget
+    ? dataByPath.get(
+        `apps/${managementTarget.appId}/kitchens/${document.id}`
+      ) || {}
+    : {}
 
-  const identity = menuKitchenIdentity(rootData, appData, placeData)
+  const identity = menuKitchenIdentity(rootData, supportData, placeData)
   if (!text(identity.name)) return null
 
   const slug = readRecordString(rootData, 'slug')
   if (!slug) return null
+  const visible = readKitchenVisibility(rootData)
+
   return {
     document,
-    appScope,
+    managementTarget,
+    supportData,
     placeData,
     identity,
     rootIdentity: readKitchenIdentity(rootData),
     place: readPlacePresentation(placeData),
-    publiclyVisible: isPublishedKitchen(rootData),
+    visible,
   }
 }
 
@@ -194,8 +176,7 @@ export function projectPublicKitchenIndexItem(
   const slug = readRecordString(rootData, 'slug')
   const shortName = readRecordString(parts.placeData, 'short_name')
   const brandTagline = text(
-    parts.rootIdentity.tagline ||
-    parts.place.brandTagline
+    parts.rootIdentity.tagline || parts.place.brandTagline
   )
   const formattedAddress = readRecordString(
     parts.placeData,
@@ -204,23 +185,19 @@ export function projectPublicKitchenIndexItem(
   const shortAddress = readRecordString(parts.placeData, 'short_address')
   const cardImageUrl = text(parts.rootIdentity.cardImageUrl)
   const imageUrl = text(
-    cardImageUrl ||
-    parts.place.coverImage ||
-    parts.place.imageUrl
+    cardImageUrl || parts.place.coverImage || parts.place.imageUrl
   )
   const mediaBackdropColor =
-    parts.rootIdentity.mediaBackdropColor ||
-    parts.place.mediaBackdropColor
-  const imageKind = cardImageUrl && mediaBackdropColor
-    ? 'brand'
-    : 'photograph'
+    parts.rootIdentity.mediaBackdropColor || parts.place.mediaBackdropColor
+  const imageKind = cardImageUrl && mediaBackdropColor ? 'brand' : 'photograph'
   const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
 
   return {
     id: parts.document.id,
     name,
     slug,
-    visibility: parts.publiclyVisible,
+    visible: parts.visible,
+    management_mode: parts.managementTarget?.mode || 'root',
     ...(shortName ? { short_name: shortName } : {}),
     ...(brandTagline ? { brand_tagline: brandTagline } : {}),
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
@@ -228,9 +205,7 @@ export function projectPublicKitchenIndexItem(
     ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(imageUrl ? { image_url: imageUrl } : {}),
     ...(imageUrl ? { image_kind: imageKind } : {}),
-    ...(mediaBackdropColor
-      ? { media_backdrop_color: mediaBackdropColor }
-      : {}),
+    ...(mediaBackdropColor ? { media_backdrop_color: mediaBackdropColor } : {}),
   }
 }
 
@@ -258,30 +233,21 @@ export function projectPublicKitchenDetail(
   const about = parts.place.about
   const phone = parts.place.phone
   const website =
-    parts.place.website ||
-    readRecordString(placeSocialLinks, 'website')
+    parts.place.website || readRecordString(placeSocialLinks, 'website')
   const googleMapsUrl = parts.place.googleMapsUrl
   const latitude = number(place.lat)
   const longitude = number(place.lng)
   const tagline = item.brand_tagline || ''
   const imageUrl = item.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
-  const appKitchen = dataByPath.get(
-    `apps/${parts.appScope.appId}/kitchens/${parts.document.id}`
-  ) || {}
-  const sproochli = readKitchenSproochliConfig({
-    console: {
-      ...record(appKitchen.console),
-    },
-  })
+  const sproochli = readKitchenSproochliConfig(parts.supportData)
 
   return {
     ...item,
-    console: {
-      mode: 'live',
-      app_id: parts.appScope.appId,
-      app_role: parts.appScope.state === 'tenant_app' ? 'tenant' : 'parent',
-    },
+    ...(parts.managementTarget?.appId
+      ? { management_app_id: parts.managementTarget.appId }
+      : {}),
+    route_scope: 'live',
     display_name: item.name,
     ...(sproochli.enabled
       ? {

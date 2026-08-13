@@ -349,13 +349,13 @@ async function save() {
     const identity = { ...form }
     if (logoFile.value) {
       identity.logo_image_url = await uploadImage(
-        `kitchens/${props.kitchen.id}/logo`,
+        `kitchens/${props.kitchen.id}/identity/logo/current`,
         logoFile.value
       )
     }
     if (cardFile.value) {
       identity.card_image_url = await uploadImage(
-        `kitchens/${props.kitchen.id}/image`,
+        `kitchens/${props.kitchen.id}/identity/card/current`,
         cardFile.value
       )
     }

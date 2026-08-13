@@ -9,8 +9,6 @@ import type {
   PlaceOnboardingCompleteInput,
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
-  PlaceManualCreateInput,
-  PlaceManualCreateResult,
 } from '../../../../../models/place-onboarding.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 
@@ -77,7 +75,9 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     return result
   }
 
-  async function completePlaceOnboarding(input: PlaceOnboardingCompleteInput) {
+  async function completePlaceOnboarding(
+    input: PlaceOnboardingCompleteInput
+  ) {
     const id = canonicalPlaceId(input.id)
     if (!id) throw new Error('Choose a Place before continuing.')
     const result = await $fetch<PlaceOnboardingCompleteResult>(
@@ -89,31 +89,13 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       }
     )
     if (result?.ok !== true || result.id !== id) {
-      throw new Error(
-        '[usePlaceCreate] Place onboarding completion was invalid.'
-      )
-    }
-    return result
-  }
-
-  async function createManualPlace(input: PlaceManualCreateInput) {
-    const result = await $fetch<PlaceManualCreateResult>(
-      '/api/places/onboarding/manual',
-      {
-        method: 'POST',
-        headers: await authHeaders(),
-        body: input,
-      }
-    )
-    if (result?.ok !== true || !canonicalPlaceId(result.id)) {
-      throw new Error('[usePlaceCreate] Manual Place response was invalid.')
+      throw new Error('[usePlaceCreate] Place onboarding completion was invalid.')
     }
     return result
   }
 
   return {
     completePlaceOnboarding,
-    createManualPlace,
     createPlan: PlaceCreatePlan,
     ensurePlaceExists,
     createPlace: ensurePlaceExists,

@@ -9,7 +9,6 @@ import type {
   PlaceBusinessHours,
   PlaceSocialLinks,
 } from '../../../../../models/place.model'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
@@ -126,13 +125,13 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updatePlaceImage(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { assets: { image: optionalString(value) } })
+    await update(reqId(ctx), { image_url: optionalString(value) })
   }
 
   async function updateMediaBackdropColor(value: string, ctx: UpdateCtx) {
     const color = normalizeHexColor(value)
     if (color === null) throw new Error('Use a 6-digit hex colour.')
-    await update(reqId(ctx), { assets: { backdrop_color: color || null } })
+    await update(reqId(ctx), { media_backdrop_color: color || null })
   }
 
   async function updatePhone(value: string, ctx: UpdateCtx) {
@@ -182,13 +181,13 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updateCoverImage(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { assets: { cover: optionalString(value) } })
+    await update(reqId(ctx), { cover_image: optionalString(value) })
   }
 
   async function updateGalleryImages(value: string[], ctx: UpdateCtx) {
     const galleryImages = Array.from(new Set(value.map(sanitize).filter(Boolean)))
     await update(reqId(ctx), {
-      assets: { gallery: galleryImages.length ? galleryImages : null },
+      gallery_images: galleryImages.length ? galleryImages : null,
     })
   }
 
@@ -201,10 +200,6 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     await update(reqId(ctx), {
       social_links: Object.keys(socialLinks).length ? socialLinks : null,
     })
-  }
-
-  async function updateBrandPalette(value: SparseBrandPalette, ctx: UpdateCtx) {
-    await update(reqId(ctx), { brand_palette: value })
   }
 
   async function updateClaimedBy(_value: string, _ctx: UpdateCtx): Promise<never> {
@@ -234,7 +229,6 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     updateCoverImage,
     updateGalleryImages,
     updateSocialLinks,
-    updateBrandPalette,
     updateClaimedBy,
   }
 }

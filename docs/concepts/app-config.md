@@ -146,13 +146,13 @@ Apps inherit the Core page transition. Route-specific exceptions use
 `definePageMeta`; app shells do not set `NuxtPage` transition props. A repeated
 App-wide need is a missing shared seam and must be promoted before use.
 
-## App assets
+## App media
 
-- Canonical paths, validation, upload, and `assets.*` App-field updates are
-  owned by the Core App asset runtime.
-- `pnpm audit:app-assets` is a read-only cross-check against that truth.
+- Canonical paths, validation, upload, and App-field updates are owned by the
+  core App media runtime.
+- `pnpm audit:app-media` is a read-only cross-check against that truth.
 - Root bulk upload, reset, and deletion scripts are retired migration tooling;
-  do not recreate a second App asset writer under `scripts/`.
+  do not recreate a second App media writer under `scripts/`.
 
 ## Delta register
 

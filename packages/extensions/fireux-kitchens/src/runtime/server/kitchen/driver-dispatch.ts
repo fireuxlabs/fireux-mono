@@ -14,12 +14,10 @@ import {
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
   serverAppDriversTarget,
+  serverAppUsersTarget,
   serverKitchenOrdersTarget,
-} from './firestore-targets'
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { AppDriverStorage } from '../../models/driver.model.ts'
 import {
   DriverDispatchVisibleStatuses,

@@ -45,6 +45,7 @@
       :alt="name"
       size="md"
       icon="i-lucide-image"
+      :class="avatarShadeClass"
       class="shrink-0"
     />
 
@@ -87,7 +88,7 @@ import type { PlaceCard } from '../../../composables/fireux/firestore/place/util
 
 type Props = Pick<
   PlaceCard.Card,
-  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'
+  'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
@@ -117,6 +118,14 @@ const props = withDefaults(defineProps<Props>(), {
 const resolvedAddress = computed(() => props.formattedAddress || '')
 const resolvedImageUrl = computed(() => props.imageUrl || '')
 const surfaceTo = computed(() => props.link && props.to ? props.to : undefined)
+
+const avatarShadeClass = computed(() => {
+  const shade = props.imageShade
+  if (!shade) return ''
+  if (shade === 'light') return 'fx-avatar-shade--light'
+  if (shade === 'dark') return 'fx-avatar-shade--dark'
+  return ''
+})
 
 const sourceLabel = computed(() =>
   props.source === 'fireux'

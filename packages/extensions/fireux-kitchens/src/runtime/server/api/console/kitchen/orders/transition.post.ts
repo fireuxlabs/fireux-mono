@@ -6,11 +6,9 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   serverAppFinancialFactsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
   serverKitchenOrdersTarget,
   serverKitchenSalesTarget,
-} from '../../../../../server/kitchen/firestore-targets'
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   isKitchenOrderTransition,
   type KitchenOrder,
