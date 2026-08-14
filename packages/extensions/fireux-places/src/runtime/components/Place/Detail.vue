@@ -14,11 +14,12 @@
           <nav class="place-detail__toolbar" aria-label="Place directory">
             <UButton
               to="/places"
-              label="Back to all Places"
+              label="All places"
               icon="i-lucide-arrow-left"
               color="neutral"
               variant="ghost"
               size="sm"
+              class="place-detail__back"
             />
             <div class="place-detail__toolbar-actions">
               <ClientOnly>

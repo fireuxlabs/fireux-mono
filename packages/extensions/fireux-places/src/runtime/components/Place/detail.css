@@ -8,6 +8,7 @@
   --place-text-toned: #39443d;
   --place-text-muted: #5f6a63;
   --place-text-dimmed: #8a938d;
+  --place-motion-fast: 160ms;
   --ui-bg: var(--place-surface);
   --ui-bg-elevated: var(--place-surface);
   --ui-bg-accented: var(--place-surface-muted);
@@ -21,8 +22,8 @@
   color: var(--ui-text);
   min-height: 100dvh;
   transition:
-    background-color 180ms ease,
-    color 180ms ease;
+    background-color var(--place-motion-fast) ease,
+    color var(--place-motion-fast) ease;
 }
 
 :global(html.dark .place-detail) {
@@ -76,7 +77,7 @@
   width: calc(var(--spacing) * 8);
 }
 
-.place-detail__toolbar :deep(a:first-child) {
+.place-detail__back {
   color: white;
 }
 

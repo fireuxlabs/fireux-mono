@@ -45,11 +45,12 @@
             v-if="place.verified"
             color="success"
             variant="solid"
+            size="sm"
             icon="i-lucide-badge-check"
             >Verified</UBadge
           >
         </div>
-        <UBadge v-if="hasShortName" color="neutral" variant="soft"
+        <UBadge v-if="hasShortName" color="neutral" variant="soft" size="sm"
           >Also known as {{ place.short_name }}</UBadge
         >
         <p
@@ -79,11 +80,9 @@
             target="_blank"
             rel="noopener noreferrer"
             :aria-label="action.ariaLabel"
+            size="md"
             :color="action.key === 'directions' ? 'primary' : 'neutral'"
             :variant="action.key === 'directions' ? 'solid' : 'soft'"
-            :class="{
-              'place-header__action--directions': action.key === 'directions',
-            }"
             >{{ action.label }}</UButton
           >
         </div>

@@ -10,7 +10,7 @@
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
         <div>
           <p v-if="place.short_address">{{ place.short_address }}</p>
-          <span>Coarse public location</span>
+          <span>Location</span>
         </div>
       </div>
       <UButton
@@ -22,7 +22,6 @@
         rel="noopener noreferrer"
         color="primary"
         size="sm"
-        class="place-visit-info__directions"
       />
       <div v-if="place.website" class="place-visit-info__website">
         <span>Website</span>
@@ -115,7 +114,7 @@ const mapUrl = computed(() => {
   display: grid;
   align-content: start;
   gap: calc(var(--spacing) * 3);
-  padding: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 5);
 }
 .place-visit-info__section + .place-visit-info__section {
   border-top: 1px solid var(--ui-border);
@@ -146,9 +145,6 @@ const mapUrl = computed(() => {
   display: grid;
   gap: calc(var(--spacing) * 2);
   padding-top: calc(var(--spacing) * 4);
-}
-.place-visit-info__directions {
-  color: white;
 }
 .place-visit-info__website > span,
 .place-visit-info__provider-hours > p {

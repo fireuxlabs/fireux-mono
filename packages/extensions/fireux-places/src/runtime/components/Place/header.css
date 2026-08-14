@@ -116,9 +116,6 @@
   gap: calc(var(--spacing) * 3);
   margin-top: calc(var(--spacing) * 2);
 }
-.place-header__action--directions {
-  color: white;
-}
 .place-header__wordmark {
   align-items: center;
   background: var(--fx-place-media-bg, var(--fx-entity-media-bg));
@@ -183,7 +180,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   .place-header__actions a {
-    transition: transform 150ms ease;
+    transition: transform var(--place-motion-fast) ease;
   }
   .place-header__actions a:hover {
     transform: translateY(-1px);
