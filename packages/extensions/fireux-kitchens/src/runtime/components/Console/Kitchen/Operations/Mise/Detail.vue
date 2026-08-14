@@ -31,10 +31,12 @@
       "
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen mise detail"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ task }"
+      :derived="debug"
     />
   </div>
 </template>

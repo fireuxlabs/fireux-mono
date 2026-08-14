@@ -22,10 +22,14 @@
         </template>
       </DriverCardsProfile>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Driver (Public DTO)"
         context="Driver detail · drivers/[handle] · endpoint-first SSR"
-        :data="devPayload"
+        :objects="devPayload"
+  :derived="{}"
         :default-open="false"
       />
     </div>

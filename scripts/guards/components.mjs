@@ -126,8 +126,6 @@ function validateMiseboxCardSpecimen(repoRoot, violations) {
 function validatePublicEntityPresentation(repoRoot, violations) {
   const coreDirectoryCardPath =
     'packages/core/fireux-core/src/runtime/components/public/EntityDirectoryCard.vue'
-  const coreHeroPath =
-    'packages/core/fireux-core/src/runtime/components/public/EntityHero.vue'
   const consumers = new Map([
     [
       'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Cards/Cell.vue',
@@ -138,16 +136,16 @@ function validatePublicEntityPresentation(repoRoot, violations) {
       'PublicEntityDirectoryCard',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Detail/Identity.vue',
-      'PublicEntityHero',
+      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Detail/Index.vue',
+      'KitchenHeader',
     ],
     [
-      'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue',
-      'PublicEntityHero',
+      'packages/extensions/fireux-places/src/runtime/components/Place/Detail.vue',
+      'PlaceHeader',
     ],
   ])
 
-  for (const componentPath of [coreDirectoryCardPath, coreHeroPath]) {
+  for (const componentPath of [coreDirectoryCardPath]) {
     const absolutePath = path.join(repoRoot, componentPath)
     if (!existsSync(absolutePath)) {
       violations.push(`${componentPath} (missing shared public-entity presentation seam)`)
@@ -159,6 +157,15 @@ function validatePublicEntityPresentation(repoRoot, violations) {
       violations.push(
         `${componentPath} (shared public-entity presentation must stay flat and semantic)`
       )
+    }
+  }
+
+  for (const componentPath of [
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Header.vue',
+    'packages/extensions/fireux-places/src/runtime/components/Place/Header.vue',
+  ]) {
+    if (!existsSync(path.join(repoRoot, componentPath))) {
+      violations.push(`${componentPath} (missing entity-owned detail header)`)
     }
   }
 
@@ -208,6 +215,29 @@ function scan(dir, violations, repoRoot) {
 
     validateRelativeImports(fullPath, source, violations, repoRoot)
     validateCardFamily(fullPath, source, violations, repoRoot)
+    validateDebugPayload(fullPath, source, violations, repoRoot)
+  }
+}
+
+function validateDebugPayload(filePath, source, violations, repoRoot) {
+  const relative = path.relative(repoRoot, filePath).split(path.sep).join('/')
+
+  for (const match of source.matchAll(/<DevDebugPanel\b[\s\S]*?\/>/g)) {
+    const tag = match[0]
+    if (
+      !/object-origin=["'](?:fetched|passed)["']/.test(tag) ||
+      !/:objects=/.test(tag) ||
+      !/:derived=/.test(tag)
+    ) {
+      violations.push(
+        `${relative} (DevDebugPanel requires object provenance plus explicit objects and derived payloads)`
+      )
+    }
+    if (/:data=/.test(tag)) {
+      violations.push(
+        `${relative} (DevDebugPanel must use objects and derived instead of data)`
+      )
+    }
   }
 }
 

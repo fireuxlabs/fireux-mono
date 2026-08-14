@@ -90,10 +90,14 @@
           description="This inspector compares direct portfolio-owned child families only. Unit drift still needs to be checked under property scope."
         />
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           title="Portfolio storage (JSON)"
           context="dev portfolios · full storage picture"
-          :data="portfolioStorageJson"
+          :objects="portfolioStorageJson"
+  :derived="{}"
           :default-open="false"
           :hide-when-empty="false"
         />

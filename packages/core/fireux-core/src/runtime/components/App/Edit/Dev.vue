@@ -73,10 +73,14 @@
             </div>
           </UPageCard>
 
-          <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+            launcher
+            include-route
             title="App model (JSON)"
             context="dashboard/developer · canonical App"
-            :data="app"
+            :objects="app"
+  :derived="{}"
             :default-open="false"
           />
         </div>

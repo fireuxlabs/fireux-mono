@@ -9,12 +9,17 @@ import type {
   PlaceBusinessHours,
   PlaceSocialLinks,
 } from '../../../../../models/place.model'
+import type { PublicPlaceDetailResponse } from '../../../../../models/place-public.model'
+import { usePlaceDetailState } from '../../../place/usePlaceDetailState'
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
 type UpdateCtx = { id: string | null | undefined }
 type PlaceBrowserPatch = Partial<
-  Record<Exclude<keyof Place, 'claimed_by' | 'created' | 'id' | 'updated'>, unknown>
+  Record<
+    Exclude<keyof Place, 'claimed_by' | 'created' | 'id' | 'updated'>,
+    unknown
+  >
 >
 
 export type PlaceMutationAuthority = {
@@ -48,9 +53,8 @@ function toOptionalNumber(value: unknown): number | null {
   ) {
     return null
   }
-  const number = typeof value === 'number'
-    ? value
-    : Number(String(value ?? '').trim())
+  const number =
+    typeof value === 'number' ? value : Number(String(value ?? '').trim())
   if (!Number.isFinite(number)) throw new Error('Value must be a number')
   return number
 }
@@ -74,14 +78,17 @@ export async function updatePlaceDocument(
   const user = await useRequireUser()
   const token = await user.getIdToken()
 
-  await $fetch(`/api/places/${encodeURIComponent(id)}`, {
-    method: 'PATCH',
-    headers: { Authorization: `Bearer ${token}` },
-    body: {
-      patch,
-      ...resolvedAuthority(options),
-    },
-  })
+  return $fetch<PublicPlaceDetailResponse>(
+    `/api/places/${encodeURIComponent(id)}`,
+    {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+      body: {
+        patch,
+        ...resolvedAuthority(options),
+      },
+    }
+  )
 }
 
 /**
@@ -89,8 +96,12 @@ export async function updatePlaceDocument(
  * owner, App-admin, or explicitly linked Kitchen-operator authority.
  */
 export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
-  const update = (id: string, patch: PlaceBrowserPatch) =>
-    updatePlaceDocument(id, patch, options)
+  const { publish } = usePlaceDetailState()
+  const update = async (id: string, patch: PlaceBrowserPatch) => {
+    const response = await updatePlaceDocument(id, patch, options)
+    publish(response)
+    return response.item
+  }
 
   async function updateName(value: string, ctx: UpdateCtx) {
     const name = sanitize(value)
@@ -166,7 +177,10 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     await update(reqId(ctx), { timezone: timezone || null })
   }
 
-  async function updateBusinessHours(value: PlaceBusinessHours, ctx: UpdateCtx) {
+  async function updateBusinessHours(
+    value: PlaceBusinessHours,
+    ctx: UpdateCtx
+  ) {
     await update(reqId(ctx), {
       business_hours: normalizePlaceBusinessHours(value),
     })
@@ -185,7 +199,9 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updateGalleryImages(value: string[], ctx: UpdateCtx) {
-    const galleryImages = Array.from(new Set(value.map(sanitize).filter(Boolean)))
+    const galleryImages = Array.from(
+      new Set(value.map(sanitize).filter(Boolean))
+    )
     await update(reqId(ctx), {
       gallery_images: galleryImages.length ? galleryImages : null,
     })
@@ -202,7 +218,10 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     })
   }
 
-  async function updateClaimedBy(_value: string, _ctx: UpdateCtx): Promise<never> {
+  async function updateClaimedBy(
+    _value: string,
+    _ctx: UpdateCtx
+  ): Promise<never> {
     throw new Error(
       'Place claiming requires a verified ownership workflow and is not currently available.'
     )

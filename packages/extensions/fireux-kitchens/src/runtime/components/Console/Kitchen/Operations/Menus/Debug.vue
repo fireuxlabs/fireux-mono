@@ -1,8 +1,12 @@
 <template>
-  <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+    launcher
+    include-route
     title="Kitchen menus debug"
     context="Kitchen menu console · /console/kitchen/menus"
-    :data="menusDebug"
+    :objects="menusDebug"
+  :derived="{}"
     :default-open="false"
   />
 </template>

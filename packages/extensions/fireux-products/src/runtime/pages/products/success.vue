@@ -19,11 +19,15 @@
         :description="paymentMessage"
       />
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         v-if="sessionPayload"
         :title="'Checkout Session (JSON)'"
         context="products/success"
-        :data="sessionPayload"
+        :objects="sessionPayload"
+  :derived="{}"
         :default-open="false"
       />
 

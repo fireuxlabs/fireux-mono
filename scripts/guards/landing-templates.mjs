@@ -75,8 +75,10 @@ export function run(ctx) {
     !existsSync(path.join(root, runtime, 'public/img/template-one/charcoal-texture.webp')) ||
     !sceneCss.includes("url('/img/template-one/charcoal-texture.webp')")
   ) violations.push('Template One Scene One must retain shared scene/layer anatomy and owned texture')
-  if (/gsap|ScrollTrigger|useLandingMotion/.test(`${page}\n${scene}\n${sceneCss}\n${detail}`))
-    violations.push('templates must not own shared motion infrastructure')
+  if (!page.includes("useLandingMotion") || !page.includes("fireux-core/runtime/composables/fireux/motion/useLandingMotion"))
+    violations.push('TemplateOnePage must consume Core landing motion once')
+  if (/from ['"]gsap|ScrollTrigger|IntersectionObserver/.test(`${page}\n${scene}\n${sceneCss}\n${detail}`))
+    violations.push('templates must not implement competing motion infrastructure')
   if (!contract.includes('TemplateOneSceneOneRequirements'))
     violations.push('Template One must retain a typed Scene One contract')
   if (!contract.includes('TemplateOneKitchenProjection') || !contract.includes('projectTemplateOneKitchen'))

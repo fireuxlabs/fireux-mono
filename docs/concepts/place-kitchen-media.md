@@ -1,6 +1,6 @@
 # Place and Kitchen media
 
-Updated: 2026-08-04
+Updated: 2026-08-14
 Ref: d232cc731
 Role: map, not canon
 
@@ -63,6 +63,14 @@ The one-time guarded recovery at
 `scripts/restore-misebox-place-identity.mjs` restores exact approved identity
 references from that protected pre-image when an earlier migration plan
 classified them as unsupported.
+
+The protected Interlaken Pizza enrichment at
+`scripts/migrate-interlaken-pizza-profile.mjs` is a one-Place application of
+the same boundary. It verifies owner-controlled website media before copying
+it into exact Place-owned Storage targets, reads current hours for the exact
+Google Place ID without storing Google photo content, preserves a complete
+pre-image, and updates the canonical Place only through the MCP/Skill mutation
+lane.
 
 ## Compatibility and migration
 

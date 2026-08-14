@@ -40,10 +40,14 @@
       />
 
       <template v-else-if="job">
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           :title="'Job (Public DTO)'"
           context="Job detail page · jobs/[id] · endpoint-first SSR"
-          :data="devPayload"
+          :objects="devPayload"
+  :derived="{}"
           :default-open="false"
         />
 

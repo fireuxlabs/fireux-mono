@@ -30,10 +30,12 @@
       </p>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen stations"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ stations }"
+      :derived="debug"
     />
   </div>
 </template>

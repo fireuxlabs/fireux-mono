@@ -23,10 +23,14 @@
   </div>
   <div v-if="cells.length" class="pt-3">
     <div class="max-w-2xl">
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="'Places (Dropdown Debug)'"
         context="Places search dropdown · live cells"
-        :data="debugCells"
+        :objects="debugCells"
+  :derived="{}"
         :default-open="false"
       />
     </div>

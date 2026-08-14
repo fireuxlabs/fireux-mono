@@ -23,7 +23,7 @@ import { navigateTo } from '#imports'
 import { useDeveloperAccess } from 'fireux-core/runtime/composables/fireux/app/useDeveloperAccess'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { Place } from '../../models/place.model'
 import { usePlaceDelete } from '../../composables/fireux/firestore/place/mutations/usePlaceDelete'
 
@@ -36,7 +36,14 @@ const { isDeveloper } = useDeveloperAccess()
 const { deletePlace } = usePlaceDelete()
 const toast = useToastify()
 const deleting = ref(false)
-const canDelete = computed(() => isDeveloper.value || isAdmin.value)
+const mounted = ref(false)
+const canDelete = computed(
+  () => mounted.value && (isDeveloper.value || isAdmin.value)
+)
+
+onMounted(() => {
+  mounted.value = true
+})
 
 async function requestDelete() {
   if (!canDelete.value || deleting.value) return

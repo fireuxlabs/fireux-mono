@@ -21,10 +21,12 @@
       @select="actions.selectTarget"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen console debug"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedKitchen: selection.kitchen, kitchens: sections.targets.collection }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

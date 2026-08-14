@@ -22,10 +22,14 @@
         </template>
       </ChefCardsProfile>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Chef (Public DTO)"
         context="Chef detail · chefs/[handle] · endpoint-first SSR"
-        :data="devPayload"
+        :objects="devPayload"
+  :derived="{}"
         :default-open="false"
       />
     </div>

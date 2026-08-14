@@ -14,10 +14,12 @@
       @select="actions.selectTarget"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Blank console debug"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedBlank: selection.blank, blanks: sections.targets.collection }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

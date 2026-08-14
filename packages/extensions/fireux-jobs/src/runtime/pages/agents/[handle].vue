@@ -22,10 +22,14 @@
         </template>
       </AgentCardsProfile>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Agent (Public DTO)"
         context="Agent detail · agents/[handle] · endpoint-first SSR"
-        :data="devPayload"
+        :objects="devPayload"
+  :derived="{}"
         :default-open="false"
       />
     </div>

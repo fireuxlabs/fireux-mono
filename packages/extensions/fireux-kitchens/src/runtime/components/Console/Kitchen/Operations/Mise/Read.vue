@@ -9,10 +9,12 @@
       link-base="/console/kitchen/mise"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen mise"
       scope="console"
-      :data="pageDebug"
+      object-origin="fetched"
+      :objects="{ selectedKitchen, miseTasks }"
+      :derived="pageDebug"
     />
   </div>
 </template>

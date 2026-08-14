@@ -58,10 +58,12 @@
       </UCard>
     </template>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Supplier identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedSupplier }"
+      :derived="debug"
     />
   </div>
 </template>

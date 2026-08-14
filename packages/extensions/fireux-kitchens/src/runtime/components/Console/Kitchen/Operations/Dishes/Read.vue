@@ -92,10 +92,14 @@
       @after-leave="selectedDish = null"
     />
 
-    <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+      launcher
+      include-route
       title="Kitchen dishes debug"
       context="Kitchen dishes console · /console/kitchen/dishes"
-      :data="dishDebug"
+      :objects="dishDebug"
+  :derived="{}"
       :default-open="false"
     />
   </section>

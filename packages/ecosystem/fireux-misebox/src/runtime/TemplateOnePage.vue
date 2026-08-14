@@ -1,6 +1,6 @@
 <template>
   <UPage class="template-one-page" :style="themeStyle">
-    <main id="top">
+    <main id="top" ref="landingRoot">
       <TemplateOneSceneOne
         :name="projection.name"
         :wordmark-src="projection.wordmarkSrc"
@@ -33,7 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
+import { useLandingMotion } from 'fireux-core/runtime/composables/fireux/motion/useLandingMotion'
 import type { TemplateOneKitchenProjection } from './template-one'
 import TemplateOneFooterScene from './TemplateOneFooterScene.vue'
 import TemplateOneFranchiseScene from './TemplateOneFranchiseScene.vue'
@@ -43,6 +44,8 @@ import TemplateOneProviderScene from './TemplateOneProviderScene.vue'
 import TemplateOneSceneOne from './TemplateOneSceneOne.vue'
 
 const props = defineProps<{ projection: TemplateOneKitchenProjection }>()
+const landingRoot = useTemplateRef<HTMLElement>('landingRoot')
+useLandingMotion(landingRoot)
 const themeStyle = computed(() => ({
   '--template-one-canvas': props.projection.palette.canvas,
   '--template-one-surface': props.projection.palette.surface,

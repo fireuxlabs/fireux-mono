@@ -143,10 +143,14 @@
     </div>
 
     <div>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="devJsonTitle"
         :context="devJsonContext"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

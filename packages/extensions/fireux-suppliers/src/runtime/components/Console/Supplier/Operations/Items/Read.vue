@@ -39,10 +39,12 @@
       </div>
     </UPageCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Supplier items"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ supplierItems }"
+      :derived="debug"
     />
   </div>
 </template>

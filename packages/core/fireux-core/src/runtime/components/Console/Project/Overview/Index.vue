@@ -17,10 +17,12 @@
     </div>
 
     <div class="mt-4">
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Project overview"
         scope="console"
-        :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProject: focus.entity, projects: multiple.items }"
+      :derived="debug"
         :default-open="false"
       />
     </div>

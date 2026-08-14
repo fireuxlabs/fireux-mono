@@ -122,10 +122,12 @@
         :specials="activeDetailMenu.specials"
       />
 
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Menu"
         scope="runtime"
-        :data="menuDebug"
+      object-origin="fetched"
+      :objects="{ menu: activeDetailMenu }"
+      :derived="menuDebug"
         :default-open="true"
       />
     </template>

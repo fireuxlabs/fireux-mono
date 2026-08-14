@@ -19,10 +19,12 @@
     </div>
 
     <div class="mt-4">
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Portfolio overview"
         scope="console"
-        :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedPortfolio: focus.entity, portfolios: multiple.items }"
+      :derived="debug"
         :default-open="false"
       />
     </div>

@@ -74,10 +74,14 @@
       "
     />
 
-    <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+      launcher
+      include-route
       title="Customers (JSON)"
       context="collection manager · customers"
-      :data="devJsonData"
+      :objects="devJsonData"
+  :derived="{}"
       :default-open="false"
       @opened="loadDevJson"
       @closed="unloadDevJson"

@@ -135,10 +135,14 @@
     />
 
     <div>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="'Places (JSON)'"
         context="collection manager · places"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

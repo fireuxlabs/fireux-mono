@@ -64,10 +64,14 @@
         No suppliers found for this source.
       </p>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Suppliers (JSON)"
         context="dev suppliers · selected source"
-        :data="suppliers"
+        :objects="suppliers"
+  :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -210,10 +214,14 @@
         source.
       </p>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="All supplier ingredients (JSON)"
         context="dev suppliers · all linked ingredient ids"
-        :data="supplierIngredientsDebug"
+        :objects="supplierIngredientsDebug"
+  :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -269,10 +277,14 @@
         Select a supplier above to inspect its linked ingredients.
       </p>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Supplier linked ingredients (JSON)"
         context="dev suppliers · selected supplier links"
-        :data="selectedSupplierDebug"
+        :objects="selectedSupplierDebug"
+  :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />

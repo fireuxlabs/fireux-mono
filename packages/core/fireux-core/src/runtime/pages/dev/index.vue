@@ -244,10 +244,14 @@
       <template #header>
         <h2>Runtime JSON</h2>
       </template>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="'Runtime (JSON)'"
         context="dev index · runtime"
-        :data="{ runtime: cfg }"
+        :objects="{ runtime: cfg }"
+  :derived="{}"
         :default-open="false"
       />
     </UCard>

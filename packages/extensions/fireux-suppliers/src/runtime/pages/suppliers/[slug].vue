@@ -28,10 +28,14 @@
         <SupplierPublicOperatorPanel :supplier="supplierRecord" />
 
         <!-- dev -->
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           :title="'Supplier (JSON)'"
           context="Supplier detail page · suppliers/[slug] · supplier doc"
-          :data="supplierRecord"
+          :objects="supplierRecord"
+  :derived="{}"
           :default-open="false"
         />
       </div>

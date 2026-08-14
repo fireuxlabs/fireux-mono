@@ -24,10 +24,12 @@
     </div>
   </UCard>
 
-  <DevFireuxDebugPanel
+  <DevDebugPanel
     title="Portfolio properties"
     scope="console"
-    :data="debug"
+      object-origin="fetched"
+      :objects="{ properties }"
+      :derived="debug"
   />
 </template>
 
@@ -35,6 +37,7 @@
 import { usePortfolioConsoleProperties } from '../../../../../composables/fireux/console/portfolio/operations/Properties/usePortfolioConsoleProperties'
 
 const {
+  properties,
   portfolioName,
   collectionPath,
   debug,

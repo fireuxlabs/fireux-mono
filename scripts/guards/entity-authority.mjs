@@ -1177,12 +1177,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     publicPlaceModel,
-    /PublicPlaceDetailProjection[\s\S]*business_hours\?:\s*PlaceBusinessHours/,
-    'The bounded Place detail must expose canonical normalized business hours.'
+    /PublicPlaceDetailProjection[\s\S]*cover_image:\s*string[\s\S]*gallery_images:\s*string\[\][\s\S]*logo_image:\s*string[\s\S]*wordmark_image:\s*string[\s\S]*business_hours:\s*PlaceBusinessHours[\s\S]*website:\s*string/,
+    'The bounded Place detail must materialize its stable presentation contract.'
   )
   assert.match(
     publicPlaceServerProjection,
-    /normalizePlaceBusinessHours\(value\.business_hours\)[\s\S]*business_hours:\s*businessHours/,
+    /cover_image:\s*coverImage[\s\S]*gallery_images:\s*galleryImages[\s\S]*logo_image:\s*logoImage[\s\S]*wordmark_image:\s*wordmarkImage[\s\S]*business_hours:\s*businessHours\s*\|\|\s*\{\s*windows:\s*\[\]\s*\}[\s\S]*website,/,
     'The Live Place detail must project normalized Place-owned business hours.'
   )
 

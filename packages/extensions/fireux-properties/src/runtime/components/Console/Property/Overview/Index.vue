@@ -19,10 +19,12 @@
     </div>
 
     <div class="mt-4">
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Property overview"
         scope="console"
-        :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProperty: focus.entity, properties: multiple.items }"
+      :derived="debug"
         :default-open="false"
       />
     </div>

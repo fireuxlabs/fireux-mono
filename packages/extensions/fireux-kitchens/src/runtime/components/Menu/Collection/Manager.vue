@@ -116,7 +116,9 @@
       More menus could not be loaded. Please try again.
     </p>
 
-    <DevJson
+<DevDebugPanel
+  object-origin="fetched"      launcher
+      include-route
       title="Menus (JSON)"
       context="collection manager · menus"
       :objects="devObjects"

@@ -62,15 +62,49 @@ export type PublicPlaceDetailProjection = PublicPlaceProjection & {
   timezone?: string
   brand_palette?: SparseBrandPalette
   about?: string
-  cover_image?: string
-  gallery_images?: string[]
-  logo_image?: string
-  wordmark_image?: string
-  business_hours?: PlaceBusinessHours
-  website?: string
+  cover_image: string
+  gallery_images: string[]
+  logo_image: string
+  wordmark_image: string
+  business_hours: PlaceBusinessHours
+  website: string
   google_maps_url?: string
 }
 
 export type PublicPlaceDetailResponse = {
   item: PublicPlaceDetailProjection
 }
+
+/** Executable shape used by development diagnostics for the bounded detail DTO. */
+export const PublicPlaceDetailDebugModel = {
+  id: '',
+  name: '',
+  place_type: '',
+  short_name: '',
+  brand_tagline: '',
+  short_address: '',
+  image_url: '',
+  media_backdrop_color: '',
+  image_shade: '',
+  verified: false,
+  slug: '',
+  default_currency_code: '',
+  timezone: '',
+  brand_palette: {},
+  about: '',
+  cover_image: '',
+  gallery_images: [],
+  logo_image: '',
+  wordmark_image: '',
+  business_hours: {},
+  website: '',
+  google_maps_url: '',
+} satisfies Record<string, unknown>
+
+export const PublicPlaceDetailDebugRequiredPaths = [
+  'id',
+  'name',
+  'place_type',
+  'short_name',
+  'slug',
+] as const

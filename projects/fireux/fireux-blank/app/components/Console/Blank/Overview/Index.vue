@@ -19,10 +19,12 @@
     </div>
 
     <div class="mt-4">
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Blank overview"
         scope="console"
-        :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedBlank: focus.entity, blanks: multiple.items }"
+      :derived="debug"
         :default-open="false"
       />
     </div>

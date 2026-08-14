@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: map, not canon
 
 ## Purpose
@@ -114,6 +114,28 @@ Use these delta states consistently:
 “Different” is not an explanation. A delta without a reason is drift until it
 is reviewed.
 
+### Growth phase is not delta state
+
+Use the controlled named-sibling lifecycle in `spine.md` when a family is
+still being discovered. `baseline`, `proving sibling`, `differentiating`, and
+`established` describe the maturity of a family seam. They never replace
+`accepted`, `migration`, `drift`, or `to-confirm`, which classify differences
+between members.
+
+While that lifecycle is active, the smallest relevant family map records:
+
+- the complete baseline and the bounded seam being tested;
+- each real proving sibling and its owner;
+- established lower-level fundamentals reused from the start;
+- the intended differentiation question or brief and explicit non-goals;
+- any deliberate duplicated structure; and
+- the comparison evidence required before extraction or a permanent guard.
+
+This is durable family context, not a task checklist. Remove obsolete proving
+notes when the comparison graduates into a spine, and retain the resulting
+invariants and classified deltas. Initial equivalence records construction
+provenance only; it cannot be cited as evidence that a contract is shared.
+
 ## Roadmaps
 
 Roadmaps are bounded recommendations, not promises. Use this order:
@@ -130,6 +152,8 @@ real external deadline.
 Before finishing a documentation change:
 
 - Verify claims against current source, nearest siblings, and relevant guards.
+- For an active family-growth phase, verify the baseline, real sibling intent,
+  differentiation target, and graduation evidence against current source.
 - Preserve `to-confirm` where evidence is incomplete.
 - Ensure every listed delta has a state and reason.
 - Keep context files durable and move detailed family material into concept

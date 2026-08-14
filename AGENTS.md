@@ -2,7 +2,7 @@
 
 Purpose: short operating router for AI agents working in `fireux-mono`.
 
-Effective: 2026-07-22
+Effective: 2026-08-14
 
 ## Mandatory Entry
 
@@ -59,6 +59,15 @@ nearest working sibling, capabilities to reuse, smallest genuinely new
 domain-owned delta, and explicit non-goals. Start as an ordinary FireUX page,
 capability, or domain component. One consumer does not justify a new system,
 engine, registry, framework, or shared abstraction.
+
+FireUX discovers a new family through controlled named-sibling evolution. A
+complete baseline may be copied into a real, separately named proving sibling
+before that sibling is deliberately differentiated. That bounded initial
+duplication is construction, not drift and not proof of a spine. Reuse proven
+lower layers immediately, align fundamentals justified independently by the
+family's product job, keep domain entrypoints named, and promote only the
+contract that survives material differentiation. Follow the lifecycle and
+gates in `docs/concepts/spine.md`.
 
 Before editing an entity, console, route family, model, collection manager, public surface, module registration, server API, or reusable seam:
 

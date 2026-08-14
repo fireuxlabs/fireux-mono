@@ -9,11 +9,12 @@
       :read-only="readOnly"
       :can-write="canWrite"
     />
-
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Portfolio team"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ portfolio }"
+      :derived="debug"
     />
   </section>
 </template>
@@ -21,6 +22,14 @@
 <script setup lang="ts">
 import { usePortfolioConsoleTeam } from '../../../../composables/fireux/console/portfolio/team/usePortfolioConsoleTeam'
 
-const { portfolioId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
-  usePortfolioConsoleTeam()
+const {
+  portfolio,
+  portfolioId,
+  teamIds,
+  operatorIds,
+  accessIds,
+  readOnly,
+  canWrite,
+  debug,
+} = usePortfolioConsoleTeam()
 </script>

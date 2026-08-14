@@ -47,10 +47,14 @@
         </template>
       </UPageCard>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="User DTO"
         context="User page · users/[handle] · endpoint-first SSR"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
       />
     </UPageBody>

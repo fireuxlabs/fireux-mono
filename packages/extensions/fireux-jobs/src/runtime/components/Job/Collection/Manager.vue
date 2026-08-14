@@ -131,10 +131,14 @@
     />
 
     <div>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Jobs (Public JSON)"
         context="collection manager · jobs · bounded public projection"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

@@ -78,10 +78,14 @@
     />
 
     <div>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="'Agents (JSON)'"
         context="collection manager · agents"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

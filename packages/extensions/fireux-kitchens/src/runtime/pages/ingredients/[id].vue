@@ -51,10 +51,14 @@
           :model="ingredientProfile"
         />
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           :title="'Ingredient (Doc)'"
           context="Ingredient detail page · ingredients/[id] · ingredient doc"
-          :data="ingredient"
+          :objects="ingredient"
+  :derived="{}"
           :default-open="false"
         />
 

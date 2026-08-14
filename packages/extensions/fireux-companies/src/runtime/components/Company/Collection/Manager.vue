@@ -100,10 +100,14 @@
     </p>
 
     <div>
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         :title="'Companies (JSON)'"
         context="collection manager · companies"
-        :data="devJsonData"
+        :objects="devJsonData"
+  :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

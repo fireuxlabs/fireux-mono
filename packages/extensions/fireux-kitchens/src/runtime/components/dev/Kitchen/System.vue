@@ -35,10 +35,14 @@
           Showing: {{ filteredKitchensResolved.length }}
         </UBadge>
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           title="Hydrated Kitchens (JSON)"
           context="dev kitchens · filtered hydrated kitchens"
-          :data="filteredKitchensResolved"
+          :objects="filteredKitchensResolved"
+  :derived="{}"
           :default-open="false"
           :hide-when-empty="false"
         />
@@ -106,10 +110,14 @@
           >.
         </div>
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           title="Kitchen storage (JSON)"
           context="dev kitchens · full storage picture"
-          :data="selectedKitchenStorageJson"
+          :objects="selectedKitchenStorageJson"
+  :derived="{}"
           :default-open="false"
           :hide-when-empty="false"
         />

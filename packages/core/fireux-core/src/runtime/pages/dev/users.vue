@@ -42,11 +42,15 @@
             </div>
           </div>
 
-          <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+            launcher
+            include-route
             v-if="signedInUserJson"
             :title="'Current user (JSON)'"
             :context="'dev users · signed-in user · resolved user payload'"
-            :data="signedInUserJson"
+            :objects="signedInUserJson"
+  :derived="{}"
             :default-open="false"
           />
         </div>

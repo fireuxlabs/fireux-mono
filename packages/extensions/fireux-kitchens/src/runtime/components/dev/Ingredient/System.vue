@@ -31,10 +31,14 @@
         </div>
       </template>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Ingredients (JSON)"
         context="dev ingredients · filtered collection"
-        :data="filteredCollection"
+        :objects="filteredCollection"
+  :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />

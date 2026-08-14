@@ -1,7 +1,7 @@
 # Templates
 
 Updated: 2026-08-14
-Ref: e57b8cc4f
+Ref: d5efe9160
 Role: map, not canon
 
 ## English meaning
@@ -48,10 +48,28 @@ or another valid consumer, it is not template-owned.
 
 ## Proving and extraction
 
-An App may prove a template by supplying real content and identity. A second
-materially different App tests whether the structure is genuinely reusable.
-Only the shared presentation pattern belongs to the template package. Each
-consumer retains its own data, copy, assets, and routes.
+Templates have two separate proof axes:
+
+- Materially different Kitchens or Apps rendering one template test that
+  template's reusability and freedom from consumer leakage.
+- Separately named templates test the shared template-family contract.
+
+Template One is the family baseline. A real Template Two may begin as an
+intentionally aligned proving sibling with its own `TemplateTwo*` names,
+components, functions, styles, and product purpose. It then differentiates in
+anatomy, interaction, requirements, or behaviour. Initial equivalence is a
+construction technique, not proof; only family mechanisms that survive that
+differentiation are candidates for cross-template extraction.
+
+Template Two adopts any independently established catalogue identity,
+compatibility, readiness, and renderer-boundary checks from its first save.
+Those fundamentals do not require copied scene anatomy or a shared template
+engine.
+
+A proving App demonstrates a template by supplying real content and identity;
+it does not become part of the pattern. Each consumer retains its own data,
+copy, assets, and routes. A second branded fixture alone does not prove a
+second template.
 
 ## Template One
 

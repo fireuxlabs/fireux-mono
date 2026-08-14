@@ -54,10 +54,14 @@
           </MoleculesCreateShell>
 
           <div class="mt-6">
-            <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+              launcher
+              include-route
               :title="'Create Product (JSON)'"
               context="dashboard/admin/products/create"
-              :data="devCreateJson"
+              :objects="devCreateJson"
+  :derived="{}"
               :default-open="false"
             />
           </div>

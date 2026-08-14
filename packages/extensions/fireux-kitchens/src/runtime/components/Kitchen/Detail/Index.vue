@@ -42,7 +42,15 @@
           </div>
         </nav>
 
-        <KitchenDetailIdentity :kitchen="displayKitchen" />
+        <KitchenHeader :kitchen="displayKitchen" />
+
+        <section v-if="kitchenAbout" class="kitchen-detail__about">
+          <div class="kitchen-detail__section-heading">
+            <p class="fx-type-label">About</p>
+            <h2 class="fx-type-section-title">{{ kitchenName }}</h2>
+          </div>
+          <p class="kitchen-detail__story fx-type-body">{{ kitchenAbout }}</p>
+        </section>
 
         <KitchenDetailMenus v-if="displayKitchen" :kitchen="displayKitchen" />
 
@@ -124,6 +132,16 @@ const applyIdentity = (identity: KitchenPublicIdentityEdit) => {
   emit('refresh')
 }
 const locator = computed(() => String(props.kitchen?.slug || '').trim())
+const kitchenName = computed(() =>
+  String(
+    displayKitchen.value?.display_name ||
+      displayKitchen.value?.name ||
+      'Kitchen'
+  ).trim()
+)
+const kitchenAbout = computed(() =>
+  String(displayKitchen.value?.about || '').trim()
+)
 const emptyFulfilment: KitchenFulfilmentConfig = {
   delivery_zones: [],
   payment_methods: [],
@@ -149,7 +167,7 @@ const resolvedFulfilment = computed(
 <style scoped>
 .kitchen-detail {
   display: grid;
-  gap: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 14));
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 11));
   padding-bottom: clamp(
     calc(var(--spacing) * 8),
     6vw,
@@ -169,6 +187,39 @@ const resolvedFulfilment = computed(
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 2);
+}
+
+.kitchen-detail__about {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+  padding-top: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
+  border-top: 1px solid var(--ui-border);
+}
+
+.kitchen-detail__section-heading {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+}
+
+.kitchen-detail__section-heading .fx-type-label {
+  color: var(--ui-primary);
+}
+
+.kitchen-detail__story {
+  max-width: 68ch;
+  color: var(--ui-text-toned);
+  font-size: clamp(var(--text-base), 1.6vw, var(--text-xl));
+  line-height: var(--leading-relaxed);
+  white-space: pre-line;
+}
+
+@media (min-width: 40rem) {
+  .kitchen-detail__about {
+    grid-template-columns:
+      minmax(calc(var(--spacing) * 40), 2fr)
+      minmax(0, 3fr);
+    align-items: start;
+  }
 }
 
 @media (max-width: 40rem) {

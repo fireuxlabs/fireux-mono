@@ -9,11 +9,12 @@
       :read-only="readOnly"
       :can-write="canWrite"
     />
-
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Property team"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ property }"
+      :derived="debug"
     />
   </section>
 </template>
@@ -21,6 +22,14 @@
 <script setup lang="ts">
 import { usePropertyConsoleTeam } from '../../../../composables/fireux/console/property/team/usePropertyConsoleTeam'
 
-const { propertyId, teamIds, operatorIds, accessIds, readOnly, canWrite, debug } =
-  usePropertyConsoleTeam()
+const {
+  property,
+  propertyId,
+  teamIds,
+  operatorIds,
+  accessIds,
+  readOnly,
+  canWrite,
+  debug,
+} = usePropertyConsoleTeam()
 </script>

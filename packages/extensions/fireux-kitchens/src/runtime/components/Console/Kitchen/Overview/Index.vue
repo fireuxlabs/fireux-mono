@@ -195,10 +195,12 @@
     </div>
 
     <div class="mt-4">
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Kitchen overview"
         scope="console"
-        :data="pageDebug"
+      object-origin="fetched"
+      :objects="{ selectedKitchen }"
+      :derived="pageDebug"
         :default-open="false"
       />
     </div>

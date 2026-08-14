@@ -77,10 +77,14 @@
       "
     />
 
-    <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+      launcher
+      include-route
       title="Drivers (JSON)"
       context="collection manager · drivers"
-      :data="devJsonData"
+      :objects="devJsonData"
+  :derived="{}"
       :default-open="false"
       @opened="loadDevJson"
       @closed="unloadDevJson"

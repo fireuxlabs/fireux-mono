@@ -93,10 +93,12 @@
         Debug
       </summary>
 
-      <DevFireuxDebugPanel
+      <DevDebugPanel
         title="Kitchen recipe detail"
         scope="console"
-        :data="debug"
+      object-origin="fetched"
+      :objects="{ recipe, dishUsage }"
+      :derived="debug"
         class="mt-4"
       />
     </details>

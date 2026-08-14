@@ -63,10 +63,14 @@
             description="This inspector reads the FireUX control-plane Project only. Apps and Ecosystems point to it through project_id."
           />
 
-          <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+            launcher
+            include-route
             title="Project storage (JSON)"
             context="dev projects · full storage picture"
-            :data="projectStorageJson"
+            :objects="projectStorageJson"
+  :derived="{}"
             :default-open="false"
             :hide-when-empty="false"
           />

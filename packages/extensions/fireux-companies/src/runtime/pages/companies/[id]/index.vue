@@ -38,10 +38,14 @@
           :model="companyProfile"
         />
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           title="Company"
           context="Company detail page · companies/[id] · bounded projection"
-          :data="company"
+          :objects="company"
+  :derived="{}"
           :default-open="false"
         />
       </div>

@@ -23,10 +23,12 @@
       </div>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Blank identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedBlank }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

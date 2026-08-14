@@ -83,10 +83,12 @@
       <p v-else class="text-sm text-dimmed">No ingredients found.</p>
     </section>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       :title="debugTitle"
       scope="console"
-      :data="pageDebug"
+      object-origin="fetched"
+      :objects="{ ingredients }"
+      :derived="pageDebug"
     />
   </div>
 </template>

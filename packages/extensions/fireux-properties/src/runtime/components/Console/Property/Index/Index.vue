@@ -14,10 +14,12 @@
       @select="actions.selectTarget"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Property console debug"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProperty: selection.property, properties: sections.targets.collection }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

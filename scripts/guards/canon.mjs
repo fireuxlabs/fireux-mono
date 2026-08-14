@@ -923,7 +923,7 @@ export async function run(ctx) {
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
       '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
-      '- Collection manager dev JSON must load on DevJson open and unload on close so closed panels do no work',
+      '- Collection manager debug must load on DevDebugPanel open and unload on close so closed panels do no work',
       '- Use useRouteParam() or readRouteParam() instead of repeating String(route.params.*).trim()',
     ]
 

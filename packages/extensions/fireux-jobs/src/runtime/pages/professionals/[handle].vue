@@ -39,10 +39,14 @@
         </template>
       </ProfessionalCardsProfile>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         title="Professional (Public DTO)"
         context="Professional detail · professionals/[handle] · endpoint-first SSR"
-        :data="devPayload"
+        :objects="devPayload"
+  :derived="{}"
         :default-open="false"
       />
     </div>

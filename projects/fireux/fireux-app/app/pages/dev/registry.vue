@@ -78,7 +78,9 @@
           />
           <span>Loading directory snapshot…</span>
         </div>
-        <DevJsonPanel
+        <DevDebugPanelPanel
+          launcher
+          include-route
           v-else-if="snapshot"
           class="mt-4"
           title="Directory JSON"

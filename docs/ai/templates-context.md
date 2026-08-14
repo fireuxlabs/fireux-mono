@@ -1,7 +1,7 @@
 # Landing templates context
 
-Updated: 2026-08-12
-Ref: 93c271035
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -15,7 +15,7 @@ continues to inherit its own scoped context.
 
 Use this context for the Misebox-owned Kitchen-template catalogue, reusable
 template anatomy, preview-only brand injections, and FireUX catalogue
-referrals. The current proving member is Template One.
+referrals. The current family baseline is Template One.
 
 The foundational meaning and ownership test live in
 `docs/concepts/templates.md`. Templates own reusable presentation structure;
@@ -30,8 +30,10 @@ injected owner data.
   keeps a catalogue referral and does not copy anatomy or fixtures.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
   Console presentation. They are presentation levels, not template records.
-  Template One is the only current template; do not add a placeholder second
-  template before a real composition proves it.
+  Template One is the only current template. Do not publish a nominal Template
+  Two with no product purpose. A real Template Two may begin as a separately
+  named, structurally aligned proving sibling, then deliberately differentiate
+  under the lifecycle in `docs/concepts/spine.md`.
 - Template eligibility belongs to the fulfilled Kitchen, not to its management
   tier or the existence of a canonical App. An App is one valid provider and
   proof of the effective assets and theme values, but is not itself a
@@ -74,6 +76,16 @@ injected owner data.
   six scenes; tenant Apps and the catalogue inject Kitchen data and render the
   page directly. Consumer scenes, adapters, copied template CSS, and iframe
   previews are drift.
+- Initial duplication between `TemplateOne*` and a future real `TemplateTwo*`
+  proving sibling is bounded family construction, not consumer drift and not
+  evidence of a shared template engine. Keep both templates independently
+  named and working, differentiate Template Two materially, then compare the
+  surviving family contract before extracting or guarding cross-template
+  machinery.
+- A proving Template Two adopts independently established catalogue identity,
+  compatibility, readiness, owner-injection, and renderer-boundary checks from
+  its first save. Its components, functions, styles, anatomy, and product
+  decisions remain `TemplateTwo*`-owned while it differentiates.
 - Scene One render readiness is distinct from full Template One content
   readiness. The scene can render from one unique flagship, while the template
   requirements manifest still requires six eligible Dishes plus exactly one
@@ -99,8 +111,11 @@ injected owner data.
   layout keeps header/page chrome in normal document flow and mounts the page;
   reusable scenes never compensate for header height or position. Extract a
   shared configurable header only after a second real App proves the contract.
-- Shared landing motion remains outside this family. Do not add GSAP,
-  ScrollTrigger, or a competing motion abstraction here.
+- Core owns landing motion infrastructure. Template One declares semantic
+  hero parts and reveal directions, then calls Core's `useLandingMotion` once
+  at its shared page root. Scenes never import GSAP, create observers, or add a
+  competing motion abstraction. Reduced-motion and visible fallbacks remain
+  Core responsibilities.
 
 ## Authority and current source
 

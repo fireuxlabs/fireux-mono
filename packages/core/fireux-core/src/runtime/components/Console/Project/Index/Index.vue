@@ -14,10 +14,12 @@
       @select="actions.selectTarget"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Project console debug"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProject: selection.project, projects: sections.targets.collection }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

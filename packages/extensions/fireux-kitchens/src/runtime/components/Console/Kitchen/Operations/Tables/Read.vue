@@ -77,10 +77,12 @@
       </p>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen tables"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ activeTabs, stagingTabs, billingTabs }"
+      :derived="debug"
       :default-open="false"
     />
   </div>

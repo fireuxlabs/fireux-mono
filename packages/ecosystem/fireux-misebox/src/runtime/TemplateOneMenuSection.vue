@@ -1,6 +1,6 @@
 <template>
   <section id="menu" class="template-one-menu" :style="style" data-landing-scene="menu">
-    <div class="template-one-menu__intro">
+    <div class="template-one-menu__intro" data-landing-reveal="up">
       <div>
         <h2>Menu</h2>
         <span aria-hidden="true" />
@@ -12,7 +12,7 @@
       <img v-if="introItem?.imageUrl" :src="introItem.imageUrl" alt="" loading="lazy">
     </div>
 
-    <div class="template-one-menu__grid">
+    <div class="template-one-menu__grid" data-landing-reveal="up" style="--landing-reveal-delay: 80ms">
       <TemplateOneDishCard v-for="item in dishes" :key="item.id" :item="item" />
       <TemplateOneDishCard
         v-if="specialItem"
@@ -22,7 +22,7 @@
       />
     </div>
 
-    <article v-if="makeItYours" class="template-one-menu__make-it-yours">
+    <article v-if="makeItYours" class="template-one-menu__make-it-yours" data-landing-reveal="scale">
       <div>
         <p>+</p>
         <h3>{{ makeItYours.name }}</h3>

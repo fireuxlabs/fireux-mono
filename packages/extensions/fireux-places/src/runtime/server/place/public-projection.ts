@@ -1,7 +1,3 @@
-// Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: allowlist sparse public location truth and exclude raw stamps/search metadata.
-// Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: expose every canonical Place only through a coarse card-safe reference DTO.
-// Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: add locale defaults only to the bounded detail projection.
-// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: project only validated sparse brand colours.
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { PlaceType } from '../../models/place.model'
@@ -17,8 +13,6 @@ import {
 } from '../../utils/place-spine'
 import { normalizePublicPlaceProjection } from '../../utils/public-place-projection'
 
-const placeTypes = new Set<PlaceType>(['physical', 'non_physical'])
-
 const text = (value: unknown, maxLength: number) =>
   typeof value === 'string' && value.trim() && value.trim().length <= maxLength
     ? value.trim()
@@ -26,7 +20,7 @@ const text = (value: unknown, maxLength: number) =>
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const httpsUrl = (value: unknown) => {
@@ -42,15 +36,18 @@ const httpsUrl = (value: unknown) => {
   }
 }
 
-/** Build locality-only display copy without transporting street/postal truth. */
 const coarseAddress = (value: unknown) => {
   const address = record(value)
   const countryCode = text(address.country_code, 2).toUpperCase()
-  const parts = Array.from(new Set([
-    text(address.city, 120),
-    text(address.region, 120),
-    /^[A-Z]{2}$/.test(countryCode) ? countryCode : '',
-  ].filter(Boolean)))
+  const parts = Array.from(
+    new Set(
+      [
+        text(address.city, 120),
+        text(address.region, 120),
+        /^[A-Z]{2}$/.test(countryCode) ? countryCode : '',
+      ].filter(Boolean)
+    )
+  )
   const result = parts.join(', ')
   return result.length <= 240 ? result : ''
 }
@@ -60,10 +57,9 @@ export function projectPublicPlace(
   value: Record<string, unknown>
 ): PublicPlaceProjection | null {
   if (!isFirestoreDocumentId(id)) return null
-
   const name = text(value.name, 240)
   const placeType = text(value.place_type, 40) as PlaceType
-  if (!name || !placeTypes.has(placeType)) return null
+  if (!name || !['physical', 'non_physical'].includes(placeType)) return null
 
   const result = normalizePublicPlaceProjection({
     id,
@@ -77,11 +73,7 @@ export function projectPublicPlace(
       value.media_backdrop_color,
       value.image_shade
     ),
-    image_shade: text(value.image_shade, 10) === 'light'
-      ? 'light'
-      : text(value.image_shade, 10) === 'dark'
-        ? 'dark'
-        : 'none',
+    image_shade: value.image_shade,
     verified: value.verified === true,
     slug: (() => {
       const slug = text(value.slug, 240).toLowerCase()
@@ -102,14 +94,11 @@ export function projectPublicPlaceDetail(
   const currency = normalizePlaceCurrencyCode(value.default_currency_code)
   const timezone = normalizePlaceTimezone(value.timezone)
   const brandPalette = readBrandPalette(value.brand_palette)
-  const about = text(value.about, 10_000)
   const coverImage = httpsUrl(value.cover_image)
   const galleryImages = Array.isArray(value.gallery_images)
-    ? Array.from(new Set(
-        value.gallery_images
-          .map(httpsUrl)
-          .filter(Boolean)
-      )).slice(0, 24)
+    ? Array.from(
+        new Set(value.gallery_images.map(httpsUrl).filter(Boolean))
+      ).slice(0, 24)
     : []
   const logoImage = httpsUrl(value.logo_image)
   const wordmarkImage = httpsUrl(value.wordmark_image)
@@ -123,13 +112,13 @@ export function projectPublicPlaceDetail(
     ...(Object.keys(brandPalette).length
       ? { brand_palette: brandPalette }
       : {}),
-    ...(about ? { about } : {}),
-    ...(coverImage ? { cover_image: coverImage } : {}),
-    ...(galleryImages.length ? { gallery_images: galleryImages } : {}),
-    ...(logoImage ? { logo_image: logoImage } : {}),
-    ...(wordmarkImage ? { wordmark_image: wordmarkImage } : {}),
-    ...(businessHours ? { business_hours: businessHours } : {}),
-    ...(website ? { website } : {}),
+    ...(text(value.about, 10_000) ? { about: text(value.about, 10_000) } : {}),
+    cover_image: coverImage,
+    gallery_images: galleryImages,
+    logo_image: logoImage,
+    wordmark_image: wordmarkImage,
+    business_hours: businessHours || { windows: [] },
+    website,
     ...(googleMapsUrl ? { google_maps_url: googleMapsUrl } : {}),
   }
 }

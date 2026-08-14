@@ -142,10 +142,12 @@
       </div>
     </template>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedKitchen, place, menus }"
+      :derived="debug"
     />
   </div>
 </template>

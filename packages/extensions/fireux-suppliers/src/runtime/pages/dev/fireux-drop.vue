@@ -60,10 +60,14 @@
               </template>
             </UCard>
 
-            <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+              launcher
+              include-route
               title="Root Suppliers (JSON)"
               context="dev suppliers · filtered root collection"
-              :data="filteredSuppliers"
+              :objects="filteredSuppliers"
+  :derived="{}"
               :default-open="false"
               :hide-when-empty="false"
             />
@@ -124,10 +128,14 @@
               description="Current Supplier canon requires root identity plus its App support record. If child families emerge later, add them here deliberately."
             />
 
-            <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+              launcher
+              include-route
               title="Supplier storage (JSON)"
               context="dev suppliers · full storage picture"
-              :data="supplierStorageJson"
+              :objects="supplierStorageJson"
+  :derived="{}"
               :default-open="false"
               :hide-when-empty="false"
             />

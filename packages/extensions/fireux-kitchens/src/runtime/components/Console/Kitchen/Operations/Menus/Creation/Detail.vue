@@ -125,10 +125,14 @@
       </UCard>
     </template>
 
-    <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+      launcher
+      include-route
       title="Kitchen menu source debug"
       context="Kitchen menu source · /console/kitchen/menus/uploads/[uploadId]"
-      :data="debug"
+      :objects="debug"
+  :derived="{}"
       :default-open="false"
     />
   </section>

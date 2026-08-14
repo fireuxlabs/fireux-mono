@@ -1,0 +1,136 @@
+.fireux-dev-json {
+  min-width: 0;
+  max-width: 100%;
+}
+.jsonpanel-launcher {
+  display: flex;
+  justify-content: flex-end;
+}
+.jsonpanel-launcher :deep(button) {
+  border: 1px solid var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
+  color: var(--fx-debug-ink);
+}
+.jsonpanel-panel {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--fx-debug-yellow-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  background:
+    linear-gradient(135deg, var(--fx-debug-yellow-bg), transparent 48%),
+    var(--ui-bg);
+  padding: calc(var(--spacing) * 3);
+}
+.jsonpanel-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  margin-bottom: calc(var(--spacing) * 2);
+}
+.jsonpanel-header > :first-child {
+  min-width: 0;
+}
+.jsonpanel-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--fx-debug-yellow-border);
+  border-radius: 9999px;
+  background: var(--fx-debug-yellow-bg-strong);
+  padding: 1px 7px;
+  color: var(--fx-debug-ink);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.jsonpanel-title {
+  margin: calc(var(--spacing) * 1.5) 0 0;
+  color: var(--fx-debug-ink);
+  font-size: 13px;
+  font-weight: var(--font-weight-bold);
+}
+.jsonpanel-context,
+.jsonpanel-meta {
+  margin: calc(var(--spacing) * 0.5) 0 0;
+  color: var(--fx-debug-yellow-muted);
+}
+.jsonpanel-context {
+  font-size: var(--text-xs);
+}
+.jsonpanel-meta {
+  font-size: 11px;
+}
+.jsonpanel-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+.jsonpanel-content {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+}
+.jsonpanel-view-switch {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+.jsonpanel-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: calc(var(--spacing) * 2.5);
+}
+.jsonpanel-section {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--fx-debug-yellow-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-bg);
+}
+.jsonpanel-section__header {
+  display: flex;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  border-bottom: 1px solid var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
+  padding: calc(var(--spacing) * 2);
+  color: var(--fx-debug-ink);
+}
+.jsonpanel-section__header span {
+  color: var(--fx-debug-yellow-muted);
+}
+.jsonpanel-section__rows {
+  margin: 0;
+}
+.jsonpanel-section__row {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.7fr) minmax(0, 1.3fr);
+  gap: calc(var(--spacing) * 2.5);
+  padding: calc(var(--spacing) * 2);
+}
+.jsonpanel-section__row + .jsonpanel-section__row {
+  border-top: 1px solid var(--ui-border-muted);
+}
+.jsonpanel-section__row dt {
+  color: var(--ui-text-muted);
+}
+.jsonpanel-section__row dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--fx-debug-yellow-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--fx-debug-yellow-bg);
+  padding: calc(var(--spacing) * 2.5);
+  margin-top: calc(var(--spacing) * 2);
+  color: var(--ui-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

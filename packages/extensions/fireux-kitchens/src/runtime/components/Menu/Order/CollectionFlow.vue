@@ -75,7 +75,9 @@
   />
 
   <!-- 2026-07-19 15:18 CEST: Keep this dev-only recovery trace while the canonical customer-order landing seam is being verified across concurrent customer-session work. -->
-  <DevJson
+<DevDebugPanel
+  object-origin="fetched"    launcher
+    include-route
     title="Menu order recovery (JSON)"
     context="menu order · canonical customer recovery"
     :objects="{

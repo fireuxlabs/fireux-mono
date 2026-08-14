@@ -16,11 +16,11 @@
       data-scene-layer="texture-highlight"
     />
     <div class="template-one-scene-one__content" data-scene-layer="content">
-      <div v-if="ready" class="template-one-scene-one__identity" data-scene-layer="identity">
+      <div v-if="ready" class="template-one-scene-one__identity" data-scene-layer="identity" data-landing-hero-part="heading">
         <h1 :id="titleId" class="sr-only">{{ name }}</h1>
         <img class="template-one-scene-one__wordmark" :src="wordmarkSrc" :alt="name" loading="eager" decoding="async">
       </div>
-      <div v-if="ready" class="template-one-scene-one__copy" data-scene-layer="copy">
+      <div v-if="ready" class="template-one-scene-one__copy" data-scene-layer="copy" data-landing-hero-part="description">
         <p class="template-one-scene-one__tagline">
           <span v-for="line in tagline" :key="line">{{ line }}</span>
         </p>
@@ -29,7 +29,7 @@
           <span aria-hidden="true">→</span>
         </NuxtLink>
       </div>
-      <div v-if="ready" class="template-one-scene-one__product" data-scene-layer="product">
+      <div v-if="ready" class="template-one-scene-one__product" data-scene-layer="product" data-landing-hero-part="preview">
         <img
           :src="flagshipDish?.image"
           :alt="flagshipDish?.name || ''"
@@ -51,6 +51,7 @@
     <a
       v-if="showScrollCue"
       class="template-one-scene-one__scroll-cue"
+      data-landing-hero-part="trust"
       :href="scrollTo"
       aria-label="Scroll to explore"
     >

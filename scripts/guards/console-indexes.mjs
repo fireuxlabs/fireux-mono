@@ -629,7 +629,7 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
     `Console${family}IndexSelected`
   )
   const targetsTag = readSelfClosingTag(source, `Console${family}IndexTargets`)
-  const debugTag = readSelfClosingTag(source, 'DevFireuxDebugPanel')
+  const debugTag = readSelfClosingTag(source, 'DevDebugPanel')
 
   assertMatch(
     source,
@@ -671,11 +671,11 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
     )
   }
   if (!debugTag) {
-    violations.push(`${relative} (missing DevFireuxDebugPanel)`)
+    violations.push(`${relative} (missing DevDebugPanel)`)
   } else {
     assertMatch(
       debugTag,
-      /:data=["']debug["']/,
+      /:derived=["']debug["']/,
       relative,
       'debug panel must receive the index debug state',
       violations
@@ -683,7 +683,7 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   }
   const selectedPosition = source.indexOf(`<Console${family}IndexSelected`)
   const targetsPosition = source.indexOf(`<Console${family}IndexTargets`)
-  const debugPosition = source.indexOf('<DevFireuxDebugPanel')
+  const debugPosition = source.indexOf('<DevDebugPanel')
   if (
     selectedPosition >= 0 &&
     targetsPosition >= 0 &&

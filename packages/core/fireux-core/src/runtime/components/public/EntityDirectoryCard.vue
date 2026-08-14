@@ -113,7 +113,7 @@ const resolvedImageAlt = computed(() => props.imageAlt.trim())
 const mediaStyle = computed(() => {
   const background = props.mediaBackground.trim()
   return background
-    ? { '--fx-public-entity-media-bg': background }
+    ? { '--fx-entity-media-bg': background }
     : undefined
 })
 const imageLoadFailed = ref(false)
@@ -140,7 +140,7 @@ watch(resolvedImageUrl, () => {
   padding: 0;
   border-color: color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 4);
-  background: var(--fx-public-entity-media-bg, var(--ui-bg-elevated));
+  background: var(--fx-entity-media-bg, var(--ui-bg-elevated));
   color: inherit;
   font: inherit;
   text-decoration: none;

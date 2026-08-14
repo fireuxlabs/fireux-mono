@@ -57,10 +57,12 @@
       </UCard>
     </template>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Portfolio identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedPortfolio }"
+      :derived="debug"
     />
   </div>
 </template>

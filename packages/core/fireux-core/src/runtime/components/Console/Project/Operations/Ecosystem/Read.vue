@@ -65,10 +65,12 @@
       </p>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Project ecosystem"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProject, ecosystems }"
+      :derived="debug"
     />
   </div>
 </template>

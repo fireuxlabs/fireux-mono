@@ -1,93 +1,63 @@
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
-import { computed, resolveComponent } from 'vue'
-import {
-  usePlaceFetch,
-  usePlaceSeo,
-} from '../firestore/place/usePlace'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { computed } from 'vue'
+import { usePlaceFetch, usePlaceSeo } from '../firestore/place/usePlace'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
 } from '../../../models/place.model'
+import { PlaceStorage, type Place } from '../../../models/place.model'
+import { projectPublicPlaceDetail } from '../../../utils/public-place-projection'
 
 export function usePlaceDetail(props: { locator: string }) {
   const locator = computed(() => String(props.locator || '').trim())
-  const { place, outcome, statusCode, missing, failed, refresh, ready } =
-    usePlaceFetch(locator)
+  const {
+    place: projectedPlace,
+    outcome,
+    statusCode,
+    missing,
+    failed,
+    refresh,
+    ready,
+  } = usePlaceFetch(locator)
 
-  const { isAdmin } = useUser()
+  const { isAdmin, isDeveloper } = useUser()
+  const liveLocator = computed(() =>
+    import.meta.client && (isAdmin.value || isDeveloper.value)
+      ? locator.value
+      : ''
+  )
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const livePlaceRead = firestoreFetchDoc<Place>(
+    PlaceStorage.collection,
+    liveLocator
+  )
+  const livePlace = computed(() => {
+    const value = livePlaceRead.value
+    return value
+      ? projectPublicPlaceDetail(
+          locator.value,
+          value as unknown as Record<string, unknown>
+        )
+      : null
+  })
+  const place = computed(() => livePlace.value || projectedPlace.value)
   const showDebug = import.meta.dev
-  const resolvedRelatedOperations = resolveComponent(
-    'KitchenPlacePublicOperations',
-    false
-  )
-  const relatedOperationsComponent =
-    typeof resolvedRelatedOperations === 'string'
-      ? null
-      : resolvedRelatedOperations
-  const initials = computed(() =>
-    String(place.value?.name || 'P')
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join('')
-  )
   const detailStyle = computed(() => {
     const palette = place.value?.brand_palette
+    const accent =
+      place.value?.media_backdrop_color ||
+      palette?.primary_color ||
+      'var(--ui-primary)'
     return {
-      '--fx-public-entity-accent':
-        palette?.primary_color || 'var(--ui-primary)',
-      '--fx-public-entity-media-bg':
-        place.value?.media_backdrop_color || 'var(--ui-bg-muted)',
+      '--ui-primary': accent,
+      '--fx-entity-accent': accent,
+      '--fx-entity-media-bg':
+        place.value?.media_backdrop_color ||
+        palette?.primary_color ||
+        'var(--ui-bg-muted)',
     }
   })
-  const placeTypeLabel = computed(() =>
-    place.value?.place_type === 'non_physical'
-      ? 'Non-physical place'
-      : 'Physical place'
-  )
-  const mapUrl = computed(() => {
-    if (place.value?.google_maps_url) return place.value.google_maps_url
-    const address = String(place.value?.short_address || '').trim()
-    if (!address || !place.value?.name) return ''
-    const query = encodeURIComponent(`${place.value.name}, ${address}`)
-    return `https://www.google.com/maps/search/?api=1&query=${query}`
-  })
-  const primaryActions = computed(
-    () =>
-      [
-        mapUrl.value
-          ? {
-              key: 'directions',
-              label: 'Directions',
-              ariaLabel: `Get directions to ${place.value?.name || 'this place'}`,
-              icon: 'i-lucide-navigation',
-              to: mapUrl.value,
-              target: '_blank' as const,
-              rel: 'noopener noreferrer',
-            }
-          : null,
-        place.value?.website
-          ? {
-              key: 'website',
-              label: 'Website',
-              ariaLabel: `Visit the ${place.value.name} website`,
-              icon: 'i-lucide-external-link',
-              to: place.value.website,
-              target: '_blank' as const,
-              rel: 'noopener noreferrer',
-            }
-          : null,
-      ].filter(Boolean) as Array<{
-        key: 'directions' | 'website'
-        label: string
-        ariaLabel: string
-        icon: string
-        to: string
-        target: '_blank'
-        rel: string
-      }>
-  )
   const websiteLabel = computed(() => {
     const value = String(place.value?.website || '').trim()
     if (!value) return ''
@@ -101,7 +71,7 @@ export function usePlaceDetail(props: { locator: string }) {
     Boolean(
       place.value?.short_address ||
         place.value?.website ||
-        (!place.value?.business_hours?.windows?.length &&
+        (!place.value?.business_hours.windows.length &&
           place.value?.place_type === 'physical')
     )
   )
@@ -163,7 +133,7 @@ export function usePlaceDetail(props: { locator: string }) {
   }
 
   const hoursRows = computed(() =>
-    (place.value?.business_hours?.windows || [])
+    (place.value?.business_hours.windows || [])
       .map((window) => ({
         days: formatDays(window.days),
         time: formatWindow(window),
@@ -197,12 +167,7 @@ export function usePlaceDetail(props: { locator: string }) {
     ready,
     isAdmin,
     showDebug,
-    relatedOperationsComponent,
-    initials,
     detailStyle,
-    placeTypeLabel,
-    mapUrl,
-    primaryActions,
     websiteLabel,
     hasVisitDetails,
     facts,

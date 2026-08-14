@@ -23,10 +23,12 @@
       </div>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Property identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProperty }"
+      :derived="debug"
       :default-open="false"
     />
   </section>

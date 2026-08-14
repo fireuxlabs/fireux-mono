@@ -30,6 +30,12 @@ import {
   placeAuthorityIds,
   readRootKitchenManagement,
 } from './mutation-authority'
+import {
+  allowedPlacePatchKeys as allowedPatchKeys,
+  allowedPlaceSocialKeys as allowedSocialKeys,
+  optionalPlaceTextFields as optionalTextFields,
+} from './mutation-fields'
+import { readPlaceDetailProjection } from './read-projection'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -42,43 +48,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-
-const optionalTextFields = new Map<string, number>([
-  ['short_name', 120],
-  ['brand_tagline', 240],
-  ['about', 10_000],
-  ['formatted_address', 500],
-  ['short_address', 240],
-  ['search_term', 1_000],
-  ['image_url', 2_048],
-  ['cover_image', 2_048],
-  ['logo_image', 2_048],
-  ['wordmark_image', 2_048],
-  ['phone', 120],
-  ['email', 320],
-  ['website', 2_048],
-])
-const allowedSocialKeys = new Set([
-  'website',
-  'instagram',
-  'facebook',
-  'tiktok',
-  'linkedin',
-  'youtube',
-])
-const allowedPatchKeys = new Set([
-  'name',
-  ...optionalTextFields.keys(),
-  'lat',
-  'lng',
-  'media_backdrop_color',
-  'gallery_images',
-  'social_links',
-  'default_currency_code',
-  'timezone',
-  'business_hours',
-  'brand_palette',
-])
 
 function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
@@ -185,8 +154,10 @@ function normalizePatch(
     if (optionalTextFields.has(key)) {
       const normalized = deleteOrText(value, optionalTextFields.get(key) || 240)
       if (
-        (key === 'image_url' || key === 'cover_image' ||
-          key === 'logo_image' || key === 'wordmark_image') &&
+        (key === 'image_url' ||
+          key === 'cover_image' ||
+          key === 'logo_image' ||
+          key === 'wordmark_image') &&
         typeof normalized === 'string'
       ) {
         patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
@@ -199,13 +170,14 @@ function normalizePatch(
                 : key === 'logo_image'
                   ? `places/${target.placeId}/logo`
                   : `places/${target.placeId}/wordmark`,
-          label: key === 'image_url'
-            ? 'Place image'
-            : key === 'cover_image'
-              ? 'Place cover'
-              : key === 'logo_image'
-                ? 'Place logo'
-                : 'Place wordmark',
+          label:
+            key === 'image_url'
+              ? 'Place image'
+              : key === 'cover_image'
+                ? 'Place cover'
+                : key === 'logo_image'
+                  ? 'Place logo'
+                  : 'Place wordmark',
         })
       } else {
         patch[key] = normalized
@@ -396,5 +368,13 @@ export async function mutatePlace(
     })
   })
 
-  return { id, updated: true }
+  const item = await readPlaceDetailProjection(id)
+  if (!item) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Updated Place projection is unavailable.',
+    })
+  }
+
+  return { item }
 }

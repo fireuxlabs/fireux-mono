@@ -8,8 +8,6 @@ import path from 'node:path'
 const file = (repoRoot, relativePath) => path.join(repoRoot, relativePath)
 const read = (repoRoot, relativePath) =>
   readFileSync(file(repoRoot, relativePath), 'utf8')
-const readFamily = (repoRoot, relativePaths) =>
-  relativePaths.map((relativePath) => read(repoRoot, relativePath)).join('\n')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const base = 'packages/extensions/fireux-kitchens/src/runtime/'
@@ -44,15 +42,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${base}components/Kitchen/Detail/Sproochli.vue`
   )
-  const placeOperations = read(
-    repoRoot,
-    `${base}components/Kitchen/Place/PublicOperations.vue`
-  )
-  const placeDetail = readFamily(repoRoot, [
-    'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue',
-    'packages/extensions/fireux-places/src/runtime/composables/fireux/place/usePlaceDetail.ts',
-  ])
-
   assert.equal(
     existsSync(file(repoRoot, legacyPublicCollectionPath)),
     false,
@@ -105,11 +94,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(publicProjection, /profile_id/)
   assert.match(sproochli, /SproochliLanguageTrigger/)
   assert.match(sproochli, /resolveSproochliLanguageOptions/)
-  assert.match(placeDetail, /KitchenPlacePublicOperations/)
-  assert.match(placeOperations, /visibility:\s*'published'/)
-  assert.match(placeOperations, /kitchenSlug:\s*kitchen\.slug/)
-  assert.match(placeOperations, /\bmenuRoutePath\s*\(/)
-  assert.doesNotMatch(placeOperations, /firebase\/firestore|collection\s*\(/)
   assert.match(
     identityEditor,
     /\/api\/kitchens\/\$\{encodeURIComponent\(props\.kitchen\.slug\)\}\/identity/

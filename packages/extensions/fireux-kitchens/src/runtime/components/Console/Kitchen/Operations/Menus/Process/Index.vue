@@ -132,11 +132,15 @@
         />
       </div>
 
-      <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+        launcher
+        include-route
         v-if="result"
         title="Menu process result"
         context="Kitchen menu process · /console/kitchen/menus/[menuId]"
-        :data="result"
+        :objects="result"
+  :derived="{}"
         :default-open="false"
       />
     </div>

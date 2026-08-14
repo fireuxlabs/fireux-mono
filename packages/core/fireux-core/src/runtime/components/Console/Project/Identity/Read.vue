@@ -29,10 +29,12 @@
       </div>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Project identity"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ selectedProject }"
+      :derived="debug"
     />
   </div>
 </template>
@@ -40,5 +42,6 @@
 <script setup lang="ts">
 import { useProjectConsoleIdentity } from '../../../../composables/fireux/console/project/identity/useProjectConsoleIdentity'
 
-const { name, description, imageUrl, debug } = useProjectConsoleIdentity()
+const { selectedProject, name, description, imageUrl, debug } =
+  useProjectConsoleIdentity()
 </script>

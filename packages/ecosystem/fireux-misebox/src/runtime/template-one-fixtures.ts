@@ -1,5 +1,6 @@
 import {
   projectTemplateOneKitchen,
+  type TemplateOneFlagshipDish,
   type TemplateOneKitchenProjection,
   type TemplateOneKitchenSpecimen,
   type TemplateOneMenuContent,

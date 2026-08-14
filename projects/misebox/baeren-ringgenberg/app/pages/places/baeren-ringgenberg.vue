@@ -1,5 +1,5 @@
 <template>
-  <PlacePublicDetail locator="ChIJE-GP3-Kjj0cRzAv0WviwcsY" />
+  <PlaceDetail locator="ChIJE-GP3-Kjj0cRzAv0WviwcsY" />
 </template>
 
 <script setup lang="ts">

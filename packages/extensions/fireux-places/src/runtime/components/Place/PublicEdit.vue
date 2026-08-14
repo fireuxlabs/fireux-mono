@@ -74,11 +74,15 @@
           />
         </div>
 
-        <DevJson
+<DevDebugPanel
+  object-origin="fetched"
+          launcher
+          include-route
           v-if="showDebug && editableFields"
           :title="'Place (Editable)'"
           context="Place edit page · places/[id-or-slug]/edit · editable fields"
-          :data="editableFields"
+          :objects="editableFields"
+  :derived="{}"
           :default-open="false"
         />
 

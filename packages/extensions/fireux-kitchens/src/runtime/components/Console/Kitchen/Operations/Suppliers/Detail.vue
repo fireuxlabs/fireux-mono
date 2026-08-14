@@ -64,10 +64,12 @@
       "
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen supplier detail"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ supplier }"
+      :derived="debug"
     />
   </div>
 </template>

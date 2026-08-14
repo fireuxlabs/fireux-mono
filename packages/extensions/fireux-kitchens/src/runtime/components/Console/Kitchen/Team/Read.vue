@@ -36,10 +36,12 @@
       </p>
     </UCard>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen team"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ teamMembers }"
+      :derived="debug"
     />
   </div>
 </template>

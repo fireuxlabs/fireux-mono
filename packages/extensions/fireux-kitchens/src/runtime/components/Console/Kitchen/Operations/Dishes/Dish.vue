@@ -294,10 +294,12 @@
       </template>
     </template>
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen dish detail"
       scope="console"
-      :data="fireuxDebugData"
+      object-origin="fetched"
+      :objects="{ dish, dishSpec, componentViews, prepItems, recipes, miseRequirements, menuUsage, finance }"
+      :derived="fireuxDebugData"
       :default-open="false"
     />
   </section>

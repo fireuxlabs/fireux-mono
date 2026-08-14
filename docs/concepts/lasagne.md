@@ -1,7 +1,7 @@
 # Lasagne architecture
 
-Updated: 2026-08-09
-Ref: 5b5de1c1c
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: map, not canon
 
 ## Purpose
@@ -125,6 +125,14 @@ object and exposes `intro`, default, and `footer` slots. `PlaceOnboarding` and
 FireUX does not optimize for the fewest lines. Small domain-owned repetition
 is accepted when it keeps meaning and authority local.
 
+The controlled sibling lifecycle in `spine.md` also permits a bounded proving
+sibling to begin structurally aligned with a complete baseline. Preserve
+separately named entrypoints such as `useKitchenCollection` and
+`useCompanyCollection`, reuse established lower mechanics and outcome
+vocabulary immediately, and let each domain's authority, query, projection,
+and lifecycle differentiate honestly. The initial copy establishes an
+independent comparison surface; it does not prove an abstraction.
+
 Repeat a thin edge when sharing it would require:
 
 - a large optional prop contract;
@@ -133,8 +141,10 @@ Repeat a thin edge when sharing it would require:
 - a generic controller that unions unrelated states; or
 - a lower layer importing knowledge from a higher layer.
 
-Extract only after two or more domains prove the same input, output, lifecycle,
-and authority boundary. Similar appearance alone is not sufficient.
+Extract only after two or more real domains have materially differentiated and
+still prove the same input, output, lifecycle, authority boundary, ownership,
+and dependency direction. Similar appearance or common ancestry alone is not
+sufficient.
 
 ## Reference shapes
 

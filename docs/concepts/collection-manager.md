@@ -169,7 +169,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - `objects` means fetched/API collection rows as the manager receives them.
 - `derived` means interface cards, filters, counts, selected variant, links, and other UI state.
 - Do not mix stored/public surface fields with `useXInterface()` card output in one flat JSON array.
-- A manager using `useDevCollectionJson` loads its snapshot only when `DevJson`
+- A manager using `useDevCollectionJson` loads its snapshot only when `DevDebugPanel`
   opens and unloads it when the panel closes; closed debug panels do no work.
 
 ## Current source-mode snapshot

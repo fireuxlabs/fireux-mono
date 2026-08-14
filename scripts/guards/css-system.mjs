@@ -207,11 +207,7 @@ const APPROVED_DIRECT_SPACING_VALUES = new Map([
     ]),
   ],
   [
-    'packages/core/fireux-core/src/runtime/components/dev/FireuxDebugPanel.vue',
-    new Set(['gap:12px', 'gap:6px', 'padding:10px 12px']),
-  ],
-  [
-    'packages/core/fireux-core/src/runtime/components/dev/Json.vue',
+    'packages/core/fireux-core/src/runtime/components/dev/DebugPanel.vue',
     new Set([
       'padding:12px',
       'margin-bottom:8px',

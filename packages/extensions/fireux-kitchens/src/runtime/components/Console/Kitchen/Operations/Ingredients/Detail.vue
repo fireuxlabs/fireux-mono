@@ -49,10 +49,12 @@
       :description="`No ingredient was found for ${ingredientId || 'this route'}.`"
     />
 
-    <DevFireuxDebugPanel
+    <DevDebugPanel
       title="Kitchen ingredient detail"
       scope="console"
-      :data="debug"
+      object-origin="fetched"
+      :objects="{ ingredient }"
+      :derived="debug"
     />
   </div>
 </template>

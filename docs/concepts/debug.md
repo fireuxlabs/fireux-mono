@@ -1,9 +1,11 @@
 # Debug surface map
-Updated: 2026-08-11
-Ref: a4729c0f2
+
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: map, not canon
 
 ## Purpose
+
 Map how debug information should appear without becoming page noise.
 
 ## Vertical links
@@ -29,7 +31,12 @@ Map how debug information should appear without becoming page noise.
   client-only so unauthenticated SSR cannot disclose diagnostic state.
 - Dev preview/sample data belongs to authenticated dev tooling. It must not
   import console Demo Data, whose lazy read-only contract is separate.
-- Debug data should separate raw objects from derived values when helpful.
+- Every component-level debug payload separates source objects from derived
+  values. The shared panel presents those concerns in that order and retains
+  raw JSON as a secondary view.
+- Every payload declares whether its objects were `fetched` by the owning
+  surface or `passed` into it. The inspect view names that provenance rather
+  than presenting an ambiguous object bucket.
 - Debug state stays with the source, reader, controller, or component that owns
   the diagnosed domain. Do not pass child internals up and back down merely to
   assemble one page-wide debug object.
@@ -50,9 +57,27 @@ Map how debug information should appear without becoming page noise.
 
 ## Object vs derived
 
-- `objects`: fetched records, API surfaces, hydrated rows, and direct source payloads.
+- `objects`: records and payloads fetched by the owning page/component or
+  passed into the owning component by its parent.
 - `derived`: interface cards, UI filters, counts, selected modes, computed labels, and route/action targets.
-- Prefer `DevJson` `objects` and `derived` props over a single flat `data` blob when both kinds exist.
+- Build reusable or non-trivial payloads through the typed
+  `DevDebugPayload`/`defineDevDebugPayload` Core contract. Keep payload
+  construction with its owning script rather than hiding data-flow decisions
+  in the renderer.
+- Use the `objects` and `derived` props on `DevDebugPanel`. Every caller also
+  declares `object-origin="fetched"` or `object-origin="passed"`; flat
+  `data` payloads are rejected.
+- The inspect renderer presents record fields, colors, booleans, URLs, empty
+  values, arrays, and nested objects semantically. It does not mutate or
+  replace the raw JSON representation.
+- When an executable runtime shape exists, pass it through `contract` for the
+  whole objects payload or `contracts` keyed to named object entries. The panel
+  reuses Core model-drift comparison to annotate unexpected properties,
+  type mismatches, and missing or empty required paths; it never guesses a
+  contract from field names and never changes the inspected payload.
+- Contracts describe allowed shape separately from required data. Model keys
+  may remain optional, while `requiredPaths` identifies values that must be
+  present and non-empty for that surface. Arrays are inspected item by item.
 
 ## Avoid
 
@@ -67,18 +92,15 @@ Map how debug information should appear without becoming page noise.
 
 ## Delta register
 
-| Surface | State | Reason |
-| --- | --- | --- |
-| `DevJson` | `accepted` | Route-aware, structured `objects`/`derived` diagnostics with open/close events for lazy expensive snapshots |
-| `DevFireuxDebugPanel` | `accepted` | Compact always-mounted dev card for already prepared console/runtime data |
-| A third generic debug panel | `drift` | Extend one of the two proven surfaces instead of creating another competing system |
+| Surface                     | State      | Reason                                                                                                                                    |
+| --------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `DevDebugPanel`             | `accepted` | One structured `objects`/`derived` diagnostic surface; inline by default, with launcher/open-close lifecycle for lazy expensive snapshots |
+| Another generic debug panel | `drift`    | Extend the one proven surface instead of creating a competing system                                                                      |
 
 ## Alignment roadmap
 
-- Now: use `DevJson` for route/collection inspection and
-  `DevFireuxDebugPanel` for concise prepared runtime state. Keep each panel
-  beside its owning page or component surface.
-- Next: align naming only if both components converge on the same lifecycle and
-  data contract; visual similarity alone is not enough.
+- Now: use `DevDebugPanel` beside its owning page or component surface. Enable
+  `launcher` and open/close events when the diagnostic payload is expensive;
+  enable `include-route` when route identity is material.
 - Later: guard against production rendering and unbounded closed-panel work if
   those failures recur outside Collection Managers.

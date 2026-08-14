@@ -6,6 +6,7 @@ import type {
   PublicPlaceProjection,
 } from '../../../../../models/place-public.model'
 import type { Place } from '../../../../../models/place.model'
+import { usePlaceDetailState } from '../../../place/usePlaceDetailState'
 
 type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>
@@ -33,12 +34,7 @@ const readStatusCode = (value: unknown) => {
     statusCode?: unknown
     response?: { status?: unknown }
   }
-  return Number(
-    error.statusCode ??
-    error.status ??
-    error.response?.status ??
-    0
-  )
+  return Number(error.statusCode ?? error.status ?? error.response?.status ?? 0)
 }
 
 function createPlaceFetcher(): PlaceFetchFunction {
@@ -55,11 +51,13 @@ function createPlaceFetcher(): PlaceFetchFunction {
 
     void $fetch<PublicPlaceDetailResponse>(
       `/api/places/${encodeURIComponent(id)}`
-    ).then(response => {
-      place.value = response?.item ? asPlace(response.item) : undefined
-    }).catch(() => {
-      place.value = undefined
-    })
+    )
+      .then((response) => {
+        place.value = response?.item ? asPlace(response.item) : undefined
+      })
+      .catch(() => {
+        place.value = undefined
+      })
 
     return place
   }
@@ -86,17 +84,24 @@ export function usePlaceFetch(
     },
     { server: true, watch: [locator] }
   )
+  const { projection } = usePlaceDetailState()
+  const localProjection = projection(locator)
   const place = computed<Place | null>(() =>
-    state.data.value?.item ? asPlace(state.data.value.item) : null
+    localProjection.value?.item
+      ? asPlace(localProjection.value.item)
+      : state.data.value?.item
+        ? asPlace(state.data.value.item)
+        : null
   )
   const pending = computed(() => state.pending.value)
   const statusCode = computed(() => readStatusCode(state.error.value))
-  const missing = computed(() =>
-    statusCode.value === 404 ||
-    (!state.pending.value && !state.error.value && !place.value)
+  const missing = computed(
+    () =>
+      statusCode.value === 404 ||
+      (!state.pending.value && !state.error.value && !place.value)
   )
-  const failed = computed(() =>
-    Boolean(state.error.value) && statusCode.value !== 404
+  const failed = computed(
+    () => Boolean(state.error.value) && statusCode.value !== 404
   )
   const outcome = computed<PublicPlaceReadOutcome>(() => {
     if (!locator.value) return 'idle'

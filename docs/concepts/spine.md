@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-08-09
-Ref: 5b5de1c1c
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: map, not canon
 
 ## Purpose
@@ -16,13 +16,115 @@ shape is visible.
 The Place/Kitchen media ownership and transparent-brand backdrop spine is
 mapped in `docs/concepts/place-kitchen-media.md`.
 
+## Family growth lifecycle
+
+FireUX grows a family through controlled named-sibling evolution:
+
+`baseline → proving sibling → differentiating → established spine`
+
+This lifecycle applies to the seam being changed, not automatically to an
+entire product. A family may have an established collection contract while its
+editor or workflow remains a baseline.
+
+### 1. Baseline
+
+Complete the first named member at the seam being tested. It must be useful in
+its own right, correctly owned, readable, and passing its current checks. Reuse
+existing FireUX, Core, Nuxt UI, domain, security, accessibility, and lifecycle
+fundamentals; a baseline is not permission to rebuild proven lower layers.
+
+Do not fork an unresolved implementation merely to compare two copies of the
+same uncertainty.
+
+### 2. Proving sibling
+
+A second real member may begin as an intentionally aligned structural copy of
+the baseline. Give it its own honest domain or product names, owner, files, and
+entrypoints so it can evolve independently. Copy only the bounded family seam;
+do not duplicate storage authority, consumer records, brand assets, fixtures,
+or an existing lower-level spine.
+
+A proving sibling requires a real product purpose and a declared
+differentiation question or brief. The final design may remain `to-confirm`,
+but the map must explain why the independent member exists and which product
+dimension it will explore. A placeholder, renamed alias, theme swap, fixture,
+or second consumer of the same member does not qualify. Initial equivalence is
+a construction technique, not evidence of a shared contract.
+
+### Share fundamentals early
+
+Controlled duplication does not mean duplicating known fundamentals. Share a
+lower mechanism or family protocol from the first sibling save when its reason
+exists independently in current source, an established spine, or unavoidable
+product and domain truth. Typical examples are identity and registration,
+compatibility or readiness outcomes, authorization, failure vocabulary,
+accessibility, and safe transport primitives.
+
+A template catalogue may require each template to expose identity,
+compatibility, readiness, and a renderer boundary while every template keeps
+its own anatomy. Collection members may share lower read mechanics and outcome
+vocabulary while retaining `useKitchenCollection` and
+`useCompanyCollection`. The family job is evidence for those fundamentals;
+identical copied implementation is not. Keep an unresolved proposed
+fundamental `to-confirm` instead of building ceremony around it.
+
+### 3. Differentiating
+
+Keep both siblings working while the new member develops at least one material
+product difference. Material differences may change requirements, anatomy,
+interaction, lifecycle, authority, inputs, or outcomes. Names, brand tokens,
+copy, and fixture values alone do not materially differentiate a member.
+
+Align already-proved family vocabulary and outcomes early, while preserving
+named member seams such as `useKitchenCollection`, `useCompanyCollection`,
+`TemplateOnePage`, and `TemplateTwoPage`. Do not insert member-name branches,
+large optional contracts, pass-through wrappers, or a generic engine merely
+to hide the proving duplication.
+
+### 4. Compare and establish
+
+After material differentiation, compare:
+
+- ownership and dependency direction;
+- authority and source data;
+- inputs, outputs, readiness, failure, and lifecycle;
+- structure, behaviour, and presentation responsibilities; and
+- the reasons each difference exists.
+
+Classify differences as `accepted`, `migration`, `drift`, or `to-confirm`.
+Promote a spine candidate only when at least two real members still use the
+same contract for the same reason. The candidate becomes an established spine
+when named members consume it through the same ownership and dependency
+direction and behavioural verification protects it.
+
+The correct comparison may leave deliberate named duplication and extract
+nothing. Shared ancestry, identical filenames, visual similarity, or applying
+the same bug fix to both siblings is not sufficient evidence.
+
+### Promotion and evidence
+
+Before a third sibling or permanent family guard, record the comparison in the
+smallest family map. Name the baseline, proving sibling, reused fundamentals,
+material differentiation, surviving invariant, accepted deltas, and non-goals.
+Guards protect semantic ownership and behaviour after promotion; they do not
+freeze temporary duplicate files, one member's copy, scene count, or exact
+anatomy as a family-wide contract.
+
+Keep the save that establishes a baseline, creates a proving sibling,
+differentiates it, or extracts a spine focused on that family phase. When using
+`pnpm gitsave`, provide a commit message that names the family and the phase or
+invariant instead of relying on the generated filename summary.
+
 ## Before editing
 
 1. Name the family.
-2. Name the nearest working sibling.
-3. Name what must match.
-4. Name what may differ and why.
-5. Patch the smallest useful slice.
+2. Name its growth phase and the baseline or nearest working sibling.
+3. Name the proven fundamentals to reuse.
+4. Name what must match.
+5. Name what may differ and why.
+6. For a proving sibling, name its real product purpose, differentiation
+   question, comparison trigger, and non-goals.
+7. Patch the smallest useful slice.
 
 If a difference has no reason, treat it as drift. If the reason is temporary
 compatibility, treat it as migration debt rather than a permanent family delta.
@@ -61,7 +163,7 @@ contract.
 | Card                          | `card-family.md`            | Prop-driven Card variants plus `scripts/guards/components.mjs`                                   | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt                                                               |
 | Core models                   | `core-models.md`            | Canonical model files plus entity-authority and user-app-access guards                           | App, Ecosystem, User/AppUser, and Project ownership is explicit; named stored projections remain migration debt                                     |
 | Product language              | `product-language.md`       | Atomic source fields, child surfaces, operation catalogues, and parent composition               | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review                                                            |
-| Landing templates             | `landing-templates.md`      | FireUX catalogue/detail routes, one Scene One anatomy, typed injections, and focused guard       | Scene One proves three materially different identities without forking anatomy                                                                      |
+| Landing templates             | `landing-templates.md`      | Canonical Kitchen projection, package-owned six-scene page, two brand injections, and focused guard | Template One is the baseline; a future real Template Two may enter as a separately named proving sibling before deliberate differentiation         |
 | Theming                       | `theming.md`                | Core primitives, App/Kitchen brand ownership, injections, templates, and seller doorways         | FireUX owns canonical previews; FireUX and Misebox may offer one shared theme family                                                                |
 | Blog                          | `blog.md`                   | Blog root/public projection plus `scripts/guards/blog-authority.mjs`                             | Blog truth and ecosystem-wide publication are shared; authored story language remains owner-defined                                                 |
 | Search visibility             | `search-visibility.md`      | Core SEO runtime plus `scripts/guards/seo-spine.mjs`                                             | Route identity, private indexing, and bounded Jobs discovery are guarded; metadata adoption, entity graphs, and multilingual URLs remain incomplete |
@@ -75,7 +177,7 @@ contract.
 | App config                    | `app-config.md`             | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig`                                         | Runtime role is explicit; repeated project defaults are drift                                                                                       |
 | Brand assets                  | `brand-assets.md`           | Core source family plus `scripts/guards/fireux-brand-assets.mjs`                                 | FireUX identity is Core-owned; parent ecosystem and App projections are guarded                                                                     |
 | Layout                        | `layouts.md`                | `AppShell` and current runtime layouts                                                           | Ownership is clear; slot versus direct route rendering is `to-confirm`                                                                              |
-| Debug                         | `debug.md`                  | `DevJson` and `DevFireuxDebugPanel`                                                              | Two distinct surfaces are accepted; a third generic panel is drift                                                                                  |
+| Debug                         | `debug.md`                  | `DevDebugPanel`                                                                                  | One payload and renderer contract; inline and launcher lifecycle modes are configuration, not separate families                                     |
 | Privacy-first measurement     | `privacy-measurement.md`    | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                               | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |
 | Repository performance        | `repository-performance.md` | `scripts/measure-workspace.mjs` and the root verification commands                               | Measurement is reproducible; timing budgets remain to-confirm until repeated reference-environment evidence exists                                  |
 | Lasagne architecture          | `lasagne.md`                | Entity composables, domain controllers, Console providers, and structural shells                 | Dependency direction is defined; touched prop-relay workflows should move toward domain-owned controllers without a universal entity framework      |
@@ -85,6 +187,9 @@ contract.
 - A tiny behavior needs many unrelated files.
 - A helper name hides confusion instead of naming a real seam.
 - A new layer duplicates an existing core seam.
+- A proposed proving sibling has no real product purpose or differentiation
+  question.
+- Initial sibling equivalence is presented as proof of a shared contract.
 - A project app starts owning reusable domain behavior.
 - A family difference is described but not classified.
 - Documentation calls current drift an accepted pattern without evidence.

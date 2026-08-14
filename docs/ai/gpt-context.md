@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-09
-Ref: 5b5de1c1c
+Updated: 2026-08-14
+Ref: d5efe9160
 Role: living context
 Scope: repo-wide
 
@@ -37,9 +37,10 @@ source or a guard is the better reference.
 
 Family work starts at `docs/concepts/spine.md`. Its registry routes every
 currently documented family and cross-cutting spine to the smallest relevant
-map and summarizes the alignment queue. Every family difference must be
-classified as accepted, migration, drift, or to-confirm; see
-`docs/concepts/documentation.md`.
+map, owns the controlled named-sibling growth lifecycle, and summarizes the
+alignment queue. Growth phase and difference state are separate: every family
+difference must still be classified as accepted, migration, drift, or
+to-confirm; see `docs/concepts/documentation.md`.
 
 Product literature starts at `docs/concepts/product-language.md`. Derive copy
 bottom-up from current source atoms and child surfaces. Each parent summarises
@@ -76,9 +77,31 @@ abstraction, establish before editing:
 
 Begin with an ordinary FireUX page, named capability, or domain component.
 Do not create a system, engine, registry, framework, or shared abstraction from
-one consumer. A second real sibling permits contract comparison; only a proven
-repeated contract permits extraction. If the existing family cannot express
-the requirement, report the exact missing seam before broad edits.
+one consumer.
+
+When the work is a genuinely new family, use the controlled sibling lifecycle
+in `docs/concepts/spine.md`:
+
+- complete one independently useful named baseline at the seam being tested;
+- create a second real member in its own names and ownership boundary; it may
+  begin as a bounded structural copy of the baseline;
+- reuse established Core, Nuxt UI, domain, safety, and lifecycle fundamentals
+  from the first save while keeping member entrypoints such as
+  `useXCollection` independently editable;
+- materially differentiate the proving sibling, then compare authority,
+  inputs, outcomes, lifecycle, structure, and behaviour; and
+- extract and guard only the contract that remains shared after that
+  differentiation.
+
+An early family protocol is valid when its identity, readiness, safety,
+authority, or outcome requirements follow independently from current product
+and domain truth. Record that evidence and let every sibling adopt the protocol
+from its first save. Do not use copied member structure as the evidence.
+
+Initial equivalence is a construction technique, not evidence. A nominal
+placeholder, renamed alias, branded fixture, or second consumer of the same
+member is not a proving sibling. If the existing family cannot express the
+requirement, report the exact missing seam before broad edits.
 
 ## Task identity
 
@@ -307,14 +330,12 @@ the requirement, report the exact missing seam before broad edits.
 - Nuxt UI is the universal App baseline. Core `main.scss` may own shared
   anatomy, rhythm, accessibility, and semantic browser contracts, but it does
   not impose an ecosystem aesthetic.
-- Core `PublicEntityDirectoryCard` and `PublicEntityHero` are the shared
-  image-led public entity presentation seams. Kitchen and Place are their
-  proving siblings. Core owns whole-card interaction, media failure, opaque
-  surface anatomy, title/action geometry, focus, and mobile-first composition;
-  named domain components retain DTOs, media ownership, content, badges,
-  routes, actions, and publication authority. Keep these seams flat and
-  semantic: no decorative gradients, glass, App selectors, or inferred media
-  ownership.
+- Core `PublicEntityDirectoryCard` is the shared image-led directory-card
+  presentation seam. Kitchen and Place are its proving siblings. Their detail
+  headers remain separately named and domain-owned as `KitchenHeader` and
+  `PlaceHeader`; similar anatomy does not create a cross-domain header API.
+  Keep the shared card seam flat and semantic: no decorative gradients, glass,
+  App selectors, or inferred media ownership.
 - Core `LandingProductIndex` owns the Main App product-landing region
   vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
   `surfaces`, `console`, `specifics`, `ecosystems`, `apps`, `tools`,
@@ -878,6 +899,29 @@ Before any remote Firebase operation:
    authorization and the relevant backup or verification gate.
 
 Do not add per-app MCP configuration files merely to expose Firebase to Codex.
+
+## Personal account browser access
+
+- A personal account remains user-owned even when its session is used for
+  FireUX or Misebox work. The user signs in, completes password recovery and
+  multi-factor challenges, and manages recovery or security settings. Agents
+  use only the already authenticated browser session the user names.
+- Never ask for, read, type, copy, store, log, commit, or document passwords,
+  recovery codes, authentication cookies, session tokens, or password-manager
+  contents. Repository documentation may describe the operating workflow but
+  never personal access material.
+- Default to read-only inspection. Before an agent publishes a post, sends a
+  consequential message, changes account or Page settings, grants access, or
+  acts as the user, show the exact proposed action and obtain the user's review
+  at the action boundary. Routine reactions or navigation do not broaden that
+  authority.
+- Keep personal and business identities distinct. Confirm the active account,
+  Page, recipient, and audience from visible browser state before preparing an
+  external action; never infer them from a prior task or another browser.
+- Facebook is one current consumer of this rule, not a special credential
+  system or repository-owned integration. Apply the same boundary to any
+  personal social, email, marketplace, or partner account used through a
+  browser session.
 
 ## Firebase project directory
 
