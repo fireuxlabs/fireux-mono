@@ -1,6 +1,3 @@
-@import './sections.css';
-@import './lower-sections.css';
-
 :root {
   --color-theme-50: #fff8e8;
   --color-theme-100: #fbecc4;
@@ -49,16 +46,6 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-.friiites-page {
-  color: var(--friiites-black);
-  background: var(--friiites-cream);
-}
-
-.friiites-page a:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 5px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -37,7 +37,14 @@
 .template-one-scene-one__wordmark {
   display: block;
   width: 100%;
+  max-height: 20rem;
   height: auto;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.template-one-scene-one[data-presentation='wordmark'] .template-one-scene-one__identity {
+  overflow: hidden;
 }
 
 .template-one-scene-one__copy {
@@ -368,4 +375,3 @@
     transform: translateY(calc(var(--spacing) * 3));
   }
 }
-

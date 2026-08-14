@@ -1,0 +1,63 @@
+import type {
+  TemplateOneFlagshipDish,
+  TemplateOneMenuContent,
+} from 'fireux-misebox/runtime/template-one'
+
+const productDemoSurface = 'template-one' as const
+const productDemoDataSource = 'demo' as const
+const money = (value: number) => `CHF ${value.toFixed(2)}`
+
+export async function useTemplateOneProductDemo(): Promise<{
+  menu: TemplateOneMenuContent
+  flagshipDish: TemplateOneFlagshipDish
+}> {
+  const { deanosKitchenDemoMenu } = await import(
+    'fireux-kitchens/runtime/demo/kitchen/operations/Menus/deanos-main'
+  )
+  const dishById = new Map(deanosKitchenDemoMenu.dishes.map(dish => [dish.id, dish]))
+  const menu: TemplateOneMenuContent = {
+    menu: {
+      id: deanosKitchenDemoMenu.rootMenu.id,
+      name: deanosKitchenDemoMenu.rootMenu.name,
+      description: deanosKitchenDemoMenu.rootMenu.description || '',
+      sections: deanosKitchenDemoMenu.menuSections.map(({ section, items }) => ({
+        id: section.id,
+        label: section.label,
+        items: items.map((item) => {
+          const dish = dishById.get(item.dish_id)!
+          return {
+            id: item.id,
+            dishId: dish.id,
+            itemKind: dish.item_kind,
+            isDeal: dish.is_deal,
+            name: dish.name,
+            description: dish.description,
+            imageUrl: dish.image,
+            price: item.price,
+            priceLabel: money(item.price),
+            priceOptions: item.price_options.map(option => ({
+              ...option,
+              priceLabel: money(option.price),
+            })),
+            addOns: item.add_ons.map(addOn => ({
+              ...addOn,
+              priceLabel: money(addOn.price),
+            })),
+          }
+        }),
+      })),
+    },
+    menuHref: '/templates/template-one?kitchen=deanos',
+    menuActionLabel: 'Browse menu',
+  }
+  const dish = deanosKitchenDemoMenu.dishes[0]!
+  return {
+    menu,
+    flagshipDish: {
+      id: dish.id,
+      name: dish.name,
+      description: dish.description,
+      image: dish.image,
+    },
+  }
+}

@@ -17,6 +17,13 @@ export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, ConsoleP
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']
 
+export const templateOneOrderingCopy = {
+  navigationLabel: 'Ordering',
+  eyebrow: 'Five ways to order',
+  title: 'Ordering',
+  description: 'Choose the service that fits where you are and what you need.',
+} as const
+
 export type TemplateOneFlagshipDish = {
   id: string
   name: string
@@ -40,6 +47,82 @@ export type TemplateOneMenuContent = {
   menuActionLabel?: string
 }
 
+export type TemplateOneLink = {
+  label: string
+  to: string
+  description?: string
+  action?: string
+  icon?: string
+}
+
+export type TemplateOneMedia = {
+  src: string
+  alt: string
+}
+
+export type TemplateOneKitchenProjection = {
+  id: string
+  name: string
+  placePrimaryColor: string
+  wordmarkSrc: string
+  palette: AppPalette
+  typography: AppTypography
+  flagshipDish: TemplateOneFlagshipDish | null
+  requirements: TemplateOneSceneOneRequirements
+  hero: {
+    identityAlignment: 'left' | 'center'
+    tagline: readonly string[]
+    productCrop?: { visibleAspect: number; scale: number; offsetX: number; offsetY: number }
+  }
+  menu: TemplateOneMenuContent
+  ordering: {
+    artifacts: readonly TemplateOneMedia[]
+    surfaces: readonly TemplateOneLink[]
+  }
+  franchise: {
+    title: string
+    description: string
+    actionLabel: string
+    media: readonly TemplateOneMedia[]
+  }
+  provider: {
+    title: string
+    description: string
+    href: string
+    wordmarkLightSrc: string
+    wordmarkDarkSrc: string
+    name: string
+  }
+  footer: {
+    eyebrow: string
+    title: string
+    description: string
+    consoleTo: string
+    consoleLabel: string
+    origin: string
+    links: readonly TemplateOneLink[]
+  }
+}
+
+export type TemplateOneKitchenProjectionInput = Omit<
+  TemplateOneKitchenProjection,
+  'requirements'
+> & { requirements?: Partial<TemplateOneSceneOneRequirements> }
+
+export const projectTemplateOneKitchen = (
+  input: TemplateOneKitchenProjectionInput
+): TemplateOneKitchenProjection => ({
+  ...input,
+  requirements: {
+    wordmark: Boolean(input.wordmarkSrc),
+    palette: Boolean(input.palette),
+    typography: Boolean(input.typography.display_family && input.typography.body_family),
+    flagshipDish: Boolean(input.flagshipDish?.image),
+    pattern: 'unapproved',
+    ...input.requirements,
+  },
+})
+
 export type TemplateOneKitchenSpecimen = {
   id: 'seehotel-bonigen' | 'pizza-the-action' | 'friiites' | 'deanos'
   name: string
@@ -49,6 +132,7 @@ export type TemplateOneKitchenSpecimen = {
   rootProps: {
     placePrimaryColor: string
     wordmarkSrc: string
+    tagline: string
     source: string
     kitchenSource?: string
   }
@@ -71,6 +155,12 @@ export type TemplateOneKitchenSpecimen = {
       present: 'wordmark'
       identityAlignment: 'left' | 'center'
       tagline: readonly string[]
+      productCrop?: {
+        visibleAspect: number
+        scale: number
+        offsetX: number
+        offsetY: number
+      }
     }
     process: {
       eyebrow: string

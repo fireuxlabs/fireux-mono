@@ -28,22 +28,27 @@ real composition proves a common contract.
 2. Display that Kitchen's Root, Console, and App presentation configuration.
 3. List the presentations compatible with that Kitchen.
 
-Compatibility is progressive:
+Default and Theme remain progressive presentation levels:
 
 ```text
 Root    → Default
 Console → Default + Theme
-App     → Default + Theme + Template One
 ```
 
-The catalogue does not inspect Storage, validate asset binaries, fetch a
-flagship Dish, render template scenes, or own template-specific readiness.
+Template One instead requires a template-ready Kitchen. Eligibility is based
+on fulfilled Kitchen inputs, not whether the Kitchen is App-managed. The
+catalogue reports Kitchen name, tagline, effective palette and typography,
+the five standard identity asset roles, one unique flagship Dish, and its
+image. Menu readiness is evaluated separately.
 
 ## Detail
 
 `/templates/[slug]?kitchen=<id>` is a thin resolver. It validates the selected
 Kitchen/presentation combination, uses ordinary Core/Nuxt UI page structure
-for Default and Theme, and renders Template One for a compatible App Kitchen.
+for Default and Theme, and renders Template One for a template-ready Kitchen.
+Both the catalogue and tenant route inject a `TemplateOneKitchenProjection`
+into the same package-owned `TemplateOnePage`; neither owns scenes, adapters,
+template CSS, or iframe previews.
 It owns no inspection rail, prop ledger, brand switcher, specimen laboratory,
 or route-specific CSS.
 
@@ -70,6 +75,6 @@ and Deano's use the same scene anatomy.
 
 ## Verification
 
-Run the focused landing-template and CSS guards, verify Root/Console/App
-compatibility on `/templates`, verify Friiites and Deano's share Scene One
+Run the focused landing-template and CSS guards, verify Kitchen readiness on
+`/templates`, verify Friiites and Deano's share Scene One
 anatomy, then run the owning builds and `pnpm guard`.

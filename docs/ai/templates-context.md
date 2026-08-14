@@ -29,12 +29,13 @@ injected owner data.
 - Misebox owns the canonical `/templates/template-one` product page. FireUX
   keeps a catalogue referral and does not copy anatomy or fixtures.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
-  Console presentation. They are progressive presentation levels, not App
-  template records. Template One is the only current App template; do not add
-  a placeholder second template before a real composition proves it.
-- Templates are available only to App-managed Kitchens. Root and Console
-  Kitchens appear on the Template One page only as progression specimens that
-  expose the inherited atom inputs an App template extends.
+  Console presentation. They are presentation levels, not template records.
+  Template One is the only current template; do not add a placeholder second
+  template before a real composition proves it.
+- Template eligibility belongs to the fulfilled Kitchen, not to its management
+  tier or the existence of a canonical App. An App is one valid provider and
+  proof of the effective assets and theme values, but is not itself a
+  functional prerequisite.
 - Root owns neither theme nor template. Console owns Kitchen Menu `PageStyle`
   but never template selection. An App extends the effective Console theme with
   one App-owned template applied across all of its tenant/franchise Kitchens;
@@ -62,13 +63,17 @@ injected owner data.
   order is never a fallback. Dish owns food imagery. Optional App Brand Asset
   roles such as marks and patterns remain unapproved until their owner records
   canonical role and usage metadata.
-- The `/templates` catalogue has only three responsibilities: select one
-  Kitchen (temporarily from four development specimens), display that
-  Kitchen's Root/Console/App presentation configuration, and list compatible
-  presentations. It does not validate asset binaries, inspect Storage, render
-  scenes, or own Template-One-specific readiness machinery. Replacing the
-  temporary selector with one canonical Kitchen projection must not change
-  this page anatomy.
+- The `/templates` catalogue selects one Kitchen, displays its effective
+  presentation inputs, checks Kitchen-level template readiness, and lists
+  compatible presentations. The readiness check reports supplied values and
+  canonical asset roles; it does not validate asset binaries or inspect
+  Storage. Replacing the temporary specimens with canonical Kitchen
+  projections must not change this page anatomy.
+- Every Template One surface follows one canonical
+  `TemplateOneKitchenProjection → TemplateOnePage` flow. The package owns all
+  six scenes; tenant Apps and the catalogue inject Kitchen data and render the
+  page directly. Consumer scenes, adapters, copied template CSS, and iframe
+  previews are drift.
 - Scene One render readiness is distinct from full Template One content
   readiness. The scene can render from one unique flagship, while the template
   requirements manifest still requires six eligible Dishes plus exactly one

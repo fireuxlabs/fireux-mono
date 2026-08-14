@@ -1,17 +1,5 @@
 <template>
-  <TemplateOneSceneOne
-    v-if="isTemplateOne"
-    :name="kitchen.name"
-    :wordmark-src="wordmarkSrc"
-    :place-primary-color="kitchen.rootProps.placePrimaryColor"
-    :present="kitchen.appProps!.sceneOne.present"
-    :identity-alignment="kitchen.appProps!.sceneOne.identityAlignment"
-    :tagline="kitchen.appProps!.sceneOne.tagline"
-    :palette="palette"
-    :typography="kitchen.appProps!.typography"
-    :flagship-dish="flagship?.dish || null"
-    :requirements="requirements"
-  />
+  <TemplateOnePage v-if="projection" :projection="projection" />
 
   <UPage v-else>
     <UContainer class="py-12 sm:py-16">
@@ -30,14 +18,15 @@
 
 <script setup lang="ts">
 import { createError } from 'h3'
-import TemplateOneSceneOne from 'fireux-misebox/runtime/TemplateOneSceneOne.vue'
+import TemplateOnePage from 'fireux-misebox/runtime/TemplateOnePage.vue'
 import {
+  createTemplateOneFixtureProjection,
   findLandingTemplate,
   findLandingTemplateBrand,
   isLandingTemplateBrandId,
 } from 'fireux-misebox/runtime/template-one-fixtures'
-import { resolveAppPalette } from 'fireux-core/runtime/utils/brand-palette'
-import type { AppPalette } from 'fireux-core/types/theme'
+import { useTemplateOneProductDemo } from '~/composables/product-demo/useTemplateOneProductDemo'
+import type { MenuDetailPayload } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/server/dish/flagship-projection'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
@@ -57,36 +46,52 @@ if (rank[kitchen.tier] < rank[presentation.minimumTier])
   throw createError({ statusCode: 404, statusMessage: 'Presentation unavailable for this Kitchen' })
 
 const isTemplateOne = presentation.slug === 'template-one' && Boolean(kitchen.appProps)
-const { data: flagship } = await useAsyncData(
+const deanosData = isTemplateOne && kitchen.id === 'deanos'
+  ? await useTemplateOneProductDemo()
+  : null
+const [{ data: flagship }, { data: menuResult }] = await Promise.all([useAsyncData(
   `template-flagship-${kitchen.id}`,
-  () => isTemplateOne
+  () => isTemplateOne && kitchen.id !== 'deanos'
     ? $fetch<KitchenFlagshipDishResult>(
         `/api/kitchens/${kitchen.appProps!.kitchenId}/flagship-dish`,
         { query: { appId: kitchen.appProps!.appId } }
       )
     : null
-)
-const palette = computed<AppPalette>(() => {
-  if (!kitchen.consoleProps || !kitchen.appProps)
-    throw createError({ statusCode: 404, statusMessage: 'App presentation unavailable' })
-  return resolveAppPalette(kitchen.consoleProps.palette, kitchen.appProps.palette)!
+), useAsyncData(
+  `template-menu-${kitchen.id}`,
+  () => isTemplateOne && kitchen.id !== 'deanos'
+    ? $fetch<MenuDetailPayload>('/api/menus/friiites')
+    : null
+)])
+const storageUrl = (path: string) =>
+  `https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/${encodeURIComponent(`apps/friiites/img/app/${path}`)}?alt=media`
+const projection = computed(() => {
+  if (!isTemplateOne) return null
+  if (kitchen.id === 'deanos') {
+    return createTemplateOneFixtureProjection({
+      kitchen,
+      menu: deanosData!.menu,
+      flagshipDish: deanosData!.flagshipDish,
+      media: path => miseboxDemoMediaUrl(`kitchens/deanos/${path}`),
+      wordmarkSrc: miseboxDemoMediaUrl('kitchens/deanos/logo.png'),
+    })
+  }
+  if (menuResult.value?.kind !== 'manifest') return null
+  return createTemplateOneFixtureProjection({
+    kitchen,
+    menu: {
+      menu: menuResult.value.manifest.content,
+      specials: menuResult.value.manifest.specials,
+      menuHref: '/menus/friiites',
+      menuActionLabel: 'Browse menu',
+    },
+    flagshipDish: flagship.value?.dish || null,
+    media: storageUrl,
+    wordmarkSrc: kitchen.rootProps.wordmarkSrc,
+  })
 })
-const wordmarkSrc = computed(() => {
-  const source = kitchen.rootProps.wordmarkSrc
-  return source.startsWith('demo:') ? miseboxDemoMediaUrl(source.slice(5)) : source
-})
-const requirements = computed(() => ({
-  wordmark: Boolean(wordmarkSrc.value),
-  palette: Boolean(palette.value),
-  typography: Boolean(
-    kitchen.appProps?.typography.display_family &&
-    kitchen.appProps?.typography.body_family
-  ),
-  flagshipDish: flagship.value?.ready === true,
-  pattern: 'unapproved' as const,
-}))
 
-definePageMeta({ layout: 'landing', name: 'MiseboxTemplateDetailPage' })
+definePageMeta({ layout: false, name: 'MiseboxTemplateDetailPage' })
 useSeo({
   title: `${presentation.name} · ${kitchen.name} · Misebox`,
   description: presentation.summary,

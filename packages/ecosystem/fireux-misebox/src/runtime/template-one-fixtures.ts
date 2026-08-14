@@ -1,19 +1,27 @@
-import type { TemplateOneKitchenSpecimen } from './template-one'
+import {
+  projectTemplateOneKitchen,
+  type TemplateOneKitchenProjection,
+  type TemplateOneKitchenSpecimen,
+  type TemplateOneMenuContent,
+} from './template-one'
 import { MISEBOX_BASIC_PRIMARY_COLOR } from './kitchen-basic-presentation'
 import {
   compactAppPalette,
   consolePaletteFromApp,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { AppPalette } from 'fireux-core/types/theme'
+import { resolveAppPalette } from 'fireux-core/runtime/utils/brand-palette'
 
 const rootProps = (
   placePrimaryColor: string,
   source: string,
   wordmarkSrc = '',
-  kitchenSource = ''
+  kitchenSource = '',
+  tagline = ''
 ) => ({
   placePrimaryColor,
   wordmarkSrc,
+  tagline,
   source,
   ...(kitchenSource ? { kitchenSource } : {}),
 })
@@ -98,7 +106,10 @@ export const landingTemplateBrands = [
     },
     rootProps: rootProps(
       MISEBOX_BASIC_PRIMARY_COLOR,
-      'Misebox Basic default primary colour'
+      'Misebox Basic default primary colour',
+      '',
+      '',
+      'Pizza, pasta and neighbourhood hospitality.'
     ),
     consoleProps: {
       source: 'Pizza the Action Demo Kitchen.menus.style',
@@ -114,12 +125,19 @@ export const landingTemplateBrands = [
     name: 'Friiites',
     tier: 'app',
     demo: false,
-    assetSources: {},
+    assetSources: {
+      logo: 'apps/friiites/img/app/logo.png',
+      wordmarkLight: 'apps/friiites/img/app/wordmark-light.png',
+      wordmarkDark: 'apps/friiites/img/app/wordmark-dark.png',
+      cover: 'apps/friiites/img/app/cover.png',
+      thumbnail: 'apps/friiites/img/app/thumbnail.png',
+    },
     rootProps: rootProps(
       '#0b0b0a',
       'places/5dGJgdjDv7Zi0tjva61O · media_backdrop_color',
       'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Ffriiites%2Fimg%2Fapp%2Fwordmark-dark.png?alt=media',
-      'kitchens/5dGJgdjDv7Zi0tjva61O · assets.backdrop_color'
+      'kitchens/5dGJgdjDv7Zi0tjva61O · assets.backdrop_color',
+      'Hand-cut. Brined. Triple-fried in beef tallow.'
     ),
     consoleProps: {
       source: 'apps/friiites/kitchens/5dGJgdjDv7Zi0tjva61O · console.theme.palette',
@@ -142,6 +160,12 @@ export const landingTemplateBrands = [
         present: 'wordmark',
         identityAlignment: 'left',
         tagline: ['Hand-cut.', 'Brined.', 'Triple-fried', 'in beef tallow.'],
+        productCrop: {
+          visibleAspect: 857 / 445,
+          scale: 1200 / 857,
+          offsetX: -(178 / 857) * 100,
+          offsetY: -(387 / 445) * 100,
+        },
       },
       process: {
         eyebrow: 'Our method',
@@ -179,7 +203,9 @@ export const landingTemplateBrands = [
     rootProps: rootProps(
       '#ff4f2e',
       "Deano's Demo Place primary colour",
-      'demo:apps/deanos/img/app/wordmark-dark.png'
+      'demo:apps/deanos/img/app/wordmark-dark.png',
+      '',
+      'Smashed. Seared. Stacked. Served hot.'
     ),
     consoleProps: {
       source: "Deano's Demo Console palette derived from its App",
@@ -202,6 +228,12 @@ export const landingTemplateBrands = [
         present: 'wordmark',
         identityAlignment: 'center',
         tagline: ['Smashed.', 'Seared.', 'Stacked.', 'Served hot.'],
+        productCrop: {
+          visibleAspect: 1.6,
+          scale: 1,
+          offsetX: 0,
+          offsetY: 0,
+        },
       },
       process: {
         eyebrow: 'The build',
@@ -285,3 +317,78 @@ export const isLandingTemplateBrandId = (
   value: string
 ): value is TemplateOneKitchenSpecimen['id'] =>
   landingTemplateBrands.some((brand) => brand.id === value)
+
+type TemplateOneMediaResolver = (path: string) => string
+
+export const createTemplateOneFixtureProjection = (input: {
+  kitchen: TemplateOneKitchenSpecimen
+  menu: TemplateOneMenuContent
+  flagshipDish: TemplateOneFlagshipDish | null
+  media: TemplateOneMediaResolver
+  wordmarkSrc?: string
+}): TemplateOneKitchenProjection => {
+  const { kitchen, media } = input
+  if (!kitchen.consoleProps || !kitchen.appProps)
+    throw new Error(`${kitchen.name} is not configured for Template One`)
+  const palette = resolveAppPalette(kitchen.consoleProps.palette, kitchen.appProps.palette)
+  if (!palette)
+    throw new Error(`${kitchen.name} has no effective Template One palette`)
+  const isFriiites = kitchen.id === 'friiites'
+  const asset = (friiites: string, deanos: string) => media(isFriiites ? friiites : deanos)
+  return projectTemplateOneKitchen({
+    id: kitchen.id,
+    name: kitchen.name,
+    placePrimaryColor: kitchen.rootProps.placePrimaryColor,
+    wordmarkSrc: input.wordmarkSrc || media(isFriiites ? 'wordmark-dark.png' : 'wordmark-dark.png'),
+    palette,
+    typography: kitchen.appProps.typography,
+    flagshipDish: input.flagshipDish,
+    hero: kitchen.appProps.sceneOne,
+    menu: input.menu,
+    ordering: {
+      artifacts: [
+        { src: asset('branding/table-qr-stand.png', 'menu/deanos-classic.jpg'), alt: `${kitchen.name} ordering point` },
+        { src: asset('packaging/carton-empty.webp', 'menu/skin-on-fries.jpg'), alt: `${kitchen.name} signature serve` },
+        { src: asset('branding/takeaway-bag.png', 'menu/dirty-deanos-fries.jpg'), alt: `${kitchen.name} takeaway` },
+      ],
+      surfaces: [
+        { label: 'Table', icon: 'i-lucide-utensils', description: 'Order from your table.', action: 'Table menu', to: isFriiites ? '/friiites.table' : '#menu' },
+        { label: 'Kiosk', icon: 'i-lucide-monitor', description: 'Build your order on the in-store screen.', action: 'Kiosk menu', to: isFriiites ? '/friiites.kiosk' : '#menu' },
+        { label: 'Delivery', icon: 'i-lucide-bike', description: 'Send your order to your door.', action: 'Delivery menu', to: isFriiites ? '/friiites.delivery' : '#menu' },
+        { label: 'Collection', icon: 'i-lucide-shopping-bag', description: 'Order ahead and collect.', action: 'Collection menu', to: isFriiites ? '/friiites.collection' : '#menu' },
+        { label: 'Counter', icon: 'i-lucide-chef-hat', description: 'Order with the team at the counter.', action: 'Staff sign in', to: isFriiites ? '/auth?redirect=/friiites.staff_pos' : '#menu' },
+      ],
+    },
+    franchise: {
+      title: 'Franchise',
+      description: `Bring ${kitchen.name} to your community.`,
+      actionLabel: 'Franchise enquiries',
+      media: [
+        { src: asset('branding/staff-apron.png', 'menu/hot-honey-chicken.jpg'), alt: `${kitchen.name} team` },
+        { src: asset('branding/storefront-fascia.png', 'menu/double-trouble.jpg'), alt: `${kitchen.name} storefront` },
+        { src: asset('branding/takeaway-bag.png', 'menu/skin-on-fries.jpg'), alt: `${kitchen.name} packaging` },
+      ],
+    },
+    provider: {
+      title: 'Powered by Misebox',
+      description: `The kitchen system behind ${kitchen.name}.`,
+      href: 'https://misebox.app',
+      wordmarkLightSrc: '/img/ecosystem/wordmark-light.png',
+      wordmarkDarkSrc: '/img/ecosystem/wordmark-dark.png',
+      name: 'Misebox',
+    },
+    footer: {
+      eyebrow: 'Kitchen operations',
+      title: `Manage ${kitchen.name} in Misebox.`,
+      description: 'Menus, dishes, recipes, preparation and orders stay connected in the Kitchen Console.',
+      consoleTo: isFriiites ? '/console/kitchen' : '/get-started',
+      consoleLabel: 'Enter Console',
+      origin: `${kitchen.name} · Developed in Switzerland`,
+      links: [
+        { label: 'Menu', to: '#menu' },
+        { label: 'Order', to: '#order-now' },
+        { label: 'Franchise', to: '#franchise' },
+      ],
+    },
+  })
+}
