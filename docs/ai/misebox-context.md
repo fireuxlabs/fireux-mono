@@ -37,6 +37,13 @@ Before each task:
   into one app-wide `/operations` index grouped by Console.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
+- Misebox may own neutral physical product masters with named branding
+  surfaces. An App- or Kitchen-owned treatment references that neutral product
+  and owns only its approved identity application; commerce fields such as
+  unit, minimum quantity, and order increment remain product concerns. Product
+  pages may present the neutral master and its treatments, while Kitchens
+  purchase a treatment rather than copying the neutral asset or another
+  owner's identity.
 - `/kitchens` is the Kitchen collection. It scans the canonical `kitchens`
   root collection and excludes only a root whose boolean `visibility` is
   explicitly `false` for ordinary visitors. A signed-in configured developer
@@ -76,6 +83,11 @@ Before each task:
   retain only the palette delta over Console and exactly two typography family
   inputs; the five App masters remain the universal readiness gate.
   Operational settings do not live on the Kitchen root.
+  Menu roles are explicit AppKitchen Console configuration: one
+  `primary_menu_id` and an optional enabled `specials_menu_id`. Never infer the
+  primary Menu from collection order. Specials remains an ordinary KitchenMenu;
+  its published content is projected into the primary Menu using the primary
+  renderer's presentation.
   Authenticated Console target projection requires the exact root, Place,
   matching AppKitchen support, and scoped App membership. `operator_ids`
   grants Kitchen mutation authority; `team_ids` grants target/read membership

@@ -37,14 +37,10 @@
 
 <script setup lang="ts">
 const menuItems = [
-  { label: '02 Menu', to: '/#menu' },
-  { label: '03 Locations', to: '/#locations' },
-  { label: '04 Method', to: '/#method' },
-  { label: '05 Classic', to: '/#classic' },
-  { label: '06 Next level', to: '/#next-level' },
-  { label: '07 Order now', to: '/#order-now' },
-  { label: '08 Franchise', to: '/#franchise' },
-  { label: '09 Misebox', to: '/#misebox' },
+  { label: 'Menu', to: '/#menu' },
+  { label: 'Order your way', to: '/#order-now' },
+  { label: 'Franchise', to: '/#franchise' },
+  { label: 'Misebox', to: '/#misebox' },
 ] as const
 </script>
 

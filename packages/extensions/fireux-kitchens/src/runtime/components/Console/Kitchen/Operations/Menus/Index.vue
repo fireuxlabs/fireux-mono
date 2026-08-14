@@ -1,6 +1,15 @@
 <template>
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-4">
+      <header class="space-y-1">
+        <h1 class="text-xl font-semibold text-highlighted">Menus</h1>
+        <p class="text-sm text-muted">
+          Open a menu to manage its content, ordering and publishing.
+        </p>
+      </header>
+
+      <ConsoleKitchenOperationsMenusRoles />
+
       <ConsoleKitchenOperationsMenusList />
 
       <ConsoleKitchenOperationsMenusTools />

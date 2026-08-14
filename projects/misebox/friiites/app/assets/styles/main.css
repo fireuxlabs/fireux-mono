@@ -1,4 +1,5 @@
 @import './sections.css';
+@import './lower-sections.css';
 
 :root {
   --color-theme-50: #fff8e8;

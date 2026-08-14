@@ -7,6 +7,7 @@ import type {
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
+import type { MenuManifestContent } from '../../../models/kitchen/menu/menu-detail.model'
 import type {
   SproochliAttachmentConfig,
   SproochliLanguageCode,
@@ -30,6 +31,7 @@ export type MenuPayloadScope = {
   page_style?: Record<string, unknown>
   choices?: unknown[]
   sections?: unknown[]
+  specials?: MenuManifestContent
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig

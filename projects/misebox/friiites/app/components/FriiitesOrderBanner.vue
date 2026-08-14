@@ -1,8 +1,8 @@
 <template>
   <aside class="friiites-order-banner" aria-label="Order Friiites">
-    <p>New store</p>
+    <p>Friiites Interlaken</p>
 
-    <NuxtLink to="/#menu">Order now</NuxtLink>
+    <NuxtLink to="/menus">Browse menu</NuxtLink>
   </aside>
 </template>
 

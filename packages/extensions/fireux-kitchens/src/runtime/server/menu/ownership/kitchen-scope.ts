@@ -44,6 +44,9 @@ export type MenuKitchenScope = {
   currencyCode?: string
   currencyFormat?: CurrencyDisplayFormat
   showCurrency?: boolean
+  primaryMenuId?: string
+  specialsEnabled?: boolean
+  specialsMenuId?: string
   page_style?: Record<string, unknown>
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
@@ -210,6 +213,7 @@ export async function readRootMenuKitchenScope(
     placeData
   )
   const sproochli = readKitchenSproochliConfig(appKitchenData)
+  const menus = readKitchenMenusConfig(appKitchenData)
 
   return {
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
@@ -229,6 +233,9 @@ export async function readRootMenuKitchenScope(
     ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
     currencyFormat: identity.currencyFormat,
     showCurrency: identity.showCurrency,
+    ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
+    ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
+    ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
     ...(identity.page_style ? { page_style: identity.page_style } : {}),
     ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
       ? { fulfilment }

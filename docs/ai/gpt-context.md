@@ -59,6 +59,27 @@ Before each task:
 5. Inspect the current source, nearest working sibling, and relevant
    `scripts/guards/*` files before making claims or proposing changes.
 
+## New-work entry test
+
+Before treating a task as a new system, ask whether the work can be expressed
+inside an existing FireUX family using current Core, Nuxt UI, domain
+capabilities, and named components.
+
+For every new product surface, ecosystem capability, or proposed shared
+abstraction, establish before editing:
+
+- the existing family;
+- the nearest working sibling;
+- the Core, Nuxt UI, and domain capabilities that will be reused;
+- the smallest genuinely new domain-owned delta; and
+- explicit non-goals.
+
+Begin with an ordinary FireUX page, named capability, or domain component.
+Do not create a system, engine, registry, framework, or shared abstraction from
+one consumer. A second real sibling permits contract comparison; only a proven
+repeated contract permits extraction. If the existing family cannot express
+the requirement, report the exact missing seam before broad edits.
+
 ## Task identity
 
 - A task title and its explicit handoff define its working scope. Treat an
@@ -73,11 +94,11 @@ Before each task:
   and refuses a save when another task changes the shared worktree during
   verification. Every task that edits the repository runs `pnpm guard` before
   handoff; focused guards are iteration feedback, not a completion substitute.
-- Keep product source readable and responsibility-owned. File length is review
-  evidence, not a save blocker: split a file when it contains distinct owned
-  responsibilities or a smaller seam materially improves maintenance, not to
-  satisfy an arbitrary line count. Operational `scripts/` remain governed by
-  script safety, usage, and lifecycle guards.
+- Permanent product source under `packages/`, `projects/`, and `tools/` must
+  remain at or below 400 lines per authored code, style, or Rules file. Split
+  responsibilities into named owned seams; there is no allowlist or scope
+  switch. Operational `scripts/` are outside this product-source boundary and
+  remain governed by script safety, usage, and lifecycle guards.
 
 ## Authority
 

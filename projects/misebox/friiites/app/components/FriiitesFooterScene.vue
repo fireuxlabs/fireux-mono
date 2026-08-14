@@ -31,10 +31,20 @@
         </div>
       </div>
 
+      <a class="friiites-footer__misebox" href="https://misebox.app" target="_blank" rel="noopener noreferrer">
+        <span>Powered by</span>
+        <AppBrandWordmark
+          light-src="/img/ecosystem/wordmark-light.png"
+          dark-src="/img/ecosystem/wordmark-dark.png"
+          alt="Misebox"
+          size="small"
+        />
+      </a>
+
       <div class="friiites-footer__base">
         <nav aria-label="Footer navigation">
           <a href="#menu">Menu</a>
-          <a href="#locations">Locations</a>
+          <a href="#order-now">Order</a>
           <a href="#franchise">Franchise</a>
         </nav>
         <p>Friiites · Developed in Switzerland</p>
@@ -132,6 +142,22 @@
   padding-top: calc(var(--spacing) * 8);
   color: color-mix(in srgb, var(--friiites-cream) 55%, transparent);
   border-top: 1px solid color-mix(in srgb, var(--friiites-cream) 15%, transparent);
+}
+
+.friiites-footer__misebox {
+  display: inline-grid;
+  gap: calc(var(--spacing) * 2);
+  width: min(100%, 14rem);
+  color: color-mix(in srgb, var(--friiites-cream) 65%, transparent);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.friiites-footer__misebox :deep(.fx-brand-wordmark) {
+  width: 100%;
+  max-width: none;
 }
 
 .friiites-footer__base nav {

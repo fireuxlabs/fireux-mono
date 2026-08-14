@@ -1,11 +1,15 @@
 <template>
   <section class="space-y-4">
-    <ConsoleKitchenOperationsMenusCreationUrl />
+    <div id="create-menu" class="scroll-mt-24">
+      <ConsoleKitchenOperationsMenusCreationUrl />
+    </div>
 
-    <ConsoleKitchenOperationsMenusCreationUpload
-      title="Upload menu source"
-      description="Use a clear menu name, such as main, lunch, or drinks. Multiple photos are fine."
-      cta-label="Upload menu source"
-    />
+    <div id="import-menu" class="scroll-mt-24">
+      <ConsoleKitchenOperationsMenusCreationUpload
+        title="Upload menu source"
+        description="Use a clear menu name, such as main, lunch, or drinks. Multiple photos are fine."
+        cta-label="Upload menu source"
+      />
+    </div>
   </section>
 </template>

@@ -39,6 +39,12 @@ Kitchen, but no root identity. MenuItem is a MenuSection-owned placement Record
 and must reference a Dish from that same Kitchen. Dish owns food copy and media;
 MenuItem owns price, variants, add-ons, availability, and order.
 
+AppKitchen `console.menus` also names the Kitchen's primary Menu and optional
+Specials Menu by explicit id. Collection order is never Menu role identity.
+When enabled, the bounded public projection embeds the published Specials
+content only into the configured primary Menu; Specials remains an ordinary,
+independently edited KitchenMenu and inherits the parent renderer's style.
+
 ## Shared spine
 
 - Public Menu reads use bounded server projections. Raw Menu or KitchenMenu

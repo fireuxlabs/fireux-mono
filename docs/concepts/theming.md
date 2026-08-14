@@ -110,28 +110,22 @@ directly from `Kitchen.management.mode`: Root, Console and App. Demo status
 never changes that capability classification. The Root input is only the Place
 primary colour; Seehotel is as complete as Friiites at that level. It is the
 first agreed fallback, used behind poor or transparent identity media and
-overridden by richer resolved Console or App presentation. Level Two compares the same
+overridden by richer resolved Console or App presentation.
 
 The `/templates` catalogue owns the comparison flow: select one Kitchen, then
 open a presentation level with the same `?kitchen=<slug>` projection. `Default`
 is the included Root presentation, `Theme` is the Console presentation, and
-Template One/Two are App template compositions. Default and Theme are grouped
+Template One is the current App template composition. Default and Theme are grouped
 in the catalogue for comparison but are not marketed or modelled as App
 templates.
-It also owns the selected Kitchen's complete asset-readiness ledger, keeping
-validation outside template anatomy and leaving detail routes focused on the
-applied composition.
-The detail route retains a compact Kitchen switcher so direct links remain
-useful. Kitchen selection determines identity, assets and inherited theme;
-template selection determines composition. Template Two initially shares the
-same low-level proving scene while retaining its own routable template identity
-and future anatomy ownership.
-
-Menu sample using the existing `Kitchen.menus.style` / `PageStyle` contract:
-Seehotel shows the resolved default Menu baseline with no authored Console
-override, while Pizza the Action shows its source-owned Demo Console theme.
-Friiites and Deano's do not receive invented Console values before their App
-template work begins. Place presentation is intentionally bounded to one
+The catalogue displays the selected Kitchen's resolved Root, Console and App
+presentation configuration, then lists only compatible presentations. Asset
+binary validation and Storage inspection remain outside catalogue routes and
+template anatomy.
+The detail route is a thin compatible-presentation resolver. Default and Theme
+use ordinary Core/Nuxt UI page structure; Template One renders its current
+Scene One composition. The detail owns no inspection rail, specimen system,
+brand switcher, or route CSS. Place presentation is intentionally bounded to one
 semantic `presentation.identity_backdrop_color` input. Current persisted Place
 source still names this field `media_backdrop_color`; renaming that stored
 field requires a guarded Place projection/write migration and is deliberately
@@ -156,32 +150,18 @@ otherwise Misebox supplies its ecosystem-owned default blue `#2563eb` and
 reports the source as `misebox-default`. Generic Kitchen models and FireUX Core
 do not own this ecosystem fallback. Missing identity media remains honestly
 absent and never produces invented branding.
-The Template One Root comparison reads the current public Kitchen detail and
-presents that Basic result directly. Its identity card may use the real Place
-image with the canonical Kitchen name; the accompanying ledger always reports
-Place image, logo, wordmark and primary-colour provenance, including explicit
-`Missing` values rather than hiding incomplete fields.
-Console comparison is strictly additive. Pizza the Action first renders the
-same resolved Basic contract—Misebox default blue, canonical name and its
-Demo-owned logo, with missing Place image and wordmark stated—then renders its
-source-owned Console `PageStyle` improvement. A Console specimen must never
-offer less identity evidence than Root.
-
-One neutral Menu section and item provide shared sample content at this level.
-They belong to no Kitchen and do not create Menu records. The sample uses the
-real default Menu catalogue presentation with no attached Menu style or Console
-theme. The Place backdrop remains inspectable above it but does not theme it.
+The catalogue shows the selected specimen's stored colour and typography
+layers. It does not create a second identity card, sample Menu, or readiness
+ledger.
 
 Scene One is the current reusable composition. The three-step Process scene and
 Friiites Method adapter remain audit evidence only; neither mounts in the
-catalogue preview or live App until the Place migration, Root Kitchen identity,
-Console identity and asset-authority gates are complete.
-The App preview exposes Scene One beneath its developer toolbar. Page header
-and navigation remain external chrome; Scene One owns only the dominant
+catalogue preview or live App until its content is ready. Page header and
+navigation remain external chrome; Scene One owns only the dominant
 wordmark, supporting copy and action, flagship Dish presentation, fixed
 texture/backlight and scroll cue.
-Template inspection resolves App-owned identity media only through the owning
-App record and canonical Storage projection. Misebox remains ignorant of
+Template rendering resolves App-owned identity media through canonical
+Storage-backed roles. Misebox remains ignorant of
 sibling App bundles: it must not mount their public directories, call their
 development ports or copy their assets into the template package. Template One
 renders an explicit missing state when Storage has not supplied the role; it
@@ -189,37 +169,11 @@ must not invoke Core's semantic FireUX brand fallback for a tenant injection.
 For App fixtures, `wordmarkSrc` has one canonical meaning: the App-owned
 `img/app/wordmark-dark.png` Storage role. Fixtures cannot point that prop at a
 brand-specific nested alternate, a sibling bundle mount or a square
-`logo.png`. Friiites and Deano's remain explicitly missing until their App
-Storage projections supply that canonical role.
-The Misebox template-detail route intentionally uses a minimal route shell
-rather than absorbing the default Misebox layout. Catalogue navigation,
-fixture selection and prop provenance sit in normal document flow above the
-template canvas. Identity lettering comes from the supplied wordmark artwork;
-the two App typography families drive the derived Scene One copy and label
-roles.
-Every template-detail state begins with one route-shell inheritance rail.
-Root shows `Place → Kitchen`, Console adds `Console`, and App preview adds
-`Console → App + Template One`. This is inspection chrome rather than template
-anatomy, and keeps the inherited Place surface visible even when the selected
-App renders only its final resolved scene.
-Every selected specimen shows the same compact Place preview before any richer
-level. It uses only the resolved Place primary colour and canonical identity
-media, with an explicit missing state, so the starting surface remains visible
-independently of whether the selected Kitchen is Root-, Console-, or App-managed.
-This preview is route-shell inspection chrome, not Template One anatomy.
-The same adjacent Kitchen preview carries the complete visible Place identity
-(primary colour and canonical wordmark) forward, then adds the Kitchen name and
-its first useful public capability: a menu doorway. The technical Kitchen route
-is the action target rather than user-facing content. This shows the effective
-progressive surface without reassigning ownership of the Place colour or
-identity media to Kitchen. The Kitchen preview is also inspection chrome rather
-than Template One anatomy. Root, Console, and App specimens must use these same
-two preview components; management mode changes available later layers, never
-the anatomy of inherited levels.
-The composition is mobile-first: Scene One starts from the compact phone
-header, viewport-bounded identity frame and horizontally scrollable developer
-props strip, then enhances those same elements for wider viewports without a
-second DOM anatomy.
+`logo.png`.
+The detail route uses the ordinary Misebox landing layout. Identity lettering
+comes from supplied wordmark artwork; the two App typography families drive
+Scene One copy and label roles. Scene One remains mobile-first and enhances the
+same DOM anatomy at wider viewports.
 Scene One uses the Place primary colour as its actual base canvas. Template
 One's fixed texture is blended over that canvas rather than covering it, and
 its backlight remains a separate Template-owned layer. The Deano's editable
@@ -241,25 +195,10 @@ Kitchens on this page are inspectable progression specimens, not template
 customers or template consumers. They show the inherited atom ownership that
 an App template extends: Root → Console → App Template.
 
-The Template One inspection page checks readiness before App template work.
-Root and Console show their progressive inherited requirements but do not
-claim template eligibility. An App is template-ready only when Firebase
-Storage contains all five canonical masters: logo, both surface wordmarks,
-cover and thumbnail. `wordmark.png`, favicon and PWA icons are bundle outputs,
-not extra Storage-master decisions, and remain the owning App build's
-responsibility.
-
-Demo fixtures may prove the same five-role template input without becoming an
-App. Their deterministic Demo data supplies relative object references which
-resolve to the existing Demo Firebase Storage authority; the inspection page
-validates those resolved URLs and dimensions directly. It labels this as Demo
-template assets and never queries or invents `apps/<demo-id>/...` ownership.
-Within the fixed `demo/misebox-app` authority, template assets use the same
-App-shaped relative family as real Apps:
-`apps/<demo-id>/img/app/<filename>`. Deano's fulfils the five roles with its
-approved combined lockup preserved unchanged: the same transparent wide
-lockup is valid on both surfaces, while cover and thumbnail use brand-only
-graphic presentation without Dish media.
+App onboarding remains responsible for canonical asset readiness; the
+catalogue does not duplicate that validation. Demo fixtures may prove the same
+presentation contract without becoming an App and resolve through their
+existing Demo Storage authority.
 
 Palette authorship is progressive and remains separated by owner:
 

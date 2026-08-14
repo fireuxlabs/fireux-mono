@@ -13,6 +13,7 @@
     :show-action="true"
     :show-scroll-cue="true"
     :mobile-composition="mobileComposition"
+    menu-to="/menus"
   />
 </template>
 

@@ -6,17 +6,16 @@ import type {
 } from 'fireux-core/runtime/models/utils/style.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { MenuManifestSection } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { EntityAssetSourceMap } from 'fireux-core/runtime/models/operations/entity-asset-onboarding'
 import type { AppTypography } from 'fireux-core/types/theme'
+import type {
+  MenuManifestContent,
+  MenuManifestItem,
+} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 
 export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, ConsolePalette }
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']
-
-export type TemplateOneMenuSample = {
-  sections: MenuManifestSection[]
-}
 
 export type TemplateOneFlagshipDish = {
   id: string
@@ -31,6 +30,14 @@ export type TemplateOneSceneOneRequirements = {
   typography: boolean
   flagshipDish: boolean
   pattern: 'approved' | 'unapproved' | 'missing'
+}
+
+export type TemplateOneMenuContent = {
+  menu: MenuManifestContent
+  specials?: MenuManifestContent | null
+  makeItYours?: MenuManifestItem | null
+  menuHref?: string
+  menuActionLabel?: string
 }
 
 export type TemplateOneKitchenSpecimen = {

@@ -1,87 +1,75 @@
 # Landing template family
 
-Updated: 2026-08-10
+Updated: 2026-08-13
 Ref: 93c271035
 Role: map, not canon
 
+This family inherits the foundational template definition in
+`docs/concepts/templates.md`. A landing template is reusable presentation
+structure filled by owner-supplied identity, content, assets, routes, and
+operational data. A proving App's values never become template defaults.
+
 ## Family
 
-Misebox publishes the canonical Kitchen landing compositions at `/templates`.
-Template One's contract, anatomy and fixtures live in `fireux-misebox` so the
-Misebox App and tenant Apps can consume one source. FireUX may list the family,
-but refers to the Misebox-owned detail rather than copying it.
+Misebox owns Kitchen-, Menu-, and Dish-aware landing templates. FireUX may
+refer customers to the Misebox catalogue, but does not copy Misebox template
+anatomy or fixtures. Other ecosystems may later own their own template
+families while reusing ordinary Core page, state, and control primitives.
+
+Template One is the only implemented Misebox template. Do not invent a shared
+cross-ecosystem template framework or placeholder Template Two before a second
+real composition proves a common contract.
+
+## Catalogue
+
+`/templates` has three responsibilities:
+
+1. Select one Kitchen. Four development specimens are temporarily available.
+2. Display that Kitchen's Root, Console, and App presentation configuration.
+3. List the presentations compatible with that Kitchen.
+
+Compatibility is progressive:
+
+```text
+Root    → Default
+Console → Default + Theme
+App     → Default + Theme + Template One
+```
+
+The catalogue does not inspect Storage, validate asset binaries, fetch a
+flagship Dish, render template scenes, or own template-specific readiness.
+
+## Detail
+
+`/templates/[slug]?kitchen=<id>` is a thin resolver. It validates the selected
+Kitchen/presentation combination, uses ordinary Core/Nuxt UI page structure
+for Default and Theme, and renders Template One for a compatible App Kitchen.
+It owns no inspection rail, prop ledger, brand switcher, specimen laboratory,
+or route-specific CSS.
+
+## Template One
+
+Template One currently proves one shared composition: Scene One. Its internal
+grammar remains:
 
 `Page → Scenes → Layers → Elements`
 
-The page owns catalogue/detail chrome and viewport controls. The anatomy owns
-scene markup and presentation CSS. An injection supplies identity data only.
+Header and ecosystem page chrome remain outside scenes. Scene One consumes a
+canonical wordmark, resolved palette, two typography families, and the unique
+Kitchen-owned flagship Dish from the bounded projection. Dish owns food media;
+Template One owns scene composition and its fixed charcoal texture. Friiites
+and Deano's use the same scene anatomy.
 
-## Current member
+## Authority
 
-Template One is the neutral family at `/templates/template-one`. Its first
-slice compares Place-level presentation across Seehotel Bönigen, Pizza the
-Action, Friiites and Deano's Smash. Every selection is equally complete at this
-level: it shows the single semantic `place_primary_color` input. Current Place
-storage retains the source-backed `media_backdrop_color` field pending a
-separate guarded migration. Console and App props remain separate progression
-levels. Core `BrandPalette` is an App-template input value
-object, not a Place atom.
-
-The page also renders one shared neutral Menu sample with one section and one
-item through the real `MenuBrowseCatalogue` presentation. Its content belongs
-to no Kitchen and stays identical across the toggle. With no Menu style or
-Console theme attached, it retains the shared out-of-the-box Menu defaults; the
-Place backdrop is displayed separately and does not style the Menu. It is a
-presentation specimen, not a persisted Menu or MenuItem record.
-
-Template availability begins at App management. The current Place-level
-comparison does not imply that a Root or Console Kitchen can select or purchase
-Template One.
-
-Root has no theme or template. Console adds Kitchen Menu `PageStyle` only. App
-extends that effective Console theme with its selected template and applies the
-result consistently across every tenant/franchise Kitchen in that App. Template
-selection is App-owned, not a per-Kitchen franchise choice.
-
-At the App level, Friiites and Deano's Smash consume the same Scene One
-composition. Friiites proves it with canonical identity media; Deano's has an
-existing Demo-owned square logo but no canonical App wordmark yet, so the
-wordmark role is shown as missing rather than substituted. The shared media
-frame does not branch around that missing role. Once Deano's supplies
-`public/img/app/wordmark-dark.png`, the Scene One injection may align that same
-identity frame left or centre;
-Friiites uses left alignment and Deano's uses centre alignment. This is a
-bounded presentation option, not alternate scene markup. The charcoal surface
-is owned by Template One and is identical for both injections; it is not a
-brand asset or configurable delta. Both current fixtures declare
-`present: 'wordmark'`; fulfilment of that role resolves from Root identity
-rather than being duplicated into Scene One configuration. The
-catalogue and live Friiites App consume the same component; neither owns
-duplicate Scene One markup or CSS. The Process composition remains available
-but is not mounted in the current one-scene preview.
-
-Resolution is progressive and dynamic:
-
-`default Menu style ← Console Kitchen PageStyle ← App Brand System + Template`
-
-Current source proves Place `media_backdrop_color` and Kitchen `menus.style`,
-including dynamic compaction and resolution. The Kitchen Menu style is the
-Console theme; it is not followed by a second Console-theme system. App Brand
-System and template assignment are not persisted models yet. Do not copy
-resolved values upward during onboarding.
-
-## Delta register
-
-| Difference                                            | State      | Reason                                                                     |
-| ----------------------------------------------------- | ---------- | -------------------------------------------------------------------------- |
-| Kitchen identity permits media overrides              | accepted   | current Kitchen model owns sparse identity media overrides                 |
-| Console theme is Kitchen Menu `PageStyle`             | accepted   | one Console theme contract; no parallel theme system                        |
-| App template override layer                           | to-confirm | no persisted template selection/override contract exists                   |
-| `projects/templates/fireux-template` remains separate | accepted   | it is a guarded starter App, not a presentation catalogue                  |
-| FireUX and Misebox expose theme request paths         | accepted   | seller ownership may differ while anatomy and injection source stay shared |
+- Catalogue/detail routes: `projects/misebox/misebox-app/app/pages/templates/*`
+- Temporary specimens: `packages/ecosystem/fireux-misebox/src/runtime/template-one-fixtures.ts`
+- Template One contract: `packages/ecosystem/fireux-misebox/src/runtime/template-one.ts`
+- Scene One: `packages/ecosystem/fireux-misebox/src/runtime/TemplateOneSceneOne.vue`
+- Guard: `scripts/guards/landing-templates.mjs`
 
 ## Verification
 
-Start with `scripts/guards/landing-templates.mjs`, then build `fireux-misebox`
-and the Misebox App. In browser checks, assert the provenance rows remain
-structurally unchanged while the BrandPalette values and Rule colour change.
+Run the focused landing-template and CSS guards, verify Root/Console/App
+compatibility on `/templates`, verify Friiites and Deano's share Scene One
+anatomy, then run the owning builds and `pnpm guard`.

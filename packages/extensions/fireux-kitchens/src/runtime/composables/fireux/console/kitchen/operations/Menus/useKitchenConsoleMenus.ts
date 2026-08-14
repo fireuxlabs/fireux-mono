@@ -18,6 +18,7 @@ import {
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
 import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
 const text = (value: unknown) => String(value ?? '').trim()
 type MenuPreviewDish = {
@@ -165,6 +166,50 @@ export function useKitchenConsoleMenus() {
   const canManageMenuService = computed(() =>
     kitchenConsole.runtime.isDemo.value
   )
+  const menuConfig = computed(() => {
+    const menus = kitchenConsole.selection.kitchen.value?.menus
+    return {
+      primaryMenuId: text(menus?.primary_menu_id),
+      specialsEnabled: menus?.specials_enabled === true,
+      specialsMenuId: text(menus?.specials_menu_id),
+    }
+  })
+
+  async function updateMenuConfig(input: {
+    primaryMenuId: string
+    specialsEnabled: boolean
+    specialsMenuId: string
+  }) {
+    assertCanWrite()
+    const kitchenId = text(kitchenConsole.selection.kitchenId.value)
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    await $fetch('/api/console/kitchen/menus/config', {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+      body: {
+        kitchen_id: kitchenId,
+        primary_menu_id: text(input.primaryMenuId),
+        specials_enabled: input.specialsEnabled,
+        specials_menu_id: text(input.specialsMenuId),
+      },
+    })
+    await kitchenConsole.targets.refresh()
+  }
+
+  async function createSpecialsMenu() {
+    const result = await createMenu({
+      id: 'specials',
+      name: 'Daily Specials',
+      description: 'Today’s specials.',
+    })
+    await updateMenuConfig({
+      primaryMenuId: menuConfig.value.primaryMenuId,
+      specialsEnabled: true,
+      specialsMenuId: result.id,
+    })
+    return result
+  }
 
   async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
     if (!canCreateMenu.value) {
@@ -221,6 +266,9 @@ export function useKitchenConsoleMenus() {
     menuSourcesPending: sourceUploads.pending,
     menuPreviewDishes,
     canManageMenuService,
+    menuConfig,
+    updateMenuConfig,
+    createSpecialsMenu,
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
     isMenuInService: (menuId: string) =>

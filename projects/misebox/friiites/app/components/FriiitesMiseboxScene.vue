@@ -1,56 +1,24 @@
 <template>
-  <section
-    id="misebox"
-    class="friiites-scene friiites-scene--misebox"
-    aria-labelledby="friiites-misebox-title"
-    data-landing-scene="misebox"
-    data-friiites-scene="misebox"
-  >
-    <div aria-hidden="true" data-scene-layer="background" />
-    <div class="friiites-scene-content" data-scene-layer="content">
-      <img
-        class="friiites-misebox-draft"
-        src="/img/app/misebox/scene-nine-misebox-v2.webp"
-        alt=""
-        width="1536"
-        height="1024"
-        aria-hidden="true"
-      >
-      <div class="sr-only">
-        <p>09</p>
-        <h2 id="friiites-misebox-title">Run on Misebox</h2>
-        <p>
-          Misebox connects Friiites menus, dishes and recipes, preparation,
-          and Kitchen orders through the Kitchen Console.
-        </p>
-      </div>
+  <section id="misebox" class="friiites-lower-section friiites-misebox" data-landing-scene="misebox">
+    <div>
+      <h2>Powered by Misebox</h2>
+      <p>The kitchen system behind Friiites.</p>
     </div>
-    <div aria-hidden="true" data-scene-layer="foreground" />
+    <a href="https://misebox.app" target="_blank" rel="noopener noreferrer" aria-label="Visit Misebox">
+      <AppBrandWordmark
+        light-src="/img/ecosystem/wordmark-light.png"
+        dark-src="/img/ecosystem/wordmark-dark.png"
+        alt="Misebox"
+        size="large"
+      />
+    </a>
   </section>
 </template>
 
 <style scoped>
-.friiites-scene--misebox {
-  display: block;
-  min-height: 0;
-  padding: 0;
-  color: var(--friiites-cream);
-  background: var(--friiites-black);
-}
-
-.friiites-scene--misebox .friiites-scene-content {
-  display: block;
-}
-
-.friiites-misebox-draft {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-@media (min-width: 48rem) {
-  .friiites-scene--misebox {
-    padding: 0;
-  }
-}
+.friiites-misebox { grid-template-columns: 1fr auto; align-items: center; min-height: 13rem; border-bottom: 1px solid color-mix(in srgb, var(--friiites-cream) 14%, transparent); }
+.friiites-misebox h2 { font-size: clamp(var(--text-3xl), 5vw, var(--text-6xl)); }
+.friiites-misebox a { display: block; width: min(42vw, 22rem); }
+.friiites-misebox a :deep(.fx-brand-wordmark) { width: 100%; max-width: none; }
+@media (max-width: 42rem) { .friiites-misebox { grid-template-columns: 1fr; gap: calc(var(--spacing) * 8); } }
 </style>

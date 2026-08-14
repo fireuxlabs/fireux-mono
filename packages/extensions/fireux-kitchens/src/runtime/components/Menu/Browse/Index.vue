@@ -113,10 +113,19 @@
         :show-currency="showCurrency"
       />
 
+      <MenuBrowseSpecials
+        v-if="activeDetailMenu?.specials"
+        :currency-code="currencyCode"
+        :currency-format="currencyFormat"
+        :copy="browseSurfaceCopy"
+        :show-currency="showCurrency"
+        :specials="activeDetailMenu.specials"
+      />
+
       <DevFireuxDebugPanel
-        title="Menu Sproochli"
+        title="Menu"
         scope="runtime"
-        :data="translationDebug"
+        :data="menuDebug"
         :default-open="true"
       />
     </template>
@@ -250,11 +259,23 @@ const menuDirection = computed(() =>
     ? 'rtl'
     : 'ltr'
 )
-const translationDebug = computed(() => ({
-  state: sproochli.value?.state ?? 'off',
-  language: sproochli.value?.language || 'Default',
-  default_language: sproochli.value?.defaultLanguage ?? null,
-  ready_languages: sproochli.value?.readyLanguages ?? null,
+const menuDebug = computed(() => ({
+  menu_id: menuId.value,
+  route_scope: menuRouteScope.value,
+  render_kind: renderKind.value,
+  source: activeDetailMenu.value?.source ?? null,
+  specials: activeDetailMenu.value?.specials
+    ? {
+        name: activeDetailMenu.value.specials.name,
+        section_count: activeDetailMenu.value.specials.sections.length,
+      }
+    : null,
+  sproochli: {
+    state: sproochli.value?.state ?? 'off',
+    language: sproochli.value?.language || 'Default',
+    default_language: sproochli.value?.defaultLanguage ?? null,
+    ready_languages: sproochli.value?.readyLanguages ?? null,
+  },
 }))
 const preserveSproochliQuery = (to: string) => {
   const language = sproochli.value?.language
@@ -358,6 +379,7 @@ useSeo({
   line-height: var(--leading-normal);
   text-align: left;
 }
+
 
 .menu-browse__notice strong {
   color: var(--menu-text);

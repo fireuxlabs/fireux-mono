@@ -21,19 +21,10 @@
             <small>{{ kitchen.tier }}{{ kitchen.demo ? ' · Demo' : '' }}</small>
           </NuxtLink>
         </nav>
-        <TemplateOneAssetReadiness
-          :name="selectedKitchen.name"
-          :stage="selectedKitchen.tier"
-          :sources="assetSources"
-          :storage-readiness="appAssetReadiness"
-          :storage-pending="appAssetsPending"
-          :storage-error="appAssetsError"
-          :authority="selectedKitchen.demo ? 'demo' : 'app'"
-        />
       </section>
 
-      <TemplatePaletteProgression :kitchen="selectedKitchen" />
-      <TemplateTypographyProgression :kitchen="selectedKitchen" />
+      <TemplatesKitchenPalette :kitchen="selectedKitchen" />
+      <TemplatesKitchenTypography :kitchen="selectedKitchen" />
 
       <section aria-labelledby="template-title">
         <div><small>Step 2</small><h2 id="template-title">Template</h2></div>
@@ -57,14 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import TemplateOneAssetReadiness from '~/components/templates/TemplateOneAssetReadiness.vue'
-import TemplatePaletteProgression from '~/components/templates/TemplatePaletteProgression.vue'
-import TemplateTypographyProgression from '~/components/templates/TemplateTypographyProgression.vue'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type { EntityAssetSourceMap } from 'fireux-core/runtime/models/operations/entity-asset-onboarding'
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
-import { useTemplateOneAppAssetReadiness } from '~/composables/templates/useTemplateOneAppAssetReadiness'
 import {
   findLandingTemplateBrand,
   isLandingTemplateBrandId,
@@ -83,31 +67,6 @@ const requirementLabel = (minimumTier: keyof typeof tierRank) =>
 const selectedKitchen = computed(() => {
   const id = String(route.query.kitchen || '')
   return isLandingTemplateBrandId(id) ? findLandingTemplateBrand(id)! : kitchens[0]
-})
-const selectedKitchenId = computed(() => selectedKitchen.value.id)
-const { readiness: appAssetReadiness, pending: appAssetsPending, error: appAssetsError } =
-  await useTemplateOneAppAssetReadiness(
-    selectedKitchenId,
-    computed(() => Boolean(selectedKitchen.value.appProps && !selectedKitchen.value.demo))
-  )
-const { data: rootKitchenResponse } = await useAsyncData(
-  'template-catalogue-root-kitchen',
-  () => selectedKitchen.value.tier === 'root'
-    ? $fetch<{ item: Record<string, unknown> }>(`/api/kitchens/${selectedKitchen.value.id}`)
-    : null,
-  { watch: [selectedKitchenId] }
-)
-const assetSources = computed<EntityAssetSourceMap>(() => {
-  const sources = Object.fromEntries(
-    Object.entries(selectedKitchen.value.assetSources).map(([role, source]) => [
-      role,
-      source.startsWith('demo:') ? miseboxDemoMediaUrl(source.slice(5)) : source,
-    ])
-  ) as EntityAssetSourceMap
-  const item = rootKitchenResponse.value?.item || {}
-  return selectedKitchen.value.tier === 'root' && item.logo_image_url
-    ? { ...sources, logo: String(item.logo_image_url) }
-    : sources
 })
 
 definePageMeta({ layout: 'landing', name: 'MiseboxTemplatesIndexPage' })

@@ -210,6 +210,9 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
     showCurrency: bool(menus.show_currency, true),
     style: style as Partial<PageStyle> | undefined,
     available: bool(menus.available, true),
+    primaryMenuId: text(menus.primary_menu_id),
+    specialsEnabled: menus.specials_enabled === true,
+    specialsMenuId: text(menus.specials_menu_id),
   }
 }
 

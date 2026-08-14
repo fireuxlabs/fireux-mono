@@ -217,6 +217,7 @@ export async function buildMenuManifestPayload(
       description: readRecordString(menuData, 'description'),
       sections: readMenuManifestSections(scope.sections ?? []),
     },
+    ...(scope.specials ? { specials: scope.specials } : {}),
     behaviour: serviceProfile(menuData, scope),
     presentation: {
       currencyCode,

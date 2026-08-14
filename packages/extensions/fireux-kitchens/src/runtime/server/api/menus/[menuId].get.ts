@@ -15,6 +15,11 @@ import { buildMenuPayload } from '../../menu/payload/build.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'
 import { readKitchenMenuChoices } from '../../menu/manifest/choices.ts'
+import { readMenuManifestSections } from '../../menu/payload/sections.ts'
+import {
+  menuSpecialsContent,
+  shouldEmbedMenuSpecials,
+} from '../../../utils/menu-specials.ts'
 import {
   normalizeMenuRouteContext,
 } from '../../../utils/menu-context.ts'
@@ -26,6 +31,38 @@ import {
 } from '../../menu/ownership/public-target.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
+
+async function readSpecialsContent(
+  target: ScopedPublicMenuTarget | RootPublicMenuTarget
+) {
+  const primaryMenuId = text(target.scope.primaryMenuId)
+  const specialsMenuId = text(target.scope.specialsMenuId)
+  if (!shouldEmbedMenuSpecials({
+    sourceMenuId: target.sourceMenuId,
+    primaryMenuId,
+    specialsEnabled: target.scope.specialsEnabled,
+    specialsMenuId,
+  })) return undefined
+
+  const data = await getRuntimeFirestore()
+    .doc(`apps/${target.appId}/kitchens/${target.kitchenId}/menus/${specialsMenuId}`)
+    .get()
+  if (!data.exists || readRecordString(data.data() || {}, 'status') !== 'published') {
+    return undefined
+  }
+  const sections = await readKitchenMenuSections(getRuntimeFirestore(), {
+    appId: target.appId,
+    kitchenId: target.kitchenId,
+    menuId: specialsMenuId,
+  })
+  const menu = data.data() || {}
+  return menuSpecialsContent({
+    id: specialsMenuId,
+    name: readRecordString(menu, 'name') || 'Daily Specials',
+    description: readRecordString(menu, 'description'),
+    sections: readMenuManifestSections(sections),
+  })
+}
 
 type MenuRequestError = {
   status?: number
@@ -69,7 +106,7 @@ async function readKitchenMenu(
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
-  const [sections, choices] = await Promise.all([
+  const [sections, choices, specials] = await Promise.all([
     readKitchenMenuSections(db, {
       appId: target.appId,
       kitchenId: target.kitchenId,
@@ -82,6 +119,7 @@ async function readKitchenMenu(
       currentMenuId: target.sourceMenuId,
       routeKind: target.kind,
     }),
+    readSpecialsContent(target),
   ])
 
   return await buildMenuPayload(target.routeMenuId, data, {
@@ -92,6 +130,7 @@ async function readKitchenMenu(
     page_style: target.scope.page_style,
     sections,
     choices,
+    specials,
   })
 }
 
@@ -108,7 +147,7 @@ async function readRootMenuDetail(
   const hasKitchenSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
-  const [sourceSections, choices] = await Promise.all([
+  const [sourceSections, choices, specials] = await Promise.all([
     hasKitchenSource
       ? readKitchenMenuSections(db, {
           appId: source.app_id || '',
@@ -124,6 +163,7 @@ async function readRootMenuDetail(
           currentMenuId: source.menu_id || '',
         })
       : [],
+    hasKitchenSource ? readSpecialsContent(target) : undefined,
   ])
 
   return await buildMenuPayload(target.routeMenuId, data, {
@@ -134,6 +174,7 @@ async function readRootMenuDetail(
     page_style: kitchenScope.page_style,
     sections: sourceSections,
     choices,
+    specials,
   })
 }
 

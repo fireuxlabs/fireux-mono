@@ -17,6 +17,11 @@ Use this context for the Misebox-owned Kitchen-template catalogue, reusable
 template anatomy, preview-only brand injections, and FireUX catalogue
 referrals. The current proving member is Template One.
 
+The foundational meaning and ownership test live in
+`docs/concepts/templates.md`. Templates own reusable presentation structure;
+consumer identity, content, assets, routes, and operational values remain
+injected owner data.
+
 ## Ownership boundaries
 
 - `fireux-misebox` owns Template One's contract, atom anatomy, reusable scene
@@ -25,7 +30,8 @@ referrals. The current proving member is Template One.
   keeps a catalogue referral and does not copy anatomy or fixtures.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
   Console presentation. They are progressive presentation levels, not App
-  template records; Template One and Template Two remain App-only.
+  template records. Template One is the only current App template; do not add
+  a placeholder second template before a real composition proves it.
 - Templates are available only to App-managed Kitchens. Root and Console
   Kitchens appear on the Template One page only as progression specimens that
   expose the inherited atom inputs an App template extends.
@@ -56,6 +62,13 @@ referrals. The current proving member is Template One.
   order is never a fallback. Dish owns food imagery. Optional App Brand Asset
   roles such as marks and patterns remain unapproved until their owner records
   canonical role and usage metadata.
+- The `/templates` catalogue has only three responsibilities: select one
+  Kitchen (temporarily from four development specimens), display that
+  Kitchen's Root/Console/App presentation configuration, and list compatible
+  presentations. It does not validate asset binaries, inspect Storage, render
+  scenes, or own Template-One-specific readiness machinery. Replacing the
+  temporary selector with one canonical Kitchen projection must not change
+  this page anatomy.
 - Scene One render readiness is distinct from full Template One content
   readiness. The scene can render from one unique flagship, while the template
   requirements manifest still requires six eligible Dishes plus exactly one
@@ -93,6 +106,7 @@ referrals. The current proving member is Template One.
 5. `projects/fireux/fireux-app/app/pages/templates/*`
 6. `scripts/guards/landing-templates.mjs`
 7. `docs/concepts/landing-templates.md`
+8. `docs/concepts/templates.md`
 8. `docs/concepts/theming.md`
 
 Brand copy and assets must point back to current owner source. Missing assets

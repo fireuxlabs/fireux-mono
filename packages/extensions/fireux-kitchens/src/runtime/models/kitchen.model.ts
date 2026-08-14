@@ -93,6 +93,9 @@ export type KitchenMenusConfig = {
   currency_format: CurrencyDisplayFormat
   show_currency: boolean
   available?: boolean
+  primary_menu_id?: string
+  specials_enabled?: boolean
+  specials_menu_id?: string
   style?: Partial<PageStyle>
 }
 

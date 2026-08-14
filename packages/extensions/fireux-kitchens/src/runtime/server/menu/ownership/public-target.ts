@@ -6,6 +6,7 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import {
   readKitchenManagementTarget,
+  readKitchenMenusConfig,
   readKitchenSproochliConfig,
 } from '../../../utils/kitchen-spine.ts'
 import { menuSourceFromData } from '../payload/source.ts'
@@ -240,6 +241,7 @@ const scopedTarget = async (
     placeData
   )
   const sproochli = readKitchenSproochliConfig(input.rootKitchenData)
+  const menus = readKitchenMenusConfig(appKitchenData)
 
   return {
     kind,
@@ -276,6 +278,9 @@ const scopedTarget = async (
       ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
       currencyFormat: identity.currencyFormat,
       showCurrency: identity.showCurrency,
+      ...(menus.primaryMenuId ? { primaryMenuId: menus.primaryMenuId } : {}),
+      ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
+      ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
       ...(identity.page_style ? { page_style: identity.page_style } : {}),
       ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
         ? { fulfilment }

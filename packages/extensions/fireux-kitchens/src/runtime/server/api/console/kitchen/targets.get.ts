@@ -166,6 +166,13 @@ function projectKitchenTarget(input: {
       currency_format: menus.currencyFormat,
       show_currency: menus.showCurrency,
       available: menus.available,
+      ...(menus.primaryMenuId
+        ? { primary_menu_id: menus.primaryMenuId }
+        : {}),
+      ...(menus.specialsEnabled ? { specials_enabled: true } : {}),
+      ...(menus.specialsMenuId
+        ? { specials_menu_id: menus.specialsMenuId }
+        : {}),
       ...(Object.keys(resolvedMenuStyle).length
         ? { style: resolvedMenuStyle }
         : {}),

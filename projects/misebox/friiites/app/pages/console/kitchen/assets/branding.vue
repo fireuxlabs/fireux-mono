@@ -25,34 +25,30 @@
             </p>
           </div>
 
-          <UCard>
+          <UCard v-for="brandObject in brandObjects" :key="brandObject.role">
             <template #header>
               <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <div class="font-semibold text-highlighted">Empty serving carton</div>
-                  <p class="text-sm text-muted">The shared base for Classic and future Friiites Dishes.</p>
+                  <div class="font-semibold text-highlighted">{{ brandObject.name }}</div>
+                  <p class="text-sm text-muted">{{ brandObject.description }}</p>
                 </div>
-                <code class="text-xs text-dimmed">packaging.serving_carton_empty</code>
+                <code class="text-xs text-dimmed">{{ brandObject.role }}</code>
               </div>
             </template>
 
             <div class="grid gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(16rem,0.7fr)]">
               <div class="asset-preview overflow-hidden rounded-xl border border-default">
                 <img
-                  v-if="asset?.media.url"
-                  :src="asset.media.url"
-                  alt="Empty black Friiites cardboard serving carton"
+                  :src="brandObject.image"
+                  :alt="brandObject.alt"
                   class="mx-auto block h-auto w-full max-w-3xl object-contain"
                 >
-                <div v-else class="grid min-h-80 place-items-center p-8 text-sm text-muted">
-                  Loading serving carton…
-                </div>
               </div>
 
               <dl class="grid content-start gap-4 text-sm">
                 <div>
                   <dt class="text-dimmed">Status</dt>
-                  <dd class="font-medium text-highlighted">Draft visual proof</dd>
+                  <dd class="font-medium text-highlighted">Available</dd>
                 </div>
                 <div>
                   <dt class="text-dimmed">Artwork</dt>
@@ -65,26 +61,25 @@
                 <div>
                   <dt class="text-dimmed">Runtime</dt>
                   <dd class="font-medium text-highlighted">
-                    Stored {{ asset?.media.width || 0 }} × {{ asset?.media.height || 0 }} transparent WebP
+                    {{ brandObject.runtime }}
                   </dd>
                 </div>
                 <div>
                   <dt class="text-dimmed">Storage object</dt>
                   <dd class="break-all font-mono text-xs text-highlighted">
-                    {{ asset?.media.object_path || 'Loading…' }}
+                    {{ brandObject.objectPath }}
                   </dd>
                 </div>
                 <div>
                   <dt class="text-dimmed">Next use</dt>
-                  <dd class="font-medium text-highlighted">Classic Dish composition</dd>
+                  <dd class="font-medium text-highlighted">{{ brandObject.use }}</dd>
                 </div>
               </dl>
             </div>
 
             <template #footer>
               <p class="text-xs text-dimmed">
-                The carton form is provisional. Production dimensions, material and print placement
-                remain a future branded-consumable specification.
+                Brand objects remain separate from Dish photography and landing compositions.
               </p>
             </template>
           </UCard>
@@ -113,6 +108,59 @@ type BrandAsset = {
 const { data: asset } = await useFetch<BrandAsset>(
   '/api/internal/app/brand-assets/serving-carton'
 )
+
+const brandObjects = computed(() => [
+  {
+    name: 'Empty serving carton',
+    description: 'The shared base for Classic and future Friiites Dishes.',
+    role: 'packaging.serving_carton_empty',
+    image: asset.value?.media.url || '/img/app/packaging/carton-empty.webp',
+    alt: 'Empty black Friiites cardboard serving carton',
+    runtime: asset.value ? `Stored ${asset.value.media.width} × ${asset.value.media.height} transparent WebP` : 'Transparent WebP',
+    objectPath: asset.value?.media.object_path || 'apps/friiites/brand-assets/serving-carton',
+    use: 'Dish composition',
+  },
+  {
+    name: 'Takeaway bag',
+    description: 'Branded paper carry bag for collection and delivery presentation.',
+    role: 'packaging.takeaway_bag',
+    image: '/img/app/branding/takeaway-bag.png',
+    alt: 'Black Friiites takeaway bag',
+    runtime: 'Transparent PNG',
+    objectPath: 'public/img/app/branding/takeaway-bag.png',
+    use: 'Collection and delivery',
+  },
+  {
+    name: 'Staff apron',
+    description: 'Front-of-house and kitchen uniform treatment.',
+    role: 'uniform.staff_apron',
+    image: '/img/app/branding/staff-apron.png',
+    alt: 'Black Friiites staff apron',
+    runtime: 'Transparent PNG',
+    objectPath: 'public/img/app/branding/staff-apron.png',
+    use: 'Team and franchise presentation',
+  },
+  {
+    name: 'Storefront fascia',
+    description: 'Primary exterior location sign treatment.',
+    role: 'place.storefront_fascia',
+    image: '/img/app/branding/storefront-fascia.png',
+    alt: 'Black Friiites storefront fascia sign',
+    runtime: 'Transparent PNG',
+    objectPath: 'public/img/app/branding/storefront-fascia.png',
+    use: 'Location and franchise presentation',
+  },
+  {
+    name: 'Table QR stand',
+    description: 'Table ordering doorway with a location-specific QR code.',
+    role: 'ordering.table_qr_stand',
+    image: '/img/app/branding/table-qr-stand.png',
+    alt: 'Black Friiites table QR ordering stand',
+    runtime: 'Transparent PNG',
+    objectPath: 'public/img/app/branding/table-qr-stand.png',
+    use: 'Table ordering',
+  },
+])
 
 definePageMeta({
   layout: 'console',

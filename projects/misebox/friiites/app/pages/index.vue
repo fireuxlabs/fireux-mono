@@ -2,6 +2,11 @@
   <UPage class="friiites-page">
     <main id="top">
       <FriiitesHeroScene />
+      <FriiitesMenuScene />
+      <FriiitesOrderNowScene />
+      <FriiitesFranchiseScene />
+      <FriiitesMiseboxScene />
+      <FriiitesFooterScene />
     </main>
   </UPage>
 </template>

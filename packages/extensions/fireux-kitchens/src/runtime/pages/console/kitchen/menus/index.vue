@@ -4,6 +4,29 @@
     <UDashboardPanel id="console-kitchen-menus">
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Menus" />
+
+        <UDashboardToolbar>
+          <template #right>
+            <UButton
+              v-if="canWrite"
+              to="/console/kitchen/menus/create#import-menu"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-upload"
+              size="sm"
+            >
+              Import
+            </UButton>
+            <UButton
+              v-if="canWrite"
+              to="/console/kitchen/menus/create#create-menu"
+              icon="i-lucide-link"
+              size="sm"
+            >
+              Create from URL
+            </UButton>
+          </template>
+        </UDashboardToolbar>
       </template>
 
       <template #body>
@@ -16,6 +39,10 @@
 </template>
 
 <script setup lang="ts">
+import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
+
+const { runtime: { canWrite } } = useKitchenConsole()
+
 definePageMeta({
   layout: 'console',
   consoleSurface: 'browse',

@@ -1,43 +1,31 @@
 <template>
-  <section
-    id="menu"
-    class="friiites-scene friiites-scene--menu"
-    aria-labelledby="friiites-menu-title"
-    data-landing-scene="menu"
-    data-friiites-scene="menu"
-  >
-    <div aria-hidden="true" data-scene-layer="background" />
-    <div class="friiites-scene-content" data-scene-layer="content">
-      <img
-        class="friiites-menu-draft"
-        src="/img/app/menu/scene-two-menu.webp"
-        alt=""
-        width="1536"
-        height="1024"
-        aria-hidden="true"
-      >
-      <div class="sr-only">
-        <p>02</p>
-        <h2 id="friiites-menu-title">The menu</h2>
-        <p>Hand-cut. Brined. Triple-fried in beef tallow.</p>
-        <h3>Classic</h3>
-        <p>Friiites seasoning.</p>
-        <h3>House specials</h3>
-        <p>Classic Friiites, finished our way.</p>
-        <dl>
-          <dt>Fondue</dt>
-          <dd>Swiss cheese fondue.</dd>
-          <dt>Deluxe</dt>
-          <dd>Parmesan. Truffle oil.</dd>
-          <dt>Poutine</dt>
-          <dd>Beef &amp; onion gravy. Cheese curds.</dd>
-        </dl>
-        <h3>Today’s special</h3>
-        <p>The Wurst. Bratwurst. Curry ketchup. Diced onion.</p>
-        <h3>Make it yours</h3>
-        <p>Cheese. Parmesan. Truffle oil. Gravy. Crispy onions. Jalapeños. Bacon. Sauces.</p>
-      </div>
-    </div>
-    <div aria-hidden="true" data-scene-layer="foreground" />
-  </section>
+  <TemplateOneMenuSection
+    v-if="manifest"
+    :content="content"
+    :palette="palette"
+    :typography="typography"
+  />
 </template>
+
+<script setup lang="ts">
+import TemplateOneMenuSection from 'fireux-misebox/runtime/TemplateOneMenuSection.vue'
+import type { MenuDetailPayload } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+
+const { data } = await useFetch<MenuDetailPayload>('/api/menus/friiites')
+const manifest = computed(() => data.value?.kind === 'manifest' ? data.value.manifest : null)
+const content = computed(() => ({
+  menu: manifest.value!.content,
+  specials: manifest.value!.specials,
+  menuHref: '/menus',
+  menuActionLabel: 'Browse menu',
+}))
+const palette = {
+  canvas: '#181817', surface: '#242321', canvas_inverted: '#f3e9d2',
+  text: '#f3e9d2', text_muted: '#bdb6a5', ink: '#181817',
+  accent: '#d99a22', accent_contrast: '#181817',
+}
+const typography = {
+  display_family: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
+  body_family: "'Arial Narrow', Arial, sans-serif",
+}
+</script>

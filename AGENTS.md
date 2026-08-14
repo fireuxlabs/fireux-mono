@@ -34,9 +34,31 @@ Create a new `docs/ai/<scope>-context.md` only for a recurring product, ecosyste
 
 Every scoped context must inherit this file and `docs/ai/gpt-context.md`, define its purpose/scope/ownership boundaries/authority/refresh process/verification expectations, point to current source and guards, and exclude temporary task state.
 
+## Documentation Rule
+
+Before creating or renaming a living context or concept map, read
+`docs/concepts/documentation.md` and copy the metadata shape from the nearest
+current sibling. Every `docs/concepts/*.md` map must declare exactly one
+`Updated: YYYY-MM-DD`, one reviewed ancestor `Ref: <short git ref>`, and
+`Role: map, not canon`. Every `docs/ai/*-context.md` must use its guarded living
+context role and scope. Add the required graph link in the same change, then
+verify the document through `pnpm guard`.
+
 ## Working Rule
 
 FireUX needs a solid spine more than another local exception.
+
+Before treating work as a new system, always ask:
+
+> Can this be expressed inside an existing FireUX family using current Core,
+> Nuxt UI, domain capabilities, and named components?
+
+For every new product surface, ecosystem capability, or proposed shared
+abstraction, answer that question before editing. Name the existing family,
+nearest working sibling, capabilities to reuse, smallest genuinely new
+domain-owned delta, and explicit non-goals. Start as an ordinary FireUX page,
+capability, or domain component. One consumer does not justify a new system,
+engine, registry, framework, or shared abstraction.
 
 Before editing an entity, console, route family, model, collection manager, public surface, module registration, server API, or reusable seam:
 

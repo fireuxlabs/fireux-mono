@@ -1,35 +1,10 @@
 import type { TemplateOneKitchenSpecimen } from './template-one'
-import type { TemplateOneMenuSample } from './template-one'
 import { MISEBOX_BASIC_PRIMARY_COLOR } from './kitchen-basic-presentation'
 import {
   compactAppPalette,
   consolePaletteFromApp,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { AppPalette } from 'fireux-core/types/theme'
-
-export const templateOneMenuSample = {
-  sections: [
-    {
-      id: 'small-plates',
-      label: 'Small plates',
-      items: [
-        {
-          id: 'roasted-tomato-toast',
-          dishId: '',
-          itemKind: 'food',
-          isDeal: false,
-          name: 'Roasted tomato toast',
-          description: 'Heritage tomatoes, basil and olive oil.',
-          imageUrl: '',
-          price: 14,
-          priceLabel: '',
-          priceOptions: [],
-          addOns: [],
-        },
-      ],
-    },
-  ],
-} as const satisfies TemplateOneMenuSample
 
 const rootProps = (
   placePrimaryColor: string,
@@ -143,7 +118,7 @@ export const landingTemplateBrands = [
     rootProps: rootProps(
       '#0b0b0a',
       'places/5dGJgdjDv7Zi0tjva61O · media_backdrop_color',
-      '',
+      'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Ffriiites%2Fimg%2Fapp%2Fwordmark-dark.png?alt=media',
       'kitchens/5dGJgdjDv7Zi0tjva61O · assets.backdrop_color'
     ),
     consoleProps: {
@@ -286,29 +261,6 @@ export const landingTemplates = [
     summary: 'Place primary colour, Console theme, then App template.',
     anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
     features: ['Place primary colour', 'Console presentation', 'App template'],
-    purchaseOptions: [
-      {
-        seller: 'FireUX',
-        label: 'Request through FireUX',
-        to: '/pricing/your-app',
-      },
-      {
-        seller: 'Misebox',
-        label: 'Request through Misebox',
-        to: '/get-started',
-      },
-    ],
-    brands: landingTemplateBrands,
-  },
-  {
-    slug: 'template-two',
-    name: 'Template Two',
-    kind: 'template',
-    minimumTier: 'app',
-    status: 'Foundation only',
-    summary: 'The same Kitchen inputs, ready for a second composition.',
-    anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
-    features: ['Shared Kitchen projection', 'Independent template anatomy'],
     purchaseOptions: [
       {
         seller: 'FireUX',
