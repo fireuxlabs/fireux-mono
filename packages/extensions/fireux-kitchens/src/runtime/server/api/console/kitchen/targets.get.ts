@@ -132,6 +132,7 @@ function projectKitchenTarget(input: {
   const phone = place.phone
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
+  const logoImageUrl = rootIdentity.logoImageUrl || place.logoImage
   const cardImageUrl = rootIdentity.cardImageUrl || resolvedIdentity.imageUrl
   const mediaBackdropColor =
     rootIdentity.mediaBackdropColor ||
@@ -151,8 +152,8 @@ function projectKitchenTarget(input: {
       ...(rootIdentity.cardImageUrl
         ? { card_image_url: rootIdentity.cardImageUrl }
         : {}),
-      ...(rootIdentity.logoImageUrl
-        ? { logo_image_url: rootIdentity.logoImageUrl }
+      ...(logoImageUrl
+        ? { logo_image_url: logoImageUrl }
         : {}),
       ...(mediaBackdropColor
         ? { media_backdrop_color: mediaBackdropColor }

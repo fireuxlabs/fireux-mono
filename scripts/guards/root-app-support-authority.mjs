@@ -964,8 +964,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenInterface,
-    /function consoleTarget\([\s\S]*kitchenIdentity\.logoImageUrl \|\| target\.logo_image_url[\s\S]*imageKind:\s*'brand'/,
-    'Kitchen Console targets must use the Kitchen-owned logo as brand identity without substituting Place photography.'
+    /function consoleTarget\([\s\S]*kitchenIdentity\.logoImageUrl \|\| target\.logo_image_url \|\| base\.imageUrl[\s\S]*imageKind:\s*'brand'/,
+    'Kitchen Console cards must prefer resolved logo identity before falling back to canonical card media.'
+  )
+  assert.match(
+    source.kitchenTargetApi,
+    /const logoImageUrl = rootIdentity\.logoImageUrl \|\| place\.logoImage/,
+    'Kitchen Console targets must inherit the canonical Place logo when the Kitchen root has no override.'
   )
   assert.match(
     source.kitchenPublicProjection,

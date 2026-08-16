@@ -322,7 +322,7 @@ export function useKitchenInterface() {
       name: base.name,
       shortAddress: base.shortAddress,
       imageUrl: safeString(
-        kitchenIdentity.logoImageUrl || target.logo_image_url
+        kitchenIdentity.logoImageUrl || target.logo_image_url || base.imageUrl
       ).trim(),
       imageShade: kitchenIdentity.imageShade,
       imageKind: 'brand',
