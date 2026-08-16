@@ -1,7 +1,7 @@
 # Console
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-16
+Ref: b5ed10b84
 Role: map, not canon
 
 ## Purpose
@@ -66,6 +66,17 @@ Map the shared console system and domain adapters.
   `UDashboardPanel` from filling the remaining Console width.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
 - Back navigation and page-level actions stay in the navbar right slot.
+- The selected-workspace menu follows one structural order: Overview,
+  Identity, the family's top-level Operations, then Team when that family has
+  a real collaboration lifecycle. Hand-authored route order does not redefine
+  those groups.
+- Create belongs to the target selector lifecycle at `/console/{family}`. A
+  create route may remain as the selector's action target, but it never appears
+  in selected-workspace navigation.
+- A capability used inside an Operation, such as Menu QR, remains a child tool
+  instead of becoming another top-level Operation. Identity-owned QR belongs
+  with Identity. Development routes are hidden, unavailable outside a
+  development build, and restricted to the configured developer.
 - An operation browse page may place one proven primary operation action, such
   as a dedicated create-route doorway, in the secondary
   `UDashboardToolbar` right slot. Scope, filters, views, and board-wide

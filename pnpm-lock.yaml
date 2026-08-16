@@ -269,6 +269,9 @@ importers:
 
   packages/ecosystem/fireux-misebox:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
@@ -278,6 +281,9 @@ importers:
       fireux-kitchens:
         specifier: workspace:*
         version: link:../../extensions/fireux-kitchens
+      h3:
+        specifier: 1.15.11
+        version: 1.15.11
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2

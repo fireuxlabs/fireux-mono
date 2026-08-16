@@ -44,17 +44,38 @@
 
     <div class="border-t border-default bg-default/40 p-4 sm:p-5">
       <div class="space-y-3">
+        <div v-if="messages.length" class="space-y-3" aria-live="polite">
+          <div
+            v-for="message in messages"
+            :key="message.id"
+            class="flex"
+            :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
+          >
+            <div
+              class="max-w-[90%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm sm:max-w-[80%]"
+              :class="
+                message.role === 'user'
+                  ? 'bg-primary text-inverted'
+                  : 'border border-default bg-elevated text-highlighted'
+              "
+            >
+              {{ message.body }}
+            </div>
+          </div>
+        </div>
+
         <UChatPrompt
           v-model="draft"
           placeholder="Ask Misebox AI about your menus"
-          @submit.prevent="showConnectionNotice = true"
+          :loading="submitting"
+          @submit.prevent="askMenuAi"
         >
           <template #footer>
             <div class="flex items-center justify-between gap-3">
               <p class="text-xs text-muted">
                 Confirmed context + current Menu records
               </p>
-              <UChatPromptSubmit status="ready" label="Ask" />
+              <UChatPromptSubmit :status="chatStatus" label="Ask" />
             </div>
           </template>
         </UChatPrompt>
@@ -72,14 +93,16 @@
           </UButton>
         </div>
 
+        <p v-if="scopeSummary" class="text-xs text-muted">
+          {{ scopeSummary }}
+        </p>
+
         <UAlert
-          v-if="showConnectionNotice"
-          color="info"
+          v-if="errorMessage"
+          color="error"
           variant="soft"
-          title="Menu AI connection is next"
-          description="Your draft has not been sent or saved. This design is ready for the Menu context assembler and agent endpoint."
-          :close="{ color: 'info', variant: 'link' }"
-          @update:open="showConnectionNotice = false"
+          title="Misebox AI could not answer"
+          :description="errorMessage"
         />
       </div>
     </div>
@@ -87,10 +110,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from '#imports'
+import { computed, ref } from '#imports'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useKitchenMenusWorkspace } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
 
-const draft = ref('')
-const showConnectionNotice = ref(false)
+type MenuAiMessage = {
+  id: string
+  role: 'assistant' | 'user'
+  body: string
+}
+
+type MenuAiResponse = {
+  ok: true
+  answer: string
+  scope: {
+    userContext: boolean
+    menuContext: boolean
+    menuCount: number
+    source: 'ai' | 'records'
+    contextSaved: boolean
+    usage?: {
+      amount: string
+      currency: string
+    }
+  }
+}
+
+const developmentDraft = import.meta.dev ? 'Summarise these menus' : ''
+const draft = ref(developmentDraft)
+const submitting = ref(false)
+const errorMessage = ref('')
+const messages = ref<MenuAiMessage[]>([])
+const responseScope = ref<MenuAiResponse['scope'] | null>(null)
+const workspace = useKitchenMenusWorkspace()
+
+const chatStatus = computed<'ready' | 'submitted' | 'error'>(() =>
+  submitting.value ? 'submitted' : errorMessage.value ? 'error' : 'ready'
+)
+
+const scopeSummary = computed(() => {
+  const scope = responseScope.value
+  if (!scope) return ''
+  const contexts = [
+    scope.userContext ? 'Misebox User context' : '',
+    scope.menuContext ? 'Menu context' : '',
+  ].filter(Boolean)
+  return [
+    `Checked ${scope.menuCount} current ${scope.menuCount === 1 ? 'Menu' : 'Menus'}`,
+    scope.source === 'records' ? 'Answered from Menu records' : 'Misebox AI',
+    scope.contextSaved ? 'Saved to Menu context' : '',
+    scope.usage ? `AI usage ${scope.usage.amount}` : '',
+    ...contexts,
+  ].filter(Boolean).join(' · ')
+})
 
 const contextScopes = [
   { label: 'You', icon: 'i-lucide-user' },
@@ -104,4 +176,58 @@ const suggestions = [
   'Review menu images',
   'Help me update prices',
 ] as const
+
+async function askMenuAi() {
+  const prompt = draft.value.trim()
+  if (!prompt || submitting.value) return
+  const appId = String(workspace.activeKitchenAppId.value || '').trim()
+  const kitchenId = String(
+    workspace.storageKitchenId.value || workspace.kitchenId.value || ''
+  ).trim()
+  if (!appId || !kitchenId) {
+    errorMessage.value = 'Select a live Kitchen before asking about its Menus.'
+    return
+  }
+
+  messages.value.push({
+    id: `user-${Date.now()}`,
+    role: 'user',
+    body: prompt,
+  })
+  draft.value = developmentDraft
+  errorMessage.value = ''
+  submitting.value = true
+
+  try {
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const response = await $fetch<MenuAiResponse>(
+      '/api/console/kitchen/menus/ai',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { appId, kitchenId, prompt },
+      }
+    )
+    if (response.scope.contextSaved) await workspace.refresh()
+    messages.value.push({
+      id: `assistant-${Date.now()}`,
+      role: 'assistant',
+      body: response.answer,
+    })
+    responseScope.value = response.scope
+  } catch (error) {
+    const failure = error as {
+      data?: { statusMessage?: string; message?: string }
+      message?: string
+    }
+    errorMessage.value =
+      failure.data?.statusMessage ||
+      failure.data?.message ||
+      failure.message ||
+      'Misebox AI could not answer this Menu question.'
+  } finally {
+    submitting.value = false
+  }
+}
 </script>

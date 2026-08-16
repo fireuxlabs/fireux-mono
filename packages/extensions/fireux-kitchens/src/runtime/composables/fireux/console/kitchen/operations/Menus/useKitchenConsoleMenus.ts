@@ -21,6 +21,10 @@ import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDe
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
 type MenuPreviewDish = {
   name: string
   imageUrl: string
@@ -167,8 +171,11 @@ export function useKitchenConsoleMenus() {
     kitchenConsole.runtime.isDemo.value
   )
   const menuConfig = computed(() => {
-    const menus = kitchenConsole.selection.kitchen.value?.menus
+    const kitchen = kitchenConsole.selection.kitchen.value
+    const menus = kitchen?.menus
+    const liveMenus = record(record(kitchen?.console).menus)
     return {
+      context: text(liveMenus.context) || text(menus?.context),
       primaryMenuId: text(menus?.primary_menu_id),
       specialsEnabled: menus?.specials_enabled === true,
       specialsMenuId: text(menus?.specials_menu_id),
@@ -283,6 +290,7 @@ export function useKitchenConsoleMenus() {
     renameMenu,
     publishMenu,
     archiveMenu,
+    refresh: kitchenConsole.targets.refresh,
     debug: computed(() => ({
       kitchenId: kitchenConsole.selection.kitchenId.value,
       activeKitchenAppId: kitchenConsole.runtime.appId.value,

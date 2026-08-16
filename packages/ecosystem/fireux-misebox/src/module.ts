@@ -9,6 +9,7 @@ import { configureModulePages } from './config/module/pages-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configurePublicAssets } from './config/module/public-assets-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
+import { configureServer } from './config/module/server-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
@@ -26,6 +27,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       configurePublicAssets,
     })
     configurePlugins(resolver)
+    configureServer(resolver)
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

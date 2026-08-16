@@ -163,6 +163,7 @@ function projectKitchenTarget(input: {
       gallery,
     },
     menus: {
+      ...(menus.context ? { context: menus.context } : {}),
       currency_format: menus.currencyFormat,
       show_currency: menus.showCurrency,
       available: menus.available,

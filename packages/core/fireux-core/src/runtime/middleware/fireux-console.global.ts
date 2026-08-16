@@ -1,4 +1,10 @@
-import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
+import {
+  abortNavigation,
+  createError,
+  defineNuxtRouteMiddleware,
+  navigateTo,
+  useRuntimeConfig,
+} from '#imports'
 import {
   consoleFamilyFromPath,
   normalizeConsoleFamily,
@@ -60,6 +66,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   const meta = to.meta as Record<string, unknown>
+  const roles = Array.isArray(meta.roles) ? meta.roles : []
+  const needsDeveloper = roles.includes('developer')
+
+  if (needsDeveloper && !import.meta.dev) {
+    return abortNavigation(
+      createError({
+        statusCode: 404,
+        statusMessage: 'Not found',
+      })
+    )
+  }
+
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
 
@@ -69,7 +87,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
-  const needsAdmin = Array.isArray(meta.roles) && meta.roles.includes('admin')
+  if (needsDeveloper) {
+    const developerId = String(fireuxRuntime().developerId || '').trim()
+    if (!developerId || auth.uid !== developerId) {
+      return navigateTo('/dashboard')
+    }
+  }
+
+  const needsAdmin = roles.includes('admin')
   if (!needsAdmin) return
 
   const isAdmin = await resolveClientAppAdmin({

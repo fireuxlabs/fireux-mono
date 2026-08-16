@@ -148,5 +148,6 @@ export async function requireKitchenWriter(
     db,
     uid: user.uid,
     rootKitchen: rootKitchenSnapshot.data() ?? {},
+    appKitchen: kitchenSnapshot.data() ?? {},
   }
 }

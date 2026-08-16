@@ -36,5 +36,6 @@ definePageMeta({
   },
   requiresAuth: true,
   requiresSelection: true,
+  roles: ['developer'],
 })
 </script>

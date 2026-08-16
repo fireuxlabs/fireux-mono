@@ -1,7 +1,7 @@
 # Console entity family
 
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-08-16
+Ref: b5ed10b84
 Role: map, not canon
 
 ## Purpose
@@ -22,12 +22,12 @@ still needed to remove unexplained drift.
 
 | Member    | Current core sheets                                 | Status and reason                                                                                                                                   |
 | --------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank     | Index, Overview, Create                             | `accepted`: app-local minimal harness; it proves the shared target lifecycle without invented domain Identity, Team, or Operations                  |
+| Blank     | Index, Overview, Identity, Create                    | `accepted`: app-local minimal harness; it proves the shared target lifecycle and read-only Identity without invented Team or child Operations       |
 | Kitchen   | Index, Overview, Identity, Team, Create, Operations | `accepted`: Place-backed identity, dual Live/Demo targets, real Kitchen people records, and a large operational domain                              |
 | Supplier  | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team today and Supplier-owned catalogue/item/ingredient operations                           |
 | Portfolio | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team and a private-heavy document/property domain                                            |
 | Property  | Index, Overview, Team                               | `to-confirm`: Property is a confirmed Console Entity, but standalone Identity/Create lifecycle versus Portfolio-owned lifecycle is not yet explicit |
-| Project   | Index, Overview, Identity, Operations               | `accepted`: private, root-only, read-only FireUX control-plane entity; it has no App support record, Team, or production Create flow                |
+| Project   | Index, Overview, Identity, Team, Operations         | `accepted`: private, root-only FireUX control-plane entity; Team uses Project authority without inventing an App-support record or production Create flow |
 
 The table records current source, not a promise that every listed sheet is
 finished.
@@ -68,7 +68,9 @@ Every Console Entity must share these rules:
   (`<ecosystem>-app`); no configurable Console App id is stored. `app` alone
   stores `app_id`. Domain packages own their transactions, so Core does not
   enumerate present or future Console families.
-- Index, Overview, Identity, Team, and Operations remain separate concerns.
+- Index owns target selection and its Create doorway. Overview, Identity,
+  Team, and Operations remain separate selected-workspace concerns; Create is
+  never a selected-workspace menu peer.
   A family adds only sheets backed by a real lifecycle.
 
 ## Accepted deltas
@@ -78,8 +80,8 @@ Every Console Entity must share these rules:
 | Kitchen renders Live and Demo target sources             | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/console-indexes.mjs` and `scripts/guards/demo-data.mjs` |
 | Kitchen Team adds members and join requests below Access | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenConsoleTeam` and `Console/Kitchen/Team`                                        |
 | Supplier, Portfolio, and Property Team are Access-only   | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXConsoleTeam` adapters and `ConsoleTeamPanel`                                  |
-| Blank omits Identity, Team, and Operations               | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                            |
-| Project has no App support, Team, or Create              | `accepted` | Project authority is the private FireUX control plane and is currently read-only                                                      | Project entity declaration and internal control-plane APIs                                |
+| Blank omits Team and child Operations                    | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                            |
+| Project has no App support or Create                     | `accepted` | Project Team and Operations use private FireUX control-plane authority rather than an App-support onboarding lifecycle                | Project entity declaration and internal control-plane APIs                                |
 | Operation folders differ by domain                       | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | each owning package under `Console/X/Operations` and `console/x/operations`               |
 
 Accepted deltas change domain content or authority. They do not change the

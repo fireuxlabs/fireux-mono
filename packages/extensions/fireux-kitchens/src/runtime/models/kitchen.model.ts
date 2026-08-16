@@ -90,6 +90,8 @@ export type KitchenAssets = {
 }
 
 export type KitchenMenusConfig = {
+  /** Confirmed Kitchen-specific knowledge used by Menu AI and operators. */
+  context?: string
   currency_format: CurrencyDisplayFormat
   show_currency: boolean
   available?: boolean

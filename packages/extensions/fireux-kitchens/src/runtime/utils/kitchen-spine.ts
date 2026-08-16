@@ -204,6 +204,7 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
   const style = optionalRecord(menus.style)
 
   return {
+    context: text(menus.context),
     currencyFormat: (
       text(menus.currency_format) || 'dash'
     ) as CurrencyDisplayFormat,

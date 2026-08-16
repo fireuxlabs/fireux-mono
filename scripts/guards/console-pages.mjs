@@ -120,6 +120,7 @@ export async function run(ctx) {
 
   validateConsoleLayout(repoRoot, violations)
   validateConsoleNavigationLifecycle(repoRoot, violations)
+  validateConsoleMenuCanon(repoRoot, violations)
   validateConsoleOperationContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
   validateKitchenRecipesWorkspace(repoRoot, violations)
@@ -157,6 +158,61 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ console pages use the explicit page contract')
+}
+
+function validateConsoleMenuCanon(repoRoot, violations) {
+  for (const contract of Object.values(CONSOLE_OPERATION_CONTRACTS)) {
+    const relative = `${contract.routeRoot}/create.vue`
+    const fullPath = path.join(repoRoot, relative)
+    if (!existsSync(fullPath)) continue
+
+    const source = readFileSync(fullPath, 'utf8')
+    if (
+      !/nav:\s*\{[\s\S]*?hidden:\s*true[\s\S]*?desktop:\s*false[\s\S]*?mobile:\s*false[\s\S]*?\}/.test(
+        source
+      )
+    ) {
+      violations.push(
+        `${relative} (Create belongs to the selector lifecycle and must not appear in selected-workspace navigation)`
+      )
+    }
+  }
+
+  const kitchenQrRelative =
+    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/qr.vue'
+  const kitchenQr = readFileSync(path.join(repoRoot, kitchenQrRelative), 'utf8')
+  if (
+    !/nav:\s*\{[\s\S]*?hidden:\s*true[\s\S]*?desktop:\s*false[\s\S]*?mobile:\s*false[\s\S]*?\}/.test(
+      kitchenQr
+    )
+  ) {
+    violations.push(
+      `${kitchenQrRelative} (Menu QR is a child tool, not a top-level Kitchen Operation)`
+    )
+  }
+
+  const kitchenDevRelative =
+    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/dev.vue'
+  const kitchenDev = readFileSync(path.join(repoRoot, kitchenDevRelative), 'utf8')
+  const consoleMiddleware = readFileSync(
+    path.join(repoRoot, CONSOLE_MIDDLEWARE),
+    'utf8'
+  )
+  if (!/roles:\s*\[['"]developer['"]\]/.test(kitchenDev)) {
+    violations.push(`${kitchenDevRelative} (Console Dev must require the developer role)`)
+  }
+  if (
+    !/needsDeveloper[\s\S]*!import\.meta\.dev[\s\S]*statusCode:\s*404/.test(
+      consoleMiddleware
+    ) ||
+    !/needsDeveloper[\s\S]*developerId[\s\S]*auth\.uid !== developerId/.test(
+      consoleMiddleware
+    )
+  ) {
+    violations.push(
+      `${CONSOLE_MIDDLEWARE} (developer Console routes must be build-only and developer-only)`
+    )
+  }
 }
 
 function validateConsoleNavigationLifecycle(repoRoot, violations) {
