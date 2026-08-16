@@ -307,6 +307,12 @@ export async function writeKitchenMenuDraft(input: {
       (count, section) => count + section.items.length,
       0
     ),
+    dish_targets: plannedSections.flatMap((section, sectionIndex) =>
+      section.items.map((item, itemIndex) => ({
+        review_key: `${sectionIndex}:${itemIndex}`,
+        dish_id: item.dishId,
+      }))
+    ),
     sproochliCacheUnits,
   }
 }

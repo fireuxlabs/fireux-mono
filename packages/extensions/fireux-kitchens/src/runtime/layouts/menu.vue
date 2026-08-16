@@ -5,6 +5,7 @@
     :data-menu-layout-scope="routeScope.kind"
   >
     <MenuClose
+      v-if="!isKioskMenu"
       class="menu-close--layout"
       :class="isKioskMenu
         ? 'menu-close--bottom-left'

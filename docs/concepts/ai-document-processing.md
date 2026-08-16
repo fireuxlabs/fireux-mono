@@ -1,29 +1,35 @@
 # AI document processing map
+
 Updated: 2026-07-30
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Map the shared AI document-processing spine so menu photos, CV uploads,
 supplier delivery notes, and future document flows do not each invent their
 own provider loop.
 
 ## Vertical links
+
 - Parent: server-api.md
 - Parent: tool-provider.md
 - Child: family-menu.md
 
 ## Horizontal links
+
 - fireux.md
 - firestore-entity.md
 - console.md
 - create.md
 
 ## Family
+
 AI document processing is not an entity. It is a server-side processing seam.
 Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 
 ## Current spine
+
 - Source files are uploaded and stored by the consuming domain/app.
 - Domain adapter selects source files and describes the extraction job.
 - `fireux-ai` runs the provider loop over each file.
@@ -35,6 +41,7 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Confirmed runs may record billable usage against the owning domain.
 
 ## Provider-owned
+
 - API provider config.
 - Model selection.
 - JSON response enforcement and parsing.
@@ -43,6 +50,7 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Provider/model metadata.
 
 ## Domain-owned
+
 - Source record lookup.
 - Access/auth policy.
 - Domain prompt.
@@ -52,6 +60,7 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Approval/write mutations.
 
 ## Menu example
+
 - Kitchen owns `menu-uploads` and current menu/dish records.
 - `fireux-ai` processes uploaded menu photos.
 - Kitchen normalizes sections/items and compares against current dishes.
@@ -78,14 +87,21 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Processing estimates cost first, then writes draft/review data after
   operator confirmation.
 - Kitchen records AI usage for later billing/invoicing.
+- Kitchen persists a per-item media decision separately from extracted candidates.
+  A reviewed Keep candidate is fetched through the bounded public-raster policy and
+  crosses canonical Dish normalization only at confirmation. Generate and
+  Reprocess with AI remain explicit, selective work and block confirmation until
+  their reviewable output exists; No image performs no media write.
 
 ## Future examples
+
 - Professional profile CV: Professional owns the upload and profile fields;
   AI extracts experience, education, skills, and certifications.
 - Supplier delivery note: Supplier or Kitchen/Supplier operation owns the
   upload; AI extracts line items, quantities, prices, dates, and supplier refs.
 
 ## Working notes
+
 - Do not skip cover pages or pre-filter meaning by filename/order. The AI
   should classify valid but empty/non-content pages as `empty`.
 - Do not overwrite published records in the same step as extraction.
@@ -112,14 +128,14 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 
 ## Delta register
 
-| Difference | State | Reason or alignment trigger |
-| --- | --- | --- |
-| Menu is the only proven domain adapter | `accepted` | It proves the shared loop without forcing CV or delivery-note semantics into Kitchen code |
-| Menu accepts URL text, direct PDF files, and images | `accepted` | Source transport differs, while status, provider metadata, and domain normalization remain shared |
-| Menu stores retry checkpoints in `ai_process` and review truth in `ai_draft` | `accepted` | Snapshot location is domain-owned; another domain may use a different record while preserving the review boundary |
-| Successful extraction does not retain giant raw model text | `accepted` | Structured output, bounded per-file metadata, and failure excerpts are enough for current review/debug needs |
-| No second domain has proved the adapter contract | `to-confirm` | Do not generalize prompts, draft schemas, or approval records until another real consumer exists |
-| PDF handling is direct-file while images use image input | `accepted` | The provider supports both; introduce page rendering only when a measured PDF failure requires it |
+| Difference                                                                   | State        | Reason or alignment trigger                                                                                       |
+| ---------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Menu is the only proven domain adapter                                       | `accepted`   | It proves the shared loop without forcing CV or delivery-note semantics into Kitchen code                         |
+| Menu accepts URL text, direct PDF files, and images                          | `accepted`   | Source transport differs, while status, provider metadata, and domain normalization remain shared                 |
+| Menu stores retry checkpoints in `ai_process` and review truth in `ai_draft` | `accepted`   | Snapshot location is domain-owned; another domain may use a different record while preserving the review boundary |
+| Successful extraction does not retain giant raw model text                   | `accepted`   | Structured output, bounded per-file metadata, and failure excerpts are enough for current review/debug needs      |
+| No second domain has proved the adapter contract                             | `to-confirm` | Do not generalize prompts, draft schemas, or approval records until another real consumer exists                  |
+| PDF handling is direct-file while images use image input                     | `accepted`   | The provider supports both; introduce page rendering only when a measured PDF failure requires it                 |
 
 ## Alignment roadmap
 

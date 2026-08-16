@@ -107,6 +107,9 @@ importers:
       '@nuxt/eslint':
         specifier: ^1.12.1
         version: 1.12.1(@typescript-eslint/utils@8.50.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.2))(@vue/compiler-sfc@3.5.34)(eslint@9.39.4(jiti@2.7.0))(magicast@0.5.3)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
+      '@respeak/lucide-motion-vue':
+        specifier: ^0.6.2
+        version: 0.6.2(@nuxt/kit@4.4.6(magicast@0.5.3))(motion-v@2.3.0(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
       firebase:
         specifier: 11.10.0
         version: 11.10.0
@@ -134,6 +137,9 @@ importers:
       jiti:
         specifier: ^2.7.0
         version: 2.7.0
+      motion-v:
+        specifier: ^2.3.0
+        version: 2.3.0(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
       tailwindcss:
         specifier: ^4.1.18
         version: 4.1.18
@@ -487,6 +493,9 @@ importers:
       '@internationalized/date':
         specifier: ^3.10.1
         version: 3.10.1
+      '@lottiefiles/dotlottie-vue':
+        specifier: ^0.11.25
+        version: 0.11.25(vue@3.5.20(typescript@5.9.2))
       fireux-ai:
         specifier: workspace:*
         version: link:../fireux-ai
@@ -1580,6 +1589,9 @@ importers:
       '@iconify-json/vscode-icons':
         specifier: ^1.2.37
         version: 1.2.37
+      '@lottiefiles/dotlottie-vue':
+        specifier: ^0.11.25
+        version: 0.11.25(vue@3.5.20(typescript@5.9.2))
       '@nuxt/fonts':
         specifier: ^0.11.4
         version: 0.11.4(db0@0.3.4(better-sqlite3@12.6.0))(ioredis@5.10.1)(magicast@0.5.3)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
@@ -3710,6 +3722,16 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
+  '@lottiefiles/dotlottie-vue@0.11.25':
+    resolution: {integrity: sha512-OZ48XybtG6UL4tap3NTKMJpNMSCBSKYTdTDYVN/5u3rz0qCenMy7FrFtK8GvQKuyyYPcqk6GiLajk7pY4Hp4vw==}
+    engines: {node: '>=18.17.0', npm: '>=9.5.0'}
+    peerDependencies:
+      vue: 3.5.20
+
+  '@lottiefiles/dotlottie-web@0.79.1':
+    resolution: {integrity: sha512-UKk+DmY2yurQs2T02AekNGVLD+fSGlygHKnf9485LCWF+CUvMSUXizAgR2qDGFUH2APj2i58nk21QhfVi9EG6g==}
+    engines: {node: '>=18.17.0', npm: '>=9.5.0'}
+
   '@mapbox/node-pre-gyp@2.0.0':
     resolution: {integrity: sha512-llMXd39jtP0HpQLVI37Bf1m2ADlEb35GYSh1SDSLsBhR+5iCxiNGlT31yqbNtVHygHAtMy6dWFERpU2JgufhPg==}
     engines: {node: '>=18'}
@@ -4542,6 +4564,16 @@ packages:
 
   '@remirror/core-constants@3.0.0':
     resolution: {integrity: sha512-42aWfPrimMfDKDi4YegyS7x+/0tlzaqwPQCULLanv3DMIlu96KTJR0fM5isWX2UViOqlGnX6YFgqWepcX+XMNg==}
+
+  '@respeak/lucide-motion-vue@0.6.2':
+    resolution: {integrity: sha512-RJ22UL/ZE69ey70Tb5IlQ2ZKhbmfxsoPn/u4bOA164WtcaNhoxKTxCf+IFEOcjtOfkyQ+vfdwg8UYVTDWuhKqQ==}
+    peerDependencies:
+      '@nuxt/kit': 4.4.6
+      motion-v: ^2
+      vue: 3.5.20
+    peerDependenciesMeta:
+      '@nuxt/kit':
+        optional: true
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
@@ -6262,6 +6294,12 @@ packages:
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
+  d3-array@1.2.4:
+    resolution: {integrity: sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==}
+
+  d3-polygon@1.0.6:
+    resolution: {integrity: sha512-k+RF7WvI08PC8reEoXa/w2nSg5AUMTi+peBD9cmFc+0ixHfbs4QmxxkarVal1IkVkgxVuk9JSHhJURHiyHKAuQ==}
+
   data-view-buffer@1.0.2:
     resolution: {integrity: sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==}
     engines: {node: '>= 0.4'}
@@ -6473,6 +6511,9 @@ packages:
 
   duplexify@4.1.3:
     resolution: {integrity: sha512-M3BmBhwJRZsSx38lZyhE53Csddgzl5R7xGJNk7CVddZD6CcmwMCH8J+7AprIrQKH7TonKxaCjcv27Qmf+sQ+oA==}
+
+  earcut@2.2.4:
+    resolution: {integrity: sha512-/pjZsA1b4RPHbeWZQn66SWS8nZZWLQQ23oE3Eam7aroEFGEvwKAsJfZ9ytiEMycfzXWpca4FA9QIOehf7PocBQ==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -6964,6 +7005,9 @@ packages:
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
 
+  flubber@0.4.2:
+    resolution: {integrity: sha512-79RkJe3rA4nvRCVc2uXjj7U/BAUq84TS3KHn6c0Hr9K64vhj83ZNLUziNx4pJoBumSPhOl5VjH+Z0uhi+eE8Uw==}
+
   fontaine@0.6.0:
     resolution: {integrity: sha512-cfKqzB62GmztJhwJ0YXtzNsmpqKAcFzTqsakJ//5COTzbou90LU7So18U+4D8z+lDXr4uztaAUZBonSoPDcj1w==}
 
@@ -6991,6 +7035,20 @@ packages:
 
   framer-motion@12.23.12:
     resolution: {integrity: sha512-6e78rdVtnBvlEVgu6eFEAgG9v3wLnYEboM8I5O5EXvfKC8gxGQB8wXJdhkMy10iVcn05jl6CNw7/HTsTCfwcWg==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  framer-motion@12.43.0:
+    resolution: {integrity: sha512-1eaL3RvR/kAlbG7UYcpMptEyzPoENO0c6w7ZnB3/hh2vSAz/6uGAFn6fdoqTBguNstf3MsFhJHsD/0DHiclG+g==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0 || ^19.0.0
@@ -8256,11 +8314,23 @@ packages:
   motion-dom@12.23.12:
     resolution: {integrity: sha512-RcR4fvMCTESQBD/uKQe49D5RUeDOokkGRmz4ceaJKDBgHYtZtntC/s2vLvY38gqGaytinij/yi3hMcWVcEF5Kw==}
 
+  motion-dom@12.43.0:
+    resolution: {integrity: sha512-azKON4d9S65PEoFUiQTMTgPheEmzf2QngdRc50AKfJp9Q9mmcBVw22c8eMq9k8kxOFHdL7+WZY7N/5F/lwiDag==}
+
   motion-utils@12.23.6:
     resolution: {integrity: sha512-eAWoPgr4eFEOFfg2WjIsMoqJTW6Z8MTUCgn/GZ3VRpClWBdnbjryiA3ZSNLyxCTmCQx4RmYX6jX1iWHbenUPNQ==}
 
+  motion-utils@12.39.0:
+    resolution: {integrity: sha512-8nadJAJjTtqRkmRF36FoJTrywK9nnFmnPwnSMyxaOCU7GDjN9RTMJIxx9De8ErM+vpPhMccr/6fo5WciyQLnMQ==}
+
   motion-v@1.7.1:
     resolution: {integrity: sha512-B22fYcHGx05moUtoIH0ZP/JzeacGOHzLkLmMTKU9tRB+uVMSfgqiXVzZb602qiG1ap8W7TZ+5RD5R3MmODu9oA==}
+    peerDependencies:
+      '@vueuse/core': '>=10.0.0'
+      vue: 3.5.20
+
+  motion-v@2.3.0:
+    resolution: {integrity: sha512-J0CCfXtICCni9RjotDUBOs57xNpYI9yyBSohEOxaRHrmjwOtlw291fhRu/mdgEdSasys96R028YDDOAtWBbRaA==}
     peerDependencies:
       '@vueuse/core': '>=10.0.0'
       vue: 3.5.20
@@ -9815,10 +9885,16 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  svg-path-properties@0.2.2:
+    resolution: {integrity: sha512-GmrB+b6woz6CCdQe6w1GHs/1lt25l7SR5hmhF8jRdarpv/OgjLyuQygLu1makJapixeb1aQhP/Oa1iKi93o/aQ==}
+
   svgo@4.0.1:
     resolution: {integrity: sha512-XDpWUOPC6FEibaLzjfe0ucaV0YrOjYotGJO1WpF0Zd+n6ZGEQUsSugaoLq9QkEZtAfQIxT42UChcssDVPP3+/w==}
     engines: {node: '>=16'}
     hasBin: true
+
+  svgpath@2.6.0:
+    resolution: {integrity: sha512-OIWR6bKzXvdXYyO4DK/UWa1VA1JeKq8E+0ug2DG98Y/vOmMpfZNj+TIG988HjfYSqtcy/hFOtZq/n/j5GSESNg==}
 
   swrv@1.1.0:
     resolution: {integrity: sha512-pjllRDr2s0iTwiE5Isvip51dZGR7GjLH1gCSVyE8bQnbAx6xackXsFdojau+1O5u98yHF5V73HQGOFxKUXO9gQ==}
@@ -9930,6 +10006,10 @@ packages:
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+
+  topojson-client@3.1.0:
+    resolution: {integrity: sha512-605uxS6bcYxGXw9qi62XyrV6Q3xwbndjachmNxu8HWTtVPxZfEJN9fd/SZS1Q54Sn2y0TMyMxFj/cJINqGHrKw==}
+    hasBin: true
 
   totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}
@@ -12631,6 +12711,13 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
+  '@lottiefiles/dotlottie-vue@0.11.25(vue@3.5.20(typescript@5.9.2))':
+    dependencies:
+      '@lottiefiles/dotlottie-web': 0.79.1
+      vue: 3.5.20(typescript@5.9.2)
+
+  '@lottiefiles/dotlottie-web@0.79.1': {}
+
   '@mapbox/node-pre-gyp@2.0.0':
     dependencies:
       consola: 3.4.2
@@ -13695,6 +13782,14 @@ snapshots:
 
   '@remirror/core-constants@3.0.0': {}
 
+  '@respeak/lucide-motion-vue@0.6.2(@nuxt/kit@4.4.6(magicast@0.5.3))(motion-v@2.3.0(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))':
+    dependencies:
+      flubber: 0.4.2
+      motion-v: 2.3.0(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))
+      vue: 3.5.20(typescript@5.9.2)
+    optionalDependencies:
+      '@nuxt/kit': 4.4.6(magicast@0.5.3)
+
   '@rolldown/pluginutils@1.0.1': {}
 
   '@rollup/plugin-alias@5.1.1(rollup@4.60.4)':
@@ -14424,7 +14519,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.50.0
       debug: 4.4.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.8.5
       tinyglobby: 0.2.16
       ts-api-utils: 2.1.0(typescript@5.9.2)
       typescript: 5.9.2
@@ -15509,6 +15604,10 @@ snapshots:
 
   csstype@3.1.3: {}
 
+  d3-array@1.2.4: {}
+
+  d3-polygon@1.0.6: {}
+
   data-view-buffer@1.0.2:
     dependencies:
       call-bound: 1.0.4
@@ -15660,6 +15759,8 @@ snapshots:
       readable-stream: 3.6.2
       stream-shift: 1.0.3
     optional: true
+
+  earcut@2.2.4: {}
 
   eastasianwidth@0.2.0: {}
 
@@ -16422,6 +16523,15 @@ snapshots:
 
   flatted@3.3.3: {}
 
+  flubber@0.4.2:
+    dependencies:
+      d3-array: 1.2.4
+      d3-polygon: 1.0.6
+      earcut: 2.2.4
+      svg-path-properties: 0.2.2
+      svgpath: 2.6.0
+      topojson-client: 3.1.0
+
   fontaine@0.6.0:
     dependencies:
       '@capsizecss/metrics': 3.5.0
@@ -16474,6 +16584,12 @@ snapshots:
     dependencies:
       motion-dom: 12.23.12
       motion-utils: 12.23.6
+      tslib: 2.8.1
+
+  framer-motion@12.43.0:
+    dependencies:
+      motion-dom: 12.43.0
+      motion-utils: 12.39.0
       tslib: 2.8.1
 
   fresh@0.5.2: {}
@@ -17300,7 +17416,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.0
+      semver: 7.8.5
 
   jwa@1.4.2:
     dependencies:
@@ -18016,7 +18132,13 @@ snapshots:
     dependencies:
       motion-utils: 12.23.6
 
+  motion-dom@12.43.0:
+    dependencies:
+      motion-utils: 12.39.0
+
   motion-utils@12.23.6: {}
+
+  motion-utils@12.39.0: {}
 
   motion-v@1.7.1(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2)):
     dependencies:
@@ -18024,6 +18146,19 @@ snapshots:
       framer-motion: 12.23.12
       hey-listen: 1.0.8
       motion-dom: 12.23.12
+      vue: 3.5.20(typescript@5.9.2)
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - react
+      - react-dom
+
+  motion-v@2.3.0(@vueuse/core@13.9.0(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2)):
+    dependencies:
+      '@vueuse/core': 13.9.0(vue@3.5.20(typescript@5.9.2))
+      framer-motion: 12.43.0
+      hey-listen: 1.0.8
+      motion-dom: 12.43.0
+      motion-utils: 12.39.0
       vue: 3.5.20(typescript@5.9.2)
     transitivePeerDependencies:
       - '@emotion/is-prop-valid'
@@ -20103,6 +20238,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  svg-path-properties@0.2.2: {}
+
   svgo@4.0.1:
     dependencies:
       commander: 11.1.0
@@ -20112,6 +20249,8 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
       sax: 1.6.0
+
+  svgpath@2.6.0: {}
 
   swrv@1.1.0(vue@3.5.20(typescript@5.9.2)):
     dependencies:
@@ -20233,6 +20372,10 @@ snapshots:
       reserved-identifiers: 1.2.0
 
   toidentifier@1.0.1: {}
+
+  topojson-client@3.1.0:
+    dependencies:
+      commander: 2.20.3
 
   totalist@3.0.1: {}
 

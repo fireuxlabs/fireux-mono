@@ -1,4 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 import type { CurrencyDisplayFormat } from '../../shared/currency-display.model'
 import type {
   SproochliDefaultLanguage,
@@ -8,7 +9,11 @@ import type { MenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
 import type { KitchenImageShade } from '../../kitchen.model'
 import type { DishItemKind } from '../dish.model'
 import type { MenuKioskSkin } from './kiosk-skin.model'
-import type { MenuChoice, MenuOrderingConfig, MenuServiceProfile } from './menu.model'
+import type {
+  MenuChoice,
+  MenuOrderingConfig,
+  MenuServiceProfile,
+} from './menu.model'
 
 export type MenuManifestPriceOption = {
   id: string
@@ -61,8 +66,13 @@ export type MenuKitchenPresentation = {
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenName: string
+  kitchenTagline?: string
   kitchenWordmarkImageUrl?: string
+  placeLogoImageUrl?: string
+  placeWordmarkImageUrl?: string
   pageStyle?: Partial<PageStyle>
+  theme: ConsoleTheme
+  themeSource: 'menu' | 'kitchen' | 'place-default'
 }
 
 export type MenuManifestPresentation = MenuKitchenPresentation & {

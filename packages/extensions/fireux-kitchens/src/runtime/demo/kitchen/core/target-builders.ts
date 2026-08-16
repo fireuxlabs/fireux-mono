@@ -10,8 +10,11 @@ import {
   KitchenDefaults,
   type AppKitchen,
   type Kitchen,
+  type KitchenFulfilmentConfig,
   type KitchenFulfilmentPaymentPolicy,
+  type KitchenMenusConfig,
   type KitchenOrdersConfig,
+  type KitchenTablesConfig,
 } from '../../../models/kitchen.model'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoIdentity } from './types'
@@ -161,6 +164,12 @@ export const target = (
     operatorIds?: readonly string[]
   } = {}
 ): KitchenDemoTarget => {
+  const legacyConsoleSource = targetKitchen as unknown as {
+    fulfilment: KitchenFulfilmentConfig
+    menus: KitchenMenusConfig
+    orders: KitchenOrdersConfig
+    tables: KitchenTablesConfig
+  }
   const publicPlace = normalizePublicPlaceProjection(
     targetPlace as unknown as Record<string, unknown>
   )
@@ -175,6 +184,12 @@ export const target = (
       team_ids: [...(access.teamIds ?? [])],
       operator_ids: [...(access.operatorIds ?? [])],
       join_requests: [],
+      console: {
+        fulfilment: legacyConsoleSource.fulfilment,
+        menus: legacyConsoleSource.menus,
+        orders: legacyConsoleSource.orders,
+        tables: legacyConsoleSource.tables,
+      },
       created: kitchenDemoCreated(identity),
       updated: kitchenDemoUpdated(),
     },

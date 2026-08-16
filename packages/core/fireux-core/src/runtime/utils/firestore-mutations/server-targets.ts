@@ -25,17 +25,6 @@ const APP_AUTHORITY_COLLECTIONS = Object.freeze({
 const segment = assertFirestoreMutationSegment
 const verbs = ALL_FIRESTORE_MUTATION_VERBS
 
-export function serverUserAccountTarget(userId: string) {
-  const id = segment(userId, 'userId')
-  return defineFirestoreMutationTarget({
-    key: 'users.private.account',
-    lane: 'server',
-    verbs,
-    database: { kind: 'identity' },
-    collectionPath: `users/${id}/private`,
-  })
-}
-
 export function serverAppUsersTarget(appId: string) {
   const id = segment(appId, 'appId')
   return defineFirestoreMutationTarget({

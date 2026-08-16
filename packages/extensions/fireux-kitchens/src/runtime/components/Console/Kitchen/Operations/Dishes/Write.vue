@@ -3,7 +3,7 @@
   <UCard>
     <template #header>
       <div class="console-card-header">
-        <div class="console-card-header__title">Create dish</div>
+        <div class="console-card-header__title">Create {{ catalogue.singular }}</div>
       </div>
     </template>
 
@@ -15,9 +15,9 @@
         <div class="flex flex-col items-start gap-2">
           <MoleculesFormsFirestoreImagePicker
             :src="imagePreviewUrl"
-            :alt="name.trim() || 'New Dish'"
+            :alt="name.trim() || `New ${catalogue.singular}`"
             :initials="imageInitials"
-            button-label="Choose Dish image"
+            :button-label="`Choose ${catalogue.singular} image`"
             :disabled="saving || !canCreateDish"
             :update-function="stageImage"
           />
@@ -53,7 +53,7 @@
           :loading="saving"
           :disabled="!canCreateDish || !name.trim()"
         >
-          Create dish
+          Create {{ catalogue.singular }}
         </UButton>
 
         <p
@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
+import { useKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 import { useDishCreate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishCreate'
 import { useDishImageUpload } from '../../../../../composables/fireux/firestore/dish/mutations/useDishImageUpload'
 
@@ -79,7 +79,8 @@ const {
   rootCollection,
   databaseId,
   canWrite,
-} = useKitchenConsoleDishes({ resolveMenuSections: false })
+  catalogue,
+} = useKitchenDishesWorkspace()
 const { createDish } = useDishCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,
@@ -141,6 +142,7 @@ const addDish = async () => {
       {
         name: dishName,
         description: normalizeString(description.value),
+        item_kind: catalogue.itemKind,
       },
       { kitchenId: resolvedKitchenId }
     )

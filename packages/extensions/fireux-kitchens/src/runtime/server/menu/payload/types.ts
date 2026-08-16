@@ -8,6 +8,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import type { MenuManifestContent } from '../../../models/kitchen/menu/menu-detail.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 import type {
   SproochliAttachmentConfig,
   SproochliLanguageCode,
@@ -20,7 +21,10 @@ export type MenuPayloadScope = {
   kitchenLogoImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
+  kitchenTagline?: string
   kitchenWordmarkImageUrl?: string
+  placeLogoImageUrl?: string
+  placeWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string
@@ -29,6 +33,7 @@ export type MenuPayloadScope = {
   sourceKind?: string
   menuContext?: MenuRouteContext
   page_style?: Record<string, unknown>
+  kitchen_theme?: ConsoleTheme
   choices?: unknown[]
   sections?: unknown[]
   specials?: MenuManifestContent
@@ -56,14 +61,11 @@ export type MenuPayloadSource = {
 
 export type MenuPayloadSourceKind = 'doc' | 'menu'
 
-export const menuPayloadText = (value: unknown) =>
-  String(value ?? '').trim()
+export const menuPayloadText = (value: unknown) => String(value ?? '').trim()
 
 export const compactMenuPayloadRecord = <T extends Record<string, unknown>>(
   value: T
 ) =>
   Object.fromEntries(
-    Object.entries(value).filter(([, entry]) =>
-      Boolean(menuPayloadText(entry))
-    )
+    Object.entries(value).filter(([, entry]) => Boolean(menuPayloadText(entry)))
   ) as Partial<T>

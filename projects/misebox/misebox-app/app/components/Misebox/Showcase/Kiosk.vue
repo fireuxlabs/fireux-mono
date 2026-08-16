@@ -127,11 +127,20 @@
       data-misebox-showcase="kiosk-canvas"
       :aria-label="`${manifest.presentation.kitchenName} Kiosk preview`"
     >
+      <MiseboxShowcaseKioskAttract
+        v-if="!started"
+        :backdrop-image-url="attractImageUrl"
+        :kitchen-name="manifest.presentation.kitchenName"
+        :logo-image-url="manifest.presentation.kitchenLogoImageUrl"
+        :wordmark-image-url="manifest.presentation.kitchenWordmarkImageUrl"
+        @start="started = true"
+      />
+
       <MenuOrderKioskFlow
+        v-else
         :key="scopeKey"
         :configs="kioskConfigs"
         :currency-code="manifest.presentation.currencyCode"
-        fixed-order-type="eat_in"
         :kitchen-id="manifest.source.kitchenId"
         :kitchen-name="manifest.presentation.kitchenName"
         :kitchen-slug="manifest.source.kitchenSlug"
@@ -161,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { MiseboxProductDemoKioskAppearance } from '../../../composables/product-demo/useMiseboxProductDemo'
@@ -206,6 +215,14 @@ const { className: themeClassName, styleVars: themeStyleVars } =
   })
 
 const previewOpen = ref(false)
+const started = ref(false)
+const attractImageUrl = computed(() =>
+  String(props.manifest.presentation.kitchenImageUrl || '').trim()
+  || props.manifest.content.sections
+    .flatMap(section => section.items)
+    .map(item => String(item.imageUrl || '').trim())
+    .find(Boolean)
+)
 const previewScale = ref(0.5)
 const standalonePreviewStyle = computed<Record<string, string> | undefined>(
   () =>
@@ -234,6 +251,10 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updatePreviewScale)
+})
+
+watch(() => props.scopeKey, () => {
+  started.value = false
 })
 
 function openPortraitPreview() {

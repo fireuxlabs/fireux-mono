@@ -48,3 +48,190 @@
   padding: clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 12));
   overflow-y: auto;
 }
+
+.menu-kiosk-skin--default {
+  color-scheme: light;
+  --menu-bg: #f7f4ec !important;
+  --menu-text: #102018 !important;
+  --menu-title: #0b1710 !important;
+  --menu-muted: #526158 !important;
+  --kiosk-surface: #fffdf7;
+  --kiosk-surface-raised: #f0ece3;
+  --kiosk-chrome: #fffdf7;
+  --kiosk-rail: #ece8df;
+  --kiosk-on-brand: #fffdf7;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk::before {
+  background:
+    radial-gradient(circle at 90% 12%, color-mix(in srgb, var(--menu-secondary) 72%, transparent) 0 9rem, transparent 9.15rem),
+    radial-gradient(circle at 12% 88%, color-mix(in srgb, var(--menu-secondary) 42%, transparent) 0 7rem, transparent 7.1rem),
+    radial-gradient(circle, color-mix(in srgb, var(--menu-primary) 10%, transparent) 1.25px, transparent 1.4px);
+  background-size: auto, auto, 1.35rem 1.35rem;
+  opacity: 0.86;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start {
+  width: 100%;
+  gap: clamp(calc(var(--spacing) * 5), 2vh, calc(var(--spacing) * 10));
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__identity h1,
+.menu-kiosk-skin--default .menu-order-kiosk-start__prompt h2 {
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.06em;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__identity h1 {
+  font-size: clamp(2.8rem, 5vw, 4.8rem);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__identity p {
+  color: var(--menu-secondary);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__prompt h2 {
+  font-size: clamp(3.6rem, 7vw, 6.4rem);
+  line-height: 0.94;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option {
+  min-height: clamp(11rem, 16vh, 16rem);
+  border: 2px solid color-mix(in srgb, var(--menu-primary) 18%, transparent);
+  border-radius: calc(var(--ui-radius) * 6);
+  background: var(--kiosk-surface);
+  box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--menu-primary) 10%, transparent);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option[data-menu-kiosk-mode='eat_in'] {
+  border-color: color-mix(in srgb, var(--menu-secondary) 72%, white);
+  background: var(--menu-secondary);
+  color: var(--kiosk-on-brand);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option[data-menu-kiosk-mode='takeaway'] {
+  border-color: color-mix(in srgb, var(--menu-secondary) 22%, var(--kiosk-on-brand));
+  background: var(--kiosk-on-brand);
+  color: var(--menu-secondary);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option-copy strong,
+.menu-kiosk-skin--default .menu-order-kiosk-start__option-copy span {
+  color: inherit;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option-copy span {
+  max-width: 14ch;
+  font-size: clamp(var(--text-base), 1.8vw, var(--text-xl));
+  line-height: 1.4;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option[data-menu-kiosk-mode='eat_in'] .menu-order-kiosk-start__option-icon {
+  background: transparent;
+  color: var(--kiosk-on-brand);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option[data-menu-kiosk-mode='takeaway'] .menu-order-kiosk-start__option-icon {
+  background: transparent;
+  color: var(--menu-secondary);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-start__option-icon {
+  width: clamp(5.5rem, 9vw, 8rem);
+  height: clamp(5.5rem, 9vw, 8rem);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--menu-primary);
+  font-size: clamp(3.4rem, 6vw, 5.5rem);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk__toolbar,
+.menu-kiosk-skin--default .menu-order-kiosk-catalogue__rail {
+  border: 0;
+  background: var(--kiosk-chrome);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk__toolbar {
+  box-shadow: 0 0.75rem 2.5rem color-mix(in srgb, var(--menu-primary) 22%, transparent);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-catalogue__rail {
+  background: var(--kiosk-rail);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk__change,
+.menu-kiosk-skin--default .menu-order-kiosk__identity strong,
+.menu-kiosk-skin--default .menu-order-kiosk__identity small,
+.menu-kiosk-skin--default .menu-order-kiosk__mode {
+  color: var(--menu-title);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-catalogue__section {
+  color: var(--menu-muted);
+  font-family: var(--menu-title-font);
+  font-weight: var(--font-weight-bold);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-catalogue__section--active {
+  border-radius: 9999px;
+  background: var(--menu-primary);
+  color: var(--kiosk-on-brand);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-catalogue__header h2 {
+  font-size: clamp(2.6rem, 4.8vw, 4.2rem);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.065em;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item__media {
+  background: transparent;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item__media img {
+  padding: clamp(0.35rem, 1.5vw, 0.8rem);
+  border-radius: 0;
+  object-fit: contain;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item[data-menu-item-media-fit='contain'] .menu-order-kiosk-item__media img {
+  padding: clamp(0.65rem, 3vw, 1.4rem);
+  object-fit: contain;
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item__add {
+  border: 0;
+  border-radius: 9999px;
+  background: var(--menu-primary);
+  color: var(--kiosk-on-brand);
+  padding-inline: calc(var(--spacing) * 4);
+}
+
+.menu-kiosk-skin--default .menu-order-basket-summary {
+  border: 2px solid color-mix(in srgb, var(--menu-secondary) 70%, transparent);
+  border-radius: calc(var(--ui-radius) * 6);
+  background: var(--menu-primary);
+  color: var(--kiosk-on-brand);
+}
+
+.menu-kiosk-skin--default .menu-order-basket-summary__copy strong,
+.menu-kiosk-skin--default .menu-order-basket-summary__copy span,
+.menu-kiosk-skin--default .menu-order-basket-summary__total,
+.menu-kiosk-skin--default .menu-order-basket-summary__chevron {
+  color: var(--kiosk-on-brand);
+}
+
+.menu-kiosk-skin--default .menu-order-kiosk-item__media-fallback {
+  background: var(--menu-primary);
+  color: var(--kiosk-on-brand);
+}

@@ -327,6 +327,7 @@ const {
   financePending,
   financeError,
   debug,
+  catalogue,
 } = useKitchenConsoleDish()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -370,9 +371,9 @@ const menuPlacements = computed(() =>
 )
 const breadcrumbItems = computed(() => [
   {
-    label: 'Dishes',
-    icon: 'i-lucide-utensils',
-    to: '/console/kitchen/dishes',
+    label: catalogue.title,
+    icon: catalogue.icon,
+    to: catalogue.path,
   },
   {
     label: normalizeString(dish.value?.name) || 'Dish details',

@@ -1,4 +1,10 @@
-import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  toValue,
+  type MaybeRefOrGetter,
+} from 'vue'
 import { createError, useAsyncData } from '#imports'
 import {
   normalizeSproochliLanguage,
@@ -29,6 +35,7 @@ export type MenuLoadFailure = {
 type UseMenuOptions = {
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+  liveRefreshMs?: MaybeRefOrGetter<number | null | undefined>
   sproochliLanguage?: MaybeRefOrGetter<
     SproochliLanguageCode | string | null | undefined
   >
@@ -47,10 +54,10 @@ function requestStatusCode(value: unknown) {
   const error = value as MenuRequestError
   const statusCode = Number(
     error?.statusCode ||
-    error?.status ||
-    error?.data?.statusCode ||
-    error?.data?.status ||
-    500
+      error?.status ||
+      error?.data?.statusCode ||
+      error?.data?.status ||
+      500
   )
 
   return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
@@ -101,16 +108,15 @@ export function useMenu(
   )
   const keyPart = (value: unknown) =>
     encodeURIComponent(String(value ?? '').trim())
-  const key = computed(
-    () =>
-      [
-        'menu',
-        `scope=${routeScope.value.kind}`,
-        `kitchen=${keyPart(kitchenSlug.value)}`,
-        `id=${keyPart(id.value)}`,
-        `context=${menuContext.value}`,
-        `sproochli=${sproochliLanguage.value}`,
-      ].join('|')
+  const key = computed(() =>
+    [
+      'menu',
+      `scope=${routeScope.value.kind}`,
+      `kitchen=${keyPart(kitchenSlug.value)}`,
+      `id=${keyPart(id.value)}`,
+      `context=${menuContext.value}`,
+      `sproochli=${sproochliLanguage.value}`,
+    ].join('|')
   )
   const indexPath = computed(() => menuRouteIndexPath(routeScope.value))
   const menuPath = computed(() =>
@@ -160,13 +166,41 @@ export function useMenu(
     { watch: [endpoint] }
   )
   const ready = state.then(() => undefined)
+  const liveRefreshMs = computed(() => {
+    const value = Number(toValue(options.liveRefreshMs) || 0)
+
+    return Number.isFinite(value) && value >= 1_000 ? value : 0
+  })
+  let liveRefreshTimer: ReturnType<typeof setInterval> | undefined
+  const refreshLiveMenu = () => {
+    if (!liveRefreshMs.value || state.status.value === 'pending') return
+    if (
+      typeof globalThis.document !== 'undefined' &&
+      globalThis.document.visibilityState === 'hidden'
+    ) {
+      return
+    }
+
+    void state.refresh()
+  }
+
+  onMounted(() => {
+    if (!liveRefreshMs.value) return
+
+    liveRefreshTimer = setInterval(refreshLiveMenu, liveRefreshMs.value)
+    globalThis.document.addEventListener('visibilitychange', refreshLiveMenu)
+  })
+  onBeforeUnmount(() => {
+    if (liveRefreshTimer) clearInterval(liveRefreshTimer)
+    globalThis.document.removeEventListener('visibilitychange', refreshLiveMenu)
+  })
   const renderKind = computed<MenuRenderKind>(() => {
-    if (state.pending.value || state.error.value || !state.data.value) {
+    if (state.error.value || !state.data.value) {
       return 'unavailable'
     }
     return state.data.value.kind === 'document' ? 'document' : 'structured'
   })
-  const document = computed<MenuDocumentPayload | null>(() =>
+  const documentProjection = computed<MenuDocumentPayload | null>(() =>
     renderKind.value === 'document' && state.data.value?.kind === 'document'
       ? state.data.value.document
       : null
@@ -195,10 +229,10 @@ export function useMenu(
     qrPath,
     menu: state.data,
     renderKind,
-    document,
+    document: documentProjection,
     manifest,
     failure,
-    pending: state.pending,
+    pending: computed(() => state.pending.value && !state.data.value),
     error: state.error,
     ready,
   }

@@ -28,16 +28,21 @@
       <MenuOrderKioskCatalogue
         :key="scopeKey"
         :currency-code="currencyCode"
+        :catalogue-background-image-url="catalogueBackgroundImageUrl"
         :sections="sections"
+        :section-card-frame-image-url="sectionCardFrameImageUrl"
+        :section-card-image-urls="sectionCardImageUrls"
         @add="basket.add"
       />
 
       <div class="menu-order-kiosk-order__basket">
         <MenuOrderBasketSummary
+          always-visible
           :currency-code="basket.currencyCode.value"
           :quantity="basket.quantity.value"
           :total="basket.total.value"
           :total-label="basket.totalLabel.value"
+          label="View order"
           @review="openBasket"
         />
       </div>
@@ -84,6 +89,7 @@ import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 
 const props = defineProps<{
   config: MenuOrderTypeConfig | null
+  catalogueBackgroundImageUrl?: string
   currencyCode: string
   kitchenId: string
   kitchenSlug?: string
@@ -91,6 +97,8 @@ const props = defineProps<{
   orderType: MenuOrderKioskType
   scopeKey: string
   sections: MenuManifestSection[]
+  sectionCardFrameImageUrl?: string
+  sectionCardImageUrls?: Record<string, string>
   sourceMenuId: string
 }>()
 const scopeKey = computed(() => props.scopeKey)

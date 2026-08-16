@@ -6,12 +6,14 @@
       'menu-order-kiosk-item--unavailable': !canSelect,
       'menu-order-kiosk-item--without-media': !itemImageUrl,
     }"
+    :data-menu-item-media-fit="mediaFit"
     data-menu-item="true"
     :data-menu-item-id="item.id"
     data-menu-item-mode="selectable"
   >
-    <div v-if="itemImageUrl" class="menu-order-kiosk-item__media">
+    <div class="menu-order-kiosk-item__media">
       <img
+        v-if="itemImageUrl"
         :src="itemImageUrl"
         :alt="item.name"
         width="320"
@@ -20,8 +22,10 @@
         decoding="async"
         @error="hideImage"
       >
+      <span v-else class="menu-order-kiosk-item__media-fallback" aria-hidden="true">
+        <UIcon :name="item.itemKind === 'drink' ? 'i-lucide-cup-soda' : 'i-lucide-utensils'" />
+      </span>
     </div>
-
     <div class="menu-order-kiosk-item__body">
       <div class="menu-order-kiosk-item__copy">
         <h3>{{ item.name }}</h3>
@@ -30,7 +34,6 @@
           Price unavailable
         </span>
       </div>
-
       <div
         v-if="priceOptions.length"
         class="menu-order-kiosk-item__variants"
@@ -53,24 +56,22 @@
           <strong>{{ formatPrice(variant.price) }}</strong>
         </button>
       </div>
-
       <button
         type="button"
         class="menu-order-kiosk-item__add"
-        :data-menu-action="requiresConfiguration ? 'configure-item' : 'add-item'"
+        data-menu-action="view-item"
         :aria-label="actionLabel"
         :disabled="!canSelect"
         @click="activateItem"
       >
         <span>
-          {{ requiresConfiguration ? 'Extras' : 'Add' }}
+          View
         </span>
         <strong v-if="actionPriceLabel">{{ actionPriceLabel }}</strong>
       </button>
     </div>
   </article>
 </template>
-
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { formatCurrencyAmount } from '../../../../utils/currency-display'
@@ -82,27 +83,22 @@ import {
   resolveMenuOrderAddOns,
   resolveMenuOrderPriceOptions,
 } from '../../../../utils/menu-order-options'
-
 type MenuOrderItemSelection = {
   trigger: HTMLButtonElement
   variantId?: string
 }
-
 const props = defineProps<{
   currencyCode: string
   item: MenuManifestItem
 }>()
-
 const emit = defineEmits<{
   (event: 'select', selection: MenuOrderItemSelection): void
   (event: 'add', input: MenuOrderBasketInput): void
 }>()
-
 const failedImageUrl = ref('')
 const selectedVariantId = ref('')
 const itemImageUrl = computed(() => {
   const url = String(props.item.imageUrl || '').trim()
-
   return url && url !== failedImageUrl.value ? url : ''
 })
 const resolvedPriceOptions = computed(() =>
@@ -125,7 +121,6 @@ const startingPrice = computed(() => {
   if (!priceOptions.value.length) {
     return menuOrderPositivePrice(props.item.price) ? Number(props.item.price) : 0
   }
-
   return Math.min(...priceOptions.value.map(({ price }) => Number(price)))
 })
 const actionPriceLabel = computed(() => formatPrice(
@@ -134,49 +129,28 @@ const actionPriceLabel = computed(() => formatPrice(
 const canSelect = computed(() =>
   orderDataValid.value && itemIdentityValid.value && startingPrice.value > 0
 )
-const requiresConfiguration = computed(() => addOns.value.length > 0)
-const actionLabel = computed(() => requiresConfiguration.value
-  ? `Choose extras for ${props.item.name}`
-  : selectedVariant.value
-    ? `Add ${props.item.name}, ${selectedVariant.value.label}, to basket`
-    : `Add ${props.item.name} to basket`
-)
-
+const mediaFit = computed(() => props.item.itemKind === 'drink' ? 'contain' : 'cover')
+const actionLabel = computed(() => `View ${props.item.name} details`)
 watch(() => props.item.imageUrl, () => {
   failedImageUrl.value = ''
 })
-
 watch(() => props.item, () => {
   selectedVariantId.value = defaultMenuOrderPriceOption(
     priceOptions.value
   )?.id || ''
 }, { immediate: true })
-
 function activateItem(event: MouseEvent) {
   if (!canSelect.value) return
   const trigger = event.currentTarget
   if (!(trigger instanceof HTMLButtonElement)) return
-
-  if (requiresConfiguration.value) {
-    emit('select', {
-      trigger,
-      ...(selectedVariant.value ? { variantId: selectedVariant.value.id } : {}),
-    })
-    return
-  }
-
-  emit('add', {
-    item: props.item,
+  emit('select', {
+    trigger,
     ...(selectedVariant.value ? { variantId: selectedVariant.value.id } : {}),
-    addOnIds: [],
-    quantity: 1,
   })
 }
-
 function hideImage() {
   failedImageUrl.value = itemImageUrl.value
 }
-
 function formatPrice(price: number) {
   return formatCurrencyAmount(price, {
     currencyCode: props.currencyCode,
@@ -184,7 +158,6 @@ function formatPrice(price: number) {
   })
 }
 </script>
-
 <style scoped>
 .menu-order-kiosk-item {
   --kiosk-item-bg: var(--menu-bg, var(--ui-bg));
@@ -193,50 +166,78 @@ function formatPrice(price: number) {
   --kiosk-item-muted: var(--menu-muted, var(--ui-text-muted));
   --kiosk-item-primary: var(--menu-primary, var(--ui-primary));
   --kiosk-item-secondary: var(--menu-secondary, var(--ui-secondary));
-
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
   min-width: 0;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--kiosk-item-text) 14%, transparent);
-  border-radius: var(--menu-radius-control);
-  background: color-mix(in srgb, var(--kiosk-item-bg) 96%, var(--kiosk-item-primary));
-  box-shadow: 0 0.8rem 2.2rem color-mix(in srgb, var(--kiosk-item-text) 5%, transparent);
+  padding: clamp(calc(var(--spacing) * 3), 1.5vw, calc(var(--spacing) * 5));
+  border: 1px solid color-mix(in srgb, var(--kiosk-item-text) 8%, transparent);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: color-mix(in srgb, var(--kiosk-item-bg) 78%, transparent);
+  box-shadow: 0 0.8rem 2.2rem color-mix(in srgb, var(--kiosk-item-text) 7%, transparent);
   color: var(--kiosk-item-text);
+  backdrop-filter: blur(8px);
+  animation: kiosk-item-enter 420ms ease-out both;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
-
+.menu-order-kiosk-item:hover,
+.menu-order-kiosk-item:focus-within {
+  border-color: color-mix(in srgb, var(--kiosk-item-primary) 34%, transparent);
+  box-shadow: 0 1rem 2.8rem color-mix(in srgb, var(--kiosk-item-primary) 12%, transparent);
+  transform: translateY(-0.18rem);
+}
 .menu-order-kiosk-item__media {
   display: grid;
+  width: 94%;
   aspect-ratio: 1;
   min-height: 0;
+  justify-self: center;
   place-items: center;
-  overflow: hidden;
-  border-bottom: 1px solid color-mix(in srgb, var(--kiosk-item-text) 9%, transparent);
+  overflow: visible;
+  border: 0;
 }
-
 .menu-order-kiosk-item__media img {
   display: block;
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 1.1rem 1.4rem color-mix(in srgb, var(--kiosk-item-text) 22%, transparent));
+  object-fit: contain;
+  transition: filter 180ms ease, transform 220ms ease;
+}
+.menu-order-kiosk-item:hover .menu-order-kiosk-item__media img,
+.menu-order-kiosk-item:focus-within .menu-order-kiosk-item__media img {
+  filter: drop-shadow(0 1.35rem 1.6rem color-mix(in srgb, var(--kiosk-item-primary) 24%, transparent));
+  transform: scale(1.035) rotate(-0.4deg);
+}
+.menu-order-kiosk-item[data-menu-item-media-fit='contain'] .menu-order-kiosk-item__media img {
   padding: clamp(0.65rem, 3vw, 1.4rem);
   object-fit: contain;
 }
-
+.menu-order-kiosk-item__media-fallback {
+  display: grid;
+  width: 5rem;
+  height: 5rem;
+  place-items: center;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--kiosk-item-primary) 12%, var(--kiosk-item-bg));
+  color: var(--kiosk-item-primary);
+}
+.menu-order-kiosk-item__media-fallback :deep(svg) {
+  width: 3.25rem;
+  height: 3.25rem;
+}
 .menu-order-kiosk-item__body,
 .menu-order-kiosk-item__copy {
   display: grid;
 }
-
 .menu-order-kiosk-item__body {
-  min-height: 10rem;
+  min-height: 9rem;
   gap: 0.8rem;
-  padding: clamp(0.9rem, 1.7vw, 1.15rem);
+  padding-top: clamp(calc(var(--spacing) * 4), 1.7vw, calc(var(--spacing) * 5));
 }
-
 .menu-order-kiosk-item__copy {
   gap: 0.35rem;
 }
-
 .menu-order-kiosk-item__copy p {
   display: -webkit-box;
   margin: 0;
@@ -247,11 +248,9 @@ function formatPrice(price: number) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
-
 .menu-order-kiosk-item h3 {
   margin: 0;
 }
-
 .menu-order-kiosk-item h3 {
   display: -webkit-box;
   overflow: hidden;
@@ -263,13 +262,11 @@ function formatPrice(price: number) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
-
 .menu-order-kiosk-item__variants {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
 }
-
 .menu-order-kiosk-item__variants button {
   display: inline-grid;
   min-height: 2.5rem;
@@ -284,24 +281,20 @@ function formatPrice(price: number) {
   line-height: 1.2;
   text-align: left;
 }
-
 .menu-order-kiosk-item__variants button strong {
   color: inherit;
   font-variant-numeric: tabular-nums;
 }
-
 .menu-order-kiosk-item__variants .menu-order-kiosk-item__variant--selected {
   border-color: var(--kiosk-item-primary);
   background: color-mix(in srgb, var(--kiosk-item-primary) 11%, var(--kiosk-item-bg));
   color: var(--kiosk-item-primary);
 }
-
 .menu-order-kiosk-item__variants button:focus-visible,
 .menu-order-kiosk-item__add:focus-visible {
   outline: 3px solid var(--kiosk-item-primary);
   outline-offset: 0.18rem;
 }
-
 .menu-order-kiosk-item__add {
   display: flex;
   min-height: 2.75rem;
@@ -309,68 +302,71 @@ function formatPrice(price: number) {
   justify-content: space-between;
   gap: calc(var(--spacing) * 3);
   margin-top: auto;
-  padding: 0.55rem 0;
+  padding: 0.65rem calc(var(--spacing) * 3);
   border: 0;
-  border-top: 1px solid color-mix(in srgb, var(--kiosk-item-text) 10%, transparent);
-  border-radius: 0;
-  background: transparent;
-  color: var(--kiosk-item-primary);
+  border-radius: var(--menu-radius-control);
+  background: var(--kiosk-item-primary);
+  color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
   font-weight: var(--font-weight-black);
+  transition: filter 160ms ease, transform 160ms ease;
 }
-
+.menu-order-kiosk-item__add:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
 .menu-order-kiosk-item__add > span {
   display: inline-flex;
   min-width: 0;
   align-items: center;
   gap: calc(var(--spacing) * 2);
 }
-
 .menu-order-kiosk-item__add > strong {
   flex: 0 0 auto;
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
 }
-
 .menu-order-kiosk-item__add:disabled {
   border-color: color-mix(in srgb, var(--kiosk-item-text) 10%, transparent);
-  background: transparent;
+  background: color-mix(in srgb, var(--kiosk-item-text) 8%, transparent);
   color: var(--kiosk-item-muted);
   cursor: not-allowed;
 }
-
 .menu-order-kiosk-item__unavailable-label {
   color: var(--kiosk-item-muted);
   font-size: 0.72rem;
   font-weight: var(--font-weight-extrabold);
 }
-
 .menu-order-kiosk-item--unavailable {
   opacity: 0.66;
 }
-
 .menu-order-kiosk-item--without-media {
-  position: relative;
-  min-height: clamp(18rem, 29vw, 24rem);
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 105% -5%, color-mix(in srgb, var(--kiosk-item-primary) 17%, transparent) 0 7rem, transparent 7.1rem),
-    radial-gradient(circle at -5% 105%, color-mix(in srgb, var(--kiosk-item-secondary) 10%, transparent) 0 5rem, transparent 5.1rem),
-    color-mix(in srgb, var(--kiosk-item-bg) 95%, var(--kiosk-item-primary));
+  border: 1px dashed color-mix(in srgb, var(--kiosk-item-text) 18%, transparent);
+  border-radius: var(--menu-radius-control);
+  background: color-mix(in srgb, var(--kiosk-item-bg) 78%, transparent);
 }
-
 .menu-order-kiosk-item--without-media .menu-order-kiosk-item__body {
-  min-height: 100%;
-  align-content: end;
-  padding-top: clamp(
-    calc(var(--spacing) * 16),
-    10vw,
-    calc(var(--spacing) * 32)
-  );
+  min-height: 10rem;
+  padding-inline: calc(var(--spacing) * 4);
 }
-
 .menu-order-kiosk-item--without-media h3 {
   font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+}
+@keyframes kiosk-item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-order-kiosk-item {
+    animation: none;
+    transition: none;
+  }
+  .menu-order-kiosk-item__media img,
+  .menu-order-kiosk-item__add {
+    transition: none;
+  }
 }
 </style>

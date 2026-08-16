@@ -83,6 +83,14 @@ Before each task:
   retain only the palette delta over Console and exactly two typography family
   inputs; the five App masters remain the universal readiness gate.
   Operational settings do not live on the Kitchen root.
+  Public Menu colour presentation resolves an optional KitchenMenu
+  `theme.palette` over the AppKitchen Console palette, deleting the Menu field
+  to restore inheritance. The bounded DTO exposes the effective palette and
+  its `menu | kitchen | place-default` source. The Console palette remains
+  `canvas`, `text`, `accent`, and `accent_contrast`. The protected
+  `scripts/migrate-misebox-menu-themes.mjs` migration moves only proved legacy
+  Menu colours into that existing authority; it does not invent missing accent
+  colours or make a root Menu another Kitchen-theme owner.
   Menu roles are explicit AppKitchen Console configuration: one
   `primary_menu_id` and an optional enabled `specials_menu_id`. Never infer the
   primary Menu from collection order. Specials remains an ordinary KitchenMenu;

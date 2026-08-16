@@ -69,12 +69,7 @@
       </UAlert>
     </section>
 
-    <section class="product-demo-index__experiences" aria-labelledby="demo-experiences-title">
-      <div class="product-demo-index__section-heading">
-        <p class="fx-type-headline">Choose a perspective</p>
-        <h2 id="demo-experiences-title">Three restaurants, three perspectives</h2>
-      </div>
-
+    <section class="product-demo-index__experiences" aria-label="Product demonstrations">
       <div class="product-demo-index__grid">
         <component
           v-for="experience in experiences"

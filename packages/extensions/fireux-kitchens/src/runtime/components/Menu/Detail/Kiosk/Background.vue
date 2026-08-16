@@ -2,6 +2,7 @@
   <section
     class="kiosk-background"
     :style="backgroundStyle"
+    :data-kiosk-tone="tone || 'dark'"
     :aria-label="ariaLabel"
   >
     <img
@@ -27,6 +28,7 @@ const props = defineProps<{
   logoImageUrl?: string
   primaryColor?: string
   secondaryColor?: string
+  tone?: 'dark' | 'light'
 }>()
 
 const backgroundStyle = computed(() => {
@@ -37,10 +39,16 @@ const backgroundStyle = computed(() => {
         '--kiosk-background-image': `url('${url}')`,
         '--kiosk-primary': props.primaryColor || '#ff7912',
         '--kiosk-secondary': props.secondaryColor || '#050505',
+        '--kiosk-background-overlay': props.tone === 'light'
+          ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
+          : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
       }
     : {
         '--kiosk-primary': props.primaryColor || '#ff7912',
         '--kiosk-secondary': props.secondaryColor || '#050505',
+        '--kiosk-background-overlay': props.tone === 'light'
+          ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
+          : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
       }
 })
 </script>
@@ -63,7 +71,7 @@ const backgroundStyle = computed(() => {
   overflow: hidden;
   overscroll-behavior: none;
   background-image:
-    linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%)),
+    var(--kiosk-background-overlay),
     var(
       --kiosk-background-image,
       linear-gradient(145deg, #111, #2a1204)
@@ -73,6 +81,14 @@ const backgroundStyle = computed(() => {
   background-repeat: no-repeat;
   background-size: 100% 100%, auto 100%;
   color: white;
+}
+
+.kiosk-background[data-kiosk-tone='light'] {
+  --menu-muted: rgb(3 55 35 / 70%);
+  --menu-text: #033723;
+  --menu-title: #033723;
+
+  color: #033723;
 }
 
 .kiosk-background__logo {

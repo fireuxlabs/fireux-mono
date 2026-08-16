@@ -72,11 +72,6 @@
   gap: calc(var(--spacing) * 2);
 }
 
-.place-detail__color-mode-placeholder {
-  height: calc(var(--spacing) * 8);
-  width: calc(var(--spacing) * 8);
-}
-
 .place-detail__back {
   color: white;
 }

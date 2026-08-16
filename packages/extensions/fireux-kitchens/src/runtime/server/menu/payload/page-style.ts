@@ -49,14 +49,16 @@ export function readMenuPageStyle(value: unknown): Partial<PageStyle> {
   return Object.fromEntries(entries) as Partial<PageStyle>
 }
 
-export function parseMenuPageStyleInput(value: unknown): MenuPageStyleInputResult {
+export function parseMenuPageStyleInput(
+  value: unknown
+): MenuPageStyleInputResult {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return { ok: false, value: {}, error: 'Menu style must be an object.' }
   }
 
   const source = value as Record<string, unknown>
   const allowed = new Set<string>(pageStyleKeys)
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
   if (unsupported) {
     return {
       ok: false,
@@ -67,7 +69,9 @@ export function parseMenuPageStyleInput(value: unknown): MenuPageStyleInputResul
 
   const style: Partial<PageStyle> = {}
   for (const key of pageStyleColorKeys) {
-    const color = String(source[key] ?? '').trim().toLowerCase()
+    const color = String(source[key] ?? '')
+      .trim()
+      .toLowerCase()
     if (!color) continue
     if (!/^#[0-9a-f]{6}$/.test(color)) {
       return {
@@ -109,7 +113,7 @@ export function parseMenuPageStyleInput(value: unknown): MenuPageStyleInputResul
 }
 
 type MenuPageStyleLayer = {
-  source: 'place' | 'app-kitchen' | 'root-kitchen' | 'menu'
+  source: 'place' | 'root-kitchen' | 'console-theme' | 'app-kitchen' | 'menu'
   style: unknown
 }
 

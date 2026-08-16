@@ -8,6 +8,8 @@
         </p>
       </header>
 
+      <ConsoleKitchenOperationsMenusAi />
+
       <ConsoleKitchenOperationsMenusRoles />
 
       <ConsoleKitchenOperationsMenusList />

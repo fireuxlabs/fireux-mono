@@ -8,31 +8,56 @@ import {
 } from '../../../models/kitchen/menu/kiosk-skin.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const localPreviewBackgrounds = (
+const skinOneAppDefaults = (
   appId: string,
   skinId: string
-): MenuKioskSkinDoc['backgrounds'] | undefined => {
-  if (process.env.NODE_ENV === 'production') return undefined
-  if (appId !== 'misebox-app' || skinId !== 'spice-dark') return undefined
+): MenuKioskSkinDoc | undefined => {
+  if (
+    appId !== 'misebox-app' ||
+    (skinId !== 'spice-dark' && skinId !== 'skin-one')
+  ) return undefined
 
-  const base = '/img/app/kiosk/skins/spice-dark'
+  const imageUrl = '/img/app/kiosk/skins/skin-one/welcome-background.png'
 
   return {
-    portrait_large: {
-      image_url: `${base}/portrait-large.png`,
-      width: 1080,
-      height: 1920,
+    background_image_url: imageUrl,
+    catalogue_background_image_url:
+      '/img/app/kiosk/skins/skin-one/catalogue-background.png',
+    section_card_frame_image_url:
+      '/img/app/kiosk/skins/skin-one/category-frame-overlay.png',
+    section_card_image_urls: Object.fromEntries(
+      [
+        'pizza', 'burgers', 'kebab-falafel', 'grill', 'mains-plates',
+        'pasta', 'mezze-salads', 'snacks-sides', 'soft-drinks',
+        'traditional', 'hot-drinks', 'beer', 'wine', 'spirits',
+      ].map(key => [
+        key,
+        `/img/app/kiosk/skins/skin-one/section-cards/${key}${
+          ['soft-drinks', 'traditional', 'hot-drinks', 'beer', 'wine', 'spirits'].includes(key)
+            ? '-plum'
+            : ''
+        }.png`,
+      ])
+    ),
+    backgrounds: {
+      portrait_large: {
+        image_url: imageUrl,
+        width: 1200,
+        height: 1920,
+      },
+      portrait_compact: {
+        image_url: imageUrl,
+        width: 1200,
+        height: 1920,
+      },
+      portrait_phone: {
+        image_url: imageUrl,
+        width: 1200,
+        height: 1920,
+      },
     },
-    portrait_compact: {
-      image_url: `${base}/portrait-compact.png`,
-      width: 768,
-      height: 1024,
-    },
-    portrait_phone: {
-      image_url: `${base}/portrait-phone.png`,
-      width: 390,
-      height: 844,
-    },
+    tone: 'light',
+    thumbnail_image_url: imageUrl,
   }
 }
 
@@ -54,20 +79,19 @@ export async function readMenuKioskSkin(
   if (!snap.exists) return undefined
 
   const rawData = snap.data() as MenuKioskSkinDoc
-  const previewBackgrounds = localPreviewBackgrounds(resolvedAppId, resolvedSkinId)
-  const data = previewBackgrounds
+  const appDefaults = skinOneAppDefaults(resolvedAppId, resolvedSkinId)
+  const data = appDefaults
     ? {
+        ...appDefaults,
         ...rawData,
-        background_image_url:
-          previewBackgrounds.portrait_large?.image_url ||
-          rawData.background_image_url,
-        backgrounds: {
-          ...(rawData.backgrounds ?? {}),
-          ...previewBackgrounds,
+        section_card_image_urls: {
+          ...(appDefaults.section_card_image_urls ?? {}),
+          ...(rawData.section_card_image_urls ?? {}),
         },
-        thumbnail_image_url:
-          previewBackgrounds.portrait_compact?.image_url ||
-          rawData.thumbnail_image_url,
+        backgrounds: {
+          ...(appDefaults.backgrounds ?? {}),
+          ...(rawData.backgrounds ?? {}),
+        },
       }
     : rawData
   if (data.status === 'archived') return undefined

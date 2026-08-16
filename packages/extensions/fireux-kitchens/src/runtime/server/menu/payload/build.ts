@@ -7,11 +7,15 @@ import type {
   MenuDocumentFileKind,
   MenuManifest,
 } from '../../../models/kitchen/menu/menu-detail.model'
-import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
+import type {
+  MenuChoice,
+  MenuOrderTypeConfig,
+} from '../../../models/kitchen/menu/menu.model'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import {
-  normalizeSproochliLanguage,
-} from 'fireux-sproochli/runtime/sproochli'
-import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
+  readMenuOrderingConfig,
+  isMenuOrderingEnabled,
+} from '../ordering/config.ts'
 import {
   menuContextProfile,
   normalizeMenuRouteContext,
@@ -24,6 +28,7 @@ import {
   readMenuFile,
 } from './file.ts'
 import { readMenuPageStyle } from './page-style.ts'
+import { resolveEffectiveMenuTheme } from './theme.ts'
 import { readMenuKioskSkin } from './kiosk-skin.ts'
 import { readMenuManifestSections } from './sections.ts'
 import { menuSourceFromData } from './source.ts'
@@ -39,7 +44,7 @@ import {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const unique = <T extends string>(values: T[]) =>
   values.filter((value, index, source) => source.indexOf(value) === index)
@@ -48,7 +53,9 @@ const kitchenImageShade = (value: unknown) => {
   return shade === 'light' || shade === 'dark' ? shade : undefined
 }
 
-const readMenuSourceKind = (data: Record<string, unknown>): MenuPayloadSourceKind =>
+const readMenuSourceKind = (
+  data: Record<string, unknown>
+): MenuPayloadSourceKind =>
   readRecordString(data, 'source_kind') === 'kitchen-menu' ||
   readRecordString(data, 'kind') === 'menu'
     ? 'menu'
@@ -68,6 +75,7 @@ const menuDataForManifest = (
   const status = rootMenuData.status ?? sourceMenu.status
   const ordering = sourceMenu.ordering ?? rootMenuData.ordering
   const kioskSkinId = sourceMenu.kiosk_skin_id ?? rootMenuData.kiosk_skin_id
+  const theme = sourceMenu.theme ?? rootMenuData.theme
 
   return {
     ...rootMenuData,
@@ -76,6 +84,7 @@ const menuDataForManifest = (
     ...(status ? { status } : {}),
     ...(ordering ? { ordering } : {}),
     ...(kioskSkinId ? { kiosk_skin_id: kioskSkinId } : {}),
+    ...(theme ? { theme } : {}),
   }
 }
 
@@ -92,10 +101,7 @@ export async function readMenuSourceMenu(source: MenuPayloadSource) {
   return readRecordString(data, 'status') === 'published' ? data : {}
 }
 
-const defaultOrderType = (
-  types: KitchenOrderType[],
-  contextValue: unknown
-) => {
+const defaultOrderType = (types: KitchenOrderType[], contextValue: unknown) => {
   if (!types.length) return undefined
 
   const profile = menuContextProfile(contextValue)
@@ -106,9 +112,13 @@ const defaultOrderType = (
 
   if (preferred && visibleTypes.includes(preferred)) return preferred
 
-  return visibleTypes[0] ||
-    (profile.context !== 'generic' ? preferred || profile.visibleOrderTypes[0] : types[0]) ||
+  return (
+    visibleTypes[0] ||
+    (profile.context !== 'generic'
+      ? preferred || profile.visibleOrderTypes[0]
+      : types[0]) ||
     'dine_in'
+  )
 }
 
 const contextOrderTypeConfigs = (
@@ -129,17 +139,14 @@ const publicOrderTypeConfig = (config: MenuOrderTypeConfig) => {
   return result
 }
 
-const contextChoices = (
-  choices: MenuChoice[],
-  contextValue: unknown
-) => {
+const contextChoices = (choices: MenuChoice[], contextValue: unknown) => {
   const profile = menuContextProfile(contextValue)
 
-  return choices.filter((choice) =>
-    choice.order_type && (
-      profile.context === 'generic' ||
-      profile.visibleOrderTypes.includes(choice.order_type)
-    )
+  return choices.filter(
+    (choice) =>
+      choice.order_type &&
+      (profile.context === 'generic' ||
+        profile.visibleOrderTypes.includes(choice.order_type))
   )
 }
 
@@ -154,7 +161,9 @@ const serviceProfile = (
   )
   const context = normalizeMenuRouteContext(scope.menuContext)
   const orderTypeConfigs = contextOrderTypeConfigs(ordering, context)
-  const availableOrderTypes = unique(ordering.order_types.map((type) => type.type))
+  const availableOrderTypes = unique(
+    ordering.order_types.map((type) => type.type)
+  )
   const orderTypes = unique(orderTypeConfigs.map((type) => type.type))
   const contextOrdering = {
     ...ordering,
@@ -168,7 +177,7 @@ const serviceProfile = (
   }
   const defaultType = defaultOrderType(orderTypes, context)
   const choices = Array.isArray(scope.choices)
-    ? scope.choices as MenuChoice[]
+    ? (scope.choices as MenuChoice[])
     : []
 
   return {
@@ -181,10 +190,9 @@ const serviceProfile = (
     ...(defaultType
       ? {
           defaultOrderType: defaultType,
-          defaultOrderTypeConfig:
-            contextOrdering.order_types.find((type: MenuOrderTypeConfig) =>
-              type.type === defaultType
-            ),
+          defaultOrderTypeConfig: contextOrdering.order_types.find(
+            (type: MenuOrderTypeConfig) => type.type === defaultType
+          ),
         }
       : {}),
     choices: contextChoices(choices, context),
@@ -202,11 +210,17 @@ export async function buildMenuManifestPayload(
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
   const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
+  const resolvedTheme = resolveEffectiveMenuTheme(
+    menuData,
+    scope.kitchen_theme,
+    scope.page_style
+  )
   const sproochliEnabled = scope.sproochli?.enabled === true
   if (!currencyCode) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Kitchen currency code is required before publishing menus.',
+      statusMessage:
+        'Kitchen currency code is required before publishing menus.',
     })
   }
 
@@ -231,8 +245,17 @@ export async function buildMenuManifestPayload(
         ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }
         : {}),
       kitchenName: source.kitchen_name || '',
+      ...(text(scope.kitchenTagline)
+        ? { kitchenTagline: text(scope.kitchenTagline) }
+        : {}),
       ...(text(scope.kitchenWordmarkImageUrl)
         ? { kitchenWordmarkImageUrl: text(scope.kitchenWordmarkImageUrl) }
+        : {}),
+      ...(text(scope.placeLogoImageUrl)
+        ? { placeLogoImageUrl: text(scope.placeLogoImageUrl) }
+        : {}),
+      ...(text(scope.placeWordmarkImageUrl)
+        ? { placeWordmarkImageUrl: text(scope.placeWordmarkImageUrl) }
         : {}),
       ...(kioskSkin
         ? {
@@ -241,6 +264,7 @@ export async function buildMenuManifestPayload(
           }
         : {}),
       pageStyle: readMenuPageStyle(scope.page_style),
+      ...resolvedTheme,
     },
     source: {
       appId: source.app_id || '',
@@ -274,6 +298,11 @@ export function buildMenuDocumentPayload(
     file,
     storedKind: readMenuDocumentKind(data),
   }) as MenuDocumentFileKind
+  const resolvedTheme = resolveEffectiveMenuTheme(
+    data,
+    scope.kitchen_theme,
+    scope.page_style
+  )
 
   return {
     kind: 'document',
@@ -294,12 +323,16 @@ export function buildMenuDocumentPayload(
         ? { kitchenLogoImageUrl: text(scope.kitchenLogoImageUrl) }
         : {}),
       kitchenName: source.kitchen_name || '',
+      ...(text(scope.kitchenTagline)
+        ? { kitchenTagline: text(scope.kitchenTagline) }
+        : {}),
       ...(text(scope.kitchenWordmarkImageUrl)
         ? { kitchenWordmarkImageUrl: text(scope.kitchenWordmarkImageUrl) }
         : {}),
       fileKind,
       ...(hasMenuFile(file) ? { file: compactMenuFile(file) } : {}),
       pageStyle: readMenuPageStyle(scope.page_style),
+      ...resolvedTheme,
     },
   }
 }
@@ -309,9 +342,10 @@ export async function buildMenuPayload(
   data: Record<string, unknown>,
   scope: MenuPayloadScope = {}
 ): Promise<MenuDetailPayload> {
-  const sourceKind = scope.sourceKind === 'kitchen-menu'
-    ? 'menu'
-    : scope.sourceKind ?? readMenuSourceKind(data)
+  const sourceKind =
+    scope.sourceKind === 'kitchen-menu'
+      ? 'menu'
+      : (scope.sourceKind ?? readMenuSourceKind(data))
 
   return sourceKind === 'menu'
     ? await buildMenuManifestPayload(menuId, data, scope)

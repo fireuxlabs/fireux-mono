@@ -88,6 +88,10 @@ async function normalizeDishImage(data: Buffer) {
 
     return await source
       .rotate()
+      .trim({
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+        threshold: 4,
+      })
       .resize(contentSize, contentSize, {
         fit: 'contain',
         background: { r: 0, g: 0, b: 0, alpha: 0 },

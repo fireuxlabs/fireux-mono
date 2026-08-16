@@ -1,9 +1,15 @@
 <template>
-  <section v-if="findings.length" class="debug-drift">
+  <section
+    v-if="hasContracts"
+    class="debug-drift"
+    :class="{ 'debug-drift--healthy': !findings.length }"
+  >
     <header class="debug-drift__header">
       <div>
-        <strong>Contract drift</strong>
-        <p>Runtime data differs from the declared debug contract.</p>
+        <strong>{{
+          findings.length ? 'Contract drift' : 'Contract matches'
+        }}</strong>
+        <p>{{ contractNames.join(', ') || 'Unnamed runtime contract' }}</p>
       </div>
       <div class="debug-drift__counts">
         <UBadge v-if="missingCount" color="error" variant="soft">
@@ -12,6 +18,12 @@
         <UBadge v-if="extraCount" color="warning" variant="soft">
           {{ extraCount }} unexpected
         </UBadge>
+        <UBadge v-if="deprecatedCount" color="neutral" variant="soft">
+          {{ deprecatedCount }} deprecated
+        </UBadge>
+        <UBadge v-if="!findings.length" color="success" variant="soft"
+          >Healthy</UBadge
+        >
       </div>
     </header>
     <div
@@ -32,6 +44,12 @@
           <li v-for="path in finding.extra" :key="path">{{ path }}</li>
         </ul>
       </div>
+      <div v-if="finding.deprecated.length">
+        <span>Deprecated</span>
+        <ul>
+          <li v-for="path in finding.deprecated" :key="path">{{ path }}</li>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
@@ -44,6 +62,9 @@ defineProps<{
   findings: DevDebugContractFinding[]
   missingCount: number
   extraCount: number
+  deprecatedCount: number
+  contractNames: string[]
+  hasContracts: boolean
 }>()
 </script>
 
@@ -61,6 +82,9 @@ defineProps<{
   gap: calc(var(--spacing) * 2);
   background: color-mix(in srgb, var(--ui-color-warning-500) 10%, transparent);
   padding: calc(var(--spacing) * 2.5);
+}
+.debug-drift--healthy {
+  border-color: var(--ui-color-success-400);
 }
 .debug-drift__header p {
   margin: calc(var(--spacing) * 0.5) 0 0;

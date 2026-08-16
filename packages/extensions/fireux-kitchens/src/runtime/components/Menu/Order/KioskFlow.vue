@@ -4,45 +4,27 @@
 <template>
   <section
     class="menu-order-kiosk"
-    :class="`menu-order-kiosk--${activeType ? 'order' : 'mode'}`"
+    :class="`menu-order-kiosk--${stage}`"
     data-menu-kiosk-presentation="touch"
-    :data-menu-kiosk-stage="activeType ? 'order' : 'mode'"
+    :data-menu-kiosk-stage="stage"
     aria-label="Kiosk ordering"
   >
     <MenuOrderKioskStart
       v-if="!activeType"
+      :backdrop-image-url="backdropImageUrl"
+      :eat-in-card-image-url="eatInCardImageUrl"
       :menu-name="menuName"
       :options="options"
       :kitchen-name="kitchenName"
+      :kitchen-tagline="kitchenTagline"
       :logo-image-url="logoImageUrl"
+      :sections="sections"
+      :takeaway-card-image-url="takeawayCardImageUrl"
       :wordmark-image-url="wordmarkImageUrl"
       @select="selectedType = $event"
     />
 
     <template v-else>
-      <header class="menu-order-kiosk__toolbar">
-        <button
-          v-if="!fixedConfig"
-          type="button"
-          class="menu-order-kiosk__change"
-          data-menu-action="change-kiosk-mode"
-          @click="clearSelection"
-        >
-          <UIcon name="i-lucide-arrow-left" aria-hidden="true" />
-          <span>Change</span>
-        </button>
-        <span v-else class="menu-order-kiosk__change-spacer" aria-hidden="true" />
-
-        <span class="menu-order-kiosk__identity">
-          <strong>{{ kitchenName || menuName }}</strong>
-          <small v-if="kitchenName && menuName !== kitchenName">{{ menuName }}</small>
-        </span>
-
-        <span class="menu-order-kiosk__mode">
-          {{ selectedLabel }}
-        </span>
-      </header>
-
       <slot
         name="order"
         :config="selectedConfig"
@@ -53,6 +35,7 @@
         <MenuOrderKioskOrderFlow
           :key="activeType"
           :config="selectedConfig"
+          :catalogue-background-image-url="catalogueBackgroundImageUrl"
           :currency-code="currencyCode"
           :kitchen-id="kitchenId"
           :kitchen-slug="kitchenSlug"
@@ -60,6 +43,8 @@
           :order-type="activeType"
           :scope-key="`${scopeKey}:${activeType}`"
           :sections="sections"
+          :section-card-frame-image-url="sectionCardFrameImageUrl"
+          :section-card-image-urls="sectionCardImageUrls"
           :source-menu-id="sourceMenuId"
         />
       </slot>
@@ -74,29 +59,40 @@ import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-deta
 import type { MenuOrderKioskType } from '../../../composables/fireux/menu/order/useMenuOrderKiosk'
 
 const props = defineProps<{
+  backdropImageUrl?: string
+  catalogueBackgroundImageUrl?: string
   configs: MenuOrderTypeConfig[]
   currencyCode: string
+  eatInCardImageUrl?: string
   fixedOrderType?: MenuOrderKioskType
   kitchenId: string
   kitchenName?: string
+  kitchenTagline?: string
   kitchenSlug?: string
   logoImageUrl?: string
   menuId: string
   menuName: string
   scopeKey: string
   sections: MenuManifestSection[]
+  sectionCardFrameImageUrl?: string
+  sectionCardImageUrls?: Record<string, string>
   sourceMenuId: string
+  takeawayCardImageUrl?: string
   wordmarkImageUrl?: string
 }>()
 
 const selectedType = ref<MenuOrderKioskType | null>(null)
+const stage = computed(() => activeType.value ? 'order' : 'mode')
 const options = computed(() => props.configs.flatMap((config) => {
   if (config.type !== 'eat_in' && config.type !== 'takeaway') return []
 
   return [{
     type: config.type,
     label: config.type === 'eat_in' ? 'Eat here' : 'Take away',
-    icon: config.type === 'eat_in' ? 'i-lucide-utensils' : 'i-lucide-shopping-bag',
+    icon: config.type === 'eat_in' ? 'i-lucide-armchair' : 'i-lucide-shopping-bag',
+    description: config.type === 'eat_in'
+      ? 'We’ll bring it to your table'
+      : 'Collect your order at the counter',
     paused: config.availability?.paused === true,
   }]
 }))
@@ -117,10 +113,6 @@ const activeType = computed<MenuOrderKioskType | null>(() => {
 const selectedConfig = computed(() => props.configs.find(
   config => config.type === activeType.value
 ) || null)
-const selectedLabel = computed(() =>
-  activeType.value === 'eat_in' ? 'Eat here' : 'Take away'
-)
-
 function clearSelection() {
   if (fixedConfig.value) return
   selectedType.value = null
@@ -151,110 +143,6 @@ function clearSelection() {
 }
 
 .menu-order-kiosk--order {
-  grid-template-rows: auto minmax(0, 1fr);
-}
-
-.menu-order-kiosk__toolbar {
-  display: grid;
-  grid-template-columns: minmax(6rem, 1fr) auto minmax(6rem, 1fr);
-  gap: calc(var(--spacing) * 4);
-  align-items: center;
-  min-height: 4.5rem;
-  padding:
-    max(calc(var(--spacing) * 3), env(safe-area-inset-top))
-    clamp(calc(var(--spacing) * 3), 2vw, calc(var(--spacing) * 6))
-    calc(var(--spacing) * 3);
-  border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
-  background: var(--menu-bg);
-}
-
-.menu-order-kiosk__change {
-  display: inline-flex;
-  width: max-content;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem calc(var(--spacing) * 3);
-  border: 0;
-  border-radius: var(--menu-radius-control);
-  background: transparent;
-  color: var(--menu-text);
-  cursor: pointer;
-  font: inherit;
-  font-weight: var(--font-weight-extrabold);
-}
-
-.menu-order-kiosk__change-spacer {
-  display: block;
-}
-
-.menu-order-kiosk__change:focus-visible {
-  outline: 3px solid var(--menu-primary);
-  outline-offset: 0.25rem;
-}
-
-.menu-order-kiosk__change :deep(.iconify) {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex: 0 0 auto;
-}
-
-.menu-order-kiosk__identity {
-  display: grid;
-  min-width: 0;
-  justify-items: center;
-  line-height: 1.05;
-}
-
-.menu-order-kiosk__identity strong,
-.menu-order-kiosk__identity small {
-  max-width: min(44vw, 28rem);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.menu-order-kiosk__identity strong {
-  color: var(--menu-title);
-  font-family: var(--menu-title-font);
-  font-size: clamp(0.95rem, 1.7vw, 1.2rem);
-  text-align: center;
-}
-
-.menu-order-kiosk__identity small {
-  margin-top: var(--spacing);
-  color: var(--menu-muted);
-  font-size: 0.7rem;
-  font-weight: var(--font-weight-bold);
-}
-
-.menu-order-kiosk__mode {
-  justify-self: end;
-  color: var(--menu-muted);
-  font-size: 0.82rem;
-  font-weight: var(--font-weight-bold);
-  white-space: nowrap;
-}
-
-@media (max-width: 700px) {
-  .menu-order-kiosk__toolbar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    min-height: 4.5rem;
-    padding-inline: calc(var(--spacing) * 3);
-  }
-
-  .menu-order-kiosk__change span {
-    display: none;
-  }
-
-  .menu-order-kiosk__change {
-    width: 2.75rem;
-    justify-content: center;
-    padding: 0;
-  }
-
-  .menu-order-kiosk__change-spacer {
-    width: 2.75rem;
-  }
+  grid-template-rows: minmax(0, 1fr);
 }
 </style>

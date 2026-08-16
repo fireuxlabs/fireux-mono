@@ -270,8 +270,15 @@ const scopedTarget = async (
           }
         : {}),
       ...(identity.name ? { kitchenName: identity.name } : {}),
+      ...(identity.tagline ? { kitchenTagline: identity.tagline } : {}),
       ...(identity.wordmarkImageUrl
         ? { kitchenWordmarkImageUrl: identity.wordmarkImageUrl }
+        : {}),
+      ...(identity.placeLogoImageUrl
+        ? { placeLogoImageUrl: identity.placeLogoImageUrl }
+        : {}),
+      ...(identity.placeWordmarkImageUrl
+        ? { placeWordmarkImageUrl: identity.placeWordmarkImageUrl }
         : {}),
       kitchenAppId: input.appId,
       kitchenMenuId: menuId,
@@ -282,6 +289,9 @@ const scopedTarget = async (
       ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
       ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
       ...(identity.page_style ? { page_style: identity.page_style } : {}),
+      ...(identity.kitchen_theme
+        ? { kitchen_theme: identity.kitchen_theme }
+        : {}),
       ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
         ? { fulfilment }
         : {}),

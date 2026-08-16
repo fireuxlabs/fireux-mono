@@ -40,8 +40,8 @@ const MEMBERS = [
     inspectTag: 'aria-label="Menu placements"',
     updateTag: '<ConsoleKitchenOperationsDishesEdit',
     deleteTag: '<ConsoleKitchenOperationsDishesDelete',
-    recordsLabel: 'aria-label="Dishes"',
-    toolsLabel: 'aria-labelledby="create-dish-title"',
+    recordsLabel: ':aria-label="catalogue.title"',
+    toolsLabel: ':aria-labelledby="`create-${catalogue.singular}-title`"',
     quickLook:
       'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/QuickLook.vue',
     quickLookTag: '<ConsoleKitchenOperationsDishesQuickLook',
@@ -54,7 +54,7 @@ const MEMBERS = [
         'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/fetch/useKitchenDishCollection.ts',
       controller:
         'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts',
-      errorTitle: 'title="Dishes unavailable"',
+      errorTitle: ':title="`${catalogue.title} unavailable`"',
     },
   },
 ]

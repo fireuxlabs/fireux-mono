@@ -11,16 +11,10 @@
       </div>
     </div>
     <div class="space-y-4">
-      <p
-        v-if="!source"
-        class="text-sm text-dimmed"
-      >
+      <p v-if="!source" class="text-sm text-dimmed">
         Upload the source document before processing.
       </p>
-      <p
-        v-else
-        class="text-sm text-dimmed"
-      >
+      <p v-else class="text-sm text-dimmed">
         {{ sourceDescription }}
       </p>
       <MoleculesDisclosurePanel
@@ -61,7 +55,13 @@
               <UBadge
                 v-for="file in fileResults"
                 :key="file.id"
-                :color="file.status === 'failed' ? 'error' : file.status === 'empty' ? 'neutral' : 'success'"
+                :color="
+                  file.status === 'failed'
+                    ? 'error'
+                    : file.status === 'empty'
+                      ? 'neutral'
+                      : 'success'
+                "
                 variant="soft"
               >
                 {{ file.file_name }} · {{ file.status }}
@@ -85,7 +85,13 @@
             >
               <div class="flex flex-wrap items-center gap-2">
                 <UBadge
-                  :color="flag.level === 'error' ? 'error' : flag.level === 'warning' ? 'warning' : 'info'"
+                  :color="
+                    flag.level === 'error'
+                      ? 'error'
+                      : flag.level === 'warning'
+                        ? 'warning'
+                        : 'info'
+                  "
                   variant="soft"
                 >
                   {{ flag.code }}
@@ -95,7 +101,10 @@
             </li>
           </ul>
         </MoleculesDisclosurePanel>
-        <div class="grid gap-4" :class="{ 'xl:grid-cols-2': currentSections.length }">
+        <div
+          class="grid gap-4"
+          :class="{ 'xl:grid-cols-2': currentSections.length }"
+        >
           <MoleculesDisclosurePanel
             v-if="currentSections.length"
             title="Existing menu"
@@ -132,15 +141,15 @@
         />
       </div>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         v-if="result"
         title="Menu process result"
         context="Kitchen menu process · /console/kitchen/menus/[menuId]"
         :objects="result"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
       />
     </div>
@@ -152,39 +161,23 @@ import { computed, ref, watch } from 'vue'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
+import {
+  menuProcessNumberText as numberText,
+  menuProcessOptionLabel as optionLabel,
+  menuProcessPriceText as priceText,
+  menuProcessRecord as record,
+  menuProcessRecords as records,
+  menuProcessText as text,
+} from './view'
 
-const {
-  menu,
-  source,
-  menuId,
-  kitchenId,
-  activeKitchenAppId,
-  canWrite,
-} = useKitchenConsoleMenu()
+const { menu, source, menuId, kitchenId, activeKitchenAppId, canWrite } =
+  useKitchenConsoleMenu()
 const { currentUser } = useAuth()
 const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const authToken = ref('')
 const pendingMode = ref<'standard' | 'strong' | ''>('')
 const error = ref('')
 const result = ref<Record<string, unknown> | null>(null)
-const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-const records = (value: unknown) =>
-  Array.isArray(value) ? value.map(record) : []
-const numberText = (value: unknown) => {
-  const number = Number(value)
-  return Number.isFinite(number) ? String(number) : '0'
-}
-const priceText = (value: unknown) => {
-  const number = Number(value)
-  return Number.isFinite(number) && number > 0 ? `CHF ${number}` : ''
-}
-const optionLabel = (option: Record<string, unknown>) =>
-  text(option.label) ||
-    [text(option.quantity), text(option.unit)].filter(Boolean).join(' ')
 const processDescription = computed(() =>
   menu.value
     ? 'Convert the upload and save a review draft. Published menus are not overwritten automatically.'
@@ -192,7 +185,9 @@ const processDescription = computed(() =>
 )
 const sourceDescription =
   'Reads the saved source and saves a structured menu draft. Processing can take several minutes; if interrupted, retry resumes from the last saved checkpoint.'
-const uploadId = computed(() => text(record(source.value).id) || text(menuId.value))
+const uploadId = computed(
+  () => text(record(source.value).id) || text(menuId.value)
+)
 const sourceDraft = computed(() => record(record(source.value).ai_draft))
 const sourceProcess = computed(() => record(record(source.value).ai_process))
 const persistedStage = computed(() => text(sourceProcess.value.stage))
@@ -219,7 +214,8 @@ const statusMessage = computed(() => {
 })
 const persistedError = computed(() =>
   persistedStage.value === 'failed'
-    ? text(sourceProcess.value.reason) || 'The previous menu processing run failed.'
+    ? text(sourceProcess.value.reason) ||
+      'The previous menu processing run failed.'
     : ''
 )
 const displayError = computed(() => error.value || persistedError.value)
@@ -237,22 +233,39 @@ const canProcess = computed(() =>
 const persistedReport = computed(() => record(sourceDraft.value.report))
 const counts = computed(() => {
   const local = record(record(result.value?.comparison).counts)
-  return Object.keys(local).length ? local : record(persistedReport.value.counts)
+  return Object.keys(local).length
+    ? local
+    : record(persistedReport.value.counts)
 })
 const showStats = computed(() =>
   Boolean(result.value || Object.keys(counts.value).length)
 )
 const stats = computed(() => [
   { label: 'Source files', value: numberText(counts.value.source_files) },
-  { label: 'Raw items', value: numberText(counts.value.raw_extracted_items ?? counts.value.extracted_items) },
-  { label: 'Draft items', value: numberText(counts.value.normalized_items ?? counts.value.extracted_items) },
-  { label: 'Draft variants', value: numberText(counts.value.extracted_price_options) },
+  {
+    label: 'Raw items',
+    value: numberText(
+      counts.value.raw_extracted_items ?? counts.value.extracted_items
+    ),
+  },
+  {
+    label: 'Draft items',
+    value: numberText(
+      counts.value.normalized_items ?? counts.value.extracted_items
+    ),
+  },
+  {
+    label: 'Draft variants',
+    value: numberText(counts.value.extracted_price_options),
+  },
   { label: 'Draft add-ons', value: numberText(counts.value.extracted_add_ons) },
   { label: 'Review flags', value: String(flags.value.length) },
   {
     label: 'Menu write',
-    value: text(record(result.value?.write).action) ||
-      text(record(sourceDraft.value.write).action) || 'Pending',
+    value:
+      text(record(result.value?.write).action) ||
+      text(record(sourceDraft.value.write).action) ||
+      'Pending',
   },
   {
     label: 'AI calls',
@@ -279,8 +292,9 @@ const flags = computed(() => {
   const local = toFlags(record(result.value?.comparison).flags)
   return local.length ? local : toFlags(persistedReport.value.flags)
 })
-const writeMessage = computed(() =>
-  text(result.value?.message) ||
+const writeMessage = computed(
+  () =>
+    text(result.value?.message) ||
     text(record(result.value?.write).action) ||
     text(record(sourceDraft.value.write).action)
 )
@@ -324,8 +338,10 @@ const draftSections = computed(() =>
       ? extractedSections.value
       : persistedDraftSections.value
 )
-const hasDraft = computed(() => Boolean(result.value) ||
-  draftSections.value.some((section) => section.items.length)
+const hasDraft = computed(
+  () =>
+    Boolean(result.value) ||
+    draftSections.value.some((section) => section.items.length)
 )
 watch(
   currentUser,
@@ -365,7 +381,6 @@ async function processSource(mode: 'standard' | 'strong') {
       }),
     })
     const payload = await response.json().catch(() => null)
-
     if (!response.ok) {
       throw new Error(
         text(payload?.statusMessage) ||
@@ -376,9 +391,8 @@ async function processSource(mode: 'standard' | 'strong') {
 
     result.value = payload as Record<string, unknown>
   } catch (cause) {
-    error.value = cause instanceof Error
-      ? cause.message
-      : 'Menu processing failed.'
+    error.value =
+      cause instanceof Error ? cause.message : 'Menu processing failed.'
   } finally {
     pendingMode.value = ''
   }

@@ -11,6 +11,8 @@ const productDemoDataSource = 'demo' as const
 export async function loadMiseboxProductDemo(
   loadIngredientRoots: (ids: string[]) => Promise<PublicIngredient[]>
 ): Promise<MiseboxProductDemoModel> {
+  const { pill: projectKitchenPill, surface: projectKitchenSurface } =
+    useKitchenInterface()
   const [
     scenarioModule,
     presentationModule,
@@ -79,8 +81,6 @@ export async function loadMiseboxProductDemo(
   const consoleRecipeCascadeById = new Map(
     consoleMenuCascade.recipes.map(recipe => [recipe.id, recipe])
   )
-  const { pill: projectKitchenPill, surface: projectKitchenSurface } =
-    useKitchenInterface()
   const consoleKitchenPill = projectKitchenPill(projectKitchenSurface({
     kitchen: consoleScenario.kitchen,
     place: consoleScenario.place,

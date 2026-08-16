@@ -13,11 +13,20 @@ export type MenuKioskSkin = {
   id: string
   label: string
   backgroundImageUrl: string
+  catalogueBackgroundImageUrl?: string
+  sectionCardFrameImageUrl?: string
+  sectionCardImageUrls?: Record<string, string>
   backgrounds?: Partial<Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>>
+  choiceCards?: MenuKioskSkinChoiceCards
   primaryColor: string
   secondaryColor: string
   thumbnailImageUrl?: string
   tone: 'dark' | 'light'
+}
+
+export type MenuKioskSkinChoiceCards = {
+  eatInImageUrl?: string
+  takeawayImageUrl?: string
 }
 
 export type MenuKioskSkinStatus = 'active' | 'draft' | 'archived'
@@ -26,10 +35,17 @@ export type MenuKioskSkinDoc = {
   id?: string
   label?: string
   background_image_url?: string
+  catalogue_background_image_url?: string
+  section_card_frame_image_url?: string
+  section_card_image_urls?: Record<string, string>
   backgrounds?: {
     portrait_large?: MenuKioskSkinBackgroundDoc
     portrait_compact?: MenuKioskSkinBackgroundDoc
     portrait_phone?: MenuKioskSkinBackgroundDoc
+  }
+  choice_cards?: {
+    eat_in_image_url?: string
+    takeaway_image_url?: string
   }
   primary_color?: string
   secondary_color?: string
@@ -111,6 +127,19 @@ export const menuKioskSkinFromDoc = (
   const primaryColor = hexColor(data.primary_color)
   const secondaryColor = hexColor(data.secondary_color)
   const tone = data.tone === 'light' ? 'light' : 'dark'
+  const choiceCards = {
+    ...(clean(data.choice_cards?.eat_in_image_url)
+      ? { eatInImageUrl: clean(data.choice_cards?.eat_in_image_url) }
+      : {}),
+    ...(clean(data.choice_cards?.takeaway_image_url)
+      ? { takeawayImageUrl: clean(data.choice_cards?.takeaway_image_url) }
+      : {}),
+  }
+  const sectionCardImageUrls = Object.fromEntries(
+    Object.entries(data.section_card_image_urls ?? {})
+      .map(([key, value]) => [clean(key), clean(value)])
+      .filter(([key, value]) => Boolean(key && value))
+  )
 
   if (!resolvedId || !backgroundImageUrl || !primaryColor || !secondaryColor) return null
 
@@ -118,9 +147,17 @@ export const menuKioskSkinFromDoc = (
     id: resolvedId,
     label,
     backgroundImageUrl,
+    ...(clean(data.catalogue_background_image_url)
+      ? { catalogueBackgroundImageUrl: clean(data.catalogue_background_image_url) }
+      : {}),
+    ...(clean(data.section_card_frame_image_url)
+      ? { sectionCardFrameImageUrl: clean(data.section_card_frame_image_url) }
+      : {}),
+    ...(Object.keys(sectionCardImageUrls).length ? { sectionCardImageUrls } : {}),
     ...(Object.keys(resolvedBackgrounds).length
       ? { backgrounds: resolvedBackgrounds }
       : {}),
+    ...(Object.keys(choiceCards).length ? { choiceCards } : {}),
     primaryColor,
     secondaryColor,
     ...(clean(data.thumbnail_image_url)

@@ -1,91 +1,127 @@
 <template>
-  <span v-if="color" class="debug-value debug-value--color">
-    <span
-      class="debug-value__swatch"
-      :style="{ backgroundColor: color }"
-      aria-hidden="true"
-    />
-    <code>{{ color }}</code>
+  <span v-if="dependency || sensitive || debugState" class="debug-value__meta">
+    <UBadge v-if="debugState" color="neutral" variant="soft" size="xs">
+      {{ debugStateLabel }}
+    </UBadge>
+    <UBadge v-if="sensitive" color="warning" variant="soft" size="xs">
+      Sensitive
+    </UBadge>
+    <small v-if="dependency">← {{ dependencyLabel }}</small>
   </span>
 
-  <UBadge
-    v-else-if="typeof value === 'boolean'"
-    :color="value ? 'success' : 'neutral'"
-    variant="subtle"
-    size="sm"
-  >
-    {{ value ? 'True' : 'False' }}
-  </UBadge>
-
-  <span v-else-if="isEmpty" class="debug-value debug-value--empty">
-    {{ emptyLabel }}
-  </span>
-
-  <a
-    v-else-if="imageUrl"
-    class="debug-value debug-value--image"
-    :href="imageUrl"
-    target="_blank"
-    rel="noreferrer"
-  >
-    <img :src="imageUrl" :alt="`${fieldLabel} preview`" loading="lazy" />
-    <span>
-      <strong>{{ fieldLabel }}</strong>
-      <small>{{ urlLabel }}</small>
+  <template v-if="!debugState">
+    <span v-if="color" class="debug-value debug-value--color">
+      <span
+        class="debug-value__swatch"
+        :style="{ backgroundColor: color }"
+        aria-hidden="true"
+      />
+      <code>{{ color }}</code>
     </span>
-    <UIcon name="i-lucide-external-link" aria-hidden="true" />
-  </a>
 
-  <a
-    v-else-if="url"
-    class="debug-value debug-value--url"
-    :href="url"
-    target="_blank"
-    rel="noreferrer"
-  >
-    <span>{{ urlLabel }}</span>
-    <UIcon name="i-lucide-external-link" aria-hidden="true" />
-  </a>
+    <UBadge
+      v-else-if="typeof value === 'boolean'"
+      :color="value ? 'success' : 'neutral'"
+      variant="subtle"
+      size="sm"
+    >
+      {{ value ? 'True' : 'False' }}
+    </UBadge>
 
-  <details
-    v-else-if="Array.isArray(value)"
-    class="debug-value debug-value--structured"
-    :open="expanded"
-  >
-    <summary>{{ value.length }} {{ value.length === 1 ? 'item' : 'items' }}</summary>
-    <ol v-if="value.length" class="debug-value__list">
-      <li v-for="(item, index) in value" :key="index">
-        <FireuxDebugValue :name="name" :value="item" :depth="depth + 1" />
-      </li>
-    </ol>
-  </details>
+    <span v-else-if="isEmpty" class="debug-value debug-value--empty">
+      {{ emptyLabel }}
+    </span>
 
-  <details
-    v-else-if="record"
-    class="debug-value debug-value--structured"
-    :open="expanded"
-  >
-    <summary>{{ fields.length }} {{ fields.length === 1 ? 'field' : 'fields' }}</summary>
-    <dl class="debug-value__fields">
-      <div v-for="field in fields" :key="field.key" class="debug-value__field">
-        <dt>{{ field.label }}</dt>
-        <dd>
+    <a
+      v-else-if="imageUrl"
+      class="debug-value debug-value--image"
+      :href="imageUrl"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <img :src="imageUrl" :alt="`${fieldLabel} preview`" loading="lazy" />
+      <span>
+        <strong>{{ fieldLabel }}</strong>
+        <small>{{ urlLabel }}</small>
+      </span>
+      <UIcon name="i-lucide-external-link" aria-hidden="true" />
+    </a>
+
+    <a
+      v-else-if="url"
+      class="debug-value debug-value--url"
+      :href="url"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <span>{{ urlLabel }}</span>
+      <UIcon name="i-lucide-external-link" aria-hidden="true" />
+    </a>
+
+    <details
+      v-else-if="Array.isArray(value)"
+      class="debug-value debug-value--structured"
+      :open="expanded"
+    >
+      <summary>
+        {{ value.length }} {{ value.length === 1 ? 'item' : 'items' }}
+      </summary>
+      <ol v-if="value.length" class="debug-value__list">
+        <li v-for="(item, index) in value" :key="index">
           <FireuxDebugValue
-            :name="field.key"
-            :value="field.value"
+            :name="name"
+            :value="item"
+            :path="`${path}[${index}]`"
             :depth="depth + 1"
-            :expanded="depth < 1"
           />
-        </dd>
-      </div>
-    </dl>
-  </details>
+        </li>
+      </ol>
+    </details>
 
-  <code v-else class="debug-value debug-value--primitive">{{ value }}</code>
+    <details
+      v-else-if="record"
+      class="debug-value debug-value--structured"
+      :open="expanded"
+    >
+      <summary>
+        {{ fields.length }} {{ fields.length === 1 ? 'field' : 'fields' }}
+      </summary>
+      <dl class="debug-value__fields">
+        <div
+          v-for="field in fields"
+          :key="field.key"
+          class="debug-value__field"
+        >
+          <dt>{{ field.label }}</dt>
+          <dd>
+            <FireuxDebugValue
+              :name="field.key"
+              :value="field.value"
+              :path="path ? `${path}.${field.key}` : field.key"
+              :depth="depth + 1"
+              :expanded="depth < 1"
+            />
+          </dd>
+        </div>
+      </dl>
+    </details>
+
+    <code v-else class="debug-value debug-value--primitive">{{ value }}</code>
+  </template>
+
+  <span v-if="depth <= 1" class="debug-value__actions">
+    <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="copyValue">
+      Value
+    </UButton>
+    <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="copyPath">
+      Path
+    </UButton>
+  </span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 import {
   humanizeDebugKey,
   isDebugColor,
@@ -100,20 +136,45 @@ const props = withDefaults(
     value: unknown
     depth?: number
     expanded?: boolean
+    path?: string
+    dependency?: string | string[]
   }>(),
   {
     name: 'value',
     depth: 0,
     expanded: false,
+    path: '',
   }
 )
 
 const color = computed(() => (isDebugColor(props.value) ? props.value : ''))
 const url = computed(() => (isDebugUrl(props.value) ? props.value : ''))
 const fieldLabel = computed(() => humanizeDebugKey(props.name))
+const sensitive = computed(() =>
+  /(?:^|[_-])(?:password|secret|token|email|phone|address|coordinates?|owner_id)(?:[_-]|$)/i.test(
+    props.name
+  )
+)
+const debugState = computed(() => {
+  if (!record.value || Object.keys(record.value).length !== 1) return ''
+  const state = record.value.__debugState
+  return state === 'loading' || state === 'not-fetched' || state === 'redacted'
+    ? state
+    : ''
+})
+const debugStateLabel = computed(() =>
+  debugState.value === 'not-fetched'
+    ? 'Not fetched'
+    : humanizeDebugKey(debugState.value)
+)
+const dependencyLabel = computed(() =>
+  Array.isArray(props.dependency)
+    ? props.dependency.join(' + ')
+    : props.dependency
+)
 const imageUrl = computed(() => {
   if (!url.value) return ''
-  return /(?:^|[_-])(?:image|logo|wordmark|avatar|cover|thumbnail|photo)(?:[_-]|$)/i.test(
+  return /(?:^|[_-])(?:images?|logos?|wordmarks?|avatars?|covers?|thumbnails?|photos?)(?:[_-]|$)/i.test(
     props.name
   )
     ? url.value
@@ -135,15 +196,27 @@ const isEmpty = computed(
   () => props.value === null || props.value === undefined || props.value === ''
 )
 const emptyLabel = computed(() => {
-  if (props.value === null) return 'Null'
-  if (props.value === undefined) return 'Undefined'
+  if (props.value === null) return 'No data (null)'
+  if (props.value === undefined) return 'Not fetched (undefined)'
   return 'Empty'
 })
+const { copyText } = useDevClipboard()
+const copyValue = () =>
+  copyText(
+    typeof props.value === 'string'
+      ? props.value
+      : (JSON.stringify(props.value, null, 2) ?? String(props.value)),
+    { label: props.path || props.name }
+  )
+const copyPath = () =>
+  copyText(props.path || props.name, { label: 'Field path' })
 const urlLabel = computed(() => {
   if (!url.value) return ''
   try {
     const parsed = new URL(url.value)
-    const leaf = decodeURIComponent(parsed.pathname.split('/').filter(Boolean).at(-1) ?? '')
+    const leaf = decodeURIComponent(
+      parsed.pathname.split('/').filter(Boolean).at(-1) ?? ''
+    )
     return leaf || parsed.hostname
   } catch {
     return url.value
@@ -154,6 +227,24 @@ const urlLabel = computed(() => {
 <style scoped>
 .debug-value {
   min-width: 0;
+}
+
+.debug-value__meta,
+.debug-value__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing);
+}
+
+.debug-value__meta {
+  margin-bottom: var(--spacing);
+}
+.debug-value__meta small {
+  color: var(--ui-text-muted);
+}
+.debug-value__actions {
+  margin-top: var(--spacing);
 }
 
 .debug-value--color,
@@ -175,12 +266,14 @@ const urlLabel = computed(() => {
 }
 
 .debug-value--image img {
-  width: calc(var(--spacing) * 14);
-  height: calc(var(--spacing) * 14);
+  width: auto;
+  height: auto;
+  max-width: calc(var(--spacing) * 24);
+  max-height: calc(var(--spacing) * 24);
   flex: 0 0 auto;
   border-radius: var(--ui-radius);
   background: var(--ui-bg-muted);
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .debug-value--image > span {

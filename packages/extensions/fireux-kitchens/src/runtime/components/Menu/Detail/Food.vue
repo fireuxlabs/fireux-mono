@@ -7,6 +7,7 @@
     :logo-image-url="props.menu.presentation.kitchenLogoImageUrl"
     :primary-color="props.menu.presentation.kioskSkin?.primaryColor"
     :secondary-color="props.menu.presentation.kioskSkin?.secondaryColor"
+    :tone="props.menu.presentation.kioskSkin?.tone"
   >
     <Transition name="menu-kiosk-surface" mode="out-in">
       <div

@@ -30,6 +30,16 @@ export const kitchenOperations = [
     icon: 'i-lucide-utensils',
   },
   {
+    id: 'kitchen.drinks',
+    slug: 'drinks',
+    title: 'Drinks',
+    description:
+      'Create and manage drinks used across kitchen menus.',
+    to: '/console/kitchen/drinks',
+    console: kitchenConsole,
+    icon: 'i-lucide-glass-water',
+  },
+  {
     id: 'kitchen.ingredients',
     slug: 'ingredients',
     title: 'Ingredients',

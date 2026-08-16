@@ -11,7 +11,7 @@
       color="neutral"
       variant="soft"
       title="Select a kitchen"
-      description="Choose a kitchen before managing dishes."
+      :description="`Choose a kitchen before managing ${catalogue.plural}.`"
     />
   </section>
 </template>
@@ -23,5 +23,6 @@ import ConsoleKitchenOperationsDishesTools from './Tools.vue'
 
 const {
   kitchenId,
+  catalogue,
 } = useKitchenDishesWorkspace()
 </script>

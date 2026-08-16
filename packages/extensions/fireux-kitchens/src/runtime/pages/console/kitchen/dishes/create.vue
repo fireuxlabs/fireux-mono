@@ -16,6 +16,10 @@
 </template>
 
 <script setup lang="ts">
+import { provideKitchenDishesWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
+
+provideKitchenDishesWorkspace('food')
+
 const breadcrumbItems = [
   {
     label: 'Dishes',

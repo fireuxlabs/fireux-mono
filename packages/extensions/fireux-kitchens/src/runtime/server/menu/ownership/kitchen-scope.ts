@@ -24,6 +24,7 @@ import type {
   KitchenFulfilmentConfig,
   KitchenImageShade,
 } from '../../../models/kitchen.model.ts'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import { menuSourceFromData } from '../payload/source.ts'
@@ -38,7 +39,10 @@ export type MenuKitchenScope = {
   kitchenLogoImageUrl?: string
   kitchenSlug?: string
   kitchenName?: string
+  kitchenTagline?: string
   kitchenWordmarkImageUrl?: string
+  placeLogoImageUrl?: string
+  placeWordmarkImageUrl?: string
   kitchenAppId?: string
   kitchenMenuId?: string
   currencyCode?: string
@@ -48,6 +52,9 @@ export type MenuKitchenScope = {
   specialsEnabled?: boolean
   specialsMenuId?: string
   page_style?: Record<string, unknown>
+  kitchen_theme?: ConsoleTheme
+  placeLogoImageUrl: string
+  placeWordmarkImageUrl: string
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
   sproochli?: SproochliAttachmentConfig
@@ -55,23 +62,19 @@ export type MenuKitchenScope = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
   readRecordString(record(value.identity), 'name')
 
-export const resolveSourceAppId = (
-  kitchenData: Record<string, unknown>
-) => readKitchenManagementTarget(
-  kitchenData,
-  String(useRuntimeConfig().public?.fireux?.ecosystem ?? '').trim()
-).appId
+export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
+  readKitchenManagementTarget(
+    kitchenData,
+    String(useRuntimeConfig().public?.fireux?.ecosystem ?? '').trim()
+  ).appId
 
-export async function readAppMenuKitchenData(
-  appId: string,
-  kitchenId: string
-) {
+export async function readAppMenuKitchenData(appId: string, kitchenId: string) {
   if (!appId || !kitchenId) return {}
 
   const snap = await getRuntimeFirestore()
@@ -82,9 +85,7 @@ export async function readAppMenuKitchenData(
   return snap.exists ? snap.data() || {} : {}
 }
 
-export async function readMenuKitchenPlaceData(
-  kitchenId: string
-) {
+export async function readMenuKitchenPlaceData(kitchenId: string) {
   if (!kitchenId) return {}
 
   const snap = await getRuntimeFirestore()
@@ -101,6 +102,7 @@ export function menuKitchenIdentity(
   placeData: Record<string, unknown> = {}
 ): {
   name: string
+  tagline: string
   imageUrl: string
   imageShade: KitchenImageShade
   logoImageUrl: string
@@ -109,12 +111,18 @@ export function menuKitchenIdentity(
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
   page_style?: Record<string, unknown>
+  kitchen_theme?: ConsoleTheme
 } {
   const rootIdentity = readKitchenIdentity(rootData)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(appData)
   const consolePalette = readKitchenConsolePalette(appData)
+  const placePalette = record(placeData.brand_palette)
+  const placeStyle = place.mediaBackdropColor
+    && !readRecordString(placePalette, 'primary_color')
+    ? { ...placePalette, primary_color: place.mediaBackdropColor }
+    : placePalette
   const consoleStyle = consolePalette
     ? {
         background_color_light: consolePalette.canvas,
@@ -124,30 +132,33 @@ export function menuKitchenIdentity(
         title_color_light: consolePalette.text,
         title_color_dark: consolePalette.text,
         primary_color: consolePalette.accent,
-        secondary_color: consolePalette.accent_contrast,
+        // Legacy PageStyle uses secondary for decorative Menu accents.
+        // Console accent_contrast is reserved for text placed on accent.
+        secondary_color: consolePalette.accent,
       }
     : {}
   const pageStyle = resolveMenuPageStyle(
-    { source: 'place', style: placeData.brand_palette },
+    { source: 'place', style: placeStyle },
     { source: 'root-kitchen', style: rootData.brand_palette },
     { source: 'console-theme', style: consoleStyle },
     { source: 'app-kitchen', style: readKitchenMenuStyle(appData) }
   )
 
   return {
-    name:
-      explicitKitchenDisplayName(rootData) ||
-      place.name,
-    imageUrl: place.imageUrl,
+    name: explicitKitchenDisplayName(rootData) || place.name,
+    tagline: rootIdentity.tagline || place.brandTagline,
+    imageUrl: place.coverImage || place.imageUrl,
     imageShade: place.imageShade as KitchenImageShade,
     logoImageUrl: rootIdentity.logoImageUrl,
+    placeLogoImageUrl: place.logoImage,
+    placeWordmarkImageUrl: place.wordmarkImage,
     wordmarkImageUrl:
-      rootIdentity.wordmarkNoLogoImageUrl ||
-      rootIdentity.wordmarkImageUrl,
+      rootIdentity.wordmarkNoLogoImageUrl || rootIdentity.wordmarkImageUrl,
     currencyCode,
     currencyFormat: menuDisplay.currencyFormat,
     showCurrency: menuDisplay.showCurrency,
     ...(Object.keys(pageStyle).length ? { page_style: pageStyle } : {}),
+    ...(consolePalette ? { kitchen_theme: { palette: consolePalette } } : {}),
   }
 }
 
@@ -196,10 +207,9 @@ export async function readRootMenuKitchenScope(
 
   const kitchenData = snapshot?.exists ? snapshot.data() || {} : {}
   const resolvedKitchenId = snapshot?.exists ? snapshot.id : kitchenId
-  const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
-  const kitchenAppId =
-    source.app_id ||
-    resolveSourceAppId(kitchenData)
+  const resolvedKitchenSlug =
+    readRecordString(kitchenData, 'slug') || kitchenSlug
+  const kitchenAppId = source.app_id || resolveSourceAppId(kitchenData)
   const [appKitchenData, placeData] = await Promise.all([
     readAppMenuKitchenData(kitchenAppId, resolvedKitchenId),
     readMenuKitchenPlaceData(resolvedKitchenId),
@@ -222,11 +232,20 @@ export async function readRootMenuKitchenScope(
       ? { kitchenImageShade: identity.imageShade }
       : {}),
     ...(identity.imageUrl ? { kitchenImageUrl: identity.imageUrl } : {}),
-    ...(identity.logoImageUrl ? { kitchenLogoImageUrl: identity.logoImageUrl } : {}),
+    ...(identity.logoImageUrl
+      ? { kitchenLogoImageUrl: identity.logoImageUrl }
+      : {}),
     ...(resolvedKitchenSlug ? { kitchenSlug: resolvedKitchenSlug } : {}),
     ...(identity.name ? { kitchenName: identity.name } : {}),
+    ...(identity.tagline ? { kitchenTagline: identity.tagline } : {}),
     ...(identity.wordmarkImageUrl
       ? { kitchenWordmarkImageUrl: identity.wordmarkImageUrl }
+      : {}),
+    ...(identity.placeLogoImageUrl
+      ? { placeLogoImageUrl: identity.placeLogoImageUrl }
+      : {}),
+    ...(identity.placeWordmarkImageUrl
+      ? { placeWordmarkImageUrl: identity.placeWordmarkImageUrl }
       : {}),
     ...(kitchenAppId ? { kitchenAppId } : {}),
     ...(source.menu_id ? { kitchenMenuId: source.menu_id } : {}),
@@ -237,6 +256,9 @@ export async function readRootMenuKitchenScope(
     ...(menus.specialsEnabled ? { specialsEnabled: true } : {}),
     ...(menus.specialsMenuId ? { specialsMenuId: menus.specialsMenuId } : {}),
     ...(identity.page_style ? { page_style: identity.page_style } : {}),
+    ...(identity.kitchen_theme
+      ? { kitchen_theme: identity.kitchen_theme }
+      : {}),
     ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
       ? { fulfilment }
       : {}),

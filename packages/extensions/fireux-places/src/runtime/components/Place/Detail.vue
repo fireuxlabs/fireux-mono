@@ -22,24 +22,6 @@
               class="place-detail__back"
             />
             <div class="place-detail__toolbar-actions">
-              <ClientOnly>
-                <UButton
-                  :icon="colorModeIcon"
-                  :aria-label="colorModeLabel"
-                  :title="colorModeLabel"
-                  color="neutral"
-                  variant="solid"
-                  size="sm"
-                  square
-                  @click="toggleColorMode"
-                />
-                <template #fallback>
-                  <span
-                    class="place-detail__color-mode-placeholder"
-                    aria-hidden="true"
-                  />
-                </template>
-              </ClientOnly>
               <UButton
                 v-if="isAdmin"
                 :to="editTo"
@@ -105,11 +87,6 @@
 
 <script setup lang="ts">
 import { setResponseStatus } from '#imports'
-import { computed } from 'vue'
-import {
-  useColorMode,
-  useResolvedColorMode,
-} from 'fireux-core/runtime/composables/fireux/app/useColorMode'
 import { usePlaceDetail } from '../../composables/fireux/place/usePlaceDetail'
 import {
   PublicPlaceDetailDebugModel,
@@ -124,20 +101,6 @@ const placeDebugContract = {
   requiredPaths: [...PublicPlaceDetailDebugRequiredPaths],
 }
 const detail = usePlaceDetail(props)
-const colorMode = useColorMode()
-const resolvedColorMode = useResolvedColorMode()
-const colorModeIcon = computed(() =>
-  resolvedColorMode.value === 'dark' ? 'i-lucide-sun' : 'i-lucide-moon'
-)
-const colorModeLabel = computed(() =>
-  resolvedColorMode.value === 'dark'
-    ? 'Use light appearance'
-    : 'Use dark appearance'
-)
-
-function toggleColorMode() {
-  colorMode.value = resolvedColorMode.value === 'dark' ? 'light' : 'dark'
-}
 
 await detail.ready
 if (import.meta.server && detail.missing.value) {

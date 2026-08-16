@@ -5,7 +5,10 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { serverKitchenMenuUploadsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  serverKitchenDishesTarget,
+  serverKitchenMenuUploadsTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { writeKitchenMenuDraft } from '../../../../menu/draft/write'
 import { compareKitchenMenuDraftToCurrent } from '../../../../menu/draft/comparison'
 import { readKitchenMenuCurrentShape } from '../../../../menu/draft/current'
@@ -21,6 +24,12 @@ import {
   requireKitchenMenuUploadUser,
 } from '../../../../menu/source/uploads'
 import { importKitchenMenuCacheUnits } from '../../../../menu/sproochli/cache-import'
+import {
+  normalizeMenuMediaReview,
+  menuMediaReviewKey,
+} from '../../../../menu/media/review'
+import { fetchPublicRasterImage } from 'fireux-core/runtime/server/utils/http/public-raster-image'
+import { normalizeAndSaveDishImage } from '../../../../dish/image'
 
 type ConfirmMenuBody = Partial<
   Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>
@@ -78,11 +87,37 @@ export default defineEventHandler(async (event: H3Event) => {
   const sections = normalizeKitchenMenuDraftSections({
     sections: aiDraft.sections,
   })
+  const mediaReview = normalizeMenuMediaReview(aiDraft.media_review)
 
   if (!sections.length || !countKitchenMenuDraftItems(sections)) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Confirm needs at least one dish in the menu draft.',
+    })
+  }
+
+  const missingMediaDecisions = sections.flatMap((section, sectionIndex) =>
+    section.items.flatMap((item, itemIndex) =>
+      mediaReview[menuMediaReviewKey(sectionIndex, itemIndex)]
+        ? []
+        : [item.name]
+    )
+  )
+  if (missingMediaDecisions.length) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `Review Dish media before confirming: ${missingMediaDecisions.join(', ')}.`,
+    })
+  }
+  const queuedAiMedia = Object.values(mediaReview).filter(
+    (decision) =>
+      decision.action === 'generate' || decision.action === 'reprocess-ai'
+  )
+  if (queuedAiMedia.length) {
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        'Generate or reprocess the selected Dish media before confirming the menu.',
     })
   }
 
@@ -129,7 +164,37 @@ export default defineEventHandler(async (event: H3Event) => {
     uid,
     sections,
   })
-  const { sproochliCacheUnits, ...write } = writeResult
+  const {
+    sproochliCacheUnits,
+    dish_targets: dishTargets,
+    ...write
+  } = writeResult
+  const mediaApplied: Array<{ dish_id: string; image: string }> = []
+  for (const target of dishTargets) {
+    const decision = mediaReview[target.review_key]
+    if (decision?.action !== 'keep' || !decision.candidate_url) continue
+    const fetched = await fetchPublicRasterImage(decision.candidate_url)
+    const saved = await normalizeAndSaveDishImage({
+      appId,
+      kitchenId,
+      dishId: target.dish_id,
+      data: fetched.buffer,
+    })
+    try {
+      await serverUpdate(
+        serverKitchenDishesTarget(appId, kitchenId),
+        target.dish_id,
+        {
+          image: saved.imageUrl,
+          updated: serverAuditStamp({ by: uid, appId }),
+        }
+      )
+      mediaApplied.push({ dish_id: target.dish_id, image: saved.imageUrl })
+    } catch (cause) {
+      await saved.deleteUploaded().catch(() => undefined)
+      throw cause
+    }
+  }
   const provenance = record(aiDraft.provenance)
   let cacheImport:
     | Awaited<ReturnType<typeof importKitchenMenuCacheUnits>>
@@ -181,6 +246,7 @@ export default defineEventHandler(async (event: H3Event) => {
           ...cacheImport,
           at: stamp.at,
         },
+        media_applied: mediaApplied,
       },
       updated: stamp,
     }
@@ -192,6 +258,7 @@ export default defineEventHandler(async (event: H3Event) => {
     uploadId,
     write,
     cacheImport,
+    mediaApplied,
     message:
       'Menu draft confirmed. Dishes, sections, and menu items were created.',
   }

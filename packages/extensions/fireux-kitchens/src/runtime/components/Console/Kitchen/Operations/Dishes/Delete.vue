@@ -40,6 +40,7 @@ const {
   rootCollection,
   databaseId,
   canWrite,
+  catalogue,
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
@@ -64,7 +65,7 @@ const deleteSelectedDish = async () => {
   try {
     await deleteDish(dishId.value, { kitchenId: kitchenId.value })
     toast.add({ title: 'Dish deleted', icon: 'i-heroicons-check-circle' })
-    await navigateTo('/console/kitchen/dishes')
+    await navigateTo(catalogue.path)
   } catch (error) {
     const message = String((error as any)?.message || error || 'Failed to delete dish')
     toast.add({

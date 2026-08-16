@@ -11,20 +11,17 @@
     :style="themeStyleVars"
     :dir="menuDirection"
     :lang="menuLanguage || undefined"
-    :aria-labelledby="hasMenu
-      ? 'menu-browse-title'
-      : failure
-        ? 'menu-browse-unavailable-title'
-        : undefined"
+    :aria-labelledby="
+      hasMenu
+        ? 'menu-browse-title'
+        : failure
+          ? 'menu-browse-unavailable-title'
+          : undefined
+    "
   >
-    <p v-if="pending" class="menu-browse__state" role="status">
-      Loading menu…
-    </p>
+    <p v-if="pending" class="menu-browse__state" role="status">Loading menu…</p>
 
-    <MenuBrowseUnavailable
-      v-else-if="failure"
-      :failure="failure"
-    />
+    <MenuBrowseUnavailable v-else-if="failure" :failure="failure" />
 
     <template v-else-if="hasMenu">
       <MenuIdentity
@@ -40,10 +37,7 @@
         presentation="open"
         :prices-label="browseSurfaceCopy.pricesLabel"
       >
-        <template
-          v-if="sproochli"
-          #utility
-        >
+        <template v-if="sproochli" #utility>
           <ClientOnly>
             <div class="menu-browse__translation">
               <SproochliLanguageTrigger
@@ -125,16 +119,14 @@
       <DevDebugPanel
         title="Menu"
         scope="runtime"
-      object-origin="fetched"
-      :objects="{ menu: activeDetailMenu }"
-      :derived="menuDebug"
+        object-origin="fetched"
+        :objects="{ menu: activeDetailMenu }"
+        :derived="menuDebug"
         :default-open="true"
       />
     </template>
 
-    <p v-else class="menu-browse__state" role="alert">
-      Menu unavailable.
-    </p>
+    <p v-else class="menu-browse__state" role="alert">Menu unavailable.</p>
   </article>
 </template>
 
@@ -159,16 +151,19 @@ import {
 } from '../../../utils/kitchen-menu-route'
 import { guestMenuSurfaceOptions } from '../../../utils/menu-context'
 
-const props = withDefaults(defineProps<{
-  menuId: string
-  menuRouteScope?: MenuRouteScope
-  pageCanvas?: boolean
-  propagateResponseStatus?: boolean
-}>(), {
-  menuRouteScope: rootMenuRouteScope,
-  pageCanvas: false,
-  propagateResponseStatus: false,
-})
+const props = withDefaults(
+  defineProps<{
+    menuId: string
+    menuRouteScope?: MenuRouteScope
+    pageCanvas?: boolean
+    propagateResponseStatus?: boolean
+  }>(),
+  {
+    menuRouteScope: rootMenuRouteScope,
+    pageCanvas: false,
+    propagateResponseStatus: false,
+  }
+)
 
 const route = useRoute()
 const menuId = computed(() => String(props.menuId || '').trim())
@@ -190,9 +185,9 @@ const {
   routeScope: menuRouteScope,
   sproochliLanguage: requestedSproochliLanguage,
 })
-const browseSurfaceCopy = computed(() =>
-  detailMenu.value?.sproochli?.surfaceCopy ??
-  resolveMenuBrowseSurfaceCopy()
+const browseSurfaceCopy = computed(
+  () =>
+    detailMenu.value?.sproochli?.surfaceCopy ?? resolveMenuBrowseSurfaceCopy()
 )
 
 if (props.propagateResponseStatus) {
@@ -204,34 +199,35 @@ if (props.propagateResponseStatus) {
 
 const hasMenu = computed(() => renderKind.value !== 'unavailable')
 const activeDetailMenu = computed(() => detailMenu.value)
-const menuName = computed(() =>
-  activeDetailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
+const menuName = computed(
+  () =>
+    activeDetailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
 )
-const menuDescription = computed(() =>
-  activeDetailMenu.value?.content.description ||
-  documentMenu.value?.description ||
-  ''
+const menuDescription = computed(
+  () =>
+    activeDetailMenu.value?.content.description ||
+    documentMenu.value?.description ||
+    ''
 )
-const menuPresentation = computed(() =>
-  activeDetailMenu.value?.presentation || documentMenu.value || null
+const menuPresentation = computed(
+  () => activeDetailMenu.value?.presentation || documentMenu.value || null
 )
-const kitchenName = computed(() =>
-  menuPresentation.value?.kitchenName || ''
-)
+const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
 const currencyCode = computed(() =>
-  String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
+  String(menuPresentation.value?.currencyCode || '')
+    .trim()
+    .toUpperCase()
 )
 const currencyFormat = computed<CurrencyDisplayFormat>(() => {
   const format = menuPresentation.value?.currencyFormat
 
   return format === 'symbol' || format === 'code' ? format : 'dash'
 })
-const showCurrency = computed(() =>
-  menuPresentation.value?.showCurrency !== false
+const showCurrency = computed(
+  () => menuPresentation.value?.showCurrency !== false
 )
-const pageStyle = computed(() =>
-  menuPresentation.value?.pageStyle || null
-)
+const pageStyle = computed(() => menuPresentation.value?.pageStyle || null)
+const theme = computed(() => menuPresentation.value?.theme || null)
 const canonicalPath = computed(() =>
   menuCanonicalPath({
     scope: menuRouteScope.value,
@@ -243,17 +239,16 @@ const canonicalPath = computed(() =>
 const sproochli = computed(() => {
   return detailMenu.value?.sproochli ?? null
 })
-const sproochliLanguageOptions = computed(() =>
-  resolveSproochliLanguageState({
-    enabled: true,
-    defaultLanguage: sproochli.value?.defaultLanguage,
-    cachedLanguages: sproochli.value?.readyLanguages ?? [],
-  }).options
+const sproochliLanguageOptions = computed(
+  () =>
+    resolveSproochliLanguageState({
+      enabled: true,
+      defaultLanguage: sproochli.value?.defaultLanguage,
+      cachedLanguages: sproochli.value?.readyLanguages ?? [],
+    }).options
 )
 const menuLanguage = computed(() =>
-  sproochli.value?.state === 'translated'
-    ? sproochli.value.language
-    : ''
+  sproochli.value?.state === 'translated' ? sproochli.value.language : ''
 )
 const menuDirection = computed(() =>
   sproochli.value?.state === 'translated' &&
@@ -298,7 +293,7 @@ const orderingSurfaceOptions = computed(() =>
     routeScope: menuRouteScope.value,
     activeContext: 'generic',
   })
-    .filter(option => option.value !== 'generic')
+    .filter((option) => option.value !== 'generic')
     .map((option) => ({
       ...option,
       to: preserveSproochliQuery(option.to),
@@ -314,22 +309,22 @@ const documentUrl = computed(() => {
 
   return `/api/menus/${encodeURIComponent(menuId.value)}/file${qs ? `?${qs}` : ''}`
 })
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle,
-  pageCanvas: computed(() => props.pageCanvas),
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle,
+    theme,
+    pageCanvas: computed(() => props.pageCanvas),
+  })
 
 useSeo({
   title: () => failure.value?.title || menuName.value,
-  description: () => failure.value?.description ||
-    menuDescription.value || `Browse ${menuName.value}.`,
+  description: () =>
+    failure.value?.description ||
+    menuDescription.value ||
+    `Browse ${menuName.value}.`,
   path: canonicalPath,
-  robots: () => failure.value ? 'noindex, nofollow' : undefined,
+  robots: () => (failure.value ? 'noindex, nofollow' : undefined),
 })
-
 </script>
 
 <style scoped>
@@ -382,7 +377,6 @@ useSeo({
   text-align: left;
 }
 
-
 .menu-browse__notice strong {
   color: var(--menu-text);
 }
@@ -394,5 +388,4 @@ useSeo({
     padding-left: max(calc(var(--spacing) * 4), env(safe-area-inset-left));
   }
 }
-
 </style>

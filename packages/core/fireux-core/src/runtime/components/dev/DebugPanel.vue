@@ -17,7 +17,8 @@
           <p v-if="context" class="jsonpanel-context">{{ context }}</p>
           <p v-if="parent" class="jsonpanel-context">{{ parent }}</p>
           <p class="jsonpanel-meta">
-            {{ routeLabel }} · {{ dataKindLabel }} · {{ dataSizeLabel }}
+            {{ routeLabel }} · {{ dataKindLabel }} · {{ dataSizeLabel }} ·
+            {{ payloadBytes }} · {{ objectCount }} objects
           </p>
         </div>
         <div class="jsonpanel-actions">
@@ -51,6 +52,13 @@
       </div>
       <div v-if="expanded" class="jsonpanel-content">
         <div class="jsonpanel-view-switch" aria-label="Debug view">
+          <UInput
+            v-model="search"
+            size="xs"
+            icon="i-lucide-search"
+            placeholder="Filter fields"
+            aria-label="Filter debug fields"
+          />
           <UButton
             size="xs"
             color="neutral"
@@ -76,6 +84,9 @@
             :findings="contractFindings"
             :missing-count="missingCount"
             :extra-count="extraCount"
+            :deprecated-count="deprecatedCount"
+            :contract-names="contractNames"
+            :has-contracts="hasContracts"
           />
           <section
             v-for="section in sections"
@@ -92,11 +103,23 @@
                 :key="entry.key"
                 class="jsonpanel-section__row"
               >
-                <dt>{{ entry.label }}</dt>
+                <dt>
+                  {{ entry.label }}
+                  <UBadge
+                    v-for="issue in issuesFor(section.key, entry.key)"
+                    :key="issue"
+                    :color="issue === 'unexpected' ? 'warning' : 'error'"
+                    variant="soft"
+                    size="xs"
+                    >{{ issue }}</UBadge
+                  >
+                </dt>
                 <dd>
                   <DevFireuxDebugValue
                     :name="entry.key"
                     :value="entry.value"
+                    :path="`${section.key}.${entry.key}`"
+                    :dependency="dependencyFor(section.key, entry.key)"
                     :expanded="section.key === 'objects'"
                   />
                 </dd>
@@ -120,6 +143,7 @@ import { useDevDebugSections } from '../../composables/dev/useDevDebugSections'
 import type {
   DevDebugContract,
   DevDebugContracts,
+  DevDebugDependencies,
   DevDebugPayload,
 } from '../../types/dev-debug'
 
@@ -131,6 +155,7 @@ interface DebugPanelProps {
   objectOrigin: DevDebugPayload['objectOrigin']
   contract?: DevDebugContract
   contracts?: DevDebugContracts
+  derivedDependencies?: DevDebugDependencies
   context?: string
   title?: string
   parent?: string
@@ -190,6 +215,7 @@ const structuredData = computed(() => {
 })
 const expanded = ref(startsOpen.value)
 const view = ref<'inspect' | 'json'>('inspect')
+const search = ref('')
 const panelVisible = ref(props.launcher ? startsOpen.value : true)
 watch(
   panelVisible,
@@ -211,26 +237,67 @@ const {
   findings: contractFindings,
   missingCount,
   extraCount,
+  deprecatedCount,
+  contractNames,
+  hasContracts,
 } = useDevDebugContracts(
   () => props.objects,
   () => props.contract,
   () => props.contracts
 )
-const sections = computed(() =>
-  rawSections.value.map((section) =>
-    section.key === 'objects'
+const sections = computed(() => {
+  const query = search.value.trim().toLowerCase()
+  return rawSections.value.map((section) => {
+    const normalized =
+      section.key === 'objects'
+        ? {
+            ...section,
+            label:
+              props.objectOrigin === 'passed'
+                ? 'Passed objects'
+                : 'Fetched objects',
+          }
+        : section.key === 'derived'
+          ? { ...section, label: 'Derived variables' }
+          : section
+    return query
       ? {
-          ...section,
-          label:
-            props.objectOrigin === 'passed'
-              ? 'Passed objects'
-              : 'Fetched objects',
+          ...normalized,
+          entries: normalized.entries.filter((entry) =>
+            `${entry.label} ${JSON.stringify(entry.value)}`
+              .toLowerCase()
+              .includes(query)
+          ),
         }
-      : section.key === 'derived'
-        ? { ...section, label: 'Derived variables' }
-        : section
-  )
-)
+      : normalized
+  })
+})
+
+const payloadBytes = computed(() => {
+  const bytes = new TextEncoder().encode(jsonString.value).length
+  return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`
+})
+const objectCount = computed(() => {
+  const value = props.objects
+  if (Array.isArray(value)) return value.length
+  return value && typeof value === 'object' ? Object.keys(value).length : 0
+})
+const cleanDriftPath = (value: string) => value.split(' (')[0]
+const issuesFor = (section: string, key: string) => {
+  if (section !== 'objects') return []
+  const issues = new Set<string>()
+  for (const finding of contractFindings.value) {
+    if (finding.missing.some((path) => cleanDriftPath(path) === key))
+      issues.add('missing')
+    if (finding.extra.some((path) => cleanDriftPath(path) === key))
+      issues.add('unexpected')
+    if (finding.deprecated.some((path) => cleanDriftPath(path) === key))
+      issues.add('deprecated')
+  }
+  return [...issues]
+}
+const dependencyFor = (section: string, key: string) =>
+  section === 'derived' ? props.derivedDependencies?.[key] : undefined
 
 const isDev = import.meta.dev
 const shouldRender = computed(

@@ -15,6 +15,7 @@ import {
   featuredServiceDemoScenario,
 } from '../scenarios'
 import type { KitchenDemoScenario } from '../core/types'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const imageShade = (value: unknown) => {
@@ -22,7 +23,9 @@ const imageShade = (value: unknown) => {
   return shade === 'light' || shade === 'dark' ? shade : 'none'
 }
 const optionId = (item: MenuItem, label: string, index: number) => {
-  const slug = clean(label).toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  const slug = clean(label)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
   return slug || `${item.id}-option-${index + 1}`
 }
 const priceLabel = (price: number, currencyCode: string) =>
@@ -31,17 +34,28 @@ const priceLabel = (price: number, currencyCode: string) =>
     format: 'dash',
     showCurrency: true,
   })
+const demoTheme = (scenario: KitchenDemoScenario): ConsoleTheme => {
+  const style = scenario.kitchen.menus.style
+  return {
+    palette: {
+      canvas: clean(style.background_color_light) || '#f8fafc',
+      text: clean(style.font_color_light) || '#0f172a',
+      accent: clean(style.primary_color) || '#0f766e',
+      accent_contrast: '#ffffff',
+    },
+  }
+}
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...scenario.kitchenMenu.ordering,
   order_types: scenario.kitchenMenu.ordering.order_types.map((config) => {
     const paymentMethods = scenario.kitchen.fulfilment.payment_methods
-      .filter(policy => policy.order_types.includes(config.type))
-      .map(policy => policy.method)
+      .filter((policy) => policy.order_types.includes(config.type))
+      .map((policy) => policy.method)
 
     return {
       ...config,
-      ...((config.fulfilment || paymentMethods.length)
+      ...(config.fulfilment || paymentMethods.length
         ? {
             fulfilment: {
               ...config.fulfilment,
@@ -60,7 +74,7 @@ export function kitchenDemoManifestSections(
 ): MenuManifestSection[] {
   const currencyCode = clean(scenario.place.default_currency_code) || 'CHF'
   const dishesById = new Map(
-    scenario.dishes.map(dish => [clean(dish.id), dish])
+    scenario.dishes.map((dish) => [clean(dish.id), dish])
   )
 
   return [...scenario.menuSections]
@@ -70,35 +84,37 @@ export function kitchenDemoManifestSections(
       id: section.id,
       label: section.label,
       items: [...items]
-        .filter(item => item.status === 'active')
+        .filter((item) => item.status === 'active')
         .sort((left, right) => left.sort_order - right.sort_order)
         .flatMap<MenuManifestItem>((item) => {
           const dish = dishesById.get(clean(item.dish_id))
           if (!dish) return []
 
-          return [{
-            id: item.id,
-            dishId: dish.id,
-            itemKind: dish.item_kind,
-            isDeal: dish.is_deal,
-            name: dish.name,
-            description: dish.description,
-            imageUrl: dish.image,
-            price: item.price,
-            priceLabel: priceLabel(item.price, currencyCode),
-            priceOptions: item.price_options.map((option, index) => ({
-              id: optionId(item, option.label, index),
-              label: option.label,
-              price: option.price,
-              priceLabel: priceLabel(option.price, currencyCode),
-            })),
-            addOns: item.add_ons.map(addOn => ({
-              id: addOn.id,
-              label: addOn.label,
-              price: addOn.price,
-              priceLabel: priceLabel(addOn.price, currencyCode),
-            })),
-          }]
+          return [
+            {
+              id: item.id,
+              dishId: dish.id,
+              itemKind: dish.item_kind,
+              isDeal: dish.is_deal,
+              name: dish.name,
+              description: dish.description,
+              imageUrl: dish.image,
+              price: item.price,
+              priceLabel: priceLabel(item.price, currencyCode),
+              priceOptions: item.price_options.map((option, index) => ({
+                id: optionId(item, option.label, index),
+                label: option.label,
+                price: option.price,
+                priceLabel: priceLabel(option.price, currencyCode),
+              })),
+              addOns: item.add_ons.map((addOn) => ({
+                id: addOn.id,
+                label: addOn.label,
+                price: addOn.price,
+                priceLabel: priceLabel(addOn.price, currencyCode),
+              })),
+            },
+          ]
         }),
     }))
 }
@@ -107,10 +123,10 @@ export function kitchenDemoManifest(
   scenario: KitchenDemoScenario
 ): MenuManifest {
   const ordering = resolvedOrdering(scenario)
-  const orderTypes = ordering.order_types.map(config => config.type)
+  const orderTypes = ordering.order_types.map((config) => config.type)
   const availableOrderTypes = ordering.order_types
-    .filter(config => config.availability?.paused !== true)
-    .map(config => config.type)
+    .filter((config) => config.availability?.paused !== true)
+    .map((config) => config.type)
   const defaultOrderType = availableOrderTypes[0]
 
   return {
@@ -129,7 +145,7 @@ export function kitchenDemoManifest(
       availableOrderTypes,
       defaultOrderType,
       defaultOrderTypeConfig: ordering.order_types.find(
-        config => config.type === defaultOrderType
+        (config) => config.type === defaultOrderType
       ),
       choices: scenario.kitchenMenu.choices,
     },
@@ -138,11 +154,18 @@ export function kitchenDemoManifest(
       currencyFormat: scenario.kitchen.menus.currency_format,
       showCurrency: scenario.kitchen.menus.show_currency,
       kitchenImageShade: imageShade(scenario.kitchen.identity.image_shade),
-      kitchenImageUrl: clean(scenario.place.cover_image || scenario.place.image_url),
+      kitchenImageUrl: clean(
+        scenario.place.cover_image || scenario.place.image_url
+      ),
       kitchenLogoImageUrl: clean(scenario.kitchen.identity.logo_image_url),
-      kitchenName: scenario.kitchen.identity.display_name || scenario.place.name,
-      kitchenWordmarkImageUrl: clean(scenario.kitchen.identity.wordmark_image_url),
+      kitchenName:
+        scenario.kitchen.identity.display_name || scenario.place.name,
+      kitchenWordmarkImageUrl: clean(
+        scenario.kitchen.identity.wordmark_image_url
+      ),
       pageStyle: scenario.kitchen.menus.style,
+      theme: demoTheme(scenario),
+      themeSource: 'place-default',
     },
     source: {
       appId: scenario.appId,

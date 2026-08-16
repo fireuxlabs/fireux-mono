@@ -13,19 +13,26 @@
     :data-menu-surface-theme="orderAvailable ? 'menu' : 'app'"
     :class="[
       themeClassName,
-      { 'menu-order--kiosk': orderAvailable && menuContext === 'kiosk' },
+      {
+        'menu-order--kiosk': orderAvailable && menuContext === 'kiosk',
+        'menu-kiosk-skin--default': orderAvailable && menuContext === 'kiosk',
+      },
     ]"
     :style="themeStyleVars"
-    :aria-label="orderAvailable && menuContext === 'kiosk'
-      ? `${menuName} kiosk`
-      : undefined"
-    :aria-labelledby="pending
-      ? undefined
-      : orderAvailable
-        ? menuContext === 'kiosk'
-          ? undefined
-          : 'menu-order-title'
-        : 'menu-order-unavailable-title'"
+    :aria-label="
+      orderAvailable && menuContext === 'kiosk'
+        ? `${menuName} kiosk`
+        : undefined
+    "
+    :aria-labelledby="
+      pending
+        ? undefined
+        : orderAvailable
+          ? menuContext === 'kiosk'
+            ? undefined
+            : 'menu-order-title'
+          : 'menu-order-unavailable-title'
+    "
   >
     <p v-if="pending" class="menu-order__state" role="status">
       Loading {{ contextProfile.label.toLowerCase() }} menu…
@@ -52,16 +59,23 @@
         v-else
         :configs="contextConfigs"
         :currency-code="currencyCode"
+        :eat-in-card-image-url="kioskEatInCardImageUrl"
         :kitchen-id="resolvedSource?.kitchenId || ''"
+        :backdrop-image-url="kioskBackgroundImageUrl || kitchenImageUrl"
+        :catalogue-background-image-url="kioskCatalogueBackgroundImageUrl"
         :kitchen-name="kitchenName"
+        :kitchen-tagline="kitchenTagline"
         :kitchen-slug="orderKitchenSlug"
-        :logo-image-url="kitchenLogoImageUrl"
+        :logo-image-url="kioskLogoImageUrl"
         :menu-id="menuId"
         :menu-name="menuName"
         :scope-key="basketScopeKey"
         :sections="menuSections"
+        :section-card-frame-image-url="kioskSectionCardFrameImageUrl"
+        :section-card-image-urls="kioskSectionCardImageUrls"
         :source-menu-id="sourceMenuId"
-        :wordmark-image-url="kitchenWordmarkImageUrl"
+        :takeaway-card-image-url="kioskTakeawayCardImageUrl"
+        :wordmark-image-url="kioskWordmarkImageUrl"
       />
     </div>
 
@@ -125,21 +139,16 @@
         :sections="menuSections"
         :source-menu-id="sourceMenuId"
       />
-
     </div>
   </article>
 </template>
-
 <script setup lang="ts">
-// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: route the private terminal doorway through the shared order lifecycle.
-// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: separate always-open request intake from future dining-slot availability.
-// Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: restore a touch-first terminal frame without reviving the retired funnel stack.
-// Concurrent edit — 2026-07-22 11:23 CEST — Kiosk simplification pass: stop wiring duplicate kitchen identity into the terminal presentation.
-// Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: supply canonical Kitchen identity without a skin or app-specific branch.
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import { useKioskSkinBackground } from '../../../composables/fireux/menu/detail/useKioskSkinBackground'
+import { menuAppPageStyle } from '../../../composables/fireux/menu/useMenuTheme'
 import { useMenuServiceComputed } from '../../../composables/fireux/firestore/menu/useMenu'
 import {
   menuRoutePath,
@@ -152,17 +161,20 @@ import {
   menuManifestSupportsContext,
 } from '../../../utils/menu-context'
 
-const props = withDefaults(defineProps<{
-  menuId: string
-  menuContext: 'delivery' | 'collection' | 'pre_order' | 'kiosk'
-  menuRouteScope?: MenuRouteScope
-  pageCanvas?: boolean
-  propagateResponseStatus?: boolean
-}>(), {
-  menuRouteScope: rootMenuRouteScope,
-  pageCanvas: false,
-  propagateResponseStatus: false,
-})
+const props = withDefaults(
+  defineProps<{
+    menuId: string
+    menuContext: 'delivery' | 'collection' | 'pre_order' | 'kiosk'
+    menuRouteScope?: MenuRouteScope
+    pageCanvas?: boolean
+    propagateResponseStatus?: boolean
+  }>(),
+  {
+    menuRouteScope: rootMenuRouteScope,
+    pageCanvas: false,
+    propagateResponseStatus: false,
+  }
+)
 
 const menuId = computed(() => String(props.menuId || '').trim())
 const menuContext = computed(() => props.menuContext)
@@ -179,67 +191,79 @@ const {
 } = useMenu(menuId, {
   routeScope: menuRouteScope,
   menuContext,
+  liveRefreshMs: computed(() => (menuContext.value === 'kiosk' ? 5_000 : 0)),
 })
-const orderPath = computed(() => menuRoutePath({
-  scope: menuRouteScope.value,
-  menuId: menuId.value,
-  context: menuContext.value,
-}))
+const orderPath = computed(() =>
+  menuRoutePath({
+    scope: menuRouteScope.value,
+    menuId: menuId.value,
+    context: menuContext.value,
+  })
+)
 const contextConfigs = computed(() => {
   const visibleTypes = new Set(contextProfile.value.visibleOrderTypes)
 
-  return detailMenu.value?.behaviour.ordering.order_types.filter(
-    ({ type }) => visibleTypes.has(type)
-  ) || []
+  return (
+    detailMenu.value?.behaviour.ordering.order_types.filter(({ type }) =>
+      visibleTypes.has(type)
+    ) || []
+  )
 })
-const contextConfig = computed(() =>
-  contextConfigs.value.find(({ type }) => type === menuContext.value) ||
-  contextConfigs.value.find(({ availability }) => availability?.paused !== true) ||
-  contextConfigs.value[0] ||
-  null
+const contextConfig = computed(
+  () =>
+    contextConfigs.value.find(({ type }) => type === menuContext.value) ||
+    contextConfigs.value.find(
+      ({ availability }) => availability?.paused !== true
+    ) ||
+    contextConfigs.value[0] ||
+    null
 )
 const orderAvailable = computed(() => {
   const behaviour = detailMenu.value?.behaviour
-
   return Boolean(
     renderKind.value === 'structured' &&
-    menuManifestSupportsContext(behaviour, menuContext.value)
+      menuManifestSupportsContext(behaviour, menuContext.value)
   )
 })
 const orderState = computed(() => {
   if (pending.value) return 'loading'
-
   return orderAvailable.value ? 'ready' : 'unavailable'
 })
 const menuPresentation = computed(() => detailMenu.value?.presentation || null)
+const { backgroundImageUrl: kioskBackgroundImageUrl } = useKioskSkinBackground({
+  skin: () => menuPresentation.value?.kioskSkin,
+})
 const menuName = computed(() => detailMenu.value?.content.name || 'Menu')
 const menuDescription = computed(() => detailMenu.value?.content.description || '')
 const menuSections = computed(() => detailMenu.value?.content.sections || [])
 const kitchenName = computed(() => menuPresentation.value?.kitchenName || '')
-const currencyCode = computed(() =>
-  String(menuPresentation.value?.currencyCode || '').trim().toUpperCase()
-)
-const showCurrency = computed(() =>
-  menuPresentation.value?.showCurrency !== false
-)
+const kitchenTagline = computed(() => menuPresentation.value?.kitchenTagline || '')
+const kioskEatInCardImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.choiceCards?.eatInImageUrl || '').trim())
+const kioskCatalogueBackgroundImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.catalogueBackgroundImageUrl || '').trim())
+const kioskSectionCardFrameImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.sectionCardFrameImageUrl || '').trim())
+const kioskSectionCardImageUrls = computed(() => menuPresentation.value?.kioskSkin?.sectionCardImageUrls || {})
+const kioskTakeawayCardImageUrl = computed(() => String(menuPresentation.value?.kioskSkin?.choiceCards?.takeawayImageUrl || '').trim())
+const kitchenImageUrl = computed(() => String(menuPresentation.value?.kitchenImageUrl || '').trim())
+const currencyCode = computed(() => String(menuPresentation.value?.currencyCode || '').trim().toUpperCase())
+const showCurrency = computed(() => menuPresentation.value?.showCurrency !== false)
 const kitchenLogoImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenLogoImageUrl || '').trim()
 )
 const kitchenWordmarkImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenWordmarkImageUrl || '').trim()
 )
-const contextMessage = computed(() =>
-  String(contextConfig.value?.message || '').trim() ||
-  (menuContext.value === 'pre_order'
-    ? 'Order ahead for a larger table, choose when you would like to dine, and the Kitchen will confirm your request.'
-    : `This menu is available for ${contextProfile.value.label.toLowerCase()}.`)
+const kioskLogoImageUrl = computed(() => kitchenLogoImageUrl.value || String(menuPresentation.value?.placeLogoImageUrl || '').trim())
+const kioskWordmarkImageUrl = computed(() => kitchenWordmarkImageUrl.value || String(menuPresentation.value?.placeWordmarkImageUrl || '').trim())
+const contextMessage = computed(
+  () =>
+    String(contextConfig.value?.message || '').trim() ||
+    (menuContext.value === 'pre_order'
+      ? 'Order ahead for a larger table, choose when you would like to dine, and the Kitchen will confirm your request.'
+      : `This menu is available for ${contextProfile.value.label.toLowerCase()}.`)
 )
-const surfaceHours = computed(() =>
-  contextConfig.value?.service_hours?.operation_hours
-)
-const { menuServiceChip: contextServiceChip } = useMenuServiceComputed(
-  surfaceHours
-)
+const surfaceHours = computed(() => contextConfig.value?.service_hours?.operation_hours)
+const { menuServiceChip: contextServiceChip } =
+  useMenuServiceComputed(surfaceHours)
 const contextStatusLabel = computed(() => {
   if (surfacePaused.value) return `${contextProfile.value.label} paused`
   if (menuContext.value === 'pre_order') return 'Pre-order requests open'
@@ -248,32 +272,33 @@ const contextStatusLabel = computed(() => {
     ? contextServiceChip.value.label
     : `${contextProfile.value.label} hours unavailable`
 })
-const surfacePaused = computed(() =>
-  contextConfig.value?.availability?.paused === true
-)
-const surfacePauseMessage = computed(() =>
-  String(contextConfig.value?.availability?.message || '').trim() ||
-  `${contextProfile.value.label} is temporarily paused. Please try again later.`
+const surfacePaused = computed(() => contextConfig.value?.availability?.paused === true)
+const surfacePauseMessage = computed(
+  () =>
+    String(contextConfig.value?.availability?.message || '').trim() ||
+    `${contextProfile.value.label} is temporarily paused. Please try again later.`
 )
 const contextStatusColor = computed(() =>
   surfacePaused.value
-    ? 'error' as const
+    ? ('error' as const)
     : menuContext.value === 'pre_order'
-      ? 'success' as const
+      ? ('success' as const)
       : contextServiceChip.value.color
 )
-const surfaceOptions = computed(() => menuContext.value === 'kiosk'
-  ? []
-  : guestMenuSurfaceOptions({
-      behaviour: detailMenu.value?.behaviour,
-      menuId: menuId.value,
-      routeScope: menuRouteScope.value,
-      activeContext: menuContext.value,
-    }).filter(option => option.value !== 'generic')
+const surfaceOptions = computed(() =>
+  menuContext.value === 'kiosk'
+    ? []
+    : guestMenuSurfaceOptions({
+        behaviour: detailMenu.value?.behaviour,
+        menuId: menuId.value,
+        routeScope: menuRouteScope.value,
+        activeContext: menuContext.value,
+      }).filter((option) => option.value !== 'generic')
 )
-const contextOrderNoun = computed(() => menuContext.value === 'pre_order'
-  ? 'pre-orders'
-  : `${contextProfile.value.label.toLowerCase()} orders`
+const contextOrderNoun = computed(() =>
+  menuContext.value === 'pre_order'
+    ? 'pre-orders'
+    : `${contextProfile.value.label.toLowerCase()} orders`
 )
 const resolvedSource = computed(() => detailMenu.value?.source || null)
 const sourceMenuId = computed(() => resolvedSource.value?.menuId || '')
@@ -282,27 +307,32 @@ const orderKitchenSlug = computed(() =>
     ? menuRouteScope.value.kitchenSlug
     : ''
 )
-const basketScopeKey = computed(() => JSON.stringify([
-  resolvedSource.value?.appId || '',
-  resolvedSource.value?.kitchenId || '',
-  sourceMenuId.value,
-  menuContext.value,
-]))
-const unavailableFailure = computed(() => failure.value || {
-  statusCode: 404,
-  title: `${contextProfile.value.label} unavailable`,
-  description:
-    `This kitchen is not accepting ${contextOrderNoun.value} from this menu right now.`,
-})
-const hasResolvedMenu = computed(() => Boolean(
-  detailMenu.value || documentMenu.value
-))
-const unavailableBrowsePath = computed(() => hasResolvedMenu.value
-  ? menuRoutePath({
-      scope: menuRouteScope.value,
-      menuId: menuId.value,
-    })
-  : ''
+const basketScopeKey = computed(() =>
+  JSON.stringify([
+    resolvedSource.value?.appId || '',
+    resolvedSource.value?.kitchenId || '',
+    sourceMenuId.value,
+    menuContext.value,
+  ])
+)
+const unavailableFailure = computed(
+  () =>
+    failure.value || {
+      statusCode: 404,
+      title: `${contextProfile.value.label} unavailable`,
+      description: `This kitchen is not accepting ${contextOrderNoun.value} from this menu right now.`,
+    }
+)
+const hasResolvedMenu = computed(() =>
+  Boolean(detailMenu.value || documentMenu.value)
+)
+const unavailableBrowsePath = computed(() =>
+  hasResolvedMenu.value
+    ? menuRoutePath({
+        scope: menuRouteScope.value,
+        menuId: menuId.value,
+      })
+    : ''
 )
 const unavailableKitchenPath = computed(() => {
   const kitchenSlug = String(resolvedSource.value?.kitchenSlug || '').trim()
@@ -311,33 +341,27 @@ const unavailableKitchenPath = computed(() => {
     ? `/kitchens/${encodeURIComponent(kitchenSlug)}`
     : ''
 })
-const pageStyle = computed(() =>
-  menuPresentation.value?.pageStyle || documentMenu.value?.pageStyle || null
+const pageStyle = computed(
+  () =>
+    menuPresentation.value?.pageStyle || documentMenu.value?.pageStyle || null
 )
-const appPageStyle = {
-  background_color_light: 'var(--ui-bg)',
-  background_color_dark: 'var(--ui-bg)',
-  font_color_light: 'var(--ui-text)',
-  font_color_dark: 'var(--ui-text)',
-  title_color_light: 'var(--ui-text-highlighted)',
-  title_color_dark: 'var(--ui-text-highlighted)',
-  primary_color: 'var(--ui-primary)',
-  secondary_color: 'var(--ui-text-muted)',
-} as const
+const theme = computed(
+  () => menuPresentation.value?.theme || documentMenu.value?.theme || null
+)
 const surfacePageStyle = computed(() =>
-  orderAvailable.value ? pageStyle.value : appPageStyle
+  orderAvailable.value ? pageStyle.value : menuAppPageStyle
 )
+const surfaceTheme = computed(() => (orderAvailable.value ? theme.value : null))
 const surfaceColorMode = computed(() =>
-  orderAvailable.value ? null : 'light' as const
+  orderAvailable.value ? null : ('light' as const)
 )
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: surfacePageStyle,
-  colorMode: surfaceColorMode,
-  pageCanvas: computed(() => props.pageCanvas),
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: surfacePageStyle,
+    theme: surfaceTheme,
+    colorMode: surfaceColorMode,
+    pageCanvas: computed(() => props.pageCanvas),
+  })
 
 if (props.propagateResponseStatus) {
   await ready
@@ -349,26 +373,28 @@ if (props.propagateResponseStatus) {
     }
   }
 }
-
 useSeoMeta({
-  title: () => failure.value?.title ||
+  title: () =>
+    failure.value?.title ||
     (orderAvailable.value
       ? `${menuName.value} · ${contextProfile.value.label}`
       : `${contextProfile.value.label} unavailable`),
-  description: () => failure.value?.description ||
+  description: () =>
+    failure.value?.description ||
     (orderAvailable.value
       ? contextMessage.value
       : unavailableFailure.value.description),
-  ogTitle: () => failure.value?.title ||
+  ogTitle: () =>
+    failure.value?.title ||
     (orderAvailable.value
       ? `${menuName.value} · ${contextProfile.value.label}`
       : `${contextProfile.value.label} unavailable`),
-  ogDescription: () => failure.value?.description ||
+  ogDescription: () =>
+    failure.value?.description ||
     (orderAvailable.value
       ? contextMessage.value
       : unavailableFailure.value.description),
   robots: 'noindex, nofollow',
 })
 </script>
-
-<style scoped src="../../../assets/styles/menu-order.css"></style>
+<style src="../../../assets/styles/menu-order.css"></style>

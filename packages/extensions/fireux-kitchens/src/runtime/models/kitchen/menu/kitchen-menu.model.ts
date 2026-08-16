@@ -11,6 +11,7 @@ import type { KitchenOrderType } from '../order.model'
 import type { WeekdayTimeWindowsConfig } from '../../shared/weekday-time.model'
 import type { MenuRouteContext, MenuSurface } from './menu-context.model'
 import type { MenuStatus } from './menu.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 
 /** Kitchen-owned operational Menu record. */
 export const KitchenMenuStorage = {
@@ -21,8 +22,10 @@ export const KitchenMenuStorage = {
   parent: 'kitchen',
   idParam: 'menuId',
   children: {
-    sections: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
-    items: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+    sections:
+      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+    items:
+      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   },
 } as const
 
@@ -61,7 +64,7 @@ export type MenuOrderFulfilmentPolicy = {
 }
 
 export const MenuOrderContactFields = ['name', 'phone', 'email'] as const
-export type MenuOrderContactField = typeof MenuOrderContactFields[number]
+export type MenuOrderContactField = (typeof MenuOrderContactFields)[number]
 
 export type MenuOrderCustomerPolicy = {
   required_fields?: MenuOrderContactField[]
@@ -162,7 +165,10 @@ export const KitchenMenuModel = {
 
 type MutableModel<T> = { -readonly [K in keyof T]: T[K] }
 
-export type KitchenMenu = MutableModel<typeof KitchenMenuModel>
+export type KitchenMenu = MutableModel<typeof KitchenMenuModel> & {
+  /** Optional Menu-owned presentation. Absence inherits the Kitchen theme. */
+  theme?: ConsoleTheme
+}
 export type KitchenMenuCreateInput = Omit<KitchenMenu, 'created' | 'updated'>
 export type KitchenMenuUpdateInput = Partial<
   Omit<KitchenMenu, 'id' | 'created' | 'updated' | 'kitchen_id'>

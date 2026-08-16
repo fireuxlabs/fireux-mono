@@ -1,6 +1,6 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
+import { useKitchenDishesWorkspace } from './useKitchenDishesWorkspace'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 type ProductionAmount = {
@@ -38,7 +38,8 @@ export function useKitchenConsoleDish() {
     pending,
     demoDishOperation,
     getMenuUsageForDish,
-  } = useKitchenConsoleDishes()
+    catalogue,
+  } = useKitchenDishesWorkspace()
 
   const dishId = useRouteParam('dishId')
 
@@ -116,5 +117,6 @@ export function useKitchenConsoleDish() {
     financePending: pending,
     financeError,
     debug,
+    catalogue,
   }
 }

@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.10.1",
+    "@lottiefiles/dotlottie-vue": "^0.11.25",
     "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-demo": "workspace:*",

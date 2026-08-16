@@ -4,11 +4,9 @@
 
     <ConsoleKitchenOperationsMenusOverview v-if="menu" />
 
-    <div
-      v-if="menu && canWrite"
-      class="grid items-start gap-4 xl:grid-cols-2"
-    >
+    <div v-if="menu && canWrite" class="grid items-start gap-4 xl:grid-cols-2">
       <ConsoleKitchenOperationsMenusEditDetails />
+      <ConsoleKitchenOperationsMenusEditTheme />
       <ConsoleKitchenOperationsMenusOrderingServiceHours />
     </div>
 
@@ -39,15 +37,12 @@
 import { computed } from 'vue'
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 
-const {
-  menu,
-  source,
-  menuId,
-  canWrite,
-} = useKitchenConsoleMenu()
-const sourceActions = computed(() => [{
-  label: 'Open Source',
-  icon: 'i-lucide-arrow-right',
-  to: `/console/kitchen/menus/${encodeURIComponent(menuId.value)}/source`,
-}])
+const { menu, source, menuId, canWrite } = useKitchenConsoleMenu()
+const sourceActions = computed(() => [
+  {
+    label: 'Open Source',
+    icon: 'i-lucide-arrow-right',
+    to: `/console/kitchen/menus/${encodeURIComponent(menuId.value)}/source`,
+  },
+])
 </script>

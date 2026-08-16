@@ -1,0 +1,45 @@
+<template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-drink-create">
+      <template #header>
+        <LayoutsConsoleNavbar title="Create Drink" />
+      </template>
+
+      <template #body>
+        <section class="space-y-4">
+          <UBreadcrumb :items="breadcrumbItems" />
+          <ConsoleKitchenOperationsDishesWrite />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { provideKitchenDishesWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
+
+provideKitchenDishesWorkspace('drink')
+
+const breadcrumbItems = [
+  { label: 'Drinks', icon: 'i-lucide-glass-water', to: '/console/kitchen/drinks' },
+  { label: 'Create drink', icon: 'i-lucide-plus' },
+]
+
+definePageMeta({
+  layout: 'console',
+  consoleSurface: 'create',
+  visibility: { modules: ['fireux-kitchens'] },
+  requiresAuth: true,
+  requiresSelection: true,
+  nav: {
+    key: 'console-kitchen-drink-create',
+    label: 'Create Drink',
+    icon: 'i-lucide-plus',
+    position: 'top',
+    hidden: true,
+    desktop: false,
+    mobile: false,
+    layouts: ['console'],
+  },
+})
+</script>

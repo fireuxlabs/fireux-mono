@@ -38,7 +38,7 @@ export async function projectMiseboxProductDemoConsoleFoundations({
     ])
   )
   const consoleTableCount = kitchenSpineModule.readKitchenTableCount(
-    consoleScenario.kitchen
+    consoleScenario.appSupport
   )
   if (!consoleTableCount) {
     throw new Error('Product Demo Kitchen Tables are not configured.')

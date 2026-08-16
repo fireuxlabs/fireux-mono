@@ -1,5 +1,13 @@
 <template>
   <div class="space-y-4">
+    <ConsoleKitchenOperationsMenusProcessMediaReview
+      :source="source"
+      :result="result"
+      :app-id="appId"
+      :kitchen-id="kitchenId"
+      :upload-id="uploadId"
+      :auth-token="authToken"
+    />
     <UAlert
       v-if="hasDestructiveOptionLoss"
       color="error"
@@ -39,9 +47,17 @@ const props = defineProps<{
 }>()
 
 const hasDestructiveOptionLoss = computed(() =>
-  props.flags.some((flag) =>
-    flag.code === 'variants-missing-in-extraction' ||
-    flag.code === 'add-ons-missing-in-extraction'
+  props.flags.some(
+    (flag) =>
+      flag.code === 'variants-missing-in-extraction' ||
+      flag.code === 'add-ons-missing-in-extraction'
   )
+)
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const uploadId = computed(() =>
+  String(record(props.source).id || props.menuId).trim()
 )
 </script>

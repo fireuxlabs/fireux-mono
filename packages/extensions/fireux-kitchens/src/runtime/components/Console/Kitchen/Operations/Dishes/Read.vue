@@ -1,34 +1,20 @@
 <template>
-  <section aria-label="Dishes" class="space-y-4">
+  <section :aria-label="catalogue.title" class="space-y-4">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
       <UInput
         v-model="query"
         icon="i-lucide-search"
-        placeholder="Search dishes"
+        :placeholder="`Search ${catalogue.plural}`"
         class="w-full sm:max-w-sm"
       />
 
-      <div class="flex gap-1 overflow-x-auto">
-        <UButton
-          v-for="option in kindOptions"
-          :key="option.value"
-          size="sm"
-          :icon="option.icon"
-          :color="kindFilter === option.value ? 'primary' : 'neutral'"
-          :variant="kindFilter === option.value ? 'solid' : 'soft'"
-          @click="kindFilter = option.value"
-        >
-          {{ option.label }}
-        </UButton>
-      </div>
-
       <span class="text-sm text-dimmed sm:ml-auto">
-        {{ visibleDishes.length }} dishes
+        {{ visibleDishes.length }} {{ catalogue.plural }}
       </span>
     </div>
 
     <div v-if="pending" class="text-sm text-dimmed">
-      Loading dishes...
+      Loading {{ catalogue.plural }}...
     </div>
 
     <UAlert
@@ -36,26 +22,26 @@
       color="error"
       variant="soft"
       icon="i-lucide-circle-alert"
-      title="Dishes unavailable"
-      description="The dishes for this kitchen could not be loaded. Please try again."
+      :title="`${catalogue.title} unavailable`"
+      :description="`The ${catalogue.plural} for this kitchen could not be loaded. Please try again.`"
     />
 
     <UAlert
       v-else-if="!dishes.length"
       color="neutral"
       variant="soft"
-      title="No dishes yet"
+      :title="`No ${catalogue.plural} yet`"
       :description="readOnly
-        ? 'No dishes are available in this read-only source.'
-        : 'Create the first dish for this kitchen.'"
+        ? `No ${catalogue.plural} are available in this read-only source.`
+        : `Create the first ${catalogue.singular} for this kitchen.`"
     />
 
     <UAlert
       v-else-if="!visibleDishes.length"
       color="neutral"
       variant="soft"
-      title="No matching dishes"
-      description="Try another search or choose a different type."
+      :title="`No matching ${catalogue.plural}`"
+      description="Try another search."
     />
 
     <div
@@ -96,8 +82,8 @@
   object-origin="fetched"
       launcher
       include-route
-      title="Kitchen dishes debug"
-      context="Kitchen dishes console · /console/kitchen/dishes"
+      :title="`Kitchen ${catalogue.plural} debug`"
+      :context="`Kitchen ${catalogue.plural} console · ${catalogue.path}`"
       :objects="dishDebug"
   :derived="{}"
       :default-open="false"
@@ -110,8 +96,6 @@ import { computed, ref } from 'vue'
 import { useKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 import type { Dish } from '../../../../../models/kitchen/dish.model'
 
-type DishKindFilter = 'all' | 'food' | 'drink' | 'deal'
-
 const {
   dishes,
   pending,
@@ -121,10 +105,10 @@ const {
   getMenuUsageForDish,
   getPriceLabelForDish,
   isDishInService,
+  catalogue,
 } = useKitchenDishesWorkspace()
 
 const query = ref('')
-const kindFilter = ref<DishKindFilter>('all')
 const quickLookOpen = ref(false)
 const selectedDish = ref<Dish | null>(null)
 
@@ -139,27 +123,12 @@ const searchable = (dish: Dish) =>
 const kindLabel = (dish: Dish) =>
   dish.is_deal ? 'Deal' : dish.item_kind === 'drink' ? 'Drink' : 'Food'
 
-const kindOptions: Array<{
-  value: DishKindFilter
-  label: string
-  icon: string
-}> = [
-  { value: 'all', label: 'All', icon: 'i-lucide-layout-grid' },
-  { value: 'food', label: 'Food', icon: 'i-lucide-utensils' },
-  { value: 'drink', label: 'Drinks', icon: 'i-lucide-glass-water' },
-  { value: 'deal', label: 'Deals', icon: 'i-lucide-tags' },
-]
 const visibleDishes = computed(() => {
   const needle = clean(query.value).toLowerCase()
 
   return dishes.value
     .filter((dish) => {
       if (needle && !searchable(dish).includes(needle)) return false
-      if (kindFilter.value === 'food') {
-        return dish.item_kind === 'food' && !dish.is_deal
-      }
-      if (kindFilter.value === 'drink') return dish.item_kind === 'drink'
-      if (kindFilter.value === 'deal') return dish.is_deal
       return true
     })
     .slice()

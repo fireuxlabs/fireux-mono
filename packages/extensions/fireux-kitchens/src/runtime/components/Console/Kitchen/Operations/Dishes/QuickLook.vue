@@ -92,6 +92,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 import type { KitchenDishMenuUsage } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
 import type { Dish } from '../../../../../models/kitchen/dish.model'
 
@@ -109,6 +110,7 @@ const emit = defineEmits<{
 }>()
 
 const open = defineModel<boolean>('open', { required: true })
+const { catalogue } = useKitchenDishesWorkspace()
 const clean = (value: unknown) => String(value ?? '').trim()
 const kindLabel = computed(() =>
   props.dish?.is_deal
@@ -121,7 +123,7 @@ const quickLookDescription = computed(() =>
   props.dish ? 'Quick look · Read-only' : 'Read-only dish preview'
 )
 const detailPath = computed(() =>
-  `/console/kitchen/dishes/${encodeURIComponent(clean(props.dish?.id))}`
+  `${catalogue.path}/${encodeURIComponent(clean(props.dish?.id))}`
 )
 const menuPlacements = computed(() =>
   props.menuUsage.map((usage, index) => ({

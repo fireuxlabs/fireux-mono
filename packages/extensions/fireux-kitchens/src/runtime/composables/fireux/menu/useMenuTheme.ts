@@ -27,6 +27,17 @@ export const menuThemeDefaultPageStyle = {
   title_font_family: '',
 } satisfies Partial<PageStyle>
 
+export const menuAppPageStyle = {
+  background_color_light: 'var(--ui-bg)',
+  background_color_dark: 'var(--ui-bg)',
+  font_color_light: 'var(--ui-text)',
+  font_color_dark: 'var(--ui-text)',
+  title_color_light: 'var(--ui-text-highlighted)',
+  title_color_dark: 'var(--ui-text-highlighted)',
+  primary_color: 'var(--ui-primary)',
+  secondary_color: 'var(--ui-text-muted)',
+} as const satisfies Partial<PageStyle>
+
 const systemFont = menuThemeFontFromId('system')
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -40,11 +51,9 @@ export function resolveMenuPageStyle(
     text(style?.background_color_dark) ||
     menuThemeDefaultPageStyle.background_color_dark
   const fontLight =
-    text(style?.font_color_light) ||
-    menuThemeDefaultPageStyle.font_color_light
+    text(style?.font_color_light) || menuThemeDefaultPageStyle.font_color_light
   const fontDark =
-    text(style?.font_color_dark) ||
-    menuThemeDefaultPageStyle.font_color_dark
+    text(style?.font_color_dark) || menuThemeDefaultPageStyle.font_color_dark
   const titleLight = text(style?.title_color_light) || fontLight
   const titleDark = text(style?.title_color_dark) || fontDark
 
@@ -56,11 +65,9 @@ export function resolveMenuPageStyle(
     title_color_light: titleLight,
     title_color_dark: titleDark,
     primary_color:
-      text(style?.primary_color) ||
-      menuThemeDefaultPageStyle.primary_color,
+      text(style?.primary_color) || menuThemeDefaultPageStyle.primary_color,
     secondary_color:
-      text(style?.secondary_color) ||
-      menuThemeDefaultPageStyle.secondary_color,
+      text(style?.secondary_color) || menuThemeDefaultPageStyle.secondary_color,
     font_source:
       text(style?.font_source) === 'google'
         ? 'google'
@@ -126,9 +133,6 @@ export function resolveMenuTitleFont(style?: Partial<PageStyle> | null) {
   )
 }
 
-function resolveMenuFontToken(
-  sourceValue: unknown,
-  familyValue: unknown
-) {
+function resolveMenuFontToken(sourceValue: unknown, familyValue: unknown) {
   return resolveMenuThemeFontToken(sourceValue, familyValue)
 }

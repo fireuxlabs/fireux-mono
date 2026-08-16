@@ -27,8 +27,6 @@
 
 .product-demo-index__intro p,
 .product-demo-index__intro h1,
-.product-demo-index__section-heading p,
-.product-demo-index__section-heading h2,
 .product-demo-index__boundary p {
   margin: 0;
 }
@@ -78,18 +76,6 @@
 
 .product-demo-index__world small {
   color: var(--ui-text-muted);
-}
-
-.product-demo-index__section-heading {
-  display: grid;
-  gap: calc(var(--spacing) * 1.8);
-}
-
-.product-demo-index__section-heading h2 {
-  color: var(--ui-text-highlighted);
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 950;
-  letter-spacing: -0.045em;
 }
 
 .product-demo-index__grid {

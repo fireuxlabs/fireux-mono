@@ -305,6 +305,12 @@ requirement, report the exact missing seam before broad edits.
   ids live at `users/{uid}/private/targets`. `App.derived.user_count` and App
   build/database metadata remain migration candidates. Use
   `docs/concepts/core-models.md` as the ownership and migration map.
+- Private AI memory about a User is ecosystem-scoped operational support at
+  `users/{uid}/private/context`, using the Core `UserContext` contract. Core
+  defines its protected storage and authenticated access seam; each active
+  ecosystem identity database owns its own context string. Do not place this
+  memory on the publicly projected User root, copy it into AppUser membership,
+  or promote ecosystem knowledge into a cross-ecosystem Core fact.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.

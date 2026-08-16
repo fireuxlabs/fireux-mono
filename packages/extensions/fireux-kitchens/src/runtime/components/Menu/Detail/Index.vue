@@ -12,13 +12,9 @@
     :dir="menuDirection"
     :lang="menuLanguage || undefined"
   >
-    <p v-if="pending" class="menu-detail__state">
-      Loading menu...
-    </p>
+    <p v-if="pending" class="menu-detail__state">Loading menu...</p>
 
-    <p v-else-if="error" class="menu-detail__state">
-      Menu unavailable.
-    </p>
+    <p v-else-if="error" class="menu-detail__state">Menu unavailable.</p>
 
     <MenuDetailDocument
       v-else-if="renderKind === 'document' && documentMenu"
@@ -29,10 +25,7 @@
 
     <template v-else-if="detailMenu">
       <ClientOnly>
-        <div
-          v-if="detailMenu.sproochli"
-          class="menu-detail__translation"
-        >
+        <div v-if="detailMenu.sproochli" class="menu-detail__translation">
           <SproochliLanguageTrigger
             :language-options="sproochliLanguageOptions"
             :selected-language="detailMenu.sproochli.language"
@@ -56,9 +49,7 @@
       />
     </template>
 
-    <p v-else class="menu-detail__state">
-      Menu unavailable.
-    </p>
+    <p v-else class="menu-detail__state">Menu unavailable.</p>
   </div>
 </template>
 
@@ -113,11 +104,12 @@ const {
   routeScope: menuRouteScope,
   sproochliLanguage,
 })
-const sproochliLanguageOptions = computed(() =>
-  resolveSproochliLanguageState({
-    enabled: true,
-    cachedLanguages: detailMenu.value?.sproochli?.readyLanguages ?? [],
-  }).options
+const sproochliLanguageOptions = computed(
+  () =>
+    resolveSproochliLanguageState({
+      enabled: true,
+      cachedLanguages: detailMenu.value?.sproochli?.readyLanguages ?? [],
+    }).options
 )
 const menuLanguage = computed(() =>
   detailMenu.value?.sproochli?.state === 'translated'
@@ -130,8 +122,8 @@ const menuDirection = computed(() =>
     ? 'rtl'
     : 'ltr'
 )
-const documentKitchenName = computed(() =>
-  documentMenu.value?.kitchenName || ''
+const documentKitchenName = computed(
+  () => documentMenu.value?.kitchenName || ''
 )
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
@@ -144,23 +136,28 @@ const documentUrl = computed(() => {
 
   return `/api/menus/${encodeURIComponent(menuId.value)}/file${qs ? `?${qs}` : ''}`
 })
-const pageStyle = computed(() =>
-  detailMenu.value?.presentation.pageStyle ||
-  documentMenu.value?.pageStyle ||
-  null
+const pageStyle = computed(
+  () =>
+    detailMenu.value?.presentation.pageStyle ||
+    documentMenu.value?.pageStyle ||
+    null
 )
-const isKioskMenu = computed(() =>
-  menuContextProfile(menuContext.value).surface === 'kiosk' ||
+const theme = computed(
+  () =>
+    detailMenu.value?.presentation.theme || documentMenu.value?.theme || null
+)
+const isKioskMenu = computed(
+  () =>
+    menuContextProfile(menuContext.value).surface === 'kiosk' ||
     detailMenu.value?.behaviour.surface === 'kiosk'
 )
-const isStaffPosMenu = computed(() =>
-  menuContextProfile(menuContext.value).surface === 'staff_pos' ||
+const isStaffPosMenu = computed(
+  () =>
+    menuContextProfile(menuContext.value).surface === 'staff_pos' ||
     detailMenu.value?.behaviour.surface === 'staff_pos'
 )
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({ pageStyle })
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({ pageStyle, theme })
 </script>
 
 <style scoped>

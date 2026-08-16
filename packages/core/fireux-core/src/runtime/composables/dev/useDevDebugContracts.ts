@@ -37,11 +37,15 @@ const inspectValue = (
     const emptyRequired = (contract.requiredPaths || [])
       .filter((path) => data && isEmptyRequiredValue(readPath(data, path)))
       .map((path) => `${path} (empty)`)
+    const deprecated = (contract.deprecatedPaths || []).filter(
+      (path) => data && readPath(data, path) !== undefined
+    )
 
     return {
       target: Array.isArray(value) ? `${target}[${index}]` : target,
       missing: [...new Set([...drift.missing, ...emptyRequired])],
       extra: drift.extra,
+      deprecated,
     }
   })
 }
@@ -66,7 +70,10 @@ export const useDevDebugContracts = (
     }
 
     return result.filter(
-      (finding) => finding.missing.length || finding.extra.length
+      (finding) =>
+        finding.missing.length ||
+        finding.extra.length ||
+        finding.deprecated.length
     )
   })
 
@@ -77,5 +84,29 @@ export const useDevDebugContracts = (
     findings.value.reduce((total, finding) => total + finding.extra.length, 0)
   )
 
-  return { findings, missingCount, extraCount }
+  const deprecatedCount = computed(() =>
+    findings.value.reduce(
+      (total, finding) => total + finding.deprecated.length,
+      0
+    )
+  )
+
+  const contractNames = computed(() => [
+    ...(toValue(contract)?.name ? [toValue(contract)!.name!] : []),
+    ...Object.entries(toValue(contracts) || {}).map(
+      ([key, value]) => value.name || key
+    ),
+  ])
+  const hasContracts = computed(() =>
+    Boolean(toValue(contract) || Object.keys(toValue(contracts) || {}).length)
+  )
+
+  return {
+    findings,
+    missingCount,
+    extraCount,
+    deprecatedCount,
+    contractNames,
+    hasContracts,
+  }
 }

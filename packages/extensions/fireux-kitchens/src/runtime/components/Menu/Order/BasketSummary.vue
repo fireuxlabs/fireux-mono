@@ -1,6 +1,6 @@
 <template>
   <button
-    v-show="quantity > 0"
+    v-show="alwaysVisible || quantity > 0"
     type="button"
     class="menu-order-basket-summary"
     data-menu-order-basket="local"
@@ -16,7 +16,7 @@
       <UIcon name="i-lucide-shopping-basket" />
     </span>
     <span class="menu-order-basket-summary__copy">
-      <strong>Basket</strong>
+      <strong>{{ label }}</strong>
       <span>{{ quantityLabel }}</span>
     </span>
     <strong class="menu-order-basket-summary__total">
@@ -34,7 +34,9 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
+  alwaysVisible?: boolean
   currencyCode: string
+  label?: string
   quantity: number
   total: number
   totalLabel: string
@@ -43,6 +45,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'review', trigger: HTMLButtonElement): void
 }>()
+const label = computed(() => String(props.label || 'Basket').trim())
 
 const quantityLabel = computed(() =>
   `${props.quantity} ${props.quantity === 1 ? 'item' : 'items'}`
@@ -51,7 +54,7 @@ const totalMarker = computed(() =>
   Math.max(0, Number(props.total || 0)).toFixed(2)
 )
 const summaryLabel = computed(() =>
-  ['Basket', quantityLabel.value, props.totalLabel || `0 ${props.currencyCode}`]
+  [label.value, quantityLabel.value, props.totalLabel || `0 ${props.currencyCode}`]
     .filter(Boolean)
     .join(', ')
 )
