@@ -1,0 +1,182 @@
+import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
+import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
+import {
+  extractFireuxAgentTip,
+  fireuxAgentTipInstruction,
+} from 'fireux-ai/runtime/agents/agent-tip'
+import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-context.model'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/operator-access'
+import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/server/kitchen/ai/usage'
+import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
+import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
+
+const PROMPT_MAX_LENGTH = 2_000
+const MAX_MENUS = 12
+const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+
+function readPrompt(value: unknown) {
+  const prompt = text(value)
+  if (!prompt) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A Kitchen question is required.',
+    })
+  }
+  if (prompt.length > PROMPT_MAX_LENGTH) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Kitchen questions must not exceed ${PROMPT_MAX_LENGTH} characters.`,
+    })
+  }
+  return prompt
+}
+
+async function readUserContext(uid: string) {
+  const snapshot = await getRuntimeIdentityFirestore()
+    .collection(UserStorage.collection)
+    .doc(uid)
+    .collection(UserContextStorage.collection)
+    .doc(UserContextStorage.document)
+    .get()
+
+  return snapshot.exists ? readRecordString(snapshot.data() || {}, 'context') : ''
+}
+
+async function readMenuManifest(
+  access: Awaited<ReturnType<typeof requireKitchenWriter>>,
+  input: { appId: string; kitchenId: string }
+) {
+  const snapshot = await access.db
+    .collection(`apps/${input.appId}/kitchens/${input.kitchenId}/menus`)
+    .limit(MAX_MENUS)
+    .get()
+
+  return Promise.all(
+    snapshot.docs.map(async (document) => {
+      const data = document.data() || {}
+      const sections = await readKitchenMenuSections(access.db, {
+        ...input,
+        menuId: document.id,
+      })
+      return {
+        id: document.id,
+        name: readRecordString(data, 'name') || document.id,
+        status: readRecordString(data, 'status'),
+        section_count: sections.length,
+        item_count: sections.reduce(
+          (total, section) => total + section.items.length,
+          0
+        ),
+        sections: sections.map((section) => ({
+          label: section.label,
+          item_count: section.items.length,
+        })),
+      }
+    })
+  )
+}
+
+export default defineEventHandler(async (event: H3Event) => {
+  const body = (await readBody(event)) as Record<string, unknown> | null
+  const appId = requirePathSegment(body?.appId, 'App id')
+  const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
+  const prompt = readPrompt(body?.prompt)
+  const access = await requireKitchenWriter(event, { appId, kitchenId })
+  const [userContext, menuManifest] = await Promise.all([
+    readUserContext(access.uid),
+    readMenuManifest(access, { appId, kitchenId }),
+  ])
+  const identity = record(access.rootKitchen.identity)
+  const kitchenName = readRecordString(identity, 'name') || kitchenId
+  const kitchenContext = readRecordString(
+    record(access.appKitchen.console),
+    'context'
+  )
+  const menuContext = readKitchenMenusConfig(access.appKitchen).context
+  const ai = useFireuxAi(event)
+  const response = await ai.generateText({
+    appId,
+    task: 'summarise_text',
+    timeoutMs: 60_000,
+    input: {
+      simulator_kind: 'kitchen_summary',
+      question: prompt,
+      kitchen: {
+        id: kitchenId,
+        name: kitchenName,
+        tagline: readRecordString(identity, 'tagline'),
+        context: kitchenContext || undefined,
+      },
+      operation_agents: {
+        MenuAI: {
+          operation: 'Menus',
+          authority: 'advisory',
+          menu_manifest: menuManifest,
+          context: menuContext || undefined,
+          instruction:
+            'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Do not propose or claim a mutation.',
+        },
+      },
+    },
+    context: {
+      agent: 'KitchenAI',
+      user_context: userContext || undefined,
+      kitchen_context: kitchenContext || undefined,
+      menu_context: menuContext || undefined,
+      instruction:
+        `Act as KitchenAI for the selected Kitchen. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scopes. For this summary, consult MenuAI and incorporate its supported operational observations into the final Kitchen summary. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
+    },
+  })
+  const result = extractFireuxAgentTip(response.text, {
+    agentId: 'KitchenAI',
+    parentId: 'MiseboxAI',
+  })
+  const answer = text(result.answer)
+  if (!response.ok || !answer) {
+    throw createError({
+      statusCode: response.disabled ? 503 : 502,
+      statusMessage: response.reason || 'KitchenAI could not answer.',
+    })
+  }
+
+  const usage = await writeKitchenAgentUsage({
+    appId,
+    kitchenId,
+    actorId: access.uid,
+    agent: 'KitchenAI',
+    task: 'answer_kitchen_question',
+    provider: response.provider,
+    model: response.model,
+    usage: response.usage,
+    tip: result.tip,
+  })
+
+  return {
+    ok: true as const,
+    answer,
+    scope: {
+      source:
+        response.execution === 'simulator'
+          ? 'simulator' as const
+          : response.execution === 'codex'
+            ? 'codex' as const
+            : 'ai' as const,
+      kitchenName,
+      userContext: Boolean(userContext),
+      kitchenContext: Boolean(kitchenContext),
+      menuContext: Boolean(menuContext),
+      menuCount: menuManifest.length,
+      delegates: ['MenuAI'] as const,
+      tipRecorded: Boolean(result.tip),
+      usage: { amount: usage.amount_label, currency: usage.currency },
+    },
+  }
+})

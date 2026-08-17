@@ -1,0 +1,91 @@
+.supplier-detail {
+  --supplier-canvas: #f6f6f3;
+  --ui-bg: #ffffff;
+  --ui-bg-elevated: #ffffff;
+  --ui-bg-accented: #f1f2ef;
+  --ui-border: #dfe2dc;
+  --ui-text: #17201a;
+  --ui-text-highlighted: #111713;
+  --ui-text-toned: #39443d;
+  --ui-text-muted: #5f6a63;
+  --ui-text-dimmed: #8a938d;
+  background: var(--supplier-canvas);
+  color: var(--ui-text);
+  min-height: 100dvh;
+}
+:global(html.dark .supplier-detail) {
+  --supplier-canvas: #0d1410;
+  --ui-bg: #151e18;
+  --ui-bg-elevated: #151e18;
+  --ui-bg-accented: #202b24;
+  --ui-border: #344139;
+  --ui-text: #e8eee9;
+  --ui-text-highlighted: #ffffff;
+  --ui-text-toned: #c3cdc6;
+  --ui-text-muted: #9eaaa2;
+  --ui-text-dimmed: #77837b;
+}
+.supplier-detail :deep(.pagebody) {
+  padding: calc(var(--spacing) * 4);
+}
+.supplier-detail__page {
+  display: grid;
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 11));
+  padding-bottom: clamp(
+    calc(var(--spacing) * 8),
+    6vw,
+    calc(var(--spacing) * 20)
+  );
+}
+.supplier-detail__hero {
+  position: relative;
+}
+.supplier-detail__toolbar {
+  inset: calc(var(--spacing) * 3) calc(var(--spacing) * 3) auto;
+  position: absolute;
+  z-index: 3;
+}
+.supplier-detail__back {
+  color: white;
+}
+.supplier-detail__content {
+  background: var(--ui-bg);
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
+}
+.supplier-detail__editorial,
+.supplier-detail__aside,
+.supplier-detail__about,
+.supplier-detail__catalogue {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+  min-width: 0;
+}
+.supplier-detail__story {
+  color: var(--ui-text-toned);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+  max-width: 68ch;
+  white-space: pre-line;
+}
+.supplier-detail__items {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+.supplier-detail__item-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 3);
+}
+@media (min-width: 64rem) {
+  .supplier-detail__content {
+    align-items: start;
+    grid-template-columns: minmax(0, 1.15fr) minmax(28rem, 0.85fr);
+  }
+}

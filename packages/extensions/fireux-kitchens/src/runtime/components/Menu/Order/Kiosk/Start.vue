@@ -114,6 +114,7 @@ const backgroundStyle = computed(() => {
 </script>
 
 <style scoped>
+@import './start-landscape.css';
 .menu-order-kiosk-start {
   position: relative;
   display: grid;
@@ -351,24 +352,6 @@ const backgroundStyle = computed(() => {
 .menu-order-kiosk-start__unavailable {
   width: min(100%, 38rem);
   justify-self: center;
-}
-
-@media (min-width: 701px) and (max-height: 800px) {
-  .menu-order-kiosk-start {
-    gap: calc(var(--spacing) * 4);
-    padding-block:
-      max(calc(var(--spacing) * 3), env(safe-area-inset-top))
-      max(calc(var(--spacing) * 3), env(safe-area-inset-bottom));
-  }
-
-  .menu-order-kiosk-start__option {
-    min-height: 7rem;
-    padding: calc(var(--spacing) * 4) calc(var(--spacing) * 6);
-  }
-
-  .menu-order-kiosk-start__options--portrait-cards {
-    width: min(68%, 32vh);
-  }
 }
 
 @media (max-width: 700px) {

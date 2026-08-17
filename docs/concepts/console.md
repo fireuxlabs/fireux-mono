@@ -69,7 +69,19 @@ Map the shared console system and domain adapters.
 - The selected-workspace menu follows one structural order: Overview,
   Identity, the family's top-level Operations, then Team when that family has
   a real collaboration lifecycle. Hand-authored route order does not redefine
-  those groups.
+  those groups. Agent is Console-level navigation and sits directly beneath
+  the family doorway, such as Kitchens; it is not one selected entity's
+  operation.
+- `/console/agent` is the one user-facing Console Agent doorway. The route is
+  a resolver and shared conversation surface, not another agent. The shared
+  Console runtime persists the family the User came from, while the family's
+  canonical committed selection supplies the target. The root doorway chooses
+  that entity coordinator; only an explicit `operation` query chooses a
+  bounded operation agent. An explicit `family` query remains available for
+  development and direct links. Entry with no explicit or prior Console family
+  remains at ecosystem-level MiseboxAI. Do not add parallel
+  `/console/{family}/agent` routes without a separately proven compatibility
+  requirement.
 - Create belongs to the target selector lifecycle at `/console/{family}`. A
   create route may remain as the selector's action target, but it never appears
   in selected-workspace navigation.

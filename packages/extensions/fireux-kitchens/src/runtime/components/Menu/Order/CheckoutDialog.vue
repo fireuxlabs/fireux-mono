@@ -4,9 +4,9 @@
   <div class="menu-order-checkout__host" data-menu-order-checkout="shared">
     <UModal
       v-model:open="openModel"
-      description="Confirm the details before sending the order."
+      description="Check the allergy information and payment, then place your order."
       :portal="false"
-      title="Send order"
+      title="Complete your order"
       :ui="modalUi"
     >
       <template #body>
@@ -79,12 +79,13 @@
             />
           </UFormField>
 
-          <UFormField label="Payment" required>
+          <UFormField label="2. Payment" required :ui="paymentFieldUi">
             <URadioGroup
               v-model="paymentMethod"
               :disabled="pending"
               :items="paymentOptions"
               label-key="label"
+              :ui="paymentRadioUi"
               value-key="value"
             />
           </UFormField>
@@ -121,7 +122,7 @@
             name="i-lucide-loader-circle"
             class="animate-spin"
           />
-          <span>{{ pending ? 'Sending…' : 'Send to Kitchen' }}</span>
+          <span>{{ pending ? 'Placing order…' : 'Place order' }}</span>
           <UIcon v-if="!pending" name="i-lucide-arrow-right" />
         </button>
       </template>
@@ -174,6 +175,11 @@ const modalUi = {
   close: 'menu-order-checkout__close',
   body: 'menu-order-checkout__body',
   footer: 'menu-order-checkout__footer',
+}
+const paymentFieldUi = { label: 'menu-order-checkout__field-label' }
+const paymentRadioUi = {
+  label: 'menu-order-checkout__payment-label',
+  description: 'menu-order-checkout__payment-description',
 }
 const name = ref('')
 const phone = ref('')
@@ -318,6 +324,14 @@ function fieldLabel(label: string, required: boolean) {
 .menu-order-checkout__summary strong {
   color: var(--menu-primary);
 }
+:deep(.menu-order-checkout__field-label),
+:deep(.menu-order-checkout__payment-label) {
+  color: var(--menu-title);
+  font-weight: var(--font-weight-extrabold);
+}
+:deep(.menu-order-checkout__payment-description) {
+  color: var(--menu-muted);
+}
 .menu-order-checkout__error {
   margin: 0;
   color: var(--ui-error);
@@ -334,7 +348,7 @@ function fieldLabel(label: string, required: boolean) {
   border: 0;
   border-radius: var(--menu-radius-control);
   background: var(--menu-primary);
-  color: var(--menu-primary-contrast);
+  color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
   font-weight: var(--font-weight-black);

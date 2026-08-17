@@ -61,6 +61,7 @@
     "fireux-core": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
+    "fireux-suppliers": "workspace:*",
     "h3": "^1.15.4"
   },
   "peerDependencies": {

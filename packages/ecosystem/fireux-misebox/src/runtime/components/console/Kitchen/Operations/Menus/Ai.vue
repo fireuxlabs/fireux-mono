@@ -127,7 +127,7 @@ type MenuAiResponse = {
     userContext: boolean
     menuContext: boolean
     menuCount: number
-    source: 'ai' | 'records'
+    source: 'ai' | 'codex' | 'simulator'
     contextSaved: boolean
     usage?: {
       amount: string
@@ -157,7 +157,11 @@ const scopeSummary = computed(() => {
   ].filter(Boolean)
   return [
     `Checked ${scope.menuCount} current ${scope.menuCount === 1 ? 'Menu' : 'Menus'}`,
-    scope.source === 'records' ? 'Answered from Menu records' : 'Misebox AI',
+    scope.source === 'simulator'
+      ? 'Local fixture · no model'
+      : scope.source === 'codex'
+        ? 'Codex dev · bounded production context · no provider tokens'
+        : 'Misebox AI',
     scope.contextSaved ? 'Saved to Menu context' : '',
     scope.usage ? `AI usage ${scope.usage.amount}` : '',
     ...contexts,

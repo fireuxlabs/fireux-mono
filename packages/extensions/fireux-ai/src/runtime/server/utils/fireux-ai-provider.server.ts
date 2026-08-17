@@ -250,6 +250,8 @@ export async function logUsage(
     provider: config.provider,
     model: config.model,
     mode: config.mode,
+    execution:
+      response.execution || (response.disabled ? 'disabled' : 'provider'),
     ok: response.ok,
     reason: response.reason,
   })

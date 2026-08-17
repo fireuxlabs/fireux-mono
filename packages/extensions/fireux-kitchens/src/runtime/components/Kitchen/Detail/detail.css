@@ -1,0 +1,91 @@
+.kitchen-detail-surface {
+  --kitchen-canvas: #f6f6f3;
+  --ui-bg: #ffffff;
+  --ui-bg-elevated: #ffffff;
+  --ui-bg-accented: #f1f2ef;
+  --ui-border: #dfe2dc;
+  --ui-text: #17201a;
+  --ui-text-highlighted: #111713;
+  --ui-text-toned: #39443d;
+  --ui-text-muted: #5f6a63;
+  --ui-text-dimmed: #8a938d;
+  background: var(--kitchen-canvas);
+  color: var(--ui-text);
+  min-height: 100dvh;
+}
+:global(html.dark .kitchen-detail-surface) {
+  --kitchen-canvas: #0d1410;
+  --ui-bg: #151e18;
+  --ui-bg-elevated: #151e18;
+  --ui-bg-accented: #202b24;
+  --ui-border: #344139;
+  --ui-text: #e8eee9;
+  --ui-text-highlighted: #ffffff;
+  --ui-text-toned: #c3cdc6;
+  --ui-text-muted: #9eaaa2;
+  --ui-text-dimmed: #77837b;
+}
+.kitchen-detail-surface :deep(.pagebody) {
+  padding: calc(var(--spacing) * 4);
+}
+.kitchen-detail {
+  display: grid;
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 11));
+  padding-bottom: clamp(
+    calc(var(--spacing) * 8),
+    6vw,
+    calc(var(--spacing) * 20)
+  );
+}
+.kitchen-detail__hero {
+  position: relative;
+}
+.kitchen-detail__toolbar {
+  align-items: center;
+  display: flex;
+  gap: calc(var(--spacing) * 3);
+  inset: calc(var(--spacing) * 3) calc(var(--spacing) * 3) auto;
+  justify-content: space-between;
+  position: absolute;
+  z-index: 3;
+}
+.kitchen-detail__actions {
+  align-items: center;
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+}
+.kitchen-detail__back {
+  color: white;
+}
+.kitchen-detail__content {
+  background: var(--ui-bg);
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
+}
+.kitchen-detail__editorial,
+.kitchen-detail__capabilities,
+.kitchen-detail__about {
+  display: grid;
+  gap: calc(var(--spacing) * 8);
+  min-width: 0;
+}
+.kitchen-detail__about {
+  gap: calc(var(--spacing) * 4);
+}
+.kitchen-detail__story {
+  color: var(--ui-text-toned);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+  max-width: 68ch;
+  white-space: pre-line;
+}
+@media (min-width: 64rem) {
+  .kitchen-detail__content {
+    align-items: start;
+    grid-template-columns: minmax(0, 1.15fr) minmax(28rem, 0.85fr);
+  }
+}

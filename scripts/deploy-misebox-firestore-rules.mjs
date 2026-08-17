@@ -1333,15 +1333,14 @@ async function buildSecurityTests() {
   }
   const rootKitchenProbePath = 'kitchens/security-rules-probe'
   const rootKitchenProbeData = {
-    app_scope: {
-      state: 'tenant_app',
+    management: {
+      mode: 'app',
       app_id: 'security-rules-tenant',
     },
   }
   const parentRootKitchenProbeData = {
-    app_scope: {
-      state: 'parent_app',
-      app_id: 'misebox-app',
+    management: {
+      mode: 'console',
     },
   }
   const appKitchenProbePath =

@@ -51,6 +51,7 @@ export type PublicKitchenDetail = PublicKitchenIndexItem & {
   display_image_url?: string
   place_image_url?: string
   cover_image?: string
+  wordmark_image?: string
   food_gallery?: string[]
   about?: string
   phone?: string

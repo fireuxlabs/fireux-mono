@@ -3,8 +3,9 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useNav } from './useNav'
 import {
+  CONSOLE_AGENT_PATH,
   normalizeConsoleFamily,
-  consoleFamilyFromPath,
+  consoleFamilyFromRouteContext,
 } from '../../routing/consoleRoutes'
 import { useConsole } from '../../console/useConsole'
 import { useConsoleSelection } from '../../console/useConsoleSelection'
@@ -36,7 +37,12 @@ export const useConsoleNav = () => {
   const familySelections = new Map(
     familyNames.map((family) => [family, useConsoleSelection(family)] as const)
   )
-  const activeFamily = computed(() => consoleFamilyFromPath(normalizePath(route.path)))
+  const activeFamily = computed(() =>
+    consoleFamilyFromRouteContext(
+      normalizePath(route.path),
+      route.query.family
+    ) || consoleRoot.activeFamily.value
+  )
   const activeSelectionId = computed(() => {
     const family = activeFamily.value
     if (!family) return ''
@@ -51,7 +57,9 @@ export const useConsoleNav = () => {
     if (path === '/console') return true
     if (!path.startsWith('/console/')) return true
 
-    const itemFamily = consoleFamilyFromPath(path)
+    if (path === CONSOLE_AGENT_PATH) return true
+
+    const itemFamily = consoleFamilyFromRouteContext(path)
     if (!itemFamily) return false
     if (!enabledFamilies.has(itemFamily)) return false
     if (
@@ -85,7 +93,23 @@ export const useConsoleNav = () => {
       : 'middle'
   }
 
-  const items = computed(() => nav.items.value.filter((item) => baseNavFilter(item)))
+  const canonicalOrder = (item: NavItem) => {
+    const path = normalizePath(item.to)
+    if (isConsoleRootPath(path)) return 0
+    if (item.key === 'console-agent') return 10
+    if (/\/overview$/.test(path)) return 0
+    if (/\/identity$/.test(path)) return 10
+    if (/\/team$/.test(path)) return 10_000
+    return 100 + item.order
+  }
+  const items = computed(() =>
+    nav.items.value
+      .filter((item) => baseNavFilter(item))
+      .map((item) =>
+        item.key === 'console-agent' ? { ...item, to: CONSOLE_AGENT_PATH } : item
+      )
+      .sort((left, right) => canonicalOrder(left) - canonicalOrder(right))
+  )
   const desktop = computed(() => items.value.filter((item) => item.desktop))
   const mobile = computed(() => items.value.filter((item) => item.mobile))
 

@@ -195,7 +195,7 @@ export function useMenu(
     globalThis.document.removeEventListener('visibilitychange', refreshLiveMenu)
   })
   const renderKind = computed<MenuRenderKind>(() => {
-    if (state.error.value || !state.data.value) {
+    if (!state.data.value) {
       return 'unavailable'
     }
     return state.data.value.kind === 'document' ? 'document' : 'structured'
@@ -212,10 +212,11 @@ export function useMenu(
   )
   const failure = computed<MenuLoadFailure | null>(() => {
     if (state.pending.value) return null
+    if (state.data.value) return null
     if (state.error.value) {
       return menuLoadFailure(requestStatusCode(state.error.value))
     }
-    return state.data.value ? null : menuLoadFailure(404)
+    return menuLoadFailure(404)
   })
 
   return {

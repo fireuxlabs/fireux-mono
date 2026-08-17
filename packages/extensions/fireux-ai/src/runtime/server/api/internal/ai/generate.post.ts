@@ -55,13 +55,20 @@ function assertAiRouteAccess(event: H3Event) {
   const apiKey = firstString(process.env.FIREUX_AI_API_KEY, rawConfig.apiKey)
   const rawMode = firstString(process.env.FIREUX_AI_MODE, rawConfig.mode)
   const mode =
-    rawMode === 'dev' || rawMode === 'app' || rawMode === 'disabled'
+    rawMode === 'app' || rawMode === 'codex' || rawMode === 'disabled'
       ? rawMode
-      : enabled
-        ? 'dev'
-        : 'disabled'
+      : rawMode === 'simulator' || rawMode === 'dev'
+        ? 'simulator'
+        : enabled
+          ? 'simulator'
+          : 'disabled'
 
   if (!enabled || mode === 'disabled') {
+    throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
+  if (mode === 'simulator' || mode === 'codex') {
+    if (import.meta.dev) return
     throw createError({ statusCode: 404, statusMessage: 'Not found' })
   }
 
@@ -70,11 +77,6 @@ function assertAiRouteAccess(event: H3Event) {
       statusCode: 503,
       statusMessage: 'FireUX AI is not configured.',
     })
-  }
-
-  if (mode === 'dev') {
-    if (import.meta.dev) return
-    throw createError({ statusCode: 404, statusMessage: 'Not found' })
   }
 
   const serviceKey = firstString(

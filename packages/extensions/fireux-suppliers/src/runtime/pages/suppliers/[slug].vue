@@ -1,57 +1,14 @@
 <template>
-  <UPage>
-    <UPageHeader
-      class="pageheader"
-      :title="pageTitle"
-      :description="pageDescription"
-    />
-
-    <UPageBody class="pagebody">
-      <UPageCard v-if="pending" variant="subtle">
-        <p class="text-sm text-dimmed">Loading supplier…</p>
-      </UPageCard>
-
-      <UPageCard
-        v-else-if="!supplierRecord"
-        title="Supplier not found"
-        description="This supplier is not available."
-        variant="subtle"
-      />
-
-      <div v-else class="space-y-4">
-        <!-- profile -->
-        <SupplierCardsProfile v-if="profileCard" :card="profileCard" />
-
-        <!-- main -->
-
-        <!-- operator -->
-        <SupplierPublicOperatorPanel :supplier="supplierRecord" />
-
-        <!-- dev -->
-<DevDebugPanel
-  object-origin="fetched"
-          launcher
-          include-route
-          :title="'Supplier (JSON)'"
-          context="Supplier detail page · suppliers/[slug] · supplier doc"
-          :objects="supplierRecord"
-  :derived="{}"
-          :default-open="false"
-        />
-      </div>
-    </UPageBody>
-  </UPage>
+  <SupplierDetail :supplier="supplierRecord" :pending="pending" />
 </template>
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { computed } from 'vue'
 import { useSupplierDetail } from '../../composables/fireux/supplier/useSupplierDetail'
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
-import { useSupplierInterface } from '../../composables/fireux/supplier/useSupplierInterface'
 
 definePageMeta({
-  layout: 'default',
+  layout: false,
   title: 'Supplier',
   description: 'View a supplier.',
   name: 'SupplierDetailPage',
@@ -62,15 +19,5 @@ const routeKey = useRouteParam('slug')
 const { supplier: supplierRecord, pending } = useSupplierDetail(routeKey, {
   key: 'slug',
 })
-const { profile } = useSupplierInterface()
-const profileCard = computed(() => profile(supplierRecord.value))
-
-const pageTitle = computed(() =>
-  profileCard.value?.title || routeKey.value || 'Supplier'
-)
-const pageDescription = computed(() =>
-  profileCard.value?.summary || 'Public supplier record.'
-)
-
 useSupplierSeo(supplierRecord)
 </script>

@@ -151,6 +151,8 @@ export type KitchenFulfilmentConfig = {
 }
 
 export type KitchenConsoleConfig = {
+  /** Confirmed Kitchen-wide knowledge used by KitchenAI and operators. */
+  context?: string
   theme?: ConsoleTheme
   menus?: KitchenMenusConfig
   orders?: KitchenOrdersConfig

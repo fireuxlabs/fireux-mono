@@ -1,12 +1,14 @@
 <template>
   <div class="menu-order-basket-dialog__host">
-    <UModal
+    <component
+      :is="presentationComponent"
       v-model:open="openModel"
-      description="Review your items and choices."
+      :description="quantityLabel"
       :portal="false"
-      title="Your basket"
-      :ui="modalUi"
-      @after:leave="$emit('after-leave')"
+      :title="presentation === 'drawer' ? 'Your order' : 'Your basket'"
+      :ui="presentationUi"
+      @after:leave="finishPresentation"
+      @animation-end="finishDrawerPresentation"
     >
       <template #body>
         <div
@@ -61,20 +63,17 @@
 
       <template #footer>
         <div class="menu-order-basket-dialog__footer-content">
-          <div class="menu-order-basket-dialog__footer-copy">
-            <span>{{ quantityLabel }}</span>
-            <strong>{{ totalLabel }}</strong>
-          </div>
-
-          <div
-            v-if="actionLabel"
-            class="menu-order-basket-dialog__next"
-          >
+          <div class="menu-order-basket-dialog__next">
             <span v-if="selectionLabel">
               <UIcon name="i-lucide-clock-3" aria-hidden="true" />
               {{ selectionLabel }}
             </span>
+            <div class="menu-order-basket-dialog__footer-copy">
+              <span>Total</span>
+              <strong>{{ totalLabel }}</strong>
+            </div>
             <button
+              v-if="actionLabel"
               type="button"
               data-menu-action="continue-basket"
               @click="continueBasket"
@@ -85,12 +84,12 @@
           </div>
         </div>
       </template>
-    </UModal>
+    </component>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, resolveComponent } from 'vue'
 import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuOrderBasketLine } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 
@@ -100,11 +99,12 @@ const props = withDefaults(
     currencyCode: string
     lines: MenuOrderBasketLine[]
     open: boolean
+    presentation?: 'drawer' | 'modal'
     removable?: boolean
     selectionLabel?: string
     totalLabel: string
   }>(),
-  { removable: true }
+  { presentation: 'modal', removable: true }
 )
 
 const emit = defineEmits<{
@@ -114,23 +114,32 @@ const emit = defineEmits<{
   (event: 'after-leave'): void
 }>()
 
-const modalUi = {
+const modalComponent = resolveComponent('UModal')
+const drawerComponent = resolveComponent('UDrawer')
+const presentationComponent = computed(() =>
+  props.presentation === 'drawer' ? drawerComponent : modalComponent)
+const presentationUi = computed(() => ({
   overlay: 'menu-order-basket-dialog__overlay',
-  content: 'menu-order-basket-dialog__content',
+  content: [
+    'menu-order-basket-dialog__content',
+    props.presentation === 'drawer' && 'menu-order-basket-dialog__content--drawer',
+  ],
+  container: props.presentation === 'drawer'
+    ? 'menu-order-basket-dialog__container--drawer'
+    : undefined,
   header: 'menu-order-basket-dialog__header',
   title: 'menu-order-basket-dialog__title',
   description: 'menu-order-basket-dialog__description',
   close: 'menu-order-basket-dialog__close',
   body: 'menu-order-basket-dialog__body',
   footer: 'menu-order-basket-dialog__footer',
-}
+}))
 const openModel = computed({
   get: () => props.open,
   set: (open: boolean) => emit('update:open', open),
 })
-const quantity = computed(() =>
-  props.lines.reduce((sum, line) => sum + line.quantity, 0)
-)
+const quantity = computed(() => props.lines.reduce(
+  (sum, line) => sum + line.quantity, 0))
 const quantityLabel = computed(() =>
   `${quantity.value} ${quantity.value === 1 ? 'item' : 'items'}`
 )
@@ -146,13 +155,20 @@ function continueBasket(event: MouseEvent) {
   const trigger = event.currentTarget
   if (trigger instanceof HTMLButtonElement) emit('continue', trigger)
 }
+
+function finishPresentation() {
+  if (props.presentation === 'modal') emit('after-leave')
+}
+
+function finishDrawerPresentation(open: boolean) {
+  if (props.presentation === 'drawer' && !open) emit('after-leave')
+}
 </script>
 
 <style scoped>
 .menu-order-basket-dialog__host {
   display: contents;
 }
-
 :deep(.menu-order-basket-dialog__overlay) {
   z-index: 60;
   background: rgb(15 23 42 / 62%);
@@ -169,6 +185,23 @@ function continueBasket(event: MouseEvent) {
   background: var(--menu-bg);
   color: var(--menu-text);
   box-shadow: 0 1.5rem 5rem rgb(15 23 42 / 28%);
+}
+
+:deep(.menu-order-basket-dialog__content--drawer) {
+  inset-inline: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: none;
+  max-height: min(78dvh, 48rem);
+  border-radius: var(--menu-radius);
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+:deep(.menu-order-basket-dialog__container--drawer) {
+  width: min(100%, 48rem);
+  margin-inline: auto;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 :deep(.menu-order-basket-dialog__header),
@@ -341,6 +374,11 @@ function continueBasket(event: MouseEvent) {
   :deep(.menu-order-basket-dialog__content) {
     width: calc(100vw - 1rem);
     max-height: calc(100dvh - 1rem);
+  }
+
+  :deep(.menu-order-basket-dialog__content--drawer) {
+    width: 100%;
+    max-height: 82dvh;
   }
 
   .menu-order-basket-dialog__line {

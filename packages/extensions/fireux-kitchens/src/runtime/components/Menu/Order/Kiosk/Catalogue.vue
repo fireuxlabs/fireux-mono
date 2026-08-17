@@ -6,6 +6,21 @@
     aria-label="Menu items"
     @keydown.esc="closeDrawer"
   >
+    <header class="menu-order-kiosk-catalogue__chrome">
+      <button type="button" aria-label="Change order type" @click="$emit('restart')">
+        <UIcon name="i-lucide-chevron-left" aria-hidden="true" />
+        Change
+      </button>
+      <div class="menu-order-kiosk-catalogue__brand">
+        <img v-if="logoImageUrl" :src="logoImageUrl" :alt="kitchenName || 'Kitchen'">
+        <strong v-else>{{ kitchenName || 'Menu' }}</strong>
+      </div>
+      <span class="menu-order-kiosk-catalogue__mode">
+        <UIcon :name="orderType === 'eat_in' ? 'i-lucide-armchair' : 'i-lucide-shopping-bag'" aria-hidden="true" />
+        {{ orderType === 'eat_in' ? 'Eat here' : 'Take away' }}
+      </span>
+    </header>
+
     <template v-if="catalogueSections.length">
       <main
         v-if="!activeSection"
@@ -158,6 +173,7 @@
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuManifestItem, MenuManifestSection } from '../../../../models/kitchen/menu/menu-detail.model'
 import type { MenuOrderBasketInput } from '../../../../composables/fireux/menu/order/useMenuOrderBasket'
+import type { MenuOrderKioskType } from '../../../../composables/fireux/menu/order/useMenuOrderKiosk'
 import { menuSectionLinks } from '../../../../utils/menu-section-links'
 import { menuCatalogueFamilies } from '../../../../utils/menu-catalogue-families'
 
@@ -169,6 +185,9 @@ type MenuOrderItemSelection = {
 const props = defineProps<{
   catalogueBackgroundImageUrl?: string
   currencyCode: string
+  kitchenName?: string
+  logoImageUrl?: string
+  orderType: MenuOrderKioskType
   sections: MenuManifestSection[]
   sectionCardFrameImageUrl?: string
   sectionCardImageUrls?: Record<string, string>
@@ -176,6 +195,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'add', input: MenuOrderBasketInput): void
+  (event: 'restart'): void
 }>()
 
 const activeSectionAnchor = ref('')
@@ -267,5 +287,6 @@ function finishDialog() {
 </script>
 
 <style scoped>
+@import './catalogue-chrome.css';
 @import './catalogue.css';
 </style>

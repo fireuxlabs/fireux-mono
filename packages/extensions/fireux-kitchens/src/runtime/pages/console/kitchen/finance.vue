@@ -53,7 +53,8 @@
       </template>
 
       <template #body>
-        <ConsoleKitchenOverviewFinance
+        <ConsoleKitchenOperationsFinanceNav />
+        <ConsoleKitchenOperationsFinanceOverview
           :from-date="calendarRange.start.toString()"
           :to-date="calendarRange.end.toString()"
         />

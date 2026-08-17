@@ -51,7 +51,9 @@ export function configureRuntime(nuxt: Nuxt, options: ModuleOptions) {
     optEnv('FIREUX_AI_MODEL', envFile) || options.model || 'gpt-4o-mini'
   const mode =
     optEnv('FIREUX_AI_MODE', envFile) ||
-    (envEnabled === true ? 'dev' : options.mode || (enabled ? 'dev' : 'disabled'))
+    (envEnabled === true
+      ? 'simulator'
+      : options.mode || (enabled ? 'simulator' : 'disabled'))
 
   rc.fireuxAi = {
     enabled,

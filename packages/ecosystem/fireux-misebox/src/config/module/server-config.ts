@@ -6,6 +6,11 @@ import {
 
 const handlers = [
   {
+    route: '/api/console/kitchen/agent',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/agent.post',
+  },
+  {
     route: '/api/console/kitchen/menus/ai',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/menus/ai.post',

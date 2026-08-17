@@ -1,8 +1,5 @@
-import { randomUUID } from 'node:crypto'
-import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { serverKitchenAiUsageTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { actualMenuAiCost } from './cost.ts'
+import { writeKitchenAgentUsage } from '../../kitchen/ai/usage.ts'
+import type { FireuxAgentTip } from 'fireux-ai/runtime/agents/agent-tip'
 
 export async function writeKitchenMenuAgentUsage(input: {
   appId: string
@@ -13,35 +10,7 @@ export async function writeKitchenMenuAgentUsage(input: {
   provider?: string
   model?: string
   usage?: Record<string, unknown>
+  tip?: FireuxAgentTip
 }) {
-  const actual = actualMenuAiCost([{
-    model: input.model,
-    usage: input.usage,
-  }])
-  const id = randomUUID()
-  const target = serverKitchenAiUsageTarget(input.appId, input.kitchenId)
-
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    mutations.create(target, id, {
-      id,
-      kind: 'menu_ai_agent',
-      status: 'recorded',
-      billable: actual.amount_minor > 0,
-      billing_owner: 'kitchen',
-      app_id: input.appId,
-      kitchen_id: input.kitchenId,
-      agent: input.agent,
-      task: input.task,
-      provider: input.provider || '',
-      model: input.model || '',
-      usage: input.usage || {},
-      actual,
-      amount_minor: actual.amount_minor,
-      amount_label: actual.amount_label,
-      currency: actual.currency,
-      created: serverAuditStamp({ by: input.actorId, appId: input.appId }),
-    })
-  })
-
-  return { id, ...actual }
+  return writeKitchenAgentUsage({ ...input, kind: 'menu_ai_agent' })
 }

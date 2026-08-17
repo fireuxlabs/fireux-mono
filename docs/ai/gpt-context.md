@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-14
-Ref: d5efe9160
+Updated: 2026-08-16
+Ref: 76aabc4b4
 Role: living context
 Scope: repo-wide
 
@@ -311,6 +311,36 @@ requirement, report the exact missing seam before broad edits.
   ecosystem identity database owns its own context string. Do not place this
   memory on the publicly projected User root, copy it into AppUser membership,
   or promote ecosystem knowledge into a cross-ecosystem Core fact.
+- FireUX AI runtime execution has an explicit cost boundary. `disabled` makes
+  no response available, `simulator` performs deterministic fixture work,
+  `codex` passes the exact provider request envelope to an isolated local Codex
+  process, and `app` is the only mode permitted to use a server-side provider
+  key. Legacy `dev` configuration is interpreted as `simulator`; merely
+  enabling AI must never authorize provider spending. The Codex lane is
+  development-only, strips provider credentials, uses an empty ephemeral
+  read-only workspace, and must not acquire repository or task context. Start
+  at `packages/extensions/fireux-ai/src/runtime` and
+  `docs/concepts/ai-document-processing.md` when this boundary changes.
+- `fireux-ai` owns the provider-neutral Console/operation-agent definition
+  contract: Core, User, and ecosystem nodes; parent identity; entity target and
+  selection policy; Console and operation scope; typed context providers with
+  explicit owners; capabilities; tool ids; and shared-inference versus
+  independent-on-demand execution. `CoreAI` and `UserAI` are the minimal root
+  definitions. Ecosystem packages own their named ecosystem coordinator and
+  compose domain-owned Console agents; domain packages own operation agents.
+  The guarded Console families are Project, Kitchen, Supplier, Portfolio,
+  Property, and the structural Blank harness. A catalogue entry is scope and
+  metadata, not an automatic model call or permission to read context.
+  An executing agent may return one bounded `FireuxAgentTip` to its declared
+  parent when a request exposes a reusable missing capability. The product
+  strips the tip marker from the user answer and records the structured tip on
+  the existing private usage event; tips never create tools or agents.
+  Domain packages own their named agent catalogues and never gain tools merely
+  by being catalogued. Cross-domain families such as Identity share
+  capabilities while retaining named domain agents, authority, and context
+  owners.
+  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning domain's
+  `runtime/ai/operation-agents` catalogue.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.

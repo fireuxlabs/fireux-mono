@@ -1,5 +1,9 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
+import {
+  extractFireuxAgentTip,
+  fireuxAgentTipInstruction,
+} from 'fireux-ai/runtime/agents/agent-tip'
 import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -193,11 +197,15 @@ export default defineEventHandler(async (event: H3Event) => {
       user_context: userContext || undefined,
       menu_context: menuContext || undefined,
       instruction:
-        'Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names.',
+        `Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names. ${fireuxAgentTipInstruction}`,
     },
   })
 
-  const answer = readableAnswer(response.text)
+  const result = extractFireuxAgentTip(response.text, {
+    agentId: 'MenuAI',
+    parentId: 'KitchenAI',
+  })
+  const answer = readableAnswer(result.answer)
   if (!response.ok || !answer) {
     throw createError({
       statusCode: response.disabled ? 503 : 502,
@@ -214,6 +222,7 @@ export default defineEventHandler(async (event: H3Event) => {
     provider: response.provider,
     model: response.model,
     usage: response.usage,
+    tip: result.tip,
   })
   if (summaryRequest) {
     await saveKitchenMenuSummaryContext(event, { kitchenId, summary: answer })
@@ -226,8 +235,14 @@ export default defineEventHandler(async (event: H3Event) => {
       userContext: Boolean(userContext),
       menuContext: Boolean(menuContext) || summaryRequest,
       menuCount: menus.length,
-      source: 'ai' as const,
+      source:
+        response.execution === 'simulator'
+          ? ('simulator' as const)
+          : response.execution === 'codex'
+            ? ('codex' as const)
+            : ('ai' as const),
       contextSaved: summaryRequest,
+      tipRecorded: Boolean(result.tip),
       usage: {
         amount: usage.amount_label,
         currency: usage.currency,

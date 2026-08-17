@@ -5,7 +5,7 @@
     :color="invalid ? 'error' : 'neutral'"
     data-menu-order-allergy-acknowledgement
     icon="i-lucide-shield-alert"
-    title="Allergy check"
+    title="1. Allergy information"
     variant="soft"
   >
     <template #description>

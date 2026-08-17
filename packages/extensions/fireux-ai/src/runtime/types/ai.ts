@@ -1,6 +1,8 @@
 export type FireuxAiProvider = 'openai' | 'google' | 'anthropic'
 
-export type FireuxAiMode = 'disabled' | 'dev' | 'app'
+export type FireuxAiMode = 'disabled' | 'simulator' | 'codex' | 'app'
+
+export type FireuxAiExecution = 'disabled' | 'simulator' | 'codex' | 'provider'
 
 export type FireuxAiTask =
   | 'translate_text'
@@ -34,6 +36,7 @@ export interface FireuxAiUsageLogEntry {
   provider: FireuxAiProvider
   model?: string
   mode: FireuxAiMode
+  execution: FireuxAiExecution
   ok: boolean
   reason?: string
 }
@@ -47,6 +50,7 @@ export interface FireuxAiResponse<T = unknown> {
   reason?: string
   provider?: FireuxAiProvider
   model?: string
+  execution?: FireuxAiExecution
   usage?: Record<string, unknown>
 }
 

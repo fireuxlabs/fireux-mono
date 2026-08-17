@@ -20,7 +20,6 @@
         :responding="order.responsePending.value"
         @cancel="cancelOrder"
         @amend="amendOrder"
-        @reset="resetOrder"
       />
     </div>
 
@@ -29,15 +28,18 @@
         :key="scopeKey"
         :currency-code="currencyCode"
         :catalogue-background-image-url="catalogueBackgroundImageUrl"
+        :kitchen-name="kitchenName"
+        :logo-image-url="logoImageUrl"
+        :order-type="orderType"
         :sections="sections"
         :section-card-frame-image-url="sectionCardFrameImageUrl"
         :section-card-image-urls="sectionCardImageUrls"
         @add="basket.add"
+        @restart="finishKioskSession"
       />
 
       <div class="menu-order-kiosk-order__basket">
         <MenuOrderBasketSummary
-          always-visible
           :currency-code="basket.currencyCode.value"
           :quantity="basket.quantity.value"
           :total="basket.total.value"
@@ -64,9 +66,10 @@
 
     <MenuOrderBasketDialog
       v-model:open="basketOpen"
-      action-label="Review and send"
+      action-label="Continue to checkout"
       :currency-code="basket.currencyCode.value"
       :lines="basket.lines.value"
+      presentation="drawer"
       :selection-label="order.modeLabel"
       :total-label="basket.totalLabel.value"
       @remove="basket.remove"
@@ -77,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
@@ -92,7 +95,9 @@ const props = defineProps<{
   catalogueBackgroundImageUrl?: string
   currencyCode: string
   kitchenId: string
+  kitchenName?: string
   kitchenSlug?: string
+  logoImageUrl?: string
   menuId: string
   orderType: MenuOrderKioskType
   scopeKey: string
@@ -100,6 +105,9 @@ const props = defineProps<{
   sectionCardFrameImageUrl?: string
   sectionCardImageUrls?: Record<string, string>
   sourceMenuId: string
+}>()
+const emit = defineEmits<{
+  (event: 'restart'): void
 }>()
 const scopeKey = computed(() => props.scopeKey)
 const basket = useMenuOrderBasket({
@@ -124,12 +132,26 @@ const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
 )
 const requiredContactFields = computed(() => props.config?.customer?.required_fields || [])
+let readyResetTimer: ReturnType<typeof setTimeout> | undefined
 
 watch(() => basket.quantity.value, (quantity: number) => {
   if (quantity || order.sentOrder.value) return
   basketOpen.value = false
   checkoutOpen.value = false
 })
+
+watch(
+  () => order.status.value?.status || order.sentOrder.value?.status,
+  (status) => {
+    clearTimeout(readyResetTimer)
+    readyResetTimer = undefined
+    if (status !== 'ready') return
+    readyResetTimer = setTimeout(finishKioskSession, 6_000)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => clearTimeout(readyResetTimer))
 
 function openBasket(trigger: HTMLButtonElement) {
   if (!basket.quantity.value) return
@@ -163,11 +185,12 @@ async function submitOrder(input: MenuOrderCheckoutInput) {
   if (created) checkoutOpen.value = false
 }
 
-function resetOrder() {
+function finishKioskSession() {
   order.reset()
   basketOpen.value = false
   checkoutOpen.value = false
   basket.clear()
+  emit('restart')
 }
 
 async function amendOrder() {

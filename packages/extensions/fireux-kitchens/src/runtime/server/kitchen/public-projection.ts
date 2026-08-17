@@ -190,7 +190,9 @@ export function projectPublicKitchenIndexItem(
   const mediaBackdropColor =
     parts.rootIdentity.mediaBackdropColor || parts.place.mediaBackdropColor
   const imageKind = cardImageUrl && mediaBackdropColor ? 'brand' : 'photograph'
-  const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
+  const logoImageUrl = text(
+    parts.rootIdentity.logoImageUrl || parts.place.logoImage
+  )
 
   return {
     id: parts.document.id,
@@ -229,6 +231,7 @@ export function projectPublicKitchenDetail(
   const place = parts.placeData
   const placeSocialLinks = record(place.social_links)
   const coverImage = parts.place.coverImage
+  const wordmarkImage = parts.place.wordmarkImage
   const gallery = parts.place.gallery
   const about = parts.place.about
   const phone = parts.place.phone
@@ -264,6 +267,7 @@ export function projectPublicKitchenDetail(
     ...(imageUrl ? { display_image_url: imageUrl } : {}),
     ...(placeImageUrl ? { place_image_url: placeImageUrl } : {}),
     ...(coverImage ? { cover_image: coverImage } : {}),
+    ...(wordmarkImage ? { wordmark_image: wordmarkImage } : {}),
     ...(gallery.length ? { food_gallery: gallery } : {}),
     ...(about ? { about } : {}),
     ...(phone ? { phone } : {}),

@@ -50,6 +50,18 @@ export function useConsole(family = '') {
       : 'global'
   const config = fireux.consoleConfig
   const families = uniqueStrings(fireux.consoles)
+  const activeFamilyCookie = useCookie<string>(
+    `fireux-console-${appScope}-active-family`,
+    { default: () => '', sameSite: 'lax' }
+  )
+  const activeFamily = useState<string>(
+    `fireux-console-${appScope}-active-family`,
+    () => normalizeConsoleFamily(activeFamilyCookie.value)
+  )
+  const activeOperation = useState<string>(
+    `fireux-console-${appScope}-active-operation`,
+    () => ''
+  )
 
   const configFor = (targetFamily = family) => {
     const key = normalizeConsoleFamily(targetFamily)
@@ -72,6 +84,14 @@ export function useConsole(family = '') {
     sourceCookie.value = nextSource
   }
   const resetSource = () => setSource('live')
+  const setActiveContext = (targetFamily = '', operation = '') => {
+    const nextFamily = normalizeConsoleFamily(targetFamily)
+    activeFamily.value = families.includes(nextFamily) ? nextFamily : ''
+    activeFamilyCookie.value = activeFamily.value
+    activeOperation.value = activeFamily.value
+      ? normalizeConsoleFamily(operation)
+      : ''
+  }
 
   return {
     appId: fireux.appId,
@@ -87,11 +107,14 @@ export function useConsole(family = '') {
     isDemo: computed(() => source.value === 'demo'),
     readOnly,
     families,
+    activeFamily,
+    activeOperation,
     config,
     configFor,
     allowsDemo,
     canCreateTarget,
     setSource,
     resetSource,
+    setActiveContext,
   }
 }

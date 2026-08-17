@@ -5,7 +5,9 @@ import type {
   FireuxAiUsageLogHook,
 } from '../../types/ai'
 import { disabledResponse, resolveConfig } from './fireux-ai-config.server'
+import { callCodexText } from './fireux-ai-codex.server'
 import { callProviderText, logUsage } from './fireux-ai-provider.server'
+import { simulateFireuxAiText } from './fireux-ai-simulator.server'
 
 export {
   FIREUX_AI_CONFIG_TASKS as FIREUX_AI_TASKS,
@@ -65,6 +67,18 @@ export function useFireuxAi(
       return response
     }
 
+    if (config.mode === 'simulator') {
+      const response = simulateFireuxAiText(request, config)
+      await logUsage(options.onUsage, request, config, response)
+      return response
+    }
+
+    if (config.mode === 'codex') {
+      const response = await callCodexText(request, config)
+      await logUsage(options.onUsage, request, config, response)
+      return response
+    }
+
     if (!config.apiKey) {
       const response = disabledResponse<string>(
         request,
@@ -76,6 +90,7 @@ export function useFireuxAi(
     }
 
     const response = await callProviderText(request, config)
+    response.execution = 'provider'
     await logUsage(options.onUsage, request, config, response)
     return response
   }

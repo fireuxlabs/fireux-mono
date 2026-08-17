@@ -72,11 +72,13 @@ export function resolveConfig(event?: H3Event): FireuxAiConfig {
     apiKey: firstString(process.env.FIREUX_AI_API_KEY, raw.apiKey),
     model: firstString(process.env.FIREUX_AI_MODEL, raw.model),
     mode:
-      mode === 'dev' || mode === 'app' || mode === 'disabled'
+      mode === 'app' || mode === 'codex' || mode === 'disabled'
         ? mode
-        : enabled
-          ? 'dev'
-          : 'disabled',
+        : mode === 'simulator' || mode === 'dev'
+          ? 'simulator'
+          : enabled
+            ? 'simulator'
+            : 'disabled',
   }
 }
 
@@ -89,6 +91,7 @@ export function disabledResponse<T>(
     ok: false,
     task: request.task,
     disabled: true,
+    execution: 'disabled',
     reason,
     provider: config.provider,
     model: firstString(request.model, config.model),

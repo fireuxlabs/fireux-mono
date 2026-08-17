@@ -1,7 +1,7 @@
 # AI document processing map
 
-Updated: 2026-07-30
-Ref: 796952bf0
+Updated: 2026-08-16
+Ref: 76aabc4b4
 Role: map, not canon
 
 ## Purpose
@@ -30,6 +30,16 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 
 ## Current spine
 
+- Runtime execution is explicit: `disabled`, deterministic `simulator`, local
+  `codex`, or provider-backed `app`. Enabling the module without choosing a
+  mode defaults to the simulator, and legacy `dev` input resolves to that same
+  safe mode.
+- Only `app` may call a configured provider. The simulator returns bounded,
+  deterministic development output and records no provider token usage.
+- `codex` is a development-only reasoning transport. It receives the exact
+  serialized request envelope used by the provider adapter, with provider keys
+  removed, in an empty ephemeral read-only workspace. It must not inspect the
+  repository, browse, run tools, or inherit task history.
 - Source files are uploaded and stored by the consuming domain/app.
 - Domain adapter selects source files and describes the extraction job.
 - `fireux-ai` runs the provider loop over each file.
@@ -113,6 +123,12 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 
 ## Source evidence
 
+- Runtime mode resolution and provider gate:
+  `packages/extensions/fireux-ai/src/runtime/server/utils/fireux-ai-config.server.ts`
+- Providerless simulator:
+  `packages/extensions/fireux-ai/src/runtime/server/utils/fireux-ai-simulator.server.ts`
+- Isolated Codex development transport:
+  `packages/extensions/fireux-ai/src/runtime/server/utils/fireux-ai-codex.server.ts`
 - Shared provider loop:
   `packages/extensions/fireux-ai/src/runtime/server/utils/document-ai.server.ts`
 - Menu domain adapter:

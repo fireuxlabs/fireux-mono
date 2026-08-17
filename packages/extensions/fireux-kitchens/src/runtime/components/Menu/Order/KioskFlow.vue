@@ -38,7 +38,9 @@
           :catalogue-background-image-url="catalogueBackgroundImageUrl"
           :currency-code="currencyCode"
           :kitchen-id="kitchenId"
+          :kitchen-name="kitchenName"
           :kitchen-slug="kitchenSlug"
+          :logo-image-url="logoImageUrl"
           :menu-id="menuId"
           :order-type="activeType"
           :scope-key="`${scopeKey}:${activeType}`"
@@ -46,6 +48,7 @@
           :section-card-frame-image-url="sectionCardFrameImageUrl"
           :section-card-image-urls="sectionCardImageUrls"
           :source-menu-id="sourceMenuId"
+          @restart="clearSelection"
         />
       </slot>
     </template>

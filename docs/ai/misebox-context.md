@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-12
-Ref: d232cc731
+Updated: 2026-08-16
+Ref: 76aabc4b4
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -291,7 +291,37 @@ Before each task:
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
-  relevant product doorways. The Console proof is mobile-first: the read-only
+  relevant product doorways. Misebox owns the canonical `/console/agent`
+  conversation surface. It resolves the persisted active Console family and
+  selected target, then mounts the entity coordinator; KitchenAI is the first
+  working coordinator and uses authorized Kitchen identity, User context,
+  Kitchen context, Menu context, and exact Menu counts. An explicit operation
+  query delegates to an operation agent such as MenuAI. Provider execution
+  remains governed by the shared `fireux-ai` disabled, simulator, codex, and
+  app modes. Local Codex testing receives the same bounded KitchenAI envelope
+  as the provider and identifies its execution lane in the response. Named
+  operation-agent scopes are logical bounded delegations inside that envelope,
+  not automatic extra model calls: KitchenAI currently consults MenuAI's exact
+  Menu manifest and confirmed Menu context for its Kitchen summary. An
+  operation agent gains a separate inference only when independent reasoning
+  or tool execution justifies the added latency and provider cost. The Console
+  agent catalogue is composed at
+  `fireux-misebox/runtime/ai/console-agents`: MiseboxAI is an explicit
+  ecosystem node beneath CoreAI and parents KitchenAI and
+  SupplierAI, while `fireux-kitchens` and `fireux-suppliers` own their exact
+  operation-agent members. Each Console coordinator declares its selected
+  entity kind, id parameter, required selection, mutation authority, and
+  owner-labelled context providers. KitchenIdentityAI and SupplierIdentityAI
+  implement the shared Identity capability family without sharing domain
+  context or automatically calling another model. Agent catalogue entries
+  start with no tools and use only source-defined top-level Operations;
+  speculative child capabilities such as Stockholding do not enter the agent
+  spine. KitchenAI and MenuAI may attach one short structured capability tip
+  to their existing private Kitchen usage record for later operator review;
+  the visible answer excludes that marker. Console jobs and domain authority
+  must prove each tool separately.
+  The Console
+  proof is mobile-first: the read-only
   component comes first and projects the canonical Kitchen Operations
   catalogue without live counts or customer data. Core
   `LandingConsolePreviewFrame` owns the shared target rail, navigation,

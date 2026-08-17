@@ -6,7 +6,8 @@ import {
   useRuntimeConfig,
 } from '#imports'
 import {
-  consoleFamilyFromPath,
+  isConsoleAgentPath,
+  consoleFamilyFromRouteContext,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
@@ -59,9 +60,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
       .map((value) => normalizeConsoleFamily(value))
       .filter(Boolean)
   )
-  const routeFamily = consoleFamilyFromPath(path)
+  const agentPath = isConsoleAgentPath(path)
+  const routeFamily = consoleFamilyFromRouteContext(path, to.query.family)
 
-  if (!routeFamily || !enabledFamilies.has(routeFamily)) {
+  if ((!agentPath && !routeFamily) || (routeFamily && !enabledFamilies.has(routeFamily))) {
     return navigateTo('/', { replace: true })
   }
 

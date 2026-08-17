@@ -202,9 +202,15 @@ importers:
 
   packages/ecosystem/fireux-bringli:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-suppliers:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-suppliers
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -215,9 +221,15 @@ importers:
 
   packages/ecosystem/fireux-buenohost:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-properties
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -228,6 +240,9 @@ importers:
 
   packages/ecosystem/fireux-fireux:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
@@ -244,6 +259,9 @@ importers:
 
   packages/ecosystem/fireux-granite:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-ai
       fireux-compliance:
         specifier: workspace:*
         version: link:../../extensions/fireux-compliance
@@ -281,6 +299,9 @@ importers:
       fireux-kitchens:
         specifier: workspace:*
         version: link:../../extensions/fireux-kitchens
+      fireux-suppliers:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-suppliers
       h3:
         specifier: 1.15.11
         version: 1.15.11
@@ -596,6 +617,9 @@ importers:
 
   packages/extensions/fireux-properties:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
@@ -647,6 +671,9 @@ importers:
 
   packages/extensions/fireux-suppliers:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../fireux-ai
       fireux-companies:
         specifier: workspace:*
         version: link:../fireux-companies
