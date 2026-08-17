@@ -5,7 +5,6 @@ import {
   findFireuxOperationAgent,
 } from 'fireux-ai/runtime/agents/operation-agent'
 import { kitchenOperationAgents } from 'fireux-kitchens/runtime/ai/operation-agents'
-import { supplierOperationAgents } from 'fireux-suppliers/runtime/ai/operation-agents'
 
 export const miseboxAgent = defineFireuxAgentNode({
   id: 'misebox.ai',
@@ -39,25 +38,6 @@ export const miseboxConsoleAgents = [
       { id: 'kitchen.context', owner: 'AppKitchen', required: false },
     ],
     operationAgents: kitchenOperationAgents,
-  }),
-  defineFireuxConsoleAgent({
-    id: 'misebox.supplier.ai',
-    name: 'SupplierAI',
-    parentId: 'MiseboxAI',
-    consoleId: 'supplier',
-    entityTarget: {
-      kind: 'Supplier',
-      idParam: 'supplierId',
-      selection: 'required',
-      authority: 'supplier-writer',
-    },
-    contextProviders: [
-      { id: 'user.context', owner: 'User', required: false },
-      { id: 'supplier.identity', owner: 'Supplier', required: true },
-      { id: 'company.identity', owner: 'Company', required: true },
-      { id: 'place.identity', owner: 'Place', required: true },
-    ],
-    operationAgents: supplierOperationAgents,
   }),
 ] as const
 

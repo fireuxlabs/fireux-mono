@@ -38,7 +38,7 @@ const AMBIENT_EFFECT_CONSUMERS = [
     deterministic: true,
   },
   {
-    page: 'projects/misebox/misebox-app/app/pages/index.vue',
+    page: 'projects/misebox/misebox-app/app/pages/product.vue',
     visual: 'projects/misebox/misebox-app/app/components/effects/Steam.vue',
     deterministic: false,
   },

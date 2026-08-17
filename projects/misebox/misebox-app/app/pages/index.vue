@@ -1,39 +1,67 @@
 <template>
-  <div class="min-h-full">
-    <EffectsAmbient class="min-h-full">
-      <!-- Steam effect parked for the current landing presentation.
-      <template #effect>
-        <EffectsSteam />
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="misebox-kitchen-home">
+      <template #header>
+        <LayoutsConsoleNavbar title="Kitchen AI">
+          <template #right>
+            <UButton
+              to="/pricing"
+              label="Free version · Upgrade"
+              color="primary"
+              variant="soft"
+              class="hidden sm:inline-flex"
+            />
+            <UButton
+              v-if="!isAuthenticated"
+              to="/auth?mode=sign-up&redirect=%2F"
+              label="Save my Kitchen"
+              color="neutral"
+              variant="soft"
+            />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
-      -->
 
-      <MiseboxLandingIndex />
-    </EffectsAmbient>
+      <template #body>
+        <section class="console-surface">
+          <ConsoleKitchenAIWelcome />
+
+          <USeparator v-if="isAuthenticated" label="Your Kitchens" />
+
+          <ConsoleKitchenIndex v-if="isAuthenticated" />
+        </section>
+      </template>
+    </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
-import MiseboxLandingIndex from '../components/Misebox/Landing/Index.vue'
+
+const { isAuthenticated } = useAuth()
 
 definePageMeta({
-  layout: 'landing',
+  layout: 'console',
+  consoleSurface: 'browse',
+  consoleAccess: 'public-entry',
   nav: {
     key: 'home',
-    label: 'Home',
-    icon: 'i-lucide-home',
+    label: 'Kitchen AI',
+    icon: 'i-lucide-sparkles',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    layouts: ['console'],
   },
+  requiresAuth: false,
+  requiresSelection: false,
 })
 
 useAppLandingSeo({
   title: appMeta.seoHome.title,
   description: appMeta.seoHome.description,
   path: '/',
-  image: '/img/landing/kitchen-operations-hero-v2.png',
   logo: '/img/app/logo.png',
   language: 'en',
 })

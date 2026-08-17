@@ -612,9 +612,17 @@ function validateDirectContract(
       `${relative} (direct console page must declare layout: 'console')`
     )
   }
-  if (!/\brequiresAuth\s*:\s*true\b/.test(script)) {
+  const isPublicEntry =
+    /\bconsoleAccess\s*:\s*['"]public-entry['"]/.test(pageMeta) &&
+    /\bconsoleSurface\s*:\s*['"]browse['"]/.test(pageMeta) &&
+    /\brequiresSelection\s*:\s*false\b/.test(pageMeta)
+  const hasValidAccess = isPublicEntry
+    ? /\brequiresAuth\s*:\s*false\b/.test(script)
+    : /\brequiresAuth\s*:\s*true\b/.test(script)
+
+  if (!hasValidAccess) {
     violations.push(
-      `${relative} (direct console page must declare requiresAuth: true)`
+      `${relative} (direct console page must require auth unless a browse-only public-entry explicitly requires neither auth nor selection)`
     )
   }
   if (!hasTopLevelProperty(pageMeta, 'requiresSelection')) {

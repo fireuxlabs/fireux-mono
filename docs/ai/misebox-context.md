@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 Ref: 76aabc4b4
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -307,19 +307,19 @@ Before each task:
   or tool execution justifies the added latency and provider cost. The Console
   agent catalogue is composed at
   `fireux-misebox/runtime/ai/console-agents`: MiseboxAI is an explicit
-  ecosystem node beneath CoreAI and parents KitchenAI and
-  SupplierAI, while `fireux-kitchens` and `fireux-suppliers` own their exact
-  operation-agent members. Each Console coordinator declares its selected
-  entity kind, id parameter, required selection, mutation authority, and
-  owner-labelled context providers. KitchenIdentityAI and SupplierIdentityAI
-  implement the shared Identity capability family without sharing domain
-  context or automatically calling another model. Agent catalogue entries
-  start with no tools and use only source-defined top-level Operations;
-  speculative child capabilities such as Stockholding do not enter the agent
-  spine. KitchenAI and MenuAI may attach one short structured capability tip
-  to their existing private Kitchen usage record for later operator review;
-  the visible answer excludes that marker. Console jobs and domain authority
-  must prove each tool separately.
+  ecosystem node beneath CoreAI and parents only KitchenAI, while
+  `fireux-kitchens` owns its exact operation-agent members. Bringli alone hosts
+  SupplierAI and the Supplier Console; Misebox consumes bounded Supplier truth
+  through the Kitchen-owned Suppliers operation and never acquires Supplier
+  selection, mutation authority, onboarding, or agent coordination. Each
+  Console coordinator declares its selected entity kind, id parameter,
+  required selection, mutation authority, and owner-labelled context
+  providers. Agent catalogue entries start with no tools and use only
+  source-defined top-level Operations; speculative child capabilities such as
+  Stockholding do not enter the agent spine. KitchenAI and MenuAI may attach
+  one short structured capability tip to their existing private Kitchen usage
+  record for later operator review; the visible answer excludes that marker.
+  Console jobs and domain authority must prove each tool separately.
   The Console
   proof is mobile-first: the read-only
   component comes first and projects the canonical Kitchen Operations
@@ -436,16 +436,18 @@ Before each task:
   canonical `/apps/:slug` details, and excludes the current global Misebox App
   from its own proof grid. It does not hard-code tenant Apps or read canonical
   App documents in the browser.
-- The main Misebox public entrance leads with the current restaurant job:
-  keeping a published menu, dishes, recipes, prep work, and Kitchen order
-  handoff connected. It names the restaurant audience and live workflow before
-  broader ecosystem or operating-system aspirations, uses Product Demo as the
-  primary proof, and labels its fictional data so it cannot read as a customer
-  result. Its inherited header promotes Kitchens, Operations, and Product Demo
-  through app-level navigation overrides. Jobs and Professional directories
-  remain secondary footer doorways rather than competing acquisition promises;
-  project presentation must not fork the shared FireUX header or change those
-  inherited routes for other apps.
+- Misebox `/` is itself the browse-only public Kitchen Console; it is not a
+  landing doorway or redirect into `/console/kitchen`. The root page directly
+  composes the real Core Console layout and page shell, while `fireux-kitchens`
+  owns the inner `ConsoleKitchenAIWelcome` domain surface. Anonymous visitors
+  receive no selected-Kitchen reads or commands; the existing Kitchen selector
+  mounts only for authenticated Users. Prompts and menu-file selection remain
+  browser-local prototype interactions with no upload, provider execution, or
+  persistence, and account creation begins only at the explicit
+  `Save my Kitchen` doorway. The previous product-led landing remains intact at
+  `/product` as the comparison and explanatory surface. The welcome must never
+  imply that a selected file was uploaded or analysed before the corresponding
+  trusted boundary exists.
 - `jobs.misebox.app` is a focused product doorway over the existing
   `misebox-app` authority, not a second canonical App. It may give public Job,
   Professional, and Agent routes a Jobs-only project layout while retaining

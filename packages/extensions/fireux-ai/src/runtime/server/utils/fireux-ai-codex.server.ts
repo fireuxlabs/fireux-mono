@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import { existsSync } from 'node:fs'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -11,6 +12,16 @@ import { requestTimeoutMs } from './fireux-ai-config.server'
 import { buildTextPrompt } from './fireux-ai-provider.server'
 
 const MAX_CODEX_OUTPUT_LENGTH = 100_000
+const MACOS_BUNDLED_CODEX = '/Applications/ChatGPT.app/Contents/Resources/codex'
+
+function resolveCodexBinary() {
+  const configured = String(process.env.FIREUX_CODEX_BIN || '').trim()
+  if (configured) return configured
+  if (process.platform === 'darwin' && existsSync(MACOS_BUNDLED_CODEX)) {
+    return MACOS_BUNDLED_CODEX
+  }
+  return 'codex'
+}
 
 function codexPrompt(request: FireuxAiRequest) {
   return [
@@ -38,7 +49,7 @@ async function executeCodex(request: FireuxAiRequest) {
   try {
     return await new Promise<string>((resolve, reject) => {
       const child = spawn(
-        process.env.FIREUX_CODEX_BIN || 'codex',
+        resolveCodexBinary(),
         [
           'exec',
           '--ephemeral',

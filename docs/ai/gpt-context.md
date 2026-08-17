@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 Ref: 76aabc4b4
 Role: living context
 Scope: repo-wide
@@ -172,6 +172,12 @@ requirement, report the exact missing seam before broad edits.
   copy the shared generated-selector CSS into projects.
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
+- Direct Console pages require authentication by default. A browse-only route
+  may opt into `consoleAccess: 'public-entry'` with `requiresAuth: false` only
+  when it also requires no selected entity. That public entry must not mount
+  protected entity reads or commands for anonymous visitors. The Console page
+  guard enforces the route metadata exception; the page owns the corresponding
+  anonymous composition boundary.
 
 ## Entity detail pages
 

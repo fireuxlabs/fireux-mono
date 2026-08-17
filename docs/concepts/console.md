@@ -1,6 +1,6 @@
 # Console
 
-Updated: 2026-08-16
+Updated: 2026-08-17
 Ref: b5ed10b84
 Role: map, not canon
 
@@ -100,6 +100,11 @@ Map the shared console system and domain adapters.
 - Create and edit share form behavior. Small primitives such as `ConsoleFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
 - New and adopted route access visibility and selection requirements live at top-level page meta; navigation metadata only describes navigation presentation.
 - Authentication and role requirements also live at top-level page meta; `nav` must not become a second access contract.
+- Direct Console pages require authentication by default. A browse-only route
+  may declare `consoleAccess: 'public-entry'` and `requiresAuth: false` only
+  when it also declares `requiresSelection: false`; its anonymous composition
+  must not mount protected entity reads or commands. The Console page guard
+  enforces this named exception.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
 - Overview navigation cards do not initialize child operation workspaces to
