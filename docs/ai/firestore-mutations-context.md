@@ -62,7 +62,8 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/targets.ts`
 - Target validation and dynamic Server target factories:
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
-  and `server-targets.ts` in the same directory
+  and the domain-named `*-targets.ts` modules in the same directory, including
+  `server-targets.ts` and `kitchen-member-targets.ts`
 - Client touchpoints:
   `packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts`
   and the remaining Update/Delete migration touchpoints in that directory

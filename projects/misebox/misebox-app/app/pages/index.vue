@@ -5,13 +5,6 @@
         <LayoutsConsoleNavbar title="Kitchen AI">
           <template #right>
             <UButton
-              to="/pricing"
-              label="Free version · Upgrade"
-              color="primary"
-              variant="soft"
-              class="hidden sm:inline-flex"
-            />
-            <UButton
               v-if="!isAuthenticated"
               to="/auth?mode=sign-up&redirect=%2F"
               label="Save my Kitchen"
@@ -24,11 +17,9 @@
 
       <template #body>
         <section class="console-surface">
-          <ConsoleKitchenAIWelcome />
-
-          <USeparator v-if="isAuthenticated" label="Your Kitchens" />
-
-          <ConsoleKitchenIndex v-if="isAuthenticated" />
+          <ConsoleKitchenTools />
+          <ConsoleKitchenAI />
+          <ConsoleKitchen v-if="isAuthenticated" />
         </section>
       </template>
     </UDashboardPanel>

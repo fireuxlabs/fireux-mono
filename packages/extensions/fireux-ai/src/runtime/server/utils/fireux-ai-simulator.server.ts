@@ -68,9 +68,7 @@ function kitchenSummary(
   const tagline = firstString(kitchen.tagline)
   const menuAgent = record(record(input.operation_agents).MenuAI)
   const menuManifest = input.menu_manifest || menuAgent.menu_manifest
-  const menus = Array.isArray(menuManifest)
-    ? menuManifest.map(record)
-    : []
+  const menus = Array.isArray(menuManifest) ? menuManifest.map(record) : []
   const menuSummary = menus
     .map((menu) => {
       const menuName = firstString(menu.name, menu.id) || 'Menu'
@@ -91,7 +89,42 @@ function kitchenSummary(
       ? `It has ${menus.length} current ${menus.length === 1 ? 'Menu' : 'Menus'}: ${menuSummary}.`
       : 'It has no current Menus in the authorized records.',
     knowledge.length ? `Saved context: ${knowledge.join(' ')}` : '',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+function kitchenTeamToolSelection(input: Record<string, unknown>) {
+  if (input.simulator_kind !== 'kitchen_team_tool_selection') return ''
+  const question = firstString(input.question) || ''
+  const invitationMatch =
+    question.match(
+      /\b(?:invite|invitation)(?:\s+link)?\s+(?:for|to)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu
+    ) ||
+    question.match(
+      /\b(?:invite|invitation)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu
+    )
+  if (invitationMatch) {
+    return JSON.stringify({
+      action: 'create_member_invitation',
+      agent: 'TeamAI',
+      name: invitationMatch[1].trim(),
+    })
+  }
+  const match = question.match(
+    /\b(?:add|create)\s+(?:a\s+)?(?:(?:new\s+)?team\s+member\s+)?(?:named\s+|called\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)(?:\s+to\s+(?:the\s+)?team)?[.!?]*$/iu
+  )
+  if (!match) return JSON.stringify({ action: 'none' })
+  const name = match[1]
+    .trim()
+    .split(/\s+/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+  return JSON.stringify({
+    action: 'add_team_member',
+    agent: 'TeamAI',
+    name,
+  })
 }
 
 function sourceText(input: unknown) {
@@ -102,6 +135,8 @@ function sourceText(input: unknown) {
 
 function simulatedText(request: FireuxAiRequest) {
   const input = record(request.input)
+  const teamToolSelection = kitchenTeamToolSelection(input)
+  if (teamToolSelection) return teamToolSelection
   const summary = kitchenSummary(input, record(request.context))
   if (summary) return summary
   const answer = menuAnswer(input)

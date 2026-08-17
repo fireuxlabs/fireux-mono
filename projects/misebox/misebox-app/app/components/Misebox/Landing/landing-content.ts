@@ -163,6 +163,15 @@ export const toolsCatalogue = {
     'Choose a published Menu. Collection, delivery, and pre-order appear only when the Menu and Kitchen enable them.',
   items: [
     {
+      id: 'restaurant-labour-cost',
+      title: 'Restaurant labour cost calculator',
+      description:
+        'Calculate total labour cost and labour percentage from sales and staffing costs.',
+      icon: 'i-lucide-calculator',
+      to: '/tools/restaurant-labour-cost',
+      action: 'Open calculator',
+    },
+    {
       id: 'ordering',
       title: 'Ordering',
       description:

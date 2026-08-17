@@ -107,6 +107,12 @@ Map the shared console system and domain adapters.
   enforces this named exception.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
+- A Console landing or Operation composes three named domain sheets when each
+  responsibility exists: `Tools`, contextual `AI`, then the focused domain
+  `View`. The route spells out that composition, while one page-provided
+  workspace supplies shared target, authority, records, and outcomes to every
+  sheet. A sheet with no real job is omitted; empty Views do not manufacture
+  dashboard cards merely to occupy space.
 - Overview navigation cards do not initialize child operation workspaces to
   calculate counts. A future count belongs to one bounded overview summary;
   each operation loads its records only when its own route opens.

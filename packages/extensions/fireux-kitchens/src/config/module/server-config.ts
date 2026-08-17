@@ -151,6 +151,17 @@ const baseServerHandlers = [
     handler: './runtime/server/api/console/kitchen/update.patch',
   },
   {
+    route: '/api/console/kitchen/team/members',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/team/members.post',
+  },
+  {
+    route: '/api/console/kitchen/team/members/:memberId',
+    method: 'patch',
+    handler:
+      './runtime/server/api/console/kitchen/team/members/[memberId].patch',
+  },
+  {
     route: '/api/console/kitchen/reports/gross-sales',
     method: 'get',
     handler:

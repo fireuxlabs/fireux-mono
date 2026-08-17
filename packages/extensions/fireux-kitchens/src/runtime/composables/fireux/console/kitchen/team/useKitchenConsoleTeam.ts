@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, inject, provide, type InjectionKey } from 'vue'
 import { useConsoleTeam } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTeam'
 import { useKitchenChildCollection } from '../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
@@ -14,7 +14,7 @@ import {
   useKitchenConsoleDemoData,
 } from '../core/useKitchenConsoleDemoData'
 
-export function useKitchenConsoleTeam() {
+function createKitchenConsoleTeam() {
   const {
     selection,
     runtime,
@@ -127,4 +127,19 @@ export function useKitchenConsoleTeam() {
     joinRequestsPending,
     debug,
   }
+}
+
+export type KitchenConsoleTeamWorkspace = ReturnType<typeof createKitchenConsoleTeam>
+
+const kitchenConsoleTeamKey: InjectionKey<KitchenConsoleTeamWorkspace> =
+  Symbol('fireux-kitchen-console-team')
+
+export function provideKitchenConsoleTeam() {
+  const workspace = createKitchenConsoleTeam()
+  provide(kitchenConsoleTeamKey, workspace)
+  return workspace
+}
+
+export function useKitchenConsoleTeam() {
+  return inject(kitchenConsoleTeamKey, null) ?? createKitchenConsoleTeam()
 }

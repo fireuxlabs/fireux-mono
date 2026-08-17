@@ -9,10 +9,26 @@ import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-c
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/operator-access'
+import {
+  addKitchenTeamMemberTool,
+  executeAddKitchenTeamMemberTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/add-member-tool'
+import {
+  createKitchenMemberInvitationTool,
+  executeCreateKitchenMemberInvitationTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/create-member-invitation-tool'
 import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/server/kitchen/ai/usage'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
 import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
+import {
+  pendingTeamTool,
+  possibleTeamToolRequest,
+  selectKitchenTeamTool,
+  teamToolConfirmation,
+  type PendingTeamTool,
+} from '../../../utils/kitchen-team-tools'
 
 const PROMPT_MAX_LENGTH = 2_000
 const MAX_MENUS = 12
@@ -47,7 +63,46 @@ async function readUserContext(uid: string) {
     .doc(UserContextStorage.document)
     .get()
 
-  return snapshot.exists ? readRecordString(snapshot.data() || {}, 'context') : ''
+  return snapshot.exists
+    ? readRecordString(snapshot.data() || {}, 'context')
+    : ''
+}
+
+async function resolveInvitationMember(
+  access: Awaited<ReturnType<typeof requireKitchenWriter>>,
+  input: { appId: string; kitchenId: string; name: string }
+) {
+  const requestedSlug = normalizeSlug(input.name)
+  const snapshot = await access.db
+    .collection(`apps/${input.appId}/kitchens/${input.kitchenId}/team`)
+    .limit(200)
+    .get()
+  const matches = snapshot.docs.filter((document) => {
+    const data = document.data() || {}
+    if (readRecordString(data, 'user_id')) return false
+    const name = readRecordString(data, 'name')
+    const slug = readRecordString(data, 'slug') || normalizeSlug(name)
+    return (
+      slug === requestedSlug || name.toLowerCase() === input.name.toLowerCase()
+    )
+  })
+  if (!matches.length) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: `No unclaimed Kitchen member named ${input.name} was found.`,
+    })
+  }
+  if (matches.length > 1) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `More than one unclaimed Kitchen member matches ${input.name}. Use the Team page to choose one.`,
+    })
+  }
+  const member = matches[0]!
+  return {
+    memberId: member.id,
+    name: readRecordString(member.data(), 'name') || input.name,
+  }
 }
 
 async function readMenuManifest(
@@ -89,7 +144,116 @@ export default defineEventHandler(async (event: H3Event) => {
   const appId = requirePathSegment(body?.appId, 'App id')
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
   const prompt = readPrompt(body?.prompt)
+  const operation = text(body?.operation)
   const access = await requireKitchenWriter(event, { appId, kitchenId })
+  const pending = pendingTeamTool(body?.pendingTool)
+  if (pending) {
+    const decision = teamToolConfirmation(prompt)
+    if (decision === 'cancelled') {
+      return {
+        ok: true as const,
+        answer:
+          pending.id === createKitchenMemberInvitationTool.id
+            ? `Okay, I won’t create an invitation for ${pending.name}.`
+            : `Okay, I won’t add ${pending.name}.`,
+      }
+    }
+    if (decision !== 'confirmed') {
+      return {
+        ok: true as const,
+        answer:
+          pending.id === createKitchenMemberInvitationTool.id
+            ? `Please confirm: create a one-use invitation link for ${pending.name}?`
+            : `Please confirm: add ${pending.name} to this Kitchen team?`,
+        pendingTool: pending,
+      }
+    }
+    if (pending.id === createKitchenMemberInvitationTool.id) {
+      const invitation = await executeCreateKitchenMemberInvitationTool(event, {
+        kitchenId,
+        memberId: pending.memberId,
+      })
+      return {
+        ok: true as const,
+        answer: `A one-use invitation for ${invitation.memberName} is ready and expires in seven days.`,
+        tool: { id: pending.id, result: invitation },
+        resultAction: {
+          kind: createKitchenMemberInvitationTool.result.primaryAction,
+          label: createKitchenMemberInvitationTool.result.label,
+          value: `/kitchen/member-invitation/${encodeURIComponent(invitation.token)}`,
+        },
+      }
+    }
+    const created = await executeAddKitchenTeamMemberTool(event, {
+      kitchenId,
+      name: pending.name,
+    })
+    return {
+      ok: true as const,
+      answer: `${created.name} has been added to this Kitchen team.`,
+      tool: { id: pending.id, result: created },
+      createdObject: {
+        name: created.name,
+        kind: 'Team member',
+        to: `/console/kitchen/team#${created.slug}`,
+      },
+    }
+  }
+
+  const ai = useFireuxAi(event)
+  if (possibleTeamToolRequest(prompt)) {
+    const selection = await selectKitchenTeamTool(ai, appId, prompt)
+    const name = text(selection.data?.name).replace(/\s+/g, ' ')
+    if (
+      selection.ok &&
+      selection.data?.action === 'create_member_invitation' &&
+      selection.data.agent === 'TeamAI' &&
+      name &&
+      name.length <= 120
+    ) {
+      const member = await resolveInvitationMember(access, {
+        appId,
+        kitchenId,
+        name,
+      })
+      const proposal: PendingTeamTool = {
+        id: createKitchenMemberInvitationTool.id,
+        memberId: member.memberId,
+        name: member.name,
+      }
+      return {
+        ok: true as const,
+        answer: `TeamAI found ${member.name}. It can create a one-use invitation link that expires in seven days. Shall I continue?`,
+        pendingTool: proposal,
+      }
+    }
+    if (
+      selection.ok &&
+      selection.data?.action === 'add_team_member' &&
+      selection.data.agent === 'TeamAI' &&
+      name &&
+      name.length <= 120
+    ) {
+      const proposal: PendingTeamTool = {
+        id: addKitchenTeamMemberTool.id,
+        name,
+      }
+      return {
+        ok: true as const,
+        answer: `KitchenAI has delegated this to TeamAI. TeamAI can use Add team member to add ${name}. Shall I continue?`,
+        pendingTool: proposal,
+      }
+    }
+  }
+
+  if (operation === 'team') {
+    return {
+      ok: true as const,
+      answer:
+        'No Team command matched. Try “Add a member named Paul” or “Create an invitation for Daisy”.',
+    }
+  }
+
   const [userContext, menuManifest] = await Promise.all([
     readUserContext(access.uid),
     readMenuManifest(access, { appId, kitchenId }),
@@ -101,7 +265,6 @@ export default defineEventHandler(async (event: H3Event) => {
     'context'
   )
   const menuContext = readKitchenMenusConfig(access.appKitchen).context
-  const ai = useFireuxAi(event)
   const response = await ai.generateText({
     appId,
     task: 'summarise_text',
@@ -131,8 +294,7 @@ export default defineEventHandler(async (event: H3Event) => {
       user_context: userContext || undefined,
       kitchen_context: kitchenContext || undefined,
       menu_context: menuContext || undefined,
-      instruction:
-        `Act as KitchenAI for the selected Kitchen. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scopes. For this summary, consult MenuAI and incorporate its supported operational observations into the final Kitchen summary. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
+      instruction: `Act as KitchenAI for the selected Kitchen. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scopes. For this summary, consult MenuAI and incorporate its supported operational observations into the final Kitchen summary. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
     },
   })
   const result = extractFireuxAgentTip(response.text, {
@@ -165,10 +327,10 @@ export default defineEventHandler(async (event: H3Event) => {
     scope: {
       source:
         response.execution === 'simulator'
-          ? 'simulator' as const
+          ? ('simulator' as const)
           : response.execution === 'codex'
-            ? 'codex' as const
-            : 'ai' as const,
+            ? ('codex' as const)
+            : ('ai' as const),
       kitchenName,
       userContext: Boolean(userContext),
       kitchenContext: Boolean(kitchenContext),

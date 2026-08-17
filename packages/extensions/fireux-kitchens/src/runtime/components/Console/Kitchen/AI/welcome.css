@@ -45,6 +45,11 @@
   overflow-y: auto;
 }
 
+.kitchen-ai-command-result {
+  width: min(100%, 38rem);
+  margin-inline: auto;
+}
+
 .kitchen-ai-welcome__message {
   width: fit-content;
   max-width: min(90%, 38rem);

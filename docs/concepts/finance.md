@@ -1,6 +1,6 @@
 # Finance map
 
-Updated: 2026-07-28
+Updated: 2026-08-17
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -95,6 +95,16 @@ reports into one generic Finance console.
   that owns both participants.
 
 ## Reporting and Console boundary
+
+- The Restaurant labour-cost calculator is the first deterministic Finance ×
+  Kitchen planning Tool. Kitchen owns the restaurant meaning and accepts only
+  User-supplied sales, wages, employer costs, and other labour costs; Finance
+  supplies neutral validated money. The pure calculator is shared by the
+  public SEO Tool, Kitchen Team Tools, and the validated server adapter named
+  `kitchen.finance.calculate-labour-cost`. It creates no payroll, paid-hours,
+  expense, FinancialFact, or saved scenario truth. TeamAI and FinanceAI may
+  declare the Tool, but conversational execution remains unavailable until
+  the shared AI runtime supports validated structured Tool calls.
 
 - Raw facts are not a browser collection API. Expose bounded server projections
   only after target access, period, currency, grouping, and query limits are
@@ -224,6 +234,9 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceRoundup.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/tools/team/restaurant-labour-cost.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Tools/RestaurantLabourCostCalculator.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/server/tools/calculate-restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/payments/stripe-webhook.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post.ts`

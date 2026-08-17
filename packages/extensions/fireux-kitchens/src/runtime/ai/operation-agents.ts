@@ -64,6 +64,8 @@ const definitions = {
   team: {
     name: 'TeamAI',
     contextProviders: [context('kitchen.team', 'AppKitchen')],
+    capabilities: [...advisoryAgentCapabilities, 'use_tools'],
+    toolIds: ['kitchen.team.add-member', 'kitchen.member.create-invitation'],
   },
   suppliers: {
     name: 'KitchenSuppliersAI',
@@ -76,6 +78,8 @@ const definitions = {
   finance: {
     name: 'FinanceAI',
     contextProviders: [context('kitchen.finance', 'Kitchen')],
+    capabilities: [...advisoryAgentCapabilities, 'use_tools'],
+    toolIds: ['kitchen.finance.calculate-labour-cost'],
   },
 } as const satisfies Record<
   KitchenOperationSlug,
@@ -84,6 +88,7 @@ const definitions = {
     family?: string
     contextProviders: readonly FireuxAgentContextProvider[]
     capabilities?: readonly FireuxOperationAgentCapability[]
+    toolIds?: readonly string[]
   }
 >
 
@@ -102,7 +107,7 @@ export const kitchenOperationAgents = kitchenOperations.map((operation) => {
       'capabilities' in definition
         ? definition.capabilities
         : advisoryAgentCapabilities,
-    toolIds: [],
+    toolIds: 'toolIds' in definition ? definition.toolIds : [],
     execution: 'shared-inference',
   })
 })

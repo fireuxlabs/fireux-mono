@@ -56,11 +56,7 @@ export const serverAppDriversTarget = (appId: string) =>
 export const serverAppKitchensTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.kitchens', 'kitchens')
 export const serverAppMarketplaceStoresTarget = (appId: string) =>
-  serverAppChildTarget(
-    appId,
-    'apps.marketplace-stores',
-    'marketplace-stores'
-  )
+  serverAppChildTarget(appId, 'apps.marketplace-stores', 'marketplace-stores')
 
 export const serverKitchenMenuUploadsTarget = (
   appId: string,
@@ -116,6 +112,21 @@ export const serverKitchenDishesTarget = (appId: string, kitchenId: string) => {
   })
 }
 
+export const serverKitchenTeamMembersTarget = (
+  appId: string,
+  kitchenId: string
+) => {
+  const app = segment(appId, 'appId')
+  const kitchen = segment(kitchenId, 'kitchenId')
+  return defineFirestoreMutationTarget({
+    key: 'apps.kitchens.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `apps/${app}/kitchens/${kitchen}/team`,
+  })
+}
+
 export const serverKitchenOrdersTarget = (appId: string, kitchenId: string) => {
   const app = segment(appId, 'appId')
   const kitchen = segment(kitchenId, 'kitchenId')
@@ -158,6 +169,7 @@ export const serverKitchenOrderIdempotencyTarget = (
   })
 }
 
+// prettier-ignore
 export const serverCustomerOrdersTarget = (appId: string, customerId: string) => {
   const app = segment(appId, 'appId')
   const customer = segment(customerId, 'customerId')

@@ -161,6 +161,7 @@ const assertAtomicConsoleOnboarding = ({
   handlerSource,
   completionFunction,
   onboardingSource,
+  authenticationSource = onboardingSource,
   serverConfigSource,
   handlerPath,
   rootTarget,
@@ -206,7 +207,7 @@ const assertAtomicConsoleOnboarding = ({
     `${name} onboarding route must delegate to its trusted transaction.`
   )
 
-  assert.match(onboardingSource, /requireFirebaseBearerUser\(event\)/)
+  assert.match(authenticationSource, /requireFirebaseBearerUser\(event\)/)
   const guarded = onboardingSource.includes('runGuardedServerTransaction')
   if (guarded) {
     assert.match(onboardingSource, /runGuardedServerTransaction/)
@@ -408,6 +409,8 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
+  kitchenOnboardingActor:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-actor.ts',
   kitchenOnboardingPolicy:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-policy.ts',
   kitchenServerConfig:
@@ -844,6 +847,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.kitchenOnboardingHandler,
     completionFunction: 'completeKitchenOnboarding',
     onboardingSource: source.kitchenOnboarding,
+    authenticationSource: source.kitchenOnboardingActor,
     serverConfigSource: source.kitchenServerConfig,
     handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
     rootTarget: 'kitchens',
@@ -1150,6 +1154,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenOnboarding,
     /(?:transaction\.create\(supportRef|mutations\.create\(supports),[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /if \(createdRoot\)[\s\S]*mutations\.create\([\s\S]*teamMembers,[\s\S]*current\.uid,[\s\S]*buildKitchenTeamMemberRecord\([\s\S]*userId:\s*current\.uid/,
+    'New Kitchen onboarding must atomically create the creator’s linked operational Team member.'
   )
   assert.match(
     source.kitchenOnboarding,

@@ -1,69 +1,122 @@
 <template>
-  <div class="space-y-6">
-    <UCard>
+  <div v-if="pending || sortedMembers.length">
+    <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
-        <div class="collection-manager__header">
-          <div class="collection-manager__title">
-            <h2>Kitchen members</h2>
-            <p>Operational people records for the selected kitchen.</p>
-          </div>
-
-          <UBadge variant="soft">{{ sortedMembers.length }}</UBadge>
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="text-base font-semibold text-highlighted">People</h2>
+          <span class="text-sm tabular-nums text-dimmed">
+            {{ sortedMembers.length }}
+          </span>
         </div>
       </template>
 
-      <div v-if="sortedMembers.length" class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div v-if="pending" class="divide-y divide-default px-4 sm:px-6">
         <div
-          v-for="member in sortedMembers"
-          :key="member.id"
-          class="rounded-lg border border-default bg-elevated/30 p-4"
+          v-for="index in 3"
+          :key="index"
+          class="flex items-center gap-3 py-4"
         >
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-user-round" class="size-4 text-dimmed" />
-            <h3 class="truncate text-sm font-semibold text-highlighted">
-              {{ memberDisplayName(member) }}
-            </h3>
-          </div>
-
-          <p class="mt-1 text-sm text-dimmed">
-            {{ memberRole(member) || 'Missing role' }}
-          </p>
+          <USkeleton class="size-10 shrink-0 rounded-full" />
+          <USkeleton class="h-4 w-32" />
         </div>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No team members found.
-      </p>
-    </UCard>
+      <ul v-else-if="sortedMembers.length" class="divide-y divide-default">
+        <li
+          v-for="member in sortedMembers"
+          :id="memberAnchor(member)"
+          :key="member.id"
+          class="flex scroll-mt-6 items-center gap-3 px-4 py-3 transition-colors target:bg-primary/5 sm:px-6"
+        >
+          <UAvatar
+            :alt="memberDisplayName(member)"
+            :text="memberInitials(member)"
+            size="md"
+            class="shrink-0"
+          />
 
-    <DevDebugPanel
-      title="Kitchen team"
-      scope="console"
-      object-origin="fetched"
-      :objects="{ teamMembers }"
-      :derived="debug"
-    />
+          <div class="min-w-0 flex-1">
+            <h3 class="truncate text-sm font-medium text-highlighted">
+              {{ memberDisplayName(member) }}
+            </h3>
+            <p
+              v-if="member.user_id"
+              class="mt-0.5 flex items-center gap-1 text-xs text-success"
+            >
+              <UIcon name="i-lucide-circle-check" class="size-3.5" />
+              Account linked
+            </p>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-1">
+            <UButton
+              label="Edit"
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              @click="emit('edit', member)"
+            />
+            <UButton
+              v-if="!member.user_id"
+              label="Invite"
+              icon="i-lucide-link"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :loading="invitingMemberId === member.id"
+              :disabled="Boolean(invitingMemberId)"
+              @click="emit('invite', member)"
+            />
+          </div>
+        </li>
+      </ul>
+    </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
+import { resolveKitchenTeamMemberAnchor } from '../../../../utils/team-member-anchor'
 
-const { teamMembers, debug } = useKitchenConsoleTeam()
+const props = withDefaults(
+  defineProps<{
+    members?: KitchenTeamMember[]
+    pending?: boolean
+    invitingMemberId?: string
+  }>(),
+  {
+    members: () => [],
+    pending: false,
+    invitingMemberId: '',
+  }
+)
+
+const emit = defineEmits<{
+  edit: [member: KitchenTeamMember]
+  invite: [member: KitchenTeamMember]
+}>()
+
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const memberName = (member: KitchenTeamMember) => normalizeString(member.name)
 const memberDisplayName = (member: KitchenTeamMember) =>
-  memberName(member) || 'Missing team member name'
-const memberRole = (member: KitchenTeamMember) => normalizeString(member.role)
+  normalizeString(member.display_name) || memberName(member) || 'Team member'
+const memberInitials = (member: KitchenTeamMember) =>
+  memberDisplayName(member)
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('')
+const memberAnchor = (member: KitchenTeamMember) =>
+  resolveKitchenTeamMemberAnchor(member)
 const sortOrder = (member: KitchenTeamMember) => {
   const value = Number(member.sort_order)
   return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
 }
 const sortedMembers = computed(() =>
-  teamMembers.value
-    .filter((member) => member.active !== false)
+  props.members
+    .filter((member) => member.active !== false && member.status !== 'inactive')
     .sort((left, right) => {
       const byOrder = sortOrder(left) - sortOrder(right)
       if (byOrder) return byOrder

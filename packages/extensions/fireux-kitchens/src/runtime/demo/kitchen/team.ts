@@ -21,6 +21,7 @@ const member = (
   id,
   kitchen_id: deanosKitchenDemoIdentity.kitchenId,
   name,
+  slug: id,
   display_name: name,
   role,
   station_ids: stationIds,

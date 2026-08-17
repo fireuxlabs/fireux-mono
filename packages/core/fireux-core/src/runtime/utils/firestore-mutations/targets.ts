@@ -4,6 +4,7 @@ import {
 } from './target-definition'
 
 export * from './server-targets'
+export * from './kitchen-member-targets'
 export * from './user-private-targets'
 export * from './client-targets'
 export {

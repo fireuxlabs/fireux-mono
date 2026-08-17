@@ -3,12 +3,14 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-team">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Team" />
+        <LayoutsConsoleNavbar title="Team" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <ConsoleKitchenTeam />
+        <section class="console-surface">
+          <ConsoleKitchenTeamTools />
+          <ConsoleKitchenTeamAI />
+          <ConsoleKitchenTeam v-if="hasTeam" />
         </section>
       </template>
     </UDashboardPanel>
@@ -16,6 +18,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { provideKitchenConsoleTeam } from '../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
+
+const team = provideKitchenConsoleTeam()
+const hasTeam = computed(() => team.teamMembers.value.length > 0)
+
 definePageMeta({
   layout: 'console',
   consoleSurface: 'browse',

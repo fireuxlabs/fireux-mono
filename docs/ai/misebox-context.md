@@ -131,6 +131,21 @@ Before each task:
   resolves names from that same scenario. Demo access ids live on a separate
   read-only `AppKitchen`-shaped support fixture composed into the target
   surface; they do not alter the Kitchen root or create Live membership.
+- Creating a new Kitchen root atomically creates the authenticated creator as
+  its first operational KitchenTeamMember, using the creator UID as the stable
+  member and User link. Connecting an existing Kitchen does not create an
+  operational member. AppKitchen `team_ids` and `operator_ids` remain Console
+  access authority and never substitute for Kitchen-owned Team records.
+- A named Kitchen member may exist without a User. An operator can create a
+  named member and can correct that member's displayed name through a narrow
+  trusted Server command. Name edits preserve the member document id, slug,
+  User link, access, and invitation state; arbitrary client-side member patching
+  is not a Console capability. An operator can create a
+  seven-day, one-use member invitation whose stored record contains only a
+  hash of the URL secret. Acceptance is a dedicated authenticated Server
+  command: it atomically links the accepting UID to the existing member,
+  consumes the invitation, and adds that UID to AppKitchen `team_ids` without
+  adding `operator_ids`. Reissuing an invitation replaces older pending links.
 - `gross_sale` records the current authoritative total without claiming a VAT
   split, net revenue, or cash settlement. Reporting is derived; P&L remains
   absent until its required producing domains and accounting contract exist.
@@ -320,6 +335,31 @@ Before each task:
   one short structured capability tip to their existing private Kitchen usage
   record for later operator review; the visible answer excludes that marker.
   Console jobs and domain authority must prove each tool separately.
+  TeamAI's proved write tools are `kitchen.team.add-member` and
+  `kitchen.member.create-invitation`. It may propose the Kitchen-owned Add
+  Member command from an explicit named-member request, or resolve one exact
+  unclaimed member and propose the same invitation command as the manual Team
+  action. Both require separate human confirmation. The agent never receives
+  Firestore paths, constructs KitchenTeamMember storage records, or chooses
+  between ambiguous member matches.
+  Tool results declare their operator affordance rather than asking inference
+  to invent one. Member creation returns navigation to the created object;
+  invitation creation returns a copy action for the operator's share link and
+  never presents the recipient's claim route as the operator's primary action.
+  The Team surface is a stateless command runner, not a conversation. It shows
+  one instruction, one structured approval, and one result before reset.
+  Unmatched Team input terminates in TeamAI with available command examples and
+  never falls through to KitchenAI or MenuAI summary generation.
+  KitchenAI performs that operation-agent and tool selection on the main
+  Kitchen conversation surface; a Team page may identify its operation for
+  presentation, but client route context is never required to make TeamAI or
+  its permitted tools available to the coordinator. A successful create tool
+  returns a structured `createdObject` descriptor for the shared AI result
+  pill; Add Member targets the stable member card on the Kitchen Team route
+  through the member's persisted, Kitchen-scoped unique slug. The guarded
+  create transaction owns slug allocation and adds a numeric suffix for a
+  collision. The Firestore member id remains storage identity until a member
+  detail page is a proved product surface.
   The Console
   proof is mobile-first: the read-only
   component comes first and projects the canonical Kitchen Operations

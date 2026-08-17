@@ -3,13 +3,6 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -18,6 +11,7 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppKitchensTarget,
   serverAppUsersTarget,
+  serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   appPaletteLayersEqual,
@@ -45,26 +39,12 @@ import {
   onboardingText as text,
   readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
-  requireOnboardingMemberRole as memberRole,
-  type KitchenOnboardingMemberRole as MemberRole,
 } from './onboarding-policy'
-
-type Firestore = ReturnType<typeof getRuntimeFirestore>
-
-type RuntimePolicy = {
-  appId: string
-  appRole: string
-  ecosystem: string
-  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
-  canCreate: boolean
-  configuredAppPalette: ReturnType<typeof readAppPalette>
-}
-
-type Actor = RuntimePolicy & {
-  uid: string
-  db: Firestore
-  membershipRef: ReturnType<Firestore['doc']>
-}
+import {
+  readKitchenOnboardingActor as actor,
+  type KitchenOnboardingFirestore as Firestore,
+} from './onboarding-actor'
+import { buildKitchenTeamMemberRecord } from './team/member-record.ts'
 
 type Locator = {
   placeId: string
@@ -87,48 +67,6 @@ function request(value: unknown, allowed: readonly string[]) {
     fail(400, `Kitchen onboarding contains unsupported field: ${unsupported}.`)
   }
   return source
-}
-
-function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = useFireUXConfig(event)
-  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
-  const appRole = fireux.role
-  const ecosystem = requireFirestoreDocumentId(
-    fireux.ecosystem,
-    'Ecosystem key'
-  )
-  const management = resolveFireuxEntityManagementForApp(
-    appRole,
-    appId,
-    ecosystem
-  )
-
-  const canCreate = resolveConsoleCanCreate(
-    appRole,
-    fireux.consoleConfig,
-    'kitchen'
-  )
-  const configuredAppPalette = readAppPalette(fireux.theme?.palette)
-  return {
-    appId,
-    appRole,
-    ecosystem,
-    management,
-    canCreate,
-    configuredAppPalette,
-  }
-}
-
-async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
-  const { uid } = await requireFirebaseBearerUser(event)
-  const policy = runtimePolicy(event)
-  const db = getRuntimeFirestore()
-  const membershipRef = db.doc(
-    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
-  )
-  const membership = await membershipRef.get()
-  const role = memberRole(membership.exists, membership.get('role'))
-  return { ...policy, uid, db, membershipRef, role }
 }
 
 async function kitchenForPlace(
@@ -247,10 +185,15 @@ export async function completeKitchenOnboarding(
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
   const supports = serverAppKitchensTarget(current.appId)
+  const teamMembers = serverKitchenTeamMembersTarget(
+    current.appId,
+    locator.kitchenId
+  )
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, app, place, root, support] = await Promise.all([
+    const [membership, user, app, place, root, support] = await Promise.all([
       mutations.read(memberships, current.uid),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
@@ -293,31 +236,39 @@ export async function completeKitchenOnboarding(
     const createdRoot = !root.exists
     const createdAppSupport = !support.exists
     const placeName = text(place.data?.name)
-    const slug = text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
+    const slug =
+      text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
     const placePalette = readBrandPalette(place.data?.brand_palette)
     const paletteOverride = compactBrandPalette(
       requestedPalette.value,
       placePalette
     )
     const storedAppPaletteValue = record(record(app.data?.theme).palette)
-    const appPalette = current.configuredAppPalette ||
-      readAppPalette(storedAppPaletteValue)
+    const appPalette =
+      current.configuredAppPalette || readAppPalette(storedAppPaletteValue)
     const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
     const storedConsole = record(supportData?.console)
     const storedTheme = record(storedConsole.theme)
     const existingConsolePalette = readConsolePalette(storedTheme.palette)
     const maySeedConsole = createdAppSupport || role === 'admin'
-    const consolePalette = existingConsolePalette ||
+    const consolePalette =
+      existingConsolePalette ||
       (appPalette && maySeedConsole ? consolePaletteFromApp(appPalette) : null)
     const inheritedConsoleTheme = appPalette
       ? { palette: consolePaletteFromApp(appPalette) }
       : null
-    const compactAppLayer = appPalette && consolePalette
-      ? compactAppPalette(appPalette, consolePalette)
-      : null
+    const compactAppLayer =
+      appPalette && consolePalette
+        ? compactAppPalette(appPalette, consolePalette)
+        : null
 
     if (!createdRoot && Object.keys(requestedPalette.value).length) {
       fail(409, 'Existing Kitchen colours are preserved during onboarding.')
+    }
+
+    const creatorName = text(user.data?.display_name) || current.authDisplayName
+    if (createdRoot && !creatorName) {
+      fail(409, 'Finish your User name before creating a Kitchen.')
     }
 
     if (createdRoot) {
@@ -366,6 +317,22 @@ export async function completeKitchenOnboarding(
           : {}),
         updated: serverAuditStamp({ by: current.uid }),
       })
+    }
+
+    if (createdRoot) {
+      mutations.create(
+        teamMembers,
+        current.uid,
+        buildKitchenTeamMemberRecord({
+          appId: current.appId,
+          createdBy: current.uid,
+          kitchenId: locator.kitchenId,
+          memberId: current.uid,
+          name: creatorName,
+          slug: normalizeSlug(creatorName) || 'team-member',
+          userId: current.uid,
+        })
+      )
     }
 
     if (

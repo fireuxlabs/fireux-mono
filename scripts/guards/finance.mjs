@@ -29,6 +29,12 @@ const FILES = {
     'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue',
   kitchenConsolePage:
     'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue',
+  restaurantLabourCalculator:
+    'packages/extensions/fireux-kitchens/src/runtime/tools/team/restaurant-labour-cost.ts',
+  restaurantLabourToolAdapter:
+    'packages/extensions/fireux-kitchens/src/runtime/server/tools/calculate-restaurant-labour-cost.ts',
+  restaurantLabourToolComponent:
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Tools/RestaurantLabourCostCalculator.vue',
   kitchenReportModel:
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/finance-report.model.ts',
   kitchenReportProjection:
@@ -125,6 +131,21 @@ export async function run(ctx) {
     FILES.kitchenConsolePage,
     violations
   )
+  const restaurantLabourCalculator = read(
+    repoRoot,
+    FILES.restaurantLabourCalculator,
+    violations
+  )
+  const restaurantLabourToolAdapter = read(
+    repoRoot,
+    FILES.restaurantLabourToolAdapter,
+    violations
+  )
+  const restaurantLabourToolComponent = read(
+    repoRoot,
+    FILES.restaurantLabourToolComponent,
+    violations
+  )
   const kitchenConsoleComposition = `${kitchenConsolePage}\n${kitchenConsole}`
   const kitchenReportModel = read(
     repoRoot,
@@ -152,6 +173,29 @@ export async function run(ctx) {
     violations
   )
   const packageSource = read(repoRoot, FILES.package, violations)
+
+  for (const [source, file, markers] of [
+    [restaurantLabourCalculator, FILES.restaurantLabourCalculator, [
+      'calculateRestaurantLabourCost',
+      'addFinancialMoney',
+      'labourBasisPoints',
+    ]],
+    [restaurantLabourToolAdapter, FILES.restaurantLabourToolAdapter, [
+      "id: 'kitchen.finance.calculate-labour-cost'",
+      "mode: 'calculate'",
+      "confirmation: 'none'",
+    ]],
+    [restaurantLabourToolComponent, FILES.restaurantLabourToolComponent, [
+      'calculateRestaurantLabourCost',
+      'Nothing is saved.',
+    ]],
+  ]) {
+    for (const marker of markers) {
+      if (!source.includes(marker)) {
+        violations.push(`${file}: missing deterministic labour-cost Tool contract (${marker})`)
+      }
+    }
+  }
 
   for (const marker of [
     'FinancialReportMetricView',

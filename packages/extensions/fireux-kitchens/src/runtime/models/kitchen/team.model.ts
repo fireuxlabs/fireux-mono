@@ -13,6 +13,7 @@ export interface KitchenTeamMember extends FireuxStamped {
   user_id: string
   chef_profile_id: string
   name: string
+  slug: string
   display_name: string
   role: string
   station_ids: string[]
@@ -107,6 +108,7 @@ export const KitchenTeamMemberDefaults = {
   chef_profile_id: '' as string,
 
   name: '' as string,
+  slug: '' as string,
   display_name: '' as string,
   role: '' as string,
   station_ids: [] as string[],
@@ -132,11 +134,10 @@ export const KitchenTeamMemberDefaults = {
   },
 } as const satisfies KitchenTeamMember
 
-export type KitchenTeamMemberCreateInput = Omit<KitchenTeamMember, 'created' | 'updated'>
-export type KitchenTeamMemberUpdateInput = Partial<
-  Omit<KitchenTeamMember, 'id' | 'created' | 'updated' | 'kitchen_id'>
+export type KitchenTeamMemberCreateInput = Omit<
+  KitchenTeamMember,
+  'created' | 'updated'
 >
-
 export const KitchenTeamJoinRequestDefaults = {
   id: '' as string,
   kitchen_id: '' as string,

@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/index/useKitchenConsoleIndex'
+import { useKitchenConsoleIndex } from '../../../composables/fireux/console/kitchen/index/useKitchenConsoleIndex'
 
 const { selection, sections, actions, debug } = useKitchenConsoleIndex()
 </script>

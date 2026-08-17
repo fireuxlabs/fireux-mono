@@ -1,38 +1,161 @@
 <template>
-  <section class="console-surface">
-    <ConsoleTeamPanel
-      entity-label="Kitchen"
-      :target-id="kitchenId"
-      :team-ids="teamIds"
-      :operator-ids="operatorIds"
-      :access-ids="accessIds"
-      :read-only="readOnly"
-      :can-write="canWrite"
+  <section>
+    <ConsoleKitchenTeamRead
+      :members="teamMembers"
+      :pending="pending"
+      :inviting-member-id="invitingMemberId"
+      @edit="editMember"
+      @invite="inviteMember"
     />
 
-    <ConsoleKitchenTeamRead />
+    <UModal
+      v-model:open="editOpen"
+      title="Edit team member"
+      description="Update the name shown in this Kitchen. Their link and account connection stay the same."
+      :ui="{ content: 'sm:max-w-md' }"
+    >
+      <template #body>
+        <form class="space-y-5" @submit.prevent="saveMember">
+          <UFormField label="Name" :error="editError || undefined">
+            <UInput
+              v-model="editName"
+              name="name"
+              autocomplete="off"
+              maxlength="120"
+              autofocus
+              class="w-full"
+            />
+          </UFormField>
+          <div class="flex justify-end gap-2">
+            <UButton
+              label="Cancel"
+              color="neutral"
+              variant="ghost"
+              type="button"
+              @click="editOpen = false"
+            />
+            <UButton
+              label="Save changes"
+              type="submit"
+              :loading="savingMember"
+            />
+          </div>
+        </form>
+      </template>
+    </UModal>
 
-    <UAlert
-      v-if="readOnly"
-      color="neutral"
-      variant="soft"
-      title="Read only"
-      description="This kitchen can be inspected, but changes are disabled."
+    <UModal
+      v-model:open="inviteOpen"
+      :title="`Invite ${invitation?.memberName || 'member'}`"
+      description="Anyone with this one-use link can claim this Kitchen member. It expires after seven days."
+      :ui="{ content: 'sm:max-w-lg' }"
+    >
+      <template #body>
+        <div v-if="invitation" class="space-y-4">
+          <UInput :model-value="invitation.link" readonly class="w-full" />
+          <div class="flex justify-end gap-2">
+            <UButton
+              label="Close"
+              color="neutral"
+              variant="ghost"
+              @click="inviteOpen = false"
+            />
+            <UButton
+              label="Copy invitation link"
+              icon="i-lucide-copy"
+              @click="copyInvitation"
+            />
+          </div>
+        </div>
+      </template>
+    </UModal>
+
+    <DevDebugPanel
+      title="Kitchen team"
+      scope="console"
+      object-origin="fetched"
+      :objects="{ teamMembers, joinRequests }"
+      :derived="debug"
     />
-
-    <ConsoleKitchenTeamWrite v-if="canWrite" />
   </section>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
+import { useKitchenMemberInvitationCreate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenMemberInvitationCreate'
+import { useKitchenMemberUpdate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenMemberUpdate'
+import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
 
-const {
-  kitchenId,
-  teamIds,
-  operatorIds,
-  accessIds,
-  readOnly,
-  canWrite,
-} = useKitchenConsoleTeam()
+const { teamMembers, joinRequests, pending, debug, kitchenId } =
+  useKitchenConsoleTeam()
+const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
+const { updateKitchenMember } = useKitchenMemberUpdate()
+const toast = useToast()
+const editOpen = ref(false)
+const editingMember = ref<KitchenTeamMember | null>(null)
+const editName = ref('')
+const editError = ref('')
+const savingMember = ref(false)
+const invitingMemberId = ref('')
+const inviteOpen = ref(false)
+const invitation = ref<{ memberName: string; link: string } | null>(null)
+
+function editMember(member: KitchenTeamMember) {
+  editingMember.value = member
+  editName.value = String(member.display_name || member.name || '').trim()
+  editError.value = ''
+  editOpen.value = true
+}
+
+async function saveMember() {
+  const member = editingMember.value
+  const name = editName.value.trim().replace(/\s+/g, ' ')
+  if (!member) return
+  if (!name) {
+    editError.value = 'Enter a name.'
+    return
+  }
+  savingMember.value = true
+  editError.value = ''
+  try {
+    await updateKitchenMember({
+      kitchenId: kitchenId.value,
+      memberId: member.id,
+      name,
+    })
+    editOpen.value = false
+    toast.add({ title: `${name} updated`, color: 'success' })
+  } catch (error) {
+    editError.value = error instanceof Error ? error.message : 'Try again.'
+  } finally {
+    savingMember.value = false
+  }
+}
+
+async function inviteMember(member: KitchenTeamMember) {
+  if (invitingMemberId.value) return
+  invitingMemberId.value = member.id
+  try {
+    invitation.value = await createKitchenMemberInvitation({
+      kitchenId: kitchenId.value,
+      memberId: member.id,
+    })
+    inviteOpen.value = true
+  } catch (error) {
+    toast.add({
+      title: 'Invitation could not be created',
+      description: error instanceof Error ? error.message : 'Try again.',
+      color: 'error',
+    })
+  } finally {
+    invitingMemberId.value = ''
+  }
+}
+
+async function copyInvitation() {
+  if (!invitation.value) return
+  await navigator.clipboard.writeText(invitation.value.link)
+  toast.add({ title: 'Invitation link copied', color: 'success' })
+}
 </script>
