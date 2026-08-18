@@ -341,6 +341,10 @@ requirement, report the exact missing seam before broad edits.
   independent-on-demand execution. `CoreAI` and `UserAI` are the minimal root
   definitions. Ecosystem packages own their named ecosystem coordinator and
   compose domain-owned Console agents; domain packages own operation agents.
+  FireUX AI also owns the reusable shared inference instruction. Executing
+  agent runtimes compose it with any concise domain instruction owned by the
+  domain agent catalogue, then supply live registered tools, authorized
+  records, and permissions rather than encoding question-specific responses.
   The guarded Console families are Project, Kitchen, Supplier, Portfolio,
   Property, and the structural Blank harness. A catalogue entry is scope and
   metadata, not an automatic model call or permission to read context.

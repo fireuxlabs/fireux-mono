@@ -63,6 +63,8 @@ const definitions = {
   },
   team: {
     name: 'TeamAI',
+    instruction:
+      'Help the operator understand and manage the selected Kitchen team using only the registered Team tools and authorized Team records.',
     contextProviders: [context('kitchen.team', 'AppKitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
     toolIds: [
@@ -92,6 +94,7 @@ const definitions = {
   {
     name: string
     family?: string
+    instruction?: string
     contextProviders: readonly FireuxAgentContextProvider[]
     capabilities?: readonly FireuxOperationAgentCapability[]
     toolIds?: readonly string[]
@@ -108,6 +111,9 @@ export const kitchenOperationAgents = kitchenOperations.map((operation) => {
     operationId: operation.id,
     operationSlug: operation.slug,
     ...('family' in definition ? { family: definition.family } : {}),
+    ...('instruction' in definition
+      ? { instruction: definition.instruction }
+      : {}),
     contextProviders: definition.contextProviders,
     capabilities:
       'capabilities' in definition

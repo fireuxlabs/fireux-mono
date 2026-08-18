@@ -97,6 +97,26 @@ function kitchenSummary(
 function kitchenTeamToolSelection(input: Record<string, unknown>) {
   if (input.simulator_kind !== 'kitchen_team_tool_selection') return ''
   const question = firstString(input.question) || ''
+  const teamAgent = record(record(input.operation_agents).TeamAI)
+  const allowedTools = Array.isArray(teamAgent.allowed_tools)
+    ? teamAgent.allowed_tools.map(record)
+    : []
+  const asksAboutCapabilities =
+    /\b(?:what|which)\b[^?]*\b(?:tools?|capabilit(?:y|ies)|can (?:i|you))\b/iu.test(
+      question
+    ) || /\bwhat can (?:i|you) do\b/iu.test(question)
+  if (asksAboutCapabilities && allowedTools.length) {
+    const descriptions = allowedTools
+      .map((tool) => firstString(tool.description))
+      .filter(Boolean)
+    return JSON.stringify({
+      action: 'answer',
+      agent: 'TeamAI',
+      answer: `You can use Team tools to ${descriptions
+        .map((description) => description!.replace(/\.$/, '').toLowerCase())
+        .join('; ')}. Write actions ask for confirmation before they run.`,
+    })
+  }
   const invitationMatch =
     question.match(
       /\b(?:invite|invitation)(?:\s+link)?\s+(?:for|to)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu

@@ -181,6 +181,12 @@ export async function runKitchenTeamAgent(
   )
   if (selection.ok && selection.data?.agent === 'TeamAI') {
     const name = text(selection.data.name).replace(/\s+/g, ' ')
+    if (selection.data.action === 'answer' && text(selection.data.answer)) {
+      return {
+        ok: true as const,
+        answer: text(selection.data.answer),
+      }
+    }
     if (selection.data.action === 'read_team_members') {
       const result = await executeReadKitchenTeamMembersTool(event, {
         kitchenId: request.kitchenId,

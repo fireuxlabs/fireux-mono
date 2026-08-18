@@ -1,4 +1,9 @@
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
+import {
+  composeFireuxAgentInstruction,
+  fireuxAgentBaseInstruction,
+} from 'fireux-ai/runtime/agents/instructions'
+import { kitchenOperationAgents } from 'fireux-kitchens/runtime/ai/operation-agents'
 import { createKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-tool'
 import { createKitchenTeamInvitationTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-invitation-tool'
 import { readKitchenTeamMembersTool } from 'fireux-kitchens/runtime/server/kitchen/team/read-members-tool'
@@ -10,6 +15,18 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
+
+const teamAgent = kitchenOperationAgents.find(
+  (agent) => agent.operationSlug === 'team'
+)
+
+const teamTools = [
+  createKitchenTeamMemberTool,
+  createKitchenTeamInvitationTool,
+  readKitchenTeamMembersTool,
+  updateKitchenMemberTool,
+  deleteKitchenTeamMemberTool,
+] as const
 
 export type PendingTeamTool =
   | { id: typeof createKitchenTeamMemberTool.id; name: string }
@@ -109,10 +126,12 @@ export function selectKitchenTeamTool(
       | 'read_team_members'
       | 'update_team_member'
       | 'delete_team_member'
+      | 'answer'
       | 'none'
     agent?: 'TeamAI'
     name?: string
     changes?: { memberId: string; name: string }[]
+    answer?: string
   }>({
     appId,
     task: 'extract_structured_data',
@@ -123,20 +142,18 @@ export function selectKitchenTeamTool(
       team_members: members,
       operation_agents: {
         TeamAI: {
-          allowed_tools: [
-            createKitchenTeamMemberTool,
-            createKitchenTeamInvitationTool,
-            readKitchenTeamMembersTool,
-            updateKitchenMemberTool,
-            deleteKitchenTeamMemberTool,
-          ],
+          definition: teamAgent,
+          allowed_tools: teamTools,
         },
       },
     },
     context: {
       agent: 'KitchenAI',
-      instruction:
-        'Route only to the named operation_agents and their allowed_tools. Infer the requested outcome from the operator language and current Team records. Use create_team_member for a new named person, read_team_members to inspect the current list, create_member_invitation for an existing member invitation, update_team_member with exact memberId/name changes, or delete_team_member for one exact existing member. Return none when no Team tool fits. Never execute a tool or invent a member id.',
+      instruction: composeFireuxAgentInstruction(
+        fireuxAgentBaseInstruction,
+        teamAgent?.instruction,
+        'Choose a registered tool action when the request requires one. Return answer with a concise answer grounded in the supplied tool definitions and records when no tool execution is required. Return none only when the request is outside TeamAI\u2019s supplied capabilities and context. Never execute a tool or invent a member id.'
+      ),
     },
     outputJsonSchema: {
       type: 'object',
@@ -149,6 +166,7 @@ export function selectKitchenTeamTool(
             'read_team_members',
             'update_team_member',
             'delete_team_member',
+            'answer',
             'none',
           ],
         },
@@ -167,8 +185,9 @@ export function selectKitchenTeamTool(
             additionalProperties: false,
           },
         },
+        answer: { type: 'string', maxLength: 1000 },
       },
-      required: ['action'],
+      required: ['action', 'agent'],
       additionalProperties: false,
     },
   })

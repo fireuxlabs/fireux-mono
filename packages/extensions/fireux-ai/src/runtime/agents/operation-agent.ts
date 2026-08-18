@@ -43,6 +43,7 @@ export type FireuxOperationAgentDefinition = {
   operationId: string
   operationSlug: string
   family?: string
+  instruction?: string
   contextProviders: readonly FireuxAgentContextProvider[]
   capabilities: readonly FireuxOperationAgentCapability[]
   toolIds: readonly string[]
