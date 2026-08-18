@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { BlogPost } from '../../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../models/blogPost.model'
 
 export function useBlogComputed(post?: Ref<BlogPost | null | undefined>) {
   const hasPost = computed(() => Boolean(post?.value?.id || post?.value?.slug))

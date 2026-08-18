@@ -108,7 +108,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import type { BlogPost } from '../../../models/blogPost.model'
 import { useBlogCollection } from '../../../composables/fireux/firestore/blog/fetch/useBlogCollection'
-import { useBlogInterface } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface'
 
 const props = withDefaults(
   defineProps<{

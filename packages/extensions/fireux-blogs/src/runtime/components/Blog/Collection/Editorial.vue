@@ -187,7 +187,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlogCard } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../composables/fireux/blog/useBlogInterface'
 import BlogCardsStory from '../Cards/Story.vue'
 
 defineOptions({ name: 'BlogCollectionEditorial' })

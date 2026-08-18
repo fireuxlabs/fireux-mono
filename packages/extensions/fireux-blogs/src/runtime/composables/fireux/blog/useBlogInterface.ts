@@ -2,8 +2,8 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type {
   PublicBlogPostIndexProjection,
   PublicBlogPostProjection,
-} from '../../../../../../models/blogPost-public.model'
-import type { BlogPost } from '../../../../../../models/blogPost.model'
+} from '../../../models/blogPost-public.model'
+import type { BlogPost } from '../../../models/blogPost.model'
 
 type BlogViewPost =
   | BlogPost

@@ -14,25 +14,16 @@
       </div>
 
       <div
-        class="flex items-center gap-1 border-l border-default pl-3"
+        class="min-w-0 border-l border-default pl-3"
         role="toolbar"
         aria-label="Team tools"
       >
-        <UTooltip :text="addMemberTooltip">
-          <UButton
-            icon="i-lucide-user-plus"
-            color="neutral"
-            :variant="addMemberOpen ? 'soft' : 'ghost'"
-            size="lg"
-            class="min-h-11 min-w-11 justify-center px-3 sm:size-11 sm:p-0"
-            aria-label="Add team member"
-            :aria-pressed="addMemberOpen"
-            :disabled="!canWrite"
-            @click="addMemberOpen = !addMemberOpen"
-          >
-            <span class="sm:hidden">Add member</span>
-          </UButton>
-        </UTooltip>
+        <UNavigationMenu
+          :items="toolGroups"
+          orientation="horizontal"
+          content-orientation="vertical"
+          aria-label="Team CRUD tools"
+        />
       </div>
     </div>
 
@@ -51,19 +42,71 @@
         />
       </template>
     </UModal>
+
+    <ConsoleKitchenTeamToolModal
+      v-if="activeTool"
+      :open="Boolean(activeTool)"
+      :mode="activeTool"
+      @update:open="handleToolOpen"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui'
 import { computed, ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
+import { useKitchenTeamTools } from '../../../../composables/fireux/console/kitchen/team/useKitchenTeamTools'
 
 const addMemberOpen = ref(false)
+const activeTool = ref<'update' | 'delete' | 'invite' | null>(null)
 const { kitchenId, canWrite } = useKitchenConsoleTeam()
 const toast = useToast()
-const addMemberTooltip = computed(() =>
-  canWrite.value ? 'Add team member' : 'Write access is required'
-)
+const tools = useKitchenTeamTools()
+const tool = (id: (typeof tools)[number]['id']) =>
+  tools.find((candidate) => candidate.id === id)!
+const toolGroups = computed<NavigationMenuItem[]>(() => [
+  {
+    label: 'Create',
+    icon: 'i-lucide-plus',
+    children: [
+      {
+        ...tool('add-member'),
+        disabled: !canWrite.value,
+        onSelect: () => {
+          addMemberOpen.value = true
+        },
+      },
+      {
+        ...tool('create-invitation'),
+        disabled: !canWrite.value,
+        onSelect: () => openTool('invite'),
+      },
+    ],
+  },
+  {
+    label: 'Update',
+    icon: 'i-lucide-pencil',
+    children: [
+      {
+        ...tool('update-member'),
+        disabled: !canWrite.value,
+        onSelect: () => openTool('update'),
+      },
+      {
+        ...tool('delete-member'),
+        disabled: !canWrite.value,
+        onSelect: () => openTool('delete'),
+      },
+    ],
+  },
+])
+const openTool = (mode: NonNullable<typeof activeTool.value>) => {
+  activeTool.value = mode
+}
+const handleToolOpen = (open: boolean) => {
+  if (!open) activeTool.value = null
+}
 const handleMemberCreated = (result: { name: string }) => {
   addMemberOpen.value = false
   toast.add({

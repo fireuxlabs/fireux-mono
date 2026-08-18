@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
+import type { BlogCard } from '../../../composables/fireux/blog/useBlogInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: BlogCard.Card

@@ -22,7 +22,7 @@ import { usePublicBlogCollection } from '../../../composables/fireux/blog/public
 import {
   type BlogCard,
   useBlogInterface,
-} from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
+} from '../../../composables/fireux/blog/useBlogInterface'
 import BlogCollectionEditorial from './Editorial.vue'
 
 defineOptions({ name: 'BlogCollectionEditorialManager' })

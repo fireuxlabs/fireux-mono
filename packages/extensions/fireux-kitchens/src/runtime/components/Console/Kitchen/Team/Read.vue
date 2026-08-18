@@ -1,12 +1,27 @@
 <template>
-  <div v-if="pending || sortedMembers.length">
+  <div
+    v-if="pending || sortedMembers.length"
+    ref="peopleCollection"
+    tabindex="-1"
+    class="outline-none"
+  >
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <div class="flex items-center justify-between gap-4">
-          <h2 class="text-base font-semibold text-highlighted">People</h2>
-          <span class="text-sm tabular-nums text-dimmed">
-            {{ sortedMembers.length }}
-          </span>
+          <div class="flex items-center gap-3">
+            <h2 class="text-base font-semibold text-highlighted">People</h2>
+            <span class="text-sm tabular-nums text-dimmed">
+              {{ sortedMembers.length }}
+            </span>
+          </div>
+          <div role="toolbar" aria-label="People tools">
+            <UNavigationMenu
+              :items="readTools"
+              orientation="horizontal"
+              content-orientation="vertical"
+              aria-label="People read tools"
+            />
+          </div>
         </div>
       </template>
 
@@ -87,7 +102,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import type { NavigationMenuItem } from '@nuxt/ui'
+import { computed, ref } from 'vue'
 import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
 import { resolveKitchenTeamMemberAnchor } from '../../../../utils/team-member-anchor'
 
@@ -111,6 +127,28 @@ const emit = defineEmits<{
   invite: [member: KitchenTeamMember]
   delete: [member: KitchenTeamMember]
 }>()
+
+const peopleCollection = ref<HTMLElement | null>(null)
+const readTools: NavigationMenuItem[] = [
+  {
+    label: 'Read',
+    icon: 'i-lucide-eye',
+    children: [
+      {
+        label: 'View people',
+        description: 'View the current Kitchen Team collection.',
+        icon: 'i-lucide-users',
+        onSelect: () => {
+          peopleCollection.value?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+          peopleCollection.value?.focus({ preventScroll: true })
+        },
+      },
+    ],
+  },
+]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const memberName = (member: KitchenTeamMember) => normalizeString(member.name)

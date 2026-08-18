@@ -2,20 +2,21 @@
   <section class="kitchen-ai-welcome" aria-labelledby="kitchen-ai-title">
     <div class="kitchen-ai-welcome__intro">
       <div class="kitchen-ai-welcome__mark" aria-hidden="true">
-        <UIcon name="i-lucide-sparkles" />
+        <UIcon :name="resolvedContextIcon" />
+        <span v-if="hasContextIcon" class="kitchen-ai-welcome__mark-ai">
+          <UIcon name="i-lucide-sparkles" />
+        </span>
       </div>
       <p class="fx-type-label">
-        {{
-          commandMode
-            ? 'TeamAI tool runner'
-            : `Kitchen AI powered by ${appName}`
-        }}
+        {{ resolvedAgentLabel }}
       </p>
-      <h1 id="kitchen-ai-title" class="fx-type-display-title">
-        {{ props.title }}
-      </h1>
+      <h1
+        id="kitchen-ai-title"
+        class="fx-type-display-title"
+        v-text="resolvedTitle"
+      />
       <p class="fx-type-description text-toned">
-        {{ props.description }}
+        {{ resolvedDescription }}
       </p>
     </div>
 
@@ -96,7 +97,7 @@
             @click="resetCommand"
           />
           <UButton
-            label="Run command"
+            label="Confirm action"
             icon="i-lucide-play"
             :loading="submitting"
             @click="confirmCommand"
@@ -104,7 +105,7 @@
         </div>
         <div v-else class="flex justify-end">
           <UButton
-            label="New command"
+            label="New request"
             color="neutral"
             variant="ghost"
             icon="i-lucide-rotate-ccw"
@@ -130,13 +131,19 @@
       />
     </div>
 
+    <ToolNuggets
+      v-if="props.aiTools?.length && (!commandMode || !commandResult)"
+      :tools="props.aiTools"
+      @select="prompt = $event"
+    />
+
     <form
       v-if="!commandMode || !commandResult"
       class="kitchen-ai-welcome__composer"
       @submit.prevent="sendPrompt"
     >
       <input
-        v-if="props.allowFile"
+        v-if="allowFile"
         ref="fileInput"
         class="sr-only"
         type="file"
@@ -144,20 +151,19 @@
         @change="stageFile"
       />
       <UButton
-        v-if="props.allowFile"
+        v-if="allowFile"
         icon="i-lucide-paperclip"
         color="neutral"
         variant="ghost"
         aria-label="Upload your existing menu"
         @click="fileInput?.click()"
       />
-      <UInput
+      <PromptInput
         v-model="prompt"
         class="kitchen-ai-welcome__input"
-        size="xl"
-        variant="none"
-        :placeholder="props.placeholder"
-        :aria-label="commandMode ? 'Enter Team command' : 'Ask Kitchen AI'"
+        :placeholder="resolvedPlaceholder"
+        :suggestions="resolvedPromptSuggestions"
+        :aria-label="commandMode ? 'Ask Team AI' : 'Ask Kitchen AI'"
       />
       <UButton
         type="submit"
@@ -169,7 +175,7 @@
       />
     </form>
 
-    <p v-if="props.allowFile" class="kitchen-ai-welcome__privacy">
+    <p v-if="allowFile" class="kitchen-ai-welcome__privacy">
       Selected files stay in your browser. Kitchen questions use the selected
       Live Kitchen only.
     </p>
@@ -181,59 +187,45 @@ import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
-
-type KitchenAIWelcomeMessage = {
-  id: number
-  role: 'user' | 'assistant'
-  text: string
-  createdObject?: KitchenAICreatedObject
-  resultAction?: KitchenAIResultAction
-}
-
-type KitchenAICreatedObject = {
-  name: string
-  kind: string
-  to: string
-  imageUrl?: string
-  actionLabel?: string
-}
-
-type KitchenAIResultAction = {
-  kind: 'copy'
-  label: string
-  value: string
-}
-
-type KitchenAIStarter = {
-  label: string
-  prompt: string
-  icon: string
-}
+import PromptInput from './PromptInput.vue'
+import ToolNuggets from './ToolNuggets.vue'
+import {
+  useKitchenAIPresentation,
+  type KitchenAIPresentationOptions,
+} from './useKitchenAIPresentation'
+import type {
+  KitchenAICreatedObject,
+  KitchenAIResultAction,
+  KitchenAIToolNugget,
+  KitchenAIWelcomeMessage,
+} from './types'
 
 const props = withDefaults(
-  defineProps<{
-    title?: string
-    description?: string
-    placeholder?: string
-    allowFile?: boolean
-    starters?: readonly KitchenAIStarter[]
-    operation?: string
-    mode?: 'assistant' | 'command'
+  defineProps<KitchenAIPresentationOptions & {
+    aiTools?: readonly KitchenAIToolNugget[]
   }>(),
   {
-    title: 'How can I help your kitchen today?',
-    description:
-      'Give me your existing menu and I’ll help turn it into a working digital Menu and Kitchen Console.',
-    placeholder: 'Ask Kitchen AI…',
-    allowFile: true,
     starters: undefined,
     operation: '',
-    mode: 'assistant',
+    aiTools: () => [],
   }
 )
 
 const { appName } = useFireUXConfig()
 const kitchenConsole = useKitchenConsole()
+const {
+  agentLabel: resolvedAgentLabel,
+  hasContextIcon,
+  contextIcon: resolvedContextIcon,
+  title: resolvedTitle,
+  description: resolvedDescription,
+  placeholder: resolvedPlaceholder,
+  promptSuggestions: resolvedPromptSuggestions,
+  allowFile,
+  starters: resolvedStarters,
+  commandMode,
+  operation: resolvedOperation,
+} = useKitchenAIPresentation(props, appName)
 const prompt = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 const messages = ref<KitchenAIWelcomeMessage[]>([])
@@ -251,26 +243,6 @@ const selectedLiveScope = computed(() => ({
   appId: String(kitchenConsole.runtime.appId.value || '').trim(),
   kitchenId: String(kitchenConsole.runtime.storageKitchenId.value || '').trim(),
 }))
-
-const defaultStarters: readonly KitchenAIStarter[] = [
-  {
-    label: 'Upload my menu',
-    prompt: 'I have an existing menu I want to turn into a working Kitchen.',
-    icon: 'i-lucide-file-up',
-  },
-  {
-    label: 'Try a Demo Kitchen',
-    prompt: 'Show me an example Kitchen so I can explore the Console.',
-    icon: 'i-lucide-chef-hat',
-  },
-  {
-    label: 'Start from scratch',
-    prompt: 'Help me create a new Kitchen from scratch.',
-    icon: 'i-lucide-plus',
-  },
-] as const
-const resolvedStarters = computed(() => props.starters ?? defaultStarters)
-const commandMode = computed(() => props.mode === 'command')
 
 function pushMessage(
   role: KitchenAIWelcomeMessage['role'],
@@ -327,7 +299,9 @@ async function runPrompt(text: string) {
         appId,
         kitchenId,
         prompt: text,
-        ...(props.operation ? { operation: props.operation } : {}),
+        ...(resolvedOperation.value
+          ? { operation: resolvedOperation.value }
+          : {}),
         ...(pendingTool.value ? { pendingTool: pendingTool.value } : {}),
       },
     })

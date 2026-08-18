@@ -6,8 +6,8 @@ import { useBlogDelete } from './mutations/useBlogDelete.ts'
 import { useBlogPublish } from './mutations/useBlogPublish'
 import { useBlogSeo } from './utils/useBlogSeo'
 import { useBlogUtils } from './utils/useBlogUtils.ts'
-import { useBlogComputed } from './utils/view/useBlogComputed'
-import { useBlogInterface } from './utils/view/useBlogInterface.ts'
+import { useBlogComputed } from '../../blog/useBlogComputed'
+import { useBlogInterface } from '../../blog/useBlogInterface'
 
 export {
   useBlogFetch,

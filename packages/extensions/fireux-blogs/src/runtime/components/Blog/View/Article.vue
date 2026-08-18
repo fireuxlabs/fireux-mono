@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { PublicBlogPostProjection } from '../../../models/blogPost-public.model';
-import { useBlogInterface } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
+import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface';
 
 const props = defineProps<{ post: PublicBlogPostProjection }>()
 
