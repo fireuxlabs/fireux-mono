@@ -1,72 +1,84 @@
-import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
   composeFireuxAgentInstruction,
   fireuxAgentBaseInstruction,
 } from 'fireux-ai/runtime/agents/instructions'
+import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { kitchenOperationAgents } from 'fireux-kitchens/runtime/ai/operation-agents'
-import { createKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-tool'
-import { createKitchenTeamInvitationTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-invitation-tool'
-import { readKitchenTeamMembersTool } from 'fireux-kitchens/runtime/server/kitchen/team/read-members-tool'
-import { deleteKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/delete-member-tool'
-import { updateKitchenMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/update-member-tool'
+import {
+  kitchenTeamAgentTools,
+  kitchenTeamMemberCreateTool,
+  kitchenTeamMemberDeleteTool,
+  kitchenTeamMemberInvitationCreateTool,
+  kitchenTeamMemberUpdateTool,
+  type KitchenTeamToolId,
+} from 'fireux-kitchens/runtime/tools/kitchen/team/index'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
+const name = (value: unknown) => text(value).replace(/\s+/g, ' ')
 
 const teamAgent = kitchenOperationAgents.find(
   (agent) => agent.operationSlug === 'team'
 )
 
-const teamTools = [
-  createKitchenTeamMemberTool,
-  createKitchenTeamInvitationTool,
-  readKitchenTeamMembersTool,
-  updateKitchenMemberTool,
-  deleteKitchenTeamMemberTool,
-] as const
+type PendingMemberChange = {
+  memberId: string
+  name: string
+  previousName: string
+}
 
 export type PendingTeamTool =
-  | { id: typeof createKitchenTeamMemberTool.id; name: string }
   | {
-      id: typeof createKitchenTeamInvitationTool.id
-      memberId: string
+      id: typeof kitchenTeamMemberCreateTool.id
       name: string
+      input: { name: string }
     }
   | {
-      id: typeof deleteKitchenTeamMemberTool.id
-      memberId: string
+      id:
+        | typeof kitchenTeamMemberInvitationCreateTool.id
+        | typeof kitchenTeamMemberDeleteTool.id
       name: string
+      input: { memberId: string }
     }
   | {
-      id: typeof updateKitchenMemberTool.id
+      id: typeof kitchenTeamMemberUpdateTool.id
       name: string
-      changes: { memberId: string; name: string; previousName: string }[]
+      input: { updates: { memberId: string; changes: { name: string } }[] }
+      changes: PendingMemberChange[]
     }
 
 export function pendingTeamTool(value: unknown): PendingTeamTool | null {
   const source = record(value)
-  const name = text(source.name).replace(/\s+/g, ' ')
-  if (!name || name.length > 120) return null
+  const input = record(source.input)
+  const displayName = name(source.name)
   const id = text(source.id)
-  if (id === createKitchenTeamMemberTool.id) return { id, name }
-  if (
-    id === createKitchenTeamInvitationTool.id ||
-    id === deleteKitchenTeamMemberTool.id
-  ) {
-    const memberId = text(source.memberId)
-    return memberId ? { id, memberId, name } : null
+
+  if (id === kitchenTeamMemberCreateTool.id) {
+    const requestedName = name(input.name)
+    return requestedName && requestedName.length <= 120
+      ? { id, name: displayName || requestedName, input: { name: requestedName } }
+      : null
   }
-  if (id === updateKitchenMemberTool.id) {
+  if (
+    id === kitchenTeamMemberInvitationCreateTool.id ||
+    id === kitchenTeamMemberDeleteTool.id
+  ) {
+    const memberId = text(input.memberId)
+    return memberId && displayName
+      ? { id, name: displayName, input: { memberId } }
+      : null
+  }
+  if (id === kitchenTeamMemberUpdateTool.id) {
     const changes = Array.isArray(source.changes)
       ? source.changes
           .map(record)
           .map((change) => ({
             memberId: text(change.memberId),
-            name: text(change.name).replace(/\s+/g, ' '),
-            previousName: text(change.previousName).replace(/\s+/g, ' '),
+            name: name(change.name),
+            previousName: name(change.previousName),
           }))
           .filter(
             (change) =>
@@ -77,7 +89,17 @@ export function pendingTeamTool(value: unknown): PendingTeamTool | null {
           )
       : []
     return changes.length && changes.length <= 200
-      ? { id, name, changes }
+      ? {
+          id,
+          name: displayName || 'Team member names',
+          input: {
+            updates: changes.map(({ memberId, name: nextName }) => ({
+              memberId,
+              changes: { name: nextName },
+            })),
+          },
+          changes,
+        }
       : null
   }
   return null
@@ -93,24 +115,56 @@ export function teamToolConfirmation(value: string) {
   return 'unknown' as const
 }
 
-export type TeamToolMember = { memberId: string; name: string }
+export type TeamToolMember = {
+  memberId: string
+  name: string
+  linked: boolean
+}
 
 export function resolveSelectedMemberChanges(
-  selected: readonly { memberId: string; name: string }[],
+  selected: readonly {
+    memberId: string
+    changes?: { name?: string }
+  }[],
   members: readonly TeamToolMember[]
 ) {
   const requested = new Map(
-    selected.map((change) => [
-      text(change.memberId),
-      text(change.name).replace(/\s+/g, ' '),
+    selected.map((update) => [
+      text(update.memberId),
+      name(update.changes?.name),
     ])
   )
   return members.flatMap((member) => {
-    const name = requested.get(member.memberId)
-    return name && name.length <= 120 && name !== member.name
-      ? [{ memberId: member.memberId, previousName: member.name, name }]
+    const nextName = requested.get(member.memberId)
+    return nextName && nextName.length <= 120 && nextName !== member.name
+      ? [
+          {
+            memberId: member.memberId,
+            previousName: member.name,
+            name: nextName,
+          },
+        ]
       : []
   })
+}
+
+export type KitchenTeamToolSelection = {
+  kind: 'tool' | 'answer' | 'none'
+  agent?: 'TeamAI'
+  toolCall?: { toolId: KitchenTeamToolId; input: unknown }
+  answer?: string
+}
+
+const toolCallSchema = {
+  oneOf: kitchenTeamAgentTools.map((tool) => ({
+    type: 'object',
+    properties: {
+      toolId: { type: 'string', const: tool.id },
+      input: tool.inputSchema,
+    },
+    required: ['toolId', 'input'],
+    additionalProperties: false,
+  })),
 }
 
 export function selectKitchenTeamTool(
@@ -119,20 +173,7 @@ export function selectKitchenTeamTool(
   prompt: string,
   members: readonly TeamToolMember[]
 ) {
-  return ai.generateJson<{
-    action:
-      | 'create_team_member'
-      | 'create_member_invitation'
-      | 'read_team_members'
-      | 'update_team_member'
-      | 'delete_team_member'
-      | 'answer'
-      | 'none'
-    agent?: 'TeamAI'
-    name?: string
-    changes?: { memberId: string; name: string }[]
-    answer?: string
-  }>({
+  return ai.generateJson<KitchenTeamToolSelection>({
     appId,
     task: 'extract_structured_data',
     timeoutMs: 60_000,
@@ -143,7 +184,7 @@ export function selectKitchenTeamTool(
       operation_agents: {
         TeamAI: {
           definition: teamAgent,
-          allowed_tools: teamTools,
+          allowed_tools: kitchenTeamAgentTools,
         },
       },
     },
@@ -152,42 +193,18 @@ export function selectKitchenTeamTool(
       instruction: composeFireuxAgentInstruction(
         fireuxAgentBaseInstruction,
         teamAgent?.instruction,
-        'Choose a registered tool action when the request requires one. Return answer with a concise answer grounded in the supplied tool definitions and records when no tool execution is required. Return none only when the request is outside TeamAI\u2019s supplied capabilities and context. Never execute a tool or invent a member id.'
+        'Understand the request, then consider the registered tools, authorized records and permissions. Return a canonical tool call when a tool is appropriate. Otherwise return a concise grounded answer or none. Never invent a member id.'
       ),
     },
     outputJsonSchema: {
       type: 'object',
       properties: {
-        action: {
-          type: 'string',
-          enum: [
-            'create_team_member',
-            'create_member_invitation',
-            'read_team_members',
-            'update_team_member',
-            'delete_team_member',
-            'answer',
-            'none',
-          ],
-        },
+        kind: { type: 'string', enum: ['tool', 'answer', 'none'] },
         agent: { type: 'string', enum: ['TeamAI'] },
-        name: { type: 'string', maxLength: 120 },
-        changes: {
-          type: 'array',
-          maxItems: 200,
-          items: {
-            type: 'object',
-            properties: {
-              memberId: { type: 'string' },
-              name: { type: 'string', maxLength: 120 },
-            },
-            required: ['memberId', 'name'],
-            additionalProperties: false,
-          },
-        },
+        toolCall: toolCallSchema,
         answer: { type: 'string', maxLength: 1000 },
       },
-      required: ['action', 'agent'],
+      required: ['kind', 'agent'],
       additionalProperties: false,
     },
   })

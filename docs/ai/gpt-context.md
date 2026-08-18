@@ -358,6 +358,18 @@ requirement, report the exact missing seam before broad edits.
   owners.
   Start at `fireux-ai/runtime/agents/operation-agent`, then the owning domain's
   `runtime/ai/operation-agents` catalogue.
+- Operational tools are domain-owned pure definitions under
+  `runtime/tools/<console>/<scope>`. One fully qualified id owns the tool's
+  model-facing context, input schema, confirmation and risk policy, human and
+  agent surface policy, and result contract. Human toolbar adapters, prompt
+  suggestions, operation-agent tool ids, live model tool declarations, and
+  server executor registries project from that definition; none owns a second
+  description or local id. Authoritative domain commands remain below this
+  layer, and both REST and agent executors call those commands so AI never
+  becomes a parallel mutation authority. Kitchen Team is the guarded proving
+  family at `fireux-kitchens/runtime/tools/kitchen/team`. Core iframe Tool
+  Providers are a separate transport family and must not be merged into this
+  operational command registry.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.

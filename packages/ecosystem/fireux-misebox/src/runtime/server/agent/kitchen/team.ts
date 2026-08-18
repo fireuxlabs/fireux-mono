@@ -1,70 +1,59 @@
-import { createError, type H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
-  createKitchenTeamMemberTool,
-  executeCreateKitchenTeamMemberTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/create-member-tool'
+  kitchenTeamMemberCreateTool,
+  kitchenTeamMemberDeleteTool,
+  kitchenTeamMemberInvitationCreateTool,
+  kitchenTeamMembersReadTool,
+  kitchenTeamMemberUpdateTool,
+} from 'fireux-kitchens/runtime/tools/kitchen/team/index'
+import { kitchenTeamServerToolRegistry } from 'fireux-kitchens/runtime/server/kitchen/team/tools/index'
 import {
-  createKitchenTeamInvitationTool,
-  executeCreateKitchenTeamInvitationTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/create-invitation-tool'
-import {
-  deleteKitchenTeamMemberTool,
-  executeDeleteKitchenTeamMemberTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/delete-member-tool'
-import {
-  executeReadKitchenTeamMembersTool,
-  readKitchenTeamMembersTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/read-members-tool'
-import {
-  executeUpdateKitchenMemberPlan,
-  updateKitchenMemberTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/update-member-tool'
-import {
+  pendingTeamTool,
   resolveSelectedMemberChanges,
   selectKitchenTeamTool,
   teamToolConfirmation,
   type PendingTeamTool,
+  type TeamToolMember,
 } from './team-tools'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const normalizedName = (value: unknown) => text(value).replace(/\s+/g, ' ')
 
-async function resolveInvitationMember(
-  access: KitchenAgentAccess,
-  request: KitchenAgentRequest,
-  name: string
-) {
-  const requestedSlug = normalizeSlug(name)
-  const snapshot = await access.db
-    .collection(`apps/${request.appId}/kitchens/${request.kitchenId}/team`)
-    .limit(200)
-    .get()
-  const matches = snapshot.docs.filter((document) => {
-    const data = document.data() || {}
-    const memberName = readRecordString(data, 'name')
-    return (
-      !readRecordString(data, 'user_id') &&
-      ((readRecordString(data, 'slug') || normalizeSlug(memberName)) ===
-        requestedSlug ||
-        memberName.toLowerCase() === name.toLowerCase())
-    )
-  })
-  if (matches.length !== 1) {
-    throw createError({
-      statusCode: matches.length ? 409 : 404,
-      statusMessage: matches.length
-        ? `More than one unclaimed Kitchen member matches ${name}. Use the Team page to choose one.`
-        : `No unclaimed Kitchen member named ${name} was found.`,
-    })
+const executors = kitchenTeamServerToolRegistry
+
+function confirmationMessage(pending: PendingTeamTool) {
+  if (pending.id === kitchenTeamMemberUpdateTool.id) {
+    return `Please confirm these name changes: ${pending.changes
+      .map((change) => `${change.previousName} → ${change.name}`)
+      .join(', ')}.`
   }
-  const member = matches[0]!
-  return {
-    memberId: member.id,
-    name: readRecordString(member.data(), 'name') || name,
+  if (pending.id === kitchenTeamMemberDeleteTool.id) {
+    return `Please confirm: permanently delete ${pending.name}?`
   }
+  if (pending.id === kitchenTeamMemberInvitationCreateTool.id) {
+    return `Please confirm: create a one-use invitation link for ${pending.name}?`
+  }
+  return `Please confirm: add ${pending.name} to this Kitchen team?`
+}
+
+function cancellationMessage(pending: PendingTeamTool) {
+  if (pending.id === kitchenTeamMemberUpdateTool.id) {
+    return 'Okay, I won’t update the Team names.'
+  }
+  if (pending.id === kitchenTeamMemberDeleteTool.id) {
+    return `Okay, I won’t delete ${pending.name}.`
+  }
+  if (pending.id === kitchenTeamMemberInvitationCreateTool.id) {
+    return `Okay, I won’t create an invitation for ${pending.name}.`
+  }
+  return `Okay, I won’t add ${pending.name}.`
 }
 
 async function executePendingTeamTool(
@@ -74,39 +63,37 @@ async function executePendingTeamTool(
 ) {
   const decision = teamToolConfirmation(request.prompt)
   if (decision === 'cancelled') {
-    return {
-      ok: true as const,
-      answer:
-        pending.id === updateKitchenMemberTool.id
-          ? 'Okay, I won’t update the Team names.'
-          : pending.id === deleteKitchenTeamMemberTool.id
-            ? `Okay, I won’t delete ${pending.name}.`
-            : pending.id === createKitchenTeamInvitationTool.id
-              ? `Okay, I won’t create an invitation for ${pending.name}.`
-              : `Okay, I won’t add ${pending.name}.`,
-    }
+    return { ok: true as const, answer: cancellationMessage(pending) }
   }
   if (decision !== 'confirmed') {
     return {
       ok: true as const,
-      answer:
-        pending.id === updateKitchenMemberTool.id
-          ? `Please confirm these name changes: ${pending.changes.map((change) => `${change.previousName} → ${change.name}`).join(', ')}.`
-          : pending.id === deleteKitchenTeamMemberTool.id
-            ? `Please confirm: permanently delete ${pending.name}?`
-            : pending.id === createKitchenTeamInvitationTool.id
-              ? `Please confirm: create a one-use invitation link for ${pending.name}?`
-              : `Please confirm: add ${pending.name} to this Kitchen team?`,
+      answer: confirmationMessage(pending),
       pendingTool: pending,
     }
   }
-  if (pending.id === updateKitchenMemberTool.id) {
-    const updated = await executeUpdateKitchenMemberPlan(event, {
+
+  if (pending.id === kitchenTeamMemberUpdateTool.id) {
+    const current = await executors[kitchenTeamMembersReadTool.id].execute(
+      event,
+      { kitchenId: request.kitchenId }
+    )
+    const currentNames = new Map(
+      current.members.map((member) => [member.memberId, member.name])
+    )
+    const unchanged = pending.changes.every(
+      (change) => currentNames.get(change.memberId) === change.previousName
+    )
+    if (!unchanged) {
+      return {
+        ok: true as const,
+        answer:
+          'The Team changed after this update was prepared. Please run the request again.',
+      }
+    }
+    const updated = await executors[pending.id].execute(event, {
       kitchenId: request.kitchenId,
-      updates: pending.changes.map(({ memberId, name }) => ({
-        memberId,
-        changes: { name },
-      })),
+      updates: pending.input.updates,
     })
     return {
       ok: true as const,
@@ -114,10 +101,11 @@ async function executePendingTeamTool(
       tool: { id: pending.id, result: updated },
     }
   }
-  if (pending.id === deleteKitchenTeamMemberTool.id) {
-    const deleted = await executeDeleteKitchenTeamMemberTool(event, {
+
+  if (pending.id === kitchenTeamMemberDeleteTool.id) {
+    const deleted = await executors[pending.id].execute(event, {
       kitchenId: request.kitchenId,
-      memberId: pending.memberId,
+      ...pending.input,
     })
     return {
       ok: true as const,
@@ -125,25 +113,27 @@ async function executePendingTeamTool(
       tool: { id: pending.id, result: deleted },
     }
   }
-  if (pending.id === createKitchenTeamInvitationTool.id) {
-    const invitation = await executeCreateKitchenTeamInvitationTool(event, {
+
+  if (pending.id === kitchenTeamMemberInvitationCreateTool.id) {
+    const invitation = await executors[pending.id].execute(event, {
       kitchenId: request.kitchenId,
-      memberId: pending.memberId,
+      ...pending.input,
     })
     return {
       ok: true as const,
       answer: `A one-use invitation for ${invitation.memberName} is ready and expires in seven days.`,
       tool: { id: pending.id, result: invitation },
       resultAction: {
-        kind: createKitchenTeamInvitationTool.result.primaryAction,
-        label: createKitchenTeamInvitationTool.result.label,
+        kind: kitchenTeamMemberInvitationCreateTool.result.primaryAction,
+        label: kitchenTeamMemberInvitationCreateTool.result.label,
         value: `/kitchen/member-invitation/${encodeURIComponent(invitation.token)}`,
       },
     }
   }
-  const created = await executeCreateKitchenTeamMemberTool(event, {
+
+  const created = await executors[pending.id].execute(event, {
     kitchenId: request.kitchenId,
-    name: pending.name,
+    ...pending.input,
   })
   return {
     ok: true as const,
@@ -157,6 +147,60 @@ async function executePendingTeamTool(
   }
 }
 
+function selectedMember(
+  input: Record<string, unknown>,
+  members: readonly TeamToolMember[]
+) {
+  const memberId = text(input.memberId)
+  return members.find((member) => member.memberId === memberId)
+}
+
+function prepareTeamTool(
+  toolId: string,
+  input: Record<string, unknown>,
+  members: readonly TeamToolMember[]
+) {
+  if (toolId === kitchenTeamMemberCreateTool.id) {
+    const name = normalizedName(input.name)
+    return name && name.length <= 120
+      ? pendingTeamTool({ id: toolId, name, input: { name } })
+      : null
+  }
+  if (
+    toolId === kitchenTeamMemberInvitationCreateTool.id ||
+    toolId === kitchenTeamMemberDeleteTool.id
+  ) {
+    const member = selectedMember(input, members)
+    if (!member || member.linked) return null
+    return pendingTeamTool({
+      id: toolId,
+      name: member.name,
+      input: { memberId: member.memberId },
+    })
+  }
+  if (toolId === kitchenTeamMemberUpdateTool.id) {
+    const selected = Array.isArray(input.updates)
+      ? input.updates.map(record).map((update) => ({
+          memberId: text(update.memberId),
+          changes: record(update.changes) as { name?: string },
+        }))
+      : []
+    const changes = resolveSelectedMemberChanges(selected, members)
+    return pendingTeamTool({
+      id: toolId,
+      name: 'Team member names',
+      changes,
+      input: {
+        updates: changes.map(({ memberId, name }) => ({
+          memberId,
+          changes: { name },
+        })),
+      },
+    })
+  }
+  return null
+}
+
 export async function runKitchenTeamAgent(
   event: H3Event,
   request: KitchenAgentRequest,
@@ -165,6 +209,7 @@ export async function runKitchenTeamAgent(
   if (request.pendingTool) {
     return executePendingTeamTool(event, request, request.pendingTool)
   }
+
   const snapshot = await access.db
     .collection(`apps/${request.appId}/kitchens/${request.kitchenId}/team`)
     .limit(200)
@@ -172,6 +217,7 @@ export async function runKitchenTeamAgent(
   const members = snapshot.docs.map((document) => ({
     memberId: document.id,
     name: readRecordString(document.data(), 'name'),
+    linked: Boolean(readRecordString(document.data(), 'user_id')),
   }))
   const selection = await selectKitchenTeamTool(
     useFireuxAi(event),
@@ -179,16 +225,18 @@ export async function runKitchenTeamAgent(
     request.prompt,
     members
   )
-  if (selection.ok && selection.data?.agent === 'TeamAI') {
-    const name = text(selection.data.name).replace(/\s+/g, ' ')
-    if (selection.data.action === 'answer' && text(selection.data.answer)) {
-      return {
-        ok: true as const,
-        answer: text(selection.data.answer),
-      }
-    }
-    if (selection.data.action === 'read_team_members') {
-      const result = await executeReadKitchenTeamMembersTool(event, {
+  const selected = selection.ok ? selection.data : null
+
+  if (selected?.agent === 'TeamAI' && selected.kind === 'answer') {
+    const answer = text(selected.answer)
+    if (answer) return { ok: true as const, answer }
+  }
+  if (selected?.agent === 'TeamAI' && selected.kind === 'tool') {
+    const call = record(selected.toolCall)
+    const toolId = text(call.toolId)
+    const input = record(call.input)
+    if (toolId === kitchenTeamMembersReadTool.id) {
+      const result = await executors[toolId].execute(event, {
         kitchenId: request.kitchenId,
       })
       return {
@@ -196,78 +244,24 @@ export async function runKitchenTeamAgent(
         answer: result.members.length
           ? `This Kitchen Team has ${result.members.length} ${result.members.length === 1 ? 'member' : 'members'}: ${result.members.map((member) => member.name).join(', ')}.`
           : 'This Kitchen Team has no members.',
-        tool: { id: readKitchenTeamMembersTool.id, result },
+        tool: { id: toolId, result },
       }
     }
-    if (
-      selection.data.action === 'create_member_invitation' &&
-      name &&
-      name.length <= 120
-    ) {
-      const member = await resolveInvitationMember(access, request, name)
+    const pending = prepareTeamTool(toolId, input, members)
+    if (pending) {
       return {
         ok: true as const,
-        answer: `TeamAI found ${member.name}. It can create a one-use invitation link that expires in seven days. Shall I continue?`,
-        pendingTool: {
-          id: createKitchenTeamInvitationTool.id,
-          memberId: member.memberId,
-          name: member.name,
-        } satisfies PendingTeamTool,
-      }
-    }
-    if (
-      selection.data.action === 'create_team_member' &&
-      name &&
-      name.length <= 120
-    ) {
-      return {
-        ok: true as const,
-        answer: `KitchenAI has delegated this to TeamAI. TeamAI can create ${name} as a Team member. Shall I continue?`,
-        pendingTool: {
-          id: createKitchenTeamMemberTool.id,
-          name,
-        } satisfies PendingTeamTool,
-      }
-    }
-    if (selection.data.action === 'update_team_member') {
-      const changes = resolveSelectedMemberChanges(
-        selection.data.changes || [],
-        members
-      )
-      if (changes.length) {
-        return {
-          ok: true as const,
-          answer: `TeamAI proposes: ${changes.map((change) => `${change.previousName} → ${change.name}`).join(', ')}. Shall I continue?`,
-          pendingTool: {
-            id: updateKitchenMemberTool.id,
-            name: 'Team member names',
-            changes,
-          } satisfies PendingTeamTool,
-        }
-      }
-    }
-    if (selection.data.action === 'delete_team_member' && name) {
-      const matches = members.filter(
-        (member) => member.name.toLowerCase() === name.toLowerCase()
-      )
-      if (matches.length === 1) {
-        return {
-          ok: true as const,
-          answer: `TeamAI can delete ${matches[0]!.name}. This cannot be undone. Shall I continue?`,
-          pendingTool: {
-            id: deleteKitchenTeamMemberTool.id,
-            memberId: matches[0]!.memberId,
-            name: matches[0]!.name,
-          } satisfies PendingTeamTool,
-        }
+        answer: `${confirmationMessage(pending)} Shall I continue?`,
+        pendingTool: pending,
       }
     }
   }
+
   return request.operation === 'team'
     ? {
         ok: true as const,
         answer:
-          'No Team command matched. Try “Add a member named Paul” or “Create an invitation for Daisy”.',
+          'No Team command matched. Try “Add a member named Alex” or choose a Team tool.',
       }
     : null
 }

@@ -71,14 +71,14 @@ const toolGroups = computed<NavigationMenuItem[]>(() => [
     icon: 'i-lucide-plus',
     children: [
       {
-        ...tool('add-member'),
+        ...tool('kitchen.team.create-member'),
         disabled: !canWrite.value,
         onSelect: () => {
           addMemberOpen.value = true
         },
       },
       {
-        ...tool('create-invitation'),
+        ...tool('kitchen.team.create-invitation'),
         disabled: !canWrite.value,
         onSelect: () => openTool('invite'),
       },
@@ -89,12 +89,12 @@ const toolGroups = computed<NavigationMenuItem[]>(() => [
     icon: 'i-lucide-pencil',
     children: [
       {
-        ...tool('update-member'),
+        ...tool('kitchen.team.update-member'),
         disabled: !canWrite.value,
         onSelect: () => openTool('update'),
       },
       {
-        ...tool('delete-member'),
+        ...tool('kitchen.team.delete-member'),
         disabled: !canWrite.value,
         onSelect: () => openTool('delete'),
       },

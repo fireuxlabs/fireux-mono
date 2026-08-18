@@ -234,7 +234,7 @@ const commandResult = ref<KitchenAIWelcomeMessage | null>(null)
 const pendingTool = ref<{
   id: string
   name: string
-  memberId?: string
+  input: Record<string, unknown>
   changes?: { memberId: string; name: string; previousName: string }[]
 } | null>(null)
 let messageId = 0
@@ -287,7 +287,7 @@ async function runPrompt(text: string) {
       pendingTool?: {
         id: string
         name: string
-        memberId?: string
+        input: Record<string, unknown>
         changes?: { memberId: string; name: string; previousName: string }[]
       }
       createdObject?: KitchenAICreatedObject

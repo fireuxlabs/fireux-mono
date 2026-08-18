@@ -107,15 +107,38 @@ function kitchenTeamToolSelection(input: Record<string, unknown>) {
     ) || /\bwhat can (?:i|you) do\b/iu.test(question)
   if (asksAboutCapabilities && allowedTools.length) {
     const descriptions = allowedTools
-      .map((tool) => firstString(tool.description))
+      .map((tool) => firstString(record(tool.context).instruction))
       .filter(Boolean)
     return JSON.stringify({
-      action: 'answer',
+      kind: 'answer',
       agent: 'TeamAI',
       answer: `You can use Team tools to ${descriptions
         .map((description) => description!.replace(/\.$/, '').toLowerCase())
         .join('; ')}. Write actions ask for confirmation before they run.`,
     })
+  }
+  const members = Array.isArray(input.team_members)
+    ? input.team_members.map(record)
+    : []
+  const memberNamed = (value: string) =>
+    members.find(
+      (member) =>
+        firstString(member.name)?.toLocaleLowerCase() ===
+        value.trim().toLocaleLowerCase()
+    )
+  const call = (toolId: string, toolInput: Record<string, unknown>) =>
+    JSON.stringify({
+      kind: 'tool',
+      agent: 'TeamAI',
+      toolCall: { toolId, input: toolInput },
+    })
+
+  if (
+    /\b(?:who|which people|list|show)\b[^?]*\b(?:team|members?|people)\b/iu.test(
+      question
+    )
+  ) {
+    return call('kitchen.team.read-members', {})
   }
   const invitationMatch =
     question.match(
@@ -125,26 +148,67 @@ function kitchenTeamToolSelection(input: Record<string, unknown>) {
       /\b(?:invite|invitation)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu
     )
   if (invitationMatch) {
-    return JSON.stringify({
-      action: 'create_member_invitation',
-      agent: 'TeamAI',
-      name: invitationMatch[1].trim(),
+    const member = memberNamed(invitationMatch[1])
+    const memberId = firstString(member?.memberId)
+    return memberId
+      ? call('kitchen.team.create-invitation', { memberId })
+      : JSON.stringify({ kind: 'none', agent: 'TeamAI' })
+  }
+  const renameMatch = question.match(
+    /\b(?:rename|change|update)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\s+(?:to|as)\s+([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu
+  )
+  if (renameMatch) {
+    const member = memberNamed(renameMatch[1])
+    const memberId = firstString(member?.memberId)
+    return memberId
+      ? call('kitchen.team.update-member', {
+          updates: [
+            { memberId, changes: { name: renameMatch[2].trim() } },
+          ],
+        })
+      : JSON.stringify({ kind: 'none', agent: 'TeamAI' })
+  }
+  if (/\b(?:title\s*case|capital(?:ise|ize))\b/iu.test(question)) {
+    const titleCase = (value: string) =>
+      value.replace(/\b\p{L}/gu, (character) =>
+        character.toLocaleUpperCase()
+      )
+    const updates = members.flatMap((member) => {
+      const memberId = firstString(member.memberId)
+      const currentName = firstString(member.name)
+      const nextName = currentName ? titleCase(currentName) : ''
+      return memberId && currentName && nextName !== currentName
+        ? [{ memberId, changes: { name: nextName } }]
+        : []
     })
+    return updates.length
+      ? call('kitchen.team.update-member', { updates })
+      : JSON.stringify({
+          kind: 'answer',
+          agent: 'TeamAI',
+          answer: 'All current Team member names already use title case.',
+        })
+  }
+  const deleteMatch = question.match(
+    /\b(?:delete|remove)\s+(?:team\s+member\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)\b/iu
+  )
+  if (deleteMatch) {
+    const member = memberNamed(deleteMatch[1])
+    const memberId = firstString(member?.memberId)
+    return memberId
+      ? call('kitchen.team.delete-member', { memberId })
+      : JSON.stringify({ kind: 'none', agent: 'TeamAI' })
   }
   const match = question.match(
-    /\b(?:add|create)\s+(?:a\s+)?(?:(?:new\s+)?team\s+member\s+)?(?:named\s+|called\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)(?:\s+to\s+(?:the\s+)?team)?[.!?]*$/iu
+    /\b(?:add|create)\s+(?:a\s+)?(?:(?:new\s+)?(?:team\s+)?member\s+)?(?:named\s+|called\s+)?([\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*)?)(?:\s+to\s+(?:the\s+)?team)?[.!?]*$/iu
   )
-  if (!match) return JSON.stringify({ action: 'none' })
+  if (!match) return JSON.stringify({ kind: 'none', agent: 'TeamAI' })
   const name = match[1]
     .trim()
     .split(/\s+/)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
-  return JSON.stringify({
-    action: 'create_team_member',
-    agent: 'TeamAI',
-    name,
-  })
+  return call('kitchen.team.create-member', { name })
 }
 
 function sourceText(input: unknown) {

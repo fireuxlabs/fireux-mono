@@ -6,6 +6,7 @@ import {
   type FireuxOperationAgentCapability,
 } from 'fireux-ai/runtime/agents/operation-agent'
 import { kitchenOperations } from '../content/operations'
+import { kitchenTeamAgentToolIds } from '../tools/kitchen/team'
 
 type KitchenOperationSlug = (typeof kitchenOperations)[number]['slug']
 
@@ -67,13 +68,7 @@ const definitions = {
       'Help the operator understand and manage the selected Kitchen team using only the registered Team tools and authorized Team records.',
     contextProviders: [context('kitchen.team', 'AppKitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
-    toolIds: [
-      'kitchen.team.create-member',
-      'kitchen.team.read-members',
-      'kitchen.team.update-member',
-      'kitchen.team.delete-member',
-      'kitchen.team.create-invitation',
-    ],
+    toolIds: kitchenTeamAgentToolIds,
   },
   suppliers: {
     name: 'KitchenSuppliersAI',
