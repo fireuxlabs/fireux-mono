@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-08-09
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -12,11 +12,17 @@ become competing versions of them.
 
 Current source is authoritative:
 
-- `packages/core/fireux-core/src/runtime/models/core/app.model.ts`
-- `packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts`
-- `packages/core/fireux-core/src/runtime/models/core/user.model.ts`
+- `packages/core/fireux-core/src/runtime/app/models/app.model.ts`
+- `packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts`
+- `packages/core/fireux-core/src/runtime/user/models/user.model.ts`
+- `packages/core/fireux-core/src/runtime/project/models/project.model.ts`
 - `scripts/guards/entity-authority.mjs`
 - `scripts/guards/user-app-access.mjs`
+- `scripts/guards/runtime-ownership.mjs`
+
+These source paths implement the `runtime/<entity>/models` ownership mapped in
+`runtime-filesystem.md`. Their movement changed no stored contract or
+authority.
 
 ## The simple spine
 
@@ -63,20 +69,22 @@ identity, presentation, and stamps in its named database; the local meta adds
 only the named `database_id` needed for routing. Ecosystem document ID is route
 identity, so no duplicate stored slug exists in either shape.
 
-The entity-facing Ecosystem read/view stack lives under
+The entity-facing Ecosystem read/view stack currently lives under
 `composables/fireux/ecosystem`: `useEcosystemDetail` resolves one bounded DTO,
 `useEcosystemInterface` maps presentation, and `useEcosystemSeo` owns metadata.
-Raw identity-database collection adapters remain under
-`composables/fireux/firestore/core/ecosystem`. Ecosystem creation and publishing
-are trusted provisioning operations; no client mutation or umbrella
-`useEcosystem()` entrypoint owns them.
+Raw identity-database collection adapters currently remain under
+`composables/fireux/firestore/core/ecosystem`. Both paths move together to the
+Ecosystem entity scope; Ecosystem creation and publishing are trusted
+provisioning operations, and no client mutation or umbrella `useEcosystem()`
+entrypoint owns them.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, `AppProject` owns FireUX Console
 access, and the local meta adds only its named `database_id`. Project document
 ID is route identity, so neither Project shape stores a duplicate slug.
 
-The entity-facing Project stack lives under `composables/fireux/project`.
+The entity-facing Project stack currently lives under
+`composables/fireux/project` and moves coherently to the Project entity scope.
 `useProjectCollection` reads the caller's target-bounded control-plane endpoint,
 `useProjectDetail` selects one Project from that bounded result, and
 `useProjectInterface` maps presentation. `/projects` is the public collection of
@@ -85,8 +93,8 @@ database credentials, team, or operational state. There is no public Project
 detail route and no browser Firestore read or mutation entrypoint; private
 selection and operations remain under `/console/project`.
 
-The read-only Project Console may expose operations backed by existing
-authority. Its Team operation reads the selected Project's `AppProject`
+The read-only Project Console may expose capabilities backed by existing
+authority. Its Team sheet reads the selected Project's `AppProject`
 operator/team ids through an admin-only server endpoint and resolves their
 canonical User presentation. It does not create a second Project membership
 model. Project notifications remain undefined until a real Project-scoped
@@ -103,16 +111,17 @@ stamps, and entity declarations are shared model utilities, not core records.
 
 ## Library ownership
 
-| Library                          | Owns                                                                                                                                                            | Does not own                                            |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `models/core`                    | The canonical `App`, `Ecosystem`, and `User` records plus the `AppUser` membership contract                                                                     | Account support, workflows, formatting, configuration   |
-| `models/system`                  | The canonical `Project` control-plane record                                                                                                                    | Module packages or App module configuration             |
-| `models/operations`              | Workflow contracts and their owned records: membership, account provisioning, notifications, conversations, events, and publication                             | A second version of a core identity                     |
-| `models/utils`                   | Reusable data-contract fragments and projections: stamps, scope, Console Entity access, profiles, entity declarations, directories, and shared style vocabulary | Normalizers, access decisions, formatters, or Vue state |
-| `runtime/types`                  | Runtime and UI coordination types that are not stored models                                                                                                    | Persisted entity authority                              |
-| `runtime/utils`                  | Derived runtime behavior such as access, avatar, and scope normalization                                                                                        | Canonical stored shape                                  |
-| `config/app`                     | Authored App composition and literature contracts                                                                                                               | Firestore records                                       |
-| Extension-owned models and utils | Domain policy proved by that extension, such as Kitchen currency display                                                                                        | Generic Core vocabulary without another domain consumer |
+| Library                           | Owns                                                                                                                                                            | Does not own                                            |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                                        | User identity, generic app-shell state, configuration   |
+| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                          | App or project identity                                 |
+| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                         | App membership or generic profile fragments             |
+| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                             | Module packages or App module configuration             |
+| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Console Entity access, profiles, entity declarations, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
+| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                    | Persisted entity authority                              |
+| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                        | Canonical stored shape                                  |
+| `config/app`                      | Authored App composition and literature contracts                                                                                                               | Firestore records                                       |
+| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                                           | Generic Core vocabulary without another domain consumer |
 
 ## Entity model file shape
 
@@ -122,6 +131,11 @@ command inputs. Runtime seed objects use the `Defaults` suffix; `Model` is not
 used for a value or as an alias for the entity type. Each stored record has its
 own storage declaration, so an App support record never shares a combined
 storage object with its canonical root.
+
+The former `models/core`, `models/system`, and entity-owning parts of
+`models/operations` have moved into App, Ecosystem, User, and Project. Root
+models retain shared contracts only; no compatibility re-export bridge is
+accepted.
 
 Module composition is source controlled through extension packages and App
 configuration. There is deliberately no generic Firestore `Module` model.
@@ -173,8 +187,9 @@ cleanup: migrate readers, writers, Rules, guards, and stored records together.
 
 ## Migration order
 
-1. Keep `models/core` limited to the three canonical model files and keep all
-   App/User vocabulary with its owner.
+1. Keep App, Ecosystem, User, and Project in their current entity model scopes;
+   do not recreate a generic canonical-entity bucket or change stored
+   authority through a filesystem edit.
 2. Resolve App data from the App database and Ecosystem/User data from the
    identity database; canonical stacks must not use an ambiguous default.
 3. Replace Nuxt-driven identity repair with an explicit provisioning command

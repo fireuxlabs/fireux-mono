@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-08-18
-Ref: 76aabc4b4
+Ref: e23268507
 Role: living context
 Scope: repo-wide
 
@@ -46,6 +46,23 @@ Product literature starts at `docs/concepts/product-language.md`. Derive copy
 bottom-up from current source atoms and child surfaces. Each parent summarises
 its children; ecosystem and landing copy summarise the proven product tree
 without inventing a parallel marketing vocabulary.
+
+Package runtime filesystem ownership starts at
+`docs/concepts/runtime-filesystem.md`. The root technical spine is reserved for
+cross-entity shared code and Nuxt entrypoints. Entity-owned components,
+composables, models, server behaviour, tools, and other implementation live
+under `src/runtime/<entity>/`, preserving the technical role inside that
+scope. Console is a shared surface, not an entity owner: shared Console
+primitives remain in the root spine, while an entity's Console adapters live
+under that entity. The declared App, Ecosystem, User, Project, Place, Job,
+Marketplace Store, Product, Kitchen, Menu, Ingredient, Supplier, Portfolio,
+and Property families use that scoped runtime now. Their completed legacy
+paths are rejected by `scripts/guards/runtime-ownership.mjs`, and scoped Nuxt
+discovery is checked by `scripts/guards/runtime-registration.mjs`. Confirmed
+parent-owned records and operations live beneath their parent Entity scope;
+to-confirm concepts remain on their owning package spine until their model
+decision is explicit. Do not invent an Entity root merely to make the tree look
+symmetrical.
 
 ## Refresh instructions
 
@@ -232,13 +249,12 @@ requirement, report the exact missing seam before broad edits.
   proving ordinary entity family.
 - Start at `docs/concepts/composables.md`, `docs/concepts/firestore-entity.md`,
   and the entity's current model, endpoint, composables, and guards.
-- Core User, App, and Ecosystem are the filesystem proving siblings: canonical records
-  remain flat in `models/core`, entity-facing read/view composables live under
-  `composables/fireux/user`, `composables/fireux/app`, and
-  `composables/fireux/ecosystem`, raw adapters remain
-  under `composables/fireux/firestore/core/<entity>`, and Profile compositions
-  live directly under `components/User` and `components/App` rather than
-  `Cards`.
+- Core User, App, Ecosystem, and Project are the proving Core ownership family.
+  Their canonical models and entity capabilities now live under the
+  corresponding `runtime/<entity>/{models,components,composables,server}`
+  roles. Generic App-shell, Console, Auth, Firestore, navigation, colour-mode,
+  and UI mechanics remain in the root shared/system spine. Profile composition
+  remains directly entity-owned rather than hidden beneath `Cards`.
 
 ## Public route identity
 
@@ -295,22 +311,22 @@ requirement, report the exact missing seam before broad edits.
 
 ## Entity canon
 
-- FireUX Core runtime models are divided by ownership. `models/core` contains
-  exactly the canonical `app.model.ts`, `ecosystem.model.ts`, and
-  `user.model.ts` trio. `User` is the person and `AppUser` is App membership;
-  `models/operations` owns workflow contracts and their support records, such
-  as `UserAccount`, User notifications, conversations, membership commands,
-  events, and publication records. `models/utils` contains reusable model
-  contracts only: stamps, scope, Console Entity fragments, profile bases,
-  entity declarations, projection DTOs, and shared style vocabulary.
-  Normalization, access resolution, formatting, and UI controller state belong
-  in `runtime/utils` or `runtime/types`, not in a model library.
-- `models/system` contains only the canonical Project control-plane record.
-  Modules are source-controlled package and App configuration, not stored
-  system records. Authored App meta is configuration under `config/app`, and
-  domain policy such as Kitchen currency display remains with its extension.
-  Do not recreate a generic `supporting` bucket, a Firestore Module model, or
-  an App-only utility model beside the canonical App.
+- Canonical entity models and their entity-owned support records belong under
+  `runtime/<entity>/models`. App, Ecosystem, User, and Project follow the same
+  filesystem ownership rule as extension entities. `User` is the person and
+  `AppUser` is App membership; that meaning does not justify keeping their
+  contracts in a generic Core entity bucket.
+- Root `runtime/models` contains only contracts genuinely shared across
+  entities, such as stamps, scope fragments, entity declarations, bounded
+  projection vocabulary, and shared style vocabulary. Normalization, access
+  resolution, formatting, and UI controller state belong in shared or
+  entity-owned `runtime/utils` and `runtime/types`, not in a model library.
+- App, Ecosystem, User, and Project models now live in their entity scopes;
+  their owned support records moved with them. Root `models/operations`
+  retains only genuinely shared coordination records. Do not reintroduce a
+  generic `supporting`, `system`, or `operations` bucket to avoid naming an
+  entity. Modules remain source-controlled package and App configuration, not
+  stored entities.
 - Source organization does not hide stored-data debt. The 2026-08-05 bounded
   migration removed duplicated User/AppUser App/profile/capability indexes
   across current databases. Membership documents determine App access,
@@ -356,10 +372,10 @@ requirement, report the exact missing seam before broad edits.
   by being catalogued. Cross-domain families such as Identity share
   capabilities while retaining named domain agents, authority, and context
   owners.
-  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning domain's
-  `runtime/ai/operation-agents` catalogue.
+  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning entity's
+  `runtime/<entity>/ai/operation-agents` catalogue.
 - Operational tools are domain-owned pure definitions under
-  `runtime/tools/<console>/<scope>`. One fully qualified id owns the tool's
+  `runtime/<entity>/tools/<scope>`. One fully qualified id owns the tool's
   model-facing context, input schema, confirmation and risk policy, human and
   agent surface policy, and result contract. Human toolbar adapters,
   operation-agent tool ids, live model tool declarations, and server executor
@@ -370,7 +386,10 @@ requirement, report the exact missing seam before broad edits.
   no-token simulator lane. Authoritative domain commands remain below this
   layer, and both REST and agent executors call those commands so AI never
   becomes a parallel mutation authority. Kitchen Team is the guarded proving
-  family at `fireux-kitchens/runtime/tools/kitchen/team`. Core iframe Tool
+  family. Its current source lives at
+  `fireux-kitchens/runtime/kitchen/tools/team`; the active Team-tool experiment
+  keeps that local subsystem `to-confirm` without changing its Kitchen/Team
+  ownership. Core iframe Tool
   Providers are a separate transport family and must not be merged into this
   operational command registry.
 - A canonical Live model owns each root or parent-scoped entity contract.
@@ -446,7 +465,7 @@ requirement, report the exact missing seam before broad edits.
   `LandingConsolePreviewFrame` owns the responsive target rail, operation
   navigation, selected heading, and persistent full-Console doorway shared by
   the FireUX Project and Misebox Kitchen proofs. Each project retains its
-  operation catalogue, target Card, Demo adapter, selection, and typed body
+  Console capability catalogue, target Card, Demo adapter, selection, and typed body
   children; unsupported or private operations remain truthful neutral states.
   These surfaces use flat semantic Nuxt UI treatments without decorative
   gradients or flares. Product Apps retain truthful data, copy, routes, and
@@ -487,10 +506,12 @@ requirement, report the exact missing seam before broad edits.
   `defineFireuxConfig` or public runtime config. Tenant Apps do not acquire the
   ecosystem-owner literature. Main Apps place Core
   `LandingOperationRail` above Section One and supply only their own working
-  Console Operations. Every Console family owns Identity. Its source-backed
-  Operation catalogue is the single authority for Console routes, the complete
-  landing subheader, and `/operations/<slug>` literature pages; public product
-  directories never masquerade as Operations. That rail sticks
+  Console capabilities. Every Console Entity owns Identity; Identity and Team
+  remain peers of Operations. A complete capability catalogue may feed the
+  landing rail, while an operation-only consumer must use only the Operations
+  listed in `docs/concepts/console.md`. Historical `operations.ts` names do not
+  reclassify Identity or Team. Public product directories never masquerade as
+  Operations. That rail sticks
   beneath the header, then exits upward as the shared pricing strip approaches
   the same edge. Pricing exposes no visible heading and compacts without
   residual detail rows to plan names and prices while later content continues
@@ -507,7 +528,7 @@ requirement, report the exact missing seam before broad edits.
   exactly one `demo` or `live` data source. Its owning adapter supplies the
   complete slotted Card envelope from that source; local orbit ids, labels, and
   coordinates remain presentation metadata, but static entity fixtures,
-  cross-source hydration, and fallback records do not enter the orbit.
+  cross-source joins, and fallback records do not enter the orbit.
   Core owns one visibility-gated desktop intro with a stable per-mount launch
   vector. It completes two closed turns through one long deceleration, returns
   exactly to the shared main pitch, and hands off without stopping to slow
@@ -595,7 +616,7 @@ requirement, report the exact missing seam before broad edits.
   authority.
 - Public User list and detail projections remain canonical-identity DTOs. On a
   tenant runtime, candidate visibility comes only from exact valid
-  `apps/{appId}/users/{uid}` memberships before root User hydration; a guessed
+  `apps/{appId}/users/{uid}` memberships before the root User join; a guessed
   global handle never establishes tenant visibility. Global runtimes retain
   the ecosystem-wide User catalogue.
 - A family core owns the authoritative target items, outcome, and selection

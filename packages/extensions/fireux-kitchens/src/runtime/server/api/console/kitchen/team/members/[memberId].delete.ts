@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery, getRouterParam } from 'h3'
-import { deleteKitchenTeamMember } from '../../../../../kitchen/team/delete.ts'
+import { deleteKitchenTeamMember } from '../../../../../../kitchen/server/team/delete.ts'
 
 export default defineEventHandler((event) =>
   deleteKitchenTeamMember(event, {

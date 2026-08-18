@@ -5,7 +5,7 @@ import {
   readAppMenuKitchenData,
   readMenuKitchenBySlug,
   resolveSourceAppId,
-} from '../../../menu/ownership/kitchen-scope.ts'
+} from '../../../../menu/server/ownership/kitchen-scope.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

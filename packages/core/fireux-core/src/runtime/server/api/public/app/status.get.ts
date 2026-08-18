@@ -2,8 +2,8 @@
 
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { AppStorage } from '../../../../models/core/app.model'
-import { isAppMediaComplete } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import { AppStorage } from '../../../../app/models/app.model.ts'
+import { isAppMediaComplete } from '../../../../app/composables/firestore/utils/appMedia'
 import { readAppPaletteLayer } from '../../../../utils/brand-palette'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 

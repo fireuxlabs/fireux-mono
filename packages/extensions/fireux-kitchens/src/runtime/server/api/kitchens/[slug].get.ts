@@ -7,13 +7,13 @@ import {
 } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type { PublicKitchenDetailResponse } from '../../../models/kitchen/kitchen-index.model.ts'
+import type { PublicKitchenDetailResponse } from '../../../kitchen/models/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
   projectPublicKitchenDetail,
   type KitchenPublicDirectoryScope,
-} from '../../kitchen/identity/public-projection.ts'
-import { readKitchenByRouteSlug } from '../../kitchen/identity/route-identity.ts'
+} from '../../../kitchen/server/identity/public-projection.ts'
+import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

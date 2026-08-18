@@ -10,13 +10,13 @@ import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type {
   MarketplaceOrder,
   MarketplaceOrderStatus,
   MarketplaceStore,
   MarketplaceStoreState,
-} from 'fireux-marketplace/runtime/models/marketplace.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
 type PersonalSurface = 'buyer' | 'seller'
 type SettingsState = 'idle' | 'loading' | 'saving' | 'saved' | 'error'

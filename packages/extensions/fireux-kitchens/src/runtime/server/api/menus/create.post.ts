@@ -25,7 +25,7 @@ import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
+import { MenuStorage } from '../../../menu/models/menu.model.ts'
 
 const maxFileSizeMb = 10
 const allowedFileTypes = [

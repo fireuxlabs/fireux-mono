@@ -18,7 +18,7 @@ members are Menu entities or inherit Menu data authority.
 - Parent: `console.md`
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
-  `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus`
 - Executable contract: `scripts/guards/like-menu-family.mjs`
 
 Current source and the executable guard outrank this map.

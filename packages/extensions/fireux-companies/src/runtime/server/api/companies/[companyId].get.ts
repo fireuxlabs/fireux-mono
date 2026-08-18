@@ -8,10 +8,10 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import type { PublicCompanyDetailResponse } from '../../../models/company-public.model'
-import { CompanyStorage } from '../../../models/company.model'
-import { projectPublicCompanyDetail } from '../../company/public-projection'
+import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
+import type { PublicCompanyDetailResponse } from '../../../place/models/company-public.model.ts'
+import { CompanyStorage } from '../../../place/models/company.model.ts'
+import { projectPublicCompanyDetail } from '../../../place/server/company/public-projection'
 
 export default defineEventHandler(async (event): Promise<PublicCompanyDetailResponse> => {
   const id = requireFirestoreDocumentId(getRouterParam(event, 'companyId'), 'Company id')

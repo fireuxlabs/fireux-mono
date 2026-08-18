@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { resolveEffectiveMenuTheme } from '../../server/menu/payload/theme.ts'
+import { resolveEffectiveMenuTheme } from '../../menu/server/payload/theme.ts'
 
 const kitchenPalette = {
   canvas: '#f6f6f3',

@@ -6,7 +6,7 @@ import {
   createAppDriverProfileSeed,
   createDriverProfileSeed,
   DriverStorage,
-} from '../../../../models/driver.model.ts'
+} from '../../../../user/models/driver.model.ts'
 
 export default createProfileProvisionHandler({
   id: 'driver',

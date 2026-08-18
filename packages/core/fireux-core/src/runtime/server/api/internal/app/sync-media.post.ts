@@ -25,8 +25,8 @@ import {
   type AppImageKind,
   type AppMediaSyncFailure,
   type AppMediaSyncResponse,
-} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
-import { ensureRuntimeAppMeta } from '../../../utils/app-projection/ensure'
+} from '../../../../app/composables/firestore/utils/appMedia'
+import { ensureRuntimeAppMeta } from '../../../../app/server/app-projection/ensure'
 
 function findRepoRoot(start: string): string {
   let current = start

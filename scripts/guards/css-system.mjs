@@ -176,7 +176,7 @@ const ARBITRARY_SPACING_CLASS_RE =
   /(?<![A-Za-z0-9_-])-?(?:m[trblxyse]?|p[trblxyse]?|gap(?:-[xy])?|space-[xy])-\[([^\]]+)\]/g
 const APPROVED_ARBITRARY_SPACING_CLASSES = new Map()
 const CANONICAL_MENU_SPACING_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/assets/styles/menu-detail/atoms/frame.css'
+  'packages/extensions/fireux-kitchens/src/runtime/menu/assets/styles/menu-detail/atoms/frame.css'
 const CANONICAL_MENU_SPACING_PROPERTIES = new Map([
   ['--menu-space-2xs', 'var(--spacing)'],
   ['--menu-space-xs', 'calc(var(--spacing) * 1.6)'],
@@ -186,7 +186,7 @@ const CANONICAL_MENU_SPACING_PROPERTIES = new Map([
 ])
 const APPROVED_NON_LAYOUT_SPACING_PROPERTIES = new Map([
   [
-    'packages/extensions/fireux-kitchens/src/runtime/components/Menu/Detail/Header.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/menu/components/Detail/Header.vue',
     new Map([['--menu-header-chip-spacing', 'var(--tracking-widest)']]),
   ],
 ])
@@ -197,7 +197,7 @@ const DIRECT_SPACING_LITERAL_EXCLUDED_PREFIXES = [
 const APPROVED_DIRECT_SPACING_VALUES = new Map([
   // Exact reviewed microgeometry, artwork, or viewport geometry; not reusable rhythm.
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
     new Set([
       'padding-block:10px',
       'margin-top:4px',
@@ -363,8 +363,8 @@ const OWNED_TYPOGRAPHY_DELTA_PATHS = new Set([
   // Component-owned artwork, output geometry, or cohesive tenant display type.
   'packages/core/fireux-core/src/runtime/components/Design/PaletteStrip.vue',
   'packages/core/fireux-core/src/runtime/components/effects/LandingEffect.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Menu/Json.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/components/Json.vue',
   'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
   'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Hero.vue',
   'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/RouteCard.vue',

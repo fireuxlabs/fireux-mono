@@ -50,7 +50,7 @@ import { computed } from 'vue'
 import {
   deriveKitchenOrderBoardStage,
   type KitchenOrderBoardStage,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 
 type ProductDemoOrder =

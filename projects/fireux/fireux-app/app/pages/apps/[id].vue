@@ -99,7 +99,7 @@
 import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/app/useAppProfileView'
+import { useAppProfileView } from 'fireux-core/runtime/app/composables/useAppProfileView'
 import {
   buildPublicPageJsonLd,
   useSeo,

@@ -5,8 +5,8 @@ import {
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
 } from 'fireux-core/runtime/server/utils/seo-sitemaps'
-import { PUBLIC_JOB_INDEX_MAX_PAGE_SIZE } from '../../models/job-public.model.ts'
-import { readPublicJobIndexPage } from '../job/public-index.ts'
+import { PUBLIC_JOB_INDEX_MAX_PAGE_SIZE } from '../../job/models/job-public.model.ts'
+import { readPublicJobIndexPage } from '../../job/server/index/public-index.ts'
 
 const MAX_SITEMAP_URLS = 50_000
 

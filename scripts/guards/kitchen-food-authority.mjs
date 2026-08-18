@@ -13,31 +13,31 @@ const read = (repoRoot, relativePath) =>
 export async function run({ repoRoot = process.cwd() } = {}) {
   const recipeModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/recipe.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts'
   )
   const dishModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/dish.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.model.ts'
   )
   const menuItemModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-item.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts'
   )
   const stationModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/station.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts'
   )
   const miseModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts'
   )
   const prepItemModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/prep-item.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts'
   )
   const menuItemWriter = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuItemMutations.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuItemMutations.ts'
   )
   const flagshipCommand = read(
     repoRoot,
@@ -107,8 +107,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(rules, /exists\([\s\S]*\/dishes\/\$\(data\.dish_id\)/)
 
   for (const retiredUmbrella of [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/recipe/useRecipe.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/useDish.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/recipe/useRecipe.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/useDish.ts',
   ]) {
     assert.equal(
       existsSync(path.join(repoRoot, retiredUmbrella)),

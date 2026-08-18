@@ -1,5 +1,5 @@
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
-import type { PublicMenuIndexItem } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
+import type { PublicMenuIndexItem } from 'fireux-kitchens/runtime/menu/models/menu-index.model'
 
 export const dishImage = miseboxDemoMediaUrl('kitchens/deanos/menu/deanos-classic.jpg')
 export const ingredientImage = '/img/showcase/ingredients/beef-mince.jpg'

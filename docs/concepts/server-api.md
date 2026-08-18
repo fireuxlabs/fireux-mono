@@ -1,7 +1,7 @@
 # Server API family
 
 Updated: 2026-08-18
-Ref: 796952bf0
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -19,25 +19,47 @@ cross-project transport cannot safely belong in browser code.
 - Tool providers: `docs/concepts/tool-provider.md`
 - Firestore entities: `docs/concepts/firestore-entity.md`
 - Menu family: `docs/concepts/family-menu.md`
+- Runtime filesystem: `docs/concepts/runtime-filesystem.md`
 
 ## Placement spine
 
-| Location                                     | Job                                                      |
-| -------------------------------------------- | -------------------------------------------------------- |
-| Package `src/runtime/server/api`             | Reusable package-owned Nitro endpoints                   |
-| App `server/api`                             | App-only composition or product endpoints                |
-| Package `src/runtime/server/utils`           | Reusable server-only primitives and workflows            |
-| App `server/utils`                           | App-only server helpers                                  |
-| Package `src/runtime/server/{domain}`        | Server extension of an already-proven named domain stack |
-| Package `src/config/module/server-config.ts` | Declarative registration of package handlers             |
+| Location                                     | Job                                          |
+| -------------------------------------------- | -------------------------------------------- |
+| Package `src/runtime/server/api`             | Reusable package-owned Nitro endpoints       |
+| App `server/api`                             | App-only composition or product endpoints    |
+| Package `src/runtime/server/utils`           | Cross-entity shared server-only primitives   |
+| App `server/utils`                           | App-only server helpers                      |
+| Package `src/runtime/{entity}/server`        | Entity-owned server capabilities             |
+| Package `src/config/module/server-config.ts` | Declarative registration of package handlers |
 
 Request handlers stay near their HTTP route. A difficult handler does not earn
 a vague top-level `handlers`, `processor`, or `manager` bucket.
 
-Domain server folders are appropriate only when the domain already has a real
-model/composable/route family. Menu and Place are current examples. Core
-utility folders should name reusable primitives such as auth, HTTP, ids,
-records, uploads, or slugs.
+Entity server folders are appropriate only when the entity already has real
+identity or product capability. Core utility folders name reusable
+cross-entity primitives such as auth, HTTP, ids, records, uploads, or slugs.
+Declared Entity behaviour now lives at `src/runtime/<entity>/server`;
+completed `src/runtime/server/<entity>` placements are rejected by the runtime
+ownership guard and are not a second accepted destination.
+
+Entity server structure follows the product surface. A Console Entity mirrors
+its visible Console peers from top to bottom: Overview, Identity, Team, and
+Operations, with `core/` and `index/` retained only for target authority and the
+selection/create doorway. `ai/` is the canonical entity-owned AI capability
+slice; it does not manufacture a generic AI navigation peer. An Entity without a Console follows its
+Entity Index and the same named child capabilities exposed from that Index.
+Structural deltas are exceptional and must name a real product capability;
+transport or persistence mechanics do not justify a different entity tree.
+The executable root-to-surface evidence is held in
+`scripts/guards/server-ownership.mjs`. Kitchen points to Index, Overview,
+Identity, Team and its Dish, Drink, Ingredient, Menu, Mise, Order, Recipe,
+Station, Supplier, Table and Finance operations. Supplier points to Index,
+Overview, Identity, Team and its Catalogue, Ingredient and Item operations.
+Project points to Index, Overview, Identity, Team and its App and Ecosystem
+operations; Ignition remains separate intake/admin. A missing server slice
+remains valid when its product surface has no server-owned behaviour; empty
+folder symmetry is not required. The complete visible capability map is owned
+by `docs/concepts/console.md`.
 
 ## Endpoint spine
 
@@ -113,7 +135,7 @@ Public list and detail endpoints for one Entity must share:
 - the same linked-identity validation;
 - truthful 404 versus 5xx behavior;
 - bounded pagination and joins;
-- no browser N+1 hydration of private/canonical records.
+- no browser N+1 loading of private/canonical records.
 
 The Public Index and Public Detail maps own page-family expectations. This map
 owns only the server transport boundary.
@@ -146,22 +168,22 @@ Current reusable server evidence includes:
 - tool-provider registry and response headers:
   `packages/core/fireux-core/src/runtime/server/utils/tool-provider.ts`;
 - App membership mutation:
-  `packages/core/fireux-core/src/runtime/server/utils/app-membership/mutate.ts`;
+  `packages/core/fireux-core/src/runtime/app/server/app-membership/mutate.ts`;
 - App-scope transfer planning:
-  `packages/core/fireux-core/src/runtime/server/utils/app-scope/transfer-plan.ts`;
+  `packages/core/fireux-core/src/runtime/app/server/app-scope/transfer-plan.ts`;
 - Console Entity onboarding authority:
   `packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts`;
 - Menu ownership/manifest/ordering workflows:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/`;
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/`;
 - Kitchen order transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/transition.ts`.
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`.
 
 Promote a helper only when several endpoints share the same authority-sensitive
 process. Shared `text()`, `record()`, or response snippets alone do not justify
 a new architecture layer.
 
 HTTP routes remain adapters. Entity and domain projections, authority reads,
-and commands live under their owning `server/<domain>/` capability and accept
+and commands live under their owning `runtime/<entity>/server` capability and accept
 transport-neutral inputs where practical. The route owns HTTP query/body/route
 parameter parsing, response headers, and status delivery. Proven extractions
 are protected by `scripts/guards/server-ownership.mjs`; this does not imply one
@@ -180,15 +202,18 @@ universal endpoint engine.
 
 ## Migration and drift register
 
-| Difference                                                                | State                      | Required direction                                                                                                                     |
-| ------------------------------------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Several package `server-config.ts` files register empty arrays            | `drift`                    | Remove no-op hooks until a real endpoint exists; optional parity does not require empty files                                          |
-| Some domain endpoint families still repeat auth/runtime parsing           | `migration`                | Consolidate only proven identical authority work into focused Core/domain primitives                                                   |
-| Several large Kitchen API routes still contain domain/storage composition | `migration`                | Extract them incrementally into the existing Menu, Kitchen Operations, Customer, and payment owners while retaining thin HTTP adapters |
-| Menu upload/processing endpoints remain a young family                    | `to-confirm`               | Keep input/process/output explicit and consolidate only after both quick Menu and KitchenMenu flows are stable                         |
-| Cross-project directory publication details were copied into broad maps   | `drift`                    | Keep durable trust boundary here and current implementation state in source/guards or a focused family map                             |
-| Provider and consumer endpoint ownership has historically been confused   | `migration`                | Enforce the Tool Provider ownership contract and keep consumer storage local                                                           |
-| Package route registration has direct and hook-based implementations      | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper                                            |
+| Difference                                                                             | State                      | Required direction                                                                                                                                                                                            |
+| -------------------------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Several package `server-config.ts` files register empty arrays                         | `drift`                    | Remove no-op hooks until a real endpoint exists; optional parity does not require empty files                                                                                                                 |
+| Some domain endpoint families still repeat auth/runtime parsing                        | `migration`                | Consolidate only proven identical authority work into focused Core/domain primitives                                                                                                                          |
+| Several Kitchen payment and processing routes still contain domain/storage composition | `migration`                | Continue extracting them into the existing Menu, Kitchen Operations, Customer, and payment owners while retaining thin HTTP adapters; Customer Order index and Menu index now delegate to their domain owners |
+| Declared Entity server behaviour lives under `runtime/<entity>/server`                 | `accepted`                 | Preserve thin `runtime/server/api` handlers and reject completed legacy server paths                                                                                                                          |
+| Menu upload/processing endpoints remain a young family                                 | `to-confirm`               | Keep input/process/output explicit and consolidate only after both quick Menu and KitchenMenu flows are stable                                                                                                |
+| Cross-project directory publication details were copied into broad maps                | `drift`                    | Keep durable trust boundary here and current implementation state in source/guards or a focused family map                                                                                                    |
+| Provider and consumer endpoint ownership has historically been confused                | `migration`                | Enforce the Tool Provider ownership contract and keep consumer storage local                                                                                                                                  |
+| Package route registration has direct and hook-based implementations                   | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper                                                                                                                   |
+| Kitchen Team server tools are being proven by an active Team-tool experiment           | `to-confirm`               | Keep `kitchen/team/tools` under Team ownership without treating its current internal subsystem as settled canon                                                                                               |
+| Kitchen Sproochli attachment sits under Identity                                       | `accepted`                 | Its working surface is `Console/Kitchen/Identity/Sections/Sproochli.vue`; the command owns Kitchen identity attachment settings                                                                               |
 
 ## Alignment roadmap
 
@@ -208,6 +233,12 @@ universal endpoint engine.
    extracting more shared helpers.
 4. Inventory app-local endpoints that now have more than one consumer and move
    only proven reusable behavior to the owning package.
+
+Marketplace, Job, and Place server capabilities now use guarded owner-first
+domain roots. Marketplace separates directory, Store, Offer, Order, and
+moderation work; Job separates identity, index, and hiring operations; Place
+separates identity, index/onboarding, and external integrations. These are
+domain vocabularies, not a universal server folder template.
 
 ### Later
 

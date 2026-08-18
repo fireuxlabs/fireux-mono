@@ -8,7 +8,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
-import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-context.model.ts'
+import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-context.model.ts'
 import {
   directoryMenuRouteScope,
   menuCanonicalPath,
@@ -20,7 +20,7 @@ import {
   parseMenuRouteTarget,
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-menu-route.ts'
+} from '../../packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts'
 
 const EXPECTED_CONTEXTS = [
   'generic',

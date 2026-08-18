@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useSupplierDetail } from '../../composables/fireux/supplier/useSupplierDetail'
-import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
+import { useSupplierDetail } from '../../supplier/composables/useSupplierDetail'
+import { useSupplierSeo } from '../../supplier/composables/firestore/utils/useSupplierSeo'
 
 definePageMeta({
   layout: false,

@@ -431,7 +431,7 @@ try {
     },
     authority: {
       model:
-        'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.model.ts',
       scope:
         'complete canonical root catalog; independent of every Kitchen, Supplier, Demo world, menu, and use',
     },

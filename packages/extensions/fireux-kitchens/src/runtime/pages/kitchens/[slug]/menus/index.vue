@@ -9,8 +9,8 @@ import { computed } from 'vue'
 import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { directoryMenuRouteScope } from '../../../../utils/kitchen-menu-route'
-import { usePublicMenuIndex } from '../../../../composables/fireux/menu/usePublicMenuIndex'
+import { directoryMenuRouteScope } from '../../../../kitchen/utils/kitchen-menu-route'
+import { usePublicMenuIndex } from '../../../../menu/composables/usePublicMenuIndex'
 
 definePageMeta({
   name: 'KitchenMenusIndexPage',

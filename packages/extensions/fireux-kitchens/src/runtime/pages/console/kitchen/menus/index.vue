@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-menus">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Menus" />
+        <LayoutsConsoleNavbar title="Kitchen Menus">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Menus" />
+          </template>
+        </LayoutsConsoleNavbar>
 
         <UDashboardToolbar>
           <template #right>
@@ -39,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
+import { useKitchenConsole } from '../../../../kitchen/composables/console/core/useKitchenConsole'
 
 const { runtime: { canWrite } } = useKitchenConsole()
 

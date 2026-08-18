@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { createReservationCommand } from '../../../../../reservation/command.ts'
+import { createReservationCommand } from '../../../../../../property/server/operations/reservations/command.ts'
 
 export default defineEventHandler(async event =>
   createReservationCommand(

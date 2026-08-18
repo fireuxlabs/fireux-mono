@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: expose the authenticated sparse Place mutation route.
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { mutatePlace } from '../../place/mutate'
+import { mutatePlace } from '../../../place/server/identity/mutate'
 
 export default defineEventHandler(async event => {
   const placeId = String(getRouterParam(event, 'placeId') || '').trim()

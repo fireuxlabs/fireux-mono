@@ -75,7 +75,7 @@ function repoRelative(repoRoot, file) {
 
 function canonicalDemoRoot(relativePath) {
   const packageMatch = relativePath.match(
-    /^(packages\/(?:core|ecosystem|extensions)\/[^/]+\/src\/runtime\/demo)(?:\/|$)/
+    /^(packages\/(?:core|ecosystem|extensions)\/[^/]+\/src\/runtime\/(?:[^/]+\/)?demo)(?:\/|$)/
   )
   if (packageMatch?.[1]) return packageMatch[1]
 
@@ -361,7 +361,7 @@ function resolveImport(relativeImporter, specifier, owners) {
 }
 
 function isConsoleAdapter(relativePath) {
-  return /\/(?:src\/runtime|app)\/composables\/fireux\/console\//.test(
+  return /\/(?:src\/runtime\/(?:[^/]+\/)?composables\/(?:fireux\/)?console|app\/composables\/fireux\/console)\//.test(
     `/${relativePath}`
   )
 }
@@ -369,15 +369,15 @@ function isConsoleAdapter(relativePath) {
 function consoleDemoRelationshipMayLoad(importer, resolved) {
   return (
     importer ===
-      'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts' &&
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/core/useSupplierConsoleDemoData.ts' &&
     resolved?.relativePath ===
-      'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios'
+      'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios'
   )
 }
 
 function consoleCoreFamily(relativePath, source) {
   const match = relativePath.match(
-    /\/(?:src\/runtime|app)\/composables\/fireux\/console\/([^/]+)\/core\/use([A-Z][A-Za-z0-9]*)Console\.(?:js|ts)$/
+    /\/(?:src\/runtime\/(?:[^/]+\/)?composables\/(?:fireux\/)?console|app\/composables\/fireux\/console)\/([^/]+)\/core\/use([A-Z][A-Za-z0-9]*)Console\.(?:js|ts)$/
   )
   if (!match) return null
 
@@ -461,7 +461,7 @@ function formatViolations(violations) {
       ]),
     '',
     '[guard] Fix:',
-    '- Keep reusable Demo modules under their package src/runtime/demo; keep app-only Demo modules under app/demo.',
+    '- Keep reusable shared Demo modules under package src/runtime/demo and Entity-owned Demo modules under src/runtime/<entity>/demo; keep app-only Demo modules under app/demo.',
     '- Load Demo through a dynamic import inside an owning console adapter or a project app/composables/product-demo/use*ProductDemo adapter.',
     '- Declare every package Demo owner in the importing project package.json.',
     '- Keep public Product Demo pages under the reserved project app/pages/demo route namespace; pages must consume the named adapter, not fixtures directly.',
@@ -533,7 +533,7 @@ export async function run(ctx) {
         code: 'owner-path',
         file: relativeDirectory,
         message:
-          'Demo is outside an owning package src/runtime/demo, project app/demo, or project app/pages/demo route namespace.',
+          'Demo is outside an owning package src/runtime/demo, Entity src/runtime/<entity>/demo, project app/demo, or project app/pages/demo route namespace.',
       })
     }
     const pending = [directory]
@@ -567,14 +567,12 @@ export async function run(ctx) {
     const productDemoAdapter = isProductDemoAdapter(relativeFile)
     const productDemoLoader =
       isProductDemoLoader(relativeFile) &&
-      existsSync(
-        path.join(repoRoot, productDemoAdapterForLoader(relativeFile))
-      )
+      existsSync(path.join(repoRoot, productDemoAdapterForLoader(relativeFile)))
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
     const consoleCore = consoleCoreFamily(relativeFile, source)
     const kitchenDemo = relativeFile.startsWith(
-      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/'
     )
 
     if (
@@ -699,7 +697,10 @@ export async function run(ctx) {
 
       const boundary = forbiddenBoundary(relativeFile)
       const consoleAdapter = isConsoleAdapter(relativeFile)
-      if (boundary || (!consoleAdapter && !productDemoAdapter && !productDemoLoader)) {
+      if (
+        boundary ||
+        (!consoleAdapter && !productDemoAdapter && !productDemoLoader)
+      ) {
         violations.push({
           code: 'consumer-boundary',
           file: relativeFile,
@@ -742,15 +743,15 @@ export async function run(ctx) {
   }
 
   const kitchenScenariosFile =
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts'
   const kitchenDemoStructure = [
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/fixtures.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/types.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Ingredients/index.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Menus/index.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Orders/history.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/presentation/index.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/team.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/core/fixtures.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/core/types.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Ingredients/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Menus/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/presentation/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/team.ts',
   ]
   for (const requiredFile of kitchenDemoStructure) {
     if (!existsSync(path.join(repoRoot, requiredFile))) {
@@ -767,8 +768,8 @@ export async function run(ctx) {
   if (existsSync(kitchenScenariosPath)) {
     const source = readSourceFamily(repoRoot, [
       kitchenScenariosFile,
-      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/operation-validation.ts',
-      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/service-validation.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenario/operation-validation.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenario/service-validation.ts',
     ])
     for (const required of [
       'kitchenDemoScenarioDescriptors',
@@ -842,7 +843,7 @@ export async function run(ctx) {
   const familyScenarioContracts = [
     {
       code: 'company-demo-place-pair',
-      file: 'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts',
+      file: 'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts',
       markers: [
         'place: PlaceStored',
         'publicCompany: PublicCompanyProjection',
@@ -859,12 +860,12 @@ export async function run(ctx) {
     },
     {
       code: 'supplier-demo-target-pair',
-      file: 'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
+      file: 'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts',
       sourceFiles: [
-        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
-        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-types.ts',
-        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-builders.ts',
-        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-validation.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenario-types.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenario-builders.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenario-validation.ts',
       ],
       markers: [
         'appSupport: AppSupplier',
@@ -897,7 +898,7 @@ export async function run(ctx) {
     },
     {
       code: 'reservation-demo-relationship',
-      file: 'packages/extensions/fireux-reservations/src/runtime/demo/reservations.ts',
+      file: 'packages/extensions/fireux-reservations/src/runtime/property/demo/reservations.ts',
       markers: [
         "const demoAppId = 'buenohost'",
         "const demoPropertyId = 'alpine-stay'",
@@ -922,7 +923,7 @@ export async function run(ctx) {
     },
     {
       code: 'project-demo-relationships',
-      file: 'packages/core/fireux-core/src/runtime/demo/project/scenarios.ts',
+      file: 'packages/core/fireux-core/src/runtime/project/demo/scenarios.ts',
       markers: [
         'appId: string',
         "appId: 'fireux-app'",
@@ -995,7 +996,7 @@ export async function run(ctx) {
   }
 
   const supplierDemoWorldFile =
-    'packages/extensions/fireux-suppliers/src/runtime/utils/supplier-demo-world.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/utils/supplier-demo-world.ts'
   const supplierDemoWorldPath = path.join(repoRoot, supplierDemoWorldFile)
   const supplierDemoWorldSource = existsSync(supplierDemoWorldPath)
     ? readFileSync(supplierDemoWorldPath, 'utf8')
@@ -1028,19 +1029,19 @@ export async function run(ctx) {
       checkFile,
       [
         `import { companyDemoTargets } from ${sourcePath(
-          'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts'
+          'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts'
         )}`,
         `import { supplierDemoScenarios } from ${sourcePath(
-          'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts'
+          'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts'
         )}`,
         `import { projectSupplierDemoWorld } from ${sourcePath(
-          'packages/extensions/fireux-suppliers/src/runtime/utils/supplier-demo-world.ts'
+          'packages/extensions/fireux-suppliers/src/runtime/supplier/utils/supplier-demo-world.ts'
         )}`,
         `import { deanosKitchenDemoScenario } from ${sourcePath(
-          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts'
         )}`,
         `import { buildKitchenDemoSuppliersOperation } from ${sourcePath(
-          'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-suppliers.ts'
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-suppliers.ts'
         )}`,
         'const world = projectSupplierDemoWorld({ scenarios: supplierDemoScenarios, companyTargets: companyDemoTargets })',
         'const operation = buildKitchenDemoSuppliersOperation({ links: deanosKitchenDemoScenario.supplierIngredientLinks, supplierScenarios: world })',
@@ -1308,13 +1309,13 @@ export async function run(ctx) {
           demoMediaContractFile
         )}`,
         `import { kitchenDemoScenarios } from ${absoluteSource(
-          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts'
         )}`,
         `import { companyDemoTargets } from ${absoluteSource(
-          'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts'
+          'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts'
         )}`,
         `import { supplierDemoScenarios } from ${absoluteSource(
-          'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts'
+          'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenarios.ts'
         )}`,
         `const expected = new Set(${JSON.stringify(expectedDemoMediaObjects)})`,
         'const found: string[] = []',
@@ -1392,10 +1393,10 @@ export async function run(ctx) {
   for (const contract of [
     {
       code: 'supplier-demo-app-filter',
-      file: 'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts',
+      file: 'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/core/useSupplierConsoleDemoData.ts',
       markers: [
         "scenario.appId !== String(appId || '').trim()",
-        "import('fireux-companies/runtime/demo/company/scenarios')",
+        "import('fireux-companies/runtime/place/demo/company/scenarios')",
         'projectSupplierDemoWorld({',
         'companyTargets: companyModule.companyDemoTargets',
         'companyPlace: scenario.companyPlace',
@@ -1451,12 +1452,12 @@ export async function run(ctx) {
       'projects/misebox/misebox-app/app/composables/product-demo/projectMiseboxProductDemoConsoleFoundations.ts',
     ])
     for (const required of [
-      "import('fireux-companies/runtime/demo/company/scenarios')",
-      "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
-      "import('fireux-kitchens/runtime/utils/kitchen/demo-dishes')",
-      "import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers')",
-      "import('fireux-kitchens/runtime/utils/kitchen/demo-finance')",
-      "import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade')",
+      "import('fireux-companies/runtime/place/demo/company/scenarios')",
+      "import('fireux-suppliers/runtime/supplier/demo/scenarios')",
+      "import('fireux-kitchens/runtime/kitchen/utils/demo-dishes')",
+      "import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers')",
+      "import('fireux-kitchens/runtime/kitchen/utils/demo-finance')",
+      "import('fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade')",
       'buildKitchenDemoDishesOperation',
       'buildKitchenDemoSuppliersOperation',
       'projectSupplierDemoWorld',
@@ -1581,9 +1582,9 @@ export async function run(ctx) {
   if (
     ![
       "dataSource: 'demo'",
-      "import('fireux-kitchens/runtime/demo/kitchen/scenarios')",
-      "import('fireux-companies/runtime/demo/company/scenarios')",
-      "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
+      "import('fireux-kitchens/runtime/kitchen/demo/scenarios')",
+      "import('fireux-companies/runtime/place/demo/company/scenarios')",
+      "import('fireux-suppliers/runtime/supplier/demo/scenarios')",
       'projectSupplierDemoWorld({',
       'companyTargets: companyModule.companyDemoTargets',
       'projectKitchenCell(projectKitchenSurface({',
@@ -1620,7 +1621,7 @@ export async function run(ctx) {
   }
 
   const kitchenDemoMenuCascadeFile =
-    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-menu-cascade.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-menu-cascade.ts'
   const kitchenDemoMenuCascadePath = path.join(
     repoRoot,
     kitchenDemoMenuCascadeFile
@@ -1657,7 +1658,7 @@ export async function run(ctx) {
   }
 
   const kitchenDemoMenuAvailabilityFile =
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Menus/availability.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Menus/availability.ts'
   const kitchenDemoMenuAvailabilityPath = path.join(
     repoRoot,
     kitchenDemoMenuAvailabilityFile
@@ -1681,9 +1682,9 @@ export async function run(ctx) {
   }
 
   const kitchenDemoMenuServiceFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/kitchen/useKitchenMenuServiceSelection.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenMenuServiceSelection.ts'
   const kitchenConsoleDemoMenuServiceFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsoleDemoMenuService.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/core/useKitchenConsoleDemoMenuService.ts'
   for (const [file, markers] of [
     [
       kitchenDemoMenuServiceFile,
@@ -1718,11 +1719,11 @@ export async function run(ctx) {
   }
 
   for (const file of [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Ingredients/useKitchenConsoleIngredients.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMise.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Menus/useKitchenConsoleMenus.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishes.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Ingredients/useKitchenConsoleIngredients.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Recipes/useKitchenConsoleRecipes.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Mise/useKitchenConsoleMise.ts',
   ]) {
     const source = readFileSync(path.join(repoRoot, file), 'utf8')
     if (!source.includes('useKitchenConsoleDemoMenuService')) {
@@ -1736,11 +1737,11 @@ export async function run(ctx) {
   }
 
   const kitchenMiseModelFile =
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts'
   const kitchenMisePresentationFile =
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise-presentation.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
   const kitchenDemoOperationsFile =
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations.ts'
   for (const [file, markers] of [
     [
       kitchenMiseModelFile,
@@ -1774,13 +1775,14 @@ export async function run(ctx) {
       ],
     ],
   ]) {
-    const source = file === kitchenDemoOperationsFile
-      ? readSourceFamily(repoRoot, [
-          file,
-          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/mise/deanos-preparation.ts',
-          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/mise/deanos-service.ts',
-        ])
-      : readFileSync(path.join(repoRoot, file), 'utf8')
+    const source =
+      file === kitchenDemoOperationsFile
+        ? readSourceFamily(repoRoot, [
+            file,
+            'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/mise/deanos-preparation.ts',
+            'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/mise/deanos-service.ts',
+          ])
+        : readFileSync(path.join(repoRoot, file), 'utf8')
     if (!markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: 'kitchen-mise-workflow',
@@ -1792,7 +1794,7 @@ export async function run(ctx) {
   }
 
   const kitchenDishOperationAdapterFile =
-    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes.ts'
   const kitchenDishOperationAdapterPath = path.join(
     repoRoot,
     kitchenDishOperationAdapterFile
@@ -1800,7 +1802,7 @@ export async function run(ctx) {
   if (existsSync(kitchenDishOperationAdapterPath)) {
     const source = readSourceFamily(repoRoot, [
       kitchenDishOperationAdapterFile,
-      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes-supply.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes-supply.ts',
     ])
     for (const required of [
       'buildKitchenDemoDishesOperation',
@@ -1832,7 +1834,7 @@ export async function run(ctx) {
   }
 
   const kitchenSupplierOperationAdapterFile =
-    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-suppliers.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-suppliers.ts'
   const kitchenSupplierOperationAdapterPath = path.join(
     repoRoot,
     kitchenSupplierOperationAdapterFile
@@ -1868,7 +1870,7 @@ export async function run(ctx) {
   }
 
   const kitchenConsoleSupplyWorkspaceFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplyWorkspace.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Suppliers/useKitchenConsoleSupplyWorkspace.ts'
   const kitchenConsoleSupplyWorkspacePath = path.join(
     repoRoot,
     kitchenConsoleSupplyWorkspaceFile
@@ -1888,7 +1890,7 @@ export async function run(ctx) {
   }
 
   const kitchenFinanceProjectionFile =
-    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance.ts'
   const kitchenFinanceProjectionPath = path.join(
     repoRoot,
     kitchenFinanceProjectionFile
@@ -1896,9 +1898,9 @@ export async function run(ctx) {
   if (existsSync(kitchenFinanceProjectionPath)) {
     const source = readSourceFamily(repoRoot, [
       kitchenFinanceProjectionFile,
-      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-items.ts',
-      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-rollups.ts',
-      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-validation.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance-items.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance-rollups.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-finance-validation.ts',
     ])
     for (const required of [
       'projectKitchenDemoFinanceReport',
@@ -1936,7 +1938,7 @@ export async function run(ctx) {
   }
 
   const kitchenConsoleDishesOperationFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishes.ts'
   const kitchenConsoleDishesOperationPath = path.join(
     repoRoot,
     kitchenConsoleDishesOperationFile
@@ -1956,16 +1958,16 @@ export async function run(ctx) {
   }
 
   const kitchenDishCollectionFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/fetch/useKitchenDishCollection.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts'
   const kitchenDishCollectionPath = path.join(
     repoRoot,
     kitchenDishCollectionFile
   )
   const kitchenConsoleDishesFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishes.ts'
   const kitchenConsoleDishesPath = path.join(repoRoot, kitchenConsoleDishesFile)
   const kitchenDishRecordsFile =
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Dishes/index.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/index.ts'
   const kitchenDishRecordsPath = path.join(repoRoot, kitchenDishRecordsFile)
   if (
     !existsSync(kitchenDishRecordsPath) ||
@@ -2000,9 +2002,9 @@ export async function run(ctx) {
   }
 
   const kitchenConsoleCoreFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/core/useKitchenConsole.ts'
   const kitchenConsoleTargetFile =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleTargetCollection.ts'
   const kitchenConsoleCorePath = path.join(repoRoot, kitchenConsoleCoreFile)
   const kitchenConsoleTargetPath = path.join(repoRoot, kitchenConsoleTargetFile)
   const kitchenConsoleCoreSource = existsSync(kitchenConsoleCorePath)

@@ -56,8 +56,8 @@ import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
-import { AppDefaults } from '../../models/core/app.model'
+import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
+import { AppDefaults } from '../../app/models/app.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -124,7 +124,7 @@ const filteredAppsDriftPayload = computed(() =>
 )
 
 const appsDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/core/fireux-core/src/runtime/models/core/app.model.ts',
+  modelPath: 'packages/core/fireux-core/src/runtime/app/models/app.model.ts',
   driftKind: appsDriftKind.value,
   selectedField: appsSelectedField.value || null,
   totalApps: filteredApps.value.length,

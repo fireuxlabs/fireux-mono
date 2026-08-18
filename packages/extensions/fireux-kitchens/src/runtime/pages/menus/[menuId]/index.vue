@@ -11,7 +11,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import {
   rootMenuRouteScope,
   tenantMenuRouteScope,
-} from '../../../utils/kitchen-menu-route'
+} from '../../../kitchen/utils/kitchen-menu-route'
 
 definePageMeta({
   middleware: ['menu-tenant-route', 'menu-projection-layout'],

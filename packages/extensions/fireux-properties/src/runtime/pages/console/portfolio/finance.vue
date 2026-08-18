@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-portfolio-finance">
       <template #header>
-        <LayoutsConsoleNavbar title="Financial Signals" />
+        <LayoutsConsoleNavbar title="Financial Signals">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Portfolio Finance" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuManifestItem } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+import type { MenuManifestItem } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
 withDefaults(defineProps<{
   item: MenuManifestItem

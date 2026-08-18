@@ -55,7 +55,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
+import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
 import type {
   LandingPricingPlan,
   LandingOperationRailItem,

@@ -11,35 +11,35 @@ const relativeFiles = {
   runtimeConfig:
     'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts',
   ecosystemType: 'packages/core/fireux-core/src/types/ecosystem.ts',
-  appModel: 'packages/core/fireux-core/src/runtime/models/core/app.model.ts',
+  appModel: 'packages/core/fireux-core/src/runtime/app/models/app.model.ts',
   kitchen:
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
   supplier:
-    'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
   property:
-    'packages/extensions/fireux-properties/src/runtime/models/property.model.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
   portfolio:
-    'packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/models/portfolio.model.ts',
   blank: 'projects/fireux/fireux-blank/app/models/blank.model.ts',
   kitchenWriter:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/commands.ts',
   supplierWriter:
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts',
   propertyWriter:
-    'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
   portfolioWriter:
-    'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts',
   blankWriter: 'projects/fireux/fireux-blank/server/utils/blank/onboarding.ts',
   kitchenTargetModel:
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/kitchen-index.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-index.model.ts',
   kitchenTargetApi:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/targets.ts',
   placeAuthority:
-    'packages/extensions/fireux-places/src/runtime/server/place/mutation-authority.ts',
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/mutation-authority.ts',
   kitchenThemeEditor:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/useKitchenThemeEditor.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/useKitchenThemeEditor.ts',
   kitchenSproochliEditor:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Sproochli.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Sproochli.vue',
   miseboxRules:
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/app-authority.rules',
   migration: 'scripts/migrate-console-entity-management.mjs',

@@ -1,7 +1,7 @@
 # Console entity family
 
 Updated: 2026-08-18
-Ref: b5ed10b84
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -14,30 +14,31 @@ still needed to remove unexplained drift.
 - Parent: `console.md`
 - Child: `family-tenant-global.md`
 - Horizontal: `entities.md`, `pages.md`, `components.md`, `composables.md`,
-  `firestore-entity.md`
+  `firestore-entity.md`, `runtime-filesystem.md`
 - Executable reference: `scripts/guards/console-indexes.mjs`
 - Server-shape reference: `scripts/guards/console-entity-server.mjs`
 - Authority reference: `scripts/guards/root-app-support-authority.mjs`
 
 ## Members and current surface
 
-| Member    | Current core sheets                                 | Status and reason                                                                                                                                   |
-| --------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank     | Index, Overview, Identity, Create                    | `accepted`: app-local minimal harness; it proves the shared target lifecycle and read-only Identity without invented Team or child Operations       |
-| Kitchen   | Index, Overview, Identity, Team, Create, Operations | `accepted`: Place-backed identity, dual Live/Demo targets, real Kitchen people records, and a large operational domain                              |
-| Supplier  | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team today and Supplier-owned catalogue/item/ingredient operations                           |
-| Portfolio | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team and a private-heavy document/property domain                                            |
-| Property  | Index, Overview, Team                               | `to-confirm`: Property is a confirmed Console Entity, but standalone Identity/Create lifecycle versus Portfolio-owned lifecycle is not yet explicit |
-| Project   | Index, Overview, Identity, Team, Operations         | `accepted`: private, root-only FireUX control-plane entity; Team uses Project authority without inventing an App-support record or production Create flow |
+The exact peer and Operation lists live once in the source-backed capability
+map in `console.md`. The family deltas are:
 
-The table records current source, not a promise that every listed sheet is
-finished.
+| Member    | Status and reason                                                                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blank     | `accepted`: app-local minimal harness; it proves Index, Overview, and read-only Identity without invented Team or Operations                              |
+| Kitchen   | `accepted`: Place-backed identity, dual Live/Demo targets, real Kitchen people records, and a large operational domain                                    |
+| Supplier  | `accepted`: root + App support target with authority-backed Team today and Supplier-owned Catalogue, Ingredient, and Item operations                      |
+| Portfolio | `accepted`: root + App support target with authority-backed Team and a private-heavy Property, document, task, compliance, and Finance domain             |
+| Property  | `accepted`: root + App support target with Identity and Team plus Reservation and Calendar operations                                                     |
+| Project   | `accepted`: private, root-only FireUX control-plane entity; Team uses Project authority without inventing an App-support record or production Create flow |
 
 ## Shared spine
 
 Every Console Entity must share these rules:
 
-- Server capabilities follow the Console's vertical slices: `core/`,
+- Entity server capabilities under the entity-scoped destination follow the
+  Console's vertical product slices: `core/`,
   `index/`, `overview/`, `identity/`, `team/`, `operations/`, and `ai/`.
   A slice exists only when it owns real server behaviour; empty placeholder
   files and folders are not required.
@@ -47,7 +48,7 @@ Every Console Entity must share these rules:
   `team/` remains a first-class Console capability. `operations/` owns all
   operations performed by or for that entity; for example,
   `kitchen/operations/` owns all Kitchen operations. `ai/` owns the entity's
-  AI capability.
+  AI capability without becoming a generic Console navigation peer.
 - Technical phases such as `access`, `lifecycle`, `mutation`, `projection`,
   and `presentation` are not entity root slices. Their behaviour stays inside
   the Console capability that owns it. HTTP adapters remain under
@@ -58,6 +59,13 @@ Every Console Entity must share these rules:
   `packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts`.
   Entity-specific management validation, projections, messages, and
   transactions remain in the owning entity slice.
+
+- Console is the shared selected-workspace surface, not the entity owner.
+  Shared Console components and composables remain in the root technical
+  spine. Entity-specific Console components and composables move to
+  `runtime/<entity>/components/Console` and
+  `runtime/<entity>/composables/console`; entity models and server commands do
+  not move under Console merely because it consumes them.
 
 - The family core owns target candidate resolution, the authoritative target
   collection outcome, and selection validity.
@@ -98,27 +106,27 @@ Every Console Entity must share these rules:
 
 ## Accepted deltas
 
-| Delta                                                    | State      | Why it exists                                                                                                                         | Evidence or owner                                                                         |
-| -------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Kitchen renders Live and Demo target sources             | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/console-indexes.mjs` and `scripts/guards/demo-data.mjs` |
-| Kitchen Team adds members and join requests below Access | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenConsoleTeam` and `Console/Kitchen/Team`                                        |
-| Supplier, Portfolio, and Property Team are Access-only   | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXConsoleTeam` adapters and `ConsoleTeamPanel`                                  |
-| Blank omits Team and child Operations                    | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                            |
-| Project has no App support or Create                     | `accepted` | Project Team and Operations use private FireUX control-plane authority rather than an App-support onboarding lifecycle                | Project entity declaration and internal control-plane APIs                                |
-| Operation folders differ by domain                       | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | each owning package under `Console/X/Operations` and `console/x/operations`               |
+| Delta                                                               | State      | Why it exists                                                                                                                         | Evidence or owner                                                                                                      |
+| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Kitchen renders Live and Demo target sources                        | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/console-indexes.mjs` and `scripts/guards/demo-data.mjs`                              |
+| Kitchen Team adds members and join requests beyond target authority | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenConsoleTeam` and `Console/Kitchen/Team`                                                                     |
+| Supplier, Portfolio, and Property Team are authority-backed only    | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXConsoleTeam` adapters and `ConsoleTeamPanel`                                                               |
+| Blank omits Team and child Operations                               | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                                                         |
+| Project has no App support or Create                                | `accepted` | Project Team and Operations use private FireUX control-plane authority rather than an App-support onboarding lifecycle                | Project entity declaration and internal control-plane APIs                                                             |
+| Operation folders differ by domain                                  | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | current source uses each owner's `components/Console/Operations` and `composables/console/operations` capability paths |
 
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
 ## Migration and drift register
 
-| Difference                                                                                 | State        | Required direction                                                                                                                     |
-| ------------------------------------------------------------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Supplier and Portfolio public-read contracts remain `to-confirm`                           | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity                                                        |
-| Property lacks an explicit standalone Identity/Create decision                             | `to-confirm` | Decide whether Property owns those sheets or deliberately enters through Portfolio; document and guard the result                      |
-| Team access presentation does not yet hydrate polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed   |
-| Console operation child matrix is not complete                                             | `drift`      | Inventory visible routes against owning operation components/composables and remove parked or fake operations                          |
-| Kitchen authored route slug differs from stable root identity                              | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID        |
+| Difference                                                                          | State        | Required direction                                                                                                                     |
+| ----------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Supplier and Portfolio public-read contracts remain `to-confirm`                    | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity                                                        |
+| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed   |
+| Historical Kitchen/Supplier `operations.ts` catalogues include Identity and Team    | `drift`      | Rename or split the complete Console capability catalogue so only the Operations listed in `console.md` enter operation-only consumers |
+| Kitchen authored route slug differs from stable root identity                       | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID        |
+| Console Entity implementation uses `runtime/<entity>/<technical role>`              | `accepted`   | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                    |
 
 ## Component and composable naming
 
@@ -136,7 +144,7 @@ Conditional names:
 
 - `ConsoleXIdentity` and `useXConsoleIdentity` when identity editing/reading is
   a real Console sheet.
-- `ConsoleXTeam` and `useXConsoleTeam` when target Access or domain people are
+- `ConsoleXTeam` and `useXConsoleTeam` when target authority or domain people are
   exposed.
 - `ConsoleXOperationsY` and `useXConsoleY` for selected-target domain work.
 
@@ -150,8 +158,8 @@ composition delta, not permission to fork the Console Index spine.
 
 - Preserve the guard-backed six-family Index parity.
 - Keep one family-owned target outcome and one outcome-bound selection.
-- Label Team as target Access first; keep Kitchen people records explicitly
-  separate from authority.
+- Keep Team as a Console peer and keep Kitchen people records explicitly
+  separate from target and mutation authority.
 
 ### Next
 
@@ -159,15 +167,14 @@ composition delta, not permission to fork the Console Index spine.
   guarded across Live, Demo, and Test sources.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
   AppKitchen access support payload-free.
-- Resolve Property's standalone Identity/Create lifecycle.
 - Reconcile Supplier and Portfolio root validation before confirming public
   projections.
-- Audit operation routes against operation ownership and remove unexplained
-  children.
+- Rename or split the historical capability catalogues so Identity and Team
+  cannot be mistaken for Operations.
 
 ### Later
 
-- Add shared people hydration only after a bounded privacy-aware contract is
+- Add a shared people projection only after a bounded privacy-aware contract is
   proven by more than one family.
 - Promote Overview, Identity, or Team details into guards only after their
   lifecycle shapes are as stable as the current Index contract.

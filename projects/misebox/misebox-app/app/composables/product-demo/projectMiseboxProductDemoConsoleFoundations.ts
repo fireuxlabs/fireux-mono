@@ -1,16 +1,16 @@
-import type { PublicIngredient } from 'fireux-kitchens/runtime/models/ingredient-public.model'
-import { resolveIngredientFoodGroup } from 'fireux-kitchens/runtime/models/ingredient-food-group'
-import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/models/kitchen/finance-report.model'
+import type { PublicIngredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
+import { resolveIngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
+import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
 
 type ConsoleScenario =
-  (typeof import('fireux-kitchens/runtime/demo/kitchen/scenarios'))['deanosKitchenDemoScenario']
+  (typeof import('fireux-kitchens/runtime/kitchen/demo/scenarios'))['deanosKitchenDemoScenario']
 type ConsoleMenuCascade = ReturnType<
-  (typeof import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'))['projectKitchenDemoMenuCascade']
+  (typeof import('fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'))['projectKitchenDemoMenuCascade']
 >
 type FinanceModule =
-  typeof import('fireux-kitchens/runtime/utils/kitchen/demo-finance')
+  typeof import('fireux-kitchens/runtime/kitchen/utils/demo-finance')
 type KitchenSpineModule =
-  typeof import('fireux-kitchens/runtime/utils/kitchen-spine')
+  typeof import('fireux-kitchens/runtime/kitchen/utils/kitchen-spine')
 
 const consoleFinancePeriodLabels = {
   '7d': '7 days',

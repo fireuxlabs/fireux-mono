@@ -188,15 +188,15 @@ The detailed state machine and operator transitions live in
 
 ## Current implementation evidence
 
-- Context model: `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-context.model.ts`
-- Context profiles: `packages/extensions/fireux-kitchens/src/runtime/utils/menu-context.ts`
-- Route grammar: `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-menu-route.ts`
+- Context model: `packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-context.model.ts`
+- Context profiles: `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-context.ts`
+- Route grammar: `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-menu-route.ts`
 - Route guard: `scripts/guards/menu-route-contract.mjs`
-- Public resolver: `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useMenu.ts`
-- Order UI: `packages/extensions/fireux-kitchens/src/runtime/components/Menu/Order/`
-- Order state: `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/order/`
+- Public resolver: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts`
+- Order UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/`
+- Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
-- Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/order.model.ts`
+- Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - Console settings: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/menus/[menuId]/ordering/`
 
 ## Delta register

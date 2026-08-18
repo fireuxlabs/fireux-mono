@@ -39,7 +39,7 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type {
   PublicMarketplaceStoreListResponse,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',

@@ -111,14 +111,14 @@ import {
   type StyleValue,
 } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
-import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollectionFunnel'
+import type { MenuOrderingCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/Collection/useCollectionFunnel'
 import type {
   MenuOrderingBasket,
   MenuOrderingDraft,
   MenuOrderingFunnelController,
   MenuOrderingFunnelState,
   MenuOrderingKitchenIntake,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 
 const props = defineProps<{
   allergenAccepted: boolean

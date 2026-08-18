@@ -36,9 +36,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
-import { usePortfolioSeo } from '../../composables/fireux/firestore/portfolio/utils/usePortfolioSeo'
-import { usePortfolioInterface } from '../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import { usePortfolioFetch } from '../../portfolio/composables/firestore/fetch/usePortfolioFetch'
+import { usePortfolioSeo } from '../../portfolio/composables/firestore/utils/usePortfolioSeo'
+import { usePortfolioInterface } from '../../portfolio/composables/firestore/utils/view/usePortfolioInterface'
 
 definePageMeta({
   layout: 'default',

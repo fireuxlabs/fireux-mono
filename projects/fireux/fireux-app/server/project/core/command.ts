@@ -1,5 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { ProjectStatus } from 'fireux-core/runtime/models/system/project.model'
+import type { ProjectStatus } from 'fireux-core/runtime/project/models/project.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { fireuxAppUsersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'

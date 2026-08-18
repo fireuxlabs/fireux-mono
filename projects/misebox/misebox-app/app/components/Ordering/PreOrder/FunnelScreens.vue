@@ -130,7 +130,7 @@ import type {
   MenuOrderingFunnelState,
   MenuOrderingKitchenIntake,
   MenuOrderingPreOrderState,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 
 const props = defineProps<{
   allergenAccepted: boolean

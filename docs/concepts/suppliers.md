@@ -59,13 +59,13 @@ paths and data, then remove the prototype code and records.
 ## Current source
 
 - Entity and children:
-  `packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts`
 - Atomic onboarding:
-  `packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts`
 - Console core:
-  `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsole.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/core/useSupplierConsole.ts`
 - Operations:
-  `packages/extensions/fireux-suppliers/src/runtime/content/operations.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts`
 - Retired Misebox doorway redirect:
   `projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts`
 - Product host: `projects/bringli/bringli-app/nuxt.config.ts`

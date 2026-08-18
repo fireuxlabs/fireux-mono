@@ -1,4 +1,4 @@
-import type { ProjectUpdateInput } from 'fireux-core/runtime/models/system/project.model'
+import type { ProjectUpdateInput } from 'fireux-core/runtime/project/models/project.model'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'

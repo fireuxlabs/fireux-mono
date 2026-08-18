@@ -152,8 +152,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
 
 const description =
   'Independent bike shop in Interlaken for vintage bicycles, adventure builds, rare components and considered cycling goods.'

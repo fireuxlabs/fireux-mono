@@ -2,15 +2,15 @@ import { useAsyncData } from '#imports'
 import {
   useAppInterface,
   type AppCard,
-} from 'fireux-core/runtime/composables/fireux/app/useAppInterface'
+} from 'fireux-core/runtime/app/composables/useAppInterface'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/project/useProjectInterface'
+} from 'fireux-core/runtime/project/composables/useProjectInterface'
 
 const productDemoSurface = 'project-console' as const
 const productDemoDataSource = 'demo' as const
@@ -38,7 +38,7 @@ export function useFireuxProductDemo() {
     'fireux-product-demo-project-console-v1',
     async () => {
       const { projectDemoScenarios } = await import(
-        'fireux-core/runtime/demo/project/scenarios'
+        'fireux-core/runtime/project/demo/scenarios'
       )
       const fireuxScenarios = projectDemoScenarios.filter(
         scenario => scenario.appId === 'fireux-app'

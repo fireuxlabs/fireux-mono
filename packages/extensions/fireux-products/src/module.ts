@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
+import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type {
   FireuxSeoExtendContext,
@@ -65,7 +65,11 @@ export default defineNuxtModule({
             ? { productKinds: options.productKinds }
             : {}),
         }),
-      composables: registerComposablesDir,
+      composables: (resolver) =>
+        registerComposablesDirs(resolver, [
+          './runtime/composables',
+          './runtime/product/composables',
+        ]),
       components: configureComponents,
       pages: configurePages,
       server: configureServer,

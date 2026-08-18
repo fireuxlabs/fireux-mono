@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 
 const { canCreateTarget } = useConsole('kitchen')
 const canCreate = computed(() => canCreateTarget())

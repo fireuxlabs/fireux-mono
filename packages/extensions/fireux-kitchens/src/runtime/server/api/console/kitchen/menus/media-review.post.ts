@@ -2,12 +2,12 @@ import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { normalizeMenuMediaReview } from '../../../../menu/media/review'
+import { normalizeMenuMediaReview } from '../../../../../menu/server/media/review'
 import {
   assertKitchenMenuUploadAccess,
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
-} from '../../../../menu/source/uploads'
+} from '../../../../../menu/server/source/uploads'
 
 export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenMenuUploadUser(

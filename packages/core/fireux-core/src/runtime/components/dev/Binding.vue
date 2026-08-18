@@ -52,8 +52,8 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: constrain binding diagnostics to the bounded current-App admin API.
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import type { App } from '../../models/core/app.model'
+import { useAppUserCollection } from '../../user/composables/firestore/fetch/useAppUserCollection'
+import type { App } from '../../app/models/app.model.ts'
 
 defineProps<{ app?: App | null; apps?: App[] | null }>()
 

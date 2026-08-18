@@ -7,7 +7,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, type ComputedRef } from 'vue'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 
 type AppSupportAccessQueryOptions = {
   db: Firestore

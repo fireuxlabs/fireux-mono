@@ -10,13 +10,13 @@ const MEMBERS = [
   {
     name: 'Kitchen Menus',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus/List.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/List.vue',
     tools:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Tools.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus/Menu.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Menu.vue',
     recordsTag: '<ConsoleKitchenOperationsMenusList',
     toolsTag: '<ConsoleKitchenOperationsMenusTools',
     inspectTag: '<ConsoleKitchenOperationsMenusWorkspaceHeader',
@@ -28,13 +28,13 @@ const MEMBERS = [
   {
     name: 'Kitchen Dishes',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Read.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Read.vue',
     tools:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Tools.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Dish.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Dish.vue',
     recordsTag: '<ConsoleKitchenOperationsDishesRead',
     toolsTag: '<ConsoleKitchenOperationsDishesTools',
     inspectTag: 'aria-label="Menu placements"',
@@ -43,17 +43,17 @@ const MEMBERS = [
     recordsLabel: ':aria-label="catalogue.title"',
     toolsLabel: ':aria-labelledby="`create-${catalogue.singular}-title`"',
     quickLook:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/QuickLook.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/QuickLook.vue',
     quickLookTag: '<ConsoleKitchenOperationsDishesQuickLook',
     detailAction: 'Open dish',
     finance:
-      'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Finance.vue',
     financeTag: '<ConsoleKitchenOperationsDishesFinance',
     collectionState: {
       fetch:
-        'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/fetch/useKitchenDishCollection.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts',
       controller:
-        'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishes.ts',
       errorTitle: ':title="`${catalogue.title} unavailable`"',
     },
   },

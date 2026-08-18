@@ -12,13 +12,13 @@ import {
   isKitchenOrderPostPaymentStatus,
   isKitchenOrderStatus,
   isKitchenOrderType,
-} from '../../../../models/kitchen/order.model.ts'
-import { statusAfterPayment } from '../../../menu/ordering/payment.ts'
+} from '../../../../kitchen/models/order.model.ts'
+import { statusAfterPayment } from '../../../../menu/server/ordering/payment.ts'
 import {
   allowUnsignedStripeWebhook,
   getMenuStripe,
-} from '../../../menu/ordering/stripe.ts'
-import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
+} from '../../../../menu/server/ordering/stripe.ts'
+import { dispatchPreOrderWhatsApp } from '../../../../menu/server/ordering/whatsapp.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: release the pending alert only after verified Pay-now completion.
 // Concurrent edit — 2026-07-21 16:41 CEST — FireUX Finance pass: make verified payment settlement transactional, non-regressive, and retryable.

@@ -6,8 +6,8 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicIngredientDetailResponse } from '../../../models/ingredient-public.model.ts'
-import { projectPublicIngredient } from '../../ingredient/public-projection.ts'
+import type { PublicIngredientDetailResponse } from '../../../ingredient/models/ingredient-public.model.ts'
+import { projectPublicIngredient } from '../../../ingredient/server/public-projection.ts'
 
 export default defineEventHandler(
   async (event): Promise<PublicIngredientDetailResponse> => {

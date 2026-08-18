@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-mise">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Mise" />
+        <LayoutsConsoleNavbar title="Kitchen Mise">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Mise" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

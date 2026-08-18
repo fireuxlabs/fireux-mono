@@ -265,7 +265,7 @@ import { computed, ref } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
-import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
+import { syncAppMediaToStorage } from '../../app/composables/firestore/utils/appMediaSync'
 
 definePageMeta({
   title: 'Dev · Overview',

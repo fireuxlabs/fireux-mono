@@ -121,11 +121,11 @@
 import { setResponseStatus } from '#imports'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import JobCardsProfile from '../../components/Job/Cards/Profile.vue'
-import JobApplyPanel from '../../components/Job/Apply/Panel.vue'
-import { usePublicJobFetch } from '../../composables/fireux/jobs/public/usePublicJobFetch'
-import { useJobSeo } from '../../composables/fireux/firestore/jobs/utils/useJobSeo'
-import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import JobCardsProfile from '../../job/components/Cards/Profile.vue'
+import JobApplyPanel from '../../job/components/Apply/Panel.vue'
+import { usePublicJobFetch } from '../../job/composables/public/usePublicJobFetch'
+import { useJobSeo } from '../../job/composables/firestore/utils/useJobSeo'
+import { useJobInterface } from '../../job/composables/firestore/utils/view/useJobInterface'
 
 const route = useRoute()
 const jobId = computed(() => {

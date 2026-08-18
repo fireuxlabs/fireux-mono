@@ -13,9 +13,9 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readUploadedMultipartFile } from 'fireux-core/runtime/server/utils/uploads/multipart'
-import { DishStorage } from '../../../../../../models/kitchen/dish.model.ts'
-import { normalizeAndSaveDishImage } from '../../../../../../server/dish/image.ts'
-import { requireKitchenWriter } from '../../../../../../server/kitchen/core/operator-access.ts'
+import { DishStorage } from '../../../../../../kitchen/models/dish.model.ts'
+import { normalizeAndSaveDishImage } from '../../../../../../kitchen/server/operations/dishes/image.ts'
+import { requireKitchenWriter } from '../../../../../../kitchen/server/core/operator-access.ts'
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] as const
 const extensionTypes = {

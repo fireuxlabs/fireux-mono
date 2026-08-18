@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { listJobApplications } from '../../job/hiring.ts'
+import { listJobApplications } from '../../../job/server/operations/hiring/index.ts'
 
 export default defineEventHandler(event => {
   const query = getQuery(event)

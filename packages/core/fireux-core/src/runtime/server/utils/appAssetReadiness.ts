@@ -7,7 +7,7 @@ import {
   appImageStoragePath,
   validateAppAssetDimensions,
   type AppImageKind,
-} from '../../composables/fireux/firestore/core/app/utils/appMedia'
+} from '../../app/composables/firestore/utils/appMedia'
 
 export type AppAssetReadinessItem = {
   kind: AppImageKind

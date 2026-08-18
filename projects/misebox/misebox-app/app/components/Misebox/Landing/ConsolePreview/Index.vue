@@ -97,9 +97,9 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
-import { useKitchenConsoleSelection } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
-import { useKitchenMenuServiceSelection } from 'fireux-kitchens/runtime/composables/fireux/kitchen/useKitchenMenuServiceSelection'
+import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/content/operations'
+import { useKitchenConsoleSelection } from 'fireux-kitchens/runtime/kitchen/composables/console/core/useKitchenConsoleSelection'
+import { useKitchenMenuServiceSelection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenMenuServiceSelection'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { DishChildPage } from './Dishes/types'
 import MiseboxLandingConsolePreviewFinance from './Finance.vue'

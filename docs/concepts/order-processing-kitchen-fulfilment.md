@@ -121,15 +121,15 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 ## Source evidence
 
 - Order types, intake policies, statuses, and transitions:
-  `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/order.model.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - Canonical creation:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Authenticated transition command:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
 - Transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/transition.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`
 - Operator family:
-  `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Orders/`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Orders/`
 
 ## Alignment roadmap
 

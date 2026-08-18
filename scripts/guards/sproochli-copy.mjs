@@ -24,7 +24,7 @@ import {
   MENU_BROWSE_SURFACE_COPY_FIELDS,
   MENU_SURFACE_COPY_VERSION,
   resolveMenuBrowseSurfaceCopy,
-} from '../../packages/extensions/fireux-kitchens/src/runtime/content/menu-surface-copy.ts'
+} from '../../packages/extensions/fireux-kitchens/src/runtime/menu/content/menu-surface-copy.ts'
 import { TranslationMemoryStorage } from '../../packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
 import {
   makeSproochliMenuMemoryKey,
@@ -197,23 +197,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenSproochliEndpoint = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/sproochli.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/sproochli.ts'
   )
   const menuBrowse = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Menu/Browse/Index.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/components/Browse/Index.vue'
   )
   const menuReader = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useMenu.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenu.ts'
   )
   const menuResolver = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/resolve.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/resolve.ts'
   )
   const menuManifestModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-detail.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-detail.model.ts'
   )
   const menuProvider = read(
     repoRoot,
@@ -257,23 +257,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const menuPayload = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/build.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/payload/build.ts'
   )
   const kitchenMenuModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/kitchen-menu.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/kitchen-menu.model.ts'
   )
   const rootMenuModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu.model.ts'
   )
   const menuRootEntry = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/utils/root-entry.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/utils/root-entry.ts'
   )
   const menuPayloadTypes = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/types.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/payload/types.ts'
   )
   const menuTranslationEndpoint = read(
     repoRoot,
@@ -321,27 +321,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const menuAiSchema = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/schema.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/schema.ts'
   )
   const menuAiExtraction = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/extraction.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/extraction.ts'
   )
   const menuAiNormalization = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/normalization.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/normalization.ts'
   )
   const menuDraftSections = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/sections.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/draft/sections.ts'
   )
   const menuDraftWrite = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/write.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/draft/write.ts'
   )
   const kitchenMenuCacheImport = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/cache-import.ts'
   )
   const menuConfirmEndpoint = read(
     repoRoot,
@@ -361,7 +361,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenMenuScope = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ownership/kitchen-scope.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/ownership/kitchen-scope.ts'
   )
 
   assert.match(languages, /\|\s*'gsw'/)
@@ -707,7 +707,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     existsSync(
       path.join(
         repoRoot,
-        'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useSproochliMenuTranslation.ts'
+        'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useSproochliMenuTranslation.ts'
       )
     ),
     false

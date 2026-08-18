@@ -4,7 +4,7 @@ import { createProfileProvisionHandler } from 'fireux-core/runtime/server/utils/
 import {
   createAppCustomerProfileSeed,
   CustomerStorage,
-} from '../../../../models/customer.model.ts'
+} from '../../../../user/models/customer.model.ts'
 
 export default createProfileProvisionHandler({
   id: 'customer',

@@ -101,10 +101,10 @@ import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../composables/fireux/user/useUser'
+import { useUser } from '../../user/composables/useUser'
 import type { PublicUserDto } from '../../server/utils/public-projection/public-dto.types'
-import type { User } from '../../models/core/user.model'
-import { UserDefaults } from '../../models/core/user.model'
+import type { User } from '../../user/models/user.model.ts'
+import { UserDefaults } from '../../user/models/user.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -200,7 +200,7 @@ const filteredUsersDriftPayload = computed(() =>
 )
 
 const usersDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/core/fireux-core/src/runtime/models/core/user.model.ts',
+  modelPath: 'packages/core/fireux-core/src/runtime/user/models/user.model.ts',
   driftKind: usersDriftKind.value,
   selectedField: usersSelectedField.value || null,
   totalUsers: filteredUsers.value.length,

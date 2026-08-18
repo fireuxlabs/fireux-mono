@@ -1,9 +1,9 @@
-import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-context.model'
+import { UserStorage } from 'fireux-core/runtime/user/models/user.model'
+import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
-import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
+import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
+import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-spine'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 
 const MAX_MENUS = 12

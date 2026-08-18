@@ -13,7 +13,7 @@ import type {
   ProfileConfig,
   ProfileRecord,
 } from '../../../../../../models/utils/profile.model'
-import { AppStorage } from '../../../../../../models/core/app.model'
+import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
 export function useProfileCollection<

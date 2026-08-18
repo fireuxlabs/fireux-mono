@@ -7,15 +7,15 @@ import { collection, query, where, type Query } from 'firebase/firestore'
 import {
   normalizeConsoleSource,
   type ConsoleSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { readConsoleTargetAuthority } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { readConsoleTargetAuthority } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,

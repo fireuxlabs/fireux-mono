@@ -1,16 +1,16 @@
 import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
-import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
+import { readMenuOrderContext } from '../../../../../menu/server/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,
   requireMenuOrderCustomerAccess,
-} from '../../../../menu/ordering/order-capability.ts'
+} from '../../../../../menu/server/ordering/order-capability.ts'
 import {
   isKitchenOrderStatus,
   isKitchenOrderType,
-} from '../../../../../models/kitchen/order.model.ts'
-import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../utils/menu-order-capability.ts'
+} from '../../../../../kitchen/models/order.model.ts'
+import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../menu/utils/menu-order-capability.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: make status private to the customer UID or opaque same-device capability.
 

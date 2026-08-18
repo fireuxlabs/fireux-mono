@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: expose authenticated reservation and canonical identity provisioning.
 
 import { createError, defineEventHandler, readBody } from 'h3'
-import type { UserHandleInput } from '../../../../models/operations/user-handle'
+import type { UserHandleInput } from '../../../../user/models/user-handle'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { updateUserHandle } from '../../../utils/user-handle/update'
+import { updateUserHandle } from '../../../../user/server/user-handle/update'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)

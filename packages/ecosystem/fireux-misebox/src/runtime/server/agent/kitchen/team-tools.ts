@@ -3,16 +3,16 @@ import {
   fireuxAgentBaseInstruction,
 } from 'fireux-ai/runtime/agents/instructions'
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { kitchenOperationAgents } from 'fireux-kitchens/runtime/ai/operation-agents'
+import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/ai/operation-agents'
 import type {
   KitchenTeamPreparedToolCall,
   KitchenTeamToolMember,
-} from 'fireux-kitchens/runtime/server/kitchen/team/tools/index'
+} from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
 import {
   findKitchenTeamTool,
   kitchenTeamAgentTools,
   type KitchenTeamToolId,
-} from 'fireux-kitchens/runtime/tools/kitchen/team/index'
+} from 'fireux-kitchens/runtime/kitchen/tools/team/index'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>

@@ -12,7 +12,7 @@ const root = path.resolve(__dirname, '..')
 const SEARCH_ROOTS = ['packages', 'projects']
 const SELF_PATH = 'scripts/check-slug-canon.mjs'
 const CANONICAL_SLUG_QUERY_FILES = new Set([
-  'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/route-identity.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/route-identity.ts',
 ])
 const SKIP_DIRS = new Set([
   '.git',

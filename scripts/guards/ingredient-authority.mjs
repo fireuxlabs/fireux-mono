@@ -53,7 +53,9 @@ const arrayDeclaration = (source, name) => {
 }
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const kitchenBase = 'packages/extensions/fireux-kitchens/src/runtime/'
+  const runtimeBase = 'packages/extensions/fireux-kitchens/src/runtime/'
+  const ingredientBase = `${runtimeBase}ingredient/`
+  const kitchenBase = `${runtimeBase}kitchen/`
   const rules = await expandFirestoreRulesTemplate(
     read(
       repoRoot,
@@ -61,14 +63,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   )
   const deploy = read(repoRoot, 'scripts/deploy-misebox-firestore-rules.mjs')
-  const model = read(repoRoot, `${kitchenBase}models/ingredient.model.ts`)
+  const model = read(repoRoot, `${ingredientBase}models/ingredient.model.ts`)
   const foodGroupModel = read(
     repoRoot,
-    `${kitchenBase}models/ingredient-food-group.ts`
+    `${ingredientBase}models/ingredient-food-group.ts`
   )
   const publicProjection = read(
     repoRoot,
-    `${kitchenBase}server/ingredient/public-projection.ts`
+    `${ingredientBase}server/public-projection.ts`
   )
   const curation = [
     'curation.ts',
@@ -76,65 +78,60 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'curation-input.ts',
     'curation-storage.ts',
   ]
-    .map((fileName) =>
-      read(repoRoot, `${kitchenBase}server/ingredient/${fileName}`)
-    )
+    .map((fileName) => read(repoRoot, `${ingredientBase}server/${fileName}`))
     .join('\n')
   const createSystem = read(
     repoRoot,
-    `${kitchenBase}components/Ingredient/Create/System.vue`
+    `${ingredientBase}components/Create/System.vue`
   )
   const curatorIndex = read(
     repoRoot,
-    `${kitchenBase}server/api/internal/ingredients/index.get.ts`
+    `${runtimeBase}server/api/internal/ingredients/index.get.ts`
   )
   const publicIndex = read(
     repoRoot,
-    `${kitchenBase}server/api/ingredients/index.get.ts`
+    `${runtimeBase}server/api/ingredients/index.get.ts`
   )
   const publicDetail = read(
     repoRoot,
-    `${kitchenBase}server/api/ingredients/[id].get.ts`
+    `${runtimeBase}server/api/ingredients/[id].get.ts`
   )
   const collection = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/firestore/ingredient/fetch/useIngredientCollection.ts`
+    `${ingredientBase}composables/firestore/fetch/useIngredientCollection.ts`
   )
   const detail = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/firestore/ingredient/fetch/useIngredientFetch.ts`
+    `${ingredientBase}composables/firestore/fetch/useIngredientFetch.ts`
   )
   const create = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/firestore/ingredient/mutations/useIngredientCreate.ts`
+    `${ingredientBase}composables/firestore/mutations/useIngredientCreate.ts`
   )
   const update = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/firestore/ingredient/mutations/useIngredientUpdate.ts`
+    `${ingredientBase}composables/firestore/mutations/useIngredientUpdate.ts`
   )
   const kitchenDemoIngredients = read(
     repoRoot,
-    `${kitchenBase}demo/kitchen/operations/Ingredients/index.ts`
+    `${kitchenBase}demo/operations/Ingredients/index.ts`
   )
-  const kitchenDemoTypes = read(
-    repoRoot,
-    `${kitchenBase}demo/kitchen/core/types.ts`
-  )
+  const kitchenDemoTypes = read(repoRoot, `${kitchenBase}demo/core/types.ts`)
   const kitchenConsoleIngredients = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/console/kitchen/operations/Ingredients/useKitchenConsoleIngredients.ts`
+    `${kitchenBase}composables/console/operations/Ingredients/useKitchenConsoleIngredients.ts`
   )
   const kitchenConsoleIngredientRead = read(
     repoRoot,
-    `${kitchenBase}components/Console/Kitchen/Operations/Ingredients/Read.vue`
+    `${kitchenBase}components/Console/Operations/Ingredients/Read.vue`
   )
   const kitchenIngredientRoots = read(
     repoRoot,
-    `${kitchenBase}composables/fireux/console/kitchen/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
+    `${kitchenBase}composables/console/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
   )
   const supplierConsoleIngredients = read(
     repoRoot,
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/operations/Ingredients/useSupplierConsoleIngredients.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/operations/Ingredients/useSupplierConsoleIngredients.ts'
   )
   const productDemoBase =
     'projects/misebox/misebox-app/app/composables/product-demo/'
@@ -157,29 +154,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'scripts/complete-misebox-ingredient-catalog.mjs'
   )
   const catalogCompletionManifest = JSON.parse(
-    read(
-      repoRoot,
-      'scripts/data/misebox-ingredient-catalog-completion.json'
-    )
+    read(repoRoot, 'scripts/data/misebox-ingredient-catalog-completion.json')
   )
 
   assert.match(model, /publicRead:\s*'projection'/)
-  assert.match(
-    foodGroupModel,
-    /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/
-  )
-  assert.match(
-    foodGroupModel,
-    /\bexport const resolveIngredientFoodGroup\b/
-  )
+  assert.match(foodGroupModel, /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/)
+  assert.match(foodGroupModel, /\bexport const resolveIngredientFoodGroup\b/)
   assert.match(
     kitchenConsoleIngredientRead,
     /\bINGREDIENT_FOOD_GROUP_OPTIONS\b/
   )
-  assert.match(
-    kitchenConsoleIngredientRead,
-    /\bresolveIngredientFoodGroup\b/
-  )
+  assert.match(kitchenConsoleIngredientRead, /\bresolveIngredientFoodGroup\b/)
   assert.doesNotMatch(
     kitchenConsoleIngredientRead,
     /\bconst (?:INGREDIENT_FOOD_GROUP_OPTIONS|resolveFoodGroup)\b/,
@@ -238,10 +223,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(curation, /candidateTerms/)
   assert.match(curation, /ingredient\.status !== 'active'/)
   assert.match(curation, /listIngredientsForCurator/)
-  assert.match(
-    curation,
-    /status === 'active' && !canonicalImageUrl/
-  )
+  assert.match(curation, /status === 'active' && !canonicalImageUrl/)
   assert.match(curation, /An active Ingredient requires an image\./)
   assert.match(createSystem, /<UFormField label="Image" required>/)
   assert.match(createSystem, /imageUploading \|\| !form\.image_url/)
@@ -257,7 +239,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\bingredients\s*:\s*Ingredient\[\]/,
     'Kitchen Demo scenarios must not own root Ingredient records.'
   )
-  assert.match(kitchenDemoIngredients, /\bingredient_id:\s*definition\.ingredientId/)
+  assert.match(
+    kitchenDemoIngredients,
+    /\bingredient_id:\s*definition\.ingredientId/
+  )
   assert.match(
     `${kitchenIngredientRoots}\n${kitchenConsoleIngredients}`,
     /\/api\/ingredients\?ids=\$\{encodeURIComponent\(/
@@ -283,10 +268,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     productDemo,
     /name = String\(ingredient\.name \|\| ''\)\.trim\(\)/
   )
-  assert.match(
-    productDemo,
-    /foodGroup:\s*resolveIngredientFoodGroup\(\{/
-  )
+  assert.match(productDemo, /foodGroup:\s*resolveIngredientFoodGroup\(\{/)
   assert.match(productDemo, /category:\s*ingredient\.category/)
   assert.match(productDemo, /kind:\s*ingredient\.kind/)
   assert.match(productDemo, /\bingredients:\s*consoleIngredients\b/)
@@ -296,17 +278,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(promotionManifest.entries?.length, 68)
   assert.equal(
-    new Set(
-      promotionManifest.entries.map(entry => entry.ingredient_id)
-    ).size,
+    new Set(promotionManifest.entries.map((entry) => entry.ingredient_id)).size,
     68,
     'The reviewed Kitchen Ingredient promotion manifest must contain 68 unique canonical ids.'
   )
   const linkedIngredientIds = [
     ...kitchenDemoIngredients.matchAll(/\bingredientId:\s*'([^']+)'/g),
-  ].map(match => match[1])
+  ].map((match) => match[1])
   const promotedIngredientIds = promotionManifest.entries.map(
-    entry => entry.ingredient_id
+    (entry) => entry.ingredient_id
   )
   assert.deepEqual(
     [...new Set(linkedIngredientIds)].sort(),

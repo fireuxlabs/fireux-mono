@@ -1,18 +1,18 @@
 import { useAsyncData } from '#imports'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
 import {
   kitchenMisePriorityLabel,
-} from 'fireux-kitchens/runtime/models/kitchen/mise.model'
+} from 'fireux-kitchens/runtime/kitchen/models/mise.model'
 import type {
   MenuManifestItem,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type {
   PublicMenuIndexItem,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-index.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
 import {
   projectSupplierDemoWorld,
-} from 'fireux-suppliers/runtime/utils/supplier-demo-world'
+} from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
 
 const productDemoSurface = 'power-cards' as const
 const productDemoDataSource = 'demo' as const
@@ -111,11 +111,11 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     supplierModule,
     suppliersModule,
   ] = await Promise.all([
-    import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
-    import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
-    import('fireux-companies/runtime/demo/company/scenarios'),
-    import('fireux-suppliers/runtime/demo/supplier/scenarios'),
-    import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers'),
+    import('fireux-kitchens/runtime/kitchen/demo/scenarios'),
+    import('fireux-kitchens/runtime/kitchen/demo/presentation/index'),
+    import('fireux-companies/runtime/place/demo/company/scenarios'),
+    import('fireux-suppliers/runtime/supplier/demo/scenarios'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers'),
   ])
   const supplierDemoWorld = projectSupplierDemoWorld({
     scenarios: supplierModule.supplierDemoScenarios,

@@ -15,64 +15,64 @@ const FILES = {
   trendComponent:
     'packages/extensions/fireux-finance/src/runtime/components/Finance/ReportTrend.vue',
   kitchenAdapter:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceSummary.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceSummary.vue',
   kitchenTrendAdapter:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceTrend.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceTrend.vue',
   kitchenCalendar:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceCalendar.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue',
   kitchenDayDetail:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceDayDetail.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue',
   kitchenRoundup:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceRoundup.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue',
   kitchenConsole:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue',
   kitchenConsolePage:
     'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue',
   restaurantLabourCalculator:
-    'packages/extensions/fireux-kitchens/src/runtime/tools/team/restaurant-labour-cost.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts',
   restaurantLabourToolAdapter:
-    'packages/extensions/fireux-kitchens/src/runtime/server/tools/calculate-restaurant-labour-cost.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/calculate-restaurant-labour-cost.ts',
   restaurantLabourToolComponent:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Tools/RestaurantLabourCostCalculator.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue',
   kitchenReportModel:
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/finance-report.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/finance-report.model.ts',
   kitchenReportProjection:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report.ts',
   kitchenDemoFinance:
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/finance.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/finance.ts',
   kitchenDemoOrderHistory:
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Orders/history.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts',
   kitchenDemoScenarios:
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenarios.ts',
 }
 
 const KITCHEN_FINANCE_SEAMS = {
   calendar: [
     FILES.kitchenCalendar,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/useKitchenFinanceCalendar.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/finance-calendar-date.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/useKitchenFinanceCalendar.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/finance-calendar-date.ts',
   ],
   console: [
     FILES.kitchenConsole,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/useKitchenFinanceOverview.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/useKitchenFinanceOverview.ts',
   ],
   dayDetail: [
     FILES.kitchenDayDetail,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/useKitchenFinanceDayDetail.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/useKitchenFinanceDayDetail.ts',
   ],
   demoScenarios: [
     FILES.kitchenDemoScenarios,
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/service-validation.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/scenario/service-validation.ts',
   ],
   reportProjection: [
     FILES.kitchenReportProjection,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-common.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-range.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-sale.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-accumulator.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-reconcile.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-aggregate.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-read.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-common.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-range.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-sale.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-accumulator.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-reconcile.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-aggregate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report-read.ts',
   ],
 }
 

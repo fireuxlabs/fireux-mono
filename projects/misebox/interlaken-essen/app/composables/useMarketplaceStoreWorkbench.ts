@@ -4,7 +4,7 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { marketSections } from '@/content/market-sections'
 import type {
   ManagedMarketplaceStore,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 import type {
   MarketplaceFulfilmentMethod,
   MarketplaceOffer,
@@ -12,7 +12,7 @@ import type {
   MarketplaceOrder,
   MarketplaceOrderStatus,
   MarketplaceStoreState,
-} from 'fireux-marketplace/runtime/models/marketplace.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
 export function useMarketplaceStoreWorkbench() {
   const { copy, locale } = useInterlakenCopy()

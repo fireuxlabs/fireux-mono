@@ -1,7 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-property-reservations">
-      <template #header><LayoutsConsoleNavbar title="Reservations" /></template>
+      <template #header>
+        <LayoutsConsoleNavbar title="Reservations">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Property Reservations" />
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
       <template #body
         ><UAlert
           title="Reservations"

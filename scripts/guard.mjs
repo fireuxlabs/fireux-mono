@@ -30,6 +30,7 @@ import { run as runOperationalScripts } from './guards/operational-scripts.mjs'
 import { run as runScriptLifecycle } from './guards/script-lifecycle.mjs'
 import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
+import { run as runRuntimeOwnership } from './guards/runtime-ownership.mjs'
 import { run as runDemoData } from './guards/demo-data.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runSlugCanon } from './guards/slug-canon.mjs'
@@ -91,6 +92,7 @@ const guards = [
   { key: 'script-lifecycle', run: runScriptLifecycle },
   { key: 'ownership', run: runOwnership },
   { key: 'runtime-registration', run: runRuntimeRegistration },
+  { key: 'runtime-ownership', run: runRuntimeOwnership },
   { key: 'demo-data', run: runDemoData },
   { key: 'canon', run: runCanon },
   { key: 'slug-canon', run: runSlugCanon },

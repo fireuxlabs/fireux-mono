@@ -6,7 +6,7 @@ import {
   readPendingAccountConsent,
 } from './account-consent'
 import { provisionSignedInUserAccount } from './userAccountProvisioning'
-import { CURRENT_USER_ACCOUNT_ASYNC_DATA_KEY } from '../user/currentUserAccount'
+import { CURRENT_USER_ACCOUNT_ASYNC_DATA_KEY } from '../../../user/composables/currentUserAccount'
 
 export type AccountProvisionState = {
   uid: string | null

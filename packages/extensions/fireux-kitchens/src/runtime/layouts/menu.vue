@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMenuExit } from '../composables/fireux/menu/useMenuExit'
+import { useMenuExit } from '../menu/composables/useMenuExit'
 
 const {
   exitKind,

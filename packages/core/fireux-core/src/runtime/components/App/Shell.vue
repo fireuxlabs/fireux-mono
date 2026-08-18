@@ -140,9 +140,9 @@ import { useFetch, useHead, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
-import AppInitializeSystem from './Initialize/System.vue'
-import { useAppInitialization } from '../../composables/fireux/app/utils/useAppInitialization'
-import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
+import AppInitializeSystem from '../../app/components/Initialize/System.vue'
+import { useAppInitialization } from '../../app/composables/utils/useAppInitialization'
+import { syncAppMediaToStorage } from '../../app/composables/firestore/utils/appMediaSync'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev

@@ -1,7 +1,7 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -79,7 +79,7 @@ remain real data even when a Demo record links to them.
   fixture or scenario concepts.
 - Ingredient identity is never Demo data. Kitchen and Supplier Demo records
   store only stable `ingredient_id` references; names, aliases, taxonomy,
-  lifecycle, parents, and images hydrate from the real canonical
+  lifecycle, parents, and images resolve from the real canonical
   `/ingredients/{ingredientId}` authority through the bounded public
   projection. A Demo fixture must not copy or locally decorate those roots.
 - Firebase Storage is the binary authority for Demo-owned presentation media;
@@ -123,8 +123,8 @@ remain real data even when a Demo record links to them.
   component kind. Menu-item variants and add-ons own their component deltas
   instead of changing the Dish base Spec.
 - Demo Menu publication and operational service availability are separate.
-  The package-owned pure cascade at
-  `runtime/utils/kitchen/demo-menu-cascade.ts` projects Menu provenance through
+  The Kitchen-owned pure cascade at
+  `runtime/kitchen/utils/demo-menu-cascade.ts` projects Menu provenance through
   Dish Specs, Menu-item deltas, Prep items, Recipes, root Ingredient links, and
   Mise candidates without mutating any record. Shared dependencies remain
   required while at least one in-service Menu uses them. Deanos' owner-local
@@ -142,11 +142,15 @@ remain real data even when a Demo record links to them.
 - This Demo production graph remains an explicit working seam, not storage
   canon. Promote it only after the model, collection, Rules, adapter, and guard
   contract have been agreed together.
-- Reusable fixtures live with their package under `src/runtime/demo`.
+- Entity-owned reusable fixtures belong under `src/runtime/<entity>/demo`.
+  Kitchen, Supplier, and Project fixtures use that ownership now. Root
+  `src/runtime/demo` remains only for genuine cross-entity Demo composition or
+  package-owned record families without a declared Entity.
 - App-only fixtures live with their project under `app/demo`.
-- A mature Demo owner keeps shared identity/types under `core/`, operation
-  records under `operations/<ExactConsoleOperation>/`, and derived guest or
-  showroom projections under optional `presentation/`. Root `scenarios.ts`
+- Within `runtime/<entity>/demo`, a mature Demo owner keeps entity-wide
+  identity/types under `core/`, operation records under
+  `operations/<ExactConsoleOperation>/`, and derived guest or showroom
+  projections under optional `presentation/`. Root `scenarios.ts`
   composes and validates those owner-local seams; it does not become a second
   fixture graph.
 - Operation folders are capability-shaped, not parity placeholders. Add an
@@ -167,9 +171,9 @@ remain real data even when a Demo record links to them.
   bounded authenticated Live target chooser so the user can leave Demo without
   losing sight of their Kitchens; that navigation read does not activate a
   selected Live Kitchen or its operations. The other narrow exception is a
-  bounded public projection read required to hydrate a shared canonical root
+  bounded public projection read required to resolve a shared canonical root
   explicitly referenced by a Demo operation record, currently Ingredient.
-  This is reference hydration, not a Live operation provider or a second Demo
+  This is a bounded reference join, not a Live operation provider or a second Demo
   identity source.
 - `useConsoleDemoData` caches a successful local load and exposes
   `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
@@ -219,8 +223,9 @@ remain real data even when a Demo record links to them.
   report from its completed-Order projection through the shared Kitchen
   projector. The dated transaction rows derive reconciled daily aggregates,
   current/prior period totals, item rollups, calendar days, grouped trend
-  points, selected-day detail, and sales-only insights, but Finance does not
-  enter the operation catalogue or create Sales or FinancialFacts. Supplier
+  points, selected-day detail, and sales-only insights. Finance is a Kitchen
+  Operation, but its report projection does not create Sales or
+  FinancialFacts. Supplier
   deliveries/invoices, staff pay, recurring rent, refunds, expenses, wages,
   VAT, labour, cashflow, profit, and P&L remain absent until their owning
   domains expose real dated producers.
@@ -237,8 +242,8 @@ remain real data even when a Demo record links to them.
   discriminated projection from its named surface adapter. A Demo orbit is
   network-free for data and may include only owner-local Demo records and pure
   projections; declared immutable HTTPS image requests are presentation
-  delivery, not data hydration. It cannot hydrate canonical Live roots or fall
-  back to Live records. Misebox therefore keeps canonical Ingredient hydration
+  delivery, not a data join. It cannot resolve canonical Live roots or fall
+  back to Live records. Misebox therefore keeps canonical Ingredient resolution
   in its Console/showroom Product Demo and excludes Ingredient-dependent Cards
   from the Demo-only orbit. Presentation components must not carry their own
   Deanos Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
@@ -249,7 +254,7 @@ remain real data even when a Demo record links to them.
   Admin, Storage SDK/API code, server code, public adapters, or mutation code.
   A guarded fixed public HTTPS Demo media URL may be a normal model field
   value; it does not grant fixtures runtime Storage authority. Consumer
-  adapters may hydrate explicitly linked shared roots through their bounded
+  adapters may resolve explicitly linked shared roots through their bounded
   public read projection; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
@@ -299,4 +304,4 @@ remain real data even when a Demo record links to them.
 - Verify an inactive console reports `idle` and does not invoke its loader.
 - Verify a Product Demo's fictional records remain deterministic and perform
   no live operational, test, or simulation storage work. Verify any canonical
-  root hydration is bounded to the stable IDs present in those records.
+  root join is bounded to the stable IDs present in those records.

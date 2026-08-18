@@ -100,7 +100,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleTargetOutcome } from '../../composables/fireux/app/console/useConsoleIndex'
+import type { ConsoleTargetOutcome } from '../../composables/fireux/console/useConsoleIndex'
 
 const props = withDefaults(
   defineProps<{

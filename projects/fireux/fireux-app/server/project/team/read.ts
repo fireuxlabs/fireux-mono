@@ -1,13 +1,13 @@
 import { useRuntimeConfig } from '#imports'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   AppUserStorage,
   UserStorage,
-} from 'fireux-core/runtime/models/core/user.model'
+} from 'fireux-core/runtime/user/models/user.model'
 import {
   AppProjectStorage,
   ProjectStorage,
-} from 'fireux-core/runtime/models/system/project.model'
+} from 'fireux-core/runtime/project/models/project.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { createError, type H3Event } from 'h3'

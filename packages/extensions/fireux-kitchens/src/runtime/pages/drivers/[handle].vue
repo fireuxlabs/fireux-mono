@@ -39,12 +39,12 @@
 <script setup lang="ts">
 import { navigateTo, setResponseStatus } from '#imports'
 import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useDriverSeo } from '../../composables/fireux/driver/useDriverSeo'
-import { useDriverInterface } from '../../composables/fireux/driver/useDriverInterface'
-import type { PublicDriverProfilePayload } from '../../models/driver.model'
+import { useDriverSeo } from '../../user/composables/driver/useDriverSeo'
+import { useDriverInterface } from '../../user/composables/driver/useDriverInterface'
+import type { PublicDriverProfilePayload } from '../../user/models/driver.model.ts'
 
 definePageMeta({
   visibility: { profiles: ['driver'] },

@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import type { Blank } from '../../../../models/blank.model'
 
 const props = withDefaults(

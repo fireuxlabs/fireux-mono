@@ -6,8 +6,8 @@ import {
   normalizeConsoleFamily,
   consoleFamilyFromRouteContext,
 } from '../../routing/consoleRoutes'
-import { useConsole } from '../../console/useConsole'
-import { useConsoleSelection } from '../../console/useConsoleSelection'
+import { useConsole } from '../../../console/useConsole'
+import { useConsoleSelection } from '../../../console/useConsoleSelection'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {

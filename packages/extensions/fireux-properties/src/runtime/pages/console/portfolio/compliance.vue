@@ -2,7 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-portfolio-compliance">
       <template #header>
-        <LayoutsConsoleNavbar title="Compliance" />
+        <LayoutsConsoleNavbar title="Compliance">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Portfolio Compliance" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
       <template #body>
         <UAlert

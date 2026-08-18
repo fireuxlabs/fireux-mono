@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
+import { useEcosystemAppCollection } from 'fireux-core/runtime/ecosystem/composables/useEcosystemAppCollection'
 import EmployerValue from './EmployerValue.vue'
 import { content, networkCatalogue, surfaceItems } from './landing-content'
 

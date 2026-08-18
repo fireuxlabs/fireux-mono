@@ -16,7 +16,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import PortfolioCreateSystem from '../../components/Portfolio/Create/System.vue'
+import PortfolioCreateSystem from '../../portfolio/components/Create/System.vue'
 
 definePageMeta({
   layout: 'default',

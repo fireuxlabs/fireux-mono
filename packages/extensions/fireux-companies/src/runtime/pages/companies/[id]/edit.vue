@@ -87,10 +87,10 @@
 import { setResponseStatus, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
-import { useCompanyDetail } from '../../../composables/fireux/company/useCompanyDetail'
-import { useCompanyInterface } from '../../../composables/fireux/company/useCompanyInterface'
+import { useCompanyDetail } from '../../../place/composables/company/useCompanyDetail'
+import { useCompanyInterface } from '../../../place/composables/company/useCompanyInterface'
 
 definePageMeta({
   layout: 'default',

@@ -1,4 +1,4 @@
-import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/project/useProjectInterface'
+import type { ProjectSurface } from 'fireux-core/runtime/project/composables/useProjectInterface'
 
 type PublicProjectDirectoryResponse = {
   ok: true

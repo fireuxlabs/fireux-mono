@@ -4,7 +4,7 @@ import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type { ProfileRefs } from '../fetch/useProfileFetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
-import { AppStorage } from '../../../../../../models/core/app.model'
+import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import type {
   AppProfileBase,
   ProfileRecord,

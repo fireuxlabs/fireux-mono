@@ -102,13 +102,13 @@
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/console/portfolio/operations/Tasks/mutations/useTaskCreate'
-import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/console/portfolio/operations/Tasks/utils/projection/useTaskProjection'
+} from 'fireux-properties/runtime/portfolio/composables/console/operations/useActivePortfolio'
+import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/console/operations/Tasks/mutations/useTaskCreate'
+import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/console/operations/Tasks/utils/projection/useTaskProjection'
 import { computed } from 'vue'
-import { usePortfolioComplianceRecordCollection } from '../../../composables/fireux/console/portfolio/operations/Compliance/fetch/usePortfolioComplianceRecordCollection'
-import { useComplianceInterface } from '../../../composables/fireux/console/portfolio/operations/Compliance/utils/view/useComplianceInterface'
-import { ComplianceRecordStorage } from '../../../models/compliance-record.model'
+import { usePortfolioComplianceRecordCollection } from '../../../portfolio/composables/console/operations/Compliance/fetch/usePortfolioComplianceRecordCollection'
+import { useComplianceInterface } from '../../../portfolio/composables/console/operations/Compliance/utils/view/useComplianceInterface'
+import { ComplianceRecordStorage } from '../../../portfolio/models/compliance-record.model.ts'
 
 definePageMeta({
   layout: 'console',

@@ -111,7 +111,7 @@ const FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN = new Map([
     new Set(['Chef', 'Customer', 'Driver']),
   ],
   [
-    'packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product',
+    'packages/extensions/fireux-products/src/runtime/product/composables/firestore',
     new Set(['price']),
   ],
 ])

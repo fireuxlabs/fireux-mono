@@ -2,7 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-drinks">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Drinks" />
+        <LayoutsConsoleNavbar title="Kitchen Drinks">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Drinks" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>
@@ -15,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/console/operations/Dishes/useKitchenDishesWorkspace'
 
 provideKitchenDishesWorkspace('drink')
 

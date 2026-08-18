@@ -1,5 +1,5 @@
 import { getRouterParam, getQuery } from 'h3'
-import { readKitchenFlagshipDish } from '../../../dish/flagship-projection'
+import { readKitchenFlagshipDish } from '../../../../kitchen/server/operations/dishes/flagship-projection'
 
 export default defineEventHandler(async (event) => {
   const kitchenId = String(getRouterParam(event, 'id') || '').trim()

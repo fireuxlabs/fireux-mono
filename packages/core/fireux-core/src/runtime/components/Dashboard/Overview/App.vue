@@ -160,7 +160,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppCard } from '../../../composables/fireux/app/useAppInterface'
+import type { AppCard } from '../../../app/composables/useAppInterface'
 import type { CurrentAppMembershipDto } from '../../../server/utils/public-projection/public-dto.types'
 import type {
   DashboardOverviewOutcome,

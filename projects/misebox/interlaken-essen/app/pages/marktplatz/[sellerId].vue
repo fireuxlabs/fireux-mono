@@ -16,7 +16,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
   PublicMarketplaceStoreResponse,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',

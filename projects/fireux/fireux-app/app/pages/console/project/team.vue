@@ -7,7 +7,7 @@
 
       <template #body>
         <section class="space-y-6">
-          <ConsoleProjectOperationsTeam />
+          <ConsoleProjectTeam />
         </section>
       </template>
     </UDashboardPanel>

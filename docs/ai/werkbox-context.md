@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -85,7 +85,7 @@ remembered implementations are not authority.
   and edit only the allowlisted scalar portions of their canonical User,
   UserAccount, Agent, and Professional records; App membership/admin reads are
   scoped to the current App. Jobs, Places, Companies, public identities, App
-  people hydration, and structured Professional experience use bounded trusted
+  people projection, and structured Professional experience use bounded trusted
   package server APIs rather than raw browser collection access.
 - Werkbox owns its strict client Rules manifest at
   `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`

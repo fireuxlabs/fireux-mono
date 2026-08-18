@@ -1,7 +1,7 @@
 # Menu family
 
-Updated: 2026-08-15
-Ref: 0d01bbd5f
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -15,7 +15,8 @@ Kitchen-scoped structured content, public route projections, or ordering.
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
 - Horizontal: `entities.md`, `firestore-entity.md`, `console.md`,
-  `family-tenant-global.md`, `ai-document-processing.md`
+  `family-tenant-global.md`, `ai-document-processing.md`,
+  `runtime-filesystem.md`
 - Route guard: `scripts/guards/menu-route-contract.mjs`
 
 ## Family in one view
@@ -155,7 +156,7 @@ validates and commits it.
 Public Menu presentation is resolved, not copied:
 
 1. Place supplies shared business defaults such as currency and hours plus its
-   identity-media colour when known.
+   one `identity_color` when known. Kitchen does not override that colour.
 2. AppKitchen `console.theme.palette` owns the Kitchen's four-role Menu default:
    `canvas`, `text`, `accent`, and `accent_contrast`.
 3. KitchenMenu may own one optional complete four-role `theme.palette` when a
@@ -183,15 +184,19 @@ map.
 
 ## Component and ownership boundaries
 
-- `components/Menu/Index` owns public Menu index composition.
-- `components/Menu/Browse` owns context-free public Menu reading.
-- `components/Menu/Order` owns the canonical public ordering shell.
-- `components/Console/Kitchen/Operations/Menus` owns upload, processing,
-  editing, publishing, sections, items, QR management, and ordering config.
-- `components/Menu/Json` is temporary diagnostic rendering for contexts that
-  do not yet have a dedicated projection.
+- `runtime/menu/components/Index` owns Menu index composition.
+- `runtime/menu/components/Browse` owns context-free Menu reading.
+- `runtime/menu/components/Order` owns the canonical ordering shell.
+- `runtime/kitchen/components/Console/Operations/Menus` owns upload,
+  processing, editing, publishing, sections, items, QR management, and
+  ordering config.
+- `runtime/menu/components/Json` is temporary diagnostic rendering for
+  contexts that do not yet have a dedicated projection.
 - Project Apps configure or compose these surfaces; they do not recreate a
-  competing public Menu renderer.
+  competing Menu renderer.
+
+Menu and Kitchen Menu now use their scoped component and composable roles.
+Root technical paths are completed legacy placements and must not return.
 
 ## Accepted deltas
 
@@ -217,6 +222,10 @@ map.
 | AI candidate images require explicit Dish media review                                      | `accepted`   | Kitchen persists Keep, Reprocess with AI, Generate, or No image per draft item; only reviewed Keep outputs cross canonical Dish normalization during confirm  |
 | Premium global Menu-id claim/reservation policy                                             | `to-confirm` | Do not claim enforcement until business policy and trusted implementation exist                                                                               |
 
+Filesystem placement is `accepted`: Menu and Kitchen Menu implementation lives
+under its Menu or Kitchen owner without merging their identities or leaving
+compatibility paths.
+
 ## Source map
 
 Start with:
@@ -224,10 +233,11 @@ Start with:
 - Entity declarations: `models/kitchen/menu/menu.model.ts` and
   `models/kitchen/menu/kitchen-menu.model.ts`.
 - Route grammar: `utils/kitchen-menu-route.ts`.
-- Ownership resolution: `server/menu/ownership/public-target.ts`.
-- Public index: `composables/fireux/menu/usePublicMenuIndex.ts`.
-- Public detail: `composables/fireux/menu/useMenu.ts`.
-- Console operation: `composables/fireux/console/kitchen/operations/Menus`.
+- Ownership resolution: `runtime/menu/server/ownership/public-target.ts`.
+- Menu index: `runtime/menu/composables/usePublicMenuIndex.ts`.
+- Menu detail: `runtime/menu/composables/useMenu.ts`.
+- Console operation:
+  `runtime/kitchen/composables/console/operations/Menus`.
 - Ordering details: `menu-ordering.md` and the Menu Order source it references.
 
 ## Alignment roadmap

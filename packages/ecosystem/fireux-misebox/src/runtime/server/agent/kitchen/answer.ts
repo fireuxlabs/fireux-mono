@@ -4,7 +4,7 @@ import {
   extractFireuxAgentTip,
   fireuxAgentTipInstruction,
 } from 'fireux-ai/runtime/agents/agent-tip'
-import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/server/kitchen/ai/usage'
+import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/kitchen/server/ai/usage'
 import { readKitchenAgentContext } from './context'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 

@@ -31,7 +31,7 @@ import { findMarketSection } from '../../content/market-sections'
 import type {
   PublicMarketplaceStore,
   PublicMarketplaceStoreListResponse,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',

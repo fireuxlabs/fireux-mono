@@ -90,7 +90,7 @@ import { useToastify } from '../../composables/fireux/app/ui/useToastify'
 import {
   useAppPublicSettings,
   type AppFeaturedSlugField,
-} from '../../composables/fireux/app/useAppPublicSettings'
+} from '../../app/composables/useAppPublicSettings'
 
 const props = withDefaults(defineProps<{
   field: AppFeaturedSlugField

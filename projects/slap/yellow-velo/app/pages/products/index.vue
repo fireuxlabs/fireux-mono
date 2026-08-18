@@ -120,8 +120,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({
   layout: 'landing',

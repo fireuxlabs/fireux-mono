@@ -1,7 +1,7 @@
 # Firestore entity stack family
 
 Updated: 2026-08-18
-Ref: 796952bf0
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -24,16 +24,23 @@ and operator adapters. It is not merely a CRUD wrapper around a collection.
 
 - console.md
 - server-api.md
+- runtime-filesystem.md
 
 ## Allowed entity stack
 
-- `composables/fireux/firestore/<entity>`
-- `composables/fireux/firestore/core/<entity>` for Core User, App, and
-  Ecosystem storage adapters
+- `runtime/<entity>/composables/firestore`
 - `fetch`
 - `mutations`
 - `seo`
 - `utils`
+
+The root `runtime/composables` spine owns only proven cross-entity Firestore
+primitives. Declared Entity adapters now live under
+`runtime/<entity>/composables/firestore`, including Core User, App, and
+Ecosystem. Completed legacy directories are guarded against returning, and no
+aliases remain at both paths. Confirmed User-backed profile/record adapters use
+the User scope in their owning extension package; to-confirm concepts stay on
+the package spine until their classification changes.
 
 Example Firestore stack names, not automatic entity proof:
 
@@ -60,9 +67,10 @@ Example Firestore stack names, not automatic entity proof:
 - Writes belong in `mutations`.
 - Firestore normalization and storage-specific validation belong in `utils`.
 - Entity-facing computed state, permissions, interfaces, and profile views
-  belong in `composables/fireux/<entity>`. Older `utils/view` locations are
-  migration debt, not the target for new families.
-- A bounded route reader belongs in `composables/fireux/<entity>` as
+  belong in `runtime/<entity>/composables`. Older `utils/view` and
+  `composables/fireux/<entity>` locations are migration debt, not the target
+  for new families.
+- A bounded route reader belongs in `runtime/<entity>/composables` as
   `useXDetail`; it does not move the public DTO into the Firestore stack.
 - An entity exposes only supported capabilities. Read-only or server-owned
   entities do not receive placeholder client mutations for structural parity.
@@ -111,7 +119,7 @@ Example Firestore stack names, not automatic entity proof:
   collection-path, document-path, document-id, or query inputs into that read.
   The shared read owns source replacement and scope disposal; do not create live
   reads inside a `computed` or render-time factory.
-- Dynamic-cardinality keyed hydration is the narrow exception. Its reconciliation
+- Dynamic-cardinality keyed reads are the narrow exception. Their reconciliation
   watcher must normalize and deduplicate active IDs, reuse surviving bindings,
   stop bindings as IDs leave the set, and stop every remaining binding on scope
   disposal. Derived/computed mapping only reads the reconciled cache.
@@ -136,7 +144,7 @@ Example Firestore stack names, not automatic entity proof:
 - An app-private profile record uses only the app-scoped path, records its id on
   `AppUser.profiles`, and must not acquire a root collection or public index.
 - Every root profile record is domain-only and uses its document id as the
-  canonical `/users/{uid}` join key. Public presentation hydrates or projects
+  canonical `/users/{uid}` join key. Public presentation joins or projects
   that User; root profile documents never embed a User summary.
 - Every App profile delta record is non-identity support: it does not duplicate
   public User identity, and successful create/repair records the profile id on
@@ -154,7 +162,7 @@ Example Firestore stack names, not automatic entity proof:
   they do not create another storage scope or another entity.
 - Root profile directories use bounded domain-owned projections that join the
   profile document to canonical User by uid; raw profile collection listeners
-  are reserved for neither public browse nor identity hydration.
+  are reserved for neither public browse nor identity resolution.
 - Private Project control-plane reads do not expose a client Firestore
   collection binding; the FireUX admin server boundary owns that read.
 - Deployed Firestore rules must independently deny unauthorized direct Project
@@ -188,9 +196,10 @@ Example Firestore stack names, not automatic entity proof:
   remains sparse unless its write contract explicitly requires every field.
 - Root and App-support records never share a combined storage object. Use
   `XStorage` for the entity root and `AppXStorage` for its App support record.
-- Entity-facing composables live at `composables/fireux/<entity>/useXDetail.ts`
-  and `useXInterface.ts`. Firestore reads and writes remain adapters beneath
-  `composables/fireux/firestore/<entity>/`.
+- Entity-facing composables live at
+  `runtime/<entity>/composables/useXDetail.ts` and `useXInterface.ts`.
+  Firestore reads and writes remain adapters beneath
+  `runtime/<entity>/composables/firestore/`.
 - The App document owns bounded access and only its declared non-secret delta.
   Collection adapters type it as the named `App<Entity>` record, require the
   root, and project allowlisted fields instead of spreading it over identity.
@@ -257,7 +266,7 @@ Example Firestore stack names, not automatic entity proof:
   as arrays, so use the shared `pending` ref.
 - Treat read errors as empty or missing records.
 - Let an App support record overwrite root identity, stamps, or relationships.
-- Fabricate a root entity from an App record when root hydration fails.
+- Fabricate a root entity from an App record when root resolution fails.
 - Accept caller-selected `scope`, `shape`, or `collectionPath` in a root-with-App-support
   mutation helper.
 

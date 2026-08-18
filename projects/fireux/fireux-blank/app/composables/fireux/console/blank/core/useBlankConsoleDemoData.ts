@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
+import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/console/useConsoleDemoData'
 import type { BlankSurface } from '../../../../../models/blank.model'
 import { composeBlankSurface } from '../../../../../utils/blank-surface'
 

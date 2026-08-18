@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-supplier-items">
       <template #header>
-        <LayoutsConsoleNavbar title="Items" />
+        <LayoutsConsoleNavbar title="Items">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Supplier Items" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

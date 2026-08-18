@@ -20,10 +20,10 @@ import type {
 import {
   publicUserBelongsToScope,
   resolvePublicUserScope,
-} from '../../../utils/public-projection/public-user-scope'
+} from '../../../../user/server/projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
-import { UserStorage } from '../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../utils/user-avatar.ts'
+import { UserStorage } from '../../../../user/models/user.model.ts'
+import { resolveUserAvatarSource } from '../../../../user/utils/user-avatar.ts'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 

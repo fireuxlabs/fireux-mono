@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { completeKitchenMenuPublication } from '../../server/menu/publication/run.ts'
+import { completeKitchenMenuPublication } from '../../menu/server/publication/run.ts'
 
 test('publishing a scoped KitchenMenu ensures its missing root projection', async () => {
   const calls: string[] = []

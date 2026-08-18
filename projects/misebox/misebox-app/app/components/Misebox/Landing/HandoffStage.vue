@@ -88,11 +88,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import type {
   MenuManifest,
   MenuManifestSection,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import { useMiseboxProductDemo } from '../../../composables/product-demo/useMiseboxProductDemo'
 import MiseboxLandingConsolePreviewMenus from './ConsolePreview/Menus.vue'
 import MiseboxLandingConsolePreviewMise from './ConsolePreview/Mise.vue'

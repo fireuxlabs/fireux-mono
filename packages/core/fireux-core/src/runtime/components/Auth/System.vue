@@ -85,8 +85,8 @@
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../composables/fireux/user/useUser'
-import { useUserInterface } from '../../composables/fireux/user/useUserInterface'
+import { useUser } from '../../user/composables/useUser'
+import { useUserInterface } from '../../user/composables/useUserInterface'
 import {
   resolveInternalRedirect,
   userOnboardingPath,

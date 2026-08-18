@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAppPublicSettings } from '../../composables/fireux/app/useAppPublicSettings'
+import { useAppPublicSettings } from '../../app/composables/useAppPublicSettings'
 
 const props = withDefaults(defineProps<{
   field: `featured_${string}_slugs`

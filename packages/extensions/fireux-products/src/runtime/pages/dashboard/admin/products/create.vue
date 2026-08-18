@@ -77,11 +77,11 @@ import { computed, ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useProductPermissions } from '../../../../composables/useProductPermissions'
-import { useProductCreate } from '../../../../composables/fireux/firestore/product/mutations/useProductCreate'
-import { useCreatePricesState } from '../../../../composables/fireux/product/create/useCreatePricesState'
-import { useCreateProductState } from '../../../../composables/fireux/product/create/useCreateProductState'
-import type { StripePriceInput } from '../../../../models/product.model'
+import { useProductPermissions } from '../../../../product/composables/useProductPermissions'
+import { useProductCreate } from '../../../../product/composables/firestore/mutations/useProductCreate'
+import { useCreatePricesState } from '../../../../product/composables/create/useCreatePricesState'
+import { useCreateProductState } from '../../../../product/composables/create/useCreateProductState'
+import type { StripePriceInput } from '../../../../product/models/product.model.ts'
 
 definePageMeta({
   layout: 'dashboard',

@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-property-team">
       <template #header>
-        <LayoutsConsoleNavbar title="Property Team" />
+        <LayoutsConsoleNavbar title="Property Team">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Property Team" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select App support paths without overlay terminology.
-import type { ConsoleSource } from '../../../../app/console/useConsole'
+import type { ConsoleSource } from '../../../../console/useConsole'
 import { readFireuxEntityManagement } from '../../../../../../utils/entity-management'
 import type { FireuxEntityManagement } from '../../../../../../models/utils/scope.model'
 

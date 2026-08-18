@@ -1,8 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, readBody } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenWriter } from '../../../../kitchen/core/operator-access'
-import { publishKitchenMenu } from '../../../../menu/publication/publish'
+import { requireKitchenWriter } from '../../../../../kitchen/server/core/operator-access'
+import { publishKitchenMenu } from '../../../../../menu/server/publication/publish'
 
 export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()

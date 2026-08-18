@@ -9,27 +9,27 @@ import {
   serverKitchenDishesTarget,
   serverKitchenMenuUploadsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { writeKitchenMenuDraft } from '../../../../menu/draft/write'
-import { compareKitchenMenuDraftToCurrent } from '../../../../menu/draft/comparison'
-import { readKitchenMenuCurrentShape } from '../../../../menu/draft/current'
+import { writeKitchenMenuDraft } from '../../../../../menu/server/draft/write'
+import { compareKitchenMenuDraftToCurrent } from '../../../../../menu/server/draft/comparison'
+import { readKitchenMenuCurrentShape } from '../../../../../menu/server/draft/current'
 import {
   countKitchenMenuDraftItems,
   normalizeKitchenMenuDraftSections,
-} from '../../../../menu/draft/sections'
+} from '../../../../../menu/server/draft/sections'
 import {
   assertKitchenMenuUploadAccess,
   assertKitchenMenuCurrencyCode,
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
-} from '../../../../menu/source/uploads'
-import { importKitchenMenuCacheUnits } from '../../../../menu/sproochli/cache-import'
+} from '../../../../../menu/server/source/uploads'
+import { importKitchenMenuCacheUnits } from '../../../../../menu/server/sproochli/cache-import'
 import {
   normalizeMenuMediaReview,
   menuMediaReviewKey,
-} from '../../../../menu/media/review'
+} from '../../../../../menu/server/media/review'
 import { fetchPublicRasterImage } from 'fireux-core/runtime/server/utils/http/public-raster-image'
-import { normalizeAndSaveDishImage } from '../../../../dish/image'
+import { normalizeAndSaveDishImage } from '../../../../../kitchen/server/operations/dishes/image'
 
 type ConfirmMenuBody = Partial<
   Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>

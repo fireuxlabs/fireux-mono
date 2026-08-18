@@ -1,7 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-portfolio-tasks">
-      <template #header><LayoutsConsoleNavbar title="Tasks" /></template>
+      <template #header>
+        <LayoutsConsoleNavbar title="Tasks">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Portfolio Tasks" />
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
       <template #body
         ><UAlert
           title="Tasks"

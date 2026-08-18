@@ -2,7 +2,7 @@ import { defineNuxtRouteMiddleware } from '#imports'
 import {
   menuRouteProjection,
   parseMenuRouteTarget,
-} from '../utils/kitchen-menu-route'
+} from '../kitchen/utils/kitchen-menu-route'
 
 export default defineNuxtRouteMiddleware((to) => {
   const rawMenuId = Array.isArray(to.params.menuId)

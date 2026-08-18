@@ -1,7 +1,7 @@
 # Console
 
-Updated: 2026-08-17
-Ref: b5ed10b84
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -22,6 +22,7 @@ Map the shared console system and domain adapters.
 - pages.md
 - debug.md
 - demo-data.md
+- runtime-filesystem.md
 
 ## Shared core
 
@@ -38,6 +39,13 @@ Map the shared console system and domain adapters.
 - `useConsoleOverview`
 - `useConsoleSelection`
 - `useConsoleTeam`
+
+Console is a shared surface and selected-workspace runtime, not an entity
+owner. Shared Console shells, navigation, selection, and outcome primitives
+remain in the root technical spine. Kitchen, Supplier, Project, and other
+entity-specific Console adapters belong beneath their entity roots according
+to `runtime-filesystem.md`. Nuxt pages and API handlers retain their framework
+paths and delegate inward.
 
 ## Page surface vocabulary
 
@@ -105,6 +113,11 @@ Map the shared console system and domain adapters.
   workspace supplies shared target, authority, records, and outcomes to every
   sheet. A sheet with no real job is omitted; empty Views do not manufacture
   dashboard cards merely to occupy space.
+- Core Console navigation exposes a neutral right slot and has no knowledge of
+  AI. An AI-enabled Operation may compose FireUX AI presentation into that slot
+  or render a bounded contextual AI sheet in its body. FireUX AI owns prompt
+  placeholders, tool discovery, suggestions, and execution presentation;
+  domain Operations own the capabilities and context supplied to it.
 - Overview navigation cards do not initialize child operation workspaces to
   calculate counts. A future count belongs to one bounded overview summary;
   each operation loads its records only when its own route opens.
@@ -130,12 +143,33 @@ Map the shared console system and domain adapters.
 - `operations`
 - `sundries`
 
+## Source-backed capability map
+
+The visible Console tree is the naming authority for entity server and client
+slices. `Index` is the selection and Create doorway; Create is not a selected
+workspace peer.
+
+| Entity    | Peer capabilities               | Operations                                                                                      |
+| --------- | ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Project   | Index, Overview, Identity, Team | Apps, Ecosystem                                                                                 |
+| Kitchen   | Index, Overview, Identity, Team | Dishes, Drinks, Ingredients, Menus, Mise, Orders, Recipes, Stations, Suppliers, Tables, Finance |
+| Supplier  | Index, Overview, Identity, Team | Catalogue, Ingredients, Items                                                                   |
+| Portfolio | Index, Overview, Identity, Team | Properties, Compliance, Documents, Tasks, Finance                                               |
+| Property  | Index, Overview, Identity, Team | Reservations, Calendar                                                                          |
+| Blank     | Index, Overview, Identity       | —                                                                                               |
+
+Ignition is separate Project intake/admin, not a Project Operation. A missing
+server folder is valid when a visible capability has no server-owned
+behaviour; the map does not require empty symmetry.
+
 ## Component bucket shape
 
 - Console families carry only the peer buckets their real lifecycle needs.
-  `Team` is not mandatory; Project deliberately has none today.
+  Every current Console Entity except Blank has Team; Project Team is a real
+  peer capability, not a Project Operation.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
-- Do not mix `Console/X/Overview.vue` with `Console/X/Overview/*`; use `Console/X/Overview/Index.vue`.
+- Do not mix an entity's `Console/Overview.vue` with `Console/Overview/*`; use
+  `runtime/<entity>/components/Console/Overview/Index.vue`.
 - `Team` sits beside `Operations` only when the entity has a real collaboration lifecycle.
 - `Operations` is for selected-target work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
@@ -143,6 +177,13 @@ Map the shared console system and domain adapters.
 ## Index pattern
 
 - Page renders `ConsoleXIndex`.
+- Only the genuine Console Entity Index capability uses the named doorway
+  `runtime/<entity>/components/Console/Index.vue`: it owns selection, creation entry, and target-list
+  presentation. Supporting selected-target and target-collection components
+  may live under the entity's `components/Console/Index/*`. This does not authorize `Index.vue` as a
+  generic directory-entry trick for AI, shells, controllers, collections, or
+  other capabilities; name those jobs directly. Do not use the opaque repeated
+  `Index/Index.vue` entry.
 - `ConsoleXIndex` renders selected and targets sections.
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
 - `useXConsole` owns target candidate resolution, the authoritative collection
@@ -188,8 +229,8 @@ Map the shared console system and domain adapters.
   operation providers remain inactive in Demo mode.
 - Persisted selection is validated only against a successful target read.
   Pending or failed target reads must not clear a saved selection.
-- Selected-target routes distinguish persistence from hydration. The persisted
-  family selection ID decides whether a target is selected; the asynchronously
+- Selected-target routes distinguish the persisted selection from the loaded
+  target. The persisted family selection ID decides whether a target is selected; the asynchronously
   loaded target object decides whether target content is ready. A missing
   object while an ID exists is a loading state, never a false "select first"
   empty state.
@@ -241,18 +282,22 @@ Map the shared console system and domain adapters.
 ## Operations
 
 - Operations are child surfaces inside a selected console target.
-- Every Console family owns Identity. One source-backed Operation catalogue
-  accounts for every top-level Operation route and projects the complete
-  landing subheader plus matching `/operations/<slug>` literature pages.
-  Overview, Create, dev tooling, and child/detail routes are not Operations;
-  product directories do not enter the Console Operation catalogue.
-- Product classification follows the selected-target work, not the component
-  folder name alone. Domain-owned workspaces such as Kitchen Identity and Team
-  may remain in the shared structural `Identity` and `Team` buckets while also
-  appearing in the Kitchen Operation catalogue because managing them is
-  ongoing Kitchen work. A selected-Kitchen report such as Finance may also be
-  an Operation when it is a dedicated operational workspace.
+- Identity and Team are first-class Console peer capabilities, not Operations.
+  Overview, Index/Create, dev tooling, and child/detail routes are also not
+  Operations. A selected-target report such as Kitchen Finance is an Operation
+  when it has its own operational workspace.
+- A Console capability catalogue may feed a landing or discovery surface, but
+  it must preserve this classification. The current Kitchen and Supplier
+  `runtime/content/operations.ts` arrays still include Identity and Team under
+  a historical `Operations` name; that is migration drift in the catalogue,
+  not authority to redefine the Console tree. Move those catalogues to their
+  entity `content` scopes and give the complete list a capability-accurate name
+  before using it as the operation-only source.
 - Operations must not leak into Firestore entity root folders.
+- Operation-AI presentation belongs to FireUX AI. Core supplies only neutral
+  Console composition slots, while each Entity Operation explicitly decides
+  whether and where to compose the AI surface. AI presentation does not belong
+  in Core, an Entity domain, or a generic `utils` folder.
 - Operation browse families must name their visible jobs rather than relying on
   folder symmetry alone. The `like-menu` family is the records-then-tools
   reference for collection-led operations.

@@ -13,7 +13,7 @@ import {
   downloadStorageFile,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
-import { resolvePublicMenuTarget } from '../../../menu/ownership/public-target.ts'
+import { resolvePublicMenuTarget } from '../../../../menu/server/ownership/public-target.ts'
 
 export default defineEventHandler(async (event) => {
   const menuId = String(getRouterParam(event, 'menuId') || '').trim()

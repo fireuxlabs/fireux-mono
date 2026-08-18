@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { mutateJobEngagement } from '../../../job/hiring.ts'
+import { mutateJobEngagement } from '../../../../job/server/operations/hiring/index.ts'
 
 export default defineEventHandler(async event => {
   const body = await readBody(event)

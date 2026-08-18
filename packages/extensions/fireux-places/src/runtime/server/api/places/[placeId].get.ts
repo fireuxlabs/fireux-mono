@@ -8,9 +8,9 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicPlaceDetailResponse } from '../../../models/place-public.model'
-import { PlaceStorage } from '../../../models/place.model'
-import { projectPublicPlaceDetail } from '../../place/public-projection'
+import type { PublicPlaceDetailResponse } from '../../../place/models/place-public.model.ts'
+import { PlaceStorage } from '../../../place/models/place.model.ts'
+import { projectPublicPlaceDetail } from '../../../place/server/identity/public-projection'
 
 export default defineEventHandler(async (event): Promise<PublicPlaceDetailResponse> => {
   const locator = requireFirestoreDocumentId(getRouterParam(event, 'placeId'), 'Place id')

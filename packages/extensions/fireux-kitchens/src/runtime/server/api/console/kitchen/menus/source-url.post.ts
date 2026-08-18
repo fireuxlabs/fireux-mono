@@ -12,11 +12,11 @@ import {
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
   storagePathsFromMenuUpload,
-} from '../../../../menu/source/uploads'
+} from '../../../../../menu/server/source/uploads'
 import {
   kitchenMenuUrlSourceRecord,
   readKitchenMenuUrlSourceRequest,
-} from '../../../../menu/source/url-sources'
+} from '../../../../../menu/server/source/url-sources'
 
 export default defineEventHandler(async (event: H3Event) => {
   const uid = await requireKitchenMenuUploadUser(

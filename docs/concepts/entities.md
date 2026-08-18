@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -93,17 +93,17 @@ The current declared Entities are:
 
 The current declared Records are:
 
-| Record           | Parent           | Public read | Why it is not an Entity                                                    |
-| ---------------- | ---------------- | ----------- | -------------------------------------------------------------------------- |
-| Company          | Place            | projection  | It is an exact same-id role marker; Place owns identity and location truth |
-| MenuSourceUpload | Kitchen          | none        | It is source material for a Kitchen workflow                               |
-| MenuSection      | KitchenMenu      | none        | It groups MenuItem records inside one Menu                                 |
-| MenuItem         | MenuSection      | none        | It is one parent-owned catalogue row                                       |
-| KitchenSale      | KitchenOrder     | none        | It is the immutable one-to-one result of Order completion                  |
-| CustomerProfile  | User             | none        | It stores App-scoped ordering preferences, not another person identity     |
-| CustomerOrderLink | User            | none        | It points to an Order without copying mutable Order lifecycle state         |
-| MarketplaceOffer | MarketplaceStore | projection  | It has no lifecycle outside its Store                                      |
-| MarketplaceOrder | MarketplaceStore | none        | It is private operational fulfilment truth for one Store                   |
+| Record            | Parent           | Public read | Why it is not an Entity                                                    |
+| ----------------- | ---------------- | ----------- | -------------------------------------------------------------------------- |
+| Company           | Place            | projection  | It is an exact same-id role marker; Place owns identity and location truth |
+| MenuSourceUpload  | Kitchen          | none        | It is source material for a Kitchen workflow                               |
+| MenuSection       | KitchenMenu      | none        | It groups MenuItem records inside one Menu                                 |
+| MenuItem          | MenuSection      | none        | It is one parent-owned catalogue row                                       |
+| KitchenSale       | KitchenOrder     | none        | It is the immutable one-to-one result of Order completion                  |
+| CustomerProfile   | User             | none        | It stores App-scoped ordering preferences, not another person identity     |
+| CustomerOrderLink | User             | none        | It points to an Order without copying mutable Order lifecycle state        |
+| MarketplaceOffer  | MarketplaceStore | projection  | It has no lifecycle outside its Store                                      |
+| MarketplaceOrder  | MarketplaceStore | none        | It is private operational fulfilment truth for one Store                   |
 
 The executable source is `scripts/_lib/entity-matrix.mjs`; the guard is
 `scripts/guards/entity-matrix.mjs`. The matrix intentionally imports no runtime
@@ -163,7 +163,7 @@ turning the indexes into authority.
 
 Public User projections preserve the same split. Global runtimes may enumerate
 the canonical User catalogue. Tenant runtimes first enumerate exact valid
-AppUser memberships for their configured App, then hydrate only those canonical
+AppUser memberships for their configured App, then resolve only those canonical
 User identities. Root `User.app_ids` is denormalized identity metadata, not
 tenant-directory selection authority, and tenant detail routes apply the same
 membership decision as their list.
@@ -219,7 +219,7 @@ bulk-promote them from route or folder symmetry.
 
 Ingredient is now a declared shared culinary root owned by
 `fireux-kitchens`. Kitchen and Supplier operational records reference its
-stable document id and hydrate only the bounded public projection. Its
+stable document id and resolve only the bounded public projection. Its
 canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
 
@@ -276,7 +276,7 @@ provider identity. Supplier Item is a Supplier-owned scoped Record: it must
 link to Product with `product_id`, owns the Supplier's offer/SKU/packaging and
 procurement terms, and may link to Ingredient when the offer represents
 culinary stock. Neither wrapper copies Product or Ingredient identity.
-Product document ids are hydrated by Firestore readers and need not be copied
+Product document ids are supplied by Firestore readers and need not be copied
 into sparse stored records. A slug is required by a published doorway, not by
 an inactive provider-imported Product that has no public route.
 
@@ -321,9 +321,9 @@ Public Index and Public Detail family maps.
 | Place plus same-id Company role                                | `accepted`   | Place owns shared location identity; Company remains an exact stamps-only role marker and public reads reuse the Place projection                                   |
 | Kitchen root + Place + App support composition                 | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only        |
 | Supplier and Portfolio public-read contracts are unresolved    | `to-confirm` | Define bounded public DTOs before claiming public family parity                                                                                                     |
-| Recipe and Dish Kitchen ownership                              | `accepted`   | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                  |
-| Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                         |
-| Product root plus Supplier Item relationship                   | `accepted`   | Product owns commercial identity and ProductPrice children; Supplier Item is a Supplier-owned offer Record with required `product_id` and optional `ingredient_id`   |
+| Recipe and Dish Kitchen ownership                              | `accepted`   | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                 |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                        |
+| Product root plus Supplier Item relationship                   | `accepted`   | Product owns commercial identity and ProductPrice children; Supplier Item is a Supplier-owned offer Record with required `product_id` and optional `ingredient_id`  |
 | Supplier location chain                                        | `accepted`   | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`. |
 | Directory publication implementation history lived in this map | `drift`      | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family               |
 

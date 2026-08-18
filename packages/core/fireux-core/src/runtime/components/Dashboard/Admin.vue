@@ -179,7 +179,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useApp } from '../../composables/fireux/app/useApp'
+import { useApp } from '../../app/composables/useApp'
 
 type AdminSurfaceMeta = {
   surface?: boolean

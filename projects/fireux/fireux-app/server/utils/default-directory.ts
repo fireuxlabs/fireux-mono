@@ -3,8 +3,8 @@ import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils
 import {
   projectPublicApp,
   toAppDirectoryEntry,
-} from 'fireux-core/runtime/server/utils/public-projection/public-app.dto'
-import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto'
+} from 'fireux-core/runtime/app/server/projection/public-app.dto'
+import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/projection/public-ecosystem.dto'
 import {
   PLATFORM_DIRECTORY_TARGETS,
   type PlatformDirectoryTarget,

@@ -7,9 +7,9 @@ import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const definitionRoot =
-  'packages/extensions/fireux-kitchens/src/runtime/tools/kitchen/team'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/team'
 const executorRoot =
-  'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/team/tools'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/tools'
 const retiredServerFiles = [
   'create-member-tool.ts',
   'create-invitation-tool.ts',
@@ -91,7 +91,7 @@ export async function run({ repoRoot }) {
 
   const operationAgents = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/ai/operation-agents.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/ai/operation-agents.ts'
   )
   if (
     !operationAgents.includes('kitchenTeamAgentToolIds') ||
@@ -104,7 +104,7 @@ export async function run({ repoRoot }) {
 
   const humanAdapter = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/team/useKitchenTeamTools.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenTeamTools.ts'
   )
   if (!humanAdapter.includes('kitchenTeamHumanTools')) {
     violations.push(
@@ -147,7 +147,7 @@ export async function run({ repoRoot }) {
 
   const teamPresentation = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/team/useKitchenTeamAI.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenTeamAI.ts'
   )
   if (
     !teamPresentation.includes('/api/console/kitchen/agent/suggestions') ||
@@ -163,7 +163,7 @@ export async function run({ repoRoot }) {
   for (const file of retiredServerFiles) {
     const retired = join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/team',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team',
       file
     )
     if (existsSync(retired)) {

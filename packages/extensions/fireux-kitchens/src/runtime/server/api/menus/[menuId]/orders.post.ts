@@ -12,29 +12,29 @@ import {
   menuOrderIdempotencyRequest,
   prepareMenuOrderCommand,
   readMenuOrderSelection,
-} from '../../../menu/ordering/order-command.ts'
-import { resolveMenuOrderFulfilment } from '../../../menu/ordering/order-fulfilment.ts'
+} from '../../../../menu/server/ordering/order-command.ts'
+import { resolveMenuOrderFulfilment } from '../../../../menu/server/ordering/order-fulfilment.ts'
 import {
   assembleMenuOrderRecord,
   createMenuOrderRecordIdentity,
-} from '../../../menu/ordering/order-record.ts'
-import { readMenuOrderContext } from '../../../menu/ordering/context.ts'
-import { readMenuOrderingConfig } from '../../../menu/ordering/config.ts'
+} from '../../../../menu/server/ordering/order-record.ts'
+import { readMenuOrderContext } from '../../../../menu/server/ordering/context.ts'
+import { readMenuOrderingConfig } from '../../../../menu/server/ordering/config.ts'
 import {
   commitMenuOrderIdempotently,
   menuOrderReservationResponse,
   readMenuOrderIdempotentResponse,
   readMenuOrderIdempotencyKey,
-} from '../../../menu/ordering/idempotency.ts'
+} from '../../../../menu/server/ordering/idempotency.ts'
 import {
   readRequestedMenuOrderItems,
   type CreateMenuOrderBody,
-} from '../../../menu/ordering/lines.ts'
-import { requireKitchenOperator } from '../../../kitchen/core/operator-access.ts'
-import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
-import { text } from '../../../menu/ordering/order-request.ts'
-import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/operations/orders/service-sequence.ts'
-import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
+} from '../../../../menu/server/ordering/lines.ts'
+import { requireKitchenOperator } from '../../../../kitchen/server/core/operator-access.ts'
+import { resolveMenuOrderItems } from '../../../../menu/server/ordering/order-items.ts'
+import { text } from '../../../../menu/server/ordering/order-request.ts'
+import { commitKitchenOrderWithServiceSequence } from '../../../../kitchen/server/operations/orders/service-sequence.ts'
+import { dispatchPreOrderWhatsApp } from '../../../../menu/server/ordering/whatsapp.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: dispatch the atomically snapshotted alert after Order commit.
 

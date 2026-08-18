@@ -2,9 +2,9 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { AppStorage } from '../../../../models/core/app.model'
-import { resolveUserAvatarSource } from '../../../../utils/user-avatar.ts'
-import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
+import { AppStorage } from '../../../../app/models/app.model.ts'
+import { resolveUserAvatarSource } from '../../../../user/utils/user-avatar.ts'
+import { AppUserStorage, UserStorage } from '../../../../user/models/user.model.ts'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,

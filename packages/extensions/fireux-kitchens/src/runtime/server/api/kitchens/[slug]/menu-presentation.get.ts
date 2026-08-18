@@ -5,8 +5,8 @@ import {
   menuKitchenIdentity,
   readAppMenuKitchenData,
   readMenuKitchenPlaceData,
-} from '../../../menu/ownership/kitchen-scope.ts'
-import { resolveDirectoryPublicMenuScope } from '../../../menu/ownership/public-target.ts'
+} from '../../../../menu/server/ownership/kitchen-scope.ts'
+import { resolveDirectoryPublicMenuScope } from '../../../../menu/server/ownership/public-target.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

@@ -8,8 +8,8 @@ import {
 } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { DishStorage } from '../../../../../../models/kitchen/dish.model.ts'
-import { requireKitchenWriter } from '../../../../../../server/kitchen/core/operator-access.ts'
+import { DishStorage } from '../../../../../../kitchen/models/dish.model.ts'
+import { requireKitchenWriter } from '../../../../../../kitchen/server/core/operator-access.ts'
 
 export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()

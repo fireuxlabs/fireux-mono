@@ -61,7 +61,7 @@ This is the practical playbook for shared Core entity onboarding journeys.
 - A protected entity doorway such as `/apps/create` first returns through
   `/users/create` when the authenticated identity has no canonical User.
 - Primary onboarding action is now on:
-  - `UserCreateSystem` (`packages/core/fireux-core/src/runtime/components/User/Create/System.vue`)
+  - `UserCreateSystem` (`packages/core/fireux-core/src/runtime/user/components/Create/System.vue`)
 - Legal acceptance is collected in onboarding only (not on `/auth`), in line with the cleaner sign-in flow.
 
 ## What `Create my User` does
@@ -193,10 +193,10 @@ Quick in-app checks:
 
 - `packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue`
 - `packages/core/fireux-core/src/runtime/components/Auth/System.vue`
-- `packages/core/fireux-core/src/runtime/components/User/Create/System.vue`
+- `packages/core/fireux-core/src/runtime/user/components/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
 - `packages/core/fireux-core/src/runtime/pages/dashboard/user/create.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/user/useUserComputed.ts`
+- `packages/core/fireux-core/src/runtime/user/composables/useUserComputed.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
 - `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
 
@@ -251,12 +251,12 @@ while any App is warning, failing, or blocked.
 ### App source anchors
 
 - `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
-- `packages/core/fireux-core/src/runtime/components/App/Create/System.vue`
-- `packages/core/fireux-core/src/runtime/components/App/Initialize/System.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/app/utils/useAppInitialization.ts`
+- `packages/core/fireux-core/src/runtime/app/components/Create/System.vue`
+- `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`
+- `packages/core/fireux-core/src/runtime/app/composables/utils/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
-- `packages/core/fireux-core/src/runtime/server/utils/app-initialization/initialize.ts`
-- `packages/core/fireux-core/src/runtime/server/utils/app-projection/ensure.ts`
+- `packages/core/fireux-core/src/runtime/app/server/app-initialization/initialize.ts`
+- `packages/core/fireux-core/src/runtime/app/server/app-projection/ensure.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts`
-- `packages/core/fireux-core/src/runtime/models/operations/app-onboarding.ts`
-- `packages/core/fireux-core/src/runtime/utils/app-onboarding-policy.ts`
+- `packages/core/fireux-core/src/runtime/app/models/app-onboarding.ts`
+- `packages/core/fireux-core/src/runtime/app/utils/app-onboarding-policy.ts`

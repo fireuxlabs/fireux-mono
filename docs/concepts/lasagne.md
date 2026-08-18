@@ -1,7 +1,7 @@
 # Lasagne architecture
 
-Updated: 2026-08-14
-Ref: d5efe9160
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -19,6 +19,7 @@ while allowing the layer above it to compose a useful product surface.
 - Entity capabilities: [composables.md](composables.md)
 - Stored authority: [firestore-entity.md](firestore-entity.md)
 - Component ownership: [components.md](components.md)
+- Runtime filesystem: [runtime-filesystem.md](runtime-filesystem.md)
 - Creation commands: [create.md](create.md)
 
 ## Layer direction
@@ -46,6 +47,11 @@ stored authority and trusted commands
 The lower layer must remain ignorant of the layer consuming it. Place does not
 know about Kitchen. A Kitchen capability may consume the supported Place
 capability it needs.
+
+These are dependency layers, not a demand for root technical folders. Physical
+package ownership follows `runtime-filesystem.md`: shared layers remain in the
+root spine, while entity-specific components, composables, models, and server
+behaviour live beneath the entity root.
 
 ## Entity capabilities
 

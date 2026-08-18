@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/useProfessional.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { useUserFetch } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserFetch'
 import { computed } from 'vue'
 
 import { professionalConfig } from './config/professionalConfig'

@@ -149,7 +149,7 @@
 
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
-import type { ConsoleTargetOutcome } from '../../composables/fireux/app/console/useConsoleIndex'
+import type { ConsoleTargetOutcome } from '../../composables/fireux/console/useConsoleIndex'
 import type { ConsoleTargetCard } from './types'
 
 const props = withDefaults(

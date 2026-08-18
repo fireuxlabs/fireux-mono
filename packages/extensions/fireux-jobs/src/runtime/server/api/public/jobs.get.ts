@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: hydrate bounded canonical Company and Place relationships.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public indexes enabled without a literal wildcard id.
 import { defineEventHandler, getQuery, setResponseHeaders } from 'h3'
-import type { PublicJobIndexPage } from '../../../models/job-public.model.ts'
-import { readPublicJobIndexPage } from '../../job/public-index.ts'
+import type { PublicJobIndexPage } from '../../../job/models/job-public.model.ts'
+import { readPublicJobIndexPage } from '../../../job/server/index/public-index.ts'
 
 export default defineEventHandler(
   async (event): Promise<PublicJobIndexPage> => {

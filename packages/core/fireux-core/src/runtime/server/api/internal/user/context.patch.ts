@@ -4,7 +4,7 @@ import {
   USER_CONTEXT_MAX_LENGTH,
   UserContextStorage,
   type UpdateCurrentUserContextResponse,
-} from '../../../../models/operations/user-context.model'
+} from '../../../../user/models/user-context.model.ts'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverUserContextTarget,

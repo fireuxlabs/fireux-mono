@@ -1,5 +1,5 @@
 import { useRequestFetch } from '#imports'
-import type { MenuDetailPayload } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
 const interlakenPizza = {
   id: 'ChIJWcym7tulj0cRb3N2twqVj1U',

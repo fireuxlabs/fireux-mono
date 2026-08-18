@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-recipes">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Recipes" />
+        <LayoutsConsoleNavbar title="Kitchen Recipes">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Recipes" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

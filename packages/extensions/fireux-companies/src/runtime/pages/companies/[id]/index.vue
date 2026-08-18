@@ -56,9 +56,9 @@
 <script setup lang="ts">
 import { setResponseStatus, useRoute } from '#imports'
 import { computed } from 'vue'
-import { useCompanyDetail } from '../../../composables/fireux/company/useCompanyDetail'
-import { useCompanyInterface } from '../../../composables/fireux/company/useCompanyInterface'
-import { useCompanySeo } from '../../../composables/fireux/firestore/company/utils/useCompanySeo'
+import { useCompanyDetail } from '../../../place/composables/company/useCompanyDetail'
+import { useCompanyInterface } from '../../../place/composables/company/useCompanyInterface'
+import { useCompanySeo } from '../../../place/composables/firestore/company/utils/useCompanySeo'
 
 definePageMeta({
   layout: 'default',

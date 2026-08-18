@@ -1,7 +1,7 @@
 # FireUX Mono concept map
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -41,7 +41,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   workspace package.
 - `scripts/guards/*`: executable shape rules.
 - `tools/*`: local tools.
-- `packages/*/*/src/runtime/demo`: package-owned reusable console Demo Data.
+- `packages/*/*/src/runtime/<entity>/demo`: entity-owned reusable Console Demo
+  Data. Root `runtime/demo` is reserved for genuine cross-entity composition
+  or package-owned record families without a declared Entity.
 - `projects/*/*/app/demo`: app-owned console Demo Data.
 - `temp/*`: ignored temporary work only, never authored source.
 - `figma-export`: optional ignored local directory or symlink, never tracked.

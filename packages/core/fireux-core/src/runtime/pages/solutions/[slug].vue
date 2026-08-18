@@ -154,7 +154,7 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from '../../composables/fireux/seo/useSeo'
-import { useUser } from '../../composables/fireux/user/useUser'
+import { useUser } from '../../user/composables/useUser'
 import type { FireuxMetaSolution } from '../../../config/app/meta-content'
 
 type SolutionsResponse = {

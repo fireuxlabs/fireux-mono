@@ -9,7 +9,7 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type { Ref } from 'vue'
 import type {
   Professional,

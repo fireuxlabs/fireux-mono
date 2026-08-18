@@ -4,10 +4,10 @@ import {
   emptyLogo,
   resolveBaseUrl,
   type LogoResponse,
-} from './logo-candidates'
-import { log, logError, logWarn } from './logo-logging'
-import { isAbortError, probeCandidates } from './logo-probe'
-import { HOMEPAGE_TIMEOUT_MS } from './logo-settings'
+} from '../../../place/server/integration/logo/candidates'
+import { log, logError, logWarn } from '../../../place/server/integration/logo/logging'
+import { isAbortError, probeCandidates } from '../../../place/server/integration/logo/probe'
+import { HOMEPAGE_TIMEOUT_MS } from '../../../place/server/integration/logo/settings'
 
 /**
  * Best-effort logo discovery.

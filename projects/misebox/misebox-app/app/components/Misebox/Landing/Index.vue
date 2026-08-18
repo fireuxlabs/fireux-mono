@@ -81,7 +81,7 @@ import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
 } from 'fireux-core/config/app/meta-content'
-import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
+import { useEcosystemAppCollection } from 'fireux-core/runtime/ecosystem/composables/useEcosystemAppCollection'
 import { metaContent } from '../../../meta'
 import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'
 import MiseboxLandingHeroImage from './HeroImage.vue'

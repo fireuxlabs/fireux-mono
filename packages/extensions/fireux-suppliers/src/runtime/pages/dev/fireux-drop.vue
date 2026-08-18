@@ -152,9 +152,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
-import { useSupplierCollection } from '../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
-import type { AppSupplier, Supplier } from '../../models/supplier/Supplier.model'
-import { SupplierDefaults as SupplierModelRuntime } from '../../models/supplier/Supplier.model'
+import { useSupplierCollection } from '../../supplier/composables/firestore/fetch/useSupplierCollection'
+import type { AppSupplier, Supplier } from '../../supplier/models/Supplier.model.ts'
+import { SupplierDefaults as SupplierModelRuntime } from '../../supplier/models/Supplier.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -237,7 +237,7 @@ const filteredSuppliersDriftPayload = computed(() =>
 )
 
 const suppliersDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model',
+  modelPath: 'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model',
   driftKind: suppliersDriftKind.value,
   selectedField: suppliersSelectedField.value || null,
   totalSuppliers: suppliersCollection.value.length,

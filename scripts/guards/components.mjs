@@ -33,30 +33,30 @@ const RELATIVE_IMPORT_RE =
   /(?:from\s+|import\s*\(\s*)(["'])(\.{1,2}\/[^"']+)\1/g
 const CARD_VARIANT_NAMES = new Set(['Cell.vue', 'Pill.vue', 'Preview.vue'])
 const LEGACY_CARD_PROFILE_PATHS = new Set([
-  'packages/core/fireux-core/src/runtime/components/Ecosystem/Cards/Profile.vue',
+  'packages/core/fireux-core/src/runtime/ecosystem/components/Cards/Profile.vue',
   'packages/extensions/fireux-blogs/src/runtime/components/Blog/Cards/Profile.vue',
-  'packages/extensions/fireux-companies/src/runtime/components/Company/Cards/Profile.vue',
+  'packages/extensions/fireux-companies/src/runtime/place/components/Company/Cards/Profile.vue',
   'packages/extensions/fireux-jobs/src/runtime/components/Agent/Cards/Profile.vue',
-  'packages/extensions/fireux-jobs/src/runtime/components/Job/Cards/Profile.vue',
+  'packages/extensions/fireux-jobs/src/runtime/job/components/Cards/Profile.vue',
   'packages/extensions/fireux-jobs/src/runtime/components/Professional/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Chef/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Mise/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Suppliers/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Driver/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Ingredient/Cards/Profile.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Cards/Profile.vue',
-  'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Profile.vue',
-  'packages/extensions/fireux-products/src/runtime/components/Product/Cards/Profile.vue',
-  'packages/extensions/fireux-properties/src/runtime/components/Portfolio/Cards/Profile.vue',
-  'packages/extensions/fireux-suppliers/src/runtime/components/Supplier/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Mise/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Suppliers/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/user/components/Driver/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Cards/Profile.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards/Profile.vue',
+  'packages/extensions/fireux-places/src/runtime/place/components/Cards/Profile.vue',
+  'packages/extensions/fireux-products/src/runtime/product/components/Cards/Profile.vue',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/components/Cards/Profile.vue',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Cards/Profile.vue',
 ])
 const CARD_SUPPORT_PATHS = new Set([
   'packages/extensions/fireux-blogs/src/runtime/components/Blog/Cards/Story.vue',
-  'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Dropdown/Fireux.vue',
-  'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Dropdown/Google.vue',
-  'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Dropdown/Selected.vue',
+  'packages/extensions/fireux-places/src/runtime/place/components/Cards/Dropdown/Fireux.vue',
+  'packages/extensions/fireux-places/src/runtime/place/components/Cards/Dropdown/Google.vue',
+  'packages/extensions/fireux-places/src/runtime/place/components/Cards/Dropdown/Selected.vue',
 ])
 const CARD_DATA_AUTHORITY_RE =
   /\b(?:useAsyncData|useFetch|\$fetch|useFirestore|useCollection|useDocument|onSnapshot|getDoc|getDocs|use[A-Z][A-Za-z0-9]*(?:Collection|Fetch))\s*\(/
@@ -128,19 +128,19 @@ function validatePublicEntityPresentation(repoRoot, violations) {
     'packages/core/fireux-core/src/runtime/components/public/EntityDirectoryCard.vue'
   const consumers = new Map([
     [
-      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Cards/Cell.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards/Cell.vue',
       'PublicEntityDirectoryCard',
     ],
     [
-      'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Cell.vue',
+      'packages/extensions/fireux-places/src/runtime/place/components/Cards/Cell.vue',
       'PublicEntityDirectoryCard',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Detail/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Detail/Index.vue',
       'KitchenHeader',
     ],
     [
-      'packages/extensions/fireux-places/src/runtime/components/Place/Detail.vue',
+      'packages/extensions/fireux-places/src/runtime/place/components/Detail.vue',
       'PlaceHeader',
     ],
   ])
@@ -161,8 +161,8 @@ function validatePublicEntityPresentation(repoRoot, violations) {
   }
 
   for (const componentPath of [
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Header.vue',
-    'packages/extensions/fireux-places/src/runtime/components/Place/Header.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Header.vue',
+    'packages/extensions/fireux-places/src/runtime/place/components/Header.vue',
   ]) {
     if (!existsSync(path.join(repoRoot, componentPath))) {
       violations.push(`${componentPath} (missing entity-owned detail header)`)

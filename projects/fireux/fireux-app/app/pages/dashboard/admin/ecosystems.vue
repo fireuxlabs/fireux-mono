@@ -84,7 +84,7 @@ import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/Fe
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
 import { usePlatformEcosystemDirectory } from '../../../composables/usePlatformDirectory'
 
 const { ecosystems, outcome: directoryOutcome } =

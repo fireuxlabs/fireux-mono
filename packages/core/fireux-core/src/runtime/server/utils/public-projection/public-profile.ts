@@ -16,7 +16,7 @@ import type {
 } from './public-dto.types'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../ids/path'
-import { mapPublicUserIdentity } from './public-user-identity'
+import { mapPublicUserIdentity } from '../../../user/server/projection/public-user-identity'
 
 const CACHE_CONTROL =
   'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'

@@ -6,7 +6,7 @@ import type {
   MenuOrderingOperatorPresence,
   MenuOrderingRouteContext,
   MenuOrderingSubmission,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 import type {
   KitchenOrder,
   KitchenOrderChannel,
@@ -16,11 +16,11 @@ import type {
   KitchenOrderPayment,
   KitchenOrderStatus,
   KitchenOrderType,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 import {
   KitchenOrderDefaults,
   resolveKitchenOrderIntakeStatus,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 
 type DraftModePatch = Partial<
   Pick<

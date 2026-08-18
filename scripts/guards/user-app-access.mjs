@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts'
 import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
@@ -87,7 +87,7 @@ export async function run({ repoRoot }) {
 
   const model = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
+    'packages/core/fireux-core/src/runtime/user/models/user.model.ts'
   )
   const modelStart = model.indexOf('export const AppUserDefaults: AppUser = {')
   const modelEnd = model.indexOf(
@@ -110,7 +110,7 @@ export async function run({ repoRoot }) {
 
   const mutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/utils/app-membership/mutation-contract.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-membership/mutation-contract.ts'
   )
   const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
@@ -144,7 +144,7 @@ export async function run({ repoRoot }) {
 
   const activeUserFetch = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserFetch.ts'
   )
   assert.match(activeUserFetch, /useCurrentAppContext/)
   assert.match(activeUserFetch, /useCurrentUserAccount/)
@@ -156,7 +156,7 @@ export async function run({ repoRoot }) {
 
   const consoleTargets = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleTargets.ts'
   )
   assert.match(consoleTargets, /useConsoleTargetRequest/)
   assert.doesNotMatch(
@@ -178,7 +178,7 @@ export async function run({ repoRoot }) {
 
   const userCreate = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/mutations/useUserCreate.ts'
   )
   assert.match(userCreate, /fetchCurrentAppContext/)
   assert.match(userCreate, /shouldEnsureMembership/)
@@ -191,7 +191,7 @@ export async function run({ repoRoot }) {
 
   const userCreateHelpers = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/createHelpers.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/utils/createHelpers.ts'
   )
   assert.match(userCreateHelpers, /provisionSignedInUserAvatar/)
   assert.doesNotMatch(
@@ -202,7 +202,7 @@ export async function run({ repoRoot }) {
 
   const membershipMutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/appMembershipMutation.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/utils/appMembershipMutation.ts'
   )
   assert.match(
     membershipMutation,
@@ -258,9 +258,9 @@ export async function run({ repoRoot }) {
   }
 
   for (const relativePath of [
-    'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/onboarding.ts',
-    'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts',
   ]) {
     assert.match(
       read(repoRoot, relativePath),

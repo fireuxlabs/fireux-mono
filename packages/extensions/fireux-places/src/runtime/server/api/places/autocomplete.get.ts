@@ -6,7 +6,7 @@ import {
   getRequestIP,
   setResponseStatus,
 } from 'h3'
-import { resolvePlacesApiKey } from '../../utils/places-api-key'
+import { resolvePlacesApiKey } from '../../../place/server/integration/google/places-api-key'
 
 // Lightweight in-memory rate limiter (per IP). Not production-grade; replace with durable store if needed.
 const rlWindowMs = 60_000 // 1 minute window

@@ -1,6 +1,6 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { UserStorage } from '../../../../models/core/user.model'
-import { UserNotificationStorage } from '../../../../models/operations/user-notification.model'
+import { UserStorage } from '../../../../user/models/user.model.ts'
+import { UserNotificationStorage } from '../../../../user/models/user-notification.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 

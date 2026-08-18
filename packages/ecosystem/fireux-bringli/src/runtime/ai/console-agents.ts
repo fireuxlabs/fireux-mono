@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxConsoleAgent,
 } from 'fireux-ai/runtime/agents/operation-agent'
-import { supplierOperationAgents } from 'fireux-suppliers/runtime/ai/operation-agents'
+import { supplierOperationAgents } from 'fireux-suppliers/runtime/supplier/ai/operation-agents'
 
 export const bringliAgent = defineFireuxAgentNode({
   id: 'bringli.ai',

@@ -1,0 +1,60 @@
+<template>
+  <UCard class="section">
+    <template #header>
+      <div class="section__header">
+        <div class="section__copy">
+          <h3>Admins</h3>
+          <p>
+            Admins can manage who helps run this app.
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <div v-if="rows.length" class="section__item space-y-2">
+      <ul class="space-y-2">
+        <li
+          v-for="admin in rows"
+          :key="admin.id"
+          class="flex items-center justify-between gap-3"
+        >
+          <UserCardsPill
+            v-bind="pillFor(admin)"
+            :link="Boolean(pillFor(admin).to)"
+            class="min-w-0"
+          />
+
+          <UButton
+            size="xs"
+            variant="soft"
+            class="shrink-0"
+            :loading="actionUid === admin.id"
+            :disabled="actionUid !== null"
+            @click="onRemoveAdmin(admin.id)"
+          >
+            Remove admin
+          </UButton>
+        </li>
+      </ul>
+    </div>
+    <p v-else class="section__empty">No admins yet.</p>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import type { UserCard } from '../../../../user/composables/useUserInterface'
+
+type AdminRow = {
+  id: string
+  role: 'admin' | 'user'
+  display_name: string
+}
+
+defineProps<{
+  rows: AdminRow[]
+  actionUid: string | null
+  pillFor: (row: AdminRow) => UserCard.Card
+  onRemoveAdmin: (uid: string) => Promise<unknown>
+}>()
+
+</script>

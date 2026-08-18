@@ -1,17 +1,17 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { PlaceStored } from 'fireux-places/runtime/models/place.model'
+import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
 import {
   AppPortfolioModel,
   PortfolioModel,
   type AppPortfolio,
   type Portfolio,
-} from '../../models/portfolio.model'
+} from '../../portfolio/models/portfolio.model.ts'
 import {
   AppPropertyModel,
   PropertyModel,
   type AppProperty,
   type Property,
-} from '../../models/property.model'
+} from '../../property/models/property.model.ts'
 
 const stamp: FirebaseTimestamp = { seconds: 1_720_000_000, nanoseconds: 0 }
 const updated = { at: stamp, by: 'demo' }

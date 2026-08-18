@@ -2,7 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-property-identity">
       <template #header>
-        <LayoutsConsoleNavbar title="Property Identity" />
+        <LayoutsConsoleNavbar title="Property Identity">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Property Identity" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

@@ -168,8 +168,8 @@ import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
 import {
   normalizeConsoleFamily,
   useConsole,
-} from '../composables/fireux/app/console/useConsole'
-import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
+} from '../composables/fireux/console/useConsole'
+import { useConsoleSelection } from '../composables/fireux/console/useConsoleSelection'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
 defineOptions({ name: 'console' })

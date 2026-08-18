@@ -366,7 +366,7 @@ export async function run({ repoRoot }) {
   )
   const jobsIndex = read(
     repoRoot,
-    'packages/extensions/fireux-jobs/src/runtime/server/job/public-index.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/index/public-index.ts'
   )
   const jobsSitemap = read(
     repoRoot,
@@ -420,7 +420,7 @@ export async function run({ repoRoot }) {
   )
   const kitchensIndex = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/public-index.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/public-index.ts'
   )
   const kitchensSitemap = read(
     repoRoot,

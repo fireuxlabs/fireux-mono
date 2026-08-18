@@ -6,15 +6,15 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const files = {
-  model: 'packages/extensions/fireux-reservations/src/runtime/models/reservation.model.ts',
+  model: 'packages/extensions/fireux-reservations/src/runtime/property/models/reservation.model.ts',
   serverConfig: 'packages/extensions/fireux-reservations/src/config/module/server-config.ts',
-  access: 'packages/extensions/fireux-reservations/src/runtime/server/reservation/access.ts',
-  records: 'packages/extensions/fireux-reservations/src/runtime/server/reservation/records.ts',
-  command: 'packages/extensions/fireux-reservations/src/runtime/server/reservation/command.ts',
-  read: 'packages/extensions/fireux-reservations/src/runtime/server/reservation/read.ts',
-  collection: 'packages/extensions/fireux-reservations/src/runtime/composables/fireux/console/property/operations/Reservations/usePropertyReservations.ts',
-  create: 'packages/extensions/fireux-reservations/src/runtime/composables/fireux/console/property/operations/Reservations/useReservationCreate.ts',
-  update: 'packages/extensions/fireux-reservations/src/runtime/composables/fireux/console/property/operations/Reservations/useReservationUpdate.ts',
+  access: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/access.ts',
+  records: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/records.ts',
+  command: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts',
+  read: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/read.ts',
+  collection: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/usePropertyReservations.ts',
+  create: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationCreate.ts',
+  update: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationUpdate.ts',
   template: 'packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules',
   rules: 'packages/ecosystem/fireux-buenohost/src/config/firebase/rules/reservation-authority.rules',
   artifact: 'scripts/firebase/buenohost/firestore.rules',

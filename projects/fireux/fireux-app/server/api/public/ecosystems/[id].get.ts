@@ -7,7 +7,7 @@ import {
 } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PublicDetailResponse } from 'fireux-core/runtime/server/utils/public-projection/public-dto.types'
-import { projectPublicEcosystem } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto'
+import { projectPublicEcosystem } from 'fireux-core/runtime/ecosystem/server/projection/public-ecosystem.dto'
 import { readPlatformDirectory } from '../../../utils/default-directory'
 import { getFirestoreDb } from '../../../utils/firebase-admin'
 

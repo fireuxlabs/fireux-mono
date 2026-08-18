@@ -1,7 +1,7 @@
-import type { PublicIngredient } from 'fireux-kitchens/runtime/models/ingredient-public.model'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { projectKitchenMiseTasks } from 'fireux-kitchens/runtime/models/kitchen/mise-presentation'
-import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/utils/supplier-demo-world'
+import type { PublicIngredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
+import { projectKitchenMiseTasks } from 'fireux-kitchens/runtime/kitchen/models/mise-presentation'
+import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
 import { projectMiseboxProductDemoConsoleFoundations } from './projectMiseboxProductDemoConsoleFoundations'
 import type { MiseboxProductDemoModel } from './misebox-product-demo.model'
 
@@ -24,15 +24,15 @@ export async function loadMiseboxProductDemo(
     kitchenSpineModule,
     menuCascadeModule,
   ] = await Promise.all([
-    import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
-    import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
-    import('fireux-companies/runtime/demo/company/scenarios'),
-    import('fireux-suppliers/runtime/demo/supplier/scenarios'),
-    import('fireux-kitchens/runtime/utils/kitchen/demo-dishes'),
-    import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers'),
-    import('fireux-kitchens/runtime/utils/kitchen/demo-finance'),
-    import('fireux-kitchens/runtime/utils/kitchen-spine'),
-    import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'),
+    import('fireux-kitchens/runtime/kitchen/demo/scenarios'),
+    import('fireux-kitchens/runtime/kitchen/demo/presentation/index'),
+    import('fireux-companies/runtime/place/demo/company/scenarios'),
+    import('fireux-suppliers/runtime/supplier/demo/scenarios'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-dishes'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-finance'),
+    import('fireux-kitchens/runtime/kitchen/utils/kitchen-spine'),
+    import('fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'),
   ])
   const supplierDemoWorld = projectSupplierDemoWorld({
     scenarios: supplierModule.supplierDemoScenarios,

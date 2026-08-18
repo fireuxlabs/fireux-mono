@@ -13,19 +13,19 @@ const read = (repoRoot, relativePath) =>
 export async function run({ repoRoot = process.cwd() } = {}) {
   const ingredientModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.model.ts'
   )
   const productModel = read(
     repoRoot,
-    'packages/extensions/fireux-products/src/runtime/models/product.model.ts'
+    'packages/extensions/fireux-products/src/runtime/product/models/product.model.ts'
   )
   const supplierItemModel = read(
     repoRoot,
-    'packages/extensions/fireux-suppliers/src/runtime/models/supplier/supplier-item.model.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/models/supplier-item.model.ts'
   )
   const serverWriter = read(
     repoRoot,
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/operations/items/item.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/operations/items/item.ts'
   )
 
   assert.match(ingredientModel, /export const IngredientDefaults\b/)
@@ -40,8 +40,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(serverWriter, /runGuardedServerTransaction/)
 
   for (const retiredUmbrella of [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/useIngredient.ts',
-    'packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProduct.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/composables/firestore/useIngredient.ts',
+    'packages/extensions/fireux-products/src/runtime/product/composables/firestore/useProduct.ts',
   ]) {
     assert.equal(
       existsSync(path.join(repoRoot, retiredUmbrella)),
@@ -51,9 +51,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
 
   for (const clientWriter of [
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierItemCreate.ts',
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierItemUpdate.ts',
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierItemDelete.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierItemCreate.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierItemUpdate.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierItemDelete.ts',
   ]) {
     const source = read(repoRoot, clientWriter)
     assert.match(source, /\$fetch/)

@@ -10,12 +10,12 @@ import {
   setResponseStatus,
   type H3Event,
 } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   AppUserStorage,
   UserStorage,
-} from 'fireux-core/runtime/models/core/user.model'
-import { UserNotificationStorage } from 'fireux-core/runtime/models/operations/user-notification.model'
+} from 'fireux-core/runtime/user/models/user.model'
+import { UserNotificationStorage } from 'fireux-core/runtime/user/models/user-notification.model'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import {
   emptyIgnitionChecklist,

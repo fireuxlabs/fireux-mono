@@ -1,8 +1,8 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import type { MarketplaceStoreMemberIntent } from '../../../../../../models/marketplace-api.model'
-import { mutateMarketplaceStoreMember } from '../../../../../marketplace/authority'
+import type { MarketplaceStoreMemberIntent } from '../../../../../../marketplace-store/models/marketplace-api.model.ts'
+import { mutateMarketplaceStoreMember } from '../../../../../../marketplace-store/server/core/capabilities'
 
-export default defineEventHandler(async event =>
+export default defineEventHandler(async (event) =>
   mutateMarketplaceStoreMember(
     event,
     getRouterParam(event, 'storeId'),

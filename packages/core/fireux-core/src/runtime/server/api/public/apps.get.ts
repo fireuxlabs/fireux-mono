@@ -1,12 +1,12 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import type { AppDirectoryEntry } from '../../../models/utils/directory'
-import { AppStorage } from '../../../models/core/app.model'
+import { AppStorage } from '../../../app/models/app.model.ts'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 import {
   projectPublicApp,
   toAppDirectoryEntry,
-} from '../../utils/public-projection/public-app.dto'
+} from '../../../app/server/projection/public-app.dto.ts'
 import { asTrimmedString } from '../../utils/public-projection/public-dto.helpers'
 import type { PublicCollectionResponse } from '../../utils/public-projection/public-dto.types'
 

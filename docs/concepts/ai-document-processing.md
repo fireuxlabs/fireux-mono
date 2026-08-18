@@ -132,13 +132,13 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Shared provider loop:
   `packages/extensions/fireux-ai/src/runtime/server/utils/document-ai.server.ts`
 - Menu domain adapter:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/extraction.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/extraction.ts`
 - Menu review/checkpoint lifecycle:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/review.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/review.ts`
 - Menu confirmation boundary:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts`
 - Menu host-local cache import:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/cache-import.ts`
 - Sproochli translation-memory persistence:
   `packages/extensions/fireux-sproochli/src/runtime/server/menu/translation-memory.ts`
 

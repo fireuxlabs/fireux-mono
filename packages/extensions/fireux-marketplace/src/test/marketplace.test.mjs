@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   projectPublicMarketplaceStore,
-} from '../../dist/runtime/server/marketplace/projection.js'
+} from '../../dist/runtime/server/marketplace/directory/projection.js'
 import {
   MarketplaceValidationError,
   canonicalMarketplaceOffer,
@@ -10,7 +10,7 @@ import {
   canonicalMarketplaceStore,
   normalizeMarketplaceOfferCreate,
   normalizeMarketplaceOrderCreate,
-} from '../../dist/runtime/server/marketplace/validation.js'
+} from '../../dist/runtime/server/marketplace/core/validation.js'
 
 const stamp = {
   created: {

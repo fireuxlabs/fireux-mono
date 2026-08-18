@@ -16,18 +16,18 @@ const ALLOWED_SLICES = new Set([
 ])
 
 const ENTITY_ROOTS = [
-  'packages/extensions/fireux-kitchens/src/runtime/server/kitchen',
-  'packages/extensions/fireux-suppliers/src/runtime/server/supplier',
-  'packages/extensions/fireux-properties/src/runtime/server/portfolio',
-  'packages/extensions/fireux-properties/src/runtime/server/property',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/server',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/server',
+  'packages/extensions/fireux-properties/src/runtime/property/server',
   'projects/fireux/fireux-app/server/project',
 ]
 
 const ONBOARDING_CONSUMERS = [
-  'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding-policy.ts',
-  'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
-  'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/authority.ts',
-  'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/onboarding-policy.ts',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/authority.ts',
+  'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
 ]
 
 export async function run({ repoRoot = process.cwd() } = {}) {

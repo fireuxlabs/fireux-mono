@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, setResponseHeaders } from 'h3'
-import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/models/supplier/supplier-public.model'
+import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/supplier/models/supplier-public.model'
 
 export default defineEventHandler(
   async (event): Promise<PublicSupplierIndex> => {

@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { computed, ref } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useKitchenConsole } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/core/useKitchenConsole'
+import { useKitchenConsole } from 'fireux-kitchens/runtime/kitchen/composables/console/core/useKitchenConsole'
 
 type Message = { id: string; role: 'assistant' | 'user'; body: string }
 type KitchenAgentScope = {

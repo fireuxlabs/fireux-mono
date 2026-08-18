@@ -64,9 +64,9 @@
 <script setup lang="ts">
 import { computed, setResponseStatus } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useUser } from '../../composables/fireux/user/useUser'
+import { useUser } from '../../user/composables/useUser'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
-import { useUserDetail } from '../../composables/fireux/user/useUserDetail'
+import { useUserDetail } from '../../user/composables/useUserDetail'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 const { appName } = useFireUXConfig()

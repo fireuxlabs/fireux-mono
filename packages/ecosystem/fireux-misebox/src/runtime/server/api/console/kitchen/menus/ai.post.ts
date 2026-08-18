@@ -4,16 +4,16 @@ import {
   extractFireuxAgentTip,
   fireuxAgentTipInstruction,
 } from 'fireux-ai/runtime/agents/agent-tip'
-import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-context.model'
+import { UserStorage } from 'fireux-core/runtime/user/models/user.model'
+import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/core/operator-access'
-import { saveKitchenMenuSummaryContext } from 'fireux-kitchens/runtime/server/menu/ai/kitchen-context'
-import { writeKitchenMenuAgentUsage } from 'fireux-kitchens/runtime/server/menu/ai/agent-usage'
-import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
-import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
+import { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
+import { saveKitchenMenuSummaryContext } from 'fireux-kitchens/runtime/menu/server/ai/kitchen-context'
+import { writeKitchenMenuAgentUsage } from 'fireux-kitchens/runtime/menu/server/ai/agent-usage'
+import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
+import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-spine'
 
 const PROMPT_MAX_LENGTH = 2_000
 const MAX_MENUS = 12

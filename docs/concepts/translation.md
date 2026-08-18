@@ -192,20 +192,20 @@ translation state onto Kitchen.
   and
   `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts`
 - Kitchen attachment authority and trusted mutation:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/sproochli.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/sproochli.ts`
 - Public Menu projection:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/build.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/payload/build.ts`
   and
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/resolve.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/resolve.ts`
 - Shared Menu-surface source copy:
-  `packages/extensions/fireux-kitchens/src/runtime/content/menu-surface-copy.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/content/menu-surface-copy.ts`
 - Translation-memory model:
   `packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts`
 - Host identity and server persistence:
   `packages/extensions/fireux-sproochli/src/runtime/host.ts` and
   `packages/extensions/fireux-sproochli/src/runtime/server/menu/`
 - Trusted host-local extraction import:
-  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/cache-import.ts`
 - Stateless Menu generation provider:
   `projects/fireux/sproochli/server/api/tools/menu/index.post.ts`,
   `projects/fireux/sproochli/server/utils/sproochliMenuProviderAuth.ts`, and

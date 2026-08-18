@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-portfolio-properties">
       <template #header>
-        <LayoutsConsoleNavbar title="Properties" />
+        <LayoutsConsoleNavbar title="Properties">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Portfolio Properties" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

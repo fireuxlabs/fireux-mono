@@ -1,4 +1,4 @@
-import { ProjectStorage } from 'fireux-core/runtime/models/system/project.model'
+import { ProjectStorage } from 'fireux-core/runtime/project/models/project.model'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 

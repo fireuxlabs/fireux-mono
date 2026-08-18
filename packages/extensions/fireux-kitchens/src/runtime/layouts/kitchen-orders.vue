@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
 
 defineOptions({ name: 'KitchenOrdersLayout' })
 

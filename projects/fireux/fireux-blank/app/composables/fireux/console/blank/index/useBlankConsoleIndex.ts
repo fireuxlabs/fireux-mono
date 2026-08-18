@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: identify targets through the shared index contract.
 // Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: consume the core-owned membership-aware target outcome.
 import { computed } from 'vue'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import type { Blank } from '../../../../../models/blank.model'
 import { useBlankConsole } from '../core/useBlankConsole'
 

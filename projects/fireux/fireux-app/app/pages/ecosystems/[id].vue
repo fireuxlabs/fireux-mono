@@ -79,8 +79,8 @@
 import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useEcosystemDetail } from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemDetail'
-import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
+import { useEcosystemDetail } from 'fireux-core/runtime/ecosystem/composables/useEcosystemDetail'
+import { useEcosystemInterface } from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
 import {
   buildPublicPageJsonLd,
   useSeo,

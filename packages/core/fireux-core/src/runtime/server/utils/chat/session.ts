@@ -7,8 +7,8 @@ import {
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { AppStorage } from '../../../models/core/app.model'
-import { AppUserStorage } from '../../../models/core/user.model'
+import { AppStorage } from '../../../app/models/app.model.ts'
+import { AppUserStorage } from '../../../user/models/user.model.ts'
 import {
   ConversationAccessStorage,
   ConversationMessageStorage,

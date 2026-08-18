@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { projectSourceAppDoorway } from '../runtime/server/utils/job/source-app-doorway.ts'
+import { projectSourceAppDoorway } from '../runtime/job/server/core/source-app-doorway.ts'
 
 const sourceApp = {
   status: 'active',

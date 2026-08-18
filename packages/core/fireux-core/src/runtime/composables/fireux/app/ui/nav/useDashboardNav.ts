@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: include app-private profile ids in dashboard navigation.
 import type { NavItem, NavPosition } from '../../nav.types'
 import { computed } from 'vue'
-import { useUser } from '../../../user/useUser'
+import { useUser } from '../../../../../user/composables/useUser'
 import { useDeveloperAccess } from '../../useDeveloperAccess'
 import { useConsoleEntryCta } from './useConsoleEntryCta'
 import { useNav } from './useNav'

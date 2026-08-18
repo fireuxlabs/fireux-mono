@@ -3,7 +3,7 @@ import { useAsyncData, useRequestFetch } from '#imports'
 import type {
   PublicIngredient,
   PublicIngredientCollectionResponse,
-} from 'fireux-kitchens/runtime/models/ingredient-public.model'
+} from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
 import type {

@@ -56,8 +56,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProductSeo } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/useProductSeo'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import { useProductSeo } from 'fireux-products/runtime/product/composables/firestore/utils/useProductSeo'
+import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({
   layout: 'landing',

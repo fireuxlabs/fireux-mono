@@ -7,7 +7,7 @@ import {
   serverAppUsersTarget,
 } from '../../../../utils/firestore-mutations/targets'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { ensureRuntimeAppMeta } from '../../../utils/app-projection/ensure'
+import { ensureRuntimeAppMeta } from '../../../../app/server/app-projection/ensure'
 import { runGuardedServerTransaction } from '../../../utils/firestore-mutations/server-transaction'
 
 const TEXT_FIELDS = {

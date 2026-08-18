@@ -5,7 +5,7 @@ import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestor
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
 import type { PublicProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'

@@ -1,6 +1,6 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import type { PublicIngredientCollectionResponse } from '../../../../models/ingredient-public.model.ts'
-import { listIngredientsForCurator } from '../../../ingredient/curation.ts'
+import type { PublicIngredientCollectionResponse } from '../../../../ingredient/models/ingredient-public.model.ts'
+import { listIngredientsForCurator } from '../../../../ingredient/server/curation.ts'
 
 export default defineEventHandler(
   async (event): Promise<PublicIngredientCollectionResponse> => {

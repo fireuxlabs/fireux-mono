@@ -15,17 +15,17 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   isKitchenOrderPostPaymentStatus,
   type KitchenOrderType,
-} from '../../../../../../models/kitchen/order.model.ts'
-import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
+} from '../../../../../../kitchen/models/order.model.ts'
+import { readMenuOrderContext } from '../../../../../../menu/server/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,
   requireMenuOrderCustomerAccess,
-} from '../../../../../menu/ordering/order-capability.ts'
-import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
-import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
-import { menuChoiceContextForOrderType } from '../../../../../../utils/menu-context.ts'
-import { menuRoutePath } from '../../../../../../utils/kitchen-menu-route.ts'
-import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
+} from '../../../../../../menu/server/ordering/order-capability.ts'
+import { statusAfterPayment } from '../../../../../../menu/server/ordering/payment.ts'
+import { getMenuStripe } from '../../../../../../menu/server/ordering/stripe.ts'
+import { menuChoiceContextForOrderType } from '../../../../../../menu/utils/menu-context.ts'
+import { menuRoutePath } from '../../../../../../kitchen/utils/kitchen-menu-route.ts'
+import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../menu/utils/menu-order-capability.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
 // Concurrent edit — 2026-07-21 16:38 CEST — FireUX Finance pass: prevent checkout creation from regressing an advanced Order.

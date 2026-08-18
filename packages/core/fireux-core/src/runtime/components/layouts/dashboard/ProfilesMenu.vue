@@ -44,7 +44,7 @@ import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/fireux/app/ui/nav/useDashboardNav'
-import { useUser } from '../../../composables/fireux/user/useUser'
+import { useUser } from '../../../user/composables/useUser'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()

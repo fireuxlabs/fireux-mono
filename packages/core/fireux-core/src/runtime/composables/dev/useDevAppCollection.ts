@@ -4,7 +4,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
-import type { App } from '../../models/core/app.model'
+import type { App } from '../../app/models/app.model.ts'
 import { useAuth } from '../fireux/firebase/useAuth'
 
 type DevAppCollectionResponse = {

@@ -11,67 +11,67 @@ const contracts = [
     'updateBlogPost',
   ],
   [
-    'packages/extensions/fireux-compliance/src/runtime/composables/fireux/console/portfolio/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
+    'packages/extensions/fireux-compliance/src/runtime/portfolio/composables/console/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
     'updateComplianceRecord',
   ],
   [
-    'packages/extensions/fireux-documents/src/runtime/composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentUpdate.ts',
+    'packages/extensions/fireux-documents/src/runtime/portfolio/composables/console/operations/Documents/mutations/useDocumentUpdate.ts',
     'updateDocumentRecord',
   ],
   [
-    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/mutations/useJobUpdate.ts',
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/firestore/mutations/useJobUpdate.ts',
     'updateJob',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Mise/mutations/useKitchenMiseUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Mise/mutations/useKitchenMiseUpdate.ts',
     'updateKitchenMise',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Stations/mutations/useKitchenStationUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Stations/mutations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/mutations/useKitchenTeamMemberUpdate.ts',
     'updateKitchenTeamMember',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/mutations/useIngredientUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/composables/firestore/mutations/useIngredientUpdate.ts',
     'updateIngredient',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenUpdate.ts',
     'updateKitchen',
   ],
   [
-    'packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/mutations/useProductUpdate.ts',
+    'packages/extensions/fireux-products/src/runtime/product/composables/firestore/mutations/useProductUpdate.ts',
     'updateProduct',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Clients/mutations/useClientUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Clients/mutations/useClientUpdate.ts',
     'updateClient',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Units/mutations/useUnitUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Units/mutations/useUnitUpdate.ts',
     'updateUnit',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
     'updatePortfolio',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyUpdate.ts',
     'updatePropertyRoot',
   ],
   [
-    'packages/extensions/fireux-reservations/src/runtime/composables/fireux/console/property/operations/Reservations/useReservationUpdate.ts',
+    'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationUpdate.ts',
     'updateReservation',
   ],
   [
-    'packages/extensions/fireux-tasks/src/runtime/composables/fireux/console/portfolio/operations/Tasks/mutations/useTaskUpdate.ts',
+    'packages/extensions/fireux-tasks/src/runtime/portfolio/composables/console/operations/Tasks/mutations/useTaskUpdate.ts',
     'updateTask',
   ],
   [
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierUpdate.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierUpdate.ts',
     'updateSupplierRoot',
   ],
 ]
@@ -92,7 +92,7 @@ export async function run({ repoRoot }) {
     }
   }
   const teamServerFile =
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/team/update.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/update.ts'
   const teamServer = await readFile(join(repoRoot, teamServerFile), 'utf8')
   if (
     !teamServer.includes('input: UpdateKitchenTeamMemberInput') ||

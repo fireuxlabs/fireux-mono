@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-17
-Ref: 76aabc4b4
+Updated: 2026-08-18
+Ref: e23268507
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -32,9 +32,13 @@ Before each task:
   `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`.
   Misebox renders that catalogue directly; the FireUX parent may compose the
   same entries into its cross-ecosystem discovery surfaces.
-- Kitchen and Supplier packages own their reusable Console Operation catalogues
-  under `src/runtime/content/operations.ts`. Misebox composes those catalogues
-  into one app-wide `/operations` index grouped by Console.
+- Kitchen and Supplier packages own their reusable Console capability
+  catalogues. Their reviewed destinations are
+  `src/runtime/kitchen/content` and `src/runtime/supplier/content`; the current
+  `src/runtime/content/operations.ts` files are migration source. Misebox
+  composes those catalogues into one app-wide discovery index grouped by
+  Console. A legacy `*Operations` filename does not reclassify Identity or Team
+  as Operations.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
 - Misebox may own neutral physical product masters with named branding
@@ -62,23 +66,27 @@ Before each task:
   App with `app_id`. The same-id AppKitchen record owns access and Console
   configuration. Neither relationship nor support substitutes for the root.
 - A Kitchen root uses the same document ID as its required Place and owns
-  `slug`, boolean `visibility`, sparse `identity`, `assets`, an optional
-  transparent-media backdrop override, exact `management`, and audit stamps.
+  `slug`, boolean `visibility`, sparse `identity`, `assets`, exact
+  `management`, and audit stamps.
   Pre-release two-colour `brand_palette` data is compatibility input rather
   than Console or App theme authority. The root does not duplicate
   a Place id or generic lifecycle status. `identity` uses `name` and `tagline`;
-  `assets` uses `image`, `logo`, `wordmark`, and `backdrop_color`. Place owns
+  `assets` uses `image`, `logo`, and `wordmark`. Place owns
   location name/address, photography, gallery, contact details, currency,
   timezone, and business hours. Collection cards resolve a Kitchen image
   override first, then the linked Place cover, then the Place image; no Place
   media is copied into Kitchen.
+  Place also owns the one identity colour used behind transparent identity
+  media. Current Kitchen `assets.backdrop_color` data is migration input, not a
+  second colour authority; bounded Kitchen reads receive the linked Place
+  colour instead of copying or overriding it.
 - AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests`, plus
   its `console` configuration for menus, orders, tables, fulfilment, and
   integrations. A missing Console theme may be seeded from the owning App's
   reviewed semantic palette during trusted attachment; existing Console
   colours are preserved. The Kitchen Identity Console mirrors onboarding as
-  Place → Kitchen → Console → App: Place backdrop first, sparse Kitchen
-  identity second, Console palette and optional font choices on AppKitchen,
+  Place → Kitchen → Console → App: Place identity colour first, sparse Kitchen
+  identity media second, Console palette and optional font choices on AppKitchen,
   then dedicated App controls only for `management.mode === 'app'`. App writes
   retain only the palette delta over Console and exactly two typography family
   inputs; the five App masters remain the universal readiness gate.
@@ -230,7 +238,7 @@ Before each task:
   It consumes package-owned deterministic Demo Worlds only through the named
   Product Demo adapter, reuses real domain components, and performs no live
   operational or Test reads or writes. A bounded public Ingredient projection
-  may hydrate the real canonical roots referenced by Demo operation links;
+  may resolve the real canonical roots referenced by Demo operation links;
   those roots are not Demo records. Demo records remain owned by their domain
   package; the project owns only route selection, marketing copy, and local
   interaction.
@@ -286,10 +294,11 @@ Before each task:
   and links to the full pricing routes; it replaces secondary
   capability notes rather than duplicating a separate onboarding section. A
   Core `LandingOperationRail` provides the horizontally scrolling rail above
-  Section One in both Main Apps. Misebox projects only the current Kitchen
-  operations from the existing typed operation catalogue and links to
-  their canonical public routes. It omits the generic Operations doorway,
-  Console group labels, and Supplier operations.
+  Section One in both Main Apps. Misebox projects the current Kitchen
+  capabilities from the existing typed catalogue and links to their canonical
+  public routes. Identity and Team remain Console peers even while the legacy
+  `operations.ts` source includes them. The rail omits the generic Operations
+  doorway, Console group labels, and Supplier capabilities.
   The first Kitchen Console proof explicitly uses Core's copy-emphasis variant
   so its selected Operation explanation is wider and more prominent than the
   read-only Console preview; later proof sections retain the balanced default.
@@ -319,9 +328,10 @@ Before each task:
   projection and general
   answer execution remain entity-owned siblings so future operation children
   do not accumulate inside an API route. Server agent support mirrors the
-  entity hierarchy under `runtime/server/agent/<entity>`, with only
-  domain-specific operation children below `operations`; it is owned behavior
-  and never belongs under a generic `utils` tree.
+  entity hierarchy at `runtime/<entity>/server/agent`, with only
+  entity-specific operation children below `operations`; the current
+  `runtime/server/agent/<entity>` path is migration source. Agent support is
+  owned behaviour and never belongs under a generic `utils` tree.
   Provider execution
   remains governed by the shared `fireux-ai` disabled, simulator, codex, and
   app modes. Local Codex testing receives the same bounded KitchenAI envelope
@@ -616,7 +626,7 @@ Before each task:
   and lifecycle belong to the root. Active canonical names and aliases cannot
   collide. Every active root carries its canonical presentation image; blank
   images are not valid active Ingredient state. Kitchen and Supplier operations
-  store stable `ingredient_id` links and hydrate bounded `/api/ingredients`
+  store stable `ingredient_id` links and resolve bounded `/api/ingredients`
   projections. Only a global Misebox App
   admin may curate the all-status library through trusted server commands, and
   roots retire or merge instead of hard-delete. Ingredient has no language or

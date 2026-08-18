@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 

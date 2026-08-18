@@ -42,7 +42,7 @@ import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
 import {
   deriveKitchenOrderBoardStage,
   type KitchenOrder,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 
 type KitchenReceivingOutcome =
   | {

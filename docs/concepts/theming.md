@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
-Updated: 2026-08-12
-Ref: 93c271035
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -29,8 +29,8 @@ artwork, typography, photography or presentation-specific scene chrome.
 An App brand belongs to a genuine tenant App and uses the canonical
 `public/img/app/*` runtime asset contract. Friiites is a Misebox tenant App and
 therefore owns a real App brand. A Kitchen logo alone does not create an App
-brand; ordinary Kitchens retain their bounded Kitchen theme and sparse
-Place-inherited overrides.
+brand; ordinary Kitchens retain their bounded Console theme and consume their
+linked Place identity colour without copying or overriding it.
 
 Media stays with the entity whose truth it depicts. Place owns location
 photography, Kitchen owns operational identity overrides, Dish owns Dish
@@ -86,8 +86,7 @@ Console layer exists. Domain-owned attachment derives a missing four-role
 `AppX.console.theme.palette`, preserves an existing Console palette, then
 compacts `App.theme.palette` to App-only additions and material overrides.
 Runtime presentation resolves Console plus App into the effective eight roles.
-Kitchen root remains sparse, and an identity backdrop override equal to Place
-is omitted.
+Kitchen root remains sparse and owns no identity-colour override.
 
 Place and Kitchen remain Storage-backed and dynamically inherited. Their
 current trusted targets (`places/<id>/{logo|wordmark}` and
@@ -126,26 +125,27 @@ The detail route is a thin compatible-presentation resolver. Default and Theme
 use ordinary Core/Nuxt UI page structure; Template One renders its current
 Scene One composition. The detail owns no inspection rail, specimen system,
 brand switcher, or route CSS. Place presentation is intentionally bounded to one
-semantic `presentation.identity_backdrop_color` input. Current persisted Place
-source still names this field `media_backdrop_color`; renaming that stored
+semantic `presentation.identity_color` input. The UI calls it Primary colour.
+Current persisted Place source still names this field
+`media_backdrop_color`; renaming that stored
 field requires a guarded Place projection/write migration and is deliberately
-not hidden inside the Template One change. A concurrent onboarding
-compatibility path also persists a sparse two-colour `brand_palette` on Place
-and Kitchen. That is current source, but it is not the target ownership model
+not hidden inside the Template One change. Current Kitchen
+`assets.backdrop_color` and a concurrent onboarding
+compatibility path also persist a sparse two-colour `brand_palette` on Place
+and Kitchen. Those are migration source, not the target ownership model,
 and must not be mistaken for Console or App palette authority. The
 existing gallery and public Place/business-card presentations may evolve, but
 they do not justify more Place theme fields yet. Core `BrandPalette` stays a
-coherent App-template value object, not a collection of colour atoms. Presentation resolves dynamically
-from defaults through Place and Kitchen before future Console and App-template
-layers; inherited values are not copied upward during onboarding. Current
-source models the Place media backdrop and Kitchen Menu PageStyle, but not separate
-Console-theme or App-template-override storage. Kitchen also currently owns
-sparse identity media overrides; that source-backed delta is not silently
-removed by the progressive model.
+coherent App-template value object, not a collection of colour atoms.
+Presentation resolves dynamically from Place through Console and App layers;
+inherited values are not copied upward during onboarding. Current source
+models the Place media backdrop and legacy Kitchen Menu PageStyle alongside
+the newer Console/App palette work. Kitchen-owned identity media remains a
+separate source-backed delta; it does not own another colour.
 
 Misebox Basic presentation resolves rather than backfills records. Canonical
 Kitchen name and slug are required; an existing wordmark or logo is an optional
-enhancement. An authored projected media backdrop is used when present,
+enhancement. The projected Place identity colour is used when present,
 otherwise Misebox supplies its ecosystem-owned default blue `#2563eb` and
 reports the source as `misebox-default`. Generic Kitchen models and FireUX Core
 do not own this ecosystem fallback. Missing identity media remains honestly
@@ -202,10 +202,10 @@ existing Demo Storage authority.
 
 Palette authorship is progressive and remains separated by owner:
 
-- Place owns one `identity_backdrop_color`, used only behind transparent
-  identity media.
-- Kitchen Root normally authors no colour. It may store one sparse identity
-  backdrop override when the Place value does not suit that Kitchen.
+- Place owns one `identity_color`, used behind transparent identity media and
+  exposed as Primary colour in authoring UI.
+- Kitchen Root authors no colour. Current `assets.backdrop_color` values are
+  migration input and must collapse into the linked Place authority.
 - Console owns four reviewed functional colours: `canvas`, `text`, `accent`
   and `accent_contrast`. Derived surfaces, borders and states are renderer
   output rather than authored palette fields.
@@ -214,7 +214,8 @@ Palette authorship is progressive and remains separated by owner:
   `accent_contrast`. Canonical App storage keeps only roles that extend or
   override Console.
 
-Resolution is dynamic: Place → Kitchen override → Console → App. Inherited
+Resolution is dynamic: Place → Console → App. Kitchen identity media consumes
+the Place colour without forming another palette layer. Inherited
 values may seed a missing lower layer during onboarding, after which duplicate
 values are removed from the richer owner. The resolved App palette applies
 across its Kitchens and franchises; it never belongs to a single Kitchen merely
@@ -273,17 +274,19 @@ The bounded Friiites cutover is implemented by
 `scripts/migrate-friiites-palette.mjs`. It uses the protected MCP/Skill mutation
 lane, preserves a complete preimage, removes only a Kitchen backdrop override
 that duplicates its Place, and refuses to overwrite a different App or Console
-palette.
+palette. That removal is migration evidence, not an accepted Kitchen colour
+seam.
 
-Root has no authored theme; its single Place backdrop provides the fallback
+Root has no authored theme; its single Place identity colour provides the fallback
 behind transparent identity uploads. Console unlocks a functional theme but
 never a template. App extends that effective Console theme with one App-owned
 template and Brand System. The App assignment governs all of its tenant and
 franchise Kitchens; individual Kitchens do not select or fork the App template.
 
 The Kitchen Identity Console mirrors onboarding as four explicit capability
-layers: Place → Kitchen → Console → App. Place edits only its identity backdrop;
-Kitchen stores sparse identity additions or overrides; Console stores its
+layers: Place → Kitchen → Console → App. Place edits its Primary identity
+colour; Kitchen stores sparse identity media additions but no colour override;
+Console stores its
 functional four-colour palette and optional menu font choices on the same-id
 AppKitchen support record. The App section appears only for
 `management.mode === 'app'` and edits the dedicated App's eight effective
@@ -356,8 +359,8 @@ sources exist.
 - Generic style vocabulary:
   `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
 - Kitchen theme mutation/editor:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/theme.ts`
-  and `components/Console/Kitchen/Identity/Theme.vue`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
+  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Theme.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/template-one*`
   and `TemplateOne*.vue`
@@ -365,8 +368,8 @@ sources exist.
   `packages/ecosystem/fireux-misebox/src/runtime/kitchen-basic-presentation.ts`
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/public-projection.ts`
-  and `components/Kitchen/Collection/Manager.vue`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-projection.ts`
+  and `runtime/kitchen/components/Collection/Manager.vue`
 - Guard: `scripts/guards/landing-templates.mjs`
 
 ## Delta register

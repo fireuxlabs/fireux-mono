@@ -56,8 +56,8 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
-import type { ProjectInterfaceCard } from 'fireux-core/runtime/composables/fireux/project/useProjectInterface'
+import { useProjectConsoleSelection } from 'fireux-core/runtime/project/composables/console/core/useProjectConsoleSelection'
+import type { ProjectInterfaceCard } from 'fireux-core/runtime/project/composables/useProjectInterface'
 import type { LandingConsolePreviewItem } from 'fireux-core/types/landing-product'
 import { useFireuxProductDemo } from '~/composables/product-demo/useFireuxProductDemo'
 

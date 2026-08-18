@@ -2,7 +2,7 @@
 
 import { FieldPath } from 'firebase-admin/firestore'
 import { defineEventHandler, setHeader } from 'h3'
-import { AppStorage } from '../../../models/core/app.model'
+import { AppStorage } from '../../../app/models/app.model.ts'
 import { requireDevDeveloper } from '../../utils/auth/developer'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 

@@ -138,11 +138,11 @@ import type {
 import {
   useAppInterface,
   type AppCard,
-} from 'fireux-core/runtime/composables/fireux/app/useAppInterface'
+} from 'fireux-core/runtime/app/composables/useAppInterface'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
+} from 'fireux-core/runtime/ecosystem/composables/useEcosystemInterface'
 import {
   usePlatformDirectory,
   usePublishedPlatformEcosystemDirectory,

@@ -105,11 +105,11 @@ import {
   computed,
   reactive,
 } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import {
   KitchenOrderDefaults,
   type KitchenOrder,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelController,
@@ -117,7 +117,7 @@ import type {
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {

@@ -5,7 +5,7 @@ import {
   AppChefStorage,
   ChefStorage,
   createChefProfileSeed,
-} from '../../../../models/chef.model.ts'
+} from '../../../../user/models/chef.model.ts'
 
 export default createProfileProvisionHandler({
   id: 'chef',

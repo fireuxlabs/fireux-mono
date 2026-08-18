@@ -16,12 +16,12 @@ import {
   PUBLIC_KITCHEN_INDEX_PAGE_SIZE,
   type PublicKitchenIndexItem,
   type PublicKitchenIndexPage,
-} from '../../../models/kitchen/kitchen-index.model.ts'
+} from '../../../kitchen/models/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
   projectPublicKitchenIndexItem,
   type KitchenPublicDirectoryScope,
-} from '../../kitchen/identity/public-projection.ts'
+} from '../../../kitchen/server/identity/public-projection.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const KITCHEN_COLLECTION_SCAN_LIMIT = 500

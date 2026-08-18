@@ -208,13 +208,13 @@ import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/fi
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
-import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
+import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
 import {
   PlaceStorage,
   type Place,
   type PlaceUpsertInput,
-} from 'fireux-places/runtime/models/place.model'
+} from 'fireux-places/runtime/place/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
@@ -374,5 +374,4 @@ async function ensureCollectionRecord(
     place: { ...place, id: placeId },
   })
 }
-
 </script>

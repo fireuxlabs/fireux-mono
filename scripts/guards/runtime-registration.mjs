@@ -94,9 +94,26 @@ function findEmptyConfigurationHooks(repoRoot) {
   return violations
 }
 
+function readRegistrationSource(packageRoot) {
+  const files = [path.join(packageRoot, 'src', 'module.ts')]
+  const configRoot = path.join(packageRoot, 'src', 'config', 'module')
+
+  if (existsSync(configRoot)) {
+    for (const entry of readdirSync(configRoot, { withFileTypes: true })) {
+      if (entry.isFile() && entry.name.endsWith('.ts')) {
+        files.push(path.join(configRoot, entry.name))
+      }
+    }
+  }
+
+  return files
+    .filter((file) => existsSync(file))
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n')
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
-  const extensionsRoot = path.join(repoRoot, 'packages', 'extensions')
   const violations = []
   const emptyHooks = findEmptyConfigurationHooks(repoRoot)
 
@@ -116,22 +133,47 @@ export async function run(ctx) {
     )
   }
 
-  for (const packageName of childDirectories(extensionsRoot)) {
-    const packageRoot = path.join(extensionsRoot, packageName)
-    const modulePath = path.join(packageRoot, 'src', 'module.ts')
-    if (!existsSync(modulePath)) continue
+  for (const family of PACKAGE_FAMILIES) {
+    const familyRoot = path.join(repoRoot, 'packages', family)
+    for (const packageName of childDirectories(familyRoot)) {
+      const packageRoot = path.join(familyRoot, packageName)
+      const modulePath = path.join(packageRoot, 'src', 'module.ts')
+      const runtimeRoot = path.join(packageRoot, 'src', 'runtime')
+      if (!existsSync(modulePath) || !existsSync(runtimeRoot)) continue
 
-    const moduleSource = readFileSync(modulePath, 'utf8')
-    for (const surface of AUTO_SURFACES) {
-      const surfaceDir = path.join(packageRoot, 'src', 'runtime', surface)
-      if (!hasFiles(surfaceDir) || hasRegistration(moduleSource, surface)) continue
+      const moduleSource = readFileSync(modulePath, 'utf8')
+      const registrationSource = readRegistrationSource(packageRoot)
+      if (family === 'extensions') {
+        for (const surface of AUTO_SURFACES) {
+          const surfaceDir = path.join(runtimeRoot, surface)
+          if (hasFiles(surfaceDir) && !hasRegistration(moduleSource, surface)) {
+            violations.push({
+              packageName,
+              surface,
+              surfaceDir: path.relative(repoRoot, surfaceDir),
+              modulePath: path.relative(repoRoot, modulePath),
+            })
+          }
+        }
+      }
 
-      violations.push({
-        packageName,
-        surface,
-        surfaceDir: path.relative(repoRoot, surfaceDir),
-        modulePath: path.relative(repoRoot, modulePath),
-      })
+      for (const owner of childDirectories(runtimeRoot)) {
+        for (const surface of AUTO_SURFACES) {
+          const surfaceDir = path.join(runtimeRoot, owner, surface)
+          if (!hasFiles(surfaceDir)) continue
+
+          const registrationPath = `./runtime/${owner}/${surface}`
+          if (registrationSource.includes(registrationPath)) continue
+
+          violations.push({
+            packageName,
+            surface,
+            surfaceDir: path.relative(repoRoot, surfaceDir),
+            modulePath: path.relative(repoRoot, modulePath),
+            registrationPath,
+          })
+        }
+      }
     }
   }
 
@@ -142,7 +184,9 @@ export async function run(ctx) {
         ...violations.flatMap((violation) => [
           `  - ${violation.surfaceDir}`,
           `      module: ${violation.modulePath}`,
-          `      missing hook: ${violation.surface}`,
+          violation.registrationPath
+            ? `      missing registration: ${violation.registrationPath}`
+            : `      missing hook: ${violation.surface}`,
         ]),
         '',
         '[guard] Fix:',
@@ -153,5 +197,7 @@ export async function run(ctx) {
     )
   }
 
-  console.log('[guard] ✅ runtime surfaces are registered and module hooks are meaningful')
+  console.log(
+    '[guard] ✅ runtime surfaces are registered and module hooks are meaningful'
+  )
 }

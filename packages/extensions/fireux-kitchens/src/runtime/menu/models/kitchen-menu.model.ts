@@ -1,0 +1,185 @@
+// Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: add surface-owned Kitchen alert policy without provider credentials.
+// Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: distinguish scoped KitchenMenu truth and its public projection from root Menu identity.
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type {
+  KitchenDeliveryZone,
+  KitchenFulfilmentPaymentMethod,
+} from '../../kitchen/models/kitchen.model.ts'
+import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
+import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model.ts'
+import type { MenuRouteContext, MenuSurface } from './menu-context.model.ts'
+import type { MenuStatus } from './menu.model.ts'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
+
+/** Kitchen-owned operational Menu record. */
+export const KitchenMenuStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
+  collection: 'menus',
+  scopeCollection: 'menus',
+  parent: 'kitchen',
+  idParam: 'menuId',
+  children: {
+    sections:
+      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+    items:
+      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  },
+} as const
+
+export const KitchenMenuEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'KitchenMenu',
+  family: ['menu', 'kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'projection',
+  parent: 'Kitchen',
+  scoped: KitchenMenuStorage.path,
+  notes: [
+    'KitchenMenu owns operator-managed content and ordering policy.',
+    'Publishing may create or synchronize a root Menu.',
+  ],
+})
+
+export type MenuPaymentMethod = KitchenFulfilmentPaymentMethod
+export type MenuDeliveryZone = KitchenDeliveryZone
+
+export type MenuOrderDepositPolicy = {
+  type: 'fixed' | 'fixed_per_person' | 'percent'
+  amount: number
+  currency_code?: string
+  label?: string
+}
+
+export type MenuOrderFulfilmentPolicy = {
+  delivery_zones?: MenuDeliveryZone[]
+  /** Server-resolved Kitchen projection; never authored by a Menu surface. */
+  payment_methods?: MenuPaymentMethod[]
+  deposit?: MenuOrderDepositPolicy
+  handoff_instructions?: string
+}
+
+export const MenuOrderContactFields = ['name', 'phone', 'email'] as const
+export type MenuOrderContactField = (typeof MenuOrderContactFields)[number]
+
+export type MenuOrderCustomerPolicy = {
+  required_fields?: MenuOrderContactField[]
+}
+
+export type MenuOrderAvailabilityPolicy = {
+  paused?: boolean
+  message?: string
+}
+
+export type MenuOrderWhatsAppNotificationPolicy = {
+  enabled?: boolean
+  /** E.164 recipient for the Kitchen alert. Provider credentials remain server environment. */
+  recipient_phone?: string
+}
+
+export type MenuOrderNotificationPolicy = {
+  whatsapp?: MenuOrderWhatsAppNotificationPolicy
+}
+
+export type MenuOrderTypeConfig = {
+  type: KitchenOrderType
+  notice_hours?: number
+  message?: string
+  service_hours?: MenuServiceHoursConfig
+  asap_enabled?: boolean
+  slot_interval_minutes?: number
+  schedule_horizon_days?: number
+  fulfilment?: MenuOrderFulfilmentPolicy
+  customer?: MenuOrderCustomerPolicy
+  availability?: MenuOrderAvailabilityPolicy
+  notifications?: MenuOrderNotificationPolicy
+}
+
+export type MenuServiceHoursConfig = {
+  inherit_kitchen_operation_hours?: boolean
+  inherit_menu_service_hours?: boolean
+  operation_hours?: WeekdayTimeWindowsConfig
+}
+
+export type MenuOrderingConfig = {
+  enabled: boolean
+  order_types: MenuOrderTypeConfig[]
+  service_hours?: MenuServiceHoursConfig
+}
+
+export type MenuChoice = {
+  value: string
+  label: string
+  menu_id: string
+  to?: string
+  order_type?: KitchenOrderType
+  message?: string
+}
+
+export type MenuServiceProfile = {
+  context: MenuRouteContext
+  surface: MenuSurface
+  ordering: MenuOrderingConfig
+  orderingEnabled: boolean
+  orderTypes: KitchenOrderType[]
+  availableOrderTypes: KitchenOrderType[]
+  defaultOrderType?: KitchenOrderType
+  defaultOrderTypeConfig?: MenuOrderTypeConfig
+  choices: MenuChoice[]
+}
+
+export const KitchenMenuModel = {
+  id: '' as string,
+  kitchen_id: '' as string,
+  name: '' as string,
+  description: '' as string,
+  status: 'draft' as MenuStatus,
+  sort_order: 0 as number,
+  doc_url: '' as string,
+  doc_name: '' as string,
+  doc_type: '' as string,
+  doc_storage_path: '' as string,
+  kiosk_skin_id: '' as string,
+  ordering: {
+    enabled: false,
+    order_types: [] as MenuOrderTypeConfig[],
+    service_hours: {
+      inherit_kitchen_operation_hours: true,
+    },
+  } as MenuOrderingConfig,
+  choices: [] as MenuChoice[],
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['updated']['by'],
+  },
+} as const
+
+type MutableModel<T> = { -readonly [K in keyof T]: T[K] }
+
+export type KitchenMenu = MutableModel<typeof KitchenMenuModel> & {
+  /** Optional Menu-owned presentation. Absence inherits the Kitchen theme. */
+  theme?: ConsoleTheme
+}
+export type KitchenMenuCreateInput = Omit<KitchenMenu, 'created' | 'updated'>
+export type KitchenMenuUpdateInput = Partial<
+  Omit<KitchenMenu, 'id' | 'created' | 'updated' | 'kitchen_id'>
+>
+
+// Transitional aliases keep operational consumers stable while imports move to
+// the explicit KitchenMenu model family.
+export const MenuStorage = KitchenMenuStorage
+export const MenuEntity = KitchenMenuEntity
+export const MenuModel = KitchenMenuModel
+export type Menu = KitchenMenu
+export type MenuCreateInput = KitchenMenuCreateInput
+export type MenuUpdateInput = KitchenMenuUpdateInput
+export type { MenuStatus }

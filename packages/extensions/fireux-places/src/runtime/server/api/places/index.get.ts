@@ -16,9 +16,9 @@ import {
   PUBLIC_PLACE_INDEX_PAGE_SIZE,
   PUBLIC_PLACE_INDEX_SCAN_BATCH_SIZE,
   type PublicPlaceIndexPage,
-} from '../../../models/place-public.model'
-import { PlaceStorage } from '../../../models/place.model'
-import { projectPublicPlace } from '../../place/public-projection'
+} from '../../../place/models/place-public.model.ts'
+import { PlaceStorage } from '../../../place/models/place.model.ts'
+import { projectPublicPlace } from '../../../place/server/identity/public-projection'
 
 const text = (value: unknown) => typeof value === 'string' ? value.trim() : ''
 const encodeCursor = (value: string) => Buffer.from(value, 'utf8').toString('base64url')

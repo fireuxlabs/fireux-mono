@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserCard } from '../../../composables/fireux/user/useUserInterface'
+import type { UserCard } from '../../../user/composables/useUserInterface'
 import type { DashboardOverviewOutcome } from './types'
 
 const props = defineProps<{

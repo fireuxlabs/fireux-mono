@@ -1,15 +1,15 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
-import type { PlaceStored } from 'fireux-places/runtime/models/place.model'
+import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/console/useConsoleDemoData'
+import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
 import {
   usePortfolioInterface,
   type PortfolioSurface,
-} from '../../firestore/portfolio/utils/view/usePortfolioInterface'
+} from '../../../../portfolio/composables/firestore/utils/view/usePortfolioInterface'
 import {
   usePropertyInterface,
   type PropertySurface,
-} from '../../firestore/property/utils/view/usePropertyInterface'
+} from '../../../../property/composables/firestore/utils/view/usePropertyInterface'
 
 export type PropertiesConsoleDemoScenario = {
   appId: string

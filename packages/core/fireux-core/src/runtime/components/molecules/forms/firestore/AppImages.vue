@@ -161,14 +161,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
+import { useAppUpdate } from '../../../../app/composables/firestore/mutations/useAppUpdate'
 import {
   appImageLocalPublicPath,
   appImageRequirement,
   appPublicAssetRequirement,
   type AppImageKind,
-} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
-import type { App } from '../../../../models/core/app.model'
+} from '../../../../app/composables/firestore/utils/appMedia'
+import type { App } from '../../../../app/models/app.model.ts'
 
 const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 const appRef = computed(() => props.app)

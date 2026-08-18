@@ -122,10 +122,10 @@ function checkFireuxCoreContracts(pkgPath) {
     'src/runtime/composables/fireux/app/FireUXConfig.ts'
   )
   const pluginConfig = source('src/config/module/plugins-config.ts')
-  const onboarding = source('src/runtime/components/App/Create/System.vue')
+  const onboarding = source('src/runtime/app/components/Create/System.vue')
   const appShell = source('src/runtime/components/App/Shell.vue')
   const appInitialization = source(
-    'src/runtime/composables/fireux/app/utils/useAppInitialization.ts'
+    'src/runtime/app/composables/utils/useAppInitialization.ts'
   )
   const appStatus = source(
     'src/runtime/server/api/public/app/status.get.ts'
@@ -133,7 +133,7 @@ function checkFireuxCoreContracts(pkgPath) {
   const appConfigType = source('src/config/app/types.ts')
   const appConfigBuilder = source('src/config/app/fireux.config.ts')
   const console = source(
-    'src/runtime/composables/fireux/app/console/useConsole.ts'
+    'src/runtime/composables/fireux/console/useConsole.ts'
   )
   const consolePolicy = source('src/runtime/utils/console-policy.ts')
   const appConfig = source('src/config/app/fireux.config.ts')
@@ -144,7 +144,7 @@ function checkFireuxCoreContracts(pkgPath) {
     'src/runtime/composables/fireux/firebase/useAuth.ts'
   )
   const userOnboarding = source(
-    'src/runtime/components/User/Create/System.vue'
+    'src/runtime/user/components/Create/System.vue'
   )
   const userCreatePage = source('src/runtime/pages/users/create.vue')
   const appCreatePage = source('src/runtime/pages/apps/create.vue')

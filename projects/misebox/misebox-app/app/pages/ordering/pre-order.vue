@@ -52,7 +52,7 @@ import {
   computed,
   reactive,
 } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
@@ -63,9 +63,9 @@ import type {
   MenuOrderingPreOrderState,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
-import type { MenuOrderDepositPolicy } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
-import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+import type { MenuOrderDepositPolicy } from 'fireux-kitchens/runtime/menu/models/menu.model'
+import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/models/order.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {

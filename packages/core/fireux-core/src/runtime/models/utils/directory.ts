@@ -3,8 +3,8 @@ import type {
   AppMedia,
   AppRole,
   AppStatus,
-} from '../core/app.model'
-import type { EcosystemStatus } from '../core/ecosystem.model'
+} from '../../app/models/app.model.ts'
+import type { EcosystemStatus } from '../../ecosystem/models/ecosystem.model.ts'
 
 /**
  * Public directory projections are transport records, not stored entities.

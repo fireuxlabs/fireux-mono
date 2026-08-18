@@ -12,7 +12,7 @@ export async function useTemplateOneProductDemo(): Promise<{
   flagshipDish: TemplateOneFlagshipDish
 }> {
   const { deanosKitchenDemoMenu } = await import(
-    'fireux-kitchens/runtime/demo/kitchen/operations/Menus/deanos-main'
+    'fireux-kitchens/runtime/kitchen/demo/operations/Menus/deanos-main'
   )
   const dishById = new Map(deanosKitchenDemoMenu.dishes.map(dish => [dish.id, dish]))
   const menu: TemplateOneMenuContent = {

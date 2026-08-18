@@ -10,16 +10,16 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import {
   PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE,
   PUBLIC_COMPANY_INDEX_MAX_SCAN_SIZE,
   PUBLIC_COMPANY_INDEX_PAGE_SIZE,
   PUBLIC_COMPANY_INDEX_SCAN_BATCH_SIZE,
   type PublicCompanyIndexPage,
-} from '../../../models/company-public.model'
-import { CompanyStorage } from '../../../models/company.model'
-import { projectPublicCompany } from '../../company/public-projection'
+} from '../../../place/models/company-public.model.ts'
+import { CompanyStorage } from '../../../place/models/company.model.ts'
+import { projectPublicCompany } from '../../../place/server/company/public-projection'
 
 const text = (value: unknown) => typeof value === 'string' ? value.trim() : ''
 const encodeCursor = (value: string) => Buffer.from(value, 'utf8').toString('base64url')

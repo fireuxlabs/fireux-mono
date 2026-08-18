@@ -2,7 +2,7 @@
 
 import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { agentConfig } from './config/agentConfig'
 import type { Agent, AppAgent } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './utils/view/useAgentComputed'

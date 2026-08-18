@@ -5,7 +5,7 @@ import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningInput,
   type UserAccountProvisioningResult,
-} from '../../../models/operations/user-account-provisioning'
+} from '../../../user/models/user-account-provisioning'
 
 function responseMessage(payload: unknown, fallback: string) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {

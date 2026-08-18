@@ -1,10 +1,10 @@
-import type { IngredientFoodGroup } from 'fireux-kitchens/runtime/models/ingredient-food-group'
-import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/models/kitchen/finance-report.model'
-import type { KitchenMiseTaskSummary } from 'fireux-kitchens/runtime/models/kitchen/mise-presentation'
-import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
-import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
-import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { IngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
+import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
+import type { KitchenMiseTaskSummary } from 'fireux-kitchens/runtime/kitchen/models/mise-presentation'
+import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
+import type { KitchenOrder } from 'fireux-kitchens/runtime/kitchen/models/order.model'
+import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
 
 export type MiseboxProductDemoExperienceModel = {
   to: '/demo/menu' | '/demo/kiosk' | '/demo/service'

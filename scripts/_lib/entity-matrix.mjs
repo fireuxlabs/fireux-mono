@@ -11,7 +11,7 @@ export const entityMatrix = [
     id: 'core/app',
     state: 'declared',
     owner: 'fireux-core',
-    source: 'packages/core/fireux-core/src/runtime/models/core/app.model.ts',
+    source: 'packages/core/fireux-core/src/runtime/app/models/app.model.ts',
     export: 'AppEntity',
     classification: {
       kind: 'entity',
@@ -29,7 +29,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-core',
     source:
-      'packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts',
+      'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts',
     export: 'EcosystemEntity',
     classification: {
       kind: 'entity',
@@ -46,7 +46,7 @@ export const entityMatrix = [
     id: 'identity/user',
     state: 'declared',
     owner: 'fireux-core',
-    source: 'packages/core/fireux-core/src/runtime/models/core/user.model.ts',
+    source: 'packages/core/fireux-core/src/runtime/user/models/user.model.ts',
     export: 'UserEntity',
     classification: {
       kind: 'entity',
@@ -64,7 +64,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-core',
     source:
-      'packages/core/fireux-core/src/runtime/models/system/project.model.ts',
+      'packages/core/fireux-core/src/runtime/project/models/project.model.ts',
     export: 'ProjectEntity',
     classification: {
       kind: 'entity',
@@ -81,7 +81,7 @@ export const entityMatrix = [
     id: 'content/job',
     state: 'declared',
     owner: 'fireux-jobs',
-    source: 'packages/extensions/fireux-jobs/src/runtime/models/job.model.ts',
+    source: 'packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts',
     export: 'JobEntity',
     classification: {
       kind: 'entity',
@@ -99,7 +99,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-places',
     source:
-      'packages/extensions/fireux-places/src/runtime/models/place.model.ts',
+      'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts',
     export: 'PlaceEntity',
     classification: {
       kind: 'entity',
@@ -117,7 +117,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-companies',
     source:
-      'packages/extensions/fireux-companies/src/runtime/models/company.model.ts',
+      'packages/extensions/fireux-companies/src/runtime/place/models/company.model.ts',
     export: 'CompanyRoleRecord',
     classification: {
       kind: 'record',
@@ -136,7 +136,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-marketplace',
     source:
-      'packages/extensions/fireux-marketplace/src/runtime/models/marketplace.model.ts',
+      'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/models/marketplace.model.ts',
     export: 'MarketplaceStoreEntity',
     classification: {
       kind: 'entity',
@@ -155,7 +155,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-marketplace',
     source:
-      'packages/extensions/fireux-marketplace/src/runtime/models/marketplace.model.ts',
+      'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/models/marketplace.model.ts',
     export: 'MarketplaceOfferRecord',
     classification: {
       kind: 'record',
@@ -174,7 +174,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-marketplace',
     source:
-      'packages/extensions/fireux-marketplace/src/runtime/models/marketplace.model.ts',
+      'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/models/marketplace.model.ts',
     export: 'MarketplaceOrderRecord',
     classification: {
       kind: 'record',
@@ -193,7 +193,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
     export: 'KitchenEntity',
     classification: {
       kind: 'entity',
@@ -211,7 +211,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.model.ts',
     export: 'IngredientEntity',
     classification: {
       kind: 'entity',
@@ -229,7 +229,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/order.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
     export: 'KitchenOrderEntity',
     classification: {
       kind: 'entity',
@@ -248,7 +248,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/sale.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/sale.model.ts',
     export: 'KitchenSaleRecord',
     classification: {
       kind: 'record',
@@ -267,7 +267,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/customer.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/customer.model.ts',
     export: 'CustomerProfileRecord',
     classification: {
       kind: 'record',
@@ -286,7 +286,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/chef.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/chef.model.ts',
     export: 'ChefProfileRecord',
     classification: {
       kind: 'record',
@@ -305,7 +305,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/chef.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/chef.model.ts',
     export: 'AppChefProfileRecord',
     classification: {
       kind: 'record',
@@ -324,7 +324,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/driver.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/driver.model.ts',
     export: 'DriverProfileRecord',
     classification: {
       kind: 'record',
@@ -343,7 +343,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/driver.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/driver.model.ts',
     export: 'AppDriverProfileRecord',
     classification: {
       kind: 'record',
@@ -362,7 +362,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/team.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts',
     export: 'KitchenTeamMemberRecord',
     classification: {
       kind: 'record',
@@ -381,7 +381,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/team.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts',
     export: 'KitchenTeamJoinRequestRecord',
     classification: {
       kind: 'record',
@@ -400,7 +400,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/station.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts',
     export: 'KitchenStationRecord',
     classification: {
       kind: 'record',
@@ -419,7 +419,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts',
     export: 'KitchenMiseTaskRecord',
     classification: {
       kind: 'record',
@@ -438,7 +438,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/customer/order.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/models/customer/order.model.ts',
     export: 'CustomerOrderLinkRecord',
     classification: {
       kind: 'record',
@@ -457,7 +457,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/kitchen-menu.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/menu/models/kitchen-menu.model.ts',
     export: 'KitchenMenuEntity',
     classification: {
       kind: 'entity',
@@ -476,7 +476,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu.model.ts',
     export: 'MenuEntity',
     classification: {
       kind: 'entity',
@@ -494,7 +494,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-source-upload.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-source-upload.model.ts',
     export: 'MenuSourceUploadRecord',
     classification: {
       kind: 'record',
@@ -513,7 +513,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-section.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-section.model.ts',
     export: 'MenuSectionRecord',
     classification: {
       kind: 'record',
@@ -532,7 +532,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-item.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts',
     export: 'MenuItemRecord',
     classification: {
       kind: 'record',
@@ -551,7 +551,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-suppliers',
     source:
-      'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
     export: 'SupplierEntity',
     classification: {
       kind: 'entity',
@@ -569,7 +569,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-properties',
     source:
-      'packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts',
+      'packages/extensions/fireux-properties/src/runtime/portfolio/models/portfolio.model.ts',
     export: 'PortfolioEntity',
     classification: {
       kind: 'entity',
@@ -587,7 +587,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-properties',
     source:
-      'packages/extensions/fireux-properties/src/runtime/models/property.model.ts',
+      'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
     export: 'PropertyEntity',
     classification: {
       kind: 'entity',
@@ -605,7 +605,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/recipe.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts',
     export: 'RecipeEntity',
     classification: {
       kind: 'entity',
@@ -624,7 +624,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/prep-item.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts',
     export: 'KitchenPrepItemEntity',
     classification: {
       kind: 'entity',
@@ -643,7 +643,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-kitchens',
     source:
-      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/dish.model.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.model.ts',
     export: 'DishEntity',
     classification: {
       kind: 'entity',
@@ -662,7 +662,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-products',
     source:
-      'packages/extensions/fireux-products/src/runtime/models/product.model.ts',
+      'packages/extensions/fireux-products/src/runtime/product/models/product.model.ts',
     export: 'ProductEntity',
     classification: {
       kind: 'entity',
@@ -680,7 +680,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-suppliers',
     source:
-      'packages/extensions/fireux-suppliers/src/runtime/models/supplier/supplier-item.model.ts',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/models/supplier-item.model.ts',
     export: 'SupplierItemRecord',
     classification: {
       kind: 'record',

@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam } from 'h3'
-import { getReservation } from '../../../../../reservation/read.ts'
+import { getReservation } from '../../../../../../property/server/operations/reservations/read.ts'
 
 export default defineEventHandler(event =>
   getReservation(

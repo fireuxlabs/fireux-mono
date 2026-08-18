@@ -6,7 +6,7 @@ import {
   getRequestIP,
   setResponseStatus,
 } from 'h3'
-import { resolvePlacesApiKey } from '../../utils/places-api-key'
+import { resolvePlacesApiKey } from '../../../place/server/integration/google/places-api-key'
 
 export default defineEventHandler(async (event: any) => {
   const dev = import.meta.dev

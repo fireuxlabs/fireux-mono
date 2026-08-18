@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import UserCreateSystem from '../../components/User/Create/System.vue'
+import UserCreateSystem from '../../user/components/Create/System.vue'
 
 definePageMeta({
   layout: 'default',

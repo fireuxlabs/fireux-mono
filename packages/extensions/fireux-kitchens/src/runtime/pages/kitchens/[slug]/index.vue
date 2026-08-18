@@ -17,9 +17,9 @@
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useKitchenDetail } from '../../../composables/fireux/kitchen/useKitchenDetail'
-import { useKitchenSeo } from '../../../composables/fireux/firestore/kitchen/utils/useKitchenSeo'
-import type { Kitchen } from '../../../models/kitchen.model'
+import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
+import { useKitchenSeo } from '../../../kitchen/composables/firestore/utils/useKitchenSeo'
+import type { Kitchen } from '../../../kitchen/models/kitchen.model.ts'
 
 definePageMeta({
   layout: false,

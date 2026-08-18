@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 18:06 CEST — Repo Efficiency Pass 2 of 6: call the self-only Professional provisioner without a target.
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
+import { useUserCreate } from 'fireux-core/runtime/user/composables/firestore/mutations/useUserCreate'
 import { professionalConfig } from '../config/professionalConfig'
 
 export function useProfessionalCreate() {

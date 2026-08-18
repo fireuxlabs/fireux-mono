@@ -1,7 +1,7 @@
 # Collection manager family
 
-Updated: 2026-07-23
-Ref: 796952bf0
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -33,7 +33,8 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Default source: collection manager fetches its own default collection.
 - Self-contained row: a collection row has every exposed list/card field needed by `useXInterface()`.
 - Synced snapshot: denormalized public fields copied onto the row from source truth by a migration/sync seam.
-- Hydration: extra live reads or API enrichment that add linked truth to a record. This is not the default collection-manager shape.
+- Linked enrichment: extra live reads or API joins that add named linked truth
+  to a record. This is not the default collection-manager shape.
 - Interface: `useXInterface()` maps fetched collection rows into cards.
 
 ## Important split
@@ -81,7 +82,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   safe Company and canonical work-Place display truth.
 - `Ingredient` consumes `/api/ingredients`. The API exposes only the canonical
   culinary identity needed by public browse and exact Kitchen/Supplier
-  hydration; raw root documents and curator writes remain server-only.
+  joins; raw root documents and curator writes remain server-only.
 - Blog's public `BlogCollectionEditorialManager` consumes `/api/public/blogs`,
   which applies publication and ecosystem scope, exposes a bounded index-card
   DTO, and owns cursor pagination. The authenticated/dev
@@ -105,14 +106,15 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Public profile collection presentation receives the profile and canonical User
   as separate DTO members from a server-side uid join. Exact detail reads remain
   separate until those pages complete their endpoint-first cutover.
-- Collection managers consume the row/projection they receive; they do not make per-row hydration calls.
+- Collection managers consume the row/projection they receive; they do not make per-row linked reads.
 
 ## Source contract
 
 - `XCollectionManager` belongs to the unqualified `/xs` collection surface.
 - Boring self-owned managers mount directly. Authority-sensitive App and
   Ecosystem pages pass one named controller, never a raw collection prop.
-- The manager fetches its own default collection and should not hydrate internally.
+- The manager fetches its own default collection and should not join linked
+  records internally.
 - A route-policy controller is a narrow accepted delta when the route must use
   the same bounded request to choose an HTTP outcome before rendering. The
   Menu index passes `usePublicMenuIndex` explicitly for tenant redirect versus
@@ -180,7 +182,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
-## Hydration directions
+## Linked-read directions
 
 - Up: scoped/local record reads a higher/root entity.
 - Down: public/root doorway reads scoped child detail.
@@ -218,21 +220,21 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 Root Simple Collection Managers
 
-| Manager     | Snapshot source                     | Direction        | Current note                                                                                                                                            |
-| ----------- | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Menu`      | Route-owned `/api/menus` controller | Self             | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
-| `Place`     | None in manager                     | Self             | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
-| `Product`   | None in manager                     | Self             | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
-| `Supplier`  | None for root browse                | Self/App support | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                             |
-| `Portfolio` | None for root browse                | Self/App support | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                            |
-| `Property`  | None for root browse                | Self/App support | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                         |
+| Manager     | Snapshot source                     | Direction        | Current note                                                                                                                                        |
+| ----------- | ----------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Menu`      | Route-owned `/api/menus` controller | Self             | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail joins. |
+| `Place`     | None in manager                     | Self             | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                        |
+| `Product`   | None in manager                     | Self             | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                    |
+| `Supplier`  | None for root browse                | Self/App support | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                         |
+| `Portfolio` | None for root browse                | Self/App support | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                        |
+| `Property`  | None for root browse                | Self/App support | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                     |
 
 Root Projected Collection Managers
 
 | Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                 |
 | -------------- | ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join the same-id Place and canonical App support without copied snapshots or client N+1 reads.                  |
-| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents.                 |
+| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests resolve Kitchen and Supplier links without exposing raw root documents.                 |
 | `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                      |
 | `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                     |
 | `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                                         |
@@ -251,7 +253,7 @@ Scoped/provided collection surfaces
 | `Dish`                | Kitchen-scoped rows                                       | Scoped      | No root index today.                                         |
 | `Recipe`              | Kitchen-scoped rows                                       | Scoped      | Public projection deferred; keep as Kitchen Recipes for now. |
 | `Station`             | Kitchen-scoped rows                                       | Scoped      | No root index today.                                         |
-| `Team`                | Kitchen/console-scoped rows                               | Scoped/side | May hydrate user records later.                              |
+| `Team`                | Kitchen/console-scoped rows                               | Scoped/side | May resolve bounded User presentation later.                 |
 | `Kitchen.Supplier`    | Kitchen-scoped supplier entries                           | Scoped/side | Local kitchen supplier surface.                              |
 | `Supplier.Item`       | Supplier-scoped item rows with Product reference          | Scoped/side | No root index today.                                         |
 | `Supplier.Ingredient` | Supplier-scoped ingredient rows with Ingredient reference | Scoped/side | No root index today.                                         |

@@ -1,7 +1,7 @@
 # Landing templates context
 
-Updated: 2026-08-14
-Ref: d5efe9160
+Updated: 2026-08-18
+Ref: e23268507
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
 
@@ -38,19 +38,22 @@ injected owner data.
   tier or the existence of a canonical App. An App is one valid provider and
   proof of the effective assets and theme values, but is not itself a
   functional prerequisite.
-- Root owns neither theme nor template. Console owns Kitchen Menu `PageStyle`
-  but never template selection. An App extends the effective Console theme with
-  one App-owned template applied across all of its tenant/franchise Kitchens;
-  franchises do not fork or select templates independently.
+- Root owns neither theme nor template. Console owns the Kitchen's functional
+  Menu palette but never template selection. An App extends the effective
+  Console theme with one App-owned template applied across all of its
+  tenant/franchise Kitchens; franchises do not fork or select templates
+  independently.
 - Place presentation is intentionally minimal: entity identity media plus one
-  semantic `identity_backdrop_color` fallback behind transparent uploads. Current
-  persisted Place source still calls it `media_backdrop_color`; migrate that
-  field only through the guarded Place projection/write family. Rich
+  semantic `identity_color`, labelled Primary colour in the editor, behind
+  transparent identity media. Current persisted Place source still calls it
+  `media_backdrop_color`; migrate that field only through the guarded Place
+  projection/write family. Rich
   palette and composition inputs begin above Place; do not treat Place
   `brand_palette` compatibility data as the Template One App palette.
 - Palette ownership is progressive and non-copying: Place owns one identity
-  backdrop, Kitchen may sparsely override it, Console owns four functional
-  colours, and App stores only roles that extend or override Console. App
+  colour, Kitchen owns no colour override, Console owns four functional
+  colours, and App stores only roles that extend or override Console. Current
+  Kitchen `assets.backdrop_color` is migration input, not an owner. App
   source still reviews the effective eight-colour result. Domain-owned App
   attachment seeds a missing Console layer from that source, preserves any
   existing Console colours, and compacts the canonical App layer. Templates
@@ -127,7 +130,7 @@ injected owner data.
 6. `scripts/guards/landing-templates.mjs`
 7. `docs/concepts/landing-templates.md`
 8. `docs/concepts/templates.md`
-8. `docs/concepts/theming.md`
+9. `docs/concepts/theming.md`
 
 Brand copy and assets must point back to current owner source. Missing assets
 remain explicit in the injection metadata and polished in the preview; never

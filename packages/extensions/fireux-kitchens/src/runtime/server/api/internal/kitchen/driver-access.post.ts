@@ -7,8 +7,8 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import {
   isDriverKitchenAccessRelation,
   type DriverKitchenAccessInput,
-} from '../../../../models/driver/kitchen-access.ts'
-import { mutateDriverKitchenAccess } from '../../../../server/driver/access.ts'
+} from '../../../../user/models/driver/kitchen-access.ts'
+import { mutateDriverKitchenAccess } from '../../../../user/server/driver/access.ts'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)

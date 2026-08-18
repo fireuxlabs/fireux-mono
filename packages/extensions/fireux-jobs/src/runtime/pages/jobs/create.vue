@@ -83,9 +83,9 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useHead, useRouter } from 'nuxt/app'
 import { computed, ref } from 'vue'
-import { useJobCreate } from '../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
+import { useJobCreate } from '../../job/composables/firestore/mutations/useJobCreate.ts'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
-import { useJobPermissions } from '../../composables/useJobPermissions.ts'
+import { useJobPermissions } from '../../job/composables/useJobPermissions.ts'
 
 definePageMeta({
   layout: 'default',

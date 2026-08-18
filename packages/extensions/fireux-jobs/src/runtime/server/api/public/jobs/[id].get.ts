@@ -11,10 +11,10 @@ import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import type { PublicJobDetailResponse } from '../../../../models/job-public.model.ts'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
+import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
+import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
+import type { PublicJobDetailResponse } from '../../../../job/models/job-public.model.ts'
 import {
   isPublicJobCandidate,
   projectPublicJob,

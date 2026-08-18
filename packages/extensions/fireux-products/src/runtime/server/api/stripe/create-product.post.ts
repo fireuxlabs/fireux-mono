@@ -8,9 +8,9 @@ import {
 } from 'h3'
 import { createRequire } from 'node:module'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
-import { STRIPE_API_VERSION } from '../../stripe/version'
-import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
+import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
+import { STRIPE_API_VERSION } from '../../../product/server/integration/stripe/version'
+import { assertProductsServiceAccess } from '../../../product/server/core/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
   try {

@@ -35,13 +35,13 @@ const typeFields = (source, typeName) => {
 }
 
 const PROJECT_MODEL =
-  'packages/core/fireux-core/src/runtime/models/system/project.model.ts'
+  'packages/core/fireux-core/src/runtime/project/models/project.model.ts'
 const APP_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/app.model.ts'
+  'packages/core/fireux-core/src/runtime/app/models/app.model.ts'
 const ECOSYSTEM_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts'
+  'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts'
 const USER_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
+  'packages/core/fireux-core/src/runtime/user/models/user.model.ts'
 const DIRECTORY_MODEL =
   'packages/core/fireux-core/src/runtime/models/utils/directory.ts'
 const PROFILE_PROVISIONING_MODEL =
@@ -55,18 +55,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
     .filter((name) => name.endsWith('.ts'))
     .sort()
-  assert.deepEqual(coreModelFiles, [
-    'app.model.ts',
-    'ecosystem.model.ts',
-    'user.model.ts',
-  ])
+  assert.deepEqual(coreModelFiles, [])
 
   const systemModelFiles = readdirSync(
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/system')
   )
     .filter((name) => name.endsWith('.ts'))
     .sort()
-  assert.deepEqual(systemModelFiles, ['project.model.ts'])
+  assert.deepEqual(systemModelFiles, [])
 
   const utilityModelFiles = readdirSync(
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/utils')
@@ -97,23 +93,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const placeModel = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/models/place.model.ts'
+    'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts'
   )
   const kitchenModel = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts'
   )
   const kitchenLogoEditor = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Logo.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Edit/Logo.vue'
   )
   const kitchenIdentityEditor = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Identity.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Edit/Identity.vue'
   )
   const kitchenConsoleIdentity = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Index.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
   assert.match(kitchenModel, /backdrop_color/)
@@ -384,7 +380,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const rootUpdater of [
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/mutations/useAgentUpdate.ts',
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/mutations/useChefUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/composables/firestore/profiles/Chef/mutations/useChefUpdate.ts',
   ]) {
     const source = read(repoRoot, rootUpdater)
     assert.match(source, /useProfileRootUpdateBase/)
@@ -394,10 +390,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const retiredProfileSurface of [
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/fetch/useAgentCollection.ts',
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/fetch/useProfessionalCollection.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/fetch/useChefCollection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/composables/firestore/profiles/Chef/fetch/useChefCollection.ts',
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/mutations/useAgentDelete.ts',
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/mutations/useProfessionalDelete.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/mutations/useChefDelete.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/composables/firestore/profiles/Chef/mutations/useChefDelete.ts',
     'packages/extensions/fireux-jobs/src/runtime/pages/agents/admin/[id].vue',
     'packages/extensions/fireux-jobs/src/runtime/pages/professionals/admin/[id].vue',
     'packages/extensions/fireux-kitchens/src/runtime/pages/chefs/admin/[id].vue',
@@ -419,7 +415,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /appProfessionals|appProfessional|useCollectionById/,
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/fetch/useChefFetch.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/user/composables/firestore/profiles/Chef/fetch/useChefFetch.ts',
       /appChefs|appChef|useCollectionById/,
     ],
   ]) {
@@ -438,7 +434,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       'Professional',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/components/Chef/Collection/Manager.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Collection/Manager.vue',
       'PublicChefDirectoryProfile',
       'Chef',
     ],
@@ -546,23 +542,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const appManager = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/components/App/Collection/Manager.vue'
+    'packages/core/fireux-core/src/runtime/app/components/Collection/Manager.vue'
   )
   const ecosystemManager = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/components/Ecosystem/Collection/Manager.vue'
+    'packages/core/fireux-core/src/runtime/ecosystem/components/Collection/Manager.vue'
   )
   const ecosystemInterface = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/ecosystem/useEcosystemInterface.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemInterface.ts'
   )
   const ecosystemFetch = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemFetch.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemFetch.ts'
   )
   const ecosystemCollection = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
   )
   for (const source of [ecosystemFetch, ecosystemCollection]) {
     assert.match(source, /readRuntimeIdentityFirestoreDatabaseId/)
@@ -582,7 +578,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       existsSync(
         path.join(
           repoRoot,
-          'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/ecosystem/mutations',
+          'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/mutations',
           legacyMutation
         )
       ),
@@ -593,11 +589,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const userProfile = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/components/User/IdentitySummary.vue'
+    'packages/core/fireux-core/src/runtime/user/components/IdentitySummary.vue'
   )
   const appProfileView = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/useAppProfileView.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/useAppProfileView.ts'
   )
   assert.doesNotMatch(userProfile, /useAppCollection/)
   assert.doesNotMatch(appProfileView, /useAppUserCollection|useUserFetch/)
@@ -633,7 +629,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const appInitialization = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/utils/app-initialization/initialize.ts'
+    'packages/core/fireux-core/src/runtime/app/server/app-initialization/initialize.ts'
   )
   const appInitializationEndpoint = read(
     repoRoot,
@@ -646,7 +642,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appInitializationEndpoint, /requireDevDeveloper\(event\)/)
   const appInitializationState = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/utils/useAppInitialization.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/utils/useAppInitialization.ts'
   )
   assert.match(
     appInitializationState,
@@ -668,7 +664,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appSettingsEndpoint, /ensureRuntimeAppMeta/)
   const appUserJoinedPublisher = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/utils/events/publishAppUserJoinedEvent.ts'
+    'packages/core/fireux-core/src/runtime/app/server/events/publishAppUserJoinedEvent.ts'
   )
   assert.doesNotMatch(appUserJoinedPublisher, /app\.ecosystem_id/)
   assert.match(appUserJoinedPublisher, /serverUserNotificationsTarget/)
@@ -677,11 +673,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appUserJoinedPublisher, /New user joined/)
   const notificationClient = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserNotifications.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserNotifications.ts'
   )
   const notificationMutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserNotificationRead.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/mutations/useUserNotificationRead.ts'
   )
   const notificationReadEndpoint = read(
     repoRoot,
@@ -705,7 +701,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   const ecosystemDetail = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/ecosystem/useEcosystemDetail.ts'
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/useEcosystemDetail.ts'
   )
   const ecosystemDetailApi = read(
     repoRoot,
@@ -799,15 +795,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const projectCollection = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/project/useProjectCollection.ts'
+    'packages/core/fireux-core/src/runtime/project/composables/useProjectCollection.ts'
   )
   const projectDetail = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/project/useProjectDetail.ts'
+    'packages/core/fireux-core/src/runtime/project/composables/useProjectDetail.ts'
   )
   const projectInterface = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/project/useProjectInterface.ts'
+    'packages/core/fireux-core/src/runtime/project/composables/useProjectInterface.ts'
   )
   const projectControlApi = read(
     repoRoot,
@@ -889,23 +885,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
 
   const jobModelPath =
-    'packages/extensions/fireux-jobs/src/runtime/models/job.model.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts'
   const jobAuthorModelPath =
-    'packages/extensions/fireux-jobs/src/runtime/models/job-author.model.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job-author.model.ts'
   const jobPublicModelPath =
-    'packages/extensions/fireux-jobs/src/runtime/models/job-public.model.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job-public.model.ts'
   const jobAuthorServerPath =
-    'packages/extensions/fireux-jobs/src/runtime/server/job/author.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/author.ts'
   const jobValidationPath =
-    'packages/extensions/fireux-jobs/src/runtime/server/job/validation.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/core/validation.ts'
   const jobPublicProjectionPath =
-    'packages/extensions/fireux-jobs/src/runtime/server/utils/job/public-projection.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/public-projection.ts'
   const jobRuntimeScopePath =
-    'packages/extensions/fireux-jobs/src/runtime/server/job/runtime.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/core/runtime.ts'
   const jobPermissionsPath =
-    'packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/useJobPermissions.ts'
   const jobPublishSurfacePath =
-    'packages/extensions/fireux-jobs/src/runtime/components/Job/Author/Publish.vue'
+    'packages/extensions/fireux-jobs/src/runtime/job/components/Author/Publish.vue'
   const agentProvisionSurfacePath =
     'packages/extensions/fireux-jobs/src/runtime/components/Agent/Create/System.vue'
   const jobModel = read(repoRoot, jobModelPath)
@@ -918,11 +914,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const agentProvisionSurface = read(repoRoot, agentProvisionSurfacePath)
   const placeMediaMutation = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/mutate.ts'
   )
   const placeMutationAuthority = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/server/place/mutation-authority.ts'
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/mutation-authority.ts'
   )
 
   assert.match(
@@ -1049,15 +1045,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     jobValidationPath,
     jobPublicProjectionPath,
     jobRuntimeScopePath,
-    'packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts',
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/useJobPermissions.ts',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.get.ts',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.post.ts',
     'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs.get.ts',
   ])
   for (const relativeRoot of [
-    'packages/extensions/fireux-jobs/src/runtime/components/Job',
-    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs',
-    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/job/components',
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/firestore',
+    'packages/extensions/fireux-jobs/src/runtime/job/composables',
     'packages/extensions/fireux-jobs/src/runtime/pages/jobs',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs',
     'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs',
@@ -1089,9 +1085,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const provenanceWriter of [
     'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/editor/useBlogDraftState.ts',
     'packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogCreate.ts',
-    'packages/extensions/fireux-products/src/runtime/composables/fireux/product/create/useCreateProductState.ts',
-    'packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/mutations/useProductCreate.ts',
-    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/mutations/useJobCreate.ts',
+    'packages/extensions/fireux-products/src/runtime/product/composables/create/useCreateProductState.ts',
+    'packages/extensions/fireux-products/src/runtime/product/composables/firestore/mutations/useProductCreate.ts',
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/firestore/mutations/useJobCreate.ts',
   ]) {
     assert.doesNotMatch(
       read(repoRoot, provenanceWriter),
@@ -1132,19 +1128,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const publicPlaceModel = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/models/place-public.model.ts'
+    'packages/extensions/fireux-places/src/runtime/place/models/place-public.model.ts'
   )
   const publicPlaceNormalizer = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/utils/public-place-projection.ts'
+    'packages/extensions/fireux-places/src/runtime/place/utils/public-place-projection.ts'
   )
   const publicPlaceServerProjection = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/server/place/public-projection.ts'
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/public-projection.ts'
   )
   const placePublicStoryEditor = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/components/Place/Edit/PublicStory.vue'
+    'packages/extensions/fireux-places/src/runtime/place/components/Edit/PublicStory.vue'
   )
   assert.match(placePublicStoryEditor, /\buseImageStorage\b/)
   assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/cover/)
@@ -1203,23 +1199,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const companyModel = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/models/company.model.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/models/company.model.ts'
   )
   const canonicalCompany = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/server/company/canonical.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/server/company/canonical.ts'
   )
   const companyMaterializer = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/server/company/materialize.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/server/company/materialize.ts'
   )
   const publicCompanyModel = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/models/company-public.model.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/models/company-public.model.ts'
   )
   const publicCompanyProjection = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/server/company/public-projection.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/server/company/public-projection.ts'
   )
   assert.match(companyModel, /kind:\s*'record'/)
   assert.match(companyModel, /parent:\s*'Place'/)

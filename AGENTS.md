@@ -2,7 +2,7 @@
 
 Purpose: short operating router for AI agents working in `fireux-mono`.
 
-Effective: 2026-08-14
+Effective: 2026-08-18
 
 ## Mandatory Entry
 
@@ -26,6 +26,7 @@ Use the smallest current context that fits the task.
 - Cross-system identity, landing, and pricing literature: `docs/ai/identity-literature-context.md`
 - Landing-template catalogue and brand injection: `docs/ai/templates-context.md`
 - Product literature and common tongue: `docs/concepts/product-language.md`
+- Runtime filesystem ownership: `docs/concepts/runtime-filesystem.md`
 - Concept maps and family language: `docs/concepts/*.md`
 - Source shape and executable authority: `scripts/guards/*`
 - Package/app entrypoints: `src/module.ts`, `src/config/module/*`, `nuxt.config.ts`, `package.json`
@@ -78,6 +79,19 @@ Before editing an entity, console, route family, model, collection manager, publ
 5. Patch the smallest useful slice.
 
 If a tiny behavior needs a broad diff, stop and report the missing seam.
+
+Package runtime ownership is entity-scoped. Root technical directories are
+the shared FireUX spine or a Nuxt entrypoint boundary; entity-owned
+implementation belongs under `src/runtime/<entity>/`. During the migration,
+do not create a parallel implementation merely to satisfy the target path:
+read `docs/concepts/runtime-filesystem.md` and move a bounded capability
+coherently when filesystem migration is part of the task.
+
+Before changing a repo-wide ownership, filesystem, Entity, Console, or product
+classification, audit the complete maintained `docs/ai` and `docs/concepts`
+graph for contradictory claims. Correct the documentation destination first;
+do not begin broad source movement while two durable maps describe different
+systems.
 
 ## Literature Rule
 

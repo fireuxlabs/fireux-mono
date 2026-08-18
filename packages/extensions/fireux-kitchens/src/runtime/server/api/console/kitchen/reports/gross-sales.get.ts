@@ -13,8 +13,8 @@ import {
   KitchenGrossSalesReportLimitError,
   readKitchenGrossSalesReport,
 } from '../../../../../server/kitchen/operations/sales/gross-sales-report.ts'
-import { requireKitchenReportReader } from '../../../../../server/kitchen/core/operator-access.ts'
-import { resolveKitchenOperationHours } from '../../../../../utils/kitchen-spine.ts'
+import { requireKitchenReportReader } from '../../../../../kitchen/server/core/operator-access.ts'
+import { resolveKitchenOperationHours } from '../../../../../kitchen/utils/kitchen-spine.ts'
 
 const validTimezone = (value: unknown) => {
   if (typeof value !== 'string' || !value || value !== value.trim())

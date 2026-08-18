@@ -94,7 +94,7 @@ import {
   deriveKitchenOrderBoardStage,
   type KitchenOrder,
   type KitchenOrderStatus,
-} from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/kitchen/models/order.model'
 
 const props = defineProps<{
   initialOrders: KitchenOrder[]

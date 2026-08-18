@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import { createMarketplaceOrder } from '../../marketplace/authority'
+import { createMarketplaceOrder } from '../../../marketplace-store/server/core/capabilities'
 
-export default defineEventHandler(async event =>
+export default defineEventHandler(async (event) =>
   createMarketplaceOrder(event, await readBody(event))
 )

@@ -18,8 +18,8 @@ import { computed } from 'vue'
 import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
-} from '../../../../composables/fireux/console/kitchen/core/useKitchenConsoleDemoData'
-import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/core/useKitchenConsole'
+} from '../../../../kitchen/composables/console/core/useKitchenConsoleDemoData'
+import { useKitchenConsole } from '../../../../kitchen/composables/console/core/useKitchenConsole'
 
 const { selection } = useKitchenConsole()
 const isDemo = computed(() => selection.kitchenSource.value === 'demo')

@@ -3,8 +3,8 @@ import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboar
 import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUserUpdate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserUpdate'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUserUpdate } from 'fireux-core/runtime/user/composables/firestore/mutations/useUserUpdate'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import {
   INTERLAKEN_LOCALITIES,
   OTHER_LOCALITY_ID,

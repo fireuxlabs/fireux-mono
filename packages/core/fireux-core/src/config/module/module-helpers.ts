@@ -15,6 +15,7 @@ export type FireuxServerHandler = Omit<
 
 type ComponentsDirOptions = {
   pattern?: string
+  ignore?: string[]
   global?: boolean
   pathPrefix?: boolean
   prefix?: string
@@ -32,6 +33,7 @@ export function registerComponentsDir(
   const config: Parameters<typeof addComponentsDir>[0] = {
     path: dir,
     pattern: options.pattern ?? '**/*.vue',
+    ignore: options.ignore,
     global: options.global ?? false,
     pathPrefix: options.pathPrefix ?? true,
   }
@@ -52,10 +54,23 @@ export function registerLayoutsDir(resolver: Resolver) {
 }
 
 export function registerComposablesDir(resolver: Resolver) {
-  const dir = resolver.resolve('./runtime/composables')
-  if (!existsSync(dir)) return null
-  addImportsDir(dir)
-  return dir
+  return registerComposablesDirs(resolver, ['./runtime/composables'])[0] ?? null
+}
+
+export function registerComposablesDirs(
+  resolver: Resolver,
+  relativePaths: readonly string[]
+) {
+  const registered: string[] = []
+
+  for (const relativePath of relativePaths) {
+    const dir = resolver.resolve(relativePath)
+    if (!existsSync(dir)) continue
+    addImportsDir(dir)
+    registered.push(dir)
+  }
+
+  return registered
 }
 
 export function registerServerHandlers(

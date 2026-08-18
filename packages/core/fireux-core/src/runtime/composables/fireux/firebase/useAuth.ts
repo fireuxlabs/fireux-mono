@@ -17,7 +17,7 @@ import {
 import { computed, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
-import { useUserCreate } from '../firestore/core/user/mutations/useUserCreate'
+import { useUserCreate } from '../../../user/composables/firestore/mutations/useUserCreate'
 import {
   clearPendingAccountConsent,
   rememberPendingAccountConsent,

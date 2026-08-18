@@ -29,7 +29,7 @@
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
   PublicMarketplaceStore,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 const props = defineProps<{ store: PublicMarketplaceStore }>()
 const { copy } = useInterlakenCopy()

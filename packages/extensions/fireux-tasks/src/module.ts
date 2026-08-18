@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
+import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configurePages } from './config/module/pages-config'
@@ -41,7 +41,11 @@ export default defineNuxtModule<ModuleOptions>({
           { enabled: options.enabled !== false },
           { merge: true }
         ),
-      composables: registerComposablesDir,
+      composables: (resolver) =>
+        registerComposablesDirs(resolver, [
+          './runtime/composables',
+          './runtime/portfolio/composables',
+        ]),
       pages: configurePages,
       server: configureServer,
     })

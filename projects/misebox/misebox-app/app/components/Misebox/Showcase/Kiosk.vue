@@ -171,8 +171,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
-import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
+import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { MiseboxProductDemoKioskAppearance } from '../../../composables/product-demo/useMiseboxProductDemo'
 
 type DemoKitchenOption = {

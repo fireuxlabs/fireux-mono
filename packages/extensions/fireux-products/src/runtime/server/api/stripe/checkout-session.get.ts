@@ -5,8 +5,8 @@ import {
   getQuery,
   type H3Event,
 } from 'h3'
-import { STRIPE_API_VERSION } from '../../stripe/version'
-import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
+import { STRIPE_API_VERSION } from '../../../product/server/integration/stripe/version'
+import { assertProductsServiceAccess } from '../../../product/server/core/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
   await assertProductsServiceAccess(event)

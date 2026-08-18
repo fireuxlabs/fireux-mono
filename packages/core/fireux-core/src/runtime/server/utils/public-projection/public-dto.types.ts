@@ -2,15 +2,15 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: keep creator principals out of public App transport.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: define the minimal public identity and App-admin people transport.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography only on full public User transport.
-import type { AppStatus } from '../../../models/core/app.model'
-import type { EcosystemStatus } from '../../../models/core/ecosystem.model'
+import type { AppStatus } from '../../../app/models/app.model.ts'
+import type { EcosystemStatus } from '../../../ecosystem/models/ecosystem.model.ts'
 import type {
   AppDerived,
   AppMedia,
   AppRole,
   AppSocialLinks,
-} from '../../../models/core/app.model'
-import type { AppUserAccessTier } from '../../../utils/app-user-access'
+} from '../../../app/models/app.model.ts'
+import type { AppUserAccessTier } from '../../../app/utils/app-user-access'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 
 export type PublicSeoDto = {

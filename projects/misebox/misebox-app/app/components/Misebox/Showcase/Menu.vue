@@ -40,9 +40,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
-import { resolveMenuBrowseSurfaceCopy } from 'fireux-kitchens/runtime/content/menu-surface-copy'
-import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
+import { resolveMenuBrowseSurfaceCopy } from 'fireux-kitchens/runtime/menu/content/menu-surface-copy'
+import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
 const props = defineProps<{
   manifest: MenuManifest

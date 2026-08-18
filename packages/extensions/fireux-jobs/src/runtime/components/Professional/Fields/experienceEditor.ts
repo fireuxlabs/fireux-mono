@@ -4,7 +4,7 @@ import {
   getLocalTimeZone,
   type DateValue,
 } from '@internationalized/date'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place.model'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 
 export type ExperienceCalendarUpdateValue =

@@ -190,10 +190,10 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type {
   PublicMarketplaceStore,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 import type {
   MarketplaceFulfilmentMethod,
-} from 'fireux-marketplace/runtime/models/marketplace.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
 const props = withDefaults(defineProps<{
   store: PublicMarketplaceStore

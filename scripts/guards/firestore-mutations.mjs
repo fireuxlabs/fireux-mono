@@ -38,9 +38,9 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 // typed lane; additions fail the guard. This turns the pre-spine writers into a
 // bounded, executable remaining-file inventory instead of an expanding allowlist.
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
-  '41d9bcfae9b30f8938da437128bf140fd402c739b72a6762b96f098ab75274dd'
+  '10484b476023427fedf10a770b83c5c71f19583e3e8ec7ee1e30f1c20b438899'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
-  '593712622256a877a2326b37c023bf030224f3e0b734219b7122c1b851d8c948'
+  '2db124cf412dcf5ee556b317a4716f90a9161fd887bebbfc986f007febe4f8fa'
 
 function sourceFiles(repoRoot) {
   const files = []
@@ -140,7 +140,7 @@ export function run({ repoRoot }) {
   const appUpdateSource = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppUpdate.ts'
+      'packages/core/fireux-core/src/runtime/app/composables/firestore/mutations/useAppUpdate.ts'
     ),
     'utf8'
   )
@@ -172,7 +172,7 @@ export function run({ repoRoot }) {
   const kitchenMenuDraftWrite = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/write.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/draft/write.ts'
     ),
     'utf8'
   )
@@ -202,7 +202,7 @@ export function run({ repoRoot }) {
   const kitchenIngredientCuration = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/ingredient/curation.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/ingredient/server/curation.ts'
     ),
     'utf8'
   )
@@ -220,7 +220,7 @@ export function run({ repoRoot }) {
   const kitchenIngredientCurationStorage = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/ingredient/curation-storage.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/ingredient/server/curation-storage.ts'
     ),
     'utf8'
   )
@@ -246,7 +246,7 @@ export function run({ repoRoot }) {
   const kitchenMenuAiUsage = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/usage.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/usage.ts'
     ),
     'utf8'
   )
@@ -262,7 +262,7 @@ export function run({ repoRoot }) {
   const kitchenMenuRootEntry = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/root-entry.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/draft/root-entry.ts'
     ),
     'utf8'
   )
@@ -291,7 +291,7 @@ export function run({ repoRoot }) {
   const kitchenOrderNotification = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/customer-notification.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/customer-notification.ts'
     ),
     'utf8'
   )
@@ -307,7 +307,7 @@ export function run({ repoRoot }) {
   const kitchenOrderServiceSequence = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/service-sequence.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/service-sequence.ts'
     ),
     'utf8'
   )
@@ -326,7 +326,7 @@ export function run({ repoRoot }) {
   const kitchenOrderIdempotency = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/menu/ordering/idempotency.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering/idempotency.ts'
     ),
     'utf8'
   )
@@ -353,7 +353,7 @@ export function run({ repoRoot }) {
   const kitchenWhatsAppDispatch = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/menu/ordering/whatsapp.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/ordering/whatsapp.ts'
     ),
     'utf8'
   )
@@ -367,7 +367,7 @@ export function run({ repoRoot }) {
   const kitchenDriverDispatch = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/driver/dispatch.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/user/server/driver/dispatch.ts'
     ),
     'utf8'
   )
@@ -382,8 +382,8 @@ export function run({ repoRoot }) {
   assert.match(kitchenDriverDispatch, /mutations\.update/)
   assert.doesNotMatch(kitchenDriverDispatch, /\.runTransaction\(|transaction\./)
   const marketplaceStoreWriters = [
-    'packages/extensions/fireux-marketplace/src/runtime/server/marketplace/authority-admin.ts',
-    'packages/extensions/fireux-marketplace/src/runtime/server/marketplace/authority-stores.ts',
+    'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/server/moderation/commands.ts',
+    'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/server/stores/commands.ts',
   ]
   for (const file of marketplaceStoreWriters) {
     const source = readFileSync(path.join(repoRoot, file), 'utf8')
@@ -432,15 +432,15 @@ export function run({ repoRoot }) {
     'The read-only Project Console must not expose canonical mutations that omit ProjectMeta synchronization.'
   )
   const placeMutationFiles = [
-    ['ensure.ts', /mutations\.create\(places,\s*id,/],
-    ['mutate.ts', /mutations\.update\(places,\s*id,/],
-    ['remove.ts', /mutations\.delete\(places,\s*id\)/],
+    ['index/ensure.ts', /mutations\.create\(places,\s*id,/],
+    ['identity/mutate.ts', /mutations\.update\(places,\s*id,/],
+    ['identity/remove.ts', /mutations\.delete\(places,\s*id\)/],
   ]
   for (const [file, verbPattern] of placeMutationFiles) {
     const source = readFileSync(
       path.join(
         repoRoot,
-        'packages/extensions/fireux-places/src/runtime/server/place',
+        'packages/extensions/fireux-places/src/runtime/place/server',
         file
       ),
       'utf8'

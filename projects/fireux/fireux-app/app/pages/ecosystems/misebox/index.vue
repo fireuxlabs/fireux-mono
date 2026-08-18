@@ -174,7 +174,7 @@ import type {
   EcosystemDirectoryEntry,
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
-import type { AppRole } from 'fireux-core/runtime/models/core/app.model'
+import type { AppRole } from 'fireux-core/runtime/app/models/app.model'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 

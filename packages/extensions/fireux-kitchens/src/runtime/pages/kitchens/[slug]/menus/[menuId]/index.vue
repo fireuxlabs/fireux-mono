@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { directoryMenuRouteScope } from '../../../../../utils/kitchen-menu-route'
+import { directoryMenuRouteScope } from '../../../../../kitchen/utils/kitchen-menu-route'
 
 definePageMeta({
   middleware: 'menu-projection-layout',

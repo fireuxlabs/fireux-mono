@@ -1,0 +1,55 @@
+import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import {
+  ProductStorage,
+  type FirebaseProduct,
+} from '../../../models/product.model.ts'
+
+export function useProductUpdate() {
+  const base = useDocumentUpdateBase<FirebaseProduct>(
+    ProductStorage.collection,
+    {
+      resolvePath: true,
+      appScoped: false,
+    }
+  )
+
+  async function updateProduct(input: {
+    productId: string
+    changes: Partial<FirebaseProduct>
+  }): Promise<boolean> {
+    const productId = String(input.productId || '').trim()
+    const updates = input.changes
+    if (!productId) {
+      throw new Error('Product id is required')
+    }
+
+    const requestedSlug =
+      updates.slug === undefined ? productId : String(updates.slug || '').trim()
+    const slugValidation = validatePublicSlug(requestedSlug, {
+      label: 'Product slug',
+      namespace: ProductStorage.collection,
+      reservedScope: 'entity',
+    })
+
+    if (!slugValidation.isValid) {
+      throw new Error(slugValidation.message || 'Product slug is invalid')
+    }
+
+    if (slugValidation.slug !== productId) {
+      throw new Error('Product slug must match product id.')
+    }
+
+    const nextUpdates =
+      updates.slug === undefined ? updates : { ...updates, slug: productId }
+
+    await base.updateById(productId, nextUpdates)
+    console.log('🧩 [Stub] updateProduct', {
+      id: productId,
+      updates: nextUpdates,
+    })
+    return true
+  }
+
+  return { updateProduct }
+}

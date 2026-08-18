@@ -1,7 +1,7 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { patchMarketplaceOffer } from '../../../../../marketplace/authority'
+import { patchMarketplaceOffer } from '../../../../../../marketplace-store/server/core/capabilities'
 
-export default defineEventHandler(async event =>
+export default defineEventHandler(async (event) =>
   patchMarketplaceOffer(
     event,
     getRouterParam(event, 'storeId'),

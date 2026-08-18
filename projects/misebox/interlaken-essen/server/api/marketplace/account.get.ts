@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {

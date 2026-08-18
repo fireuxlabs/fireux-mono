@@ -4,13 +4,13 @@ import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   estimateMenuAiCost,
   type MenuAiQuality,
-} from '../../../../menu/ai/cost'
-import { sourceRows } from '../../../../menu/source/rows'
+} from '../../../../../menu/server/ai/cost'
+import { sourceRows } from '../../../../../menu/server/source/rows'
 import {
   assertKitchenMenuUploadAccess,
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
-} from '../../../../menu/source/uploads'
+} from '../../../../../menu/server/source/uploads'
 
 type ProcessEstimateBody = {
   appId?: string

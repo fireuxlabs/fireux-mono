@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { readKitchenTeamMembers } from '../../../../kitchen/team/read.ts'
+import { readKitchenTeamMembers } from '../../../../../kitchen/server/team/read.ts'
 
 export default defineEventHandler((event) =>
   readKitchenTeamMembers(event, {

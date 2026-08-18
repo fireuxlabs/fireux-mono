@@ -1,4 +1,4 @@
-import type { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/core/operator-access'
+import type { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
 import type { PendingTeamTool } from './team-tools'
 
 export type KitchenAgentAccess = Awaited<

@@ -2,12 +2,12 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenOperator } from '../../../../kitchen/core/operator-access.ts'
-import { readMenuOrderingConfig } from '../../../../menu/ordering/config.ts'
+import { requireKitchenOperator } from '../../../../../kitchen/server/core/operator-access.ts'
+import { readMenuOrderingConfig } from '../../../../../menu/server/ordering/config.ts'
 import {
   menuPreOrderWhatsAppErrorMessage,
   sendPreOrderWhatsAppTest,
-} from '../../../../menu/ordering/whatsapp.ts'
+} from '../../../../../menu/server/ordering/whatsapp.ts'
 
 type WhatsAppTestBody = {
   appId?: string

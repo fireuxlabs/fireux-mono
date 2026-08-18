@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-identity">
       <template #header>
-        <LayoutsConsoleNavbar :title="navTitle" />
+        <LayoutsConsoleNavbar :title="navTitle">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Identity" />
+          </template>
+        </LayoutsConsoleNavbar>
       </template>
 
       <template #body>

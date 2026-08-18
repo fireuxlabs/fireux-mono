@@ -1,0 +1,35 @@
+import type { Ref } from 'vue'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import {
+  requirePropertyConsoleWrite,
+  useActiveProperty,
+  type ActivePropertyRuntime,
+} from 'fireux-properties/runtime/property/composables/console/operations/useActiveProperty'
+import type {
+  Reservation,
+  ReservationCreateInput,
+  ReservationResponse,
+} from '../../../../models/reservation.model.ts'
+
+export function useReservationCreate(
+  _existingReservations: Ref<Reservation[]>,
+  runtimeProperty: ActivePropertyRuntime = useActiveProperty()
+) {
+  async function createReservation(input: ReservationCreateInput) {
+    const propertyId = requirePropertyConsoleWrite(runtimeProperty, 'fireux-reservations')
+    if (runtimeProperty.isDemo.value) {
+      throw new Error('[fireux-reservations] Demo reservations are read-only.')
+    }
+    const user = await useRequireUser()
+    const response = await $fetch<ReservationResponse>(
+      `/api/console/properties/${encodeURIComponent(propertyId)}/reservations`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        body: input,
+      }
+    )
+    return response.reservation.id
+  }
+  return { createReservation }
+}

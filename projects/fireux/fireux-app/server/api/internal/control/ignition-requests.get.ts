@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: expose bounded private request data to FireUX App admins.
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   IgnitionRequestStorage,
   serializeIgnitionRequest,

@@ -6,22 +6,22 @@ import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
 } from 'fireux-sproochli/runtime/sproochli'
-import { buildMenuPayload } from '../../menu/payload/build.ts'
-import { menuSourceFromData } from '../../menu/payload/source.ts'
-import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'
-import { readKitchenMenuChoices } from '../../menu/manifest/choices.ts'
-import { readMenuManifestSections } from '../../menu/payload/sections.ts'
+import { buildMenuPayload } from '../../../menu/server/payload/build.ts'
+import { menuSourceFromData } from '../../../menu/server/payload/source.ts'
+import { readKitchenMenuSections } from '../../../menu/server/manifest/sections.ts'
+import { readKitchenMenuChoices } from '../../../menu/server/manifest/choices.ts'
+import { readMenuManifestSections } from '../../../menu/server/payload/sections.ts'
 import {
   menuSpecialsContent,
   shouldEmbedMenuSpecials,
-} from '../../../utils/menu-specials.ts'
-import { normalizeMenuRouteContext } from '../../../utils/menu-context.ts'
-import { parseMenuRouteTarget } from '../../../utils/kitchen-menu-route.ts'
+} from '../../../menu/utils/menu-specials.ts'
+import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
+import { parseMenuRouteTarget } from '../../../kitchen/utils/kitchen-menu-route.ts'
 import {
   resolvePublicMenuTarget,
   type RootPublicMenuTarget,
   type ScopedPublicMenuTarget,
-} from '../../menu/ownership/public-target.ts'
+} from '../../../menu/server/ownership/public-target.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

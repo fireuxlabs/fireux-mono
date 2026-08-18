@@ -3,7 +3,7 @@ import test from 'node:test'
 import {
   menuMediaReviewKey,
   normalizeMenuMediaReview,
-} from '../../server/menu/media/review'
+} from '../../menu/server/media/review'
 
 test('menu media review keeps only bounded item decisions', () => {
   assert.deepEqual(

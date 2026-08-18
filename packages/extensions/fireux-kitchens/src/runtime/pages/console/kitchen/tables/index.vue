@@ -4,6 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Tables">
           <template #right>
+            <ConsoleAIOperationPlaceholder operation="Tables" />
             <UButton
               v-if="canWrite"
               to="/console/kitchen/tables/edit"
@@ -32,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleTables } from '../../../../composables/fireux/console/kitchen/operations/Tables/useKitchenConsoleTables'
+import { useKitchenConsoleTables } from '../../../../kitchen/composables/console/operations/Tables/useKitchenConsoleTables'
 
 const { canWrite } = useKitchenConsoleTables()
 

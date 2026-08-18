@@ -72,7 +72,7 @@ import { computed } from 'vue'
 import {
   INGREDIENT_FOOD_GROUP_OPTIONS,
   type IngredientFoodGroup,
-} from 'fireux-kitchens/runtime/models/ingredient-food-group'
+} from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 
 type ProductDemoIngredient =

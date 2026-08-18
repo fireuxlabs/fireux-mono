@@ -3,7 +3,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import {
-  registerComposablesDir,
+  registerComposablesDirs,
   registerLayoutsDir,
 } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
@@ -48,7 +48,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
-        path: resolver.resolve('./runtime/types/pdf-worker.types.ts'),
+        path: resolver.resolve('./runtime/menu/types/pdf-worker.types.ts'),
       })
     })
     registerReservedRootRouteKeys([
@@ -82,7 +82,14 @@ export default defineNuxtModule<ModuleOptions>({
           ensureTestKitchen: options.ensureTestKitchen !== false,
         }),
       plugins: configurePlugins,
-      composables: registerComposablesDir,
+      composables: (resolver) =>
+        registerComposablesDirs(resolver, [
+          './runtime/composables',
+          './runtime/ingredient/composables',
+          './runtime/kitchen/composables',
+          './runtime/menu/composables',
+          './runtime/user/composables',
+        ]),
       components: configureComponents,
       layouts: registerLayoutsDir,
       pages: configurePages,

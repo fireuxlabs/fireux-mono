@@ -5,7 +5,7 @@ import {
   nextEngagementStatus,
   sameFirestoreTimestamp,
   temporaryCapacityAllowsAcceptance,
-} from '../runtime/utils/job-hiring-policy.ts'
+} from '../runtime/job/utils/job-hiring-policy.ts'
 
 test('offer versions compare exact Firestore timestamp parts', () => {
   assert.equal(

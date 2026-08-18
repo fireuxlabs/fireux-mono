@@ -6,9 +6,9 @@ import {
   readBody,
   type H3Event,
 } from 'h3'
-import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
-import { STRIPE_API_VERSION } from '../../stripe/version'
-import { getProductsFirestore } from '../../utils/getAdmin'
+import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
+import { STRIPE_API_VERSION } from '../../../product/server/integration/stripe/version'
+import { getProductsFirestore } from '../../../product/server/core/getAdmin'
 
 type CreateCheckoutSessionBody = {
   appId?: string

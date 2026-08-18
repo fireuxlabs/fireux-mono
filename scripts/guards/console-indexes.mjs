@@ -97,19 +97,19 @@ export async function run(ctx) {
 
 function validateConsoleTargetEndpoints({ repoRoot, violations }) {
   const requestRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargetRequest.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleTargetRequest.ts'
   const targetsRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleTargets.ts'
   const endpointRelative =
     'packages/core/fireux-core/src/runtime/server/api/console/[family]/targets.get.ts'
   const moduleRelative = 'packages/core/fireux-core/src/module.ts'
   const kitchenRelative =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleTargetCollection.ts'
   const friiitesRelative = 'projects/misebox/friiites/nuxt.config.ts'
   const runtimeConfigRelative =
     'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts'
   const familyRuntimeRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleFamilyRuntime.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleFamilyRuntime.ts'
   const request = readRequiredSource(
     repoRoot,
     requestRelative,
@@ -259,15 +259,15 @@ function validateConsoleTargetEndpoints({ repoRoot, violations }) {
 
 function validateConsoleDataContract({ files, repoRoot, violations }) {
   const dataRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleData.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleData.ts'
   const selectionRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleSelection.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleSelection.ts'
   const runtimeRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleEntityRuntime.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleEntityRuntime.ts'
   const writeGuardRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleWriteGuard.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleWriteGuard.ts'
   const dataAuthorityRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleDataAuthority.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleDataAuthority.ts'
   const dataSource = readRequiredSource(
     repoRoot,
     dataRelative,
@@ -494,7 +494,12 @@ function validateSourceIgnorantViews({ files, repoRoot, violations }) {
     ) {
       continue
     }
-    if (/\/components\/Console\/[^/]+\/Index\//.test(relative)) continue
+    if (
+      /\/components\/Console\/[^/]+\/Index\//.test(relative) ||
+      /\/src\/runtime\/[^/]+\/components\/Console\/Index\//.test(relative)
+    ) {
+      continue
+    }
 
     const source = readFileSync(fullPath, 'utf8')
     const branch = source.match(SOURCE_TYPE_VIEW_BRANCH_RE)
@@ -527,11 +532,11 @@ function validateMutationWriteGates({ files, repoRoot, violations }) {
       ts.ScriptKind.TS
     )
     const calls = collectCallExpressions(sourceFile)
-    const gates = calls.filter(call =>
+    const gates = calls.filter((call) =>
       CONSOLE_WRITE_GATE_RE.test(callExpressionName(call))
     )
 
-    for (const effect of calls.filter(call =>
+    for (const effect of calls.filter((call) =>
       MUTATION_EFFECT_CALLS.has(callExpressionName(call))
     )) {
       if (hasPriorGateInAction(effect, gates)) continue
@@ -548,9 +553,9 @@ function validateMutationWriteGates({ files, repoRoot, violations }) {
 
 function validateSharedConsoleSource({ repoRoot, violations }) {
   const relative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsole.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsole.ts'
   const selectionRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleSelection.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleSelection.ts'
   const fullPath = path.join(repoRoot, relative)
   if (!existsSync(fullPath)) {
     violations.push(`${relative} (missing shared Console source authority)`)
@@ -607,9 +612,7 @@ function validateSelectionHydrationGates({ files, repoRoot, violations }) {
     }
 
     const source = readFileSync(fullPath, 'utf8')
-    const objectGate = source.match(
-      /\bv-if=["']!selected[A-Z][A-Za-z]+["']/
-    )
+    const objectGate = source.match(/\bv-if=["']!selected[A-Z][A-Za-z]+["']/)
     if (!objectGate) continue
 
     violations.push(
@@ -703,7 +706,14 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   )
 
   validateSelected({ selectedPath, family, repoRoot, violations })
-  validateTargets({ targetsPath, indexDir, family, files, repoRoot, violations })
+  validateTargets({
+    targetsPath,
+    indexDir,
+    family,
+    files,
+    repoRoot,
+    violations,
+  })
   validateComposable({ family, files, repoRoot, violations })
   validateTargetAuthority({ family, files, repoRoot, violations })
 }
@@ -897,7 +907,9 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     }
     assertMatch(
       coreSource,
-      new RegExp(`useConsoleTargets\\s*\\(\\s*\\{\\s*family:\\s*['\"]${family.toLowerCase()}['\"]`),
+      new RegExp(
+        `useConsoleTargets\\s*\\(\\s*\\{\\s*family:\\s*['\"]${family.toLowerCase()}['\"]`
+      ),
       coreRelative,
       `family core must resolve ${family} target IDs`,
       violations
@@ -976,7 +988,10 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     return
   }
 
-  if (findCallSources(coreSource, 'useKitchenConsoleTargetCollection').length !== 1) {
+  if (
+    findCallSources(coreSource, 'useKitchenConsoleTargetCollection').length !==
+    1
+  ) {
     violations.push(
       `${coreRelative} (Kitchen core must own exactly one authenticated live target collection)`
     )
@@ -1075,7 +1090,10 @@ function assertNoIndexTargetResolver(source, relative, violations) {
 
 function findCallSources(source, callee) {
   const calls = []
-  const pattern = new RegExp(`\\b${escapeRegex(callee)}(?:\\s*<[^;{}()]*>)?\\s*\\(`, 'g')
+  const pattern = new RegExp(
+    `\\b${escapeRegex(callee)}(?:\\s*<[^;{}()]*>)?\\s*\\(`,
+    'g'
+  )
   let match
 
   while ((match = pattern.exec(source))) {
@@ -1154,12 +1172,7 @@ function readSelfClosingTag(source, componentName) {
   )
 }
 
-function readRequiredSource(
-  repoRoot,
-  relative,
-  missingMessage,
-  violations
-) {
+function readRequiredSource(repoRoot, relative, missingMessage, violations) {
   const fullPath = path.join(repoRoot, relative)
   if (!existsSync(fullPath)) {
     violations.push(`${relative} (${missingMessage})`)
@@ -1200,7 +1213,7 @@ function hasPriorGateInAction(effect, gates) {
   while (scope) {
     if (
       gates.some(
-        gate =>
+        (gate) =>
           gate.getStart() < effect.getStart() &&
           nearestFunctionLike(gate) === scope
       )

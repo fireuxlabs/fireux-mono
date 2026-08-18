@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { CompanyDefaults } from '../../models/company.model'
+import { CompanyDefaults } from '../../place/models/company.model.ts'
 
 definePageMeta({
   layout: 'dev',

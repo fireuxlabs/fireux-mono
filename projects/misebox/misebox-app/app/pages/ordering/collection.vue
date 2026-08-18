@@ -47,8 +47,8 @@ import {
   reactive,
   watchEffect,
 } from 'vue'
-import { useCollectionFunnel } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/Collection/useCollectionFunnel'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { useCollectionFunnel } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/Collection/useCollectionFunnel'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
 import { createOrderingFunnelShapeTrack } from '~/utils/orderingFunnelShapes'
 import type {
   MenuOrderingBasketItem,
@@ -58,9 +58,9 @@ import type {
   MenuOrderingIncoming,
   MenuOrderingProcessing,
   MenuOrderingSending,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
-import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
-import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/models/kitchen/order.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/menu/models/menu.model'
+import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/models/order.model'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {

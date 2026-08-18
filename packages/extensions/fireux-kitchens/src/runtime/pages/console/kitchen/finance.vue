@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-finance">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Finance" />
+        <LayoutsConsoleNavbar title="Kitchen Finance">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Finance" />
+          </template>
+        </LayoutsConsoleNavbar>
 
         <UDashboardToolbar>
           <template #left>
@@ -74,8 +78,8 @@ import { computed, ref, watch } from 'vue'
 import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
-} from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleDemoData'
-import { useKitchenConsole } from '../../../composables/fireux/console/kitchen/core/useKitchenConsole'
+} from '../../../kitchen/composables/console/core/useKitchenConsoleDemoData'
+import { useKitchenConsole } from '../../../kitchen/composables/console/core/useKitchenConsole'
 
 type Preset = 'today' | 'week' | 'month' | '90-days' | 'custom'
 type CalendarRangeValue = {

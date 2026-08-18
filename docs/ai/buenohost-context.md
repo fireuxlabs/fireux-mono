@@ -61,7 +61,7 @@ Use current source and guards above this document:
 - Property package: `packages/extensions/fireux-properties`
 - Reservation package: `packages/extensions/fireux-reservations`
 - Reservation command boundary:
-  `packages/extensions/fireux-reservations/src/runtime/server/reservation`
+  `packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations`
 - Reservation authority guard: `scripts/guards/reservation-authority.mjs`
 - BuenoHost Rules source:
   `packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules`

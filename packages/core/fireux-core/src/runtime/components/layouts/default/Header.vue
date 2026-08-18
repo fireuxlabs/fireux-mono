@@ -81,7 +81,7 @@ import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useCons
 import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../composables/fireux/user/useUser'
+import { useUser } from '../../../user/composables/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
 

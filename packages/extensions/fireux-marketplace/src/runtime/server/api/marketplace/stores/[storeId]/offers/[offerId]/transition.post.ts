@@ -1,8 +1,8 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import type { MarketplaceOfferTransitionIntent } from '../../../../../../../models/marketplace-api.model'
-import { transitionMarketplaceOffer } from '../../../../../../marketplace/authority'
+import type { MarketplaceOfferTransitionIntent } from '../../../../../../../marketplace-store/models/marketplace-api.model.ts'
+import { transitionMarketplaceOffer } from '../../../../../../../marketplace-store/server/core/capabilities'
 
-export default defineEventHandler(async event =>
+export default defineEventHandler(async (event) =>
   transitionMarketplaceOffer(
     event,
     getRouterParam(event, 'storeId'),

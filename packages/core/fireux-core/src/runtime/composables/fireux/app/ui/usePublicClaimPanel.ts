@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: hydrate claimant cards through the public identity API.
 import { computed, ref, type Ref } from 'vue'
-import { useUser } from '../../user/useUser'
-import { useUserInterface } from '../../user/useUserInterface'
-import { usePublicUserIdentity } from '../../public/user/usePublicUserIdentity'
+import { useUser } from '../../../../user/composables/useUser'
+import { useUserInterface } from '../../../../user/composables/useUserInterface'
+import { usePublicUserIdentity } from '../../../../user/composables/usePublicUserIdentity'
 import { useToastify } from './useToastify'
 import { useConsoleEntryCta } from './nav/useConsoleEntryCta'
 

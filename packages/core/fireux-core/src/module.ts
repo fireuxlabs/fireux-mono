@@ -14,7 +14,7 @@ import {
 } from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
 import {
-  registerComposablesDir,
+  registerComposablesDirs,
   registerLayoutsDir,
 } from './config/module/module-helpers'
 import { configurePlugins } from './config/module/plugins-config'
@@ -217,7 +217,14 @@ export default defineNuxtModule({
 
     configureFireuxModule(resolver, nuxt, {
       plugins: configurePlugins,
-      composables: registerComposablesDir,
+      composables: (resolver) =>
+        registerComposablesDirs(resolver, [
+          './runtime/composables',
+          './runtime/app/composables',
+          './runtime/ecosystem/composables',
+          './runtime/project/composables',
+          './runtime/user/composables',
+        ]),
       components: configureComponents,
       layouts: registerLayoutsDir,
       pages: configurePages,

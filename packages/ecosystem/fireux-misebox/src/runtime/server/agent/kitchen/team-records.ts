@@ -1,5 +1,5 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { KitchenTeamToolMember } from 'fireux-kitchens/runtime/server/kitchen/team/tools/index'
+import type { KitchenTeamToolMember } from 'fireux-kitchens/runtime/kitchen/server/team/tools/index'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 
 export async function readKitchenTeamToolMembers(

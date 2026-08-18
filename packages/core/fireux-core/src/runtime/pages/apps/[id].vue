@@ -44,8 +44,8 @@
 
 <script setup lang="ts">
 import { computed, setResponseStatus, useHead } from '#imports'
-import { useAppDetail } from '../../composables/fireux/app/useAppDetail'
-import { useAppProfileView } from '../../composables/fireux/app/useAppProfileView'
+import { useAppDetail } from '../../app/composables/useAppDetail'
+import { useAppProfileView } from '../../app/composables/useAppProfileView'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({

@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-08-14
-Ref: d5efe9160
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -152,6 +152,10 @@ real external deadline.
 Before finishing a documentation change:
 
 - Verify claims against current source, nearest siblings, and relevant guards.
+- For a repo-wide ownership, filesystem, Entity, Console, or product-language
+  change, audit every maintained living context and concept map for the old
+  claim before moving source. Incoming graph links alone are not enough to
+  prove that the old system has disappeared.
 - For an active family-growth phase, verify the baseline, real sibling intent,
   differentiation target, and graduation evidence against current source.
 - Preserve `to-confirm` where evidence is incomplete.

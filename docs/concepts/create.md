@@ -1,7 +1,7 @@
 # Create spine map
 
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -202,7 +202,7 @@ external system or requires provider state.
 
 - Stripe product/session endpoints.
 - Product create flows that prepare Stripe-backed product/price data.
-- Place create flows that may hydrate from Google Places and image storage.
+- Place create flows that may enrich a draft from Google Places and image storage.
 
 #### Typical shape
 
@@ -247,7 +247,7 @@ Use an ensure/upsert create when the user intent is “make sure this exists,”
 Use the domain-free `useOnboarding` composable only for step mechanics: stable
 step IDs, navigation, progress, validation gates, pending/error state, reset,
 and one finish transition. A named domain adapter such as
-`usePlacesOnboarding` owns provider hydration, draft truth, domain validation,
+`usePlacesOnboarding` owns provider enrichment, draft truth, domain validation,
 the final mutation, and completion routing.
 
 #### Place reference
@@ -288,16 +288,16 @@ markers, not a complete registry.
 - Core create-plan vocabulary:
   `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/createStrategy.ts`
 - Console-target examples:
-  `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts`,
-  `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierCreate.ts`,
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenCreate.ts`,
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts`,
   and
-  `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioCreate.ts`
+  `packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioCreate.ts`
 - Draft-state example:
-  `packages/extensions/fireux-products/src/runtime/composables/fireux/product/create/useCreateProductState.ts`
+  `packages/extensions/fireux-products/src/runtime/product/composables/create/useCreateProductState.ts`
 - Root Menu upload transaction:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/create.post.ts`
 - Scoped Kitchen Menu mutation:
-  `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuCreate.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuCreate.ts`
 
 The Menu split is settled: root `Menu` is a public doorway/upload entity while
 `KitchenMenu` is scoped Kitchen content. See `family-menu.md`; do not reopen
@@ -333,15 +333,15 @@ that distinction inside the create family.
 
 ## Delta register
 
-| Difference                                                                                         | State        | Reason or alignment trigger                                                                                             |
-| -------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                      |
+| Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                             |
+| -------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                      |
 | Console-target create may write root identity plus App support                                     | `accepted`   | The domain transaction writes its root management relationship and same-id App support; Core supplies only generic management vocabulary and resolution |
-| Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                    |
-| `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                              |
-| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                               |
-| Optional blank-field omission is described but not uniformly enforced                              | `drift`      | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical            |
-| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`   | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction        |
+| Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                                                    |
+| `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                              |
+| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                               |
+| Optional blank-field omission is described but not uniformly enforced                              | `drift`      | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical                                            |
+| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`   | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction                                        |
 
 ## Alignment roadmap
 

@@ -1,6 +1,6 @@
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { fetchCurrentAppContext } from '../composables/fireux/app/currentAppContext'
+import { fetchCurrentAppContext } from '../app/composables/currentAppContext'
 import type { CurrentAppMembershipDto } from '../server/utils/public-projection/public-dto.types'
 
 type AuthGuardState = {

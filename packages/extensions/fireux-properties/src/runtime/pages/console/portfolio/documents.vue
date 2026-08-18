@@ -1,7 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-portfolio-documents">
-      <template #header><LayoutsConsoleNavbar title="Documents" /></template>
+      <template #header>
+        <LayoutsConsoleNavbar title="Documents">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Portfolio Documents" />
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
       <template #body
         ><UAlert
           title="Documents"

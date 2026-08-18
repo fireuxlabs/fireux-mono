@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import { readKitchenPublicIdentity } from '../../../kitchen/identity/public-identity.ts'
+import { readKitchenPublicIdentity } from '../../../../kitchen/server/identity/public-identity.ts'
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {

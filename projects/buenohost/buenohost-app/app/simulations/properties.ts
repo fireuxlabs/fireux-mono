@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retain one sanitized app-local property simulation.
 // Concurrent edit — 2026-07-20 22:20 CEST — Both-Entity Authority — Property: keep preview address fields app-local and reference Place explicitly.
-import { PropertyManualModel } from 'fireux-properties/runtime/models/property.model'
-import type { PropertyIdentity, PropertyManual } from 'fireux-properties/runtime/models/property.model'
+import { PropertyManualModel } from 'fireux-properties/runtime/property/models/property.model'
+import type { PropertyIdentity, PropertyManual } from 'fireux-properties/runtime/property/models/property.model'
 
 export type BuenoHostSimulationAddressMode = 'area' | 'street' | 'exact'
 export type BuenoHostSimulationContactMode = 'chat' | 'email' | 'phone' | 'whatsapp'

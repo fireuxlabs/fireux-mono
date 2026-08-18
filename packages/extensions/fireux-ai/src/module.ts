@@ -3,6 +3,7 @@ import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { configurePages } from './config/module/pages-config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
+import { configureComponents } from './config/module/components-config'
 import type { FireuxAiMode, FireuxAiProvider } from './runtime/types/ai'
 
 export interface ModuleOptions {
@@ -39,6 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => configureRuntime(nuxt, options),
+      components: configureComponents,
       pages: configurePages,
       server: configureServer,
     })

@@ -11,10 +11,7 @@ import ts from 'typescript'
 
 import { entityMatrix } from '../_lib/entity-matrix.mjs'
 
-const MODEL_ROOTS = [
-  'packages',
-  'projects',
-]
+const MODEL_ROOTS = ['packages', 'projects']
 
 const ENTITY_MODEL =
   'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts'
@@ -101,10 +98,7 @@ const stringLiteralsInType = (node) => {
   if (ts.isUnionTypeNode(node)) {
     return node.types.flatMap((member) => stringLiteralsInType(member))
   }
-  if (
-    ts.isLiteralTypeNode(node)
-    && ts.isStringLiteral(node.literal)
-  ) {
+  if (ts.isLiteralTypeNode(node) && ts.isStringLiteral(node.literal)) {
     return [node.literal.text]
   }
   return []
@@ -130,14 +124,19 @@ const classificationVocabulary = (repoRoot) => {
   return Object.fromEntries(
     Object.entries(CLASSIFICATION_TYPES).map(([key, typeName]) => {
       const values = byType.get(typeName)
-      assert.ok(values?.size, `${ENTITY_MODEL} must declare ${typeName} as string literals.`)
+      assert.ok(
+        values?.size,
+        `${ENTITY_MODEL} must declare ${typeName} as string literals.`
+      )
       return [key, values]
     })
   )
 }
 
 const hasExportModifier = (statement) =>
-  statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ?? false
+  statement.modifiers?.some(
+    (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
+  ) ?? false
 
 const normalizeClassification = (properties) => {
   const classification = {}
@@ -152,9 +151,8 @@ const normalizeClassification = (properties) => {
 
     if (!properties.has(key)) continue
     const value = staticValue(properties.get(key))
-    classification[key] = key === 'family' && typeof value === 'string'
-      ? [value]
-      : value
+    classification[key] =
+      key === 'family' && typeof value === 'string' ? [value] : value
   }
 
   return classification
@@ -231,7 +229,8 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
   }
 
   for (const [key, allowed] of Object.entries(vocabulary)) {
-    const values = key === 'family' ? classification.family : [classification[key]]
+    const values =
+      key === 'family' ? classification.family : [classification[key]]
     for (const value of values) {
       assert.equal(
         allowed.has(value),
@@ -242,36 +241,91 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
   }
 
   if (classification.identity === 'root') {
-    assert.equal(paths.root, true, `${label} root identity requires a root path.`)
-    assert.equal(paths.scoped, false, `${label} root identity must not use scoped as App support.`)
+    assert.equal(
+      paths.root,
+      true,
+      `${label} root identity requires a root path.`
+    )
+    assert.equal(
+      paths.scoped,
+      false,
+      `${label} root identity must not use scoped as App support.`
+    )
   } else if (classification.identity === 'parent-scoped') {
-    assert.equal(paths.root, false, `${label} parent-scoped identity must not declare a root path.`)
-    assert.equal(paths.scoped, true, `${label} parent-scoped identity requires a scoped path.`)
-    assert.equal(classification.authority, 'parent', `${label} must use parent authority.`)
-    assert.equal(classification.appSupport, 'none', `${label} cannot also be an App support record.`)
-    assert.equal(paths.appSupport, false, `${label} cannot declare an App support path.`)
+    assert.equal(
+      paths.root,
+      false,
+      `${label} parent-scoped identity must not declare a root path.`
+    )
+    assert.equal(
+      paths.scoped,
+      true,
+      `${label} parent-scoped identity requires a scoped path.`
+    )
+    assert.equal(
+      classification.authority,
+      'parent',
+      `${label} must use parent authority.`
+    )
+    assert.equal(
+      classification.appSupport,
+      'none',
+      `${label} cannot also be an App support record.`
+    )
+    assert.equal(
+      paths.appSupport,
+      false,
+      `${label} cannot declare an App support path.`
+    )
     assert.ok(classification.parent, `${label} must name its parent.`)
   } else if (classification.identity === 'none') {
-    assert.equal(paths.root || paths.scoped, false, `${label} has no stored identity path.`)
+    assert.equal(
+      paths.root || paths.scoped,
+      false,
+      `${label} has no stored identity path.`
+    )
   }
 
   if (classification.appSupport === 'none') {
-    assert.equal(paths.appSupport, false, `${label} declares no App support record.`)
+    assert.equal(
+      paths.appSupport,
+      false,
+      `${label} declares no App support record.`
+    )
   } else if (classification.appSupport !== 'to-confirm') {
-    assert.equal(classification.identity, 'root', `${label} App support requires root identity.`)
-    assert.equal(paths.appSupport, true, `${label} must declare appSupportPath.`)
+    assert.equal(
+      classification.identity,
+      'root',
+      `${label} App support requires root identity.`
+    )
+    assert.equal(
+      paths.appSupport,
+      true,
+      `${label} must declare appSupportPath.`
+    )
   }
 
   if (classification.publicRead === 'direct-root') {
-    assert.equal(classification.identity, 'root', `${label} direct public reads require root identity.`)
+    assert.equal(
+      classification.identity,
+      'root',
+      `${label} direct public reads require root identity.`
+    )
   }
 
   if (classification.kind === 'record') {
-    assert.ok(classification.parent, `${label} records must name their lifecycle parent.`)
+    assert.ok(
+      classification.parent,
+      `${label} records must name their lifecycle parent.`
+    )
   }
 
   if (classification.console) {
-    assert.equal(classification.kind, 'entity', `${label} console declarations must be entities.`)
+    assert.equal(
+      classification.kind,
+      'entity',
+      `${label} console declarations must be entities.`
+    )
   }
 }
 
@@ -288,23 +342,56 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const declaredNames = new Set()
 
   for (const row of entityMatrix) {
-    assert.ok(row.id && row.owner && row.state, 'Every entity matrix row needs id, owner, and state.')
-    assert.equal(ids.has(row.id), false, `Duplicate entity matrix id: ${row.id}`)
+    assert.ok(
+      row.id && row.owner && row.state,
+      'Every entity matrix row needs id, owner, and state.'
+    )
+    assert.equal(
+      ids.has(row.id),
+      false,
+      `Duplicate entity matrix id: ${row.id}`
+    )
     ids.add(row.id)
 
     if (row.state === 'to-confirm') {
-      assert.ok(row.question?.trim(), `${row.id} must state its unresolved question.`)
-      assert.equal(row.source, undefined, `${row.id} must not pretend to have a declaration source.`)
-      assert.equal(row.classification, undefined, `${row.id} must not carry settled classification axes.`)
+      assert.ok(
+        row.question?.trim(),
+        `${row.id} must state its unresolved question.`
+      )
+      assert.equal(
+        row.source,
+        undefined,
+        `${row.id} must not pretend to have a declaration source.`
+      )
+      assert.equal(
+        row.classification,
+        undefined,
+        `${row.id} must not carry settled classification axes.`
+      )
       continue
     }
 
-    assert.equal(row.state, 'declared', `${row.id} has an unsupported matrix state.`)
-    assert.ok(row.source && row.export && row.classification, `${row.id} is missing declaration metadata.`)
-    assert.equal(existsSync(path.join(repoRoot, row.source)), true, `${row.id} source does not exist.`)
+    assert.equal(
+      row.state,
+      'declared',
+      `${row.id} has an unsupported matrix state.`
+    )
+    assert.ok(
+      row.source && row.export && row.classification,
+      `${row.id} is missing declaration metadata.`
+    )
+    assert.equal(
+      existsSync(path.join(repoRoot, row.source)),
+      true,
+      `${row.id} source does not exist.`
+    )
 
     const key = `${row.source}::${row.export}`
-    assert.equal(declarationKeys.has(key), false, `Duplicate entity declaration row: ${key}`)
+    assert.equal(
+      declarationKeys.has(key),
+      false,
+      `Duplicate entity declaration row: ${key}`
+    )
     declarationKeys.add(key)
     assert.equal(
       declaredNames.has(row.classification.name),
@@ -330,9 +417,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
     .filter((filePath) => filePath.endsWith('.ts'))
     .map((filePath) => normalizePath(path.relative(repoRoot, filePath)))
-    .filter((relativePath) =>
-      relativePath.includes('/src/runtime/models/')
-      || relativePath.includes('/app/models/')
+    .filter(
+      (relativePath) =>
+        /\/src\/runtime\/(?:[^/]+\/)?models\//.test(relativePath) ||
+        relativePath.includes('/app/models/')
     )
 
   const discovered = modelFiles.flatMap((relativePath) =>
@@ -354,10 +442,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const declaration of discovered) {
     assertClassificationSemantics(declaration, vocabulary)
     const key = `${declaration.source}::${declaration.export}`
-    const row = entityMatrix.find((candidate) =>
-      candidate.state === 'declared'
-      && candidate.source === declaration.source
-      && candidate.export === declaration.export
+    const row = entityMatrix.find(
+      (candidate) =>
+        candidate.state === 'declared' &&
+        candidate.source === declaration.source &&
+        candidate.export === declaration.export
     )
     assert.ok(row, `Unlisted entity declaration: ${key}`)
     assert.deepEqual(
@@ -367,9 +456,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  for (const row of entityMatrix.filter((candidate) => candidate.state === 'declared')) {
+  for (const row of entityMatrix.filter(
+    (candidate) => candidate.state === 'declared'
+  )) {
     const key = `${row.source}::${row.export}`
-    assert.equal(discoveredByKey.has(key), true, `Missing entity declaration: ${key}`)
+    assert.equal(
+      discoveredByKey.has(key),
+      true,
+      `Missing entity declaration: ${key}`
+    )
   }
 
   console.log(

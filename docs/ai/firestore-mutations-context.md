@@ -70,7 +70,7 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - Current-App projection maintenance:
-  `packages/core/fireux-core/src/runtime/server/utils/app-projection/ensure.ts`
+  `packages/core/fireux-core/src/runtime/app/server/app-projection/ensure.ts`
 - FireUX platform aggregation targets and direct metadata reader:
   `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
   `projects/fireux/fireux-app/server/utils/default-directory.ts`

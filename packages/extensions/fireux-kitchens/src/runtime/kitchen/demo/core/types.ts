@@ -1,0 +1,114 @@
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: type one coherent read-only Kitchen world across identity, menu and service records.
+// Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { Dish } from '../../models/dish.model.ts'
+import type { KitchenIngredient } from '../../models/ingredient.model.ts'
+import type { KitchenMiseTask } from '../../models/mise.model.ts'
+import type { KitchenOrder } from '../../models/order.model.ts'
+import type { KitchenStation } from '../../models/station.model.ts'
+import type { KitchenSupplierIngredient } from '../../models/supplier-ingredient.model.ts'
+import type { AppKitchen, Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenMenu } from '../../../menu/models/kitchen-menu.model.ts'
+import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
+import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+import type { Menu } from '../../../menu/models/menu.model.ts'
+import type { KitchenDemoFinance } from '../finance'
+import type { KitchenDemoTeamMember } from '../team'
+import type {
+  KitchenDemoCompletedOrder,
+  KitchenDemoService,
+} from '../operations/Orders/history'
+import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
+import type {
+  KitchenDemoDishSpec,
+  KitchenDemoMenuItemComponentDelta,
+  KitchenDemoMiseRequirement,
+  KitchenDemoPrepItem,
+  KitchenDemoProductionRecipe,
+} from '../production'
+import type { KitchenDemoMenuMode } from '../../utils/demo-menu-cascade'
+
+export type KitchenDemoMenuSection = {
+  section: MenuSection
+  items: MenuItem[]
+}
+
+export type KitchenDemoIdentity = {
+  appId: string
+  kitchenId: string
+  kitchenSlug: string
+  placeId: string
+  menuId: string
+  serviceId: string
+}
+
+/**
+ * Authoring bundle for one coherent Demo Menu.
+ *
+ * Dishes are included here only so the fixture can keep its references
+ * together. Console operations consume the scenario's operation-level
+ * `menus`, `dishes`, and `menuSections` projections instead.
+ */
+export type KitchenDemoMenu = {
+  rootMenu: Menu
+  kitchenMenu: KitchenMenu
+  dishes: Dish[]
+  menuSections: KitchenDemoMenuSection[]
+}
+
+export type KitchenDemoScenario = {
+  appId: string
+  appSupport: AppKitchen
+  kitchen: Kitchen
+  place: Place
+  menus: KitchenDemoMenu[]
+  menuModes: Readonly<Record<string, KitchenDemoMenuMode>>
+  kitchenIngredients: KitchenIngredient[]
+  supplierIngredientLinks: KitchenSupplierIngredient[]
+  rootMenu: Menu
+  kitchenMenu: KitchenMenu
+  dishes: Dish[]
+  dishSpecs: KitchenDemoDishSpec[]
+  dishFinance: KitchenDemoDishFinance[]
+  finance: KitchenDemoFinance | null
+  team: readonly KitchenDemoTeamMember[]
+  services: readonly KitchenDemoService[]
+  completedOrders: readonly KitchenDemoCompletedOrder[]
+  menuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[]
+  menuSections: KitchenDemoMenuSection[]
+  miseRequirements: KitchenDemoMiseRequirement[]
+  orders: KitchenOrder[]
+  prepItems: KitchenDemoPrepItem[]
+  recipes: KitchenDemoProductionRecipe[]
+  stations: KitchenStation[]
+  miseTasks: KitchenMiseTask[]
+}
+
+export type KitchenDemoScenarioMaturity = 'operational' | 'presentation'
+
+export type KitchenDemoOperation =
+  | 'dishes'
+  | 'ingredients'
+  | 'menus'
+  | 'mise'
+  | 'orders'
+  | 'recipes'
+  | 'stations'
+  | 'suppliers'
+  | 'tables'
+
+export type KitchenDemoPresentation = 'kiosk' | 'menu' | 'service'
+
+/**
+ * Explicitly classifies how much of the Kitchen Console a scenario proves.
+ *
+ * This metadata stays separate from the real Kitchen and operation records so
+ * Demo maturity never leaks into a canonical model or changes fixture output.
+ */
+export type KitchenDemoScenarioDescriptor = {
+  kitchenId: string
+  maturity: KitchenDemoScenarioMaturity
+  operationCoverage: readonly KitchenDemoOperation[]
+  presentation: readonly KitchenDemoPresentation[]
+}

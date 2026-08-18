@@ -7,8 +7,8 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicIngredientCollectionResponse } from '../../../models/ingredient-public.model.ts'
-import { projectPublicIngredient } from '../../ingredient/public-projection.ts'
+import type { PublicIngredientCollectionResponse } from '../../../ingredient/models/ingredient-public.model.ts'
+import { projectPublicIngredient } from '../../../ingredient/server/public-projection.ts'
 
 const MAX_LIBRARY_SIZE = 500
 const MAX_EXACT_IDS = 100

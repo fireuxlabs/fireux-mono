@@ -3,7 +3,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-ingredients">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Ingredients" />
+        <LayoutsConsoleNavbar title="Kitchen Ingredients">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Ingredients" />
+          </template>
+        </LayoutsConsoleNavbar>
 
         <UDashboardToolbar>
           <template #right>
@@ -29,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenIngredientsWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
+import { provideKitchenIngredientsWorkspace } from '../../../../kitchen/composables/console/operations/Ingredients/useKitchenIngredientsWorkspace'
 
 const { canWrite } = provideKitchenIngredientsWorkspace()
 

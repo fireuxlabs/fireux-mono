@@ -11,7 +11,7 @@ import type { AppTypography } from 'fireux-core/types/theme'
 import type {
   MenuManifestContent,
   MenuManifestItem,
-} from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
 export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, ConsolePalette }
 

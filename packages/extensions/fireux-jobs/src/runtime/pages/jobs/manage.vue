@@ -71,7 +71,7 @@
 import { useHead } from '#imports'
 import { computed } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { useJobPermissions } from '../../composables/useJobPermissions'
+import { useJobPermissions } from '../../job/composables/useJobPermissions'
 
 definePageMeta({
   layout: 'default',

@@ -1,7 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-property-calendar">
-      <template #header><LayoutsConsoleNavbar title="Calendar" /></template>
+      <template #header>
+        <LayoutsConsoleNavbar title="Calendar">
+          <template #right>
+            <ConsoleAIOperationPlaceholder operation="Property Calendar" />
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
       <template #body
         ><UAlert
           title="Calendar"

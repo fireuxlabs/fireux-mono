@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { calculateRestaurantLabourCost } from '../../tools/team/restaurant-labour-cost.ts'
+import { calculateRestaurantLabourCost } from '../../kitchen/utils/finance/restaurant-labour-cost.ts'
 
 const chf = (amount_minor: number) => ({
   amount_minor,

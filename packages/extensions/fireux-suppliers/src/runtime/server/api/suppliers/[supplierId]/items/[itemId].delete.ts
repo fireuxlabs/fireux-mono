@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam } from 'h3'
-import { deleteSupplierItem } from '../../../../supplier/operations/items/item'
+import { deleteSupplierItem } from '../../../../../supplier/server/operations/items/item'
 
 export default defineEventHandler(event =>
   deleteSupplierItem(

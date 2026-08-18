@@ -137,9 +137,9 @@ import { onMounted, reactive, ref } from 'vue'
 import {
   fetchJobApplications,
   mutateJobApplicationRequest,
-} from '../../../composables/fireux/jobs/hiring/jobHiringClient'
-import type { JobApplicationAction } from '../../../models/job-application.model'
-import type { JobApplicationView } from '../../../models/job-hiring.model'
+} from '../../../job/composables/hiring/jobHiringClient'
+import type { JobApplicationAction } from '../../../job/models/job-application.model.ts'
+import type { JobApplicationView } from '../../../job/models/job-hiring.model.ts'
 
 const items = ref<JobApplicationView[]>([])
 const pending = ref(true)

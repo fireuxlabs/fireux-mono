@@ -1,11 +1,11 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { processKitchenMenuAiReview } from '../../../../menu/ai/review'
+import { processKitchenMenuAiReview } from '../../../../../menu/server/ai/review'
 import {
   assertKitchenMenuCurrencyCode,
   assertKitchenMenuUploadAccess,
   requireKitchenMenuUploadUser,
-} from '../../../../menu/source/uploads'
+} from '../../../../../menu/server/source/uploads'
 
 type ProcessMenuBody = Partial<
   Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'quality', string>

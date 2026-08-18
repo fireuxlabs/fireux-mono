@@ -16,16 +16,21 @@ const CONSOLE_LAYOUT =
   'packages/core/fireux-core/src/runtime/layouts/console.vue'
 const CONSOLE_MIDDLEWARE =
   'packages/core/fireux-core/src/runtime/middleware/fireux-console.global.ts'
+const CONSOLE_NAVBAR =
+  'packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue'
+const CONSOLE_OPERATION_AI_PLACEHOLDER =
+  'packages/extensions/fireux-ai/src/runtime/components/Console/AI/OperationPlaceholder.vue'
+const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
 const KITCHEN_MENUS_COMPONENT_ROOT =
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus'
 const KITCHEN_RECIPES_COMPONENT_ROOT =
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Recipes'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Recipes'
 const KITCHEN_RECIPES_FETCH =
-  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
 const KITCHEN_RECIPES_CONTROLLER =
-  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Recipes/useKitchenConsoleRecipes.ts'
 const STANDARD_SURFACES = new Set([
   'browse',
   'detail',
@@ -51,6 +56,24 @@ const ROUTE_ONLY_META_KEYS = [
   'roles',
   'visibility',
 ]
+const CONSOLE_ENTITY_COMPONENT_ROOTS = [
+  'packages/core/fireux-core/src/runtime/project/components/Console',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/components/Console',
+  'packages/extensions/fireux-properties/src/runtime/property/components/Console',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Console',
+  'projects/fireux/fireux-blank/app/components/Console/Blank',
+]
+const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS.filter(
+  (root) => !root.endsWith('/Blank')
+)
+const CONSOLE_TEAM_COMPOSABLES = [
+  'packages/core/fireux-core/src/runtime/project/composables/console/team/useProjectConsoleTeam.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenConsoleTeam.ts',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/team/usePortfolioConsoleTeam.ts',
+  'packages/extensions/fireux-properties/src/runtime/property/composables/console/team/usePropertyConsoleTeam.ts',
+  'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/team/useSupplierConsoleTeam.ts',
+]
 const CONSOLE_OPERATION_CONTRACTS = {
   project: {
     catalogue: 'projects/fireux/fireux-app/app/meta.ts',
@@ -59,10 +82,11 @@ const CONSOLE_OPERATION_CONTRACTS = {
   },
   kitchen: {
     catalogue:
-      'packages/extensions/fireux-kitchens/src/runtime/content/operations.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/content/operations.ts',
     operations: [
       'identity',
       'dishes',
+      'drinks',
       'ingredients',
       'menus',
       'mise',
@@ -79,7 +103,7 @@ const CONSOLE_OPERATION_CONTRACTS = {
   },
   supplier: {
     catalogue:
-      'packages/extensions/fireux-suppliers/src/runtime/content/operations.ts',
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts',
     operations: ['identity', 'catalogue', 'ingredients', 'items', 'team'],
     routeRoot:
       'packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier',
@@ -120,6 +144,8 @@ export async function run(ctx) {
 
   validateConsoleLayout(repoRoot, violations)
   validateConsoleNavigationLifecycle(repoRoot, violations)
+  validateConsoleOperationAIPlaceholder(repoRoot, violations)
+  validateConsoleEntityComponentHierarchy(repoRoot, violations)
   validateConsoleMenuCanon(repoRoot, violations)
   validateConsoleOperationContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
@@ -158,6 +184,69 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ console pages use the explicit page contract')
+}
+
+function validateConsoleOperationAIPlaceholder(repoRoot, violations) {
+  const placeholderPath = path.join(
+    repoRoot,
+    CONSOLE_OPERATION_AI_PLACEHOLDER
+  )
+  if (!existsSync(placeholderPath)) {
+    violations.push(
+      `${CONSOLE_OPERATION_AI_PLACEHOLDER} (FireUX AI Operation placeholder is missing)`
+    )
+    return
+  }
+
+  const navbar = readFileSync(path.join(repoRoot, CONSOLE_NAVBAR), 'utf8')
+  if (/\bAI\b|OperationAI|consoleOperationAI/.test(navbar)) {
+    violations.push(
+      `${CONSOLE_NAVBAR} (Core Console presentation must expose neutral slots without owning AI behavior)`
+    )
+  }
+
+  const aiModule = readFileSync(path.join(repoRoot, FIREUX_AI_MODULE), 'utf8')
+  if (!aiModule.includes('components: configureComponents')) {
+    violations.push(
+      `${FIREUX_AI_MODULE} (FireUX AI must register its own presentation components)`
+    )
+  }
+}
+
+function validateConsoleEntityComponentHierarchy(repoRoot, violations) {
+  for (const root of CONSOLE_ENTITY_COMPONENT_ROOTS) {
+    if (!existsSync(path.join(repoRoot, root, 'Index.vue'))) {
+      violations.push(
+        `${root}/Index.vue (the actual Console Entity Index capability must use its visible product name)`
+      )
+    }
+    if (existsSync(path.join(repoRoot, root, 'Index', 'Index.vue'))) {
+      violations.push(
+        `${root}/Index/Index.vue (do not hide a Console Entity doorway behind an opaque repeated Index bucket)`
+      )
+    }
+  }
+
+  for (const root of CONSOLE_TEAM_COMPONENT_ROOTS) {
+    if (!existsSync(path.join(repoRoot, root, 'Team', 'Index.vue'))) {
+      violations.push(
+        `${root}/Team/Index.vue (Team is structural Console anatomy beside Operations)`
+      )
+    }
+    if (existsSync(path.join(repoRoot, root, 'Operations', 'Team'))) {
+      violations.push(
+        `${root}/Operations/Team (Team must not be nested inside the Operations implementation bucket)`
+      )
+    }
+  }
+
+  for (const relative of CONSOLE_TEAM_COMPOSABLES) {
+    if (!existsSync(path.join(repoRoot, relative))) {
+      violations.push(
+        `${relative} (Team workspace ownership sits beside operations for every Console Entity)`
+      )
+    }
+  }
 }
 
 function validateConsoleMenuCanon(repoRoot, violations) {
@@ -224,7 +313,7 @@ function validateConsoleNavigationLifecycle(repoRoot, violations) {
   const pagesConfigRelative =
     'packages/core/fireux-core/src/config/module/pages-config.ts'
   const overviewRelative =
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleOverview.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/overview/useKitchenConsoleOverview.ts'
   const pagesConfig = readFileSync(
     path.join(repoRoot, pagesConfigRelative),
     'utf8'

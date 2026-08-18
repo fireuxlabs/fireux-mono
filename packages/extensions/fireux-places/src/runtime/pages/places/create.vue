@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { PlaceOnboardingResult } from '../../composables/fireux/place/usePlaceOnboarding'
+import type { PlaceOnboardingResult } from '../../place/composables/usePlaceOnboarding'
 
 definePageMeta({
   layout: 'default',

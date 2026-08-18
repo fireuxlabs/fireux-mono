@@ -6,11 +6,11 @@ import {
   type H3Event,
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { EcosystemStorage } from '../../../../models/core/ecosystem.model'
+import { EcosystemStorage } from '../../../../ecosystem/models/ecosystem.model.ts'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../utils/ids/path'
 import { asTrimmedString } from '../../../utils/public-projection/public-dto.helpers'
-import { projectPublicEcosystem } from '../../../utils/public-projection/public-ecosystem.dto'
+import { projectPublicEcosystem } from '../../../../ecosystem/server/projection/public-ecosystem.dto.ts'
 import type { PublicDetailResponse } from '../../../utils/public-projection/public-dto.types'
 
 export default defineEventHandler(async (event: H3Event) => {

@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/models/kitchen/finance-report.model'
+import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 
 type ProductDemoFinance = MiseboxProductDemo['console']['finance']

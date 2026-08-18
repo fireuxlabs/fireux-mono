@@ -1,7 +1,7 @@
 # Composables spine map
 
 Updated: 2026-08-18
-Ref: 5b5de1c1c
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -22,6 +22,7 @@ Map where reusable runtime logic belongs.
 - pages.md
 - components.md
 - runtime-package.md
+- runtime-filesystem.md
 
 ## Core principle
 
@@ -33,29 +34,38 @@ entity to implement capabilities it does not have.
 
 ## Common buckets
 
-- `composables/fireux/firestore/<entity>` for stored entity stacks.
-- `composables/fireux/console/<entity>` for console workspaces.
-- `composables/fireux/<entity>` for normal entity runtime helpers used by
-  root routes, tenant routes, and app surfaces when they are not specifically
-  Firestore or console seams.
-- `composables/fireux/app/*` owns both the App entity's runtime capabilities
-  and explicitly named app-shell concerns; storage remains under Firestore.
+- `runtime/composables` is the cross-entity shared composable spine.
+- `runtime/<entity>/composables/firestore` owns that entity's stored adapters.
+- `runtime/<entity>/composables/console` owns that entity's Console workspace
+  adapters.
+- `runtime/<entity>/composables` owns its normal runtime capabilities used by
+  detail, directory, tenant, App, or other named surfaces.
+- Shared app-shell concerns remain in the root spine. App entity capabilities
+  move under the App entity only when their owner is the canonical App rather
+  than the Nuxt application shell.
+
+Declared Entity adapters now use these scoped roles. Completed
+`composables/fireux/firestore/<entity>`,
+`composables/fireux/console/<entity>`, and `composables/fireux/<entity>`
+placements are guarded against returning. Root profile/record adapters remain
+package-shared only while their underlying concept is `to-confirm`; confirmed
+records and operations use their parent Entity's composable scope.
 
 ## Naming note
 
-- Avoid adding new `composables/fireux/public/<entity>` buckets by default.
-  Root/public-facing routes are usually the normal entity doorway; use explicit
-  `console` or `firestore` buckets only when the seam really is scoped to that
-  system. The former Menu public bucket has already collapsed into
-  `composables/fireux/menu` and `composables/fireux/kitchen/menu`; do not
-  recreate it.
+- Avoid adding a `public` bucket beneath an entity's composables by default.
+  Root visitor-facing routes are usually the normal entity doorway; use
+  explicit `console` or `firestore` buckets only when the seam really is scoped
+  to that system. Menu now uses `runtime/menu/composables`, with Kitchen-owned
+  Menu operations under `runtime/kitchen/composables`; do not recreate a
+  generic `public` composable bucket.
 
 ## Naming notes
 
 - `useOnboarding`: domain-free staged-flow mechanics only. It must not own an
   entity draft, provider call, persistence, copy, or completion route.
 - `useXOnboarding`: named domain adapter over `useOnboarding`; owns its draft,
-  hydration, validation, and completion result. It calls `useXCreate` for
+  provider/domain enrichment, validation, and completion result. It calls `useXCreate` for
   preview and completion transport instead of owning a second mutation client.
 - `useXCreate`: create an entity/record through a client runtime seam when the
   work is mostly Firestore data. See create.md before using it for upload or
@@ -119,16 +129,17 @@ entity to implement capabilities it does not have.
 
 ## Delta register
 
-| Difference                                                                          | State       | Reason or alignment trigger                                                                                                            |
-| ----------------------------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Core, app, Firestore, console, and domain composables use different buckets         | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                       |
-| Domain `useXOnboarding` adapters contain different drafts and stages                | `accepted`  | Shared onboarding owns mechanics only; domain decisions must remain named and local                                                    |
-| Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                             |
-| Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                            |
-| Bound-record and specialist update composables use narrower inputs                  | `accepted`  | Their entity identity or workflow is fixed at setup; align ordinary entity commands without erasing genuine capability boundaries      |
-| Detail readers repeat a small outcome state machine                                 | `accepted`  | Keep entity ownership explicit; align the return vocabulary without introducing a cross-entity engine                                  |
-| Older `useXInterface`, computed, and permission helpers remain under Firestore      | `migration` | Move them to `composables/fireux/<entity>` only when the entity and all consumers move together; User and App are the proving siblings |
-| A proposed composable only shortens a component without creating reuse or authority | `drift`     | Keep the logic with its owner instead of adding a pass-through layer                                                                   |
+| Difference                                                                          | State       | Reason or alignment trigger                                                                                                           |
+| ----------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Core, app, Firestore, console, and domain composables use different buckets         | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                      |
+| Domain `useXOnboarding` adapters contain different drafts and stages                | `accepted`  | Shared onboarding owns mechanics only; domain decisions must remain named and local                                                   |
+| Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                            |
+| Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                           |
+| Bound-record and specialist update composables use narrower inputs                  | `accepted`  | Their entity identity or workflow is fixed at setup; align ordinary entity commands without erasing genuine capability boundaries     |
+| Detail readers repeat a small outcome state machine                                 | `accepted`  | Keep entity ownership explicit; align the return vocabulary without introducing a cross-entity engine                                 |
+| Older `useXInterface`, computed, and permission helpers remain under Firestore      | `migration` | Move them to `runtime/<entity>/composables` only when the entity and all consumers move together; User and App are proving siblings   |
+| Entity composables remain beneath root spine buckets                                | `migration` | Move them to `runtime/<entity>/composables` one bounded capability at a time; preserve exports and do not leave compatibility aliases |
+| A proposed composable only shortens a component without creating reuse or authority | `drift`     | Keep the logic with its owner instead of adding a pass-through layer                                                                  |
 
 ## Alignment roadmap
 

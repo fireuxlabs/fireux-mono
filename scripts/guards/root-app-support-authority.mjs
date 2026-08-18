@@ -278,143 +278,143 @@ const files = {
   consoleEntityModel:
     'packages/core/fireux-core/src/runtime/models/utils/console-entity.model.ts',
   consoleAccess:
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleAccess.ts',
+    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleAccess.ts',
   entityModel:
     'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts',
   placeModel:
-    'packages/extensions/fireux-places/src/runtime/models/place.model.ts',
+    'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts',
   supplierModel:
-    'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
   supplierCollection:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierCollection.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/fetch/useSupplierCollection.ts',
   supplierFetch:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/fetch/useSupplierFetch.ts',
   supplierInterface:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/utils/view/useSupplierInterface.ts',
   supplierCreate:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierCreate.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts',
   supplierUpdate:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierUpdate.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierUpdate.ts',
   supplierUse:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/useSupplier.ts',
   supplierServerConfig:
     'packages/extensions/fireux-suppliers/src/config/module/server-config.ts',
   supplierOnboardingHandler:
     'packages/extensions/fireux-suppliers/src/runtime/server/api/suppliers/onboarding/complete.post.ts',
   supplierOnboarding:
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts',
   retiredSupplierDelete:
-    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierDelete.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierDelete.ts',
   portfolioModel:
-    'packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/models/portfolio.model.ts',
   portfolioCollection:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/fetch/usePortfolioCollection.ts',
   portfolioFetch:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/fetch/usePortfolioFetch.ts',
   portfolioInterface:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/utils/view/usePortfolioInterface.ts',
   portfolioCreate:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioCreate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioCreate.ts',
   portfolioUpdate:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
   portfolioUse:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/usePortfolio.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/usePortfolio.ts',
   portfolioOnboardingHandler:
     'packages/extensions/fireux-properties/src/runtime/server/api/portfolios/onboarding/complete.post.ts',
   portfolioOnboarding:
-    'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts',
   retiredPortfolioDelete:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioDelete.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioDelete.ts',
   propertyModel:
-    'packages/extensions/fireux-properties/src/runtime/models/property.model.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/models/property.model.ts',
   propertyCollection:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/fetch/usePropertyCollection.ts',
   propertyFetch:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/usePropertyFetch.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/fetch/usePropertyFetch.ts',
   propertyInterface:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/utils/view/usePropertyInterface.ts',
   propertyCreate:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyCreate.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyCreate.ts',
   propertyCreateUtility:
-    'packages/extensions/fireux-properties/src/runtime/utils/property-create.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/utils/property-create.ts',
   propertyUpdate:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyUpdate.ts',
   propertyUse:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/useProperty.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/useProperty.ts',
   retiredPropertyDelete:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyDelete.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyDelete.ts',
   propertyPublicModel:
-    'packages/extensions/fireux-properties/src/runtime/models/property-index.model.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/models/property-index.model.ts',
   propertyPublicManager:
-    'packages/extensions/fireux-properties/src/runtime/components/Property/Collection/Manager.vue',
+    'packages/extensions/fireux-properties/src/runtime/property/components/Collection/Manager.vue',
   propertyPublicAdapter:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/property/usePublicPropertyIndex.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/usePublicPropertyIndex.ts',
   propertyPublicApi:
-    'packages/extensions/fireux-properties/src/runtime/server/property/index/public-index.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/server/index/public-index.ts',
   propertyServerConfig:
     'packages/extensions/fireux-properties/src/config/module/server-config.ts',
   propertyOnboardingHandler:
     'packages/extensions/fireux-properties/src/runtime/server/api/properties/onboarding/complete.post.ts',
   propertyOnboarding:
-    'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
   activePortfolio:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/useActivePortfolio.ts',
   portfolioPropertyCollection:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Properties/fetch/usePortfolioPropertyCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Properties/fetch/usePortfolioPropertyCollection.ts',
   retiredNestedProperty:
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Properties/fetch/usePropertyDocument.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Properties/fetch/usePropertyDocument.ts',
   kitchenModel:
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
   kitchenSpine:
-    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-spine.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/kitchen-spine.ts',
   kitchenDemoTargets:
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/core/targets.ts',
   kitchenTargetModel:
-    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/kitchen-index.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-index.model.ts',
   kitchenTargetCollection:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleTargetCollection.ts',
   kitchenInterface:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface.ts',
   kitchenConsoleIndex:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleIndex.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleIndex.ts',
   kitchenConsole:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/core/useKitchenConsole.ts',
   kitchenTargetApi:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/targets.ts',
   kitchenTargetHttp:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
   kitchenPublicProjection:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/public-projection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-projection.ts',
   kitchenRouteIdentity:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/route-identity.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/route-identity.ts',
   kitchenPublicDetail:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[slug].get.ts',
   kitchenTargetResolver:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/console-targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/console-targets.ts',
   kitchenCreate:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenCreate.ts',
   kitchenUpdate:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenUpdate.ts',
   kitchenUpdateInput:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/update-input.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/update-input.ts',
   kitchenUpdateServer:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/update.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/update.ts',
   kitchenMutationAuthority:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/mutation-authority.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/mutation-authority.ts',
   kitchenTheme:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/theme.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts',
   kitchenAppTheme:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/app-theme.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/app-theme.ts',
   kitchenIdentityProgression:
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Index.vue',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/commands.ts',
   kitchenOnboardingActor:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding-actor.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/onboarding-actor.ts',
   kitchenOnboardingPolicy:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding-policy.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/onboarding-policy.ts',
   consoleEntityOnboardingAuthority:
     'packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts',
   kitchenServerConfig:
@@ -433,10 +433,10 @@ const files = {
 const sourceFamilies = {
   propertyCollection: [
     files.propertyCollection,
-    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/property-collection-contract.ts',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/fetch/property-collection-contract.ts',
   ],
   kitchenDemoTargets: [
-    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/target-builders.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/core/target-builders.ts',
     files.kitchenDemoTargets,
   ],
   miseboxRules: [

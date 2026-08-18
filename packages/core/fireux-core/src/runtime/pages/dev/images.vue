@@ -112,7 +112,7 @@ import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import type { App } from '../../models/core/app.model'
+import type { App } from '../../app/models/app.model.ts'
 
 type ImageEntry = {
   urlPath: string

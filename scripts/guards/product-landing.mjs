@@ -145,13 +145,13 @@ const MISEBOX_FINANCE_PREVIEW_PATH =
 const MISEBOX_CONSOLE_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue'
 const KITCHEN_MISE_BOARD_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Mise/TaskBoard.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskBoard.vue'
 const KITCHEN_MISE_COLLECTION_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Mise/TaskCollection.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskCollection.vue'
 const KITCHEN_MISE_CONSOLE_READ_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Mise/Read.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Mise/Read.vue'
 const KITCHEN_MISE_PRESENTATION_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise-presentation.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
 const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
   menus:
     'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Menus.vue',
@@ -1345,7 +1345,7 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    "from 'fireux-kitchens/runtime/content/operations'",
+    "from 'fireux-kitchens/runtime/kitchen/content/operations'",
     '<LandingConsolePreviewFrame',
     'label="Interactive Kitchen Console preview"',
     ':items="operations"',
@@ -1837,7 +1837,7 @@ export async function run(ctx) {
   for (const required of [
     "const productDemoSurface = 'project-console' as const",
     "const productDemoDataSource = 'demo' as const",
-    "import(\n        'fireux-core/runtime/demo/project/scenarios'",
+    "import(\n        'fireux-core/runtime/project/demo/scenarios'",
     "scenario => scenario.appId === 'fireux-app'",
     'fireuxScenarios.length !== 1',
     'useProjectInterface',
@@ -2657,8 +2657,8 @@ export async function run(ctx) {
 
   for (const required of [
     "dataSource: 'demo'",
-    "import('fireux-kitchens/runtime/demo/kitchen/scenarios')",
-    "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
+    "import('fireux-kitchens/runtime/kitchen/demo/scenarios')",
+    "import('fireux-suppliers/runtime/supplier/demo/scenarios')",
     "const kitchens: MiseboxPowerCardsProductDemo['cards']['kitchens']",
     'manifest.presentation.currencyCode',
   ]) {

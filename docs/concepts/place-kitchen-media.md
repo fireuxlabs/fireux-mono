@@ -1,7 +1,7 @@
 # Place and Kitchen media
 
-Updated: 2026-08-14
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Ownership
@@ -10,7 +10,7 @@ Place is the physical venue and owns location photography: `image_url`,
 `cover_image`, and `gallery_images`. Place may also own its venue identity
 media through sparse `logo_image` and `wordmark_image` references when exact
 approved artwork exists. Kitchen is the food operation at that Place and owns
-sparse operational overrides in `assets.logo`, `assets.wordmark`, and the
+sparse operational identity media in `assets.logo`, `assets.wordmark`, and the
 optional `assets.image` card override. Place media is never copied into those
 Kitchen fields.
 
@@ -25,24 +25,32 @@ fixtures enforce the same ownership split.
 The bounded Kitchen directory projection declares the selected asset as
 `image_kind: photograph | brand`. Place cover and Place image remain
 photographic and render with cover treatment. A Kitchen card override is brand
-media only when it carries the resolved transparent-media backdrop; otherwise
-it is a photographic crop. Card components consume that typed role and do not
-guess from file names, aspect ratios, colours, or individual records.
+media only when it is transparent identity artwork; otherwise it is a
+photographic crop. Card components consume that typed role and do not guess
+from file names, aspect ratios, colours, or individual records.
 
-## Transparent-media backdrop
+## Place identity colour
 
-`Place.media_backdrop_color` is an optional validated six-digit hex base for
-transparent brand media used by Place-backed children. A Kitchen persists
-`assets.backdrop_color` only when it needs a different colour.
-Resolution is Kitchen override, then Place base, then unset.
+Place owns one optional validated six-digit `identity_color`. It is normally
+sampled from the approved logo and is the one colour used to reconcile
+transparent Place or Kitchen identity media with its backdrop. The editor may
+label it **Primary colour**; the reviewed stored and DTO name is
+`identity_color` so the field describes ownership rather than a generic page
+theme.
 
-The resolved colour may appear behind a transparent Kitchen logo, either
-Kitchen wordmark, and a Kitchen card override when that file is transparent.
-It never overlays or tints Place image, cover, gallery, or other photographic
-media.
+Kitchen owns no identity-colour override. A bounded Place-backed Kitchen read
+keeps the owners explicit—for example, `place.identity_color` beside Kitchen
+identity/media—and consumers use the linked Place value. They do not copy the
+colour onto Kitchen or flatten it into a second authority.
+
+The colour may appear behind a transparent Place or Kitchen logo, either
+wordmark, and transparent Kitchen card identity artwork. It never overlays or
+tints Place image, cover, gallery, or other photographic media. Menu and App
+palettes remain separate presentation owners.
 
 Writers accept files and persist canonical Firebase Storage download URLs for
-the exact entity-owned targets. Colour writers accept only `#rrggbb`.
+the exact entity-owned targets. The Place colour writer accepts only
+`#rrggbb`.
 
 The cross-owner target is one asset-role language through
 `Place → Kitchen → App`: a role retains the same filename and relative path,
@@ -74,9 +82,15 @@ lane.
 
 ## Compatibility and migration
 
+Current source still stores Place `media_backdrop_color` and may store Kitchen
+`assets.backdrop_color`. Both are migration input for the one Place-owned
+`identity_color`; new work must not add another Kitchen override. The guarded
+migration must update Place reads, writes, public projections, Kitchen joins,
+fixtures, guards, and stored data together, then remove the Kitchen field when
+its effective Place colour has been verified.
+
 The pre-release `image_shade` values remain read-only compatibility input:
-`light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. New
-writes use only `media_backdrop_color`. Run
+`light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run
 `scripts/audit-place-kitchen-media-backdrops.mjs` to produce the bounded Live
 checklist. Asset-specific review annotations live in
 `scripts/data/misebox-media-backdrop-audit.json`; they may mark an opaque asset

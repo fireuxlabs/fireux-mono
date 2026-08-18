@@ -1,7 +1,7 @@
 # Runtime package family
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -12,7 +12,8 @@ Core, Ecosystem, and Extension packages legitimately differ.
 ## Links
 
 - Parent: `fireux.md`
-- Children: `components.md`, `composables.md`, `pages.md`, `server-api.md`
+- Children: `runtime-filesystem.md`, `components.md`, `composables.md`,
+  `pages.md`, `server-api.md`
 - Horizontal: `pnpm.md`, `app-config.md`, `spine.md`
 - Executable references: package guards, dependency ownership guard, and each
   package's `src/module.ts`
@@ -27,14 +28,20 @@ src/config/module/*  # only for real registration/config hooks
 src/runtime/*
 ```
 
-Common runtime buckets are `components`, `composables`, `models`, `pages`,
-`server`, and `utils`. A package carries only the hooks and buckets it
+The detailed ownership contract is mapped in `runtime-filesystem.md`. Root
+technical buckets such as `components`, `composables`, `models`, and `utils`
+are shared across entities. Nuxt entrypoints such as `pages`, `layouts`,
+`plugins`, `middleware`, and `server/api` retain their conventional locations.
+Entity-owned implementation lives under `src/runtime/<entity>/<role>`. A
+package carries only the hooks, entity roots, and buckets it
 genuinely owns; a small package such as `fireux-docs` or `fireux-nuxtfire` does
-not add an empty `src/config/module` layer for symmetry.
+not add empty structure for symmetry.
 
 Shared rules:
 
 - Register Nuxt runtime surfaces through the package module.
+- Register bounded entity component and composable roots through the same
+  supported Nuxt Kit helpers; do not build an entity discovery framework.
 - Use the Core module-wiring helper rather than rebuilding Nuxt registration.
 - Keep only registration hooks that perform real work.
 - Models, types, information helpers, and ordinary utilities are explicit
@@ -96,6 +103,7 @@ parity.
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
 | Runtime surface exists but is not registered                                           | `drift`      | Add the smallest real module hook and a focused smoke route/import check                                    |
 | A reusable extension is added to every App without a universal product contract        | `drift`      | Keep Blog as the sole default; require every other extension, including Products, to be explicitly composed |
+| Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and protect registration and completed legacy paths through guards  |
 
 ## Alignment roadmap
 
@@ -103,6 +111,8 @@ parity.
 
 - Keep `src/module.ts` and real `src/config/module/*` hooks as the registration
   spine.
+- Use the implemented entity-scoped ownership in `runtime-filesystem.md`; do
+  not add a second path or infer a new Entity from an unresolved record family.
 - Let package manifests declare actual dependency ownership.
 
 ### Next

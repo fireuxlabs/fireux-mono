@@ -66,14 +66,14 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { CreatedMenuOrder } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-ordering.model'
-import type { MenuManifestSection } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
-import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/models/kitchen/menu/menu.model'
-import type { MenuOrderLifecycleStatus } from 'fireux-kitchens/runtime/composables/fireux/menu/order/useMenuOrderLifecycle'
+import type { CreatedMenuOrder } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
+import type { MenuManifestSection } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
+import type { MenuOrderTypeConfig } from 'fireux-kitchens/runtime/menu/models/menu.model'
+import type { MenuOrderLifecycleStatus } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderLifecycle'
 import {
   useMenuOrderBasket,
-} from 'fireux-kitchens/runtime/composables/fireux/menu/order/useMenuOrderBasket'
-import type { MenuOrderKioskType } from 'fireux-kitchens/runtime/composables/fireux/menu/order/useMenuOrderKiosk'
+} from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderBasket'
+import type { MenuOrderKioskType } from 'fireux-kitchens/runtime/menu/composables/order/useMenuOrderKiosk'
 
 const props = defineProps<{
   config: MenuOrderTypeConfig | null

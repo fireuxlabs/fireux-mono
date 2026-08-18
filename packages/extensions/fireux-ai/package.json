@@ -1,7 +1,7 @@
 {
   "name": "fireux-ai",
   "version": "0.1.0",
-  "description": "FireUX shared server-only AI integration seam",
+  "description": "FireUX shared AI integration and presentation seam",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",

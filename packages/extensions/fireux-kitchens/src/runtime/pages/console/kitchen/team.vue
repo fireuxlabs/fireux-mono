@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { provideKitchenConsoleTeam } from '../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
+import { provideKitchenConsoleTeam } from '../../../kitchen/composables/console/team/useKitchenConsoleTeam'
 
 const team = provideKitchenConsoleTeam()
 const hasTeam = computed(() => team.teamMembers.value.length > 0)

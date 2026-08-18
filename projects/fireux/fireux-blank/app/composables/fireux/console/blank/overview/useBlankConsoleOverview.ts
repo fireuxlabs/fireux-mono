@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: carry Blank target outcome into overview.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
+import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/console/useConsoleOverview'
 import type { Blank } from '../../../../../models/blank.model'
 import { useBlankConsole } from '../core/useBlankConsole'
 

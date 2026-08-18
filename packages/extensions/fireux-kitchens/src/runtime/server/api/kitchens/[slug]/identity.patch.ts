@@ -4,7 +4,7 @@ import {
   readBody,
   setResponseHeaders,
 } from 'h3'
-import { updateKitchenPublicIdentity } from '../../../kitchen/identity/public-identity.ts'
+import { updateKitchenPublicIdentity } from '../../../../kitchen/server/identity/public-identity.ts'
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {

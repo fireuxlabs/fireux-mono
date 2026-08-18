@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-04
-Ref: 1d6857c57
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -115,15 +115,14 @@ selection, gross sales, completed sales, and average sale. Therefore its
 surface says what can be reviewed; it does not lead with “what the Kitchen
 earned,” automatic conversion, profit, cash, or a generic Finance promise.
 
-The Kitchen Console may summarise its current operation catalogue. That
-catalogue follows real selected-Kitchen work rather than folder placement, so
-Kitchen Identity and Team are Operations even though Console anatomy keeps
-`Identity` and `Team` beside the structural `Operations` bucket. Finance is a
+The Kitchen Console may summarise its current capability tree. Identity and
+Team are first-class Console peers; they are not Operations. Finance is a
 selected-Kitchen reporting Operation. Overview is the Console home. QR is Menu
 tooling; Overview may expose quick access to important Menu QR results without
 owning the Tool. HACCP is a parked future Kitchen Operation until its workspace
 is wired. Training belongs under Team, and Purchasing belongs under Suppliers
-if Kitchen-owned purchasing gains authoritative producers. Misebox may
+if Kitchen-owned purchasing gains authoritative producers. A historical
+`operations.ts` filename does not change those product meanings. Misebox may
 summarise the Kitchen Console, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.
@@ -185,11 +184,11 @@ or advertise the FireUX ecosystem-creation offer.
 ## Current source
 
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/content/operations.ts`
-- `packages/extensions/fireux-suppliers/src/runtime/content/operations.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/content/operations.ts`
+- `packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Dish.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Dish.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`

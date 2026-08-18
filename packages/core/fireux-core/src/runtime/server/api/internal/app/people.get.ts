@@ -7,9 +7,9 @@ import {
   type H3Event,
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { AppStorage } from '../../../../models/core/app.model'
-import { AppJoinRequestStorage } from '../../../../models/operations/app-membership'
-import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
+import { AppStorage } from '../../../../app/models/app.model.ts'
+import { AppJoinRequestStorage } from '../../../../app/models/app-membership'
+import { AppUserStorage, UserStorage } from '../../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import {
   getRuntimeFirestore,
@@ -20,7 +20,7 @@ import type {
   AppAdminMemberDto,
   AppAdminPeopleResponse,
 } from '../../../utils/public-projection/public-dto.types'
-import { mapPublicUserIdentity } from '../../../utils/public-projection/public-user-identity'
+import { mapPublicUserIdentity } from '../../../../user/server/projection/public-user-identity'
 
 const MAX_MEMBERS = 100
 const MAX_JOIN_REQUESTS = 100

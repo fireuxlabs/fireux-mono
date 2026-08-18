@@ -176,16 +176,16 @@
 import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
-} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/console/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocuments } from '../../../composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocuments'
-import { usePortfolioDocumentLinks } from '../../../composables/fireux/console/portfolio/operations/Documents/fetch/usePortfolioDocumentLinks'
-import { linkDocumentToEntity } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentCreate'
-import { useDocumentStorage } from '../../../composables/fireux/console/portfolio/operations/Documents/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../composables/fireux/console/portfolio/operations/Documents/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../composables/fireux/console/portfolio/operations/Documents/utils/view/useDocumentInterface'
-import { DocumentStorage } from '../../../models/document.model'
+import { usePortfolioDocuments } from '../../../portfolio/composables/console/operations/Documents/fetch/usePortfolioDocuments'
+import { usePortfolioDocumentLinks } from '../../../portfolio/composables/console/operations/Documents/fetch/usePortfolioDocumentLinks'
+import { linkDocumentToEntity } from '../../../portfolio/composables/console/operations/Documents/mutations/linkDocumentToEntity'
+import { useDocumentCreate } from '../../../portfolio/composables/console/operations/Documents/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../portfolio/composables/console/operations/Documents/mutations/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../portfolio/composables/console/operations/Documents/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../portfolio/composables/console/operations/Documents/utils/view/useDocumentInterface'
+import { DocumentStorage } from '../../../portfolio/models/document.model.ts'
 
 definePageMeta({
   layout: 'console',

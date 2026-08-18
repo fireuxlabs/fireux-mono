@@ -6,7 +6,7 @@ import {
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
 } from '../../routing/consoleRoutes'
-import { useConsole } from '../../console/useConsole'
+import { useConsole } from '../../../console/useConsole'
 
 type ConsoleEntryFamily = {
   key: ConsoleFamily

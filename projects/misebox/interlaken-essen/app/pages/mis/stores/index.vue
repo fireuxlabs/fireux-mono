@@ -42,7 +42,7 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
   MarketplaceStore,
   MarketplaceStoreState,
-} from 'fireux-marketplace/runtime/models/marketplace.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
 definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()

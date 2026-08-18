@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePublicMenuIndex } from 'fireux-kitchens/runtime/composables/fireux/menu/usePublicMenuIndex'
+import { usePublicMenuIndex } from 'fireux-kitchens/runtime/menu/composables/usePublicMenuIndex'
 
 type ToolResponse = {
   tool: {

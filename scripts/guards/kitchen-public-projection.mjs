@@ -11,36 +11,37 @@ const read = (repoRoot, relativePath) =>
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const base = 'packages/extensions/fireux-kitchens/src/runtime/'
-  const canonicalCollectionPath = `${base}composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts`
+  const kitchenBase = `${base}kitchen/`
+  const canonicalCollectionPath = `${kitchenBase}composables/firestore/fetch/useKitchenCollection.ts`
   const legacyPublicCollectionPath = `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
   const manager = read(
     repoRoot,
-    `${base}components/Kitchen/Collection/Manager.vue`
+    `${kitchenBase}components/Collection/Manager.vue`
   )
   const collection = read(repoRoot, canonicalCollectionPath)
-  const detail = read(repoRoot, `${base}components/Kitchen/Detail/Index.vue`)
+  const detail = read(repoRoot, `${kitchenBase}components/Detail/Index.vue`)
   const identityEditor = read(
     repoRoot,
-    `${base}components/Kitchen/Detail/IdentityEditor.vue`
+    `${kitchenBase}components/Detail/IdentityEditor.vue`
   )
   const detailPage = read(repoRoot, `${base}pages/kitchens/[slug]/index.vue`)
   const indexApi = read(repoRoot, `${base}server/api/kitchens/index.get.ts`)
   const detailApi = read(repoRoot, `${base}server/api/kitchens/[slug].get.ts`)
   const operatorPanel = read(
     repoRoot,
-    `${base}components/Kitchen/Detail/OperatorPanel.vue`
+    `${kitchenBase}components/Detail/OperatorPanel.vue`
   )
   const publicIdentity = read(
     repoRoot,
-    `${base}server/kitchen/identity/public-identity.ts`
+    `${kitchenBase}server/identity/public-identity.ts`
   )
   const publicProjection = read(
     repoRoot,
-    `${base}server/kitchen/identity/public-projection.ts`
+    `${kitchenBase}server/identity/public-projection.ts`
   )
   const sproochli = read(
     repoRoot,
-    `${base}components/Kitchen/Detail/Sproochli.vue`
+    `${kitchenBase}components/Detail/Sproochli.vue`
   )
   assert.equal(
     existsSync(file(repoRoot, legacyPublicCollectionPath)),

@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/core/operator-access'
+import { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/core/operator-access'
 import { suggestKitchenTeamPrompts } from './team-tools'
 import { readKitchenTeamToolMembers } from './team-records'
 

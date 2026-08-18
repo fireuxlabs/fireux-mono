@@ -11,12 +11,12 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
+import { readMenuOrderContext } from '../../../../../../menu/server/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,
   requireMenuOrderCustomerAccess,
-} from '../../../../../menu/ordering/order-capability.ts'
-import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
+} from '../../../../../../menu/server/ordering/order-capability.ts'
+import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../menu/utils/menu-order-capability.ts'
 
 type CustomerOrderResponseBody = {
   action?: 'amend' | 'cancel'

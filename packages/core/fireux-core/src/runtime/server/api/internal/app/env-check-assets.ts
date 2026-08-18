@@ -5,7 +5,7 @@ import {
   APP_PUBLIC_ASSET_REQUIREMENTS,
   validateAppAssetDimensions,
   type AppAssetDimensionConstraints,
-} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+} from '../../../../app/composables/firestore/utils/appMedia'
 
 type ImageSizeResult = ReturnType<typeof imageSize>
 

@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { createSupplierItem } from '../../../../supplier/operations/items/item'
+import { createSupplierItem } from '../../../../../supplier/server/operations/items/item'
 
 export default defineEventHandler(async event =>
   createSupplierItem(

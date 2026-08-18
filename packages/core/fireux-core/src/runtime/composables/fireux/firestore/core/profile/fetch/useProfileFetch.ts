@@ -9,7 +9,7 @@ import {
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
-import { AppStorage } from '../../../../../../models/core/app.model'
+import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import type {
   AppProfileBase,
   ProfileBase,

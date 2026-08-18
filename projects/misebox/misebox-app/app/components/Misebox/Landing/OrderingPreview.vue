@@ -106,8 +106,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
-import type { MenuDetailView } from 'fireux-kitchens/runtime/composables/fireux/kitchen/order/funnel/shared/useFunnel'
+import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/useMenuThemeSurface'
+import type { MenuDetailView } from 'fireux-kitchens/runtime/kitchen/composables/order/funnel/shared/useFunnel'
 import type {
   MiseboxProductDemo,
   MiseboxProductDemoKiosk,

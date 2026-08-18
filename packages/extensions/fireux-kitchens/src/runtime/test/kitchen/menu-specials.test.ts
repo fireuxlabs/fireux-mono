@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { shouldEmbedMenuSpecials } from '../../utils/menu-specials.ts'
+import { shouldEmbedMenuSpecials } from '../../menu/utils/menu-specials.ts'
 
 test('specials embed only into the explicitly configured primary Menu', () => {
   assert.equal(shouldEmbedMenuSpecials({

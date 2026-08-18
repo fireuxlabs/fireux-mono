@@ -147,11 +147,11 @@ import { onMounted, reactive, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
   MarketplaceStoreModerationIntent,
-} from 'fireux-marketplace/runtime/models/marketplace-api.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 import type {
   MarketplaceStore,
   MarketplaceStoreState,
-} from 'fireux-marketplace/runtime/models/marketplace.model'
+} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
 definePageMeta({ layout: 'marketplace' })
 const { copy } = useInterlakenCopy()

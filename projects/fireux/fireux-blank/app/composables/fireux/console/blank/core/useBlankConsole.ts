@@ -5,11 +5,11 @@ import { computed } from 'vue'
 import {
   useConsole,
   type ConsoleSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
-import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
-import { useConsoleFamilyRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleFamilyRuntime'
-import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
+} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import { consoleData } from 'fireux-core/runtime/composables/fireux/console/useConsoleData'
+import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntityRuntime'
+import { useConsoleFamilyRuntime } from 'fireux-core/runtime/composables/fireux/console/useConsoleFamilyRuntime'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/console/useConsoleTargets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 import {

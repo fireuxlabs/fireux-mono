@@ -75,11 +75,11 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, ref } from 'vue'
-import { useIngredientDetail } from '../../composables/fireux/ingredient/useIngredientDetail'
-import { useIngredientInterface } from '../../composables/fireux/ingredient/useIngredientInterface'
-import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/utils/useIngredientSeo'
+import { useIngredientDetail } from '../../ingredient/composables/useIngredientDetail'
+import { useIngredientInterface } from '../../ingredient/composables/useIngredientInterface'
+import { useIngredientSeo } from '../../ingredient/composables/firestore/utils/useIngredientSeo'
 
 definePageMeta({
   layout: 'default',

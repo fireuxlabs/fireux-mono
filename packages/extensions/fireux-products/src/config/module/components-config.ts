@@ -6,4 +6,17 @@ export function configureComponents(resolver: Resolver) {
     global: true,
     pathPrefix: true,
   })
+
+  registerComponentsDir(resolver, './runtime/product/components', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'Product',
+    ignore: ['dev/**'],
+  })
+
+  registerComponentsDir(resolver, './runtime/product/components/dev', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'DevProduct',
+  })
 }

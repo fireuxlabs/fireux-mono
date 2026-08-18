@@ -98,9 +98,9 @@ import { computed, ref, watch } from 'vue'
 import type {
   FirebaseProduct,
   Price,
-} from 'fireux-products/runtime/models/product.model'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
-import { useProductPrices } from 'fireux-products/runtime/composables/fireux/firestore/product/price/fetch/useProductPrices'
+} from 'fireux-products/runtime/product/models/product.model'
+import { useProductFetch } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductFetch'
+import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import {
   buildPublicPageJsonLd,
   useSeo,

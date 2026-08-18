@@ -137,9 +137,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
-import { useProductInterface } from 'fireux-products/runtime/composables/fireux/product/useProductInterface'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import { useProductInterface } from 'fireux-products/runtime/product/composables/useProductInterface'
+import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
 import { roadmapBySlug } from '../../content/module-roadmaps'
 
 definePageMeta({

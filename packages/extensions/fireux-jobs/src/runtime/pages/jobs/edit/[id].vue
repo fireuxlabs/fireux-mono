@@ -132,13 +132,13 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useHead } from 'nuxt/app'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
+import { useJobFetch } from '../../../job/composables/firestore/fetch/useJobFetch'
 import {
   JobPayload,
   type JobCreateForm,
-} from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
-import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
-import type { Job, JobStatus } from '../../../models/job.model'
+} from '../../../job/composables/firestore/mutations/useJobCreate'
+import { useJobUpdate } from '../../../job/composables/firestore/mutations/useJobUpdate'
+import type { Job, JobStatus } from '../../../job/models/job.model.ts'
 
 definePageMeta({
   layout: 'default',

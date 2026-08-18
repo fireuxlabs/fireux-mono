@@ -5,12 +5,12 @@ import {
   type H3Event,
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { AppStorage } from '../../../../models/core/app.model'
-import { resolveAppUserAccess } from '../../../../utils/app-user-access.ts'
-import { AppUserStorage } from '../../../../models/core/user.model'
+import { AppStorage } from '../../../../app/models/app.model.ts'
+import { resolveAppUserAccess } from '../../../../app/utils/app-user-access.ts'
+import { AppUserStorage } from '../../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
-import { projectPublicApp } from '../../../utils/public-projection/public-app.dto'
+import { projectPublicApp } from '../../../../app/server/projection/public-app.dto.ts'
 import type {
   CurrentAppContextResponse,
   CurrentAppMembershipDto,

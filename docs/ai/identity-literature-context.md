@@ -1,7 +1,7 @@
 # Identity and product literature context
 
-Updated: 2026-08-04
-Ref: 1d6857c57
+Updated: 2026-08-18
+Ref: e23268507
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -53,9 +53,11 @@ shared public-language or pricing seam applies to them.
   `<App name>'s Apps`.
 - Each Main App owns its product nouns, Console name, capability limits,
   imagery, actions, and working routes.
-- Identity is a required Operation for every Console family. The owning
-  Operation catalogue keeps its Console route, landing subheader entry, and
-  `/operations/<slug>` literature page aligned.
+- Identity is a required peer capability for every Console Entity, not an
+  Operation. Team is also a peer where the source-backed Console map declares
+  it. A complete capability catalogue may keep Console routes and landing
+  discovery aligned, while operation-only literature uses only the Operations
+  listed in `docs/concepts/console.md`.
 - Static ecosystem hero photography shows people doing the product's current
   work through Core's sharp image frame. FireUX's live App/Ecosystem orbit and
   Misebox Kitchen's product-surface composition are the explicit non-people
@@ -69,9 +71,10 @@ shared public-language or pricing seam applies to them.
   the allowed placement but never supplies the new App identity. Runtime App
   initialization and repair remain an internal shell operation and must not be
   presented as `/apps/create`.
-- An Operation changes or manages an owned product object through a Console. A
-  public directory or navigation link does not become an Operation merely
-  because it appears in the landing rail.
+- An Operation is selected-target work named in the owning Console's Operation
+  list. Identity, Team, a public directory, or a navigation link does not
+  become an Operation merely because it changes data or appears in a landing
+  rail.
 - Tools remain bounded utilities or provider doorways. Solutions remain
   source-backed explanations of supported situations.
 - Pricing literature separates access, product capacity, human service,

@@ -3,8 +3,8 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useConsoleNotifications } from '../../../composables/fireux/app/ui/useConsoleNotifications'
-import { useUserNotifications } from '../../../composables/fireux/firestore/core/user/fetch/useUserNotifications'
-import { useUserNotificationRead } from '../../../composables/fireux/firestore/core/user/mutations/useUserNotificationRead'
+import { useUserNotifications } from '../../../user/composables/firestore/fetch/useUserNotifications'
+import { useUserNotificationRead } from '../../../user/composables/firestore/mutations/useUserNotificationRead'
 import {
   formatFirestoreTimestamp,
   type FirestoreTimestampLike,

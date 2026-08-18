@@ -1,6 +1,8 @@
 <template>
   <LayoutsDashboardNavbar :title="title" :ui="ui">
-    <template #right><slot name="right" /></template>
+    <template #right>
+      <slot name="right" />
+    </template>
   </LayoutsDashboardNavbar>
 </template>
 

@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import { readKitchenConsoleTargets } from '../../../kitchen/core/targets'
+import { readKitchenConsoleTargets } from '../../../../kitchen/server/core/targets'
 
 export default defineEventHandler(async (event) => {
   const response = await readKitchenConsoleTargets(event)

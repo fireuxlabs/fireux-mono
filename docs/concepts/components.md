@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-08-09
-Ref: 5b5de1c1c
+Updated: 2026-08-18
+Ref: e23268507
 Role: map, not canon
 
 ## Purpose
@@ -21,18 +21,28 @@ Map component folder and naming conventions.
 - pages.md
 - composables.md
 - lasagne.md
+- runtime-filesystem.md
 - debug.md
 
 ## Package components
 
-- Package UI belongs under `src/runtime/components`.
-- App UI belongs under `app/components`.
+- Cross-entity package UI belongs under `src/runtime/components`.
+- Entity-owned package UI belongs under
+  `src/runtime/<entity>/components`, following `runtime-filesystem.md`.
+- App UI belongs under `app/components`; reusable entity implementation does
+  not move into an App merely to preserve conventional Nuxt discovery.
+- Declared Entity components live beneath `runtime/<entity>/components` and
+  are registered with prefixes that preserve established component names.
+  Confirmed parent-owned record/operation components live beneath their parent
+  Entity scope. Root component families for still-to-confirm concepts remain
+  on the package spine; neither case is automatic evidence for a new Entity.
 
 ## CSS-to-component mapping
 
 - The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
-  components remain domain-first (`Kitchen/Cards`, `Supplier/Collection`,
-  `Console/X/Operations`) and pages remain route-first.
+  components remain entity-owned (`runtime/kitchen/components/Cards`,
+  `runtime/supplier/components/Collection`, and an entity's
+  `components/Console/Operations`) while pages remain route-first.
 - `atoms` own foundations or one semantic visual role, such as system tokens
   and the `.fx-type-*` vocabulary. They do not own a form, card, or page
   composition.
@@ -55,7 +65,8 @@ Map component folder and naming conventions.
   the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Preview` family
   classified in `card-family.md`; collection organisms to `X/Collection/*` and
   console indexes; console header/summary molecules plus the console surface
-  organism to `Console/X/*`; public-action organisms to claim/operator panels;
+  organism to an entity's `components/Console/*`; public-action organisms to
+  claim/operator panels;
   legacy `Cards/Profile` compositions are migration debt rather than ordinary
   Cards; the public specialist-profile
   family composes Core `PublicProfileHero`, `PublicProfileSection`, and
@@ -119,9 +130,10 @@ Map component folder and naming conventions.
   image and product order. Core `LandingPricingStrip` owns the shared Monthly
   subscriptions presentation; both Main Apps supply their source-backed Free,
   Premium, and Managed plans at the project edge. Core `LandingOperationRail`
-  sits above Section One in both Main Apps; each App projects its complete
-  source-backed Console Operation catalogue, including Identity, to matching
-  `/operations/<slug>` literature routes. As Section One hands off, Core moves the
+  sits above Section One in both Main Apps. Despite its historical component
+  name, each App projects its complete source-backed Console capability
+  catalogue to matching `/operations/<slug>` literature routes; Identity
+  remains a peer capability rather than becoming an Operation. As Section One hands off, Core moves the
   immersive landing header and Operations rail upward and out rather than
   hiding either surface beneath pricing; reverse scrolling restores both. This
   behavior is scoped to the immersive landing and does not affect ordinary App
@@ -147,7 +159,7 @@ Map component folder and naming conventions.
   further separates Collection, Overview, and named
   Finance/Spec/Prep/Recipes/Mise child pages beneath one persistent
   image-backed Dish context. Ingredients
-  receives the selected Demo Kitchen's usage links already hydrated through
+  receives the selected Demo Kitchen's usage links already resolved through
   canonical root Ingredients; it does not copy name or image truth. Its compact
   collapsible groups use the same ordered food-group resolver as the real
   Kitchen Console.
@@ -200,7 +212,7 @@ Map component folder and naming conventions.
   keyboard-focusable left-to-right scroll window with a responsive bento grid.
   The shared
   orbit source discriminant is closed to `demo | live`; an orbit cannot mix,
-  hydrate, or fall back across those sources. The Misebox window preserves its
+  join, or fall back across those sources. The Misebox window preserves its
   single `demo` envelope without adopting orbit geometry or motion. The orbit
   is a landing compositor, not a fourth Card variant and not a Sci-Fire-only
   component. Core
@@ -224,15 +236,17 @@ Map component folder and naming conventions.
 
 ## Domain component folders
 
-- `X/Cards`
-- `X/Collection`
-- `X/Create`
-- `X/Onboarding.vue` with named stages under `X/Onboarding/*`
-- `X/Detail.vue`
-- `X/Detail/Index.vue` when detail owns child slices
-- `X/Edit`
-- `X/Overview`
-- `Console/X/*`
+Inside `runtime/<entity>/components`:
+
+- `Cards`
+- `Collection`
+- `Create`
+- `Onboarding.vue` with named stages under `Onboarding/*`
+- `Detail.vue`
+- `Detail/Index.vue` when detail owns child slices
+- `Edit`
+- `Overview`
+- `Console/*`
 
 ## Detail rule
 
@@ -242,23 +256,38 @@ Map component folder and naming conventions.
 
 ## Root entity naming
 
-- Root entity component folders such as `Kitchen/**`, `Menu/**`, and `Supplier/**` are already public/root surfaces.
-- Do not prefix components in those folders with `Public` unless it names an external imported concept.
-- Use route/composable buckets such as `fireux/public/*` when “public” distinguishes runtime behavior rather than component location.
+- Entity component roots such as `runtime/kitchen/components`,
+  `runtime/menu/components`, and `runtime/supplier/components` already declare
+  their owner.
+- Do not prefix components in those folders with `Public` unless it names a
+  real publication or privacy boundary.
+- A surface such as Console, Detail, Directory, or Kiosk may qualify the path
+  inside the entity's component role; it does not replace the entity owner.
 
 ## Console component folders
 
-- `Console/X/Index`
-- `Console/X/Overview`
-- `Console/X/Identity`
-- `Console/X/Team`
-- `Console/X/Operations`
-- `Console/X/Sundries`
+The entity-scoped destination is:
+
+- `runtime/<entity>/components/Console/Index`
+- `runtime/<entity>/components/Console/Overview`
+- `runtime/<entity>/components/Console/Identity`
+- `runtime/<entity>/components/Console/Team`
+- `runtime/<entity>/components/Console/Operations`
+- `runtime/<entity>/components/Console/Sundries`
+
+Shared Console presentation remains under `runtime/components/Console`.
+Entity Console families now live beneath their owner. Do not recreate
+`runtime/components/Console/X`; shared Console presentation alone remains in
+the root Console folder.
 
 ## Console bucket rule
 
-- Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries`.
-- These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
+- Every entity Console family uses the same peer vocabulary when those
+  capabilities exist: `Index`, `Overview`, `Identity`, `Team`, `Operations`,
+  and optional `Sundries`.
+- These buckets are directories. Prefer
+  `runtime/<entity>/components/Console/Overview/Index.vue` over a peer
+  `Overview.vue` file.
 - `Team` is a shared console access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
 - `Sundries` quarantines parked or underdeveloped console surfaces so they do not pretend to be confirmed operations.

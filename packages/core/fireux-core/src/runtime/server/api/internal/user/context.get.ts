@@ -3,8 +3,8 @@ import {
   UserContextStorage,
   type CurrentUserContextResponse,
   type UserContext,
-} from '../../../../models/operations/user-context.model'
-import { UserStorage } from '../../../../models/core/user.model'
+} from '../../../../user/models/user-context.model.ts'
+import { UserStorage } from '../../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 

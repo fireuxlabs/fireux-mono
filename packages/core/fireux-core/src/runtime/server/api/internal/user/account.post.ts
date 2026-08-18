@@ -5,9 +5,9 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningInput,
-} from '../../../../models/operations/user-account-provisioning'
+} from '../../../../user/models/user-account-provisioning'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
-import { provisionUserAccount } from '../../../utils/user-account/provision'
+import { provisionUserAccount } from '../../../../user/server/user-account/provision'
 
 function readTermsVersion(body: unknown) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) return undefined

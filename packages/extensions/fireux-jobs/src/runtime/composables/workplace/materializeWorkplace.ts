@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 12:58 CEST — Misebox Jobs workplace adapter: expose type- and collection-discriminated owner materialization.
 import { useNuxtApp } from '#imports'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place.model'
 
 export type JobWorkplaceMaterializationInput = {
   workplaceType?: string
@@ -11,10 +11,7 @@ export type JobWorkplaceMaterializationInput = {
 
 export type JobWorkplaceMaterializationContext =
   JobWorkplaceMaterializationInput & {
-    materialize: (
-      owner: string,
-      action: () => Promise<void>
-    ) => Promise<void>
+    materialize: (owner: string, action: () => Promise<void>) => Promise<void>
   }
 
 const hookName = 'fireux:jobs:workplace:materialize'
@@ -75,9 +72,7 @@ export async function materializeJobWorkplace(
   await useNuxtApp().callHook(hookName as any, context as any)
 
   if (!claimedBy) {
-    throw new Error(
-      `No workplace adapter is registered for "${discriminator}"`
-    )
+    throw new Error(`No workplace adapter is registered for "${discriminator}"`)
   }
   if (!materialized) {
     throw new Error(

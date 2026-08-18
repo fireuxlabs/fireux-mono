@@ -5,8 +5,8 @@ import {
   type H3Event,
 } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
-import { getProductsFirestore } from '../../utils/getAdmin'
+import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
+import { getProductsFirestore } from '../../../product/server/core/getAdmin'
 
 function assertSafeDocumentSegment(value: string) {
   if (!value || value.includes('/') || value === '.' || value === '..') {

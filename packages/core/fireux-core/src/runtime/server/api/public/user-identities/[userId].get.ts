@@ -5,14 +5,14 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { UserStorage } from '../../../../models/core/user.model'
+import { UserStorage } from '../../../../user/models/user.model.ts'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../utils/ids/path'
 import type {
   PublicDetailResponse,
   PublicUserIdentityDto,
 } from '../../../utils/public-projection/public-dto.types'
-import { mapPublicUserIdentity } from '../../../utils/public-projection/public-user-identity'
+import { mapPublicUserIdentity } from '../../../../user/server/projection/public-user-identity'
 
 const CACHE_CONTROL =
   'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
