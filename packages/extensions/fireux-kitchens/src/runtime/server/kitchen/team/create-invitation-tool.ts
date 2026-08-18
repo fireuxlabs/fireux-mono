@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3'
 import { createKitchenMemberInvitation } from './member-invitation.ts'
 
-export const createKitchenMemberInvitationTool = {
-  id: 'kitchen.member.create-invitation',
+export const createKitchenTeamInvitationTool = {
+  id: 'kitchen.team.create-invitation',
   mode: 'write',
   confirmation: 'required',
   description:
@@ -15,7 +15,7 @@ export const createKitchenMemberInvitationTool = {
   },
 } as const
 
-export function executeCreateKitchenMemberInvitationTool(
+export function executeCreateKitchenTeamInvitationTool(
   event: H3Event,
   input: { kitchenId: string; memberId: string }
 ) {

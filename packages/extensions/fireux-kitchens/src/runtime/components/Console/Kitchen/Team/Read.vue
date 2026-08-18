@@ -68,6 +68,17 @@
               :disabled="Boolean(invitingMemberId)"
               @click="emit('invite', member)"
             />
+            <UButton
+              v-if="!member.user_id"
+              label="Delete"
+              icon="i-lucide-trash-2"
+              color="error"
+              variant="ghost"
+              size="sm"
+              :loading="deletingMemberId === member.id"
+              :disabled="Boolean(deletingMemberId)"
+              @click="emit('delete', member)"
+            />
           </div>
         </li>
       </ul>
@@ -85,17 +96,20 @@ const props = withDefaults(
     members?: KitchenTeamMember[]
     pending?: boolean
     invitingMemberId?: string
+    deletingMemberId?: string
   }>(),
   {
     members: () => [],
     pending: false,
     invitingMemberId: '',
+    deletingMemberId: '',
   }
 )
 
 const emit = defineEmits<{
   edit: [member: KitchenTeamMember]
   invite: [member: KitchenTeamMember]
+  delete: [member: KitchenTeamMember]
 }>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

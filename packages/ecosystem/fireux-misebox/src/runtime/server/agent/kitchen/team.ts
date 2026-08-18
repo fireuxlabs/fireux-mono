@@ -3,13 +3,21 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
-  addKitchenTeamMemberTool,
-  executeAddKitchenTeamMemberTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/add-member-tool'
+  createKitchenTeamMemberTool,
+  executeCreateKitchenTeamMemberTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/create-member-tool'
 import {
-  createKitchenMemberInvitationTool,
-  executeCreateKitchenMemberInvitationTool,
-} from 'fireux-kitchens/runtime/server/kitchen/team/create-member-invitation-tool'
+  createKitchenTeamInvitationTool,
+  executeCreateKitchenTeamInvitationTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/create-invitation-tool'
+import {
+  deleteKitchenTeamMemberTool,
+  executeDeleteKitchenTeamMemberTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/delete-member-tool'
+import {
+  executeReadKitchenTeamMembersTool,
+  readKitchenTeamMembersTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/read-members-tool'
 import {
   executeUpdateKitchenMemberPlan,
   updateKitchenMemberTool,
@@ -71,9 +79,11 @@ async function executePendingTeamTool(
       answer:
         pending.id === updateKitchenMemberTool.id
           ? 'Okay, I won’t update the Team names.'
-          : pending.id === createKitchenMemberInvitationTool.id
-            ? `Okay, I won’t create an invitation for ${pending.name}.`
-            : `Okay, I won’t add ${pending.name}.`,
+          : pending.id === deleteKitchenTeamMemberTool.id
+            ? `Okay, I won’t delete ${pending.name}.`
+            : pending.id === createKitchenTeamInvitationTool.id
+              ? `Okay, I won’t create an invitation for ${pending.name}.`
+              : `Okay, I won’t add ${pending.name}.`,
     }
   }
   if (decision !== 'confirmed') {
@@ -82,9 +92,11 @@ async function executePendingTeamTool(
       answer:
         pending.id === updateKitchenMemberTool.id
           ? `Please confirm these name changes: ${pending.changes.map((change) => `${change.previousName} → ${change.name}`).join(', ')}.`
-          : pending.id === createKitchenMemberInvitationTool.id
-            ? `Please confirm: create a one-use invitation link for ${pending.name}?`
-            : `Please confirm: add ${pending.name} to this Kitchen team?`,
+          : pending.id === deleteKitchenTeamMemberTool.id
+            ? `Please confirm: permanently delete ${pending.name}?`
+            : pending.id === createKitchenTeamInvitationTool.id
+              ? `Please confirm: create a one-use invitation link for ${pending.name}?`
+              : `Please confirm: add ${pending.name} to this Kitchen team?`,
       pendingTool: pending,
     }
   }
@@ -102,8 +114,19 @@ async function executePendingTeamTool(
       tool: { id: pending.id, result: updated },
     }
   }
-  if (pending.id === createKitchenMemberInvitationTool.id) {
-    const invitation = await executeCreateKitchenMemberInvitationTool(event, {
+  if (pending.id === deleteKitchenTeamMemberTool.id) {
+    const deleted = await executeDeleteKitchenTeamMemberTool(event, {
+      kitchenId: request.kitchenId,
+      memberId: pending.memberId,
+    })
+    return {
+      ok: true as const,
+      answer: `${deleted.name} has been deleted.`,
+      tool: { id: pending.id, result: deleted },
+    }
+  }
+  if (pending.id === createKitchenTeamInvitationTool.id) {
+    const invitation = await executeCreateKitchenTeamInvitationTool(event, {
       kitchenId: request.kitchenId,
       memberId: pending.memberId,
     })
@@ -112,13 +135,13 @@ async function executePendingTeamTool(
       answer: `A one-use invitation for ${invitation.memberName} is ready and expires in seven days.`,
       tool: { id: pending.id, result: invitation },
       resultAction: {
-        kind: createKitchenMemberInvitationTool.result.primaryAction,
-        label: createKitchenMemberInvitationTool.result.label,
+        kind: createKitchenTeamInvitationTool.result.primaryAction,
+        label: createKitchenTeamInvitationTool.result.label,
         value: `/kitchen/member-invitation/${encodeURIComponent(invitation.token)}`,
       },
     }
   }
-  const created = await executeAddKitchenTeamMemberTool(event, {
+  const created = await executeCreateKitchenTeamMemberTool(event, {
     kitchenId: request.kitchenId,
     name: pending.name,
   })
@@ -158,6 +181,18 @@ export async function runKitchenTeamAgent(
   )
   if (selection.ok && selection.data?.agent === 'TeamAI') {
     const name = text(selection.data.name).replace(/\s+/g, ' ')
+    if (selection.data.action === 'read_team_members') {
+      const result = await executeReadKitchenTeamMembersTool(event, {
+        kitchenId: request.kitchenId,
+      })
+      return {
+        ok: true as const,
+        answer: result.members.length
+          ? `This Kitchen Team has ${result.members.length} ${result.members.length === 1 ? 'member' : 'members'}: ${result.members.map((member) => member.name).join(', ')}.`
+          : 'This Kitchen Team has no members.',
+        tool: { id: readKitchenTeamMembersTool.id, result },
+      }
+    }
     if (
       selection.data.action === 'create_member_invitation' &&
       name &&
@@ -168,22 +203,22 @@ export async function runKitchenTeamAgent(
         ok: true as const,
         answer: `TeamAI found ${member.name}. It can create a one-use invitation link that expires in seven days. Shall I continue?`,
         pendingTool: {
-          id: createKitchenMemberInvitationTool.id,
+          id: createKitchenTeamInvitationTool.id,
           memberId: member.memberId,
           name: member.name,
         } satisfies PendingTeamTool,
       }
     }
     if (
-      selection.data.action === 'add_team_member' &&
+      selection.data.action === 'create_team_member' &&
       name &&
       name.length <= 120
     ) {
       return {
         ok: true as const,
-        answer: `KitchenAI has delegated this to TeamAI. TeamAI can use Add team member to add ${name}. Shall I continue?`,
+        answer: `KitchenAI has delegated this to TeamAI. TeamAI can create ${name} as a Team member. Shall I continue?`,
         pendingTool: {
-          id: addKitchenTeamMemberTool.id,
+          id: createKitchenTeamMemberTool.id,
           name,
         } satisfies PendingTeamTool,
       }
@@ -201,6 +236,22 @@ export async function runKitchenTeamAgent(
             id: updateKitchenMemberTool.id,
             name: 'Team member names',
             changes,
+          } satisfies PendingTeamTool,
+        }
+      }
+    }
+    if (selection.data.action === 'delete_team_member' && name) {
+      const matches = members.filter(
+        (member) => member.name.toLowerCase() === name.toLowerCase()
+      )
+      if (matches.length === 1) {
+        return {
+          ok: true as const,
+          answer: `TeamAI can delete ${matches[0]!.name}. This cannot be undone. Shall I continue?`,
+          pendingTool: {
+            id: deleteKitchenTeamMemberTool.id,
+            memberId: matches[0]!.memberId,
+            name: matches[0]!.name,
           } satisfies PendingTeamTool,
         }
       }

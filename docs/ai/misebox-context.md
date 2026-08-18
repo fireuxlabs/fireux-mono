@@ -347,10 +347,11 @@ Before each task:
   one short structured capability tip to their existing private Kitchen usage
   record for later operator review; the visible answer excludes that marker.
   Console jobs and domain authority must prove each tool separately.
-  TeamAI's proved write tools are `kitchen.team.add-member`,
-  `kitchen.member.create-invitation`, and
-  `kitchen.team.update-member`. It may propose the Kitchen-owned Add
-  Member command from an explicit named-member request, or resolve one exact
+  TeamAI's proved tools are `kitchen.team.create-member`,
+  `kitchen.team.read-members`, `kitchen.team.update-member`,
+  `kitchen.team.delete-member`, and `kitchen.team.create-invitation`. It may
+  propose the Kitchen-owned Create Member command from an explicit named-member
+  request, or resolve one exact
   unclaimed member and propose the same invitation command as the manual Team
   action. Both require separate human confirmation. The agent never receives
   Firestore paths, constructs KitchenTeamMember storage records, or chooses
@@ -359,7 +360,9 @@ Before each task:
   cannot alter slugs, User links, invitations, or access. TeamAI inference
   receives the authorized current member identities and the generic update
   contract, then proposes the member/name calls; application code does not
-  encode title-case or other phrase-specific update intent.
+  encode title-case or other phrase-specific update intent. Read returns a
+  bounded Team projection. Delete requires confirmation, refuses linked
+  members, and revokes pending invitations for the deleted named member.
   Tool results declare their operator affordance rather than asking inference
   to invent one. Member creation returns navigation to the created object;
   invitation creation returns a copy action for the operator's share link and

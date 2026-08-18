@@ -4,8 +4,10 @@
       :members="teamMembers"
       :pending="pending"
       :inviting-member-id="invitingMemberId"
+      :deleting-member-id="deletingMemberId"
       @edit="editMember"
       @invite="inviteMember"
+      @delete="confirmDeleteMember"
     />
 
     <UModal
@@ -41,6 +43,31 @@
             />
           </div>
         </form>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="deleteOpen"
+      :title="`Delete ${deletingMember?.display_name || deletingMember?.name || 'team member'}?`"
+      description="This removes the named member and revokes their pending invitations. It cannot be undone."
+      :ui="{ content: 'sm:max-w-md' }"
+    >
+      <template #body>
+        <div class="flex justify-end gap-2">
+          <UButton
+            label="Cancel"
+            color="neutral"
+            variant="ghost"
+            @click="deleteOpen = false"
+          />
+          <UButton
+            label="Delete member"
+            color="error"
+            icon="i-lucide-trash-2"
+            :loading="Boolean(deletingMemberId)"
+            @click="deleteMember"
+          />
+        </div>
       </template>
     </UModal>
 
@@ -85,12 +112,14 @@ import { ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 import { useKitchenMemberInvitationCreate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberUpdate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberUpdate'
+import { useKitchenTeamMemberDelete } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberDelete'
 import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
 
 const { teamMembers, joinRequests, pending, debug, kitchenId } =
   useKitchenConsoleTeam()
 const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
 const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
+const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
 const toast = useToast()
 const editOpen = ref(false)
 const editingMember = ref<KitchenTeamMember | null>(null)
@@ -100,6 +129,9 @@ const savingMember = ref(false)
 const invitingMemberId = ref('')
 const inviteOpen = ref(false)
 const invitation = ref<{ memberName: string; link: string } | null>(null)
+const deleteOpen = ref(false)
+const deletingMember = ref<KitchenTeamMember | null>(null)
+const deletingMemberId = ref('')
 
 function editMember(member: KitchenTeamMember) {
   editingMember.value = member
@@ -157,5 +189,30 @@ async function copyInvitation() {
   if (!invitation.value) return
   await navigator.clipboard.writeText(invitation.value.link)
   toast.add({ title: 'Invitation link copied', color: 'success' })
+}
+
+function confirmDeleteMember(member: KitchenTeamMember) {
+  deletingMember.value = member
+  deleteOpen.value = true
+}
+
+async function deleteMember() {
+  const member = deletingMember.value
+  if (!member || deletingMemberId.value) return
+  deletingMemberId.value = member.id
+  try {
+    const result = await deleteKitchenTeamMember(kitchenId.value, member.id)
+    deleteOpen.value = false
+    deletingMember.value = null
+    toast.add({ title: `${result.name} deleted`, color: 'success' })
+  } catch (error) {
+    toast.add({
+      title: 'Team member could not be deleted',
+      description: error instanceof Error ? error.message : 'Try again.',
+      color: 'error',
+    })
+  } finally {
+    deletingMemberId.value = ''
+  }
 }
 </script>

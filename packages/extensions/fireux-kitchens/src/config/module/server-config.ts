@@ -152,6 +152,11 @@ const baseServerHandlers = [
   },
   {
     route: '/api/console/kitchen/team/members',
+    method: 'get',
+    handler: './runtime/server/api/console/kitchen/team/members.get',
+  },
+  {
+    route: '/api/console/kitchen/team/members',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/team/members.post',
   },
@@ -160,6 +165,12 @@ const baseServerHandlers = [
     method: 'patch',
     handler:
       './runtime/server/api/console/kitchen/team/members/[memberId].patch',
+  },
+  {
+    route: '/api/console/kitchen/team/members/:memberId',
+    method: 'delete',
+    handler:
+      './runtime/server/api/console/kitchen/team/members/[memberId].delete',
   },
   {
     route: '/api/console/kitchen/reports/gross-sales',

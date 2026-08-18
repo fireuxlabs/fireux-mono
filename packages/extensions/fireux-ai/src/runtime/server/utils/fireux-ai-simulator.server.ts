@@ -121,7 +121,7 @@ function kitchenTeamToolSelection(input: Record<string, unknown>) {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
   return JSON.stringify({
-    action: 'add_team_member',
+    action: 'create_team_member',
     agent: 'TeamAI',
     name,
   })

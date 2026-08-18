@@ -66,9 +66,11 @@ const definitions = {
     contextProviders: [context('kitchen.team', 'AppKitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
     toolIds: [
-      'kitchen.team.add-member',
-      'kitchen.member.create-invitation',
+      'kitchen.team.create-member',
+      'kitchen.team.read-members',
       'kitchen.team.update-member',
+      'kitchen.team.delete-member',
+      'kitchen.team.create-invitation',
     ],
   },
   suppliers: {

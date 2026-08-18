@@ -1,6 +1,8 @@
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { addKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/add-member-tool'
-import { createKitchenMemberInvitationTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-invitation-tool'
+import { createKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-tool'
+import { createKitchenTeamInvitationTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-invitation-tool'
+import { readKitchenTeamMembersTool } from 'fireux-kitchens/runtime/server/kitchen/team/read-members-tool'
+import { deleteKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/delete-member-tool'
 import { updateKitchenMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/update-member-tool'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -10,9 +12,14 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 export type PendingTeamTool =
-  | { id: typeof addKitchenTeamMemberTool.id; name: string }
+  | { id: typeof createKitchenTeamMemberTool.id; name: string }
   | {
-      id: typeof createKitchenMemberInvitationTool.id
+      id: typeof createKitchenTeamInvitationTool.id
+      memberId: string
+      name: string
+    }
+  | {
+      id: typeof deleteKitchenTeamMemberTool.id
       memberId: string
       name: string
     }
@@ -27,8 +34,11 @@ export function pendingTeamTool(value: unknown): PendingTeamTool | null {
   const name = text(source.name).replace(/\s+/g, ' ')
   if (!name || name.length > 120) return null
   const id = text(source.id)
-  if (id === addKitchenTeamMemberTool.id) return { id, name }
-  if (id === createKitchenMemberInvitationTool.id) {
+  if (id === createKitchenTeamMemberTool.id) return { id, name }
+  if (
+    id === createKitchenTeamInvitationTool.id ||
+    id === deleteKitchenTeamMemberTool.id
+  ) {
     const memberId = text(source.memberId)
     return memberId ? { id, memberId, name } : null
   }
@@ -94,9 +104,11 @@ export function selectKitchenTeamTool(
 ) {
   return ai.generateJson<{
     action:
-      | 'add_team_member'
+      | 'create_team_member'
       | 'create_member_invitation'
+      | 'read_team_members'
       | 'update_team_member'
+      | 'delete_team_member'
       | 'none'
     agent?: 'TeamAI'
     name?: string
@@ -112,9 +124,11 @@ export function selectKitchenTeamTool(
       operation_agents: {
         TeamAI: {
           allowed_tools: [
-            addKitchenTeamMemberTool,
-            createKitchenMemberInvitationTool,
+            createKitchenTeamMemberTool,
+            createKitchenTeamInvitationTool,
+            readKitchenTeamMembersTool,
             updateKitchenMemberTool,
+            deleteKitchenTeamMemberTool,
           ],
         },
       },
@@ -122,7 +136,7 @@ export function selectKitchenTeamTool(
     context: {
       agent: 'KitchenAI',
       instruction:
-        'Route only to the named operation_agents and their allowed_tools. Infer the requested outcome from the operator language and current Team records. Use add_team_member for a new named person, create_member_invitation for an existing member invitation, or update_team_member with exact memberId/name changes when existing member names should change. Return none when no Team tool fits. Never execute a tool or invent a member id.',
+        'Route only to the named operation_agents and their allowed_tools. Infer the requested outcome from the operator language and current Team records. Use create_team_member for a new named person, read_team_members to inspect the current list, create_member_invitation for an existing member invitation, update_team_member with exact memberId/name changes, or delete_team_member for one exact existing member. Return none when no Team tool fits. Never execute a tool or invent a member id.',
     },
     outputJsonSchema: {
       type: 'object',
@@ -130,9 +144,11 @@ export function selectKitchenTeamTool(
         action: {
           type: 'string',
           enum: [
-            'add_team_member',
+            'create_team_member',
             'create_member_invitation',
+            'read_team_members',
             'update_team_member',
+            'delete_team_member',
             'none',
           ],
         },
