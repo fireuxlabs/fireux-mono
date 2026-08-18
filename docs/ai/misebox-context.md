@@ -311,7 +311,19 @@ Before each task:
   selected target, then mounts the entity coordinator; KitchenAI is the first
   working coordinator and uses authorized Kitchen identity, User context,
   Kitchen context, Menu context, and exact Menu counts. An explicit operation
-  query delegates to an operation agent such as MenuAI. Provider execution
+  query delegates to an operation agent such as MenuAI. The Kitchen agent HTTP
+  handler is transport only. Misebox's Kitchen entity
+  coordinator owns authorization and fallback answering. TeamAI is the first
+  shared entity capability beside the Kitchen coordinator and owns its bounded
+  record projection, planning, confirmation, and tool dispatch; genuinely
+  Kitchen-specific operation agents remain under `operations`. Kitchen context
+  projection and general
+  answer execution remain entity-owned siblings so future operation children
+  do not accumulate inside an API route. Server agent support mirrors the
+  entity hierarchy under `runtime/server/agent/<entity>`, with only
+  domain-specific operation children below `operations`; it is owned behavior
+  and never belongs under a generic `utils` tree.
+  Provider execution
   remains governed by the shared `fireux-ai` disabled, simulator, codex, and
   app modes. Local Codex testing receives the same bounded KitchenAI envelope
   as the provider and identifies its execution lane in the response. Named
@@ -344,7 +356,10 @@ Before each task:
   Firestore paths, constructs KitchenTeamMember storage records, or chooses
   between ambiguous member matches. The bounded name-update tool previews exact
   member-id/name changes and applies them atomically after confirmation; it
-  cannot alter slugs, User links, invitations, or access.
+  cannot alter slugs, User links, invitations, or access. TeamAI inference
+  receives the authorized current member identities and the generic update
+  contract, then proposes the member/name calls; application code does not
+  encode title-case or other phrase-specific update intent.
   Tool results declare their operator affordance rather than asking inference
   to invent one. Member creation returns navigation to the created object;
   invitation creation returns a copy action for the operator's share link and

@@ -1,13 +1,13 @@
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
-type UpdateKitchenMemberInput = {
+type UpdateKitchenTeamMemberInput = {
   kitchenId: string
   memberId: string
   name: string
 }
 
-type UpdateKitchenMemberResult = {
+type UpdateKitchenTeamMemberResult = {
   ok: true
   memberId: string
   name: string
@@ -19,10 +19,12 @@ const normalizeString = (value: unknown) =>
     .trim()
     .replace(/\s+/g, ' ')
 
-export function useKitchenMemberUpdate() {
+export function useKitchenTeamMemberUpdate() {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
 
-  const updateKitchenMember = async (input: UpdateKitchenMemberInput) => {
+  const updateKitchenTeamMember = async (
+    input: UpdateKitchenTeamMemberInput
+  ) => {
     requireWritableData()
     const kitchenId = normalizeString(input.kitchenId)
     const memberId = normalizeString(input.memberId)
@@ -33,7 +35,7 @@ export function useKitchenMemberUpdate() {
 
     const user = await useRequireUser()
     const token = await user.getIdToken()
-    const result = await $fetch<UpdateKitchenMemberResult>(
+    const result = await $fetch<UpdateKitchenTeamMemberResult>(
       `/api/console/kitchen/team/members/${encodeURIComponent(memberId)}`,
       {
         method: 'PATCH',
@@ -47,5 +49,5 @@ export function useKitchenMemberUpdate() {
     return result
   }
 
-  return { updateKitchenMember }
+  return { updateKitchenTeamMember }
 }

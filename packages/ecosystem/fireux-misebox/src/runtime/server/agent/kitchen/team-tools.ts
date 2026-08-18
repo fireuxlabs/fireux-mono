@@ -66,31 +66,22 @@ export function teamToolConfirmation(value: string) {
   return 'unknown' as const
 }
 
-export function possibleTeamToolRequest(prompt: string) {
-  return /\b(?:add|create|invite|invitation|rename|capitalise|capitalize|title[ -]?case)\b/i.test(
-    prompt
-  )
-}
+export type TeamToolMember = { memberId: string; name: string }
 
-export function requestsTeamTitleCase(prompt: string) {
-  return (
-    /\b(?:title[ -]?case|capitalise|capitalize)\b/i.test(prompt) &&
-    /\b(?:all|everyone|everybody|names?|members?|team)\b/i.test(prompt)
-  )
-}
-
-export function teamTitleCaseChanges(
-  documents: readonly { id: string; data: () => Record<string, unknown> }[]
+export function resolveSelectedMemberChanges(
+  selected: readonly { memberId: string; name: string }[],
+  members: readonly TeamToolMember[]
 ) {
-  return documents.flatMap((document) => {
-    const previousName = text(document.data().name)
-    const name = previousName.replace(
-      /(^|[\s'-])([\p{L}])/gu,
-      (_, boundary: string, letter: string) =>
-        `${boundary}${letter.toLocaleUpperCase()}`
-    )
-    return previousName && name !== previousName
-      ? [{ memberId: document.id, previousName, name }]
+  const requested = new Map(
+    selected.map((change) => [
+      text(change.memberId),
+      text(change.name).replace(/\s+/g, ' '),
+    ])
+  )
+  return members.flatMap((member) => {
+    const name = requested.get(member.memberId)
+    return name && name.length <= 120 && name !== member.name
+      ? [{ memberId: member.memberId, previousName: member.name, name }]
       : []
   })
 }
@@ -98,12 +89,18 @@ export function teamTitleCaseChanges(
 export function selectKitchenTeamTool(
   ai: ReturnType<typeof useFireuxAi>,
   appId: string,
-  prompt: string
+  prompt: string,
+  members: readonly TeamToolMember[]
 ) {
   return ai.generateJson<{
-    action: 'add_team_member' | 'create_member_invitation' | 'none'
+    action:
+      | 'add_team_member'
+      | 'create_member_invitation'
+      | 'update_team_member'
+      | 'none'
     agent?: 'TeamAI'
     name?: string
+    changes?: { memberId: string; name: string }[]
   }>({
     appId,
     task: 'extract_structured_data',
@@ -111,6 +108,7 @@ export function selectKitchenTeamTool(
     input: {
       simulator_kind: 'kitchen_team_tool_selection',
       question: prompt,
+      team_members: members,
       operation_agents: {
         TeamAI: {
           allowed_tools: [
@@ -124,17 +122,35 @@ export function selectKitchenTeamTool(
     context: {
       agent: 'KitchenAI',
       instruction:
-        'Route only to the named operation_agents and their allowed_tools. Delegate an explicit request to add or create a named Kitchen person to TeamAI and kitchen.team.add-member. Delegate a request for an invite or invitation link for an existing named member to TeamAI and kitchen.member.create-invitation. Return the matching action and name; otherwise return {"action":"none"}. Never execute a tool.',
+        'Route only to the named operation_agents and their allowed_tools. Infer the requested outcome from the operator language and current Team records. Use add_team_member for a new named person, create_member_invitation for an existing member invitation, or update_team_member with exact memberId/name changes when existing member names should change. Return none when no Team tool fits. Never execute a tool or invent a member id.',
     },
     outputJsonSchema: {
       type: 'object',
       properties: {
         action: {
           type: 'string',
-          enum: ['add_team_member', 'create_member_invitation', 'none'],
+          enum: [
+            'add_team_member',
+            'create_member_invitation',
+            'update_team_member',
+            'none',
+          ],
         },
         agent: { type: 'string', enum: ['TeamAI'] },
         name: { type: 'string', maxLength: 120 },
+        changes: {
+          type: 'array',
+          maxItems: 200,
+          items: {
+            type: 'object',
+            properties: {
+              memberId: { type: 'string' },
+              name: { type: 'string', maxLength: 120 },
+            },
+            required: ['memberId', 'name'],
+            additionalProperties: false,
+          },
+        },
       },
       required: ['action'],
       additionalProperties: false,

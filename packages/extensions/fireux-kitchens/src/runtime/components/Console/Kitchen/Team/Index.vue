@@ -84,13 +84,13 @@
 import { ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../../composables/fireux/console/kitchen/team/useKitchenConsoleTeam'
 import { useKitchenMemberInvitationCreate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenMemberInvitationCreate'
-import { useKitchenMemberUpdate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenMemberUpdate'
+import { useKitchenTeamMemberUpdate } from '../../../../composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberUpdate'
 import type { KitchenTeamMember } from '../../../../models/kitchen/team.model'
 
 const { teamMembers, joinRequests, pending, debug, kitchenId } =
   useKitchenConsoleTeam()
 const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
-const { updateKitchenMember } = useKitchenMemberUpdate()
+const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
 const toast = useToast()
 const editOpen = ref(false)
 const editingMember = ref<KitchenTeamMember | null>(null)
@@ -119,7 +119,7 @@ async function saveMember() {
   savingMember.value = true
   editError.value = ''
   try {
-    await updateKitchenMember({
+    await updateKitchenTeamMember({
       kitchenId: kitchenId.value,
       memberId: member.id,
       name,
