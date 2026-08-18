@@ -12,7 +12,6 @@
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
-
     </UMain>
 
     <ClientOnly>
@@ -52,26 +51,54 @@
               </UTooltip>
 
               <UTooltip
-                :text="supportsInlineNotes ? (notesVisible ? 'Hide developer notes' : 'Show developer notes') : 'No developer notes on this page yet'"
+                :text="
+                  supportsInlineNotes
+                    ? notesVisible
+                      ? 'Hide developer notes'
+                      : 'Show developer notes'
+                    : 'No developer notes on this page yet'
+                "
                 :popper="{ placement: 'top' }"
               >
                 <UButton
-                  :aria-label="supportsInlineNotes ? (notesVisible ? 'Hide developer notes' : 'Show developer notes') : 'No developer notes on this page yet'"
+                  :aria-label="
+                    supportsInlineNotes
+                      ? notesVisible
+                        ? 'Hide developer notes'
+                        : 'Show developer notes'
+                      : 'No developer notes on this page yet'
+                  "
                   size="xs"
                   variant="ghost"
-                  :color="supportsInlineNotes && notesVisible ? 'warning' : 'neutral'"
-                  :icon="notesVisible ? 'i-lucide-file-text' : 'i-lucide-file-minus-2'"
+                  :color="
+                    supportsInlineNotes && notesVisible ? 'warning' : 'neutral'
+                  "
+                  :icon="
+                    notesVisible
+                      ? 'i-lucide-file-text'
+                      : 'i-lucide-file-minus-2'
+                  "
                   :disabled="!supportsInlineNotes"
                   @click="toggleNotes()"
                 />
               </UTooltip>
 
               <UTooltip
-                :text="canCopyNotes ? (copiedNotes ? 'Copied developer notes' : 'Copy visible developer notes') : 'Show developer notes to copy them'"
+                :text="
+                  canCopyNotes
+                    ? copiedNotes
+                      ? 'Copied developer notes'
+                      : 'Copy visible developer notes'
+                    : 'Show developer notes to copy them'
+                "
                 :popper="{ placement: 'top' }"
               >
                 <UButton
-                  :aria-label="canCopyNotes ? 'Copy visible developer notes' : 'Show developer notes to copy them'"
+                  :aria-label="
+                    canCopyNotes
+                      ? 'Copy visible developer notes'
+                      : 'Show developer notes to copy them'
+                  "
                   size="xs"
                   variant="ghost"
                   :color="copiedNotes ? 'success' : 'neutral'"
@@ -81,7 +108,10 @@
                 />
               </UTooltip>
 
-              <UTooltip text="Collapse dev controls" :popper="{ placement: 'top' }">
+              <UTooltip
+                text="Collapse dev controls"
+                :popper="{ placement: 'top' }"
+              >
                 <UButton
                   aria-label="Collapse dev controls"
                   size="xs"
@@ -94,17 +124,21 @@
             </div>
 
             <UTooltip
-              :text="panelOpen ? 'Collapse dev controls' : 'Expand dev controls'"
+              :text="
+                panelOpen ? 'Collapse dev controls' : 'Expand dev controls'
+              "
               :popper="{ placement: 'top' }"
             >
               <UButton
-                :aria-label="panelOpen ? 'Collapse dev controls' : 'Expand dev controls'"
+                :aria-label="
+                  panelOpen ? 'Collapse dev controls' : 'Expand dev controls'
+                "
                 size="xs"
                 variant="ghost"
                 color="warning"
                 icon="i-lucide-flame"
                 class="opacity-90 hover:opacity-100"
-                style="color: var(--fx-fireux-yellow);"
+                style="color: var(--fx-fireux-yellow)"
                 @click="togglePanel()"
               />
             </UTooltip>
@@ -155,7 +189,13 @@ const manifestHref = withBuildVersion(
 )
 // App shell owns global colour-mode activation; components should only consume resolved mode.
 useColorMode()
-const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
+const {
+  panelOpen,
+  notesVisible,
+  supportsInlineNotes,
+  toggleNotes,
+  togglePanel,
+} = useDevUi()
 const copiedNotes = ref(false)
 const mediaSyncPending = ref(false)
 const mediaSyncState = ref<'idle' | 'success' | 'error'>('idle')
@@ -175,7 +215,9 @@ const mediaSyncIcon = computed(() => {
   if (mediaSyncState.value === 'error') return 'i-lucide-triangle-alert'
   return 'i-lucide-cloud-upload'
 })
-const canCopyNotes = computed(() => supportsInlineNotes.value && notesVisible.value)
+const canCopyNotes = computed(
+  () => supportsInlineNotes.value && notesVisible.value
+)
 const devDockShellStyle: CSSProperties = {
   position: 'fixed',
   left: '50vw',
@@ -195,10 +237,7 @@ const {
   initialized: boolean
   mediaReady: boolean
   paletteReady: boolean
-}>(
-  '/api/public/app/status',
-  { server: false, lazy: true }
-)
+}>('/api/public/app/status', { server: false, lazy: true })
 const isResolved = computed(
   () =>
     !appStatusPending.value &&
@@ -207,19 +246,8 @@ const isResolved = computed(
     typeof appStatus.value?.mediaReady === 'boolean' &&
     typeof appStatus.value?.paletteReady === 'boolean'
 )
-const isInitialized = computed(
-  () =>
-    appStatus.value?.initialized === true &&
-    appStatus.value?.mediaReady === true &&
-    appStatus.value?.paletteReady === true
-)
-const setupDescription = computed(() =>
-  appStatus.value?.initialized && !appStatus.value?.mediaReady
-    ? 'This App needs its five canonical Storage assets.'
-    : appStatus.value?.initialized && !appStatus.value?.paletteReady
-      ? 'This App needs its complete semantic palette.'
-    : 'This App needs to be initialized.'
-)
+const isInitialized = computed(() => appStatus.value?.initialized === true)
+const setupDescription = 'This App needs to be initialized.'
 
 const showOnboardingModal = computed(
   () => isResolved.value && !isInitialized.value
@@ -261,7 +289,9 @@ async function syncRuntimeMedia() {
 async function copyVisibleNotes() {
   if (!canCopyNotes.value || !import.meta.client) return
 
-  const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-dev-note]'))
+  const nodes = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-dev-note]')
+  )
   const notes = nodes
     .map((node) => {
       const title = String(node.dataset.devNoteTitle || '').trim()

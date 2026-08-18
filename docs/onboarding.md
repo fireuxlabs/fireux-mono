@@ -226,17 +226,32 @@ auth domains must satisfy their guards before the canonical App is saved. A
 Codex task or future Skill/MCP may legitimately invoke this Operator lane; it
 must follow the same contract rather than becoming another mutation lane.
 
-Runtime initialization remains a separate internal recovery operation. The
-App Shell mounts `AppInitializeSystem` only when the App declared by runtime
-configuration lacks its canonical record. Its green environment checks mean
-“this configured App is ready to initialize”; they are never progress for a
-new App. Initialization authenticates the configured developer and atomically
-creates the fixed runtime App plus its first App-admin membership in the named
-database through the Server mutation lane. It then idempotently creates or
-updates that App's bounded `(default)` AppMeta projection. App media sync and
-App-admin identity edits maintain both records through the same projection
-seam. The browser cannot choose an App id, database, or path, and Firestore
-Rules do not need to grant tenant-App creation to clients.
+Runtime initialization remains a separate internal recovery operation.
+Initialization authenticates the configured developer and atomically creates
+the fixed runtime App plus its first App-admin membership in the named database
+through the Server mutation lane. It then idempotently creates or updates that
+App's bounded `(default)` AppMeta projection. The browser cannot choose an App
+id, database, or path, and Firestore Rules do not need to grant tenant-App
+creation to clients.
+
+Initialization is not the whole onboarding state. The App-owned
+`public/img/app/*` family is the bundled runtime source; its five identity
+masters must also be published to canonical Firebase Storage paths and their
+URLs recorded in `App.media.*`. Firestore stores those URLs, not the binaries.
+The Storage publication lets Ecosystems, directories and other Apps render the
+brand without access to the owning bundle. App-admin identity edits maintain
+the canonical App and bounded AppMeta projection through the same projection
+seam.
+
+The App Shell initialization blocker is shown only while the canonical App
+record is missing. It must still distinguish the wider stages: `initialized`
+means the App and first administrator exist, `media published` means the five
+Storage objects and URLs exist, and `fully onboarded` means those stages plus
+any required semantic palette are complete. Missing publication remains an
+explicit retryable setup action; it does not reopen the initialization
+blocker. Green environment checks prove that the configured source is ready
+for the next required action; they do not prove that remote publication has
+already happened.
 
 Initialization requires a fully valid environment check in every mode. Dev
 mode does not bypass required Firebase configuration, live Storage

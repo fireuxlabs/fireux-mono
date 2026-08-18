@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-08-04
-Ref: 1d6857c57
+Updated: 2026-08-18
+Ref: 9412d8b2c
 Role: map, not canon
 
 ## Purpose
@@ -148,11 +148,33 @@ App-wide need is a missing shared seam and must be promoted before use.
 
 ## App media
 
+- The App-owned `public/img/app/*` family is the bundled runtime source. It
+  gives the owning App deterministic first paint, manifest/PWA assets and a
+  same-origin fallback before any remote App context is available.
+- The five identity masters are also published to
+  `apps/{appId}/img/app/*` in Firebase Storage. That published copy is how an
+  Ecosystem, directory or another App can render the brand without borrowing
+  its own bundle.
+- Firestore stores the five resulting `App.media.*` URLs. It does not store the
+  image binaries and is not a second asset source.
 - Canonical paths, validation, upload, and App-field updates are owned by the
   core App media runtime.
 - `pnpm audit:app-media` is a read-only cross-check against that truth.
 - Root bulk upload, reset, and deletion scripts are retired migration tooling;
   do not recreate a second App media writer under `scripts/`.
+
+Keep the lifecycle states distinct:
+
+- `initialized`: the canonical App record and first administrator membership
+  exist;
+- `media published`: all five Storage objects and `App.media.*` URLs exist;
+- `fully onboarded`: initialization, media publication and any required
+  semantic palette are complete.
+
+The App shell blocks initialization only while the canonical App record is
+missing. Missing media publication or palette work remains visible as its own
+setup status and action, but must not reopen the initialization blocker. An
+initialized App awaiting media publication is not an uninitialized App.
 
 ## Delta register
 

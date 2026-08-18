@@ -127,14 +127,10 @@ function checkFireuxCoreContracts(pkgPath) {
   const appInitialization = source(
     'src/runtime/app/composables/utils/useAppInitialization.ts'
   )
-  const appStatus = source(
-    'src/runtime/server/api/public/app/status.get.ts'
-  )
+  const appStatus = source('src/runtime/server/api/public/app/status.get.ts')
   const appConfigType = source('src/config/app/types.ts')
   const appConfigBuilder = source('src/config/app/fireux.config.ts')
-  const console = source(
-    'src/runtime/composables/fireux/console/useConsole.ts'
-  )
+  const console = source('src/runtime/composables/fireux/console/useConsole.ts')
   const consolePolicy = source('src/runtime/utils/console-policy.ts')
   const appConfig = source('src/config/app/fireux.config.ts')
   const metaContent = source('src/config/app/meta-content.ts')
@@ -143,9 +139,7 @@ function checkFireuxCoreContracts(pkgPath) {
   const authComposable = source(
     'src/runtime/composables/fireux/firebase/useAuth.ts'
   )
-  const userOnboarding = source(
-    'src/runtime/user/components/Create/System.vue'
-  )
+  const userOnboarding = source('src/runtime/user/components/Create/System.vue')
   const userCreatePage = source('src/runtime/pages/users/create.vue')
   const appCreatePage = source('src/runtime/pages/apps/create.vue')
   const defaultHeader = source(
@@ -221,14 +215,15 @@ function checkFireuxCoreContracts(pkgPath) {
     !appStatus.includes('mediaReady:') ||
     !appStatus.includes('paletteReady:') ||
     !appStatus.includes('isAppMediaComplete') ||
-    !appShell.includes("appStatus.value?.mediaReady === true") ||
+    !appShell.includes('() => appStatus.value?.initialized === true') ||
+    !appShell.includes('() => isResolved.value && !isInitialized.value') ||
+    appShell.includes('appStatus.value?.initialized === true &&') ||
     appInitialization.indexOf('await options.onInitialized?.()') <
       appInitialization.indexOf('syncResult.failed.length') ||
-    !appInitialization.includes('App setup is incomplete.') ||
-    !appShell.includes("appStatus.value?.paletteReady === true")
+    !appInitialization.includes('App setup is incomplete.')
   ) {
     violations.push(
-      'App initialization must remain blocked until all five canonical Storage assets are synced.'
+      'App initialization must publish canonical media, while the shell blocker follows only the canonical App record.'
     )
   }
   if (
@@ -245,7 +240,10 @@ function checkFireuxCoreContracts(pkgPath) {
     ['default Header', defaultHeader],
     ['landing Hero', landingHero],
   ]) {
-    if (!contents.includes('Open Dashboard') || /Open workspace/i.test(contents)) {
+    if (
+      !contents.includes('Open Dashboard') ||
+      /Open workspace/i.test(contents)
+    ) {
       violations.push(
         `${owner} must name the shared signed-in destination Open Dashboard.`
       )

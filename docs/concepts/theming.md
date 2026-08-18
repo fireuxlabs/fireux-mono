@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
 Updated: 2026-08-18
-Ref: e23268507
+Ref: 9412d8b2c
 Role: map, not canon
 
 ## Purpose
@@ -75,10 +75,13 @@ therefore resolves the tenant's Storage URL only. Local failure may advance to
 the same role in Storage; it may never advance to another brand or another
 asset role.
 
-App initialization enforces this boundary. Creating the App record alone is
-not readiness: the validated five-file Storage sync must also populate every
-canonical `App.media` URL before initialization can complete. Failed or partial
-sync remains retryable and does not release the App shell.
+Full App onboarding enforces this boundary. Initialization creates the App
+record and first administrator membership; it does not rename media
+publication as initialization. The validated five-file Storage sync must also
+populate every canonical `App.media` URL before the App is fully onboarded.
+Failed or partial publication remains retryable and must be reported as
+incomplete onboarding; it does not erase the App's initialized state or reopen
+the initialization blocker.
 
 The same progressive rule applies to authored colour. App source carries the
 reviewed effective eight-role palette. Initialization stores it while no lower
