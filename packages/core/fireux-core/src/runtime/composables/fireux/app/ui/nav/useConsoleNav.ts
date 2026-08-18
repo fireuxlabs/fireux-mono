@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useNav } from './useNav'
 import {
-  CONSOLE_AGENT_PATH,
   normalizeConsoleFamily,
   consoleFamilyFromRouteContext,
 } from '../../routing/consoleRoutes'
@@ -57,8 +56,6 @@ export const useConsoleNav = () => {
     if (path === '/console') return true
     if (!path.startsWith('/console/')) return true
 
-    if (path === CONSOLE_AGENT_PATH) return true
-
     const itemFamily = consoleFamilyFromRouteContext(path)
     if (!itemFamily) return false
     if (!enabledFamilies.has(itemFamily)) return false
@@ -96,7 +93,6 @@ export const useConsoleNav = () => {
   const canonicalOrder = (item: NavItem) => {
     const path = normalizePath(item.to)
     if (isConsoleRootPath(path)) return 0
-    if (item.key === 'console-agent') return 10
     if (/\/overview$/.test(path)) return 0
     if (/\/identity$/.test(path)) return 10
     if (/\/team$/.test(path)) return 10_000
@@ -105,9 +101,6 @@ export const useConsoleNav = () => {
   const items = computed(() =>
     nav.items.value
       .filter((item) => baseNavFilter(item))
-      .map((item) =>
-        item.key === 'console-agent' ? { ...item, to: CONSOLE_AGENT_PATH } : item
-      )
       .sort((left, right) => canonicalOrder(left) - canonicalOrder(right))
   )
   const desktop = computed(() => items.value.filter((item) => item.desktop))

@@ -33,6 +33,13 @@ export type BlogPostSproochliAttachment = {
   translations: Record<string, BlogPostTranslation>
 }
 
+export type BlogEditorialReview = {
+  source_kind: 'human' | 'ai-assisted'
+  privacy_reviewed: boolean
+  facts_reviewed: boolean
+  names_approved: boolean
+}
+
 type WidenLiteral<T> =
   T extends string ? string
   : T extends number ? number
@@ -96,6 +103,12 @@ export const BlogPostModel = {
   cta_text: '',
   type: 'article' as BlogPostType,
   product_id: '',
+  editorial_review: {
+    source_kind: 'human',
+    privacy_reviewed: false,
+    facts_reviewed: false,
+    names_approved: false,
+  } as BlogEditorialReview,
   sproochli: undefined as BlogPostSproochliAttachment | undefined,
   created: {
     at: {} as FirebaseTimestamp,

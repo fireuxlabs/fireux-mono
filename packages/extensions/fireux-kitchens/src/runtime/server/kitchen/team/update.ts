@@ -8,30 +8,36 @@ import {
   requireKitchenMutationAuthority,
 } from '../mutation-authority.ts'
 
-export type UpdateKitchenMemberInput = {
-  kitchenId: string
-  memberId: string
+export type KitchenTeamMemberChanges = {
   name: string
 }
 
-export type UpdateKitchenMemberResult = {
+export type UpdateKitchenTeamMemberInput = {
+  kitchenId: string
+  memberId: string
+  changes: KitchenTeamMemberChanges
+}
+
+export type UpdateKitchenTeamMemberResult = {
   ok: true
   memberId: string
   name: string
   slug: string
 }
 
-export type KitchenMemberNameChange = { memberId: string; name: string }
+export type KitchenTeamMemberUpdate = {
+  memberId: string
+  changes: KitchenTeamMemberChanges
+}
 
 const normalizeName = (value: unknown) =>
   String(value ?? '')
     .trim()
     .replace(/\s+/g, ' ')
 
-function parseInput(input: UpdateKitchenMemberInput) {
-  const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
+function parseUpdate(input: KitchenTeamMemberUpdate) {
   const memberId = requireFirestoreDocumentId(input?.memberId, 'Team member id')
-  const name = normalizeName(input?.name)
+  const name = normalizeName(input?.changes?.name)
   if (!name) {
     throw createError({
       statusCode: 400,
@@ -44,80 +50,42 @@ function parseInput(input: UpdateKitchenMemberInput) {
       statusMessage: 'Team member name must be 120 characters or fewer.',
     })
   }
-  return { kitchenId, memberId, name }
+  return { memberId, changes: { name } }
 }
 
-export async function updateKitchenMember(
+export async function updateKitchenTeamMember(
   event: H3Event,
-  input: UpdateKitchenMemberInput
-): Promise<UpdateKitchenMemberResult> {
-  const requested = parseInput(input)
-  const actor = await readKitchenMutationActor(event)
-  let slug = ''
-
-  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const kitchen = await requireKitchenMutationAuthority(
-      mutations,
-      actor,
-      requested.kitchenId
-    )
-    const members = serverKitchenTeamMembersTarget(
-      kitchen.ownerAppId,
-      requested.kitchenId
-    )
-    const current = await mutations.read(members, requested.memberId)
-    if (!current.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Team member not found.',
-      })
-    }
-
-    slug = String(current.data?.slug ?? '').trim()
-    mutations.update(members, requested.memberId, {
-      name: requested.name,
-      display_name: requested.name,
-      updated: serverAuditStamp({ by: actor.uid }),
-    })
+  input: UpdateKitchenTeamMemberInput
+): Promise<UpdateKitchenTeamMemberResult> {
+  const result = await updateKitchenTeamMembers(event, {
+    kitchenId: input.kitchenId,
+    updates: [{ memberId: input.memberId, changes: input.changes }],
   })
-
+  const updated = result.updates[0]!
   return {
     ok: true,
-    memberId: requested.memberId,
-    name: requested.name,
-    slug,
+    memberId: updated.memberId,
+    name: updated.changes.name,
+    slug: updated.slug,
   }
 }
 
-export async function updateKitchenMemberNames(
+export async function updateKitchenTeamMembers(
   event: H3Event,
-  input: { kitchenId: string; changes: KitchenMemberNameChange[] }
+  input: { kitchenId: string; updates: KitchenTeamMemberUpdate[] }
 ) {
   const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
-  const changes = Array.isArray(input?.changes)
-    ? input.changes.map((change) => ({
-        memberId: requireFirestoreDocumentId(
-          change?.memberId,
-          'Team member id'
-        ),
-        name: normalizeName(change?.name),
-      }))
+  const updates = Array.isArray(input?.updates)
+    ? input.updates.map(parseUpdate)
     : []
-  if (!changes.length || changes.length > 200) {
+  if (!updates.length || updates.length > 200) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Between 1 and 200 member name changes are required.',
     })
   }
-  if (changes.some((change) => !change.name || change.name.length > 120)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage:
-        'Every Team member name must be between 1 and 120 characters.',
-    })
-  }
   if (
-    new Set(changes.map((change) => change.memberId)).size !== changes.length
+    new Set(updates.map((update) => update.memberId)).size !== updates.length
   ) {
     throw createError({
       statusCode: 400,
@@ -137,7 +105,7 @@ export async function updateKitchenMemberNames(
       kitchenId
     )
     const existing = await Promise.all(
-      changes.map((change) => mutations.read(members, change.memberId))
+      updates.map((update) => mutations.read(members, update.memberId))
     )
     if (existing.some((member) => !member.exists)) {
       throw createError({
@@ -145,13 +113,21 @@ export async function updateKitchenMemberNames(
         statusMessage: 'One or more Team members no longer exist.',
       })
     }
-    for (const change of changes) {
-      mutations.update(members, change.memberId, {
-        name: change.name,
-        display_name: change.name,
+    for (const update of updates) {
+      mutations.update(members, update.memberId, {
+        name: update.changes.name,
+        display_name: update.changes.name,
         updated: serverAuditStamp({ by: actor.uid }),
       })
     }
+    updates.forEach((update, index) => {
+      Object.assign(update, {
+        slug: String(existing[index]?.data?.slug ?? '').trim(),
+      })
+    })
   })
-  return { ok: true as const, changes }
+  return {
+    ok: true as const,
+    updates: updates as (KitchenTeamMemberUpdate & { slug: string })[],
+  }
 }

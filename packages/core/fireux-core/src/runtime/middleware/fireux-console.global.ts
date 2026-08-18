@@ -6,7 +6,6 @@ import {
   useRuntimeConfig,
 } from '#imports'
 import {
-  isConsoleAgentPath,
   consoleFamilyFromRouteContext,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
@@ -60,10 +59,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
       .map((value) => normalizeConsoleFamily(value))
       .filter(Boolean)
   )
-  const agentPath = isConsoleAgentPath(path)
   const routeFamily = consoleFamilyFromRouteContext(path, to.query.family)
 
-  if ((!agentPath && !routeFamily) || (routeFamily && !enabledFamilies.has(routeFamily))) {
+  if (!routeFamily || !enabledFamilies.has(routeFamily)) {
     return navigateTo('/', { replace: true })
   }
 

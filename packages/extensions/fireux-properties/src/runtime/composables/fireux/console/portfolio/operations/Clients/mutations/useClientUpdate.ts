@@ -19,13 +19,13 @@ export function useClientUpdate(runtimePortfolio = useActivePortfolio()) {
     ClientStorage.collection
   )
 
-  async function updateClient(
-    clientId: string,
-    patch: ClientUpdateInput
-  ): Promise<void> {
+  async function updateClient(input: {
+    clientId: string
+    changes: ClientUpdateInput
+  }): Promise<void> {
     requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-properties')
 
-    const normalizedClientId = normalizeString(clientId)
+    const normalizedClientId = normalizeString(input.clientId)
     if (!normalizedClientId) {
       throw new Error('[fireux-properties] clientId is required.')
     }
@@ -34,7 +34,11 @@ export function useClientUpdate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] runtime client path is required.')
     }
 
-    await updateDocument<Client>(collectionPath.value, normalizedClientId, patch)
+    await updateDocument<Client>(
+      collectionPath.value,
+      normalizedClientId,
+      input.changes
+    )
   }
 
   return {

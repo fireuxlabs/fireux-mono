@@ -13,22 +13,26 @@ import {
   resolveKitchenChildCollectionPath,
 } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
-export function useKitchenStationUpdate(options: {
-  kitchenCollectionPath?: string | Ref<string | null | undefined>
-  databaseId?: string | Ref<string | null | undefined>
-} = {}) {
+export function useKitchenStationUpdate(
+  options: {
+    kitchenCollectionPath?: string | Ref<string | null | undefined>
+    databaseId?: string | Ref<string | null | undefined>
+  } = {}
+) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
-  async function updateKitchenStation(
-    kitchenId: string,
-    stationId: string,
-    patch: KitchenStationUpdateInput
-  ) {
+  async function updateKitchenStation(input: {
+    kitchenId: string
+    stationId: string
+    changes: KitchenStationUpdateInput
+  }) {
     requireWritableData()
-    const resolvedKitchenId = normalizeString(kitchenId)
-    const resolvedStationId = normalizeString(stationId)
+    const resolvedKitchenId = normalizeString(input.kitchenId)
+    const resolvedStationId = normalizeString(input.stationId)
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
     if (!resolvedStationId) throw new Error('Station id is required')
 
@@ -39,7 +43,11 @@ export function useKitchenStationUpdate(options: {
       appId,
     })
 
-    await updateDocument<KitchenStation>(collectionPath, resolvedStationId, patch)
+    await updateDocument<KitchenStation>(
+      collectionPath,
+      resolvedStationId,
+      input.changes
+    )
   }
 
   return { updateKitchenStation }

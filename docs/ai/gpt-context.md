@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-17
+Updated: 2026-08-18
 Ref: 76aabc4b4
 Role: living context
 Scope: repo-wide
@@ -223,6 +223,13 @@ requirement, report the exact missing seam before broad edits.
 - Firestore mutations have Client, Server, and MCP/Skill lanes. Those are
   transports into the same entity-owned commands and typed targets; scripts,
   CLI, agents, and Tools do not receive raw collection or database authority.
+- Ordinary root and child `useXUpdate` commands accept one typed input object
+  with named identity fields and `changes`. Stable setup dependencies belong to
+  `useXUpdate(options?)`; transport and authorization remain lane-specific.
+  Bound records and genuine transitions, media, membership, or relationship
+  capabilities keep their narrower domain contracts rather than pretending to
+  be generic patches. `scripts/guards/entity-update-contract.mjs` guards the
+  proving ordinary entity family.
 - Start at `docs/concepts/composables.md`, `docs/concepts/firestore-entity.md`,
   and the entity's current model, endpoint, composables, and guards.
 - Core User, App, and Ecosystem are the filesystem proving siblings: canonical records

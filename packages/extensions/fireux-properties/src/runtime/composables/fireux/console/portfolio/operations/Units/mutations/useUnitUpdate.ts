@@ -19,10 +19,13 @@ export function useUnitUpdate(runtimePortfolio = useActivePortfolio()) {
     UnitStorage.collection
   )
 
-  async function updateUnit(unitId: string, patch: UnitUpdateInput): Promise<void> {
+  async function updateUnit(input: {
+    unitId: string
+    changes: UnitUpdateInput
+  }): Promise<void> {
     requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-properties')
 
-    const normalizedUnitId = normalizeString(unitId)
+    const normalizedUnitId = normalizeString(input.unitId)
     if (!normalizedUnitId) {
       throw new Error('[fireux-properties] unitId is required.')
     }
@@ -31,7 +34,11 @@ export function useUnitUpdate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-properties] runtime unit path is required.')
     }
 
-    await updateDocument<Unit>(collectionPath.value, normalizedUnitId, patch)
+    await updateDocument<Unit>(
+      collectionPath.value,
+      normalizedUnitId,
+      input.changes
+    )
   }
 
   return {

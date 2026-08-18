@@ -210,7 +210,10 @@ const handleImageUpload = async (file: File) => {
       `ingredients/${props.ingredientId}/image_url`,
       file
     )
-    await updateIngredient(props.ingredientId, { image_url: url })
+    await updateIngredient({
+      ingredientId: props.ingredientId,
+      changes: { image_url: url },
+    })
     toast.success('Ingredient image updated')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to update Ingredient image'))
@@ -234,7 +237,7 @@ const saveChanges = async () => {
       replaced_by_ingredient_id:
         form.status === 'merged' ? clean(form.replaced_by_ingredient_id) : '',
     }
-    await updateIngredient(props.ingredientId, patch)
+    await updateIngredient({ ingredientId: props.ingredientId, changes: patch })
     toast.success('Ingredient updated')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to update Ingredient'))

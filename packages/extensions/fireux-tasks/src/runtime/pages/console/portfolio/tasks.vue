@@ -15,7 +15,8 @@
                 <div class="text-sm font-semibold">Task tracker</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
-                  Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
+                  Source:
+                  <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
                 </div>
               </div>
             </div>
@@ -29,7 +30,9 @@
               </div>
               <div class="fx-inset-panel">
                 <div class="text-xs text-dimmed">In progress</div>
-                <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
+                <div class="text-xl font-semibold">
+                  {{ summary.inProgress }}
+                </div>
               </div>
               <div class="fx-inset-panel">
                 <div class="text-xs text-dimmed">Done</div>
@@ -81,11 +84,7 @@
             </template>
 
             <div v-if="cards.length" class="space-y-3">
-              <div
-                v-for="item in cards"
-                :key="item.id"
-                class="fx-inset-panel"
-              >
+              <div v-for="item in cards" :key="item.id" class="fx-inset-panel">
                 <div class="flex items-start justify-between gap-3">
                   <div class="space-y-1">
                     <div class="text-sm font-semibold">{{ item.title }}</div>
@@ -241,6 +240,6 @@ const createManualTask = async () => {
 
 const setStatus = async (taskId: string, status: Task['status']) => {
   if (!canWrite.value) return
-  await updateTask(taskId, { status })
+  await updateTask({ taskId, changes: { status } })
 }
 </script>

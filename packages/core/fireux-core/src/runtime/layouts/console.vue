@@ -212,14 +212,17 @@ watch(
   () => String(route.path || ''),
   (path) => {
     const routeFamily = consoleFamilyFromRouteContext(path, route.query.family)
-    if (!routeFamily || path === '/console/agent') return
+    if (!routeFamily) return
     consoleRoot.setActiveContext(routeFamily, consoleOperationFromPath(path))
   },
   { immediate: true }
 )
-const family = computed(() =>
-  consoleFamilyFromRouteContext(String(route.path || ''), route.query.family) ||
-  consoleRoot.activeFamily.value
+const family = computed(
+  () =>
+    consoleFamilyFromRouteContext(
+      String(route.path || ''),
+      route.query.family
+    ) || consoleRoot.activeFamily.value
 )
 const familyLabel = computed(
   () => toConsoleFamilyLabel(family.value) || 'Console'

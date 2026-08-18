@@ -103,14 +103,14 @@ async function executePendingTeamTool(
   if (pending.id === updateKitchenMemberTool.id) {
     const updated = await executeUpdateKitchenMemberPlan(event, {
       kitchenId: request.kitchenId,
-      changes: pending.changes.map(({ memberId, name }) => ({
+      updates: pending.changes.map(({ memberId, name }) => ({
         memberId,
-        name,
+        changes: { name },
       })),
     })
     return {
       ok: true as const,
-      answer: `${updated.changes.length} Team ${updated.changes.length === 1 ? 'name has' : 'names have'} been updated.`,
+      answer: `${updated.updates.length} Team ${updated.updates.length === 1 ? 'name has' : 'names have'} been updated.`,
       tool: { id: pending.id, result: updated },
     }
   }

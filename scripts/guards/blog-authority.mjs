@@ -73,6 +73,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'BlogPostFeedReference',
     "kind: 'blog-post'",
     'BlogPostSproochliAttachment',
+    'BlogEditorialReview',
+    'privacy_reviewed: false',
     'sproochli: undefined',
   ]) {
     assert.ok(model.includes(token), `Blog root model must retain ${token}.`)
@@ -118,4 +120,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(detail, /fetchBySlug|useBlog\(/)
   assert.match(images, /`blogs\/\$\{blogId\}\/featured\.jpg`/)
   assert.match(images, /`blogs\/\$\{blogId\}\/social\.jpg`/)
+
+  const createSubmit = read(
+    repoRoot,
+    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/editor/useBlogCreateSubmit.ts'
+  )
+  const editorialReview = read(
+    repoRoot,
+    'packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts'
+  )
+  assert.match(createSubmit, /assertBlogEditorialApproval\(payload\)/)
+  for (const token of ['privacy_reviewed', 'facts_reviewed', 'names_approved']) {
+    assert.ok(editorialReview.includes(token), `Blog editorial review must retain ${token}.`)
+  }
 }

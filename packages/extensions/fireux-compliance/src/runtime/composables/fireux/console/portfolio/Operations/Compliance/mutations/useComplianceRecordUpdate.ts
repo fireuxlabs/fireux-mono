@@ -13,32 +13,38 @@ import {
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useComplianceRecordUpdate(runtimePortfolio = useActivePortfolio()) {
+export function useComplianceRecordUpdate(
+  runtimePortfolio = useActivePortfolio()
+) {
   const { updateDocument } = useFirestoreUpdate()
   const collectionPath = usePortfolioConsoleChildPath(
     runtimePortfolio,
     ComplianceRecordStorage.collection
   )
 
-  async function updateComplianceRecord(
-    complianceRecordId: string,
-    patch: ComplianceRecordUpdateInput
-  ): Promise<void> {
+  async function updateComplianceRecord(input: {
+    complianceRecordId: string
+    changes: ComplianceRecordUpdateInput
+  }): Promise<void> {
     requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-compliance')
 
-    const normalizedComplianceRecordId = normalizeString(complianceRecordId)
+    const normalizedComplianceRecordId = normalizeString(
+      input.complianceRecordId
+    )
     if (!normalizedComplianceRecordId) {
       throw new Error('[fireux-compliance] complianceRecordId is required.')
     }
 
     if (!collectionPath.value) {
-      throw new Error('[fireux-compliance] runtime compliance path is required.')
+      throw new Error(
+        '[fireux-compliance] runtime compliance path is required.'
+      )
     }
 
     await updateDocument<ComplianceRecord>(
       collectionPath.value,
       normalizedComplianceRecordId,
-      patch
+      input.changes
     )
   }
 

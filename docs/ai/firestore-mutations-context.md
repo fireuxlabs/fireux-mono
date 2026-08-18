@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-08-09
+Updated: 2026-08-18
 Ref: 1fca9417e
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -94,6 +94,13 @@ Core owns target types, validation, and Client/Server touchpoints. Operational
 tooling owns MCP/Skill adapters but consumes the same target objects. Domain
 packages own payload validation and lifecycle decisions, not placement.
 Security Rules remain an independent authorization boundary.
+
+Ordinary entity update adapters use one typed command object with named
+identity fields and `changes`; positional identity-plus-patch signatures are
+not the public composable contract. This grammar is shared across Client and
+Server transports but does not weaken their different authority. Bound-record
+and specialist capability commands retain narrower domain inputs. Current
+shape enforcement lives in `scripts/guards/entity-update-contract.mjs`.
 
 During migration, run the mutation guard after each slice, then focused package
 typechecks. Before handoff run full `pnpm typecheck` and `pnpm guard`. Never use

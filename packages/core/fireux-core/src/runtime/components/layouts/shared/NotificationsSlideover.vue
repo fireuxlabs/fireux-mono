@@ -22,8 +22,8 @@ const { markRead } = useUserNotificationRead()
 const { setUnreadCount } = useConsoleNotifications()
 const markingId = ref('')
 const mutationError = ref('')
-const myOrdersAvailable = computed(() =>
-  router.resolve('/dashboard/customer/profile').matched.length > 0
+const myOrdersAvailable = computed(
+  () => router.resolve('/dashboard/customer/profile').matched.length > 0
 )
 
 watch(liveUnreadCount, setUnreadCount, { immediate: true })
@@ -37,6 +37,10 @@ async function markNotificationRead(notificationId: string) {
   mutationError.value = ''
   try {
     await markRead(notificationId)
+    const notification = notifications.value.find(
+      (item) => item.id === notificationId
+    )
+    if (notification) notification.read = true
   } catch {
     mutationError.value = 'Notification could not be updated.'
   } finally {

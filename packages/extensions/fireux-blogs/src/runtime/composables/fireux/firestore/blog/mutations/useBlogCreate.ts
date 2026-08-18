@@ -40,6 +40,12 @@ export const BlogPayload = {
   cta_text: '',
   type: '',
   product_id: '',
+  editorial_review: {
+    source_kind: 'human',
+    privacy_reviewed: false,
+    facts_reviewed: false,
+    names_approved: false,
+  },
   sproochli: undefined,
 } satisfies BlogPostCreateInput
 

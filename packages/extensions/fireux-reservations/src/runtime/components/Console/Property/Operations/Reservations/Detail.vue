@@ -1,7 +1,10 @@
 <template>
   <div class="space-y-5">
     <div v-if="pending" class="grid min-h-64 place-items-center">
-      <UIcon name="i-lucide-loader-circle" class="size-7 animate-spin text-dimmed" />
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-7 animate-spin text-dimmed"
+      />
     </div>
 
     <UAlert
@@ -21,7 +24,9 @@
     />
 
     <template v-else>
-      <section class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]">
+      <section
+        class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.6fr)]"
+      >
         <UCard>
           <template #header>
             <div class="flex flex-wrap items-start justify-between gap-3">
@@ -30,10 +35,7 @@
                   <h2 class="text-xl font-semibold">
                     {{ selected.guest.display_name || 'Unnamed guest' }}
                   </h2>
-                  <UBadge
-                    :color="sourceColor(selected.source)"
-                    variant="soft"
-                  >
+                  <UBadge :color="sourceColor(selected.source)" variant="soft">
                     {{ sourceLabel(selected.source) }}
                   </UBadge>
                 </div>
@@ -53,8 +55,7 @@
             <div class="fx-inset-panel">
               <dt class="text-xs text-dimmed">Stay</dt>
               <dd class="mt-1 font-medium">
-                {{ nights(selected) }} nights ·
-                {{ selected.adults }} adults
+                {{ nights(selected) }} nights · {{ selected.adults }} adults
                 <template v-if="selected.children">
                   · {{ selected.children }} children
                 </template>
@@ -133,7 +134,9 @@
                 color="neutral"
                 :variant="selected.status === status.value ? 'soft' : 'ghost'"
                 :icon="status.icon"
-                :disabled="!canWrite || saving || selected.status === status.value"
+                :disabled="
+                  !canWrite || saving || selected.status === status.value
+                "
                 :loading="saving && pendingStatus === status.value"
                 class="justify-start"
                 @click="setStatus(status.value)"
@@ -167,13 +170,8 @@ import {
 } from '../../../../../utils/reservation-date'
 
 const props = defineProps<{ reservationId: string }>()
-const {
-  runtimeProperty,
-  reservation,
-  pending,
-  error,
-  canWrite,
-} = usePropertyReservations()
+const { runtimeProperty, reservation, pending, error, canWrite } =
+  usePropertyReservations()
 const { updateReservation } = useReservationUpdate(runtimeProperty)
 const toast = useToast()
 const selected = reservation(computed(() => props.reservationId))
@@ -187,7 +185,11 @@ const statusActions: Array<{
   { value: 'confirmed', label: 'Confirm stay', icon: 'i-lucide-circle-check' },
   { value: 'checked_in', label: 'Mark checked in', icon: 'i-lucide-log-in' },
   { value: 'checked_out', label: 'Mark checked out', icon: 'i-lucide-log-out' },
-  { value: 'cancelled', label: 'Cancel reservation', icon: 'i-lucide-circle-x' },
+  {
+    value: 'cancelled',
+    label: 'Cancel reservation',
+    icon: 'i-lucide-circle-x',
+  },
 ]
 
 const formattedTotal = computed(() => {
@@ -213,7 +215,10 @@ async function setStatus(status: ReservationStatus) {
   saving.value = true
   pendingStatus.value = status
   try {
-    const updated = await updateReservation(selected.value.id, { status })
+    const updated = await updateReservation({
+      reservationId: selected.value.id,
+      changes: { status },
+    })
     Object.assign(selected.value, updated)
     toast.add({
       title: 'Reservation updated',

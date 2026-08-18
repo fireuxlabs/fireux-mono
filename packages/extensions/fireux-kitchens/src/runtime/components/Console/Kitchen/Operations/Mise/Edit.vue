@@ -19,11 +19,7 @@
       </UFormField>
 
       <UFormField label="Description">
-        <UTextarea
-          v-model="description"
-          :rows="3"
-          :disabled="!canEditMise"
-        />
+        <UTextarea v-model="description" :rows="3" :disabled="!canEditMise" />
       </UFormField>
 
       <div class="grid gap-4 sm:grid-cols-2">
@@ -36,11 +32,7 @@
         </UFormField>
 
         <UFormField label="Service date">
-          <UInput
-            v-model="serviceDate"
-            type="date"
-            :disabled="!canEditMise"
-          />
+          <UInput v-model="serviceDate" type="date" :disabled="!canEditMise" />
         </UFormField>
       </div>
 
@@ -106,11 +98,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <UButton
-          type="submit"
-          :loading="saving"
-          :disabled="!canEditMise"
-        >
+        <UButton type="submit" :loading="saving" :disabled="!canEditMise">
           Save mise task
         </UButton>
         <p v-if="message" class="text-xs text-dimmed">
@@ -164,9 +152,7 @@ watch(
     title.value = normalizeString(task.title)
     description.value = normalizeString(task.description)
     station.value = normalizeString(task.station)
-    workflowStage.value = normalizeKitchenMiseWorkflowStage(
-      task.workflow_stage
-    )
+    workflowStage.value = normalizeKitchenMiseWorkflowStage(task.workflow_stage)
     serviceDate.value = normalizeString(task.service_date)
     status.value = normalizeKitchenMiseStatus(task.status)
     priority.value = normalizeKitchenMisePriority(task.priority)
@@ -190,7 +176,7 @@ const save = async () => {
       kitchenId: kitchenId.value,
       taskId: miseId.value,
       kitchenCollectionPath: rootCollection.value,
-      patch: {
+      changes: {
         title: title.value,
         description: description.value,
         station: station.value,

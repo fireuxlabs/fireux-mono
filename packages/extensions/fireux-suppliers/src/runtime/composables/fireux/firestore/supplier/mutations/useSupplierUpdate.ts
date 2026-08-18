@@ -7,9 +7,7 @@ import {
   type SupplierUpdateInput,
 } from '../../../../../models/supplier/Supplier.model'
 
-type SupplierMutationOptions = {
-  id: string
-}
+type SupplierMutationOptions = { id: string }
 /**
  * useSupplierUpdate
  * - Canonical Supplier identity updates only.
@@ -18,8 +16,12 @@ type SupplierMutationOptions = {
 export function useSupplierUpdate() {
   const { updateDocument } = useFirestoreUpdate()
 
-  const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
-    const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
+  const pruneUndefined = <T extends Record<string, any>>(
+    payload: Partial<T>
+  ) => {
+    const entries = Object.entries(payload).filter(
+      ([, value]) => value !== undefined
+    )
     return Object.fromEntries(entries) as Partial<T>
   }
 
@@ -47,16 +49,16 @@ export function useSupplierUpdate() {
    * Update the canonical root Supplier record.
    * Supplier ids are independent entity ids and must be supplied explicitly.
    */
-  const updateSupplierRoot = async (
-    patch: SupplierUpdateInput,
-    options: SupplierMutationOptions
-  ) => {
-    const resolvedId = resolveId(options.id)
+  const updateSupplierRoot = async (input: {
+    supplierId: string
+    changes: SupplierUpdateInput
+  }) => {
+    const resolvedId = resolveId(input.supplierId)
 
     await updateDocument<Supplier>(
       SupplierStorage.collection,
       resolvedId,
-      pruneUndefined(patch)
+      pruneUndefined(input.changes)
     )
   }
 
@@ -65,10 +67,10 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot(
-      { supplier_headline: normalized ?? undefined },
-      options
-    )
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: { supplier_headline: normalized ?? undefined },
+    })
   }
 
   const updateSummary = async (
@@ -76,15 +78,18 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot({ summary: normalized ?? undefined }, options)
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: { summary: normalized ?? undefined },
+    })
   }
 
-  const updateBio = async (
-    value: string,
-    options: SupplierMutationOptions
-  ) => {
+  const updateBio = async (value: string, options: SupplierMutationOptions) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot({ supplier_bio: normalized ?? undefined }, options)
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: { supplier_bio: normalized ?? undefined },
+    })
   }
 
   const updateImage = async (
@@ -92,31 +97,34 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot({ supplier_image: normalized ?? undefined }, options)
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: { supplier_image: normalized ?? undefined },
+    })
   }
 
   const updateItemCategories = async (
     value: string | string[],
     options: SupplierMutationOptions
   ) => {
-    await updateSupplierRoot(
-      {
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: {
         supplier_item_categories: toStringArray(value),
       },
-      options
-    )
+    })
   }
 
   const updateDeliveryAreas = async (
     value: string | string[],
     options: SupplierMutationOptions
   ) => {
-    await updateSupplierRoot(
-      {
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: {
         supplier_delivery_areas: toStringArray(value),
       },
-      options
-    )
+    })
   }
 
   const updateOrganizationName = async (
@@ -124,12 +132,12 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot(
-      {
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: {
         supplier_organization_name: normalized ?? undefined,
       },
-      options
-    )
+    })
   }
 
   const updateTagline = async (
@@ -137,14 +145,16 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    await updateSupplierRoot({ tagline: normalized ?? undefined }, options)
+    await updateSupplierRoot({
+      supplierId: options.id,
+      changes: { tagline: normalized ?? undefined },
+    })
   }
 
   const updateBioShort = async (
     value: string,
     options: SupplierMutationOptions
-  ) =>
-    updateSummary(value, options)
+  ) => updateSummary(value, options)
 
   return {
     updateSupplierRoot,

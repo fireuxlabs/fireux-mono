@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import {
-  updateKitchenMemberNames,
-  type KitchenMemberNameChange,
+  updateKitchenTeamMembers,
+  type KitchenTeamMemberUpdate,
 } from './update.ts'
 
 export const updateKitchenMemberTool = {
@@ -15,7 +15,7 @@ export const updateKitchenMemberTool = {
 
 export function executeUpdateKitchenMemberPlan(
   event: H3Event,
-  input: { kitchenId: string; changes: KitchenMemberNameChange[] }
+  input: { kitchenId: string; updates: KitchenTeamMemberUpdate[] }
 ) {
-  return updateKitchenMemberNames(event, input)
+  return updateKitchenTeamMembers(event, input)
 }

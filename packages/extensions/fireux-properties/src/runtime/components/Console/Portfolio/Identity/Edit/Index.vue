@@ -117,11 +117,12 @@ const updateIdentityField = async (
   }
 
   try {
-    await updatePortfolio(id, patch)
+    await updatePortfolio({ portfolioId: id, changes: patch })
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.add({
       title: failTitle,
       description,

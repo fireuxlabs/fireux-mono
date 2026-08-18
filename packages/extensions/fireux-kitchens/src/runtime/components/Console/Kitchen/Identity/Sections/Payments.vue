@@ -7,10 +7,7 @@
     :default-open="false"
   >
     <div class="mt-4 grid gap-4 lg:grid-cols-2">
-      <UCard
-        v-for="group in groups"
-        :key="group.id"
-      >
+      <UCard v-for="group in groups" :key="group.id">
         <p class="mb-3 text-sm text-dimmed">
           {{ group.description }}
         </p>
@@ -41,7 +38,13 @@ import type { KitchenOrderType } from '../../../../../models/kitchen/order.model
 import { readKitchenFulfilmentConfig } from '../../../../../utils/kitchen-spine'
 
 type PaymentGroup = {
-  id: 'collection' | 'delivery' | 'pre_order' | 'room_service' | 'dine_in' | 'counter'
+  id:
+    | 'collection'
+    | 'delivery'
+    | 'pre_order'
+    | 'room_service'
+    | 'dine_in'
+    | 'counter'
   label: string
   description: string
   orderTypes: KitchenOrderType[]
@@ -67,8 +70,16 @@ const groups: PaymentGroup[] = [
     orderTypes: ['collection'],
     options: [
       { value: 'cash', label: 'Cash', description: 'Pay with cash at pickup.' },
-      { value: 'card_at_pickup', label: 'Card at pickup', description: 'Use the Kitchen terminal.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely before pickup.' },
+      {
+        value: 'card_at_pickup',
+        label: 'Card at pickup',
+        description: 'Use the Kitchen terminal.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely before pickup.',
+      },
     ],
   },
   {
@@ -77,9 +88,21 @@ const groups: PaymentGroup[] = [
     description: 'Payment methods offered when the Kitchen sends an order out.',
     orderTypes: ['delivery'],
     options: [
-      { value: 'cash', label: 'Cash', description: 'Pay the driver with cash.' },
-      { value: 'card_to_driver', label: 'Card to driver', description: 'Use the driver terminal.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely before delivery.' },
+      {
+        value: 'cash',
+        label: 'Cash',
+        description: 'Pay the driver with cash.',
+      },
+      {
+        value: 'card_to_driver',
+        label: 'Card to driver',
+        description: 'Use the driver terminal.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely before delivery.',
+      },
     ],
   },
   {
@@ -88,19 +111,40 @@ const groups: PaymentGroup[] = [
     description: 'Payment methods offered for orders placed ahead.',
     orderTypes: ['pre_order'],
     options: [
-      { value: 'cash', label: 'Cash', description: 'Pay when the order is fulfilled.' },
-      { value: 'card_at_pickup', label: 'Card at pickup', description: 'Use the Kitchen terminal.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely when ordering.' },
+      {
+        value: 'cash',
+        label: 'Cash',
+        description: 'Pay when the order is fulfilled.',
+      },
+      {
+        value: 'card_at_pickup',
+        label: 'Card at pickup',
+        description: 'Use the Kitchen terminal.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely when ordering.',
+      },
     ],
   },
   {
     id: 'room_service',
     label: 'Room service',
-    description: 'Room charging remains exclusive to a verified room-service doorway.',
+    description:
+      'Room charging remains exclusive to a verified room-service doorway.',
     orderTypes: ['room_service'],
     options: [
-      { value: 'room_charge', label: 'Charge to room', description: 'Requires verified room context.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely when ordering.' },
+      {
+        value: 'room_charge',
+        label: 'Charge to room',
+        description: 'Requires verified room context.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely when ordering.',
+      },
     ],
   },
   {
@@ -109,8 +153,16 @@ const groups: PaymentGroup[] = [
     description: 'Payment methods offered for table-service orders.',
     orderTypes: ['dine_in'],
     options: [
-      { value: 'cash', label: 'Cash', description: 'Settle during table service.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely when ordering.' },
+      {
+        value: 'cash',
+        label: 'Cash',
+        description: 'Settle during table service.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely when ordering.',
+      },
     ],
   },
   {
@@ -120,8 +172,16 @@ const groups: PaymentGroup[] = [
     orderTypes: ['eat_in', 'takeaway'],
     options: [
       { value: 'cash', label: 'Cash', description: 'Pay at the counter.' },
-      { value: 'card_at_pickup', label: 'Card at counter', description: 'Use the Kitchen terminal.' },
-      { value: 'online_card', label: 'Online card', description: 'Pay securely when ordering.' },
+      {
+        value: 'card_at_pickup',
+        label: 'Card at counter',
+        description: 'Use the Kitchen terminal.',
+      },
+      {
+        value: 'online_card',
+        label: 'Online card',
+        description: 'Pay securely when ordering.',
+      },
     ],
   },
 ]
@@ -132,22 +192,21 @@ const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
 
 const methodsFor = (orderTypes: KitchenOrderType[]) =>
   fulfilment.value.payment_methods
-    .filter(policy => orderTypes.every(type => policy.order_types.includes(type)))
-    .map(policy => policy.method)
+    .filter((policy) =>
+      orderTypes.every((type) => policy.order_types.includes(type))
+    )
+    .map((policy) => policy.method)
 
 let updateQueue = Promise.resolve()
 
-const updateGroup = (
-  group: PaymentGroup,
-  selectedMethods: string[]
-) => {
+const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
   if (!props.canWrite || !props.kitchenId) {
     return Promise.reject(new Error('This kitchen is read-only.'))
   }
 
   const selected = new Set(
     selectedMethods.filter((method): method is KitchenFulfilmentPaymentMethod =>
-      group.options.some(option => option.value === method)
+      group.options.some((option) => option.value === method)
     )
   )
   const groupTypes = new Set(group.orderTypes)
@@ -155,13 +214,14 @@ const updateGroup = (
   updateQueue = updateQueue.then(async () => {
     const current = readKitchenFulfilmentConfig(props.kitchen)
     const policies = new Map(
-      current.payment_methods.map(policy => [policy.method, policy] as const)
+      current.payment_methods.map((policy) => [policy.method, policy] as const)
     )
 
     for (const option of group.options) {
       const existing = policies.get(option.value)
-      const orderTypes = (existing?.order_types || [])
-        .filter(type => !groupTypes.has(type))
+      const orderTypes = (existing?.order_types || []).filter(
+        (type) => !groupTypes.has(type)
+      )
 
       if (selected.has(option.value)) orderTypes.push(...group.orderTypes)
 
@@ -180,7 +240,9 @@ const updateGroup = (
       }
     }
 
-    const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [...policies.values()]
+    const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [
+      ...policies.values(),
+    ]
     const patch: KitchenUpdateInput = {
       fulfilment: {
         delivery_zones: current.delivery_zones,
@@ -188,14 +250,14 @@ const updateGroup = (
       },
     }
 
-    await updateKitchen(props.kitchenId, patch)
+    await updateKitchen({ kitchenId: props.kitchenId, changes: patch })
   })
 
   return updateQueue
 }
 
 const updateFunctions = Object.fromEntries(
-  groups.map(group => [
+  groups.map((group) => [
     group.id,
     (methods: string[]) => updateGroup(group, methods),
   ])

@@ -121,7 +121,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
   assert.match(kitchenConsoleIdentity, /<KitchenEditIdentity/)
   assert.match(kitchenIdentityEditor, /<KitchenEditFields/)
-  assert.doesNotMatch(kitchenIdentityEditor, /updateCoverImage|updateGalleryImages|places\//)
+  assert.doesNotMatch(
+    kitchenIdentityEditor,
+    /updateCoverImage|updateGalleryImages|places\//
+  )
   const appModel = read(repoRoot, APP_MODEL)
   const ecosystemModel = read(repoRoot, ECOSYSTEM_MODEL)
   const projectModel = read(repoRoot, PROJECT_MODEL)
@@ -672,21 +675,33 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appUserJoinedPublisher, /mutations\.query<AppUser>/)
   assert.match(appUserJoinedPublisher, /mutations\.create\(events, eventId/)
   assert.match(appUserJoinedPublisher, /New user joined/)
-  for (const notificationClient of [
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserNotifications.ts',
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserNotificationRead.ts',
+  const notificationClient = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserNotifications.ts'
+  )
+  const notificationMutation = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserNotificationRead.ts'
+  )
+  const notificationReadEndpoint = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/server/api/internal/user/notifications.get.ts'
+  )
+  const notificationUpdateEndpoint = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/server/api/internal/user/notifications/[notificationId].patch.ts'
+  )
+  for (const [source, endpoint] of [
+    [notificationClient, '/api/internal/user/notifications'],
+    [notificationMutation, '/api/internal/user/notifications/'],
   ]) {
-    const source = read(repoRoot, notificationClient)
-    assert.match(
-      source,
-      /readRuntimeFirestoreDatabaseId/,
-      `${notificationClient} must use the App database that owns notification projections.`
-    )
-    assert.doesNotMatch(
-      source,
-      /readRuntimeIdentityFirestoreDatabaseId/,
-      `${notificationClient} must not read App notification projections from Identity.`
-    )
+    assert.match(source, new RegExp(endpoint))
+    assert.doesNotMatch(source, /useFirestore|readRuntime.*FirestoreDatabaseId/)
+  }
+  for (const source of [notificationReadEndpoint, notificationUpdateEndpoint]) {
+    assert.match(source, /requireFirebaseBearerUser/)
+    assert.match(source, /getRuntimeFirestore/)
+    assert.doesNotMatch(source, /getRuntimeIdentityFirestore/)
   }
   const ecosystemDetail = read(
     repoRoot,

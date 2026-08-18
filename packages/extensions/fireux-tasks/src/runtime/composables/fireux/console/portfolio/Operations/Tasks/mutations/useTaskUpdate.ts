@@ -16,10 +16,13 @@ export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
     TaskStorage.collection
   )
 
-  async function updateTask(taskId: string, patch: Partial<Omit<Task, 'id'>>): Promise<void> {
+  async function updateTask(input: {
+    taskId: string
+    changes: Partial<Omit<Task, 'id'>>
+  }): Promise<void> {
     requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-tasks')
 
-    const normalizedTaskId = normalize(taskId)
+    const normalizedTaskId = normalize(input.taskId)
     if (!normalizedTaskId) {
       throw new Error('[fireux-tasks] taskId is required.')
     }
@@ -28,7 +31,11 @@ export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-tasks] runtime task path is required.')
     }
 
-    await updateDocument<Omit<Task, 'id'>>(collectionPath.value, normalizedTaskId, patch)
+    await updateDocument<Omit<Task, 'id'>>(
+      collectionPath.value,
+      normalizedTaskId,
+      input.changes
+    )
   }
 
   return {

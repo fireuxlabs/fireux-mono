@@ -12,18 +12,24 @@ import type {
 export function useReservationUpdate(
   runtimeProperty: ActivePropertyRuntime = useActiveProperty()
 ) {
-  async function updateReservation(reservationId: string, patch: ReservationUpdateInput) {
-    const propertyId = requirePropertyConsoleWrite(runtimeProperty, 'fireux-reservations')
+  async function updateReservation(input: {
+    reservationId: string
+    changes: ReservationUpdateInput
+  }) {
+    const propertyId = requirePropertyConsoleWrite(
+      runtimeProperty,
+      'fireux-reservations'
+    )
     if (runtimeProperty.isDemo.value) {
       throw new Error('[fireux-reservations] Demo reservations are read-only.')
     }
     const user = await useRequireUser()
     const response = await $fetch<ReservationResponse>(
-      `/api/console/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(reservationId)}`,
+      `/api/console/properties/${encodeURIComponent(propertyId)}/reservations/${encodeURIComponent(input.reservationId)}`,
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-        body: patch,
+        body: input.changes,
       }
     )
     return response.reservation

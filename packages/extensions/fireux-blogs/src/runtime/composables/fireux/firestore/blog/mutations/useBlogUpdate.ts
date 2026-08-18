@@ -8,11 +8,12 @@ import {
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
 
-  async function updateBlogPost(
-    postId: string,
-    updates: Partial<BlogPost>
-  ): Promise<boolean> {
-    const blogPostId = String(postId || '').trim()
+  async function updateBlogPost(input: {
+    blogPostId: string
+    changes: Partial<BlogPost>
+  }): Promise<boolean> {
+    const blogPostId = String(input.blogPostId || '').trim()
+    const updates = input.changes
     if (!blogPostId) {
       throw new Error('No blog post ID provided.')
     }
@@ -22,7 +23,9 @@ export function useBlogUpdate() {
     }
 
     const requestedSlug =
-      updates.slug === undefined ? blogPostId : String(updates.slug || '').trim()
+      updates.slug === undefined
+        ? blogPostId
+        : String(updates.slug || '').trim()
     const slugValidation = validatePublicSlug(requestedSlug, {
       label: 'Blog post slug',
       namespace: 'blog',

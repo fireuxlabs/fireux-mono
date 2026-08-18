@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-08-09
+Updated: 2026-08-18
 Ref: 5b5de1c1c
 Role: map, not canon
 
@@ -72,6 +72,18 @@ entity to implement capabilities it does not have.
 - `useXCreate`, `useXUpdate`, and `useXDelete`: invoke one named lifecycle
   command through an allowed mutation lane. Transport does not own domain
   policy.
+- `useXUpdate(options?)` configures stable runtime dependencies. Its ordinary
+  entity command accepts one typed `input` object containing explicitly named
+  identity fields and `changes`; root entities use `{ xId, changes }`, while
+  an unbound child uses `{ parentId, xId, changes }`. A child whose parent is
+  already fixed by the composable runtime omits that parent from the command.
+  Transport, authorization, reactive binding, and response shape may differ
+  without changing this grammar.
+- Do not disguise a transition or specialist capability as an ordinary entity
+  update. Status transitions, media replacement, membership changes, and
+  relationship commands keep outcome-specific names and typed inputs. A bound
+  record such as User or App may receive its stable entity ref at setup and
+  accept only `{ changes }` or a narrower capability input.
 - `useX`: reserve the unqualified name for a genuine active read/view runtime
   aggregate. Keep commands explicitly imported; do not combine detail,
   collection, mutations, computed state, interface, and SEO solely to create a
@@ -113,6 +125,7 @@ entity to implement capabilities it does not have.
 | Domain `useXOnboarding` adapters contain different drafts and stages                | `accepted`  | Shared onboarding owns mechanics only; domain decisions must remain named and local                                                    |
 | Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                             |
 | Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                            |
+| Bound-record and specialist update composables use narrower inputs                  | `accepted`  | Their entity identity or workflow is fixed at setup; align ordinary entity commands without erasing genuine capability boundaries      |
 | Detail readers repeat a small outcome state machine                                 | `accepted`  | Keep entity ownership explicit; align the return vocabulary without introducing a cross-entity engine                                  |
 | Older `useXInterface`, computed, and permission helpers remain under Firestore      | `migration` | Move them to `composables/fireux/<entity>` only when the entity and all consumers move together; User and App are the proving siblings |
 | A proposed composable only shortens a component without creating reuse or authority | `drift`     | Keep the logic with its owner instead of adding a pass-through layer                                                                   |

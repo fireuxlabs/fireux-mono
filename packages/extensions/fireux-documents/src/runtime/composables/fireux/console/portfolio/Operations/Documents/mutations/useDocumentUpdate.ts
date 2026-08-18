@@ -20,13 +20,13 @@ export function useDocumentUpdate(runtimePortfolio = useActivePortfolio()) {
     DocumentStorage.collection
   )
 
-  async function updateDocumentRecord(
-    documentId: string,
-    patch: DocumentUpdateInput
-  ): Promise<void> {
+  async function updateDocumentRecord(input: {
+    documentId: string
+    changes: DocumentUpdateInput
+  }): Promise<void> {
     requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-documents')
 
-    const normalizedDocumentId = normalizeString(documentId)
+    const normalizedDocumentId = normalizeString(input.documentId)
     if (!normalizedDocumentId) {
       throw new Error('[fireux-documents] documentId is required.')
     }
@@ -35,7 +35,11 @@ export function useDocumentUpdate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-documents] runtime document path is required.')
     }
 
-    await updateDocument<Document>(collectionPath.value, normalizedDocumentId, patch)
+    await updateDocument<Document>(
+      collectionPath.value,
+      normalizedDocumentId,
+      input.changes
+    )
   }
 
   return {

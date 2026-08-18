@@ -3,24 +3,13 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-home">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen AI">
-          <template #right>
-            <UButton
-              v-if="!isAuthenticated"
-              to="/auth?mode=sign-up&redirect=%2Fconsole%2Fkitchen"
-              label="Save my Kitchen"
-              color="neutral"
-              variant="soft"
-            />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Console" />
       </template>
 
       <template #body>
         <section class="console-surface">
           <ConsoleKitchenTools />
-          <ConsoleKitchenAI />
-          <ConsoleKitchen v-if="isAuthenticated" />
+          <ConsoleKitchen />
         </section>
       </template>
     </UDashboardPanel>
@@ -28,14 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-
-const { isAuthenticated } = useAuth()
-
 definePageMeta({
   layout: 'console',
   consoleSurface: 'browse',
-  consoleAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'console-kitchen',
@@ -47,7 +31,7 @@ definePageMeta({
     mobile: true,
     layouts: ['console'],
   },
-  requiresAuth: false,
+  requiresAuth: true,
   requiresSelection: false,
 })
 </script>

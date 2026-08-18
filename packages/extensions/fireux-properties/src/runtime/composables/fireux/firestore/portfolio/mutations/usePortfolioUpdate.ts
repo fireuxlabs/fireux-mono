@@ -9,14 +9,18 @@ import { PortfolioStorage } from '../../../../../models/portfolio.model'
 export function usePortfolioUpdate() {
   const { updateDocument } = useFirestoreUpdate()
 
-  const updatePortfolio = async (
-    portfolioId: string,
-    patch: PortfolioUpdateInput
-  ) => {
-    const id = String(portfolioId ?? '').trim()
+  const updatePortfolio = async (input: {
+    portfolioId: string
+    changes: PortfolioUpdateInput
+  }) => {
+    const id = String(input.portfolioId ?? '').trim()
     if (!id) throw new Error('Portfolio id is required')
 
-    await updateDocument<Portfolio>(PortfolioStorage.rootCollection, id, patch)
+    await updateDocument<Portfolio>(
+      PortfolioStorage.rootCollection,
+      id,
+      input.changes
+    )
   }
 
   return { updatePortfolio }

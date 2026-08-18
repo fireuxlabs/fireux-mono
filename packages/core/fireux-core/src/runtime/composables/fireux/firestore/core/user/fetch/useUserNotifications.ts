@@ -1,28 +1,17 @@
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: bind one owner-scoped live notification read.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: bind owner notifications only after browser auth is available.
-import {
-  collection,
-  limit,
-  orderBy,
-  query,
-  type Query,
-} from 'firebase/firestore'
-import { computed, onMounted, ref } from 'vue'
-import { UserStorage } from '../../../../../../models/core/user.model'
-import {
-  type UserNotification,
-  UserNotificationStorage,
-} from '../../../../../../models/operations/user-notification.model'
+import { computed, ref, watch } from 'vue'
+import { type UserNotification } from '../../../../../../models/operations/user-notification.model'
 import { useAuth } from '../../../../firebase/useAuth'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
-import {
-  readRuntimeFirestoreDatabaseId,
-  useFirestore,
-} from '../../../vuefire'
 
 export type UserNotificationRecord = UserNotification & { id: string }
 
 const MAX_VISIBLE_NOTIFICATIONS = 50
+
+type UserNotificationsResponse = {
+  ok: true
+  notifications: UserNotificationRecord[]
+}
 
 export function useUserNotifications() {
   if (import.meta.server) {
@@ -35,43 +24,53 @@ export function useUserNotifications() {
     }
   }
 
-  const { currentUser } = useAuth()
-  const appDatabaseId = readRuntimeFirestoreDatabaseId()
-  const appDb = useFirestore(appDatabaseId)
-  const clientReady = ref(false)
-  onMounted(() => {
-    clientReady.value = true
-  })
-  const ownerUid = computed(() => {
-    if (!clientReady.value) return ''
-    const user = currentUser.value
-    return user && !user.isAnonymous ? user.uid : ''
-  })
-  const collectionPath = computed(() => {
-    const uid = ownerUid.value
-    return uid
-      ? `${UserStorage.collection}/${uid}/${UserNotificationStorage.collection}`
-      : ''
-  })
-  const notificationQuery = computed<Query<UserNotificationRecord> | null>(() => {
-    const path = collectionPath.value
-    if (!path) return null
+  const { currentUser, hasAuthState } = useAuth()
+  const notifications = ref<UserNotificationRecord[]>([])
+  const pending = ref(false)
+  const error = ref<unknown>(null)
+  const outcome = ref<'idle' | 'pending' | 'ready' | 'error'>('idle')
 
-    return query(
-      collection(appDb, path),
-      orderBy('created.at', 'desc'),
-      limit(MAX_VISIBLE_NOTIFICATIONS)
-    ) as Query<UserNotificationRecord>
-  })
-  const { firestoreQuery } = useFirestoreRead({
-    databaseId: appDatabaseId,
-  })
-  const source = firestoreQuery<UserNotificationRecord>(
-    notificationQuery,
-    undefined,
-    collectionPath
+  const load = async () => {
+    const user = currentUser.value
+    if (!hasAuthState.value || !user || user.isAnonymous) {
+      notifications.value = []
+      pending.value = false
+      error.value = null
+      outcome.value = 'idle'
+      return
+    }
+
+    const requestUid = user.uid
+    pending.value = true
+    error.value = null
+    outcome.value = 'pending'
+    try {
+      const token = await user.getIdToken()
+      const response = await $fetch<UserNotificationsResponse>(
+        '/api/internal/user/notifications',
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      if (currentUser.value?.uid !== requestUid) return
+      notifications.value = response.notifications.slice(
+        0,
+        MAX_VISIBLE_NOTIFICATIONS
+      )
+      outcome.value = 'ready'
+    } catch (loadError) {
+      if (currentUser.value?.uid !== requestUid) return
+      notifications.value = []
+      error.value = loadError
+      outcome.value = 'error'
+    } finally {
+      if (currentUser.value?.uid === requestUid) pending.value = false
+    }
+  }
+
+  watch(
+    [hasAuthState, computed(() => currentUser.value?.uid ?? '')],
+    () => void load(),
+    { immediate: true }
   )
-  const notifications = computed(() => source.data.value ?? [])
   const unreadCount = computed(() =>
     notifications.value.reduce(
       (count, notification) => count + (notification.read ? 0 : 1),
@@ -82,8 +81,9 @@ export function useUserNotifications() {
   return {
     notifications,
     unreadCount,
-    pending: source.pending,
-    error: source.error,
-    outcome: source.outcome,
+    pending,
+    error,
+    outcome,
+    refresh: load,
   }
 }

@@ -154,7 +154,7 @@ async function saveMember() {
     await updateKitchenTeamMember({
       kitchenId: kitchenId.value,
       memberId: member.id,
-      name,
+      changes: { name },
     })
     editOpen.value = false
     toast.add({ title: `${name} updated`, color: 'success' })

@@ -1,9 +1,11 @@
 # Firestore entity stack family
-Updated: 2026-07-22
+
+Updated: 2026-08-18
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Map the stored access/composable shape for FireUX entities.
 
 The Firestore stack is one storage slice of the wider entity capability family.
@@ -12,16 +14,19 @@ lifecycle policy, events, interface projection, and its page, Console, Tool,
 and operator adapters. It is not merely a CRUD wrapper around a collection.
 
 ## Vertical links
+
 - Parent: entities.md
 - Parent: composables.md
 - Child: family-console-entity.md
 - Child: family-menu.md
 
 ## Horizontal links
+
 - console.md
 - server-api.md
 
 ## Allowed entity stack
+
 - `composables/fireux/firestore/<entity>`
 - `composables/fireux/firestore/core/<entity>` for Core User, App, and
   Ecosystem storage adapters
@@ -31,6 +36,7 @@ and operator adapters. It is not merely a CRUD wrapper around a collection.
 - `utils`
 
 Example Firestore stack names, not automatic entity proof:
+
 - `kitchen`
 - `supplier`
 - `product`
@@ -48,6 +54,7 @@ Example Firestore stack names, not automatic entity proof:
 - `task`
 
 ## Similarities
+
 - Stored entity stacks should be boring and predictable.
 - Fetch and collection concerns belong in `fetch`.
 - Writes belong in `mutations`.
@@ -74,7 +81,24 @@ Example Firestore stack names, not automatic entity proof:
 - Current authority: `docs/ai/firestore-mutations-context.md` and
   `scripts/guards/firestore-mutations.mjs`.
 
+## Update command grammar
+
+- An ordinary entity `useXUpdate(options?)` exposes one `updateX(input)`
+  command. The input contains named identity and a `changes` object; identity
+  is never positional and is never mixed into the changed fields.
+- Root example: `{ kitchenId, changes }`. Unbound child example:
+  `{ kitchenId, memberId, changes }`. A Console child already bound to its
+  selected parent runtime uses `{ childId, changes }`.
+- The mutation lane still selects transport and authority. This grammar does
+  not grant a client raw Firestore access or move server policy into a
+  composable.
+- Field workflows, transitions, media, membership, and compound relationship
+  writes are named capabilities rather than artificial generic patches.
+- Current executable shape guard:
+  `scripts/guards/entity-update-contract.mjs`.
+
 ## Read-state contract
+
 - `useFirestoreRead` is the shared reactive read authority. Its collection and
   document refs preserve normal `.value` access while also exposing `data`,
   `pending`, `error`, `outcome`, `promise`, and `stop`.
@@ -104,6 +128,7 @@ Example Firestore stack names, not automatic entity proof:
 - Current collection-state seam: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts`.
 
 ## Accepted storage deltas
+
 - Some entities are canonical roots; public readability is a separate contract.
 - Some entities and records have `parent-scoped` identity.
 - Some root entities have a separate App support record. That support record is
@@ -215,15 +240,16 @@ Example Firestore stack names, not automatic entity proof:
 
 ## Migration and drift register
 
-| Difference | State | Required direction |
-| --- | --- | --- |
-| Supplier and Portfolio do not exact-validate every root field | `migration` | Reconcile live data first, then add validators without relabelling read errors as missing |
-| Remaining profile consumers below `firestore/profiles/<Profile>` use the old organizational spine | `migration` | Follow the Chef/Driver split when each complete profile family is aligned; do not move raw adapters out of Firestore |
-| Some folders exist because a thing is stored, not because entity-ness was confirmed | `drift` | Check `entities.md` and the executable entity matrix before adding root entity ceremony |
-| Older entity-facing view helpers remain inside Firestore stacks | `migration` | Move one entity and all of its consumers together; User and App are the proving siblings |
-| Project direct-read Rules are outside the currently tested repository contract | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial |
+| Difference                                                                                        | State        | Required direction                                                                                                   |
+| ------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Supplier and Portfolio do not exact-validate every root field                                     | `migration`  | Reconcile live data first, then add validators without relabelling read errors as missing                            |
+| Remaining profile consumers below `firestore/profiles/<Profile>` use the old organizational spine | `migration`  | Follow the Chef/Driver split when each complete profile family is aligned; do not move raw adapters out of Firestore |
+| Some folders exist because a thing is stored, not because entity-ness was confirmed               | `drift`      | Check `entities.md` and the executable entity matrix before adding root entity ceremony                              |
+| Older entity-facing view helpers remain inside Firestore stacks                                   | `migration`  | Move one entity and all of its consumers together; User and App are the proving siblings                             |
+| Project direct-read Rules are outside the currently tested repository contract                    | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial                         |
 
 ## Do not
+
 - Put console operation folders inside Firestore stacks.
 - Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
 - Create fake compatibility branches without an explicit user request.

@@ -13,7 +13,7 @@ type UpdateKitchenMiseInput = {
   kitchenId: string
   taskId: string
   kitchenCollectionPath?: string
-  patch: {
+  changes: {
     title?: string
     description?: string
     station?: string
@@ -46,32 +46,32 @@ export function useKitchenMiseUpdate() {
     if (!rootCollection) throw new Error('Kitchen collection path is required')
 
     const patch: KitchenMiseTaskUpdateInput = {}
-    if ('title' in input.patch) {
-      patch.title = normalizeString(input.patch.title)
+    if ('title' in input.changes) {
+      patch.title = normalizeString(input.changes.title)
     }
-    if ('description' in input.patch) {
-      patch.description = normalizeString(input.patch.description)
+    if ('description' in input.changes) {
+      patch.description = normalizeString(input.changes.description)
     }
-    if ('station' in input.patch) {
-      patch.station = normalizeString(input.patch.station)
+    if ('station' in input.changes) {
+      patch.station = normalizeString(input.changes.station)
     }
-    if ('workflow_stage' in input.patch) {
+    if ('workflow_stage' in input.changes) {
       patch.workflow_stage = normalizeKitchenMiseWorkflowStage(
-        input.patch.workflow_stage
+        input.changes.workflow_stage
       )
     }
-    if ('service_date' in input.patch) {
-      patch.service_date = normalizeString(input.patch.service_date)
+    if ('service_date' in input.changes) {
+      patch.service_date = normalizeString(input.changes.service_date)
     }
-    if ('status' in input.patch) {
-      patch.status = normalizeKitchenMiseStatus(input.patch.status)
+    if ('status' in input.changes) {
+      patch.status = normalizeKitchenMiseStatus(input.changes.status)
     }
-    if ('priority' in input.patch) {
-      patch.priority = normalizeKitchenMisePriority(input.patch.priority)
+    if ('priority' in input.changes) {
+      patch.priority = normalizeKitchenMisePriority(input.changes.priority)
     }
-    if ('estimated_minutes' in input.patch) {
+    if ('estimated_minutes' in input.changes) {
       patch.estimated_minutes = nonNegativeInteger(
-        input.patch.estimated_minutes
+        input.changes.estimated_minutes
       )
     }
 

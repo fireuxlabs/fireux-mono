@@ -2,24 +2,14 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="misebox-kitchen-home">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen AI">
-          <template #right>
-            <UButton
-              v-if="!isAuthenticated"
-              to="/auth?mode=sign-up&redirect=%2F"
-              label="Save my Kitchen"
-              color="neutral"
-              variant="soft"
-            />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen AI" />
       </template>
 
       <template #body>
         <section class="console-surface">
           <ConsoleKitchenTools />
           <ConsoleKitchenAI />
-          <ConsoleKitchen v-if="isAuthenticated" />
+          <ConsoleKitchen v-if="clientReady && isAuthenticated" />
         </section>
       </template>
     </UDashboardPanel>
@@ -27,11 +17,19 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
 const { isAuthenticated } = useAuth()
+const consoleRoot = useConsole()
+consoleRoot.setActiveContext('kitchen')
+const clientReady = ref(false)
+onMounted(() => {
+  clientReady.value = true
+})
 
 definePageMeta({
   layout: 'console',

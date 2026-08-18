@@ -46,13 +46,8 @@ import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleTables } from '../../../../../composables/fireux/console/kitchen/operations/Tables/useKitchenConsoleTables'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 
-const {
-  kitchenId,
-  rootCollection,
-  databaseId,
-  tableCount,
-  canWrite,
-} = useKitchenConsoleTables()
+const { kitchenId, rootCollection, databaseId, tableCount, canWrite } =
+  useKitchenConsoleTables()
 const { updateKitchen } = useKitchenUpdate()
 const toast = useToastify()
 const draftTableCount = ref('0')
@@ -70,8 +65,8 @@ watch(
 const parsedTableCount = computed(() => Number(draftTableCount.value))
 const validationMessage = computed(() =>
   Number.isSafeInteger(parsedTableCount.value) &&
-    parsedTableCount.value >= 0 &&
-    parsedTableCount.value <= 500
+  parsedTableCount.value >= 0 &&
+  parsedTableCount.value <= 500
     ? ''
     : 'Use a whole number from 0 to 500.'
 )
@@ -85,8 +80,9 @@ const saveTableCount = async () => {
   saving.value = true
   saveMessage.value = ''
   try {
-    await updateKitchen(kitchenId.value, {
-      'tables.count': parsedTableCount.value,
+    await updateKitchen({
+      kitchenId: kitchenId.value,
+      changes: { 'tables.count': parsedTableCount.value },
     })
     saveMessage.value = 'Saved'
     toast.add({

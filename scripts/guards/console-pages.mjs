@@ -16,12 +16,6 @@ const CONSOLE_LAYOUT =
   'packages/core/fireux-core/src/runtime/layouts/console.vue'
 const CONSOLE_MIDDLEWARE =
   'packages/core/fireux-core/src/runtime/middleware/fireux-console.global.ts'
-const CONSOLE_ROUTING =
-  'packages/core/fireux-core/src/runtime/composables/fireux/app/routing/consoleRoutes.ts'
-const CONSOLE_NAV =
-  'packages/core/fireux-core/src/runtime/composables/fireux/app/ui/nav/useConsoleNav.ts'
-const CONSOLE_AGENT_PAGE =
-  'packages/ecosystem/fireux-misebox/src/runtime/pages/console/agent.vue'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
 const KITCHEN_MENUS_COMPONENT_ROOT =
@@ -126,7 +120,6 @@ export async function run(ctx) {
 
   validateConsoleLayout(repoRoot, violations)
   validateConsoleNavigationLifecycle(repoRoot, violations)
-  validateConsoleAgentDoorway(repoRoot, violations)
   validateConsoleMenuCanon(repoRoot, violations)
   validateConsoleOperationContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
@@ -167,50 +160,6 @@ export async function run(ctx) {
   console.log('[guard] ✅ console pages use the explicit page contract')
 }
 
-function validateConsoleAgentDoorway(repoRoot, violations) {
-  const routing = readFileSync(path.join(repoRoot, CONSOLE_ROUTING), 'utf8')
-  const nav = readFileSync(path.join(repoRoot, CONSOLE_NAV), 'utf8')
-  const middleware = readFileSync(path.join(repoRoot, CONSOLE_MIDDLEWARE), 'utf8')
-  const page = readFileSync(path.join(repoRoot, CONSOLE_AGENT_PAGE), 'utf8')
-
-  if (
-    !/CONSOLE_AGENT_PATH\s*=\s*`\$\{CONSOLE_ROOT\}\/agent`/.test(routing) ||
-    !/isConsoleAgentPath\(path\)[\s\S]*normalizeConsoleFamily\(familyQuery\)/.test(routing)
-  ) {
-    violations.push(
-      `${CONSOLE_ROUTING} (/console/agent must resolve its active family from explicit route context)`
-    )
-  }
-  if (
-    !/item\.key === ['"]console-agent['"][\s\S]*CONSOLE_AGENT_PATH/.test(nav) ||
-    /URLSearchParams|family=\$\{/.test(nav)
-  ) {
-    violations.push(
-      `${CONSOLE_NAV} (the shared Agent doorway must use its clean canonical URL and consume Console runtime context)`
-    )
-  }
-  if (
-    !/const agentPath = isConsoleAgentPath\(path\)/.test(middleware) ||
-    !/routeFamily && !enabledFamilies\.has\(routeFamily\)/.test(middleware)
-  ) {
-    violations.push(
-      `${CONSOLE_MIDDLEWARE} (/console/agent must allow ecosystem context and validate explicit family context)`
-    )
-  }
-  if (
-    !/key:\s*['"]console-agent['"]/.test(page) ||
-    !/position:\s*['"]bottom['"]/.test(page) ||
-    !/requiresSelection:\s*false/.test(page) ||
-    !/useConsoleSelection\(item\)/.test(page) ||
-    !/consoleRoot\.activeFamily\.value/.test(page) ||
-    /pages\/console\/[^'"\s]+\/agent/.test(page)
-  ) {
-    violations.push(
-      `${CONSOLE_AGENT_PAGE} (the shared doorway must sit beneath the family doorway and consume canonical family selection without creating a family-local Agent route)`
-    )
-  }
-}
-
 function validateConsoleMenuCanon(repoRoot, violations) {
   for (const contract of Object.values(CONSOLE_OPERATION_CONTRACTS)) {
     const relative = `${contract.routeRoot}/create.vue`
@@ -244,13 +193,18 @@ function validateConsoleMenuCanon(repoRoot, violations) {
 
   const kitchenDevRelative =
     'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/dev.vue'
-  const kitchenDev = readFileSync(path.join(repoRoot, kitchenDevRelative), 'utf8')
+  const kitchenDev = readFileSync(
+    path.join(repoRoot, kitchenDevRelative),
+    'utf8'
+  )
   const consoleMiddleware = readFileSync(
     path.join(repoRoot, CONSOLE_MIDDLEWARE),
     'utf8'
   )
   if (!/roles:\s*\[['"]developer['"]\]/.test(kitchenDev)) {
-    violations.push(`${kitchenDevRelative} (Console Dev must require the developer role)`)
+    violations.push(
+      `${kitchenDevRelative} (Console Dev must require the developer role)`
+    )
   }
   if (
     !/needsDeveloper[\s\S]*!import\.meta\.dev[\s\S]*statusCode:\s*404/.test(
@@ -271,10 +225,16 @@ function validateConsoleNavigationLifecycle(repoRoot, violations) {
     'packages/core/fireux-core/src/config/module/pages-config.ts'
   const overviewRelative =
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleOverview.ts'
-  const pagesConfig = readFileSync(path.join(repoRoot, pagesConfigRelative), 'utf8')
+  const pagesConfig = readFileSync(
+    path.join(repoRoot, pagesConfigRelative),
+    'utf8'
+  )
   const overview = readFileSync(path.join(repoRoot, overviewRelative), 'utf8')
   const layout = readFileSync(path.join(repoRoot, CONSOLE_LAYOUT), 'utf8')
-  const middleware = readFileSync(path.join(repoRoot, CONSOLE_MIDDLEWARE), 'utf8')
+  const middleware = readFileSync(
+    path.join(repoRoot, CONSOLE_MIDDLEWARE),
+    'utf8'
+  )
   const authGuard = readFileSync(path.join(repoRoot, ROUTE_AUTH_GUARD), 'utf8')
 
   if (
@@ -286,7 +246,11 @@ function validateConsoleNavigationLifecycle(repoRoot, violations) {
       `${pagesConfigRelative} (Console navigation must not inherit the global out-in page transition)`
     )
   }
-  if (/useKitchenConsole(?:Menus|Ingredients|Dishes|Recipes|Suppliers|Stations|Mise|Orders|Tables)/.test(overview)) {
+  if (
+    /useKitchenConsole(?:Menus|Ingredients|Dishes|Recipes|Suppliers|Stations|Mise|Orders|Tables)/.test(
+      overview
+    )
+  ) {
     violations.push(
       `${overviewRelative} (Kitchen Overview must not initialize operation workspaces for summary counts)`
     )
@@ -296,12 +260,20 @@ function validateConsoleNavigationLifecycle(repoRoot, violations) {
       `${CONSOLE_LAYOUT} (route changes must not recreate the persistent Console boundary)`
     )
   }
-  if (!/isConsolePath\(path\)[\s\S]*to\.meta\.pageTransition = false/.test(middleware)) {
+  if (
+    !/isConsolePath\(path\)[\s\S]*to\.meta\.pageTransition = false/.test(
+      middleware
+    )
+  ) {
     violations.push(
       `${CONSOLE_MIDDLEWARE} (every Console navigation must disable the global page transition)`
     )
   }
-  if (!/const currentUid = auth\.currentUser\?\.uid[\s\S]*if \(currentUid\)[\s\S]*return \{[\s\S]*isAuthenticated: !auth\.currentUser\?\.isAnonymous/.test(authGuard)) {
+  if (
+    !/const currentUid = auth\.currentUser\?\.uid[\s\S]*if \(currentUid\)[\s\S]*return \{[\s\S]*isAuthenticated: !auth\.currentUser\?\.isAnonymous/.test(
+      authGuard
+    )
+  ) {
     violations.push(
       `${ROUTE_AUTH_GUARD} (established authentication must not install another navigation-time observer)`
     )

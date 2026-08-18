@@ -32,6 +32,12 @@ const defaultBlogPost: BlogPostCreateInput = {
   cta_text: '',
   type: 'article',
   product_id: '',
+  editorial_review: {
+    source_kind: 'human',
+    privacy_reviewed: false,
+    facts_reviewed: false,
+    names_approved: false,
+  },
   sproochli: undefined,
 }
 
@@ -93,6 +99,12 @@ export function useBlogDraftState() {
       cta_text: '',
       type: 'article',
       product_id: '',
+      editorial_review: {
+        source_kind: 'human',
+        privacy_reviewed: false,
+        facts_reviewed: false,
+        names_approved: false,
+      },
       sproochli: undefined,
       source_app_id: tenantId,
       source_ecosystem_id: useFireUXConfig().ecosystemId || '',

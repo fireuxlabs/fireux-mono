@@ -260,7 +260,7 @@ const onSave = withToast(
     }
 
     try {
-      await updateJob(jobId.value, patch)
+      await updateJob({ jobId: jobId.value, changes: patch })
       await refresh()
     } finally {
       saving.value = false

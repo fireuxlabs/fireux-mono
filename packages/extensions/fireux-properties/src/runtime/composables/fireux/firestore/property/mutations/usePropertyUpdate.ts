@@ -29,30 +29,34 @@ export function usePropertyUpdate() {
   const requireAppPropertyCollection = () => {
     const resolvedAppId = normalizeString(appId)
     if (!resolvedAppId) {
-      throw new Error('[fireux-properties] app id is required for private manual updates.')
+      throw new Error(
+        '[fireux-properties] app id is required for private manual updates.'
+      )
     }
     return `${AppStorage.collection}/${resolvedAppId}/${PropertyStorage.appSupportCollection}`
   }
 
-  async function updatePropertyRoot(
-    propertyId: string,
-    patch: PropertyUpdateInput
-  ): Promise<void> {
+  async function updatePropertyRoot(input: {
+    propertyId: string
+    changes: PropertyUpdateInput
+  }): Promise<void> {
     await updateDocument<Property>(
       PropertyStorage.rootCollection,
-      requirePropertyId(propertyId),
-      patch
+      requirePropertyId(input.propertyId),
+      input.changes
     )
   }
 
-  async function updatePropertyManual(
-    propertyId: string,
-    input: PropertyManual
-  ): Promise<void> {
-    const resolvedPropertyId = requirePropertyId(propertyId)
-    const manual = canonicalPropertyManual(input)
+  async function updatePropertyManual(input: {
+    propertyId: string
+    changes: PropertyManual
+  }): Promise<void> {
+    const resolvedPropertyId = requirePropertyId(input.propertyId)
+    const manual = canonicalPropertyManual(input.changes)
     if (!manual) {
-      throw new Error('[fireux-properties] complete Property manual input is required.')
+      throw new Error(
+        '[fireux-properties] complete Property manual input is required.'
+      )
     }
     await updateDocument<PropertyManual>(
       `${requireAppPropertyCollection()}/${resolvedPropertyId}/${PropertyManualStorage.collection}`,

@@ -6,11 +6,11 @@ import type { PublicIngredientDetailResponse } from '../../../../../models/ingre
 export function useIngredientUpdate() {
   const { currentUser } = useAuth()
 
-  const updateIngredient = async (
-    ingredientId: string,
-    patch: IngredientUpdateInput
-  ) => {
-    const resolvedIngredientId = String(ingredientId || '').trim()
+  const updateIngredient = async (input: {
+    ingredientId: string
+    changes: IngredientUpdateInput
+  }) => {
+    const resolvedIngredientId = String(input.ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
     const user = currentUser.value
@@ -21,7 +21,7 @@ export function useIngredientUpdate() {
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
-        body: patch,
+        body: input.changes,
       }
     )
     await refreshNuxtData([

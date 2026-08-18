@@ -24,7 +24,10 @@ import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppKitchenStorage, KitchenStorage } from '../../../../../models/kitchen.model'
+import {
+  AppKitchenStorage,
+  KitchenStorage,
+} from '../../../../../models/kitchen.model'
 import { composeKitchenScopedSurface } from '../../../../../utils/kitchen-spine'
 import {
   useKitchenFetch,
@@ -142,8 +145,7 @@ function createKitchenConsole() {
     return 'idle' as const
   })
   const enforcedTargetId = computed(() =>
-    consoleRoot.isTenant &&
-    !allowDemo.value &&
+    kitchenSource.value === 'live' &&
     selectionOutcome.value === 'ready' &&
     liveTargetData.value.length === 1
       ? normalizeString(liveTargetData.value[0]?.value.id)
@@ -273,9 +275,7 @@ function createKitchenConsole() {
   ) => {
     const requestedSource = normalizeSource(source)
     const resolvedSource =
-      requestedSource === 'demo' && !allowDemo.value
-        ? 'live'
-        : requestedSource
+      requestedSource === 'demo' && !allowDemo.value ? 'live' : requestedSource
     selectTarget(kitchenId, resolvedSource)
   }
   watch(

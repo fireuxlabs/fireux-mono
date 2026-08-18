@@ -2,6 +2,7 @@ import { useBlogCreate } from '../../firestore/blog/mutations/useBlogCreate'
 import { useBlogPublish } from '../../firestore/blog/mutations/useBlogPublish'
 import { useBlogUtils } from '../../firestore/blog/utils/useBlogUtils'
 import { useBlogDraftState } from './useBlogDraftState'
+import { assertBlogEditorialApproval } from '../../../../utils/editorial-review'
 
 export function useBlogCreateSubmit() {
   const { getBlogPostPayload } = useBlogDraftState()
@@ -16,6 +17,7 @@ export function useBlogCreateSubmit() {
     } | undefined>
   ) => {
     const payload = getBlogPostPayload()
+    assertBlogEditorialApproval(payload)
     const slug = payload.slug || normalizeBlogSlug(payload.title || '')
     if (!slug) throw new Error('Slug is required to publish a blog post')
 

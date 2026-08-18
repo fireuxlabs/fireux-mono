@@ -6,16 +6,20 @@ import {
 } from '../../../../../models/product.model'
 
 export function useProductUpdate() {
-  const base = useDocumentUpdateBase<FirebaseProduct>(ProductStorage.collection, {
-    resolvePath: true,
-    appScoped: false,
-  })
+  const base = useDocumentUpdateBase<FirebaseProduct>(
+    ProductStorage.collection,
+    {
+      resolvePath: true,
+      appScoped: false,
+    }
+  )
 
-  async function updateProduct(
-    id: string,
-    updates: Partial<FirebaseProduct>
-  ): Promise<boolean> {
-    const productId = String(id || '').trim()
+  async function updateProduct(input: {
+    productId: string
+    changes: Partial<FirebaseProduct>
+  }): Promise<boolean> {
+    const productId = String(input.productId || '').trim()
+    const updates = input.changes
     if (!productId) {
       throw new Error('Product id is required')
     }
@@ -40,7 +44,10 @@ export function useProductUpdate() {
       updates.slug === undefined ? updates : { ...updates, slug: productId }
 
     await base.updateById(productId, nextUpdates)
-    console.log('🧩 [Stub] updateProduct', { id: productId, updates: nextUpdates })
+    console.log('🧩 [Stub] updateProduct', {
+      id: productId,
+      updates: nextUpdates,
+    })
     return true
   }
 

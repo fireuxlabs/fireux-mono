@@ -3,8 +3,8 @@ import type { JobPatchIntent } from '../../../../../models/job-author.model'
 import { patchAuthorJobRequest } from '../../../jobs/author/jobAuthorClient'
 
 export function useJobUpdate() {
-  const updateJob = (jobId: string, patch: JobPatchIntent) =>
-    patchAuthorJobRequest(jobId, patch)
+  const updateJob = (input: { jobId: string; changes: JobPatchIntent }) =>
+    patchAuthorJobRequest(input.jobId, input.changes)
 
   return { updateJob }
 }

@@ -5,8 +5,11 @@ const clean = (value: unknown) => String(value ?? '').trim()
 
 /** Kitchen roots are server-owned; every edit crosses the fixed trusted seam. */
 export function useKitchenUpdate() {
-  async function updateKitchen(kitchenId: string, patch: KitchenUpdateInput) {
-    const id = clean(kitchenId)
+  async function updateKitchen(input: {
+    kitchenId: string
+    changes: KitchenUpdateInput
+  }) {
+    const id = clean(input.kitchenId)
     if (!id) throw new Error('Kitchen id is required.')
     const user = await useRequireUser()
     const token = await user.getIdToken()
@@ -15,7 +18,7 @@ export function useKitchenUpdate() {
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
-        body: { kitchen_id: id, patch },
+        body: { kitchen_id: id, patch: input.changes },
       }
     )
     if (result.ok !== true || result.kitchen_id !== id) {

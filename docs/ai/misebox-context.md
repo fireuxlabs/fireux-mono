@@ -306,12 +306,11 @@ Before each task:
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
-  relevant product doorways. Misebox owns the canonical `/console/agent`
-  conversation surface. It resolves the persisted active Console family and
-  selected target, then mounts the entity coordinator; KitchenAI is the first
-  working coordinator and uses authorized Kitchen identity, User context,
-  Kitchen context, Menu context, and exact Menu counts. An explicit operation
-  query delegates to an operation agent such as MenuAI. The Kitchen agent HTTP
+  relevant product doorways. Misebox owns KitchenAI at `/` as its main working
+  doorway; there is no separate Console Agent route. KitchenAI uses authorized
+  Kitchen identity, User context, Kitchen context, Menu
+  context, and exact Menu counts. Bounded operation surfaces may delegate to
+  an operation agent such as MenuAI. The Kitchen agent HTTP
   handler is transport only. Misebox's Kitchen entity
   coordinator owns authorization and fallback answering. TeamAI is the first
   shared entity capability beside the Kitchen coordinator and owns its bounded
@@ -362,7 +361,10 @@ Before each task:
   contract, then proposes the member/name calls; application code does not
   encode title-case or other phrase-specific update intent. Read returns a
   bounded Team projection. Delete requires confirmation, refuses linked
-  members, and revokes pending invitations for the deleted named member.
+  members, and revokes pending invitations for the deleted named member. Manual
+  and TeamAI updates use the same Kitchen-owned member update shape with named
+  identity and `changes`; TeamAI's batch envelope only groups those same
+  updates into one confirmed atomic command.
   Tool results declare their operator affordance rather than asking inference
   to invent one. Member creation returns navigation to the created object;
   invitation creation returns a copy action for the operator's share link and

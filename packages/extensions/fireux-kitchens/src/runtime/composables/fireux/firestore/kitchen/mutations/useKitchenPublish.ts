@@ -47,9 +47,9 @@ export function useKitchenPublish() {
     const ready = assertKitchenPublishReady(input)
     const routePath = `/${KitchenStorage.collection}/${encodeURIComponent(ready.slug)}`
 
-    await updateKitchen(ready.id, {
-      slug: ready.slug,
-      visibility: true,
+    await updateKitchen({
+      kitchenId: ready.id,
+      changes: { slug: ready.slug, visibility: true },
     })
 
     return { id: ready.id, routePath }
@@ -59,8 +59,9 @@ export function useKitchenPublish() {
     const id = clean(kitchenId)
     if (!id) throw new Error('Kitchen id is required before hiding it.')
 
-    await updateKitchen(id, {
-      visibility: false,
+    await updateKitchen({
+      kitchenId: id,
+      changes: { visibility: false },
     })
 
     return { id }

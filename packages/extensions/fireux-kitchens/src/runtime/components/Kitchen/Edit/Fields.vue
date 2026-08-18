@@ -77,29 +77,33 @@ async function updateKitchenField(
   if (!props.kitchenId) throw new Error('No Kitchen selected.')
 
   try {
-    await updateKitchen(props.kitchenId, patch)
+    await updateKitchen({ kitchenId: props.kitchenId, changes: patch })
     toast.success(successTitle)
     return 'success'
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.error(`${failTitle}: ${description}`)
     throw error
   }
 }
 
-const handleName = (value: string) => updateKitchenField(
-  { 'identity.name': value },
-  'Kitchen name updated',
-  'Failed to update Kitchen name'
-)
+const handleName = (value: string) =>
+  updateKitchenField(
+    { 'identity.name': value },
+    'Kitchen name updated',
+    'Failed to update Kitchen name'
+  )
 
-const handleTagline = (value: string) => updateKitchenField(
-  { 'identity.tagline': value },
-  'Tagline updated',
-  'Failed to update tagline'
-)
+const handleTagline = (value: string) =>
+  updateKitchenField(
+    { 'identity.tagline': value },
+    'Tagline updated',
+    'Failed to update tagline'
+  )
 
-const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 })
+const formatSlugField = (value: string) =>
+  normalizeSlug(value, { maxLength: 80 })
 
 const validateSlugField = (value: string) => {
   const validation = validateSlug(formatSlugField(value), {
@@ -111,9 +115,10 @@ const validateSlugField = (value: string) => {
   return { isValid: validation.isValid, message: validation.message }
 }
 
-const handleSlug = (value: string) => updateKitchenField(
-  { slug: formatSlugField(value) },
-  'Slug updated',
-  'Failed to update slug'
-)
+const handleSlug = (value: string) =>
+  updateKitchenField(
+    { slug: formatSlugField(value) },
+    'Slug updated',
+    'Failed to update slug'
+  )
 </script>

@@ -1,7 +1,6 @@
 // Routing owns stable path/key translation only. It does not decide which
 // routes appear in navigation, or whether the current user may access them.
 export const CONSOLE_ROOT = '/console'
-export const CONSOLE_AGENT_PATH = `${CONSOLE_ROOT}/agent`
 
 export type ConsoleFamily = string
 
@@ -38,29 +37,28 @@ export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
   return normalizeConsoleFamily(path.match(/^\/console\/([^/]+)/)?.[1] || '')
 }
 
-export function isConsoleAgentPath(path: string) {
-  return String(path || '').replace(/\/+$/, '') === CONSOLE_AGENT_PATH
-}
-
 export function consoleFamilyFromRouteContext(
   path: string,
-  familyQuery?: unknown
+  _familyQuery?: unknown
 ): ConsoleFamily | '' {
-  return isConsoleAgentPath(path)
-    ? normalizeConsoleFamily(familyQuery)
-    : consoleFamilyFromPath(path)
+  return consoleFamilyFromPath(path)
 }
 
 export function consoleOperationFromPath(path: string): string {
-  if (isConsoleAgentPath(path)) return ''
   const operation = String(path || '').match(/^\/console\/[^/]+\/([^/]+)/)?.[1]
   return ['overview', 'identity', 'team', 'create'].includes(operation || '')
     ? ''
-    : String(operation || '').trim().toLowerCase()
+    : String(operation || '')
+        .trim()
+        .toLowerCase()
 }
 
 export function toConsoleFamilyPath(family: ConsoleFamily | string) {
-  const normalized = normalizeConsoleFamily(family) || String(family || '').trim().toLowerCase()
+  const normalized =
+    normalizeConsoleFamily(family) ||
+    String(family || '')
+      .trim()
+      .toLowerCase()
   const routeSegment = CONSOLE_FAMILY_ROUTE_SEGMENTS[normalized] || normalized
 
   return `${CONSOLE_ROOT}/${routeSegment}`

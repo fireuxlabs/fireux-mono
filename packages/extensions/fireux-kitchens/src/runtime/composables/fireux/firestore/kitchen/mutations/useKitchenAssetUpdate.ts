@@ -28,9 +28,10 @@ export function useKitchenAssetUpdate() {
     pending.value = true
     try {
       const url = await uploadImage(`kitchens/${id}/assets/${role}`, file)
-      await updateKitchen(id, {
-        [`assets.${role}`]: url,
-      } as KitchenUpdateInput)
+      await updateKitchen({
+        kitchenId: id,
+        changes: { [`assets.${role}`]: url } as KitchenUpdateInput,
+      })
       return url
     } finally {
       pending.value = false
@@ -43,7 +44,10 @@ export function useKitchenAssetUpdate() {
   ) {
     const id = clean(kitchenId)
     if (!id) throw new Error('Kitchen id is required.')
-    await updateKitchen(id, { 'assets.backdrop_color': color })
+    await updateKitchen({
+      kitchenId: id,
+      changes: { 'assets.backdrop_color': color },
+    })
   }
 
   return { pending, uploadKitchenAsset, updateKitchenBackdrop }

@@ -4,7 +4,9 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 type UpdateKitchenTeamMemberInput = {
   kitchenId: string
   memberId: string
-  name: string
+  changes: {
+    name: string
+  }
 }
 
 type UpdateKitchenTeamMemberResult = {
@@ -28,7 +30,7 @@ export function useKitchenTeamMemberUpdate() {
     requireWritableData()
     const kitchenId = normalizeString(input.kitchenId)
     const memberId = normalizeString(input.memberId)
-    const name = normalizeString(input.name)
+    const name = normalizeString(input.changes.name)
     if (!kitchenId) throw new Error('Kitchen id is required')
     if (!memberId) throw new Error('Team member id is required')
     if (!name) throw new Error('Team member name is required')
@@ -40,7 +42,7 @@ export function useKitchenTeamMemberUpdate() {
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
-        body: { kitchenId, name },
+        body: { kitchenId, changes: { name } },
       }
     )
     if (result.ok !== true || result.memberId !== memberId) {
