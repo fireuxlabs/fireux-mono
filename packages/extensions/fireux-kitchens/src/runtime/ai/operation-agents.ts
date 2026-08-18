@@ -65,7 +65,11 @@ const definitions = {
     name: 'TeamAI',
     contextProviders: [context('kitchen.team', 'AppKitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
-    toolIds: ['kitchen.team.add-member', 'kitchen.member.create-invitation'],
+    toolIds: [
+      'kitchen.team.add-member',
+      'kitchen.member.create-invitation',
+      'kitchen.team.update-member',
+    ],
   },
   suppliers: {
     name: 'KitchenSuppliersAI',

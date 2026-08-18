@@ -19,13 +19,19 @@ import {
   createKitchenMemberInvitationTool,
   executeCreateKitchenMemberInvitationTool,
 } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-invitation-tool'
+import {
+  executeUpdateKitchenMemberPlan,
+  updateKitchenMemberTool,
+} from 'fireux-kitchens/runtime/server/kitchen/team/update-member-tool'
 import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/server/kitchen/ai/usage'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
 import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
 import {
   pendingTeamTool,
   possibleTeamToolRequest,
+  requestsTeamTitleCase,
   selectKitchenTeamTool,
+  teamTitleCaseChanges,
   teamToolConfirmation,
   type PendingTeamTool,
 } from '../../../utils/kitchen-team-tools'
@@ -153,19 +159,37 @@ export default defineEventHandler(async (event: H3Event) => {
       return {
         ok: true as const,
         answer:
-          pending.id === createKitchenMemberInvitationTool.id
-            ? `Okay, I won’t create an invitation for ${pending.name}.`
-            : `Okay, I won’t add ${pending.name}.`,
+          pending.id === updateKitchenMemberTool.id
+            ? 'Okay, I won’t update the Team names.'
+            : pending.id === createKitchenMemberInvitationTool.id
+              ? `Okay, I won’t create an invitation for ${pending.name}.`
+              : `Okay, I won’t add ${pending.name}.`,
       }
     }
     if (decision !== 'confirmed') {
       return {
         ok: true as const,
         answer:
-          pending.id === createKitchenMemberInvitationTool.id
-            ? `Please confirm: create a one-use invitation link for ${pending.name}?`
-            : `Please confirm: add ${pending.name} to this Kitchen team?`,
+          pending.id === updateKitchenMemberTool.id
+            ? `Please confirm these name changes: ${pending.changes.map((change) => `${change.previousName} → ${change.name}`).join(', ')}.`
+            : pending.id === createKitchenMemberInvitationTool.id
+              ? `Please confirm: create a one-use invitation link for ${pending.name}?`
+              : `Please confirm: add ${pending.name} to this Kitchen team?`,
         pendingTool: pending,
+      }
+    }
+    if (pending.id === updateKitchenMemberTool.id) {
+      const updated = await executeUpdateKitchenMemberPlan(event, {
+        kitchenId,
+        changes: pending.changes.map(({ memberId, name }) => ({
+          memberId,
+          name,
+        })),
+      })
+      return {
+        ok: true as const,
+        answer: `${updated.changes.length} Team ${updated.changes.length === 1 ? 'name has' : 'names have'} been updated.`,
+        tool: { id: pending.id, result: updated },
       }
     }
     if (pending.id === createKitchenMemberInvitationTool.id) {
@@ -201,6 +225,29 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const ai = useFireuxAi(event)
+  if (requestsTeamTitleCase(prompt)) {
+    const members = await access.db
+      .collection(`apps/${appId}/kitchens/${kitchenId}/team`)
+      .limit(200)
+      .get()
+    const changes = teamTitleCaseChanges(members.docs)
+    if (!changes.length) {
+      return {
+        ok: true as const,
+        answer: 'All Team member names already use title case.',
+      }
+    }
+    const proposal: PendingTeamTool = {
+      id: updateKitchenMemberTool.id,
+      name: 'Team member names',
+      changes,
+    }
+    return {
+      ok: true as const,
+      answer: `TeamAI can make these changes: ${changes.map((change) => `${change.previousName} → ${change.name}`).join(', ')}. Shall I continue?`,
+      pendingTool: proposal,
+    }
+  }
   if (possibleTeamToolRequest(prompt)) {
     const selection = await selectKitchenTeamTool(ai, appId, prompt)
     const name = text(selection.data?.name).replace(/\s+/g, ' ')

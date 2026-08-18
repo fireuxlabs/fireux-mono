@@ -243,6 +243,7 @@ const pendingTool = ref<{
   id: string
   name: string
   memberId?: string
+  changes?: { memberId: string; name: string; previousName: string }[]
 } | null>(null)
 let messageId = 0
 
@@ -311,7 +312,12 @@ async function runPrompt(text: string) {
     const response = await $fetch<{
       ok: true
       answer: string
-      pendingTool?: { id: string; name: string; memberId?: string }
+      pendingTool?: {
+        id: string
+        name: string
+        memberId?: string
+        changes?: { memberId: string; name: string; previousName: string }[]
+      }
       createdObject?: KitchenAICreatedObject
       resultAction?: KitchenAIResultAction
     }>('/api/console/kitchen/agent', {

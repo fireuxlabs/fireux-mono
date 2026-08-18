@@ -1,6 +1,7 @@
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { addKitchenTeamMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/add-member-tool'
 import { createKitchenMemberInvitationTool } from 'fireux-kitchens/runtime/server/kitchen/team/create-member-invitation-tool'
+import { updateKitchenMemberTool } from 'fireux-kitchens/runtime/server/kitchen/team/update-member-tool'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -15,6 +16,11 @@ export type PendingTeamTool =
       memberId: string
       name: string
     }
+  | {
+      id: typeof updateKitchenMemberTool.id
+      name: string
+      changes: { memberId: string; name: string; previousName: string }[]
+    }
 
 export function pendingTeamTool(value: unknown): PendingTeamTool | null {
   const source = record(value)
@@ -25,6 +31,27 @@ export function pendingTeamTool(value: unknown): PendingTeamTool | null {
   if (id === createKitchenMemberInvitationTool.id) {
     const memberId = text(source.memberId)
     return memberId ? { id, memberId, name } : null
+  }
+  if (id === updateKitchenMemberTool.id) {
+    const changes = Array.isArray(source.changes)
+      ? source.changes
+          .map(record)
+          .map((change) => ({
+            memberId: text(change.memberId),
+            name: text(change.name).replace(/\s+/g, ' '),
+            previousName: text(change.previousName).replace(/\s+/g, ' '),
+          }))
+          .filter(
+            (change) =>
+              change.memberId &&
+              change.name &&
+              change.name.length <= 120 &&
+              change.previousName
+          )
+      : []
+    return changes.length && changes.length <= 200
+      ? { id, name, changes }
+      : null
   }
   return null
 }
@@ -40,7 +67,32 @@ export function teamToolConfirmation(value: string) {
 }
 
 export function possibleTeamToolRequest(prompt: string) {
-  return /\b(?:add|create|invite|invitation)\b/i.test(prompt)
+  return /\b(?:add|create|invite|invitation|rename|capitalise|capitalize|title[ -]?case)\b/i.test(
+    prompt
+  )
+}
+
+export function requestsTeamTitleCase(prompt: string) {
+  return (
+    /\b(?:title[ -]?case|capitalise|capitalize)\b/i.test(prompt) &&
+    /\b(?:all|everyone|everybody|names?|members?|team)\b/i.test(prompt)
+  )
+}
+
+export function teamTitleCaseChanges(
+  documents: readonly { id: string; data: () => Record<string, unknown> }[]
+) {
+  return documents.flatMap((document) => {
+    const previousName = text(document.data().name)
+    const name = previousName.replace(
+      /(^|[\s'-])([\p{L}])/gu,
+      (_, boundary: string, letter: string) =>
+        `${boundary}${letter.toLocaleUpperCase()}`
+    )
+    return previousName && name !== previousName
+      ? [{ memberId: document.id, previousName, name }]
+      : []
+  })
 }
 
 export function selectKitchenTeamTool(
@@ -64,6 +116,7 @@ export function selectKitchenTeamTool(
           allowed_tools: [
             addKitchenTeamMemberTool,
             createKitchenMemberInvitationTool,
+            updateKitchenMemberTool,
           ],
         },
       },

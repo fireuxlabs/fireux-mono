@@ -21,6 +21,8 @@ export type UpdateKitchenMemberResult = {
   slug: string
 }
 
+export type KitchenMemberNameChange = { memberId: string; name: string }
+
 const normalizeName = (value: unknown) =>
   String(value ?? '')
     .trim()
@@ -85,4 +87,71 @@ export async function updateKitchenMember(
     name: requested.name,
     slug,
   }
+}
+
+export async function updateKitchenMemberNames(
+  event: H3Event,
+  input: { kitchenId: string; changes: KitchenMemberNameChange[] }
+) {
+  const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
+  const changes = Array.isArray(input?.changes)
+    ? input.changes.map((change) => ({
+        memberId: requireFirestoreDocumentId(
+          change?.memberId,
+          'Team member id'
+        ),
+        name: normalizeName(change?.name),
+      }))
+    : []
+  if (!changes.length || changes.length > 200) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Between 1 and 200 member name changes are required.',
+    })
+  }
+  if (changes.some((change) => !change.name || change.name.length > 120)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        'Every Team member name must be between 1 and 120 characters.',
+    })
+  }
+  if (
+    new Set(changes.map((change) => change.memberId)).size !== changes.length
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'A Team member can only be updated once per command.',
+    })
+  }
+
+  const actor = await readKitchenMutationActor(event)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const kitchen = await requireKitchenMutationAuthority(
+      mutations,
+      actor,
+      kitchenId
+    )
+    const members = serverKitchenTeamMembersTarget(
+      kitchen.ownerAppId,
+      kitchenId
+    )
+    const existing = await Promise.all(
+      changes.map((change) => mutations.read(members, change.memberId))
+    )
+    if (existing.some((member) => !member.exists)) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'One or more Team members no longer exist.',
+      })
+    }
+    for (const change of changes) {
+      mutations.update(members, change.memberId, {
+        name: change.name,
+        display_name: change.name,
+        updated: serverAuditStamp({ by: actor.uid }),
+      })
+    }
+  })
+  return { ok: true as const, changes }
 }
