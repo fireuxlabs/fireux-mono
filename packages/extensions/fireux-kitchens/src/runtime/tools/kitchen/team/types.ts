@@ -2,13 +2,6 @@ export type KitchenTeamToolMode = 'read' | 'write'
 export type KitchenTeamToolRisk = 'read' | 'write' | 'destructive'
 export type KitchenTeamToolConfirmation = 'none' | 'required'
 
-export type KitchenTeamToolSuggestion =
-  | { strategy: 'example'; text: string }
-  | { strategy: 'collection'; text: string }
-  | { strategy: 'eligible-record'; template: string }
-  | { strategy: 'record'; template: string }
-  | { strategy: 'never' }
-
 export type KitchenTeamToolDefinition = {
   id: `kitchen.team.${string}`
   mode: KitchenTeamToolMode
@@ -32,8 +25,7 @@ export type KitchenTeamToolDefinition = {
           icon: string
         }
     agent: {
-      enabled: boolean
-      suggestion: KitchenTeamToolSuggestion
+      callable: boolean
     }
   }
   result?: {

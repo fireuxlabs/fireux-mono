@@ -41,7 +41,7 @@ export type KitchenMenuDraftSection = {
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const numberValue = (value: unknown) => {
@@ -52,7 +52,7 @@ const numberValue = (value: unknown) => {
 const money = (value: unknown) => {
   if (typeof value === 'number' && Number.isFinite(value)) return value
   const normalized = readString(value)
-    .replace(/chf/ig, '')
+    .replace(/chf/gi, '')
     .replace(/[,]/g, '.')
     .match(/\d+(?:\.\d+)?/)
 
@@ -137,7 +137,9 @@ export function normalizeKitchenMenuDraftSections(
               is_deal: normalizeDishDealFlag(row.is_deal),
               image_url: readString(row.image_url),
               price: money(row.price),
-              add_ons: Array.isArray(row.add_ons) ? cleanAddOns(row.add_ons) : [],
+              add_ons: Array.isArray(row.add_ons)
+                ? cleanAddOns(row.add_ons)
+                : [],
               price_options: Array.isArray(row.price_options)
                 ? cleanPriceOptions(row.price_options)
                 : [],

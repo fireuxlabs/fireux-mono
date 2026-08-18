@@ -47,13 +47,7 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
       description: 'Update a selected Team member.',
       icon: 'i-lucide-user-pen',
     },
-    agent: {
-      enabled: true,
-      suggestion: {
-        strategy: 'record',
-        template: 'Update {existingTeamMemberName} to {updatedTeamMemberName}',
-      },
-    },
+    agent: { callable: true },
   },
   result: { kind: 'mutation' },
 })

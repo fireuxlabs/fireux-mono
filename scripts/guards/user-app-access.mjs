@@ -258,9 +258,9 @@ export async function run({ repoRoot }) {
   }
 
   for (const relativePath of [
-    'packages/extensions/fireux-properties/src/runtime/server/portfolio/onboarding.ts',
-    'packages/extensions/fireux-properties/src/runtime/server/property/onboarding.ts',
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
   ]) {
     assert.match(
       read(repoRoot, relativePath),

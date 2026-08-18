@@ -356,7 +356,7 @@ sources exist.
 - Generic style vocabulary:
   `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
 - Kitchen theme mutation/editor:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/theme.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/theme.ts`
   and `components/Console/Kitchen/Identity/Theme.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/template-one*`
@@ -365,7 +365,7 @@ sources exist.
   `packages/ecosystem/fireux-misebox/src/runtime/kitchen-basic-presentation.ts`
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-projection.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/public-projection.ts`
   and `components/Kitchen/Collection/Manager.vue`
 - Guard: `scripts/guards/landing-templates.mjs`
 

@@ -1,13 +1,8 @@
 // Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: let an authenticated Kitchen operator verify the stored recipient and provider.
-import {
-  createError,
-  defineEventHandler,
-  readBody,
-  type H3Event,
-} from 'h3'
+import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenOperator } from '../../../../kitchen/operator-access.ts'
+import { requireKitchenOperator } from '../../../../kitchen/core/operator-access.ts'
 import { readMenuOrderingConfig } from '../../../../menu/ordering/config.ts'
 import {
   menuPreOrderWhatsAppErrorMessage,
@@ -22,7 +17,7 @@ type WhatsAppTestBody = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -44,9 +39,9 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const preOrder = readMenuOrderingConfig(record(menuSnap.data()))
-    .order_types
-    .find(config => config.type === 'pre_order')
+  const preOrder = readMenuOrderingConfig(
+    record(menuSnap.data())
+  ).order_types.find((config) => config.type === 'pre_order')
   const whatsapp = preOrder?.notifications?.whatsapp
   if (!whatsapp?.enabled || !whatsapp.recipient_phone) {
     throw createError({

@@ -18,7 +18,10 @@ export default defineEventHandler(
     const snapshot = await getRuntimeFirestore().doc(`ingredients/${id}`).get()
     const item = snapshot.exists ? projectPublicIngredient(snapshot) : null
     if (!item) {
-      throw createError({ statusCode: 404, statusMessage: 'Ingredient not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Ingredient not found.',
+      })
     }
 
     setResponseHeaders(event, {

@@ -811,11 +811,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const projectControlApi = read(
     repoRoot,
-    'projects/fireux/fireux-app/server/api/internal/control/projects.get.ts'
+    'projects/fireux/fireux-app/server/project/index/read.ts'
   )
   const projectTeamApi = read(
     repoRoot,
-    'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId]/team.get.ts'
+    'projects/fireux/fireux-app/server/project/team/read.ts'
   )
   assert.doesNotMatch(
     projectCollection,

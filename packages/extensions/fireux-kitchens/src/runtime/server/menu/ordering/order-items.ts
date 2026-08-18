@@ -40,9 +40,13 @@ export async function resolveMenuOrderItems(
     requestedItems: RequestedMenuOrderItem[]
   }
 ) {
-  const sourceMenuIds = Array.from(new Set(
-    input.requestedItems.map((item) => text(item.menuId) || input.context.menuId)
-  ))
+  const sourceMenuIds = Array.from(
+    new Set(
+      input.requestedItems.map(
+        (item) => text(item.menuId) || input.context.menuId
+      )
+    )
+  )
   if (!sourceMenuIds.every(safeSegment)) {
     throw createError({
       statusCode: 400,
@@ -51,50 +55,57 @@ export async function resolveMenuOrderItems(
   }
 
   const rowsByMenuId = new Map(
-    await Promise.all(sourceMenuIds.map(async (sourceMenuId) => {
-      const sourceMenuSnap = await db
-        .doc(
-          `apps/${input.context.appId}/kitchens/${input.context.kitchenId}/menus/${sourceMenuId}`
-        )
-        .get()
-      const sourceMenuData = sourceMenuSnap.data() || {}
-      if (!sourceMenuSnap.exists || text(sourceMenuData.status) !== 'published') {
-        throw createError({
-          statusCode: 404,
-          statusMessage: 'Menu item source is not available.',
-        })
-      }
-
-      const sourceOrdering = readMenuOrderingConfig(
-        sourceMenuData,
-        input.context.fulfilment,
-        input.context.operationHours
-      )
-      if (
-        !isMenuOrderingEnabled(sourceOrdering) ||
-        !sourceOrdering.order_types.some((type) => type.type === input.orderType)
-      ) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Menu item source does not accept this order type.',
-        })
-      }
-
-      const sections = await readKitchenMenuSections(db, {
-        appId: input.context.appId,
-        kitchenId: input.context.kitchenId,
-        menuId: sourceMenuId,
-      })
-
-      return [
-        sourceMenuId,
-        new Map(
-          sections.flatMap((section) =>
-            section.items.map((item) => [item.id, item])
+    await Promise.all(
+      sourceMenuIds.map(async (sourceMenuId) => {
+        const sourceMenuSnap = await db
+          .doc(
+            `apps/${input.context.appId}/kitchens/${input.context.kitchenId}/menus/${sourceMenuId}`
           )
-        ),
-      ] as const
-    }))
+          .get()
+        const sourceMenuData = sourceMenuSnap.data() || {}
+        if (
+          !sourceMenuSnap.exists ||
+          text(sourceMenuData.status) !== 'published'
+        ) {
+          throw createError({
+            statusCode: 404,
+            statusMessage: 'Menu item source is not available.',
+          })
+        }
+
+        const sourceOrdering = readMenuOrderingConfig(
+          sourceMenuData,
+          input.context.fulfilment,
+          input.context.operationHours
+        )
+        if (
+          !isMenuOrderingEnabled(sourceOrdering) ||
+          !sourceOrdering.order_types.some(
+            (type) => type.type === input.orderType
+          )
+        ) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Menu item source does not accept this order type.',
+          })
+        }
+
+        const sections = await readKitchenMenuSections(db, {
+          appId: input.context.appId,
+          kitchenId: input.context.kitchenId,
+          menuId: sourceMenuId,
+        })
+
+        return [
+          sourceMenuId,
+          new Map(
+            sections.flatMap((section) =>
+              section.items.map((item) => [item.id, item])
+            )
+          ),
+        ] as const
+      })
+    )
   )
   const items: ResolvedMenuOrderItem[] = input.requestedItems.map(
     (requestedItem, index) => {

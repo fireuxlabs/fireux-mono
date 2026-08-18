@@ -4,9 +4,7 @@ import {
   type SproochliLanguageCode,
   type SproochliMenuTranslationField,
 } from 'fireux-sproochli/runtime/sproochli'
-import {
-  resolveSproochliMenu,
-} from 'fireux-sproochli/runtime/server/menu/provider-client'
+import { resolveSproochliMenu } from 'fireux-sproochli/runtime/server/menu/provider-client'
 import {
   readSproochliMenuTranslationCache,
   readSproochliMenuTranslationCacheLanguages,
@@ -17,12 +15,8 @@ import {
   sproochliTranslationMemoryId,
   writeSproochliTranslationMemory,
 } from 'fireux-sproochli/runtime/server/menu/translation-memory'
-import {
-  sproochliMenuTranslationMemoryCandidate,
-} from 'fireux-sproochli/runtime/server/menu/translation-recipe'
-import {
-  resolveSproochliHostStorage,
-} from 'fireux-sproochli/runtime/server/menu/storage'
+import { sproochliMenuTranslationMemoryCandidate } from 'fireux-sproochli/runtime/server/menu/translation-recipe'
+import { resolveSproochliHostStorage } from 'fireux-sproochli/runtime/server/menu/storage'
 import {
   MENU_BROWSE_SURFACE_COPY_FIELDS,
   resolveMenuBrowseSurfaceCopy,
@@ -36,7 +30,9 @@ const readCanonicalCacheLanguages = async (
   ...new Set(
     (await readSproochliMenuTranslationCacheLanguages(input))
       .map(normalizeSproochliLanguage)
-      .filter((entry): entry is Exclude<SproochliLanguageCode, ''> => Boolean(entry))
+      .filter((entry): entry is Exclude<SproochliLanguageCode, ''> =>
+        Boolean(entry)
+      )
   ),
 ]
 const fieldSegment = (value: unknown) =>
@@ -50,7 +46,10 @@ function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
   const menuKey = menuFieldKey(menu)
   const fields: SproochliMenuTranslationField[] = [
     { id: `${menuKey}:name`, sourceText: text(menu.content.name) },
-    { id: `${menuKey}:description`, sourceText: text(menu.content.description) },
+    {
+      id: `${menuKey}:description`,
+      sourceText: text(menu.content.description),
+    },
   ]
 
   menu.content.sections.forEach((section) => {
@@ -79,7 +78,7 @@ function menuFields(menu: MenuManifest): SproochliMenuTranslationField[] {
     })
   })
 
-  return fields.filter(field => field.sourceText)
+  return fields.filter((field) => field.sourceText)
 }
 
 function translatedMenu(
@@ -99,7 +98,7 @@ function translatedMenu(
         `${menuKey}:description`,
         menu.content.description
       ),
-      sections: menu.content.sections.map(section => ({
+      sections: menu.content.sections.map((section) => ({
         ...section,
         label: translated(`section:${section.id}:label`, section.label),
         items: section.items.map((item) => {
@@ -107,18 +106,15 @@ function translatedMenu(
           return {
             ...item,
             name: translated(`${itemKey}:name`, item.name),
-            description: translated(
-              `${itemKey}:description`,
-              item.description
-            ),
-            priceOptions: item.priceOptions.map(option => ({
+            description: translated(`${itemKey}:description`, item.description),
+            priceOptions: item.priceOptions.map((option) => ({
               ...option,
               label: translated(
                 `${itemKey}:price-option:${option.id}:label`,
                 option.label
               ),
             })),
-            addOns: item.addOns.map(option => ({
+            addOns: item.addOns.map((option) => ({
               ...option,
               label: translated(
                 `${itemKey}:add-on:${option.id}:label`,
@@ -143,7 +139,7 @@ export async function resolveMenuSproochli(
   )
   const fields = [
     ...menuFields(menu),
-    ...MENU_BROWSE_SURFACE_COPY_FIELDS.map(field => ({
+    ...MENU_BROWSE_SURFACE_COPY_FIELDS.map((field) => ({
       id: field.id,
       sourceText: field.sourceText,
     })),
@@ -157,8 +153,7 @@ export async function resolveMenuSproochli(
   let readyLanguages: SproochliLanguageCode[] | null = null
 
   try {
-    readyLanguages =
-      await readCanonicalCacheLanguages(cacheScope)
+    readyLanguages = await readCanonicalCacheLanguages(cacheScope)
     if (!requestedLanguage) {
       return {
         ...menu,
@@ -178,7 +173,7 @@ export async function resolveMenuSproochli(
     })
 
     if (!translations) {
-      const candidates = fields.map(field =>
+      const candidates = fields.map((field) =>
         sproochliMenuTranslationMemoryCandidate({
           fieldId: field.id,
           sourceLanguage: 'auto',
@@ -216,7 +211,7 @@ export async function resolveMenuSproochli(
           !sameHost ||
           resolution.language !== requestedLanguage ||
           resolved.size !== missingFields.length ||
-          missingFields.some(field => !text(resolved.get(field.id)))
+          missingFields.some((field) => !text(resolved.get(field.id)))
         ) {
           throw new Error('Sproochli returned an incomplete Menu.')
         }
@@ -224,15 +219,14 @@ export async function resolveMenuSproochli(
         missingFields.forEach((field) => {
           translations!.set(field.id, text(resolved.get(field.id)))
         })
-        const missingIds = new Set(missingFields.map(field => field.id))
+        const missingIds = new Set(missingFields.map((field) => field.id))
         await writeSproochliTranslationMemory(
           storage,
           candidates
-            .filter(candidate => missingIds.has(candidate.fieldId))
-            .map(candidate => ({
+            .filter((candidate) => missingIds.has(candidate.fieldId))
+            .map((candidate) => ({
               ...candidate,
-              provider:
-                text(resolution.provider) || 'google-cloud-translation',
+              provider: text(resolution.provider) || 'google-cloud-translation',
               translatedText: translations!.get(candidate.fieldId) || '',
             }))
         )
@@ -240,7 +234,7 @@ export async function resolveMenuSproochli(
 
       if (
         translations.size !== fields.length ||
-        fields.some(field => !text(translations!.get(field.id)))
+        fields.some((field) => !text(translations!.get(field.id)))
       ) {
         throw new Error('Sproochli could not resolve a complete Menu.')
       }
@@ -258,8 +252,7 @@ export async function resolveMenuSproochli(
       if (!translations) {
         throw new Error('Sproochli could not persist a complete Menu.')
       }
-      readyLanguages =
-        await readCanonicalCacheLanguages(cacheScope)
+      readyLanguages = await readCanonicalCacheLanguages(cacheScope)
     }
 
     const translated = translatedMenu(menu, translations)

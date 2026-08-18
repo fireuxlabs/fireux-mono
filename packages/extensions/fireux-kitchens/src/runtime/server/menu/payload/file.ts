@@ -10,8 +10,7 @@ import {
 } from './types.ts'
 
 export const readMenuDocumentKind = (data: Record<string, unknown>) =>
-  readRecordString(data, 'file_kind') ||
-  readRecordString(data, 'kind')
+  readRecordString(data, 'file_kind') || readRecordString(data, 'kind')
 
 export const readMenuFile = (
   data: Record<string, unknown>

@@ -302,7 +302,7 @@ const files = {
   supplierOnboardingHandler:
     'packages/extensions/fireux-suppliers/src/runtime/server/api/suppliers/onboarding/complete.post.ts',
   supplierOnboarding:
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/onboarding.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts',
   retiredSupplierDelete:
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierDelete.ts',
   portfolioModel:
@@ -322,7 +322,7 @@ const files = {
   portfolioOnboardingHandler:
     'packages/extensions/fireux-properties/src/runtime/server/api/portfolios/onboarding/complete.post.ts',
   portfolioOnboarding:
-    'packages/extensions/fireux-properties/src/runtime/server/portfolio/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/server/portfolio/index/onboarding/onboarding.ts',
   retiredPortfolioDelete:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioDelete.ts',
   propertyModel:
@@ -350,13 +350,13 @@ const files = {
   propertyPublicAdapter:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/property/usePublicPropertyIndex.ts',
   propertyPublicApi:
-    'packages/extensions/fireux-properties/src/runtime/server/api/properties/index.get.ts',
+    'packages/extensions/fireux-properties/src/runtime/server/property/index/public-index.ts',
   propertyServerConfig:
     'packages/extensions/fireux-properties/src/config/module/server-config.ts',
   propertyOnboardingHandler:
     'packages/extensions/fireux-properties/src/runtime/server/api/properties/onboarding/complete.post.ts',
   propertyOnboarding:
-    'packages/extensions/fireux-properties/src/runtime/server/property/onboarding.ts',
+    'packages/extensions/fireux-properties/src/runtime/server/property/index/onboarding.ts',
   activePortfolio:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio.ts',
   portfolioPropertyCollection:
@@ -380,39 +380,43 @@ const files = {
   kitchenConsole:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts',
   kitchenTargetApi:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/targets.ts',
+  kitchenTargetHttp:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
   kitchenPublicProjection:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-projection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/public-projection.ts',
   kitchenRouteIdentity:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/route-identity.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/route-identity.ts',
   kitchenPublicDetail:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[slug].get.ts',
   kitchenTargetResolver:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/console-targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/console-targets.ts',
   kitchenCreate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts',
   kitchenUpdate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts',
   kitchenUpdateInput:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/update-input.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/update-input.ts',
   kitchenUpdateServer:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/update.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/update.ts',
   kitchenMutationAuthority:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/mutation-authority.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/core/mutation-authority.ts',
   kitchenTheme:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/theme.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/theme.ts',
   kitchenAppTheme:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/app-theme.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/app-theme.ts',
   kitchenIdentityProgression:
     'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding.ts',
   kitchenOnboardingActor:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-actor.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding-actor.ts',
   kitchenOnboardingPolicy:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-policy.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/onboarding/onboarding-policy.ts',
+  consoleEntityOnboardingAuthority:
+    'packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts',
   kitchenServerConfig:
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts',
   blankCollection:
@@ -1113,7 +1117,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /management\.mode === 'root'/)
   assert.match(
     source.kitchenTargetApi,
-    /isGlobal\s*\?\s*indexedTargetIds\s*:\s*indexedTargetIds\.filter\(id => scopes\.get\(id\)\?\.appId === appId\)/,
+    /isGlobal\s*\?\s*indexedTargetIds\s*:\s*indexedTargetIds\.filter\(\(?id\)? => scopes\.get\(id\)\?\.appId === appId\)/,
     'Tenant Kitchen target projection must be restricted to the current App.'
   )
   assert.match(
@@ -1127,7 +1131,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /authority\.operatorIds\.includes\(uid\)/
   )
   assert.match(source.kitchenTargetApi, /authority\.teamIds\.includes\(uid\)/)
-  assert.match(source.kitchenTargetApi, /Cache-Control': 'private, no-store'/)
+  assert.match(source.kitchenTargetHttp, /Cache-Control': 'private, no-store'/)
+  assert.match(source.kitchenTargetHttp, /readKitchenConsoleTargets\(event\)/)
   assert.doesNotMatch(
     source.kitchenTargetApi,
     /getQuery|readBody|\.\.\.root\b|\.\.\.support\b/,
@@ -1177,8 +1182,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboardingPolicy,
-    /unsupported field:[\s\S]*boundedIds\(value\.operator_ids[\s\S]*boundedIds\(value\.team_ids[\s\S]*value\.join_requests/,
+    /unsupported field:[\s\S]*readConsoleEntitySupportAuthority\(value, 'Kitchen'\)/,
     'AppKitchen support must reject domain payload and require the three access arrays.'
+  )
+  assert.match(
+    source.consoleEntityOnboardingAuthority,
+    /operatorIds:[\s\S]*value\.operator_ids[\s\S]*teamIds:[\s\S]*value\.team_ids[\s\S]*joinRequests:[\s\S]*value\.join_requests/,
+    'Shared Console Entity support authority must validate all three access arrays.'
   )
   for (const [name, sources, retiredPath] of [
     [

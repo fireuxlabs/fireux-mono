@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import { updateKitchenAppTheme } from '../../../kitchen/app-theme.ts'
+import { updateKitchenAppTheme } from '../../../kitchen/identity/app-theme.ts'
 
-export default defineEventHandler(async event =>
+export default defineEventHandler(async (event) =>
   updateKitchenAppTheme(event, await readBody(event))
 )

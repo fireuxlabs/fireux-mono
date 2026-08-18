@@ -108,9 +108,10 @@ const customerPartySize = (value: unknown) => {
 }
 
 export const readCustomer = (value: unknown): KitchenOrderCustomer => {
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
+  const source =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {}
   const customer = {
     name: customerText(source.name, 'Customer name', 120),
     email: customerText(source.email, 'Customer email', 254),

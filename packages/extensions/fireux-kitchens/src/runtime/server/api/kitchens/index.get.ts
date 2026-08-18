@@ -21,7 +21,7 @@ import {
   hydrateKitchenPublicDocuments,
   projectPublicKitchenIndexItem,
   type KitchenPublicDirectoryScope,
-} from '../../kitchen/public-projection.ts'
+} from '../../kitchen/identity/public-projection.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const KITCHEN_COLLECTION_SCAN_LIMIT = 500
@@ -88,7 +88,8 @@ export default defineEventHandler(
     if (query.visibility) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Kitchen collection visibility is not caller-selectable.',
+        statusMessage:
+          'Kitchen collection visibility is not caller-selectable.',
       })
     }
 
@@ -143,7 +144,7 @@ export default defineEventHandler(
 
       const snapshot = await kitchenQuery.get()
       if (snapshot.empty) break
-      const documents = snapshot.docs.map(document => ({
+      const documents = snapshot.docs.map((document) => ({
         id: document.id,
         data: document.data() || {},
       }))
@@ -156,13 +157,14 @@ export default defineEventHandler(
       for (const [index, document] of documents.entries()) {
         scanned += 1
         afterId = document.id
-        const item = document.data.visibility === false && !includeHidden
-          ? null
-          : projectPublicKitchenIndexItem(
-              document,
-              dataByPath,
-              directoryScope
-            )
+        const item =
+          document.data.visibility === false && !includeHidden
+            ? null
+            : projectPublicKitchenIndexItem(
+                document,
+                dataByPath,
+                directoryScope
+              )
         if (item) items.push(item)
         if (items.length >= limit) {
           if (index < documents.length - 1 || documents.length === scanLimit) {

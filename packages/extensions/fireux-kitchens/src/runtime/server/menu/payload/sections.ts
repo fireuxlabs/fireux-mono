@@ -9,10 +9,10 @@ import type {
 } from '../../../models/kitchen/menu/menu-detail.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
+const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const itemName = (item: Record<string, unknown>) =>
@@ -24,19 +24,15 @@ const itemDescription = (item: Record<string, unknown>) =>
 // Top-level image values here are already joined public rows, not stored
 // MenuItem ownership. Raw MenuItem fallbacks are deliberately excluded.
 const itemImageUrl = (item: Record<string, unknown>) =>
-  text(item.imageUrl) ||
-  text(item.image_url) ||
-  text(record(item.dish).image)
+  text(item.imageUrl) || text(item.image_url) || text(record(item.dish).image)
 
 const itemPriceLabel = (item: Record<string, unknown>) =>
-  text(item.priceLabel) ||
-  text(item.price_label) ||
-  text(item.price)
+  text(item.priceLabel) || text(item.price_label) || text(item.price)
 
 const priceNumber = (value: unknown) => {
   const parsed = Number(
     text(value)
-      .replace(/chf/ig, '')
+      .replace(/chf/gi, '')
       .replace(',', '.')
       .match(/\d+(?:\.\d+)?/)?.[0] || 0
   )
@@ -46,10 +42,14 @@ const priceNumber = (value: unknown) => {
 
 const optionId = (option: Record<string, unknown>, fallback: string) =>
   text(option.id) ||
-  text(option.label).toLowerCase().replace(/[^a-z0-9]+/g, '-') ||
+  text(option.label)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') ||
   fallback
 
-const itemPriceOptions = (item: Record<string, unknown>): MenuManifestPriceOption[] =>
+const itemPriceOptions = (
+  item: Record<string, unknown>
+): MenuManifestPriceOption[] =>
   list(item.priceOptions || item.price_options)
     .map((option, optionIndex) => {
       const optionRecord = record(option)
@@ -65,7 +65,7 @@ const itemPriceOptions = (item: Record<string, unknown>): MenuManifestPriceOptio
           (price ? String(price) : ''),
       }
     })
-    .filter(option => option.label && option.priceLabel)
+    .filter((option) => option.label && option.priceLabel)
 
 const itemAddOns = (item: Record<string, unknown>): MenuManifestAddOn[] =>
   list(item.addOns || item.add_ons)
@@ -83,7 +83,7 @@ const itemAddOns = (item: Record<string, unknown>): MenuManifestAddOn[] =>
           (price ? String(price) : ''),
       }
     })
-    .filter(option => option.label && option.price >= 0)
+    .filter((option) => option.label && option.price >= 0)
 
 export const readMenuManifestSections = (
   sections: unknown[]

@@ -12,11 +12,10 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
-const rows = (value: unknown) =>
-  Array.isArray(value) ? value.map(record) : []
+const rows = (value: unknown) => (Array.isArray(value) ? value.map(record) : [])
 
 const money = (value: unknown) => {
   const number = Number(value)
@@ -42,8 +41,9 @@ const foodBookingIds = (html: string) =>
     ...[...html.matchAll(/data-glf-ruid=["']([^"']+)["']/g)].map((match) =>
       text(match[1])
     ),
-    ...[...html.matchAll(/restaurant_uid["']?\s*[:=]\s*["']([^"']+)["']/g)]
-      .map((match) => text(match[1])),
+    ...[...html.matchAll(/restaurant_uid["']?\s*[:=]\s*["']([^"']+)["']/g)].map(
+      (match) => text(match[1])
+    ),
   ])
 
 const optionGroupSummary = (value: unknown) =>
@@ -220,9 +220,7 @@ export async function resolveKitchenMenuUrlContent(
     provider: 'html',
     source_url: sourceUrl,
     resolved_url: response.url || sourceUrl,
-    text: response.ok
-      ? pageText(body)
-      : `URL returned ${response.status}.`,
+    text: response.ok ? pageText(body) : `URL returned ${response.status}.`,
     metadata: {
       status: response.status,
       foodbooking_ids: ids,

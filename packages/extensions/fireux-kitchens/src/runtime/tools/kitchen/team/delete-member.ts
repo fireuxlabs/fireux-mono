@@ -28,7 +28,7 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
       description: 'Delete an unlinked member and revoke pending invitations.',
       icon: 'i-lucide-user-minus',
     },
-    agent: { enabled: true, suggestion: { strategy: 'never' } },
+    agent: { callable: true },
   },
   result: { kind: 'mutation' },
 })

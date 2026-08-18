@@ -25,7 +25,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const serverWriter = read(
     repoRoot,
-    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/item.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/server/supplier/operations/items/item.ts'
   )
 
   assert.match(ingredientModel, /export const IngredientDefaults\b/)

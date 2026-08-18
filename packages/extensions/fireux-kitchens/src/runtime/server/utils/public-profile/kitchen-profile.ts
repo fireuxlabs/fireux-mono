@@ -22,9 +22,7 @@ function strings(value: unknown, maxItems: number, maxLength = 160): string[] {
   ) {
     return []
   }
-  return value
-    .map((entry) => entry.trim())
-    .filter(Boolean)
+  return value.map((entry) => entry.trim()).filter(Boolean)
 }
 
 function gallery(value: unknown) {
@@ -33,7 +31,9 @@ function gallery(value: unknown) {
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return []
     const source = entry as Record<string, unknown>
     if (
-      !Object.keys(source).every((key) => ['name', 'image_url'].includes(key)) ||
+      !Object.keys(source).every((key) =>
+        ['name', 'image_url'].includes(key)
+      ) ||
       !Object.hasOwn(source, 'name') ||
       !Object.hasOwn(source, 'image_url') ||
       typeof source.name !== 'string' ||

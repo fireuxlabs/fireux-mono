@@ -28,18 +28,22 @@ type StorageBucket = ReturnType<ReturnType<typeof getStorage>['bucket']>
 const text = (value: unknown) => String(value ?? '').trim()
 
 const missingStorageObject = (error: unknown) => {
-  const source = error && typeof error === 'object'
-    ? error as { code?: unknown; statusCode?: unknown }
-    : {}
+  const source =
+    error && typeof error === 'object'
+      ? (error as { code?: unknown; statusCode?: unknown })
+      : {}
   const code = String(source.code ?? '').toLowerCase()
 
-  return source.statusCode === 404 || code === '404' || code.includes('not-found')
+  return (
+    source.statusCode === 404 || code === '404' || code.includes('not-found')
+  )
 }
 
 const storagePreconditionFailed = (error: unknown) => {
-  const source = error && typeof error === 'object'
-    ? error as { code?: unknown; statusCode?: unknown }
-    : {}
+  const source =
+    error && typeof error === 'object'
+      ? (error as { code?: unknown; statusCode?: unknown })
+      : {}
   return Number(source.code ?? source.statusCode) === 412
 }
 
@@ -55,13 +59,14 @@ const customMetadata = (value: unknown): Record<string, string> => {
 const downloadTokens = (metadata: Record<string, string>) =>
   text(metadata.firebaseStorageDownloadTokens)
     .split(',')
-    .map(value => value.trim())
+    .map((value) => value.trim())
     .filter(Boolean)
 
-const dishImageConflict = () => createError({
-  statusCode: 409,
-  statusMessage: 'The Dish image changed during upload. Please try again.',
-})
+const dishImageConflict = () =>
+  createError({
+    statusCode: 409,
+    statusMessage: 'The Dish image changed during upload. Please try again.',
+  })
 
 async function currentObjectMetadata(
   bucket: StorageBucket,
@@ -82,7 +87,10 @@ async function normalizeDishImage(data: Buffer) {
       limitInputPixels: maxInputPixels,
     })
     const metadata = await source.metadata()
-    if (!metadata.format || !['jpeg', 'png', 'webp'].includes(metadata.format)) {
+    if (
+      !metadata.format ||
+      !['jpeg', 'png', 'webp'].includes(metadata.format)
+    ) {
       throw new Error('unsupported format')
     }
 
@@ -113,9 +121,11 @@ async function normalizeDishImage(data: Buffer) {
   }
 }
 
-export async function normalizeAndSaveDishImage(input: DishImageTarget & {
-  data: Buffer
-}) {
+export async function normalizeAndSaveDishImage(
+  input: DishImageTarget & {
+    data: Buffer
+  }
+) {
   const data = await normalizeDishImage(input.data)
   const uploadId = randomUUID()
   const downloadToken = randomUUID()
@@ -160,11 +170,7 @@ export async function normalizeAndSaveDishImage(input: DishImageTarget & {
   }
 
   return {
-    imageUrl: firebaseStorageDownloadUrl(
-      bucketName,
-      objectPath,
-      downloadToken
-    ),
+    imageUrl: firebaseStorageDownloadUrl(bucketName, objectPath, downloadToken),
     objectPath,
     async deleteUploaded() {
       let current
@@ -183,12 +189,14 @@ export async function normalizeAndSaveDishImage(input: DishImageTarget & {
       }
 
       try {
-        await bucket.file(objectPath, {
-          preconditionOpts: {
-            ifGenerationMatch: savedVersion.generation,
-            ifMetagenerationMatch: savedVersion.metageneration,
-          },
-        }).delete()
+        await bucket
+          .file(objectPath, {
+            preconditionOpts: {
+              ifGenerationMatch: savedVersion.generation,
+              ifMetagenerationMatch: savedVersion.metageneration,
+            },
+          })
+          .delete()
       } catch (error) {
         if (storagePreconditionFailed(error) || missingStorageObject(error)) {
           return

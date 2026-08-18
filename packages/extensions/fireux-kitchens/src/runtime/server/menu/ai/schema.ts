@@ -7,7 +7,8 @@ const LOCALIZED_TEXT_SCHEMA = {
     properties: {
       language: {
         type: 'string',
-        description: 'Detected Sproochli language code such as en, de, fr, it, or gsw.',
+        description:
+          'Detected Sproochli language code such as en, de, fr, it, or gsw.',
       },
       text: { type: 'string' },
     },

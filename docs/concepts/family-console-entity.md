@@ -1,6 +1,6 @@
 # Console entity family
 
-Updated: 2026-08-16
+Updated: 2026-08-18
 Ref: b5ed10b84
 Role: map, not canon
 
@@ -16,6 +16,7 @@ still needed to remove unexplained drift.
 - Horizontal: `entities.md`, `pages.md`, `components.md`, `composables.md`,
   `firestore-entity.md`
 - Executable reference: `scripts/guards/console-indexes.mjs`
+- Server-shape reference: `scripts/guards/console-entity-server.mjs`
 - Authority reference: `scripts/guards/root-app-support-authority.mjs`
 
 ## Members and current surface
@@ -35,6 +36,28 @@ finished.
 ## Shared spine
 
 Every Console Entity must share these rules:
+
+- Server capabilities follow the Console's vertical slices: `core/`,
+  `index/`, `overview/`, `identity/`, `team/`, `operations/`, and `ai/`.
+  A slice exists only when it owns real server behaviour; empty placeholder
+  files and folders are not required.
+- `core/` owns entity-wide authority and target resolution. `index/` owns the
+  collection and Create/onboarding doorway. `overview/` owns only genuine
+  overview-specific reads. `identity/` owns identity projection and mutation.
+  `team/` remains a first-class Console capability. `operations/` owns all
+  operations performed by or for that entity; for example,
+  `kitchen/operations/` owns all Kitchen operations. `ai/` owns the entity's
+  AI capability.
+- Technical phases such as `access`, `lifecycle`, `mutation`, `projection`,
+  and `presentation` are not entity root slices. Their behaviour stays inside
+  the Console capability that owns it. HTTP adapters remain under
+  `runtime/server/api` and call these entity-owned capabilities.
+- Core owns only server primitives proven across entity families. Shared App
+  runtime policy, membership validation, bounded support-authority parsing,
+  and capacity enforcement live in
+  `packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts`.
+  Entity-specific management validation, projections, messages, and
+  transactions remain in the owning entity slice.
 
 - The family core owns target candidate resolution, the authoritative target
   collection outcome, and selection validity.

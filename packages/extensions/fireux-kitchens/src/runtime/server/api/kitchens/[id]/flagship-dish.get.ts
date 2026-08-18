@@ -5,7 +5,10 @@ export default defineEventHandler(async (event) => {
   const kitchenId = String(getRouterParam(event, 'id') || '').trim()
   const appId = String(getQuery(event).appId || '').trim()
   if (!kitchenId || !appId) {
-    throw createError({ statusCode: 400, statusMessage: 'Kitchen and App identity are required.' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen and App identity are required.',
+    })
   }
   return readKitchenFlagshipDish(appId, kitchenId)
 })

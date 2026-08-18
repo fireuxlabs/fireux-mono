@@ -7,7 +7,7 @@ import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firest
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
-} from '../mutation-authority.ts'
+} from '../core/mutation-authority.ts'
 import { buildKitchenTeamMemberRecord } from './member-record.ts'
 
 export type CreateKitchenTeamMemberInput = {

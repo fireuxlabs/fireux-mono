@@ -18,10 +18,10 @@ import { kitchenPaymentMethodsForOrderType } from '../../../utils/kitchen-spine.
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const list = (value: unknown) => Array.isArray(value) ? value : []
+const list = (value: unknown) => (Array.isArray(value) ? value : [])
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const unique = <T extends string>(values: T[]) =>
@@ -51,14 +51,19 @@ const mergeFulfilmentPolicy = (
     : []
   // 2026-07-19 16:35 CEST — Payment capability and order-type applicability
   // are Kitchen truth. A Menu surface consumes the eligible projection only.
-  const paymentMethods = kitchenPaymentMethodsForOrderType(kitchenPolicy, orderType)
+  const paymentMethods = kitchenPaymentMethodsForOrderType(
+    kitchenPolicy,
+    orderType
+  )
   const deposit = menuPolicy?.deposit
   const handoffInstructions = menuPolicy?.handoff_instructions
   const next: MenuOrderFulfilmentPolicy = {
     ...(deliveryZones.length ? { delivery_zones: deliveryZones } : {}),
     ...(paymentMethods.length ? { payment_methods: paymentMethods } : {}),
     ...(deposit ? { deposit } : {}),
-    ...(handoffInstructions ? { handoff_instructions: handoffInstructions } : {}),
+    ...(handoffInstructions
+      ? { handoff_instructions: handoffInstructions }
+      : {}),
   }
 
   return Object.keys(next).length ? next : undefined
@@ -130,5 +135,7 @@ export function isMenuOrderingEnabled(ordering: MenuOrderingConfig) {
 }
 
 export function readMenuOrderTypes(data: Record<string, unknown>) {
-  return unique(readMenuOrderingConfig(data).order_types.map((type) => type.type))
+  return unique(
+    readMenuOrderingConfig(data).order_types.map((type) => type.type)
+  )
 }

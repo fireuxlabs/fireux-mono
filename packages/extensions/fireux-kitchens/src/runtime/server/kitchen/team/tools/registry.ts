@@ -3,11 +3,13 @@ import { kitchenTeamMemberInvitationCreateExecutor } from './create-member-invit
 import { kitchenTeamMemberDeleteExecutor } from './delete-member'
 import { kitchenTeamMembersReadExecutor } from './read-members'
 import { kitchenTeamMemberUpdateExecutor } from './update-member'
+import type { KitchenTeamServerTool } from './types'
 
 export const kitchenTeamServerToolRegistry = {
   [kitchenTeamMemberCreateExecutor.definition.id]:
     kitchenTeamMemberCreateExecutor,
-  [kitchenTeamMembersReadExecutor.definition.id]: kitchenTeamMembersReadExecutor,
+  [kitchenTeamMembersReadExecutor.definition.id]:
+    kitchenTeamMembersReadExecutor,
   [kitchenTeamMemberUpdateExecutor.definition.id]:
     kitchenTeamMemberUpdateExecutor,
   [kitchenTeamMemberDeleteExecutor.definition.id]:
@@ -15,3 +17,12 @@ export const kitchenTeamServerToolRegistry = {
   [kitchenTeamMemberInvitationCreateExecutor.definition.id]:
     kitchenTeamMemberInvitationCreateExecutor,
 } as const
+
+export function findKitchenTeamServerTool(id: string) {
+  return (
+    kitchenTeamServerToolRegistry as Record<
+      string,
+      KitchenTeamServerTool | undefined
+    >
+  )[id]
+}

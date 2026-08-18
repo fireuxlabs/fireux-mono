@@ -211,6 +211,52 @@ function kitchenTeamToolSelection(input: Record<string, unknown>) {
   return call('kitchen.team.create-member', { name })
 }
 
+function kitchenTeamPromptSuggestions(input: Record<string, unknown>) {
+  if (input.simulator_kind !== 'kitchen_team_prompt_suggestions') return ''
+  const teamAgent = record(record(input.operation_agents).TeamAI)
+  const toolIds = new Set(
+    (Array.isArray(teamAgent.allowed_tools) ? teamAgent.allowed_tools : [])
+      .map(record)
+      .map((tool) => firstString(tool.id))
+      .filter((id): id is string => Boolean(id))
+  )
+  const members = Array.isArray(input.team_members)
+    ? input.team_members.map(record)
+    : []
+  const namedMembers = members.filter((member) => firstString(member.name))
+  const unlinkedMember = namedMembers.find((member) => !member.linked)
+  const casingMember = namedMembers.find((member) => {
+    const name = firstString(member.name) || ''
+    const titleCase = name.replace(/\b\p{L}/gu, (character) =>
+      character.toLocaleUpperCase()
+    )
+    return name !== titleCase
+  })
+  const suggestions = []
+  if (toolIds.has('kitchen.team.read-members')) {
+    suggestions.push('Who is currently on my Team?')
+  }
+  if (toolIds.has('kitchen.team.create-member')) {
+    suggestions.push('Add a new Team member named Alex')
+  }
+  if (
+    toolIds.has('kitchen.team.create-invitation') &&
+    firstString(unlinkedMember?.name)
+  ) {
+    suggestions.push(
+      `Create an invitation for ${firstString(unlinkedMember?.name)}`
+    )
+  }
+  if (toolIds.has('kitchen.team.update-member') && namedMembers.length) {
+    suggestions.push(
+      casingMember
+        ? 'Make sure all Team member names use title case'
+        : `Rename ${firstString(namedMembers[0]?.name)} to a new name`
+    )
+  }
+  return JSON.stringify({ suggestions: suggestions.slice(0, 4) })
+}
+
 function sourceText(input: unknown) {
   if (typeof input === 'string') return input.trim()
   const data = record(input)
@@ -219,6 +265,8 @@ function sourceText(input: unknown) {
 
 function simulatedText(request: FireuxAiRequest) {
   const input = record(request.input)
+  const teamPromptSuggestions = kitchenTeamPromptSuggestions(input)
+  if (teamPromptSuggestions) return teamPromptSuggestions
   const teamToolSelection = kitchenTeamToolSelection(input)
   if (teamToolSelection) return teamToolSelection
   const summary = kitchenSummary(input, record(request.context))

@@ -34,7 +34,7 @@ export async function publishKitchenMenu(
   const menuData = menuSnap.data() || {}
   const sectionsSnap = await menuRef.collection('sections').get()
   const sections = sectionsSnap.docs.filter(
-    section => text(section.get('status')) !== 'archived'
+    (section) => text(section.get('status')) !== 'archived'
   )
   if (!sections.length) throw new Error('Menu needs at least one section')
 
@@ -42,15 +42,15 @@ export async function publishKitchenMenu(
   for (const section of sections) {
     const itemsSnap = await section.ref.collection('items').get()
     const items = itemsSnap.docs.filter(
-      item => text(item.get('status')) !== 'archived'
+      (item) => text(item.get('status')) !== 'archived'
     )
     itemCount += items.length
     for (const item of items) {
       const dishId = text(item.get('dish_id'))
       if (!dishId) throw new Error('Every menu item needs a dish')
-      const dishSnap = await input.db.doc(
-        `apps/${input.appId}/kitchens/${input.kitchenId}/dishes/${dishId}`
-      ).get()
+      const dishSnap = await input.db
+        .doc(`apps/${input.appId}/kitchens/${input.kitchenId}/dishes/${dishId}`)
+        .get()
       if (!dishSnap.exists) {
         throw new Error(`Menu item references missing dish: ${dishId}`)
       }
@@ -64,19 +64,21 @@ export async function publishKitchenMenu(
   const ensureRootEntry =
     dependencies.ensureRootEntry || ensureKitchenMenuRootEntry
   const root = await completeKitchenMenuPublication({
-    updateScopedMenu: () => updateMenu(
-      serverKitchenMenusTarget(input.appId, input.kitchenId),
-      input.menuId,
-      { status: 'published', updated: stamp }
-    ),
-    ensureRootEntry: () => ensureRootEntry(input.db, {
-      appId: input.appId,
-      kitchenId: input.kitchenId,
-      kitchenPath: input.kitchenPath,
-      menuId: input.menuId,
-      menuData: publishedMenuData,
-      stamp,
-    }),
+    updateScopedMenu: () =>
+      updateMenu(
+        serverKitchenMenusTarget(input.appId, input.kitchenId),
+        input.menuId,
+        { status: 'published', updated: stamp }
+      ),
+    ensureRootEntry: () =>
+      ensureRootEntry(input.db, {
+        appId: input.appId,
+        kitchenId: input.kitchenId,
+        kitchenPath: input.kitchenPath,
+        menuId: input.menuId,
+        menuData: publishedMenuData,
+        stamp,
+      }),
   })
 
   return { menuId: input.menuId, root }

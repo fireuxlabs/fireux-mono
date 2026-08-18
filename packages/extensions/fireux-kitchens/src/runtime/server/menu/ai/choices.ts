@@ -13,6 +13,10 @@ export const hasIncludedMenuChoiceCue = (input: {
   const name = String(input.name ?? '').trim()
   const description = String(input.description ?? '').trim()
 
-  return /\b(?:or|oder)\b/iu.test(name) ||
-    includedDescriptionChoicePatterns.some((pattern) => pattern.test(description))
+  return (
+    /\b(?:or|oder)\b/iu.test(name) ||
+    includedDescriptionChoicePatterns.some((pattern) =>
+      pattern.test(description)
+    )
+  )
 }

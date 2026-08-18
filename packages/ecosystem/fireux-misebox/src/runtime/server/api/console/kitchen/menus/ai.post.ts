@@ -9,8 +9,8 @@ import { UserContextStorage } from 'fireux-core/runtime/models/operations/user-c
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/operator-access'
-import { saveKitchenMenuSummaryContext } from 'fireux-kitchens/runtime/server/kitchen/menu-context'
+import { requireKitchenWriter } from 'fireux-kitchens/runtime/server/kitchen/core/operator-access'
+import { saveKitchenMenuSummaryContext } from 'fireux-kitchens/runtime/server/menu/ai/kitchen-context'
 import { writeKitchenMenuAgentUsage } from 'fireux-kitchens/runtime/server/menu/ai/agent-usage'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/server/menu/manifest/sections'
 import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/utils/kitchen-spine'
@@ -118,7 +118,9 @@ async function readUserContext(uid: string) {
     .doc(UserContextStorage.document)
     .get()
 
-  return snapshot.exists ? readRecordString(snapshot.data() || {}, 'context') : ''
+  return snapshot.exists
+    ? readRecordString(snapshot.data() || {}, 'context')
+    : ''
 }
 
 async function readMenus(
@@ -196,8 +198,7 @@ export default defineEventHandler(async (event: H3Event) => {
       agent: 'MiseboxAiMenu',
       user_context: userContext || undefined,
       menu_context: menuContext || undefined,
-      instruction:
-        `Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names. ${fireuxAgentTipInstruction}`,
+      instruction: `Act as MiseboxAiMenu, an advisory Menu specialist for the selected Kitchen. Answer the operator question using only the supplied authorized Menu records, exact menu_manifest facts, and confirmed context. The menu_manifest counts are authoritative: copy them exactly and never recount or alter them. Treat context as operator knowledge, not measured evidence. State when the records do not support a claim. Never claim that you changed or published data. If asked to make a change, explain the proposed change and ask for approval. Be concise, concrete, and use the Menu and Dish names from the records. Return conversational plain text for a restaurant operator. Never return JSON, a schema, code fences, or internal field names. ${fireuxAgentTipInstruction}`,
     },
   })
 

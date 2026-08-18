@@ -31,7 +31,7 @@ const numberValue = (value: unknown) => {
 }
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const money = (amount: number) => Math.ceil(Math.max(0, amount) * 100)
 const usd = (minor: number) => `$${(minor / 100).toFixed(2)}`
@@ -45,8 +45,8 @@ const roundUpMinor = (minor: number) => {
 }
 
 const modelPrice = (model: string) => {
-  const key = Object.keys(USD_PER_1M_TOKENS).find((priceModel) =>
-    model === priceModel || model.startsWith(`${priceModel}-`)
+  const key = Object.keys(USD_PER_1M_TOKENS).find(
+    (priceModel) => model === priceModel || model.startsWith(`${priceModel}-`)
   )
 
   return key ? USD_PER_1M_TOKENS[key] : USD_PER_1M_TOKENS['gpt-5.4-mini']
@@ -57,9 +57,11 @@ const isPhoto = (file: MenuAiCostFile) => {
   const type = text(file.file_type).toLowerCase()
   const name = text(file.file_name || file.storage_path).toLowerCase()
 
-  return kind === 'photo' ||
+  return (
+    kind === 'photo' ||
     type.startsWith('image/') ||
     /\.(jpe?g|png|gif|webp)$/i.test(name)
+  )
 }
 
 const isPdf = (file: MenuAiCostFile) => {
@@ -72,7 +74,7 @@ const isPdf = (file: MenuAiCostFile) => {
 
 const isUrl = (file: MenuAiCostFile) =>
   text(file.file_kind).toLowerCase() === 'url' ||
-    /^https?:\/\//i.test(text(file.file_name || file.storage_path))
+  /^https?:\/\//i.test(text(file.file_name || file.storage_path))
 
 export function menuAiModelPlan(
   files: MenuAiCostFile[],
@@ -87,13 +89,17 @@ export function menuAiModelPlan(
       : files.every(isPdf)
         ? 'pdf'
         : 'document'
-  const extractionModel = quality === 'strong'
-    ? text(process.env.FIREUX_AI_MENU_EXTRACTION_STRONG_MODEL) || 'gpt-5.5'
-    : hasUrl
-      ? text(process.env.FIREUX_AI_MENU_URL_EXTRACTION_MODEL) || 'gpt-5.4-nano'
-      : hasPhoto
-      ? text(process.env.FIREUX_AI_MENU_PHOTO_EXTRACTION_MODEL) || 'gpt-5.4-mini'
-      : text(process.env.FIREUX_AI_MENU_PDF_EXTRACTION_MODEL) || 'gpt-5.4-nano'
+  const extractionModel =
+    quality === 'strong'
+      ? text(process.env.FIREUX_AI_MENU_EXTRACTION_STRONG_MODEL) || 'gpt-5.5'
+      : hasUrl
+        ? text(process.env.FIREUX_AI_MENU_URL_EXTRACTION_MODEL) ||
+          'gpt-5.4-nano'
+        : hasPhoto
+          ? text(process.env.FIREUX_AI_MENU_PHOTO_EXTRACTION_MODEL) ||
+            'gpt-5.4-mini'
+          : text(process.env.FIREUX_AI_MENU_PDF_EXTRACTION_MODEL) ||
+            'gpt-5.4-nano'
   const normalizationModel =
     text(process.env.FIREUX_AI_MENU_NORMALIZATION_MODEL) || 'gpt-5.4-nano'
 
@@ -108,21 +114,33 @@ export function menuAiModelPlan(
 function estimatedTokens(file: MenuAiCostFile) {
   if (isUrl(file)) {
     return {
-      input: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_INPUT_TOKENS) || 30_000,
-      output: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_OUTPUT_TOKENS) || 3_000,
+      input:
+        numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_INPUT_TOKENS) ||
+        30_000,
+      output:
+        numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_URL_OUTPUT_TOKENS) ||
+        3_000,
     }
   }
 
   if (isPhoto(file)) {
     return {
-      input: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_PHOTO_INPUT_TOKENS) || 25_000,
-      output: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_PHOTO_OUTPUT_TOKENS) || 3_000,
+      input:
+        numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_PHOTO_INPUT_TOKENS) ||
+        25_000,
+      output:
+        numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_PHOTO_OUTPUT_TOKENS) ||
+        3_000,
     }
   }
 
   return {
-    input: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_DOC_INPUT_TOKENS) || 15_000,
-    output: numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_DOC_OUTPUT_TOKENS) || 2_500,
+    input:
+      numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_DOC_INPUT_TOKENS) ||
+      15_000,
+    output:
+      numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_DOC_OUTPUT_TOKENS) ||
+      2_500,
   }
 }
 
@@ -144,10 +162,16 @@ export function estimateMenuAiCost(input: {
     const tokens = estimatedTokens(file)
     return total + costMinor(plan.extraction_model, tokens.input, tokens.output)
   }, 0)
-  const normalizationInput = files.length *
-    (numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_NORMALIZATION_INPUT_TOKENS) || 4_000)
-  const normalizationOutput = files.length *
-    (numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_NORMALIZATION_OUTPUT_TOKENS) || 2_000)
+  const normalizationInput =
+    files.length *
+    (numberValue(
+      process.env.FIREUX_AI_MENU_ESTIMATE_NORMALIZATION_INPUT_TOKENS
+    ) || 4_000)
+  const normalizationOutput =
+    files.length *
+    (numberValue(
+      process.env.FIREUX_AI_MENU_ESTIMATE_NORMALIZATION_OUTPUT_TOKENS
+    ) || 2_000)
   const normalizationMinor = costMinor(
     plan.normalization_model,
     normalizationInput,
@@ -156,9 +180,9 @@ export function estimateMenuAiCost(input: {
   const safetyMultiplier =
     numberValue(process.env.FIREUX_AI_MENU_ESTIMATE_SAFETY_MULTIPLIER) || 1.5
   const providerEstimateMinor = extractionMinor + normalizationMinor
-  const amountMinor = roundUpMinor(money(
-    ((extractionMinor + normalizationMinor) / 100) * safetyMultiplier
-  ))
+  const amountMinor = roundUpMinor(
+    money(((extractionMinor + normalizationMinor) / 100) * safetyMultiplier)
+  )
 
   return {
     ...plan,
@@ -183,7 +207,9 @@ function costFromUsage(call: UsageCall) {
 
   const inputTokens = numberValue(usage.input_tokens)
   const outputTokens = numberValue(usage.output_tokens)
-  const cachedTokens = numberValue(record(usage.input_tokens_details).cached_tokens)
+  const cachedTokens = numberValue(
+    record(usage.input_tokens_details).cached_tokens
+  )
   const price = modelPrice(model)
   const billableInputTokens = Math.max(0, inputTokens - cachedTokens)
 
@@ -195,7 +221,9 @@ function costFromUsage(call: UsageCall) {
 }
 
 export function actualMenuAiCost(calls: UsageCall[]) {
-  const billableCalls = calls.filter((call) => Object.keys(record(call.usage)).length)
+  const billableCalls = calls.filter(
+    (call) => Object.keys(record(call.usage)).length
+  )
   const amountMinor = billableCalls.reduce(
     (total, call) => total + costFromUsage(call),
     0

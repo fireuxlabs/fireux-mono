@@ -229,7 +229,9 @@ export async function run({ repoRoot }) {
       violations.push(`FireUX directory reader must retain ${marker}.`)
     }
   }
-  for (const marker of ["NON_INDEXABLE_DIRECTORY_APP_IDS = new Set(['fireux-blank'])"]) {
+  for (const marker of [
+    "NON_INDEXABLE_DIRECTORY_APP_IDS = new Set(['fireux-blank'])",
+  ]) {
     if (!fireuxDirectoryPolicy.includes(marker)) {
       violations.push(`FireUX directory search policy must retain ${marker}.`)
     }
@@ -418,7 +420,7 @@ export async function run({ repoRoot }) {
   )
   const kitchensIndex = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-index.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/index/public-index.ts'
   )
   const kitchensSitemap = read(
     repoRoot,

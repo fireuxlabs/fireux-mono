@@ -4,7 +4,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { listDriverDispatches } from '../../../../server/kitchen/driver-dispatch.ts'
+import { listDriverDispatches } from '../../../../server/driver/dispatch.ts'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)

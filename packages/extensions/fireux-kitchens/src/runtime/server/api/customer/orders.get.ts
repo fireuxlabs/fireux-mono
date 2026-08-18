@@ -59,18 +59,20 @@ export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
     const match = orderPath.match(ORDER_PATH)
     if (!match || match[1] !== appId || match[3] !== linkSnap.id) return []
 
-    return [{
-      linkId: linkSnap.id,
-      link,
-      orderRef: db.doc(orderPath),
-    }]
+    return [
+      {
+        linkId: linkSnap.id,
+        link,
+        orderRef: db.doc(orderPath),
+      },
+    ]
   })
   const orderSnaps = candidates.length
-    ? await db.getAll(...candidates.map(candidate => candidate.orderRef))
+    ? await db.getAll(...candidates.map((candidate) => candidate.orderRef))
     : []
   const kitchens = await customerKitchenHydration(
     db,
-    candidates.map(candidate => candidate.link)
+    candidates.map((candidate) => candidate.link)
   )
   const items = candidates.flatMap((candidate, index) => {
     const orderSnap = orderSnaps[index]
@@ -88,19 +90,19 @@ export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
 
   return {
     items,
-    nextCursor: page.size === PAGE_SIZE
-      ? page.docs.at(-1)?.id || null
-      : null,
+    nextCursor: page.size === PAGE_SIZE ? page.docs.at(-1)?.id || null : null,
     ...(import.meta.dev
       ? {
           debug: {
             customer_uid: uid,
             link_count: page.size,
             candidate_count: candidates.length,
-            resolved_order_count: orderSnaps.filter(snapshot => snapshot.exists).length,
+            resolved_order_count: orderSnaps.filter(
+              (snapshot) => snapshot.exists
+            ).length,
             visible_order_count: items.length,
             omitted_count: page.size - items.length,
-            statuses: items.map(item => ({
+            statuses: items.map((item) => ({
               id: item.id,
               status: item.status,
               order_type: item.order_type,
@@ -119,10 +121,10 @@ function customerOrderSummary(
   kitchen?: CustomerKitchenHydration
 ): CustomerOrderSummary | null {
   if (
-    !order
-    || text(order.customer_uid) !== customerUid
-    || !isKitchenOrderStatus(order.status)
-    || !isKitchenOrderType(order.order_type)
+    !order ||
+    text(order.customer_uid) !== customerUid ||
+    !isKitchenOrderStatus(order.status) ||
+    !isKitchenOrderType(order.order_type)
   ) {
     return null
   }
@@ -134,10 +136,12 @@ function customerOrderSummary(
   const deliveryZone = record(fulfilmentMatch.zone)
   const payment = record(order.payment)
   const method = paymentMethods.has(payment.method as KitchenOrderPaymentMethod)
-    ? payment.method as KitchenOrderPaymentMethod
+    ? (payment.method as KitchenOrderPaymentMethod)
     : undefined
-  const paymentStatus = paymentStatuses.has(payment.status as KitchenOrderPaymentStatus)
-    ? payment.status as KitchenOrderPaymentStatus
+  const paymentStatus = paymentStatuses.has(
+    payment.status as KitchenOrderPaymentStatus
+  )
+    ? (payment.status as KitchenOrderPaymentStatus)
     : 'not_required'
   const collectionMode = collection.mode === 'scheduled' ? 'scheduled' : 'queue'
   // 2026-07-19 15:40 CEST: Project the owning customer's canonical Order lines so a Kitchen send-back can restore review state without browser basket persistence.
@@ -150,28 +154,37 @@ function customerOrderSummary(
 
     const variantId = text(item.variant_id)
     const variantLabel = text(item.variant_label)
-    return [{
-      id: text(item.source_item_id) || text(item.id) || `item-${index + 1}`,
-      menu_id: text(item.menu_id),
-      name,
-      quantity,
-      unit_price: unitPrice,
-      ...(variantId || variantLabel
-        ? { variant: { id: variantId || variantLabel, label: variantLabel || variantId } }
-        : {}),
-      add_ons: array(item.add_ons).flatMap((value) => {
-        const addOn = record(value)
-        const id = text(addOn.id)
-        const label = text(addOn.label)
-        const price = number(addOn.price)
+    return [
+      {
+        id: text(item.source_item_id) || text(item.id) || `item-${index + 1}`,
+        menu_id: text(item.menu_id),
+        name,
+        quantity,
+        unit_price: unitPrice,
+        ...(variantId || variantLabel
+          ? {
+              variant: {
+                id: variantId || variantLabel,
+                label: variantLabel || variantId,
+              },
+            }
+          : {}),
+        add_ons: array(item.add_ons).flatMap((value) => {
+          const addOn = record(value)
+          const id = text(addOn.id)
+          const label = text(addOn.label)
+          const price = number(addOn.price)
 
-        return id && label ? [{ id, label, price }] : []
-      }),
-    }]
+          return id && label ? [{ id, label, price }] : []
+        }),
+      },
+    ]
   })
-  const orderNumber = text(order.order_number) || (
-    number(order.service_number) > 0 ? String(number(order.service_number)) : ''
-  )
+  const orderNumber =
+    text(order.order_number) ||
+    (number(order.service_number) > 0
+      ? String(number(order.service_number))
+      : '')
   const createdAt = iso(order.created_at) || iso(record(order.created).at)
   const estimatedReadyMinutes = number(order.estimated_ready_minutes)
   const estimatedReadyAt = iso(order.estimated_ready_at)
@@ -192,10 +205,7 @@ function customerOrderSummary(
     ...(text(order.kitchen_note)
       ? { kitchen_note: text(order.kitchen_note) }
       : {}),
-    item_count: items.reduce(
-      (total, item) => total + item.quantity,
-      0
-    ),
+    item_count: items.reduce((total, item) => total + item.quantity, 0),
     items,
     kitchen: {
       id: text(link.kitchen_id),
@@ -205,9 +215,7 @@ function customerOrderSummary(
         ? { logo_image_url: kitchen.logoImageUrl }
         : {}),
       ...(kitchen?.imageUrl ? { image_url: kitchen.imageUrl } : {}),
-      ...(kitchen?.imageShade
-        ? { image_shade: kitchen.imageShade }
-        : {}),
+      ...(kitchen?.imageShade ? { image_shade: kitchen.imageShade } : {}),
     },
     menu: {
       id: text(link.menu_id),
@@ -285,7 +293,7 @@ async function customerKitchenHydration(
 
   const snapshots = await db.getAll(...references.values())
   const dataByPath = new Map(
-    snapshots.map(snapshot => [
+    snapshots.map((snapshot) => [
       snapshot.ref.path,
       snapshot.exists ? snapshot.data() || {} : {},
     ])
@@ -317,22 +325,23 @@ async function customerKitchenHydration(
       const appData = appId
         ? dataByPath.get(`apps/${appId}/kitchens/${kitchenId}`) || {}
         : {}
-      const placeData = dataByPath.get(
-        `${PlaceStorage.collection}/${kitchenId}`
-      ) || {}
+      const placeData =
+        dataByPath.get(`${PlaceStorage.collection}/${kitchenId}`) || {}
       const identity = menuKitchenIdentity(rootData, appData, placeData)
       const slug = text(rootData.slug) || text(appData.slug)
 
-      return [[
-        kitchenKey(link),
-        {
-          name: identity.name,
-          path: safeKitchenPath(slug),
-          logoImageUrl: identity.logoImageUrl,
-          imageUrl: identity.imageUrl,
-          imageShade: identity.imageShade,
-        },
-      ] as const]
+      return [
+        [
+          kitchenKey(link),
+          {
+            name: identity.name,
+            path: safeKitchenPath(slug),
+            logoImageUrl: identity.logoImageUrl,
+            imageUrl: identity.imageUrl,
+            imageShade: identity.imageShade,
+          },
+        ] as const,
+      ]
     })
   )
 }
@@ -342,14 +351,13 @@ function kitchenKey(link: Record<string, unknown>) {
 }
 
 function safeKitchenPath(slug: string) {
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)
-    ? `/kitchens/${slug}`
-    : ''
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? `/kitchens/${slug}` : ''
 }
 
 function safeMenuPath(value: unknown) {
   const path = text(value)
-  const valid = /^\/(?:menus\/[^/?#]+|kitchens\/[^/?#]+\/menus\/[^/?#]+|[^/?#]+)$/
+  const valid =
+    /^\/(?:menus\/[^/?#]+|kitchens\/[^/?#]+\/menus\/[^/?#]+|[^/?#]+)$/
   return valid.test(path) ? path : '/menus'
 }
 
@@ -360,12 +368,14 @@ function iso(value: unknown) {
     return Number.isNaN(date.getTime()) ? '' : date.toISOString()
   }
   const source = value as { toDate?: () => Date }
-  return typeof source.toDate === 'function' ? source.toDate().toISOString() : ''
+  return typeof source.toDate === 'function'
+    ? source.toDate().toISOString()
+    : ''
 }
 
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 }
 

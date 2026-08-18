@@ -35,12 +35,7 @@ export async function readMenuDeliveryPlaceDetails(
   url.searchParams.set('place_id', placeId)
   url.searchParams.set(
     'fields',
-    [
-      'address_component',
-      'formatted_address',
-      'geometry',
-      'place_id',
-    ].join(',')
+    ['address_component', 'formatted_address', 'geometry', 'place_id'].join(',')
   )
   url.searchParams.set('key', key.key)
 
@@ -52,7 +47,7 @@ export async function readMenuDeliveryPlaceDetails(
     })
   }
 
-  const payload = await response.json() as Record<string, any>
+  const payload = (await response.json()) as Record<string, any>
   const result = payload.result || null
   const baseDebug = {
     lookup: 'place_details',
@@ -127,7 +122,7 @@ export async function geocodeMenuDeliveryAddress(
     })
   }
 
-  const payload = await response.json() as Record<string, any>
+  const payload = (await response.json()) as Record<string, any>
   const result = Array.isArray(payload.results) ? payload.results[0] : null
   if (payload.status !== 'OK' || !result) {
     return {
@@ -179,7 +174,7 @@ export async function reverseGeocodeMenuDeliveryAddress(
     })
   }
 
-  const payload = await response.json() as Record<string, any>
+  const payload = (await response.json()) as Record<string, any>
   const result = Array.isArray(payload.results) ? payload.results[0] : null
   if (payload.status !== 'OK' || !result) {
     return {
@@ -205,8 +200,8 @@ export async function reverseGeocodeMenuDeliveryAddress(
 function readAddressComponent(components: unknown, type: string) {
   if (!Array.isArray(components)) return ''
 
-  const component = components.find((entry) =>
-    Array.isArray(entry?.types) && entry.types.includes(type)
+  const component = components.find(
+    (entry) => Array.isArray(entry?.types) && entry.types.includes(type)
   )
 
   return text(component?.long_name || component?.short_name)

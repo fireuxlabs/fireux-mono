@@ -26,15 +26,14 @@ export function validateMenuOrderSchedule(input: {
   requestedFor: string
 }) {
   const strategy = menuOrderTypeStrategy(input.orderType)
-  const scheduledFor = (
+  const scheduledFor =
     strategy.schedule === 'requested_for' ||
     strategy.schedule === 'optional_requested_for'
-  )
-    ? input.requestedFor
-    : strategy.schedule === 'collection' &&
-        input.collection?.mode === 'scheduled'
-      ? input.collection.requested_for || ''
-      : ''
+      ? input.requestedFor
+      : strategy.schedule === 'collection' &&
+          input.collection?.mode === 'scheduled'
+        ? input.collection.requested_for || ''
+        : ''
   if (strategy.schedule === 'requested_for' && !scheduledFor) {
     throw createError({
       statusCode: 400,
@@ -68,7 +67,8 @@ export function validateMenuOrderSchedule(input: {
     if (openState.known && !openState.open) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'This menu is not accepting orders outside serving hours.',
+        statusMessage:
+          'This menu is not accepting orders outside serving hours.',
       })
     }
   }
@@ -90,9 +90,10 @@ export function validateMenuOrderSchedule(input: {
   if (!notice.available) {
     throw createError({
       statusCode: 400,
-      statusMessage: noticeHours > 0
-        ? `Choose a time at least ${noticeHours} hours from now.`
-        : 'Choose a future date and time.',
+      statusMessage:
+        noticeHours > 0
+          ? `Choose a time at least ${noticeHours} hours from now.`
+          : 'Choose a future date and time.',
     })
   }
 }

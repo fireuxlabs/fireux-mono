@@ -1,9 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  readBody,
-  type H3Event,
-} from 'h3'
+import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { processKitchenMenuAiReview } from '../../../../menu/ai/review'
 import {
@@ -12,7 +7,9 @@ import {
   requireKitchenMenuUploadUser,
 } from '../../../../menu/source/uploads'
 
-type ProcessMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'quality', string>> & {
+type ProcessMenuBody = Partial<
+  Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId' | 'quality', string>
+> & {
   limit?: number
   force?: boolean
   confirmBilling?: boolean

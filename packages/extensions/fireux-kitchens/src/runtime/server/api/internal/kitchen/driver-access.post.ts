@@ -8,7 +8,7 @@ import {
   isDriverKitchenAccessRelation,
   type DriverKitchenAccessInput,
 } from '../../../../models/driver/kitchen-access.ts'
-import { mutateDriverKitchenAccess } from '../../../../server/kitchen/driver-access.ts'
+import { mutateDriverKitchenAccess } from '../../../../server/driver/access.ts'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)

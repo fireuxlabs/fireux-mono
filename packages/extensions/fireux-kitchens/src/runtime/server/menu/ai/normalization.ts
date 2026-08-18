@@ -26,7 +26,7 @@ export type MenuAiNormalizationResult = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const notesFrom = (value: unknown) => {
@@ -44,20 +44,17 @@ const skippedNormalization = (reason: string): MenuAiNormalizationResult => ({
   changes: [],
 })
 
-function buildMenuNormalizationRequest(
-  input: {
-    menuId: string
-    currencyCode: string
-    sections: KitchenMenuDraftSection[]
-  }
-) {
+function buildMenuNormalizationRequest(input: {
+  menuId: string
+  currencyCode: string
+  sections: KitchenMenuDraftSection[]
+}) {
   // TODO(menu-ai): Indian Gourmet surfaced provider filter labels like "All Chicken".
   // Flag these before the next production run; decide later if we auto-strip them.
   return {
     input: {
       sections: input.sections,
-      instruction:
-        `Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Keep or correct item_kind as "food" or "drink" for every item, and keep or correct is_deal as true only for bundled deals, meal deals, set menus, or offers. Flag storefront/filter section labels prefixed with "All " (for example "All Chicken", "All Dessert", or "All BBQ/Grill") in notes and changes for operator review before publishing. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, source_file_ids, and their aligned *_translations arrays. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Every price_options.price must remain an absolute full item price greater than zero, never an increment or surcharge. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve optional extras, toppings, sides, and add-ons in add_ons. An add_ons.price is an incremental surcharge and may remain 0 for a labelled optional free add-on. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, ingredients, languages, or translations. Keep canonical authored values as Default and retain only translations already aligned by extraction; never join them with slashes.`,
+      instruction: `Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Keep or correct item_kind as "food" or "drink" for every item, and keep or correct is_deal as true only for bundled deals, meal deals, set menus, or offers. Flag storefront/filter section labels prefixed with "All " (for example "All Chicken", "All Dessert", or "All BBQ/Grill") in notes and changes for operator review before publishing. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, source_file_ids, and their aligned *_translations arrays. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Every price_options.price must remain an absolute full item price greater than zero, never an increment or surcharge. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve optional extras, toppings, sides, and add-ons in add_ons. An add_ons.price is an incremental surcharge and may remain 0 for a labelled optional free add-on. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, ingredients, languages, or translations. Keep canonical authored values as Default and retain only translations already aligned by extraction; never join them with slashes.`,
     },
     context: {
       domain: 'restaurant_menu',
@@ -131,9 +128,13 @@ export async function normalizeMenuExtractionWithAi(
   }
 ): Promise<MenuAiNormalizationResult> {
   if (!input.sections.length) {
-    return skippedNormalization('Raw extraction did not produce sections to normalize.')
+    return skippedNormalization(
+      'Raw extraction did not produce sections to normalize.'
+    )
   }
-  const currencyCode = String(input.currencyCode ?? '').trim().toUpperCase()
+  const currencyCode = String(input.currencyCode ?? '')
+    .trim()
+    .toUpperCase()
   if (!currencyCode) throw new Error('Kitchen currency code is required')
 
   const ai = useFireuxAi(event)

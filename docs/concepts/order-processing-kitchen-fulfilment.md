@@ -127,7 +127,7 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Authenticated transition command:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
 - Transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/order/transition.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/transition.ts`
 - Operator family:
   `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Orders/`
 

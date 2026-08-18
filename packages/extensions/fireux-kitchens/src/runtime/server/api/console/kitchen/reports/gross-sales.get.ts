@@ -12,18 +12,13 @@ import {
   KitchenGrossSalesReportInvariantError,
   KitchenGrossSalesReportLimitError,
   readKitchenGrossSalesReport,
-} from '../../../../../server/kitchen/sales/gross-sales-report.ts'
-import { requireKitchenReportReader } from '../../../../../server/kitchen/operator-access.ts'
-import {
-  resolveKitchenOperationHours,
-} from '../../../../../utils/kitchen-spine.ts'
+} from '../../../../../server/kitchen/operations/sales/gross-sales-report.ts'
+import { requireKitchenReportReader } from '../../../../../server/kitchen/core/operator-access.ts'
+import { resolveKitchenOperationHours } from '../../../../../utils/kitchen-spine.ts'
 
 const validTimezone = (value: unknown) => {
-  if (
-    typeof value !== 'string'
-    || !value
-    || value !== value.trim()
-  ) return false
+  if (typeof value !== 'string' || !value || value !== value.trim())
+    return false
   try {
     new Intl.DateTimeFormat('en', { timeZone: value }).format()
     return true
@@ -42,8 +37,7 @@ export default defineEventHandler(async (event: H3Event) => {
   )
   const resolvedHours = resolveKitchenOperationHours(rootKitchen, rootPlace)
   const effectiveHours =
-    resolvedHours.source === 'custom'
-    && !validTimezone(resolvedHours.timezone)
+    resolvedHours.source === 'custom' && !validTimezone(resolvedHours.timezone)
       ? resolveKitchenOperationHours({}, rootPlace)
       : resolvedHours
 

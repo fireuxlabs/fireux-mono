@@ -190,10 +190,11 @@ function matchMenuDeliveryZone(
   origin?: MenuDeliveryOrigin
 ) {
   const point = { lat: address.lat, lng: address.lng }
-  const polygonZone = zones.find((zone) =>
-    Array.isArray(zone.polygon) &&
-    zone.polygon.length >= 3 &&
-    pointInPolygon(point, zone.polygon)
+  const polygonZone = zones.find(
+    (zone) =>
+      Array.isArray(zone.polygon) &&
+      zone.polygon.length >= 3 &&
+      pointInPolygon(point, zone.polygon)
   )
   if (polygonZone) {
     return {
@@ -202,14 +203,13 @@ function matchMenuDeliveryZone(
     }
   }
 
-  const distance = origin
-    ? distanceMetres(origin, point)
-    : 0
+  const distance = origin ? distanceMetres(origin, point) : 0
   const radiusZone = origin
     ? [...zones]
         .filter((zone) => Number(zone.radius_m || 0) > 0)
-        .sort((left, right) =>
-          Number(left.radius_m || 0) - Number(right.radius_m || 0)
+        .sort(
+          (left, right) =>
+            Number(left.radius_m || 0) - Number(right.radius_m || 0)
         )
         .find((zone) => distance <= Number(zone.radius_m || 0))
     : undefined
@@ -249,9 +249,12 @@ function matchMenuDeliveryZone(
 
   return {
     zone: undefined,
-    reason: !origin && zones.some((zone) => Number(zone.radius_m || 0) > 0)
-      ? 'radius_origin_unavailable'
-      : postalCode ? 'no_zone_for_postal_code' : 'no_postal_code',
+    reason:
+      !origin && zones.some((zone) => Number(zone.radius_m || 0) > 0)
+        ? 'radius_origin_unavailable'
+        : postalCode
+          ? 'no_zone_for_postal_code'
+          : 'no_postal_code',
     distance_m: Math.round(distance),
   }
 }
@@ -260,7 +263,7 @@ function distanceMetres(
   left: { lat: number; lng: number },
   right: { lat: number; lng: number }
 ) {
-  const radians = (value: number) => value * Math.PI / 180
+  const radians = (value: number) => (value * Math.PI) / 180
   const latDelta = radians(right.lat - left.lat)
   const lngDelta = radians(right.lng - left.lng)
   const startLat = radians(left.lat)
@@ -269,15 +272,14 @@ function distanceMetres(
     Math.sin(latDelta / 2) ** 2 +
     Math.cos(startLat) * Math.cos(endLat) * Math.sin(lngDelta / 2) ** 2
 
-  return 6371000 * 2 * Math.atan2(
-    Math.sqrt(haversine),
-    Math.sqrt(1 - haversine)
+  return (
+    6371000 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
   )
 }
 
 function pointInPolygon(
-  point: { lat: number, lng: number },
-  polygon: Array<{ lat: number, lng: number }>
+  point: { lat: number; lng: number },
+  polygon: Array<{ lat: number; lng: number }>
 ) {
   let inside = false
 

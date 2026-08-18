@@ -1,10 +1,38 @@
-import type { H3Event } from 'h3'
 import { kitchenTeamMemberDeleteTool as definition } from '../../../../tools/kitchen/team'
 import { deleteKitchenTeamMember } from '../delete'
+import type { KitchenTeamServerTool } from './types'
+
+const memberId = (input: unknown) => {
+  const source =
+    input && typeof input === 'object' && !Array.isArray(input)
+      ? (input as Record<string, unknown>)
+      : {}
+  return String(source.memberId ?? '').trim()
+}
 
 export const kitchenTeamMemberDeleteExecutor = {
   definition,
-  execute(event: H3Event, input: { kitchenId: string; memberId: string }) {
-    return deleteKitchenTeamMember(event, input)
+  prepare(input, members) {
+    const member = members.find(
+      (candidate) => candidate.memberId === memberId(input)
+    )
+    return member && !member.linked
+      ? {
+          id: definition.id,
+          input: { memberId: member.memberId },
+          name: member.name,
+          confirmation: `Permanently delete ${member.name}?`,
+        }
+      : null
   },
-} as const
+  async execute(event, kitchenId, prepared) {
+    const result = await deleteKitchenTeamMember(event, {
+      kitchenId,
+      memberId: memberId(prepared.input),
+    })
+    return {
+      answer: `${result.name} has been deleted.`,
+      result,
+    }
+  },
+} satisfies KitchenTeamServerTool

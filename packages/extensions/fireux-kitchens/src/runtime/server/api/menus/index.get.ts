@@ -106,9 +106,8 @@ const publicMenuIndexItem = (
     : null
   const contexts = guestDiscoverableMenuContexts(ordering)
   const storedKind = scopedKitchen ? 'menu' : readRecordString(data, 'kind')
-  const kind = storedKind === 'menu' || storedKind === 'doc'
-    ? storedKind
-    : undefined
+  const kind =
+    storedKind === 'menu' || storedKind === 'doc' ? storedKind : undefined
   const description = readRecordString(data, 'description')
 
   return {
@@ -142,7 +141,7 @@ const menuIndexHydration = async (
   db: ReturnType<typeof getRuntimeFirestore>,
   documents: MenuIndexDocument[]
 ) => {
-  const sources = documents.map(document => ({
+  const sources = documents.map((document) => ({
     document,
     source: menuSourceFromData(document.data),
   }))
@@ -175,7 +174,7 @@ const menuIndexHydration = async (
   // without either copied Kitchen identity or per-Menu reads.
   const snapshots = await db.getAll(...references.values())
   const dataByPath = new Map(
-    snapshots.map(snapshot => [
+    snapshots.map((snapshot) => [
       snapshot.ref.path,
       snapshot.exists ? snapshot.data() || {} : {},
     ])
@@ -209,9 +208,8 @@ const menuIndexHydration = async (
         ? `apps/${source.app_id}/kitchens/${source.kitchen_id}`
         : ''
       const rootData = dataByPath.get(rootPath) || {}
-      const placeData = dataByPath.get(
-        `${PlaceStorage.collection}/${source.kitchen_id}`
-      ) || {}
+      const placeData =
+        dataByPath.get(`${PlaceStorage.collection}/${source.kitchen_id}`) || {}
       const identity = menuKitchenIdentity(
         rootData,
         appPath ? dataByPath.get(appPath) || {} : {},
@@ -222,9 +220,10 @@ const menuIndexHydration = async (
         appPath ? dataByPath.get(appPath) || {} : {},
         placeData
       )
-      const menuPath = appPath && source.menu_id
-        ? `${appPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
-        : ''
+      const menuPath =
+        appPath && source.menu_id
+          ? `${appPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
+          : ''
       const menuData = menuPath ? dataByPath.get(menuPath) : undefined
       const kitchen = identity.name
         ? {
@@ -232,9 +231,7 @@ const menuIndexHydration = async (
             ...(identity.logoImageUrl
               ? { logo_image_url: identity.logoImageUrl }
               : {}),
-            ...(identity.imageUrl
-              ? { image_url: identity.imageUrl }
-              : {}),
+            ...(identity.imageUrl ? { image_url: identity.imageUrl } : {}),
             ...(identity.imageShade
               ? { image_shade: identity.imageShade }
               : {}),
@@ -283,21 +280,15 @@ const scopedMenuIndexHydration = async (
         ...(identity.logoImageUrl
           ? { logo_image_url: identity.logoImageUrl }
           : {}),
-        ...(identity.imageUrl
-          ? { image_url: identity.imageUrl }
-          : {}),
-        ...(identity.imageShade
-          ? { image_shade: identity.imageShade }
-          : {}),
+        ...(identity.imageUrl ? { image_url: identity.imageUrl } : {}),
+        ...(identity.imageShade ? { image_shade: identity.imageShade } : {}),
       }
     : undefined
 
   return {
     ...(kitchen ? { kitchen } : {}),
     ...(identity.name ? { kitchenName: identity.name } : {}),
-    ...(kitchenOperationHours.windows.length
-      ? { kitchenOperationHours }
-      : {}),
+    ...(kitchenOperationHours.windows.length ? { kitchenOperationHours } : {}),
   }
 }
 
@@ -312,9 +303,10 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Menus not found.',
     })
   }
-  const directoryScope = !tenantScope && kitchenSlug
-    ? await resolveDirectoryPublicMenuScope(kitchenSlug)
-    : null
+  const directoryScope =
+    !tenantScope && kitchenSlug
+      ? await resolveDirectoryPublicMenuScope(kitchenSlug)
+      : null
   const scopedKitchen = tenantScope || directoryScope
   const scope: PublicMenuIndexScope = tenantScope
     ? { kind: 'tenant', kitchenSlug: tenantScope.kitchenSlug }
@@ -345,7 +337,7 @@ export default defineEventHandler(async (event) => {
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs
-  const indexDocuments = pageDocs.map(doc => ({
+  const indexDocuments = pageDocs.map((doc) => ({
     id: doc.id,
     data: doc.data(),
   }))
@@ -356,16 +348,19 @@ export default defineEventHandler(async (event) => {
     ? await scopedMenuIndexHydration(db, scopedKitchen)
     : null
   const items = pageDocs
-    .map((doc) => publicMenuIndexItem(
-      doc.id,
-      doc.data(),
-      scopedKitchen,
-      scopedHydration || hydration.get(doc.id)
-    ))
+    .map((doc) =>
+      publicMenuIndexItem(
+        doc.id,
+        doc.data(),
+        scopedKitchen,
+        scopedHydration || hydration.get(doc.id)
+      )
+    )
     .filter((menu): menu is NonNullable<typeof menu> => Boolean(menu))
-  const nextCursor = hasMore && pageDocs.length
-    ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')
-    : null
+  const nextCursor =
+    hasMore && pageDocs.length
+      ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')
+      : null
 
   return {
     scope,

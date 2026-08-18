@@ -12,7 +12,7 @@ import {
   applyKitchenOrderServiceSequenceToResponse,
   nextKitchenOrderServiceSequence,
   type KitchenOrderLinkedRecord,
-} from '../../kitchen/order/service-sequence.ts'
+} from '../../kitchen/operations/orders/service-sequence.ts'
 
 const IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9._~-]{16,128}$/

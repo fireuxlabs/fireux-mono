@@ -30,10 +30,10 @@ import {
   readRequestedMenuOrderItems,
   type CreateMenuOrderBody,
 } from '../../../menu/ordering/lines.ts'
-import { requireKitchenOperator } from '../../../kitchen/operator-access.ts'
+import { requireKitchenOperator } from '../../../kitchen/core/operator-access.ts'
 import { resolveMenuOrderItems } from '../../../menu/ordering/order-items.ts'
 import { text } from '../../../menu/ordering/order-request.ts'
-import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/order/service-sequence.ts'
+import { commitKitchenOrderWithServiceSequence } from '../../../kitchen/operations/orders/service-sequence.ts'
 import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: dispatch the atomically snapshotted alert after Order commit.

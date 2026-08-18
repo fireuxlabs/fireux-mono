@@ -49,7 +49,9 @@ export async function readKitchenMenuSections(
       .map(async (section) => {
         const sectionId = text(section.id)
         const itemsSnap = await db
-          .collection(`${basePath}/menus/${input.menuId}/sections/${sectionId}/items`)
+          .collection(
+            `${basePath}/menus/${input.menuId}/sections/${sectionId}/items`
+          )
           .get()
         const items = itemsSnap.docs
           .map((doc) => readRecord({ id: doc.id, ...(doc.data() || {}) }))

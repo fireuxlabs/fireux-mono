@@ -6,7 +6,7 @@ import {
   setSitemapResponseHeaders,
 } from 'fireux-core/runtime/server/utils/seo-sitemaps'
 import { PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE } from '../../models/kitchen/kitchen-index.model.ts'
-import { readPublicKitchenIndexPage } from '../kitchen/public-index.ts'
+import { readPublicKitchenIndexPage } from '../kitchen/index/public-index.ts'
 
 const MAX_SITEMAP_URLS = 50_000
 

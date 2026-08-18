@@ -1,6 +1,6 @@
 # Server API family
 
-Updated: 2026-07-22
+Updated: 2026-08-18
 Ref: 796952bf0
 Role: map, not canon
 
@@ -22,14 +22,14 @@ cross-project transport cannot safely belong in browser code.
 
 ## Placement spine
 
-| Location | Job |
-| --- | --- |
-| Package `src/runtime/server/api` | Reusable package-owned Nitro endpoints |
-| App `server/api` | App-only composition or product endpoints |
-| Package `src/runtime/server/utils` | Reusable server-only primitives and workflows |
-| App `server/utils` | App-only server helpers |
-| Package `src/runtime/server/{domain}` | Server extension of an already-proven named domain stack |
-| Package `src/config/module/server-config.ts` | Declarative registration of package handlers |
+| Location                                     | Job                                                      |
+| -------------------------------------------- | -------------------------------------------------------- |
+| Package `src/runtime/server/api`             | Reusable package-owned Nitro endpoints                   |
+| App `server/api`                             | App-only composition or product endpoints                |
+| Package `src/runtime/server/utils`           | Reusable server-only primitives and workflows            |
+| App `server/utils`                           | App-only server helpers                                  |
+| Package `src/runtime/server/{domain}`        | Server extension of an already-proven named domain stack |
+| Package `src/config/module/server-config.ts` | Declarative registration of package handlers             |
 
 Request handlers stay near their HTTP route. A difficult handler does not earn
 a vague top-level `handlers`, `processor`, or `manager` bucket.
@@ -72,17 +72,17 @@ HTTP handler rather than hiding it in another generic layer.
 
 ## Route families
 
-| Family | Typical job | Accepted delta |
-| --- | --- | --- |
-| Public list/detail | Bounded projection for public pages | Pagination, joins, and publication filters differ by entity authority |
-| Internal | Authenticated owner/member/admin work | Required role and fixed domain scope differ |
-| Console | Selected-target commands and projections | Target family and operation differ; selection alone never grants authority |
-| Onboarding | Idempotent root/support creation or attachment | Domain seed and validation differ; transaction shape remains fixed-runtime |
-| Upload | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ |
-| Tool provider | Return or execute a reusable provider contract | Tool payload differs; provider never steals consumer data ownership |
-| Webhook/callback | Verify provider signature and advance trusted state | Signature and event vocabulary are provider-specific |
-| Cross-project publication | Signed owner-to-receiver projection transport | Requires OIDC/source allowlists and server-only support databases |
-| Dev | Bounded developer inspection | Development build plus configured developer identity are mandatory |
+| Family                    | Typical job                                                   | Accepted delta                                                             |
+| ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Public list/detail        | Bounded projection for public pages                           | Pagination, joins, and publication filters differ by entity authority      |
+| Internal                  | Authenticated owner/member/admin work                         | Required role and fixed domain scope differ                                |
+| Console                   | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
+| Onboarding                | Idempotent root/support creation or attachment                | Domain seed and validation differ; transaction shape remains fixed-runtime |
+| Upload                    | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ                                    |
+| Tool provider             | Return or execute a reusable provider contract                | Tool payload differs; provider never steals consumer data ownership        |
+| Webhook/callback          | Verify provider signature and advance trusted state           | Signature and event vocabulary are provider-specific                       |
+| Cross-project publication | Signed owner-to-receiver projection transport                 | Requires OIDC/source allowlists and server-only support databases          |
+| Dev                       | Bounded developer inspection                                  | Development build plus configured developer identity are mandatory         |
 
 These are server endpoint families, not new Entity kinds.
 
@@ -149,36 +149,46 @@ Current reusable server evidence includes:
   `packages/core/fireux-core/src/runtime/server/utils/app-membership/mutate.ts`;
 - App-scope transfer planning:
   `packages/core/fireux-core/src/runtime/server/utils/app-scope/transfer-plan.ts`;
+- Console Entity onboarding authority:
+  `packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts`;
 - Menu ownership/manifest/ordering workflows:
   `packages/extensions/fireux-kitchens/src/runtime/server/menu/`;
 - Kitchen order transition enforcement:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/order/transition.ts`.
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/transition.ts`.
 
 Promote a helper only when several endpoints share the same authority-sensitive
 process. Shared `text()`, `record()`, or response snippets alone do not justify
 a new architecture layer.
 
+HTTP routes remain adapters. Entity and domain projections, authority reads,
+and commands live under their owning `server/<domain>/` capability and accept
+transport-neutral inputs where practical. The route owns HTTP query/body/route
+parameter parsing, response headers, and status delivery. Proven extractions
+are protected by `scripts/guards/server-ownership.mjs`; this does not imply one
+universal endpoint engine.
+
 ## Accepted deltas
 
-| Delta | State | Reason |
-| --- | --- | --- |
-| Core registers foundational routes directly in its module | `accepted` | Core owns the runtime foundation and has no parent package hook to consume |
-| Extension packages register explicit handler lists | `accepted` | Apps opt into domain routes through installed modules |
-| App-local APIs exist beside package APIs | `accepted` | App-only product composition should not become reusable package truth prematurely |
-| Public projections join different linked records | `accepted` | Safe public meaning differs by Entity while bounded projection rules remain shared |
-| Provider callbacks use provider-specific verification | `accepted` | Signatures and event schemas are external contracts |
-| OPTIONS handlers accompany cross-origin tools/uploads | `accepted` | Browser preflight is part of the external tool boundary |
+| Delta                                                     | State      | Reason                                                                             |
+| --------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
+| Core registers foundational routes directly in its module | `accepted` | Core owns the runtime foundation and has no parent package hook to consume         |
+| Extension packages register explicit handler lists        | `accepted` | Apps opt into domain routes through installed modules                              |
+| App-local APIs exist beside package APIs                  | `accepted` | App-only product composition should not become reusable package truth prematurely  |
+| Public projections join different linked records          | `accepted` | Safe public meaning differs by Entity while bounded projection rules remain shared |
+| Provider callbacks use provider-specific verification     | `accepted` | Signatures and event schemas are external contracts                                |
+| OPTIONS handlers accompany cross-origin tools/uploads     | `accepted` | Browser preflight is part of the external tool boundary                            |
 
 ## Migration and drift register
 
-| Difference | State | Required direction |
-| --- | --- | --- |
-| Several package `server-config.ts` files register empty arrays | `drift` | Remove no-op hooks until a real endpoint exists; optional parity does not require empty files |
-| Some domain endpoint families still repeat auth/runtime parsing | `migration` | Consolidate only proven identical authority work into focused Core/domain primitives |
-| Menu upload/processing endpoints remain a young family | `to-confirm` | Keep input/process/output explicit and consolidate only after both quick Menu and KitchenMenu flows are stable |
-| Cross-project directory publication details were copied into broad maps | `drift` | Keep durable trust boundary here and current implementation state in source/guards or a focused family map |
-| Provider and consumer endpoint ownership has historically been confused | `migration` | Enforce the Tool Provider ownership contract and keep consumer storage local |
-| Package route registration has direct and hook-based implementations | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper |
+| Difference                                                                | State                      | Required direction                                                                                                                     |
+| ------------------------------------------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Several package `server-config.ts` files register empty arrays            | `drift`                    | Remove no-op hooks until a real endpoint exists; optional parity does not require empty files                                          |
+| Some domain endpoint families still repeat auth/runtime parsing           | `migration`                | Consolidate only proven identical authority work into focused Core/domain primitives                                                   |
+| Several large Kitchen API routes still contain domain/storage composition | `migration`                | Extract them incrementally into the existing Menu, Kitchen Operations, Customer, and payment owners while retaining thin HTTP adapters |
+| Menu upload/processing endpoints remain a young family                    | `to-confirm`               | Keep input/process/output explicit and consolidate only after both quick Menu and KitchenMenu flows are stable                         |
+| Cross-project directory publication details were copied into broad maps   | `drift`                    | Keep durable trust boundary here and current implementation state in source/guards or a focused family map                             |
+| Provider and consumer endpoint ownership has historically been confused   | `migration`                | Enforce the Tool Provider ownership contract and keep consumer storage local                                                           |
+| Package route registration has direct and hook-based implementations      | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper                                            |
 
 ## Alignment roadmap
 

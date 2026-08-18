@@ -28,13 +28,7 @@ export const kitchenTeamMemberInvitationCreateTool = defineKitchenTeamTool({
       description: 'Create a one-use link for an unlinked member.',
       icon: 'i-lucide-link',
     },
-    agent: {
-      enabled: true,
-      suggestion: {
-        strategy: 'eligible-record',
-        template: 'Create an invitation for {existingTeamMemberName}',
-      },
-    },
+    agent: { callable: true },
   },
   result: {
     kind: 'share-link',

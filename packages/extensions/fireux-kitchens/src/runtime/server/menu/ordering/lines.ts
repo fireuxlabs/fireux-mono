@@ -68,7 +68,9 @@ const quantity = (value: unknown) => {
   return parsed
 }
 const variantKey = (value: unknown) =>
-  text(value).toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  text(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
 
 const readVariant = (value: unknown): MenuOrderVariantInput | null => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
@@ -170,10 +172,9 @@ export const resolveMenuOrderAddOns = (
       variantKey(requestedAddOn.label),
     ].filter(Boolean)
     const match = options.find((option) =>
-      [
-        variantKey(option.id),
-        variantKey(option.label),
-      ].filter(Boolean).some((key) => requestedKeys.includes(key))
+      [variantKey(option.id), variantKey(option.label)]
+        .filter(Boolean)
+        .some((key) => requestedKeys.includes(key))
     )
     if (!match) {
       throw createError({
@@ -184,8 +185,8 @@ export const resolveMenuOrderAddOns = (
 
     return match
   })
-  const resolvedKeys = resolved.map((addOn) =>
-    variantKey(addOn.id) || variantKey(addOn.label)
+  const resolvedKeys = resolved.map(
+    (addOn) => variantKey(addOn.id) || variantKey(addOn.label)
   )
   if (new Set(resolvedKeys).size !== resolvedKeys.length) {
     throw createError({

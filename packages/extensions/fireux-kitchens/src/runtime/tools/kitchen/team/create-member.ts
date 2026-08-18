@@ -36,13 +36,7 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
       description: 'Add a named person to this Kitchen Team.',
       icon: 'i-lucide-user-plus',
     },
-    agent: {
-      enabled: true,
-      suggestion: {
-        strategy: 'example',
-        text: 'Add a new Team member named Alex',
-      },
-    },
+    agent: { callable: true },
   },
   result: { kind: 'object' },
 })

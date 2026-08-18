@@ -8,7 +8,7 @@ import type { MenuAiExtractionResult } from './extraction'
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export const menuAiExtractionCacheKey = (input: {
@@ -17,19 +17,23 @@ export const menuAiExtractionCacheKey = (input: {
   normalizationModel: string
   quality: string
   promptVersion: string
-}) => JSON.stringify({
-  version: input.promptVersion,
-  model: input.model,
-  normalizationModel: input.normalizationModel,
-  quality: input.quality,
-  files: input.files.map((file) => ({
-    id: text(file.id),
-    name: text(file.file_name),
-    type: text(file.file_type),
-    kind: text(file.file_kind),
-    path: text((file as FireuxAiDocumentSourceFile & { storage_path?: string }).storage_path),
-  })),
-})
+}) =>
+  JSON.stringify({
+    version: input.promptVersion,
+    model: input.model,
+    normalizationModel: input.normalizationModel,
+    quality: input.quality,
+    files: input.files.map((file) => ({
+      id: text(file.id),
+      name: text(file.file_name),
+      type: text(file.file_type),
+      kind: text(file.file_kind),
+      path: text(
+        (file as FireuxAiDocumentSourceFile & { storage_path?: string })
+          .storage_path
+      ),
+    })),
+  })
 
 export function cachedMenuExtraction(input: {
   source: Record<string, unknown>
@@ -40,7 +44,9 @@ export function cachedMenuExtraction(input: {
 }): MenuAiExtractionResult | null {
   const draft = record(input.source.ai_draft)
   if (text(record(draft.cache).key) !== input.cacheKey) return null
-  const sections = normalizeKitchenMenuDraftSections({ sections: draft.sections })
+  const sections = normalizeKitchenMenuDraftSections({
+    sections: draft.sections,
+  })
   if (!sections.length) return null
   const itemsCount = countKitchenMenuDraftItems(sections)
 

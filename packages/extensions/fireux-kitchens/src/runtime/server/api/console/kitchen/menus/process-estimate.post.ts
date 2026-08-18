@@ -1,9 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  readBody,
-  type H3Event,
-} from 'h3'
+import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
@@ -26,7 +21,7 @@ type ProcessEstimateBody = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -49,7 +44,8 @@ export default defineEventHandler(async (event: H3Event) => {
   if (!sourceSnap.exists) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Upload a source document before estimating AI processing.',
+      statusMessage:
+        'Upload a source document before estimating AI processing.',
     })
   }
 

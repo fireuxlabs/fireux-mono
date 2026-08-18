@@ -24,8 +24,8 @@ const exactIds = (value: unknown) => {
   }
   const ids = [...new Set(value.split(',').map(text).filter(Boolean))]
   if (
-    ids.length > MAX_EXACT_IDS
-    || ids.some(id => !isFirestoreDocumentId(id))
+    ids.length > MAX_EXACT_IDS ||
+    ids.some((id) => !isFirestoreDocumentId(id))
   ) {
     throw createError({
       statusCode: 400,
@@ -40,7 +40,7 @@ export default defineEventHandler(
     const db = getRuntimeFirestore()
     const ids = exactIds(getQuery(event).ids)
     const documents = ids.length
-      ? await db.getAll(...ids.map(id => db.doc(`ingredients/${id}`)))
+      ? await db.getAll(...ids.map((id) => db.doc(`ingredients/${id}`)))
       : (
           await db
             .collection('ingredients')
@@ -52,14 +52,15 @@ export default defineEventHandler(
     if (!ids.length && documents.length > MAX_LIBRARY_SIZE) {
       throw createError({
         statusCode: 503,
-        statusMessage: 'Ingredient library exceeds the bounded public projection.',
+        statusMessage:
+          'Ingredient library exceeds the bounded public projection.',
       })
     }
 
     const items = documents
-      .filter(document => document.exists)
+      .filter((document) => document.exists)
       .map(projectPublicIngredient)
-      .filter(item => item?.status === 'active')
+      .filter((item) => item?.status === 'active')
       .sort((left, right) =>
         (left?.name || '').localeCompare(right?.name || '', undefined, {
           sensitivity: 'base',
@@ -72,8 +73,8 @@ export default defineEventHandler(
         'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
     })
     return {
-      items: items.filter(
-        (item): item is NonNullable<typeof item> => Boolean(item)
+      items: items.filter((item): item is NonNullable<typeof item> =>
+        Boolean(item)
       ),
     }
   }

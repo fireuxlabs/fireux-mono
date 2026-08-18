@@ -7,8 +7,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const FILES = {
-  package:
-    'packages/extensions/fireux-finance/package.json',
+  package: 'packages/extensions/fireux-finance/package.json',
   presentationModel:
     'packages/extensions/fireux-finance/src/runtime/models/report-presentation.model.ts',
   presentationComponent:
@@ -38,7 +37,7 @@ const FILES = {
   kitchenReportModel:
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/finance-report.model.ts',
   kitchenReportProjection:
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report.ts',
   kitchenDemoFinance:
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/finance.ts',
   kitchenDemoOrderHistory:
@@ -67,13 +66,13 @@ const KITCHEN_FINANCE_SEAMS = {
   ],
   reportProjection: [
     FILES.kitchenReportProjection,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-common.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-range.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-sale.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-accumulator.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-reconcile.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-aggregate.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-read.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-common.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-range.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-sale.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-accumulator.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-reconcile.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-aggregate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/finance/gross-sales-report-read.ts',
   ],
 }
 
@@ -87,17 +86,13 @@ function read(repoRoot, file, violations) {
 }
 
 function readSeams(repoRoot, files, violations) {
-  return files.map(file => read(repoRoot, file, violations)).join('\n')
+  return files.map((file) => read(repoRoot, file, violations)).join('\n')
 }
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const violations = []
-  const presentationModel = read(
-    repoRoot,
-    FILES.presentationModel,
-    violations
-  )
+  const presentationModel = read(repoRoot, FILES.presentationModel, violations)
   const presentationComponent = read(
     repoRoot,
     FILES.presentationComponent,
@@ -175,24 +170,35 @@ export async function run(ctx) {
   const packageSource = read(repoRoot, FILES.package, violations)
 
   for (const [source, file, markers] of [
-    [restaurantLabourCalculator, FILES.restaurantLabourCalculator, [
-      'calculateRestaurantLabourCost',
-      'addFinancialMoney',
-      'labourBasisPoints',
-    ]],
-    [restaurantLabourToolAdapter, FILES.restaurantLabourToolAdapter, [
-      "id: 'kitchen.finance.calculate-labour-cost'",
-      "mode: 'calculate'",
-      "confirmation: 'none'",
-    ]],
-    [restaurantLabourToolComponent, FILES.restaurantLabourToolComponent, [
-      'calculateRestaurantLabourCost',
-      'Nothing is saved.',
-    ]],
+    [
+      restaurantLabourCalculator,
+      FILES.restaurantLabourCalculator,
+      [
+        'calculateRestaurantLabourCost',
+        'addFinancialMoney',
+        'labourBasisPoints',
+      ],
+    ],
+    [
+      restaurantLabourToolAdapter,
+      FILES.restaurantLabourToolAdapter,
+      [
+        "id: 'kitchen.finance.calculate-labour-cost'",
+        "mode: 'calculate'",
+        "confirmation: 'none'",
+      ],
+    ],
+    [
+      restaurantLabourToolComponent,
+      FILES.restaurantLabourToolComponent,
+      ['calculateRestaurantLabourCost', 'Nothing is saved.'],
+    ],
   ]) {
     for (const marker of markers) {
       if (!source.includes(marker)) {
-        violations.push(`${file}: missing deterministic labour-cost Tool contract (${marker})`)
+        violations.push(
+          `${file}: missing deterministic labour-cost Tool contract (${marker})`
+        )
       }
     }
   }
@@ -215,35 +221,47 @@ export async function run(ctx) {
   }
 
   for (const [source, file, markers] of [
-    [kitchenDemoFinance, FILES.kitchenDemoFinance, [
-      "kind: 'completed_order'",
-      'source: {',
-      'orderId: order.id',
-      'placedAt: order.placedAt',
-      'occurredAt: order.completedAt',
-      'closedByTeamMemberId:',
-      'signedAmountMinor: order.pricing.totalMinor',
-      "counterparty: 'Guest'",
-      'summary:',
-    ]],
-    [kitchenDemoOrderHistory, FILES.kitchenDemoOrderHistory, [
-      'KitchenDemoCompletedOrder',
-      'serviceNumber: number',
-      'placedAt: string',
-      'completedAt: string',
-      'unitPriceMinor: number',
-      'lineTotalMinor: number',
-      'deanosKitchenDemoServices',
-      'deanosKitchenDemoCompletedOrders',
-    ]],
-    [kitchenDemoScenarios, FILES.kitchenDemoScenarios, [
-      'seenFinanceOrderIds',
-      "transaction.source.kind !== 'completed_order'",
-      'transaction.source.id !== sourceOrder.id',
-      'transaction.occurredAt !== sourceOrder.completedAt',
-      'transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor',
-      'closer.display_name !== transaction.closedBy',
-    ]],
+    [
+      kitchenDemoFinance,
+      FILES.kitchenDemoFinance,
+      [
+        "kind: 'completed_order'",
+        'source: {',
+        'orderId: order.id',
+        'placedAt: order.placedAt',
+        'occurredAt: order.completedAt',
+        'closedByTeamMemberId:',
+        'signedAmountMinor: order.pricing.totalMinor',
+        "counterparty: 'Guest'",
+        'summary:',
+      ],
+    ],
+    [
+      kitchenDemoOrderHistory,
+      FILES.kitchenDemoOrderHistory,
+      [
+        'KitchenDemoCompletedOrder',
+        'serviceNumber: number',
+        'placedAt: string',
+        'completedAt: string',
+        'unitPriceMinor: number',
+        'lineTotalMinor: number',
+        'deanosKitchenDemoServices',
+        'deanosKitchenDemoCompletedOrders',
+      ],
+    ],
+    [
+      kitchenDemoScenarios,
+      FILES.kitchenDemoScenarios,
+      [
+        'seenFinanceOrderIds',
+        "transaction.source.kind !== 'completed_order'",
+        'transaction.source.id !== sourceOrder.id',
+        'transaction.occurredAt !== sourceOrder.completedAt',
+        'transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor',
+        'closer.display_name !== transaction.closedBy',
+      ],
+    ],
   ]) {
     for (const marker of markers) {
       if (!source.includes(marker)) {
@@ -368,25 +386,37 @@ export async function run(ctx) {
   }
 
   const kitchenPresentations = [
-    [FILES.kitchenCalendar, kitchenCalendar, [
-      'Daily sales',
-      'update:selectedDate',
-      'currency.currency_code',
-      'formatFinancialMinorAmount',
-    ]],
-    [FILES.kitchenDayDetail, kitchenDayDetail, [
-      'Daily roundup',
-      'Item roundup',
-      'item_sales',
-      'delivery_fees',
-      'formatFinancialMinorAmount',
-    ]],
-    [FILES.kitchenRoundup, kitchenRoundup, [
-      'Period roundup',
-      'Top item',
-      'Strongest weekday',
-      'formatFinancialMinorAmount',
-    ]],
+    [
+      FILES.kitchenCalendar,
+      kitchenCalendar,
+      [
+        'Daily sales',
+        'update:selectedDate',
+        'currency.currency_code',
+        'formatFinancialMinorAmount',
+      ],
+    ],
+    [
+      FILES.kitchenDayDetail,
+      kitchenDayDetail,
+      [
+        'Daily roundup',
+        'Item roundup',
+        'item_sales',
+        'delivery_fees',
+        'formatFinancialMinorAmount',
+      ],
+    ],
+    [
+      FILES.kitchenRoundup,
+      kitchenRoundup,
+      [
+        'Period roundup',
+        'Top item',
+        'Strongest weekday',
+        'formatFinancialMinorAmount',
+      ],
+    ],
   ]
   for (const [file, source, markers] of kitchenPresentations) {
     for (const marker of markers) {
@@ -420,9 +450,9 @@ export async function run(ctx) {
     'Average sale',
   ]) {
     if (
-      presentationModel.includes(forbidden)
-      || presentationComponent.includes(forbidden)
-      || trendComponent.includes(forbidden)
+      presentationModel.includes(forbidden) ||
+      presentationComponent.includes(forbidden) ||
+      trendComponent.includes(forbidden)
     ) {
       violations.push(
         `${FILES.presentationComponent}: shared Finance presentation acquired domain/data authority (${forbidden})`
@@ -462,8 +492,8 @@ export async function run(ctx) {
 
   const packageJson = packageSource ? JSON.parse(packageSource) : {}
   if (
-    packageJson.dependencies?.['fireux-kitchens']
-    || packageJson.dependencies?.['fireux-properties']
+    packageJson.dependencies?.['fireux-kitchens'] ||
+    packageJson.dependencies?.['fireux-properties']
   ) {
     violations.push(
       `${FILES.package}: Finance must not depend on a producing domain`
@@ -474,7 +504,7 @@ export async function run(ctx) {
     throw new Error(
       [
         '[guard] Shared Finance spine drifted:',
-        ...violations.map(violation => `- ${violation}`),
+        ...violations.map((violation) => `- ${violation}`),
       ].join('\n')
     )
   }

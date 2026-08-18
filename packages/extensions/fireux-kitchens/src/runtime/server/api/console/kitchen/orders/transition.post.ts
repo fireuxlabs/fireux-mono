@@ -13,13 +13,13 @@ import {
   isKitchenOrderTransition,
   type KitchenOrder,
 } from '../../../../../models/kitchen/order.model.ts'
-import { requireKitchenOperator } from '../../../../../server/kitchen/operator-access.ts'
-import { buildKitchenOrderTransitionPatch } from '../../../../../server/kitchen/order/transition.ts'
-import { publishAcceptedOrderCustomerNotification } from '../../../../../server/kitchen/order/customer-notification.ts'
+import { requireKitchenOperator } from '../../../../../server/kitchen/core/operator-access.ts'
+import { buildKitchenOrderTransitionPatch } from '../../../../../server/kitchen/operations/orders/transition.ts'
+import { publishAcceptedOrderCustomerNotification } from '../../../../../server/kitchen/operations/orders/customer-notification.ts'
 import {
   buildCompletedKitchenOrderSale,
   KitchenSaleInvariantError,
-} from '../../../../../server/kitchen/order/sale.ts'
+} from '../../../../../server/kitchen/operations/orders/sale.ts'
 
 type TransitionKitchenOrderBody = {
   app_id?: string

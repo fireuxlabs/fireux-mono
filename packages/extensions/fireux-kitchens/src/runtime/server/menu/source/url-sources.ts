@@ -55,7 +55,8 @@ export async function readKitchenMenuUrlSourceRequest(
     uploadId,
     sourceUrl,
     sourceProvider: providerFromUrl(sourceUrl, body?.sourceProvider),
-    replaceExisting: text(body?.replaceExisting) === 'true' ||
+    replaceExisting:
+      text(body?.replaceExisting) === 'true' ||
       text(body?.replace) === '1' ||
       text(body?.replace) === 'true',
   }

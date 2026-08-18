@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { requireKitchenOperator } from '../../../../../server/kitchen/operator-access.ts'
-import { endKitchenOrderService } from '../../../../../server/kitchen/order/service-sequence.ts'
+import { requireKitchenOperator } from '../../../../../server/kitchen/core/operator-access.ts'
+import { endKitchenOrderService } from '../../../../../server/kitchen/operations/orders/service-sequence.ts'
 
 type EndKitchenOrderServiceBody = {
   app_id?: string

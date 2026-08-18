@@ -192,7 +192,7 @@ translation state onto Kitchen.
   and
   `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts`
 - Kitchen attachment authority and trusted mutation:
-  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sproochli.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/sproochli.ts`
 - Public Menu projection:
   `packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/build.ts`
   and

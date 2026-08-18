@@ -17,10 +17,7 @@ import type { MenuOrderCommand } from './order-command.ts'
 import type { MenuOrderContext } from './context.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 import { resolveMenuOrderPayment } from './payment.ts'
-import {
-  money,
-  numberValue,
-} from './order-request.ts'
+import { money, numberValue } from './order-request.ts'
 import { validateMenuOrderSchedule } from './schedule.ts'
 
 export type ResolvedMenuOrderFulfilment = {
@@ -46,9 +43,10 @@ export async function resolveMenuOrderFulfilment(input: {
   const scheduleHours = command.orderTypeConfig?.service_hours?.operation_hours
   validateMenuOrderSchedule({
     collection: command.collection,
-    hours: command.orderType === 'collection'
-      ? scheduleHours
-      : scheduleHours || input.ordering.service_hours?.operation_hours,
+    hours:
+      command.orderType === 'collection'
+        ? scheduleHours
+        : scheduleHours || input.ordering.service_hours?.operation_hours,
     noticeHours: command.orderTypeConfig?.notice_hours,
     orderType: command.orderType,
     requestedFor: command.requestedFor,
@@ -133,10 +131,16 @@ export async function resolveMenuOrderFulfilment(input: {
           ? { asap_enabled: command.orderTypeConfig.asap_enabled }
           : {}),
         ...(command.orderTypeConfig.slot_interval_minutes
-          ? { slot_interval_minutes: command.orderTypeConfig.slot_interval_minutes }
+          ? {
+              slot_interval_minutes:
+                command.orderTypeConfig.slot_interval_minutes,
+            }
           : {}),
         ...(command.orderTypeConfig.schedule_horizon_days
-          ? { schedule_horizon_days: command.orderTypeConfig.schedule_horizon_days }
+          ? {
+              schedule_horizon_days:
+                command.orderTypeConfig.schedule_horizon_days,
+            }
           : {}),
         ...(command.orderTypeConfig.customer
           ? { customer: command.orderTypeConfig.customer }

@@ -38,7 +38,7 @@ export type MenuAiExtractionResult = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const numberValue = (value: unknown) => {
@@ -52,11 +52,10 @@ export const MENU_SOURCE_EXTRACTION_MODEL =
 export const MENU_SOURCE_EXTRACTION_STRONG_MODEL =
   text(process.env.FIREUX_AI_MENU_EXTRACTION_STRONG_MODEL) || 'gpt-5.5'
 export const MENU_SOURCE_NORMALIZATION_MODEL =
-  text(process.env.FIREUX_AI_MENU_NORMALIZATION_MODEL) ||
-    'gpt-5.4-nano'
-const MENU_SOURCE_IMAGE_DETAIL = (
-  text(process.env.FIREUX_AI_MENU_IMAGE_DETAIL) || 'auto'
-) as 'low' | 'high' | 'auto'
+  text(process.env.FIREUX_AI_MENU_NORMALIZATION_MODEL) || 'gpt-5.4-nano'
+const MENU_SOURCE_IMAGE_DETAIL = (text(
+  process.env.FIREUX_AI_MENU_IMAGE_DETAIL
+) || 'auto') as 'low' | 'high' | 'auto'
 export const MENU_SOURCE_EXTRACTION_TIMEOUT_MS =
   numberValue(process.env.FIREUX_AI_MENU_EXTRACTION_TIMEOUT_MS) || 120_000
 const MENU_SOURCE_URL_TEXT_LIMIT =
@@ -85,15 +84,13 @@ export const menuAiExtractionCacheKey = (input: {
   model: string
   normalizationModel: string
   quality: string
-}) => buildMenuAiExtractionCacheKey({
-  ...input,
-  promptVersion: MENU_SOURCE_EXTRACTION_PROMPT_VERSION,
-})
+}) =>
+  buildMenuAiExtractionCacheKey({
+    ...input,
+    promptVersion: MENU_SOURCE_EXTRACTION_PROMPT_VERSION,
+  })
 
-function annotateSections(
-  sections: KitchenMenuDraftSection[],
-  fileId: string
-) {
+function annotateSections(sections: KitchenMenuDraftSection[], fileId: string) {
   return sections.map((section) => ({
     ...section,
     items: section.items.map((item) => ({
@@ -150,20 +147,17 @@ async function withUrlText(file: FireuxAiDocumentSourceFile) {
   }
 }
 
-function buildMenuSourceExtractionRequest(
-  input: {
-    menuId: string
-    currencyCode: string
-    file: FireuxAiDocumentSourceFile
-  }
-) {
+function buildMenuSourceExtractionRequest(input: {
+  menuId: string
+  currencyCode: string
+  file: FireuxAiDocumentSourceFile
+}) {
   if (isUrlFile(input.file)) {
     return {
       input: {
         source_url: input.file.file_url,
         page_text: input.file.text_excerpt,
-        instruction:
-          `Classify this fetched restaurant menu or ordering URL, then extract only menu dishes that are present in the supplied page_text. page_text may be cleaned HTML text or resolved provider menu JSON. Use source_file_ids ["${input.file.id}"] for every item. Set item_kind to "food" or "drink" for every item, and set is_deal true only for bundled deals, meal deals, set menus, or offers. If page_text is only a shell, booking widget, empty page, or does not contain visible menu items, return {"sections":[],"notes":["no visible menu items in fetched URL content"]}. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. If a section label looks like a storefront filter label prefixed with "All " (for example "All Chicken" or "All Dessert"), keep it for now but add an extraction note that it needs operator review before publishing. ${MENU_LANGUAGE_VARIANT_INSTRUCTION} Return prices as ${input.currencyCode} numbers. If the provider data includes an item image_url, preserve it; otherwise return image_url as an empty string and do not invent stock images. If a dish has required sizes or mutually exclusive variants, put them in price_options. Every price_options.price must be the absolute full item price charged for that variant, never an increment or surcharge, and must be greater than zero. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. If a dish has optional extras, toppings, sides, or provider modifier_groups, put them in add_ons, not standalone dishes. An add_ons.price is the incremental surcharge and may be 0 for a labelled optional free add-on. Do not invent dishes, sections, prices, images, translations, or provider data not present in page_text.`,
+        instruction: `Classify this fetched restaurant menu or ordering URL, then extract only menu dishes that are present in the supplied page_text. page_text may be cleaned HTML text or resolved provider menu JSON. Use source_file_ids ["${input.file.id}"] for every item. Set item_kind to "food" or "drink" for every item, and set is_deal true only for bundled deals, meal deals, set menus, or offers. If page_text is only a shell, booking widget, empty page, or does not contain visible menu items, return {"sections":[],"notes":["no visible menu items in fetched URL content"]}. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. If a section label looks like a storefront filter label prefixed with "All " (for example "All Chicken" or "All Dessert"), keep it for now but add an extraction note that it needs operator review before publishing. ${MENU_LANGUAGE_VARIANT_INSTRUCTION} Return prices as ${input.currencyCode} numbers. If the provider data includes an item image_url, preserve it; otherwise return image_url as an empty string and do not invent stock images. If a dish has required sizes or mutually exclusive variants, put them in price_options. Every price_options.price must be the absolute full item price charged for that variant, never an increment or surcharge, and must be greater than zero. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. If a dish has optional extras, toppings, sides, or provider modifier_groups, put them in add_ons, not standalone dishes. An add_ons.price is the incremental surcharge and may be 0 for a labelled optional free add-on. Do not invent dishes, sections, prices, images, translations, or provider data not present in page_text.`,
       },
       context: {
         domain: 'restaurant_menu',
@@ -228,7 +222,7 @@ function buildMenuSourceExtractionRequest(
   const sourceLabel = fileIsPdf ? 'PDF' : 'photo or image'
 
   return {
-      input: {
+    input: {
       ...(fileIsPdf
         ? {
             files: [
@@ -251,8 +245,7 @@ function buildMenuSourceExtractionRequest(
             ],
             imageDetail: MENU_SOURCE_IMAGE_DETAIL,
           }),
-        instruction:
-          `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Set item_kind to "food" or "drink" for every item, and set is_deal true only for bundled deals, meal deals, set menus, or offers. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. If a section label looks like a storefront filter label prefixed with "All " (for example "All Chicken" or "All Dessert"), keep it for now but add an extraction note that it needs operator review before publishing. ${MENU_LANGUAGE_VARIANT_INSTRUCTION} Return prices as ${input.currencyCode} numbers. Return image_url as an empty string; do not invent stock images from uploaded documents. If a dish has required sizes or mutually exclusive variants, put them in price_options. Every price_options.price must be the absolute full item price charged for that variant, never an increment or surcharge, and must be greater than zero. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve variants such as 3Stk/4Stk/5Stk, 300gr/400gr, or named kids pasta choices as labelled price_options. If a dish has optional extras, toppings, or sides such as "Add-ons: Manchego 2.50" or "Mit Pommes 25.-", put those extras in add_ons. An add_ons.price is the incremental surcharge and may be 0 for a labelled optional free add-on. Do not invent dishes, sections, prices, images, or translations.`,
+      instruction: `Classify this uploaded restaurant menu ${sourceLabel}, then extract only the visible menu dishes from this file. Use source_file_ids ["${input.file.id}"] for every item. Set item_kind to "food" or "drink" for every item, and set is_deal true only for bundled deals, meal deals, set menus, or offers. Covers, QR codes, contact pages, empty pages, and non-dish pages are valid uploads; return {"sections":[],"notes":["no visible menu items"]} for those. Keep original section labels and dish names, but correct obvious OCR or spelling mistakes when the intended dish is clear. If a section label looks like a storefront filter label prefixed with "All " (for example "All Chicken" or "All Dessert"), keep it for now but add an extraction note that it needs operator review before publishing. ${MENU_LANGUAGE_VARIANT_INSTRUCTION} Return prices as ${input.currencyCode} numbers. Return image_url as an empty string; do not invent stock images from uploaded documents. If a dish has required sizes or mutually exclusive variants, put them in price_options. Every price_options.price must be the absolute full item price charged for that variant, never an increment or surcharge, and must be greater than zero. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve variants such as 3Stk/4Stk/5Stk, 300gr/400gr, or named kids pasta choices as labelled price_options. If a dish has optional extras, toppings, or sides such as "Add-ons: Manchego 2.50" or "Mit Pommes 25.-", put those extras in add_ons. An add_ons.price is the incremental surcharge and may be 0 for a labelled optional free add-on. Do not invent dishes, sections, prices, images, or translations.`,
     },
     context: {
       domain: 'restaurant_menu',
@@ -334,11 +327,12 @@ export async function extractMenuSourceWithAi(
     files: sourceFiles,
     taskId: input.menuId,
     logScope: 'kitchen-menu-ai-extraction',
-    buildRequest: (file) => buildMenuSourceExtractionRequest({
-      menuId: input.menuId,
-      currencyCode,
-      file,
-    }),
+    buildRequest: (file) =>
+      buildMenuSourceExtractionRequest({
+        menuId: input.menuId,
+        currencyCode,
+        file,
+      }),
     readResult: (data, file) => {
       const sections = annotateSections(
         normalizeKitchenMenuDraftSections(data),

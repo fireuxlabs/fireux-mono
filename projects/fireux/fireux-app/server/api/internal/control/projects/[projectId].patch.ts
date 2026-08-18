@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { updateProject } from '../../../../utils/project-mutations'
+import { updateProject } from '../../../../project/identity/update'
 
 export default defineEventHandler(async (event) =>
   updateProject(

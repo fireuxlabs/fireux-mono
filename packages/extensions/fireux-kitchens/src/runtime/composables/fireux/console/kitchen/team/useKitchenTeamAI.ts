@@ -1,82 +1,88 @@
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { kitchenOperationAgents } from '../../../../../ai/operation-agents'
-import {
-  kitchenTeamAgentTools,
-  type KitchenTeamToolSuggestion,
-} from '../../../../../tools/kitchen/team'
+import { kitchenTeamAgentTools } from '../../../../../tools/kitchen/team'
+import { useKitchenConsole } from '../core/useKitchenConsole'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
 import { useKitchenConsoleTeam } from './useKitchenConsoleTeam'
 
-const memberName = (member: { name?: string; display_name?: string }) =>
-  String(member.display_name || member.name || '').trim()
-
-const titleCase = (value: string) =>
-  value.replace(/\b\p{L}/gu, (character) => character.toLocaleUpperCase())
-
-const fillRequestTemplate = (
-  template: string,
-  values: Record<string, string>
-) =>
-  Object.entries(values).reduce(
-    (result, [key, value]) => result.replaceAll(`{${key}}`, value),
-    template
+const capabilityFingerprint = kitchenTeamAgentTools
+  .map((tool) =>
+    JSON.stringify({
+      id: tool.id,
+      context: tool.context,
+      inputSchema: tool.inputSchema,
+      confirmation: tool.confirmation,
+    })
   )
-
-type NamedMember = {
-  member: { user_id?: string }
-  name: string
-}
-
-const suggestionText = (
-  suggestion: KitchenTeamToolSuggestion,
-  members: NamedMember[]
-) => {
-  if (suggestion.strategy === 'never') return null
-  if (suggestion.strategy === 'example' || suggestion.strategy === 'collection') {
-    return suggestion.text
-  }
-
-  if (suggestion.strategy === 'eligible-record') {
-    const member = members.find(({ member }) => !member.user_id)
-    return member
-      ? fillRequestTemplate(suggestion.template, {
-          existingTeamMemberName: member.name,
-        })
-      : null
-  }
-
-  const casing = members.find(({ name }) => titleCase(name) !== name)
-  const member = casing || members[0]
-  if (!member) return null
-
-  return fillRequestTemplate(suggestion.template, {
-    existingTeamMemberName: member.name,
-    updatedTeamMemberName: casing ? titleCase(casing.name) : 'a new name',
-  })
-}
+  .join('|')
 
 export function useKitchenTeamAI() {
   const agent = kitchenOperationAgents.find(
     (candidate) => candidate.operationSlug === 'team'
   )
-
-  if (!agent) {
-    throw new Error('Kitchen TeamAI is not registered.')
-  }
+  if (!agent) throw new Error('Kitchen TeamAI is not registered.')
 
   const aiTools = useKitchenTeamAITools()
-  const { teamMembers } = useKitchenConsoleTeam()
-
-  const promptSuggestions = () => {
-    const members = teamMembers.value
-      .map((member) => ({ member, name: memberName(member) }))
-      .filter(({ name }) => Boolean(name))
+  const kitchenConsole = useKitchenConsole()
+  const { kitchenId, teamMembers, pending, readOnly } = useKitchenConsoleTeam()
+  const promptSuggestions = ref<string[]>([])
+  const suggestionCache = useState<Record<string, string[]>>(
+    'kitchen-team-ai-suggestions',
+    () => ({})
+  )
+  const suggestionKey = computed(() => {
+    if (!kitchenId.value || pending.value || readOnly.value) return ''
+    const memberState = teamMembers.value
+      .map((member) => `${member.id}:${member.name}:${member.user_id}`)
+      .sort()
+      .join('|')
     return [
-      ...kitchenTeamAgentTools
-        .map((tool) => suggestionText(tool.surfaces.agent.suggestion, members))
-        .filter((suggestion): suggestion is string => Boolean(suggestion)),
-      'What can I do with my Team?',
-    ]
+      kitchenConsole.runtime.appId.value,
+      kitchenId.value,
+      capabilityFingerprint,
+      memberState,
+    ].join('::')
+  })
+  let requestVersion = 0
+
+  const loadPromptSuggestions = async () => {
+    if (import.meta.server) return
+    const key = suggestionKey.value
+    if (!key) {
+      promptSuggestions.value = []
+      return
+    }
+    if (suggestionCache.value[key]) {
+      promptSuggestions.value = suggestionCache.value[key]
+      return
+    }
+    const version = ++requestVersion
+    try {
+      const user = await useRequireUser()
+      const token = await user.getIdToken()
+      const response = await $fetch<{ ok: true; suggestions: string[] }>(
+        '/api/console/kitchen/agent/suggestions',
+        {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: {
+            appId: kitchenConsole.runtime.appId.value,
+            kitchenId: kitchenId.value,
+            operation: 'team',
+          },
+        }
+      )
+      if (version !== requestVersion || key !== suggestionKey.value) return
+      suggestionCache.value[key] = response.suggestions
+      promptSuggestions.value = response.suggestions
+    } catch {
+      if (version === requestVersion) promptSuggestions.value = []
+    }
   }
+
+  watch(suggestionKey, () => void loadPromptSuggestions())
+  onMounted(() => void loadPromptSuggestions())
 
   return {
     agent,
@@ -84,9 +90,10 @@ export function useKitchenTeamAI() {
     contextIcon: 'i-lucide-users',
     title: 'Work with your Team',
     description: 'Ask about the people working with this Kitchen.',
+    placeholder: 'Ask about your Team…',
     aiTools,
     get promptSuggestions() {
-      return promptSuggestions()
+      return promptSuggestions.value
     },
   }
 }

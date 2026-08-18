@@ -1,9 +1,5 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: isolate testable token generation and constant-time digest verification.
-import {
-  createHash,
-  randomBytes,
-  timingSafeEqual,
-} from 'node:crypto'
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import { readMenuOrderCapabilityToken } from '../../../utils/menu-order-capability.ts'
 
 const SHA256_HEX_PATTERN = /^[a-f0-9]{64}$/
@@ -28,5 +24,7 @@ export function matchesMenuOrderCapability(token: string, storedHash: string) {
   const candidate = createHash('sha256').update(token).digest()
   const stored = Buffer.from(storedHash, 'hex')
 
-  return stored.length === candidate.length && timingSafeEqual(stored, candidate)
+  return (
+    stored.length === candidate.length && timingSafeEqual(stored, candidate)
+  )
 }

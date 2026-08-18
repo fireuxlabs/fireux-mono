@@ -61,7 +61,7 @@ paths and data, then remove the prototype code and records.
 - Entity and children:
   `packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts`
 - Atomic onboarding:
-  `packages/extensions/fireux-suppliers/src/runtime/server/supplier/onboarding.ts`
+  `packages/extensions/fireux-suppliers/src/runtime/server/supplier/index/onboarding.ts`
 - Console core:
   `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsole.ts`
 - Operations:

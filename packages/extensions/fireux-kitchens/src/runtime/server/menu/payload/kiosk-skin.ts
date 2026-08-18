@@ -15,7 +15,8 @@ const skinOneAppDefaults = (
   if (
     appId !== 'misebox-app' ||
     (skinId !== 'spice-dark' && skinId !== 'skin-one')
-  ) return undefined
+  )
+    return undefined
 
   const imageUrl = '/img/app/kiosk/skins/skin-one/welcome-background.png'
 
@@ -27,13 +28,31 @@ const skinOneAppDefaults = (
       '/img/app/kiosk/skins/skin-one/category-frame-overlay.png',
     section_card_image_urls: Object.fromEntries(
       [
-        'pizza', 'burgers', 'kebab-falafel', 'grill', 'mains-plates',
-        'pasta', 'mezze-salads', 'snacks-sides', 'soft-drinks',
-        'traditional', 'hot-drinks', 'beer', 'wine', 'spirits',
-      ].map(key => [
+        'pizza',
+        'burgers',
+        'kebab-falafel',
+        'grill',
+        'mains-plates',
+        'pasta',
+        'mezze-salads',
+        'snacks-sides',
+        'soft-drinks',
+        'traditional',
+        'hot-drinks',
+        'beer',
+        'wine',
+        'spirits',
+      ].map((key) => [
         key,
         `/img/app/kiosk/skins/skin-one/section-cards/${key}${
-          ['soft-drinks', 'traditional', 'hot-drinks', 'beer', 'wine', 'spirits'].includes(key)
+          [
+            'soft-drinks',
+            'traditional',
+            'hot-drinks',
+            'beer',
+            'wine',
+            'spirits',
+          ].includes(key)
             ? '-plum'
             : ''
         }.png`,

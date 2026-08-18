@@ -7,15 +7,13 @@ import {
 } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type {
-  PublicKitchenDetailResponse,
-} from '../../../models/kitchen/kitchen-index.model.ts'
+import type { PublicKitchenDetailResponse } from '../../../models/kitchen/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
   projectPublicKitchenDetail,
   type KitchenPublicDirectoryScope,
-} from '../../kitchen/public-projection.ts'
-import { readKitchenByRouteSlug } from '../../kitchen/route-identity.ts'
+} from '../../kitchen/identity/public-projection.ts'
+import { readKitchenByRouteSlug } from '../../kitchen/identity/route-identity.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -36,13 +34,12 @@ export default defineEventHandler(
     }
 
     const db = getRuntimeFirestore()
-    const kitchen = await readKitchenByRouteSlug(db, slug)
-      .catch(() => {
-        throw createError({
-          statusCode: 503,
-          statusMessage: 'Kitchen could not be read.',
-        })
+    const kitchen = await readKitchenByRouteSlug(db, slug).catch(() => {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Kitchen could not be read.',
       })
+    })
     const data = kitchen?.data || {}
     if (!kitchen) {
       throw createError({

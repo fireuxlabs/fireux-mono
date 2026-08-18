@@ -23,7 +23,7 @@ export type KitchenTeamHumanTool = Extract<
 >
 
 export const kitchenTeamAgentTools = kitchenTeamTools.filter(
-  (tool) => tool.surfaces.agent.enabled
+  (tool) => tool.surfaces.agent.callable
 )
 export const kitchenTeamAgentToolIds = kitchenTeamAgentTools.map(
   (tool) => tool.id

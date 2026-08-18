@@ -1,8 +1,6 @@
 import { createError } from 'h3'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import {
-  type IngredientStatus,
-} from '../../models/ingredient-taxonomy.ts'
+import { type IngredientStatus } from '../../models/ingredient-taxonomy.ts'
 import { normalizeIngredientAliases } from './public-projection.ts'
 
 export type StoredRecord = Record<string, unknown>

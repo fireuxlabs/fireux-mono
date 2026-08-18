@@ -50,8 +50,8 @@ export default defineEventHandler(async (event) => {
     context.fulfilment,
     context.operationHours
   )
-  const deliveryPolicy = ordering.order_types.find((type) =>
-    type.type === 'delivery'
+  const deliveryPolicy = ordering.order_types.find(
+    (type) => type.type === 'delivery'
   )
   if (!isMenuOrderingEnabled(ordering) || !deliveryPolicy) {
     throw createError({
@@ -61,10 +61,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const zones = deliveryPolicy.fulfilment?.delivery_zones || []
-  const origin = await resolveMenuDeliveryOrigin(
-    context.kitchenPlaceId,
-    zones
-  )
+  const origin = await resolveMenuDeliveryOrigin(context.kitchenPlaceId, zones)
   if (placeId) {
     return checkMenuDeliveryPlaceId(placeId, zones, origin)
   }

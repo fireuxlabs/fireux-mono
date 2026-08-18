@@ -17,13 +17,7 @@ export const kitchenTeamMembersReadTool = defineKitchenTeamTool({
   },
   surfaces: {
     human: false,
-    agent: {
-      enabled: true,
-      suggestion: {
-        strategy: 'collection',
-        text: 'Who is currently on my Team?',
-      },
-    },
+    agent: { callable: true },
   },
   result: { kind: 'collection' },
 })

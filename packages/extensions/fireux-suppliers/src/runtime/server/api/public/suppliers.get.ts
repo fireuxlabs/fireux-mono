@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import { readPublicSupplierIndex } from '../../supplier/public-projection.ts'
+import { readPublicSupplierIndex } from '../../supplier/identity/public-projection.ts'
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {

@@ -13,7 +13,7 @@ import type { ResolvedMenuOrderFulfilment } from './order-fulfilment.ts'
 import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 import { createMenuOrderCapability } from './order-capability.ts'
-import { createKitchenOrderPricing } from '../../kitchen/order/pricing.ts'
+import { createKitchenOrderPricing } from '../../kitchen/operations/orders/pricing.ts'
 import { numberValue, orderId, orderNumber } from './order-request.ts'
 
 export type MenuOrderRecordIdentity = {

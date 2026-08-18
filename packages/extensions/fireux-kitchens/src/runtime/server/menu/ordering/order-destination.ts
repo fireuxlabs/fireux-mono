@@ -34,7 +34,7 @@ const requiredLocationLabel = (value: unknown, label: string) => {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const readCollection = (value: unknown): MenuOrderingCollectionState => {
@@ -83,16 +83,18 @@ export function readMenuOrderDestination(
     })
   }
 
-  const source = strategy.destination === 'table'
-    ? record(body?.table)
-    : strategy.destination === 'room_service'
-      ? record(body?.room_service)
-      : {}
+  const source =
+    strategy.destination === 'table'
+      ? record(body?.table)
+      : strategy.destination === 'room_service'
+        ? record(body?.room_service)
+        : {}
 
   return {
-    collection: strategy.destination === 'collection'
-      ? readCollection(body?.collection)
-      : null,
+    collection:
+      strategy.destination === 'collection'
+        ? readCollection(body?.collection)
+        : null,
     ...(strategy.destination === 'table'
       ? { table: { number: requiredLocationLabel(source.number, 'Table') } }
       : {}),

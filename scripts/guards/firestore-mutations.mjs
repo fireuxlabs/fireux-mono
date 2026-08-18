@@ -40,7 +40,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
   '41d9bcfae9b30f8938da437128bf140fd402c739b72a6762b96f098ab75274dd'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
-  'bda76e185e9be6e3cf978e8d2e494c3d24cd1cbd789aab845b6691cdc20a5b76'
+  '593712622256a877a2326b37c023bf030224f3e0b734219b7122c1b851d8c948'
 
 function sourceFiles(repoRoot) {
   const files = []
@@ -291,7 +291,7 @@ export function run({ repoRoot }) {
   const kitchenOrderNotification = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/order/customer-notification.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/customer-notification.ts'
     ),
     'utf8'
   )
@@ -307,7 +307,7 @@ export function run({ repoRoot }) {
   const kitchenOrderServiceSequence = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/order/service-sequence.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/operations/orders/service-sequence.ts'
     ),
     'utf8'
   )
@@ -367,7 +367,7 @@ export function run({ repoRoot }) {
   const kitchenDriverDispatch = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/driver-dispatch.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/server/driver/dispatch.ts'
     ),
     'utf8'
   )
@@ -397,13 +397,13 @@ export function run({ repoRoot }) {
     'utf8'
   )
   assert.match(marketplaceAdminWriter, /serverAppUsersTarget/)
-  const projectMutationsSource = readFileSync(
-    path.join(
-      repoRoot,
-      'projects/fireux/fireux-app/server/utils/project-mutations.ts'
-    ),
-    'utf8'
-  )
+  const projectMutationsSource = [
+    'projects/fireux/fireux-app/server/project/index/create.ts',
+    'projects/fireux/fireux-app/server/project/identity/update.ts',
+    'projects/fireux/fireux-app/server/project/identity/delete.ts',
+  ]
+    .map((file) => readFileSync(path.join(repoRoot, file), 'utf8'))
+    .join('\n')
   assert.match(projectMutationsSource, /export async function createProject/)
   assert.match(projectMutationsSource, /export async function updateProject/)
   assert.match(projectMutationsSource, /export async function deleteProject/)

@@ -197,7 +197,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenSproochliEndpoint = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sproochli.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/identity/sproochli.ts'
   )
   const menuBrowse = read(
     repoRoot,

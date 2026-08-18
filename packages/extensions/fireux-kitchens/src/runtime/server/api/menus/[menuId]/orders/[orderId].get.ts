@@ -1,9 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  getRouterParam,
-} from 'h3'
+import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
@@ -26,7 +21,7 @@ const numberValue = (value: unknown) => {
   return Number.isFinite(number) ? number : 0
 }
 const timestampIso = (value: unknown) => {
-  const source = value as { toDate?: () => Date, seconds?: number } | null
+  const source = value as { toDate?: () => Date; seconds?: number } | null
   if (typeof source?.toDate === 'function') return source.toDate().toISOString()
 
   const seconds = Number(source?.seconds)
@@ -38,9 +33,10 @@ const timestampIso = (value: unknown) => {
   return Number.isFinite(parsed) ? new Date(parsed).toISOString() : ''
 }
 const fulfilmentMatch = (value: unknown) => {
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
+  const source =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {}
   const type = text(source.type)
   const reference = text(source.reference)
   const handoff = text(source.handoff)
@@ -50,9 +46,10 @@ const fulfilmentMatch = (value: unknown) => {
   return { type, reference, handoff }
 }
 const collectionState = (value: unknown) => {
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
+  const source =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {}
   const mode = text(source.mode)
   if (mode !== 'queue' && mode !== 'scheduled') return undefined
 
@@ -100,9 +97,10 @@ export default defineEventHandler(async (event) => {
     })
   }
   requireMenuOrderCustomerAccess(access, data)
-  const driverResponses = data.driver_responses && typeof data.driver_responses === 'object'
-    ? data.driver_responses as Record<string, { status?: unknown }>
-    : {}
+  const driverResponses =
+    data.driver_responses && typeof data.driver_responses === 'object'
+      ? (data.driver_responses as Record<string, { status?: unknown }>)
+      : {}
   const match = fulfilmentMatch(data.fulfilment_match)
   const collection = collectionState(data.collection)
   const status = text(data.status)
@@ -121,11 +119,13 @@ export default defineEventHandler(async (event) => {
     order_type: orderType,
     ...(match ? { fulfilment_match: match } : {}),
     ...(collection ? { collection } : {}),
-    ...(text(data.kitchen_note) ? { kitchen_note: text(data.kitchen_note) } : {}),
+    ...(text(data.kitchen_note)
+      ? { kitchen_note: text(data.kitchen_note) }
+      : {}),
     estimated_ready_minutes: numberValue(data.estimated_ready_minutes),
     estimated_ready_at: timestampIso(data.estimated_ready_at),
-    driver_watching_count: Object.values(driverResponses)
-      .filter((response) => text(response?.status) === 'watching')
-      .length,
+    driver_watching_count: Object.values(driverResponses).filter(
+      (response) => text(response?.status) === 'watching'
+    ).length,
   }
 })

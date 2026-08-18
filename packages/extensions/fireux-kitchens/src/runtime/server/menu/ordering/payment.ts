@@ -46,20 +46,21 @@ export function resolveMenuOrderPaymentMethod(
   const configuredPaymentMethods =
     input.orderTypeConfig?.fulfilment?.payment_methods || []
   const hasDeferredPayment = configuredPaymentMethods.some(
-    method => method !== 'online_card'
+    (method) => method !== 'online_card'
   )
-  const allowedPaymentMethods: KitchenOrderPaymentMethod[] =
-    input.orderTypeConfig?.fulfilment?.deposit
-      ? ['deposit']
-      : [
-          ...configuredPaymentMethods,
-          ...(hasDeferredPayment ? ['pay_later' as const] : []),
-        ]
+  const allowedPaymentMethods: KitchenOrderPaymentMethod[] = input
+    .orderTypeConfig?.fulfilment?.deposit
+    ? ['deposit']
+    : [
+        ...configuredPaymentMethods,
+        ...(hasDeferredPayment ? ['pay_later' as const] : []),
+      ]
   const requestedPaymentMethod = normalizePaymentMethod(
     input.requestedPaymentMethod,
     allowedPaymentMethods
   )
-  const paymentMethod = requestedPaymentMethod ||
+  const paymentMethod =
+    requestedPaymentMethod ||
     (input.orderTypeConfig?.fulfilment?.deposit
       ? 'deposit'
       : allowedPaymentMethods.length === 1
@@ -111,7 +112,10 @@ const depositAmount = (
   const amount = numberValue(deposit.amount)
   if (deposit.type === 'fixed') return amount
   if (deposit.type === 'fixed_per_person') {
-    return amount * Math.max(1, Math.floor(numberValue(input.customer.party_size) || 1))
+    return (
+      amount *
+      Math.max(1, Math.floor(numberValue(input.customer.party_size) || 1))
+    )
   }
   if (deposit.type === 'percent') {
     return input.totalChf * (amount / 100)

@@ -9,7 +9,7 @@ import {
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
-} from '../mutation-authority.ts'
+} from '../core/mutation-authority.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

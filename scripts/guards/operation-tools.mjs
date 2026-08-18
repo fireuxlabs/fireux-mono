@@ -48,15 +48,24 @@ export async function run({ repoRoot }) {
         violations.push(`${definitionRoot}/${file}: missing ${required}`)
       }
     }
+    if (/\bsuggestion\s*:/.test(definition)) {
+      violations.push(
+        `${definitionRoot}/${file}: tools declare capabilities, not authored prompt suggestions.`
+      )
+    }
     const executorFile = `${executorRoot}/${file}`
     if (!existsSync(join(repoRoot, executorFile))) {
       violations.push(`${executorFile}: missing executor for ${id || file}.`)
       continue
     }
     const executor = await source(repoRoot, executorFile)
-    if (!executor.includes(' as definition ') || !executor.includes('execute(')) {
+    if (
+      !executor.includes(' as definition ') ||
+      !executor.includes('prepare(') ||
+      !executor.includes('execute(')
+    ) {
       violations.push(
-        `${executorFile}: must bind the canonical definition to an executable command.`
+        `${executorFile}: must bind the definition to preparation and execution.`
       )
     }
   }
@@ -119,6 +128,35 @@ export async function run({ repoRoot }) {
   ) {
     violations.push(
       'Misebox TeamAI must return canonical tool calls, not a bespoke action enum.'
+    )
+  }
+
+  const teamRuntime = await source(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/team.ts'
+  )
+  if (
+    !teamRuntime.includes('findKitchenTeamServerTool') ||
+    teamRuntime.includes("'kitchen.team.") ||
+    /kitchenTeamMember(?:Create|Read|Update|Delete|Invitation)/.test(teamRuntime)
+  ) {
+    violations.push(
+      'Misebox TeamAI runtime must prepare and execute through generic registry lookup.'
+    )
+  }
+
+  const teamPresentation = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/team/useKitchenTeamAI.ts'
+  )
+  if (
+    !teamPresentation.includes('/api/console/kitchen/agent/suggestions') ||
+    /Add a new Team member|Who is currently on my Team|Create an invitation for/.test(
+      teamPresentation
+    )
+  ) {
+    violations.push(
+      'useKitchenTeamAI must load inferred suggestions rather than authoring tool prompts.'
     )
   }
 

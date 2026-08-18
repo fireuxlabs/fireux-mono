@@ -28,9 +28,8 @@ export default defineEventHandler(async (event) => {
     menuId,
     getQuery(event).kitchenSlug
   )
-  const data = target.kind === 'root-doorway'
-    ? target.rootMenuData
-    : target.menuData
+  const data =
+    target.kind === 'root-doorway' ? target.rootMenuData : target.menuData
   if (readRecordString(data, 'status') !== 'published') {
     throw createError({
       statusCode: 404,
@@ -42,10 +41,11 @@ export default defineEventHandler(async (event) => {
   const contentType =
     readRecordString(file, 'type') || 'application/octet-stream'
   const fileName = readRecordString(file, 'name') || menuId
-  const safeFileName = fileName
-    .replace(/[\r\n"]/g, '')
-    .trim()
-    .replace(/[^\x20-\x7E]/g, '_') || menuId
+  const safeFileName =
+    fileName
+      .replace(/[\r\n"]/g, '')
+      .trim()
+      .replace(/[^\x20-\x7E]/g, '_') || menuId
 
   if (!objectPath) {
     throw createError({

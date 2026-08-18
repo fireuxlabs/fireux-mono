@@ -1,15 +1,7 @@
-import {
-  normalizeSproochliLanguage,
-} from 'fireux-sproochli/runtime/sproochli'
-import type {
-  SproochliMenuCacheImportUnit,
-} from 'fireux-sproochli/runtime/menu-cache'
-import {
-  resolveSproochliHostStorage,
-} from 'fireux-sproochli/runtime/server/menu/storage'
-import {
-  sproochliMenuTranslationMemoryCandidate,
-} from 'fireux-sproochli/runtime/server/menu/translation-recipe'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
+import type { SproochliMenuCacheImportUnit } from 'fireux-sproochli/runtime/menu-cache'
+import { resolveSproochliHostStorage } from 'fireux-sproochli/runtime/server/menu/storage'
+import { sproochliMenuTranslationMemoryCandidate } from 'fireux-sproochli/runtime/server/menu/translation-recipe'
 import {
   sproochliTranslationMemoryId,
   writeSproochliTranslationMemory,
@@ -62,15 +54,16 @@ export async function importKitchenMenuCacheUnits(input: {
     throw new Error('Sproochli Menu cache import host does not match runtime.')
   }
 
-  const valuesByIdentity =
-    new Map<string, SproochliTranslationMemoryValue>()
+  const valuesByIdentity = new Map<string, SproochliTranslationMemoryValue>()
   input.units.forEach((unit, index) => {
     const fieldId = text(unit.fieldId)
     const sourceText = text(unit.sourceText)
     const translatedText = text(unit.translatedText)
     const targetLanguage = normalizeSproochliLanguage(unit.targetLanguage)
     if (!fieldId || !sourceText || !translatedText || !targetLanguage) {
-      throw new Error(`Sproochli Menu cache import unit ${index + 1} is invalid.`)
+      throw new Error(
+        `Sproochli Menu cache import unit ${index + 1} is invalid.`
+      )
     }
 
     const candidate = sproochliMenuTranslationMemoryCandidate({
@@ -81,7 +74,9 @@ export async function importKitchenMenuCacheUnits(input: {
     })
     const identity = sproochliTranslationMemoryId(candidate)
     if (!identity) {
-      throw new Error(`Sproochli Menu cache import unit ${index + 1} is invalid.`)
+      throw new Error(
+        `Sproochli Menu cache import unit ${index + 1} is invalid.`
+      )
     }
 
     const value: SproochliTranslationMemoryValue = {

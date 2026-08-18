@@ -1,8 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type {
-  MenuChoice,
-} from '../../../models/kitchen/menu/menu.model.ts'
+import type { MenuChoice } from '../../../models/kitchen/menu/menu.model.ts'
 import { menuOrderTypeLabel } from '../../../utils/menu-ordering-ui.ts'
 import { menuChoiceContextForOrderType } from '../../../utils/menu-context.ts'
 import {
@@ -34,9 +32,10 @@ const menuPath = (
   orderType: Parameters<typeof menuChoiceContextForOrderType>[0],
   routeKind: MenuChoiceInput['routeKind']
 ) => {
-  const scope = routeKind === 'tenant-menu'
-    ? tenantMenuRouteScope()
-    : directoryMenuRouteScope(kitchenSlug)
+  const scope =
+    routeKind === 'tenant-menu'
+      ? tenantMenuRouteScope()
+      : directoryMenuRouteScope(kitchenSlug)
 
   return menuRoutePath({
     scope,
@@ -102,10 +101,13 @@ export async function readKitchenMenuChoices(
       data: doc.data() || {},
     }))
     .filter((row) => readRecordString(row.data, 'status') === 'published')
-    .sort((left, right) =>
-      numberValue(left.data.sort_order) - numberValue(right.data.sort_order) ||
-      (readRecordString(left.data, 'name') || left.id)
-        .localeCompare(readRecordString(right.data, 'name') || right.id)
+    .sort(
+      (left, right) =>
+        numberValue(left.data.sort_order) -
+          numberValue(right.data.sort_order) ||
+        (readRecordString(left.data, 'name') || left.id).localeCompare(
+          readRecordString(right.data, 'name') || right.id
+        )
     )
 
   return rows.flatMap((row) =>

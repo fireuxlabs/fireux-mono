@@ -20,7 +20,7 @@ import { createError, type H3Event } from 'h3'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
-} from '../mutation-authority.ts'
+} from '../core/mutation-authority.ts'
 
 const INVITATION_LIFETIME_MS = 7 * 24 * 60 * 60 * 1_000
 

@@ -1,9 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  getQuery,
-  getRouterParam,
-} from 'h3'
+import { createError, defineEventHandler, getQuery, getRouterParam } from 'h3'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
@@ -20,9 +15,7 @@ import {
   menuSpecialsContent,
   shouldEmbedMenuSpecials,
 } from '../../../utils/menu-specials.ts'
-import {
-  normalizeMenuRouteContext,
-} from '../../../utils/menu-context.ts'
+import { normalizeMenuRouteContext } from '../../../utils/menu-context.ts'
 import { parseMenuRouteTarget } from '../../../utils/kitchen-menu-route.ts'
 import {
   resolvePublicMenuTarget,
@@ -37,17 +30,25 @@ async function readSpecialsContent(
 ) {
   const primaryMenuId = text(target.scope.primaryMenuId)
   const specialsMenuId = text(target.scope.specialsMenuId)
-  if (!shouldEmbedMenuSpecials({
-    sourceMenuId: target.sourceMenuId,
-    primaryMenuId,
-    specialsEnabled: target.scope.specialsEnabled,
-    specialsMenuId,
-  })) return undefined
+  if (
+    !shouldEmbedMenuSpecials({
+      sourceMenuId: target.sourceMenuId,
+      primaryMenuId,
+      specialsEnabled: target.scope.specialsEnabled,
+      specialsMenuId,
+    })
+  )
+    return undefined
 
   const data = await getRuntimeFirestore()
-    .doc(`apps/${target.appId}/kitchens/${target.kitchenId}/menus/${specialsMenuId}`)
+    .doc(
+      `apps/${target.appId}/kitchens/${target.kitchenId}/menus/${specialsMenuId}`
+    )
     .get()
-  if (!data.exists || readRecordString(data.data() || {}, 'status') !== 'published') {
+  if (
+    !data.exists ||
+    readRecordString(data.data() || {}, 'status') !== 'published'
+  ) {
     return undefined
   }
   const sections = await readKitchenMenuSections(getRuntimeFirestore(), {
@@ -77,10 +78,10 @@ function menuRequestStatusCode(value: unknown) {
   const error = value as MenuRequestError
   const statusCode = Number(
     error?.statusCode ||
-    error?.status ||
-    error?.data?.statusCode ||
-    error?.data?.status ||
-    500
+      error?.status ||
+      error?.data?.statusCode ||
+      error?.data?.status ||
+      500
   )
 
   return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
@@ -90,11 +91,12 @@ function menuRequestStatusCode(value: unknown) {
 
 function safePublicMenuError(value: unknown) {
   const statusCode = menuRequestStatusCode(value)
-  const statusMessage = statusCode === 404
-    ? 'Menu not found.'
-    : statusCode >= 500
-      ? 'Menu temporarily unavailable.'
-      : 'Menu unavailable.'
+  const statusMessage =
+    statusCode === 404
+      ? 'Menu not found.'
+      : statusCode >= 500
+        ? 'Menu temporarily unavailable.'
+        : 'Menu unavailable.'
 
   return createError({ statusCode, statusMessage })
 }
@@ -202,11 +204,7 @@ export default defineEventHandler(async (event) => {
 
     const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
     if (publicTarget.kind !== 'root-doorway') {
-      return await readKitchenMenu(
-        publicTarget,
-        menuContext,
-        sproochliLanguage
-      )
+      return await readKitchenMenu(publicTarget, menuContext, sproochliLanguage)
     }
 
     return await readRootMenuDetail(

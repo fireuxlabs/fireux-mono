@@ -4,9 +4,9 @@ import {
   readBody,
   setResponseHeaders,
 } from 'h3'
-import { updateKitchenPublicIdentity } from '../../../kitchen/public-identity.ts'
+import { updateKitchenPublicIdentity } from '../../../kitchen/identity/public-identity.ts'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'private, no-store',

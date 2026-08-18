@@ -1,10 +1,5 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: require explicit currency through concrete Place runtime imports.
-import {
-  createError,
-  getQuery,
-  readMultipartFormData,
-  type H3Event,
-} from 'h3'
+import { createError, getQuery, readMultipartFormData, type H3Event } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
@@ -21,7 +16,10 @@ import {
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { AppKitchenStorage, KitchenStorage } from '../../../models/kitchen.model'
+import {
+  AppKitchenStorage,
+  KitchenStorage,
+} from '../../../models/kitchen.model'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../../models/kitchen/menu/menu-source-upload.model'
@@ -63,7 +61,10 @@ export type SavedKitchenMenuUploadFile = {
   contentType: string
 }
 
-export function setKitchenMenuUploadCors(event: H3Event, method: 'GET' | 'POST') {
+export function setKitchenMenuUploadCors(
+  event: H3Event,
+  method: 'GET' | 'POST'
+) {
   setCorsHeaders(event, {
     methods: [method],
     headers: ['content-type', 'authorization'],
@@ -127,7 +128,8 @@ export async function readKitchenMenuUploadRequest(
     appId,
     kitchenId,
     uploadId,
-    replaceExisting: text(query.replace) === '1' || text(query.replace) === 'true',
+    replaceExisting:
+      text(query.replace) === '1' || text(query.replace) === 'true',
     files,
   }
 }
@@ -155,7 +157,8 @@ export function readKitchenMenuUploadAvailabilityRequest(event: H3Event) {
     appId: requirePathSegment(query.appId, 'App id'),
     kitchenId: requirePathSegment(query.kitchenId, 'Kitchen id'),
     uploadId,
-    replaceExisting: text(query.replace) === '1' || text(query.replace) === 'true',
+    replaceExisting:
+      text(query.replace) === '1' || text(query.replace) === 'true',
   }
 }
 
@@ -275,18 +278,20 @@ export async function saveKitchenMenuUploadFiles(
 }
 
 export function storagePathsFromMenuUpload(value: unknown) {
-  const source = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
+  const source =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? (value as Record<string, unknown>)
+      : {}
   const paths = new Set<string>()
   const primary = text(source.storage_path)
   if (primary) paths.add(primary)
 
   if (Array.isArray(source.files)) {
     for (const file of source.files) {
-      const row = file && typeof file === 'object' && !Array.isArray(file)
-        ? file as Record<string, unknown>
-        : {}
+      const row =
+        file && typeof file === 'object' && !Array.isArray(file)
+          ? (file as Record<string, unknown>)
+          : {}
       const path = text(row.storage_path)
       if (path) paths.add(path)
     }
@@ -307,9 +312,8 @@ export function kitchenMenuUploadRecord(
       contentType: file.contentType,
     })
   )
-  const singleKind = Array.from(new Set(fileKinds)).length === 1
-    ? fileKinds[0]
-    : 'document'
+  const singleKind =
+    Array.from(new Set(fileKinds)).length === 1 ? fileKinds[0] : 'document'
 
   return {
     id: request.uploadId,

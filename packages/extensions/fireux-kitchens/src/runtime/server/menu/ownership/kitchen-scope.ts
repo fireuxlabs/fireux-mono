@@ -29,7 +29,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
-import { readKitchenByRouteSlug } from '../../kitchen/route-identity.ts'
+import { readKitchenByRouteSlug } from '../../kitchen/identity/route-identity.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -119,10 +119,10 @@ export function menuKitchenIdentity(
   const menuDisplay = readKitchenMenusConfig(appData)
   const consolePalette = readKitchenConsolePalette(appData)
   const placePalette = record(placeData.brand_palette)
-  const placeStyle = place.mediaBackdropColor
-    && !readRecordString(placePalette, 'primary_color')
-    ? { ...placePalette, primary_color: place.mediaBackdropColor }
-    : placePalette
+  const placeStyle =
+    place.mediaBackdropColor && !readRecordString(placePalette, 'primary_color')
+      ? { ...placePalette, primary_color: place.mediaBackdropColor }
+      : placePalette
   const consoleStyle = consolePalette
     ? {
         background_color_light: consolePalette.canvas,

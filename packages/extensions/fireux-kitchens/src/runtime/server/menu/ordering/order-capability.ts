@@ -1,9 +1,5 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: authorize canonical customer Order access without exposing a bearer secret at rest.
-import {
-  createError,
-  getHeader,
-  type H3Event,
-} from 'h3'
+import { createError, getHeader, type H3Event } from 'h3'
 import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   MENU_ORDER_CAPABILITY_HEADER,
@@ -48,10 +44,7 @@ export function requireMenuOrderCustomerAccess(
     return { actorId: 'order-capability' }
   }
 
-  if (
-    access.customerUid &&
-    access.customerUid === text(order.customer_uid)
-  ) {
+  if (access.customerUid && access.customerUid === text(order.customer_uid)) {
     return { actorId: access.customerUid }
   }
 

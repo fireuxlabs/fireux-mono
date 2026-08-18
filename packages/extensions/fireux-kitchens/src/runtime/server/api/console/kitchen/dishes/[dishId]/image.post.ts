@@ -15,7 +15,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { readUploadedMultipartFile } from 'fireux-core/runtime/server/utils/uploads/multipart'
 import { DishStorage } from '../../../../../../models/kitchen/dish.model.ts'
 import { normalizeAndSaveDishImage } from '../../../../../../server/dish/image.ts'
-import { requireKitchenWriter } from '../../../../../../server/kitchen/operator-access.ts'
+import { requireKitchenWriter } from '../../../../../../server/kitchen/core/operator-access.ts'
 
 const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] as const
 const extensionTypes = {
@@ -89,7 +89,8 @@ export default defineEventHandler(async (event: H3Event) => {
       if (readString(current.get('image')) !== previousImage) {
         throw createError({
           statusCode: 409,
-          statusMessage: 'The Dish image changed during upload. Please try again.',
+          statusMessage:
+            'The Dish image changed during upload. Please try again.',
         })
       }
       transaction.update(dishRef, {
@@ -103,9 +104,9 @@ export default defineEventHandler(async (event: H3Event) => {
       const current = await dishRef.get()
       committed = Boolean(
         current.exists &&
-        readString(current.get('id')) === dishId &&
-        readString(current.get('kitchen_id')) === kitchenId &&
-        readString(current.get('image')) === saved.imageUrl
+          readString(current.get('id')) === dishId &&
+          readString(current.get('kitchen_id')) === kitchenId &&
+          readString(current.get('image')) === saved.imageUrl
       )
     } catch {
       throw createError({

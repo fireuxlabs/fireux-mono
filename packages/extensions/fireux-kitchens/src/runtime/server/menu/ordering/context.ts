@@ -49,7 +49,8 @@ export const readMenuOrderContext = async (
   if (!kitchenPlaceId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'This Kitchen must be linked to a Place before accepting orders.',
+      statusMessage:
+        'This Kitchen must be linked to a Place before accepting orders.',
     })
   }
   const kitchenName = text(target.scope.kitchenName)
@@ -63,14 +64,14 @@ export const readMenuOrderContext = async (
     ...(currencyCode ? { currencyCode } : {}),
     menuId: target.sourceMenuId,
     routeMenuId: target.routeMenuId,
-    routeScope: target.kind === 'directory-menu'
-      ? directoryMenuRouteScope(target.kitchenSlug)
-      : target.kind === 'tenant-menu'
-        ? tenantMenuRouteScope()
-        : rootMenuRouteScope(),
-    menuData: target.kind === 'root-doorway'
-      ? target.sourceMenuData
-      : target.menuData,
+    routeScope:
+      target.kind === 'directory-menu'
+        ? directoryMenuRouteScope(target.kitchenSlug)
+        : target.kind === 'tenant-menu'
+          ? tenantMenuRouteScope()
+          : rootMenuRouteScope(),
+    menuData:
+      target.kind === 'root-doorway' ? target.sourceMenuData : target.menuData,
     ...(target.scope.fulfilment ? { fulfilment: target.scope.fulfilment } : {}),
     ...(target.scope.kitchen_operation_hours
       ? { operationHours: target.scope.kitchen_operation_hours }

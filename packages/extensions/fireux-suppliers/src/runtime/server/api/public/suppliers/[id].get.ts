@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import { readPublicSupplierDetail } from '../../../supplier/public-projection.ts'
+import { readPublicSupplierDetail } from '../../../supplier/identity/public-projection.ts'
 
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, {

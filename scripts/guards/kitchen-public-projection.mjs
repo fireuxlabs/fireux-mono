@@ -32,11 +32,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const publicIdentity = read(
     repoRoot,
-    `${base}server/kitchen/public-identity.ts`
+    `${base}server/kitchen/identity/public-identity.ts`
   )
   const publicProjection = read(
     repoRoot,
-    `${base}server/kitchen/public-projection.ts`
+    `${base}server/kitchen/identity/public-projection.ts`
   )
   const sproochli = read(
     repoRoot,

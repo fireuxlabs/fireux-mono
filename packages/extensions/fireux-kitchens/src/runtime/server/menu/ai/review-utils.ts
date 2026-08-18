@@ -6,7 +6,7 @@ import {
 
 export const menuAiReviewRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export const countExtractedMenuItems = (

@@ -1,5 +1,9 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { DishStorage, normalizeDish, type Dish } from '../../models/kitchen/dish.model'
+import {
+  DishStorage,
+  normalizeDish,
+  type Dish,
+} from '../../models/kitchen/dish.model'
 
 export type KitchenFlagshipDishProjection = Pick<
   Dish,
@@ -18,7 +22,10 @@ export type KitchenFlagshipDishResult = {
   }
 }
 
-const contentReadiness = (eligibleDishCount: number, uniqueFlagship: boolean) => ({
+const contentReadiness = (
+  eligibleDishCount: number,
+  uniqueFlagship: boolean
+) => ({
   ready: eligibleDishCount >= 6 && uniqueFlagship,
   eligibleDishCount,
   requiredDishCount: 6 as const,
@@ -40,29 +47,40 @@ export async function readKitchenFlagshipDish(
     }
   }
 
-  const collection = getRuntimeFirestore()
-    .collection(`apps/${app}/kitchens/${kitchen}/${DishStorage.collection}`)
+  const collection = getRuntimeFirestore().collection(
+    `apps/${app}/kitchens/${kitchen}/${DishStorage.collection}`
+  )
   const [snapshot, dishesSnapshot] = await Promise.all([
-    collection
-    .where('is_flagship', '==', true)
-    .limit(2)
-      .get(),
+    collection.where('is_flagship', '==', true).limit(2).get(),
     collection.get(),
   ])
   const eligibleDishCount = dishesSnapshot.docs
-    .map(document => normalizeDish({ id: document.id, ...document.data() }))
-    .filter(dish => dish.item_kind === 'food' && Boolean(dish.name)).length
+    .map((document) => normalizeDish({ id: document.id, ...document.data() }))
+    .filter((dish) => dish.item_kind === 'food' && Boolean(dish.name)).length
   const uniqueFlagship = snapshot.size === 1
   const readiness = contentReadiness(eligibleDishCount, uniqueFlagship)
 
   if (!snapshot.size) {
-    return { ready: false, issue: 'missing', dish: null, contentReadiness: readiness }
+    return {
+      ready: false,
+      issue: 'missing',
+      dish: null,
+      contentReadiness: readiness,
+    }
   }
   if (!uniqueFlagship) {
-    return { ready: false, issue: 'multiple', dish: null, contentReadiness: readiness }
+    return {
+      ready: false,
+      issue: 'multiple',
+      dish: null,
+      contentReadiness: readiness,
+    }
   }
 
-  const dish = normalizeDish({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() })
+  const dish = normalizeDish({
+    id: snapshot.docs[0].id,
+    ...snapshot.docs[0].data(),
+  })
   const projection: KitchenFlagshipDishProjection = {
     id: dish.id,
     slug: dish.slug,
@@ -74,5 +92,10 @@ export async function readKitchenFlagshipDish(
   }
   return dish.image
     ? { ready: true, dish: projection, contentReadiness: readiness }
-    : { ready: false, issue: 'missing-image', dish: projection, contentReadiness: readiness }
+    : {
+        ready: false,
+        issue: 'missing-image',
+        dish: projection,
+        contentReadiness: readiness,
+      }
 }

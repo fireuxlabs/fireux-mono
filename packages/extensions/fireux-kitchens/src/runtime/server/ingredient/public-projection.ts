@@ -15,7 +15,7 @@ const member = <T extends string>(
   value: unknown,
   values: readonly T[],
   fallback: T
-) => values.includes(value as T) ? value as T : fallback
+) => (values.includes(value as T) ? (value as T) : fallback)
 
 export const normalizeIngredientAliases = (value: unknown) => {
   if (!Array.isArray(value)) return []
@@ -32,12 +32,10 @@ export const normalizeIngredientAliases = (value: unknown) => {
   return aliases
 }
 
-export function projectPublicIngredient(
-  document: {
-    id: string
-    data: () => Record<string, unknown> | undefined
-  }
-): PublicIngredient | null {
+export function projectPublicIngredient(document: {
+  id: string
+  data: () => Record<string, unknown> | undefined
+}): PublicIngredient | null {
   const source = document.data() || {}
   const id = text(document.id)
   const name = text(source.name)

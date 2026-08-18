@@ -361,10 +361,13 @@ requirement, report the exact missing seam before broad edits.
 - Operational tools are domain-owned pure definitions under
   `runtime/tools/<console>/<scope>`. One fully qualified id owns the tool's
   model-facing context, input schema, confirmation and risk policy, human and
-  agent surface policy, and result contract. Human toolbar adapters, prompt
-  suggestions, operation-agent tool ids, live model tool declarations, and
-  server executor registries project from that definition; none owns a second
-  description or local id. Authoritative domain commands remain below this
+  agent surface policy, and result contract. Human toolbar adapters,
+  operation-agent tool ids, live model tool declarations, and server executor
+  registries project from that definition; none owns a second description or
+  local id. Prompt suggestions are not tool-authored examples: an operation
+  agent infers them from the complete registered capability set, current
+  authorized records, and permissions, with session caching and a deterministic
+  no-token simulator lane. Authoritative domain commands remain below this
   layer, and both REST and agent executors call those commands so AI never
   becomes a parallel mutation authority. Kitchen Team is the guarded proving
   family at `fireux-kitchens/runtime/tools/kitchen/team`. Core iframe Tool

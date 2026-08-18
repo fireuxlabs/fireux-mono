@@ -7,7 +7,7 @@ import {
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const numberValue = (value: unknown) => {
@@ -47,10 +47,8 @@ const itemRow = (
   sort_order: numberValue(item.sort_order),
 })
 
-const sortByOrder = <T extends { sort_order: number }>(
-  left: T,
-  right: T
-) => left.sort_order - right.sort_order
+const sortByOrder = <T extends { sort_order: number }>(left: T, right: T) =>
+  left.sort_order - right.sort_order
 
 const active = (entry: { status: string }) => entry.status !== 'archived'
 
@@ -71,7 +69,10 @@ export async function readKitchenMenuCurrentShape(
 
   const dishesSnap = await db.collection(`${basePath}/dishes`).get()
   const dishesById = new Map(
-    dishesSnap.docs.map((doc) => [doc.id, asRecord({ ...doc.data(), id: doc.id })])
+    dishesSnap.docs.map((doc) => [
+      doc.id,
+      asRecord({ ...doc.data(), id: doc.id }),
+    ])
   )
   const sectionsSnap = await menuRef.collection('sections').get()
   const sections = await Promise.all(

@@ -20,19 +20,12 @@ import { isMenuOrderingEnabled } from './config.ts'
 import { readMenuOrderChannel } from './order-channels.ts'
 import { readMenuOrderDestination } from './order-destination.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
-import type {
-  CreateMenuOrderBody,
-  RequestedMenuOrderItem,
-} from './lines.ts'
+import type { CreateMenuOrderBody, RequestedMenuOrderItem } from './lines.ts'
 import {
   resolveMenuOrderPaymentMethod,
   validateMenuOrderDepositPolicy,
 } from './payment.ts'
-import {
-  normalizeOrderType,
-  readCustomer,
-  text,
-} from './order-request.ts'
+import { normalizeOrderType, readCustomer, text } from './order-request.ts'
 
 export type MenuOrderSelection = {
   orderType: KitchenOrderType
@@ -66,13 +59,14 @@ export function readMenuOrderSelection(
   const allowedOrderTypes = ordering.order_types.map((type) => type.type)
   const orderType = normalizeOrderType(body?.order_type, allowedOrderTypes)
   const channel = readMenuOrderChannel(body?.channel, orderType)
-  const orderTypeConfig = ordering.order_types.find((type) =>
-    type.type === orderType
+  const orderTypeConfig = ordering.order_types.find(
+    (type) => type.type === orderType
   )
   if (orderTypeConfig?.availability?.paused) {
     throw createError({
       statusCode: 409,
-      statusMessage: orderTypeConfig.availability.message ||
+      statusMessage:
+        orderTypeConfig.availability.message ||
         'This ordering service is temporarily paused.',
     })
   }
@@ -143,7 +137,7 @@ function validateRequiredCustomerFields(
 
   throw createError({
     statusCode: 400,
-    statusMessage: `Add your ${missing.map(field => customerFieldLabels[field]).join(', ')} before sending the order.`,
+    statusMessage: `Add your ${missing.map((field) => customerFieldLabels[field]).join(', ')} before sending the order.`,
   })
 }
 
@@ -187,18 +181,12 @@ export function menuOrderIdempotencyRequest(
       })),
     })),
     ...(command.collection ? { collection: command.collection } : {}),
-    ...(command.requestedFor
-      ? { requested_for: command.requestedFor }
-      : {}),
-    ...(command.paymentMethod
-      ? { payment_method: command.paymentMethod }
-      : {}),
+    ...(command.requestedFor ? { requested_for: command.requestedFor } : {}),
+    ...(command.paymentMethod ? { payment_method: command.paymentMethod } : {}),
     ...(Object.keys(command.customer).length
       ? { customer: command.customer }
       : {}),
     ...(command.table ? { table: command.table } : {}),
-    ...(command.roomService
-      ? { room_service: command.roomService }
-      : {}),
+    ...(command.roomService ? { room_service: command.roomService } : {}),
   }
 }

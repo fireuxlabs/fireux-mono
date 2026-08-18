@@ -1,9 +1,5 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: include only explicitly linked Place defaults in Kitchen Menu presentation.
-import {
-  createError,
-  defineEventHandler,
-  getRouterParam,
-} from 'h3'
+import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   menuKitchenIdentity,
@@ -14,7 +10,7 @@ import { resolveDirectoryPublicMenuScope } from '../../../menu/ownership/public-
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
     methods: ['GET'],
   })
