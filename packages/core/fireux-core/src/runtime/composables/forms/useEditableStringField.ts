@@ -6,7 +6,7 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import { normalizeSlug } from '../fireux/utils/slug/normalizeSlug'
+import { normalizeSlug } from '../../utils/slug/normalizeSlug'
 
 export type ValidationResult = {
   isValid: boolean

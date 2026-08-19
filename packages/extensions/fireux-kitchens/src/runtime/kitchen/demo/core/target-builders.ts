@@ -4,8 +4,7 @@ import {
   PlaceDefaults,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
-import type { PublicPlaceProjection } from 'fireux-places/runtime/place/models/place-public.model'
-import { normalizePublicPlaceProjection } from 'fireux-places/runtime/place/utils/public-place-projection'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import {
   KitchenDefaults,
   type AppKitchen,
@@ -25,7 +24,6 @@ export type KitchenDemoTarget = {
   identity: KitchenDemoIdentity
   kitchen: Kitchen
   place: Place
-  publicPlace: PublicPlaceProjection
 }
 
 export type DemoKitchenInput = {
@@ -170,11 +168,9 @@ export const target = (
     orders: KitchenOrdersConfig
     tables: KitchenTablesConfig
   }
-  const publicPlace = normalizePublicPlaceProjection(
-    targetPlace as unknown as Record<string, unknown>
-  )
-  if (!publicPlace) {
-    throw new Error('Kitchen Demo Place public projection is invalid.')
+  const resolvedPlace = normalizePlace(targetPlace.id, targetPlace)
+  if (!resolvedPlace) {
+    throw new Error('Kitchen Demo Place is invalid.')
   }
 
   return {
@@ -195,7 +191,6 @@ export const target = (
     },
     identity,
     kitchen: targetKitchen,
-    place: targetPlace,
-    publicPlace,
+    place: resolvedPlace,
   }
 }

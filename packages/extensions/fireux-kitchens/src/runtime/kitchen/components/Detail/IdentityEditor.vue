@@ -55,13 +55,15 @@
 
             <div class="grid gap-3 sm:grid-cols-2">
               <div class="rounded-xl border border-default p-3">
-                <div class="aspect-square overflow-hidden rounded-lg bg-elevated">
+                <div
+                  class="aspect-square overflow-hidden rounded-lg bg-elevated"
+                >
                   <img
                     v-if="logoPreview"
                     :src="logoPreview"
                     :alt="`${kitchen.display_name} logo`"
                     class="size-full object-contain"
-                  >
+                  />
                   <div
                     v-else
                     class="flex size-full flex-col items-center justify-center gap-2 text-muted"
@@ -103,18 +105,20 @@
                     accept="image/*"
                     class="sr-only"
                     @change="selectLogo"
-                  >
+                  />
                 </div>
               </div>
 
               <div class="rounded-xl border border-default p-3">
-                <div class="aspect-square overflow-hidden rounded-lg bg-elevated">
+                <div
+                  class="aspect-square overflow-hidden rounded-lg bg-elevated"
+                >
                   <img
                     v-if="cardPreview"
                     :src="cardPreview"
                     :alt="`${kitchen.display_name} card image`"
                     class="size-full object-cover"
-                  >
+                  />
                   <div
                     v-else
                     class="flex size-full flex-col items-center justify-center gap-2 text-muted"
@@ -155,7 +159,7 @@
                     accept="image/*"
                     class="sr-only"
                     @change="selectCard"
-                  >
+                  />
                 </div>
               </div>
             </div>
@@ -169,7 +173,9 @@
       </template>
 
       <template #footer>
-        <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+        <div
+          class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-between"
+        >
           <UButton
             to="/console/kitchen/identity"
             label="Open full identity"
@@ -206,26 +212,26 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, reactive, ref } from 'vue'
 import type {
-  KitchenPublicIdentityEdit,
-  KitchenPublicIdentityEditResponse,
-  PublicKitchenDetail,
-} from '../../models/kitchen-index.model.ts'
+  KitchenDetailPresentation,
+  KitchenIdentityEdit,
+  KitchenIdentityEditResponse,
+} from '../../models/kitchen-detail.model.ts'
 
 const props = defineProps<{
-  kitchen: PublicKitchenDetail
+  kitchen: KitchenDetailPresentation
 }>()
 
 const emit = defineEmits<{
-  saved: [identity: KitchenPublicIdentityEdit]
+  saved: [identity: KitchenIdentityEdit]
 }>()
 
-const emptyIdentity = (): KitchenPublicIdentityEdit => ({
+const emptyIdentity = (): KitchenIdentityEdit => ({
   display_name: '',
   tagline: '',
   card_image_url: '',
   logo_image_url: '',
 })
-const form = reactive<KitchenPublicIdentityEdit>(emptyIdentity())
+const form = reactive<KitchenIdentityEdit>(emptyIdentity())
 const open = ref(false)
 const loading = ref(false)
 const saving = ref(false)
@@ -239,15 +245,16 @@ const cardLocalPreview = ref('')
 const { currentUser } = useAuth()
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
-const logoPreview = computed(() =>
-  logoLocalPreview.value || form.logo_image_url
+const logoPreview = computed(
+  () => logoLocalPreview.value || form.logo_image_url
 )
-const cardPreview = computed(() =>
-  cardLocalPreview.value ||
-  form.card_image_url ||
-  props.kitchen.cover_image ||
-  props.kitchen.place_image_url ||
-  ''
+const cardPreview = computed(
+  () =>
+    cardLocalPreview.value ||
+    form.card_image_url ||
+    props.kitchen.cover_image ||
+    props.kitchen.place_image_url ||
+    ''
 )
 
 async function authorization() {
@@ -258,7 +265,7 @@ async function authorization() {
   }
 }
 
-function assignIdentity(identity: KitchenPublicIdentityEdit) {
+function assignIdentity(identity: KitchenIdentityEdit) {
   Object.assign(form, identity)
   resetSelectedFiles()
 }
@@ -328,7 +335,7 @@ async function openEditor() {
   loading.value = true
   errorMessage.value = ''
   try {
-    const response = await $fetch<KitchenPublicIdentityEditResponse>(
+    const response = await $fetch<KitchenIdentityEditResponse>(
       `/api/kitchens/${encodeURIComponent(props.kitchen.slug)}/identity`,
       { headers: await authorization() }
     )
@@ -359,7 +366,7 @@ async function save() {
         cardFile.value
       )
     }
-    const response = await $fetch<KitchenPublicIdentityEditResponse>(
+    const response = await $fetch<KitchenIdentityEditResponse>(
       `/api/kitchens/${encodeURIComponent(props.kitchen.slug)}/identity`,
       {
         method: 'PATCH',

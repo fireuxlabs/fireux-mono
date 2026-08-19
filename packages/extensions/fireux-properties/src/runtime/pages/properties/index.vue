@@ -1,17 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader
-      :title="pageTitle"
-      description="Find and join properties, or create your own Property Console."
-    />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-house"
+    secondary-label="Property tools"
+  >
+    <PropertyCollectionManager />
 
-    <UPageBody>
-      <!-- Console CTA family: actions live in PropertyCTA; browse lives in PropertyCollectionManager. -->
+    <template #secondary>
       <PropertyCTA />
-
-      <PropertyCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -41,6 +41,7 @@ definePageMeta({
 })
 
 const pageTitle = 'Properties'
+const pageDescription = 'Browse properties available through this app.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

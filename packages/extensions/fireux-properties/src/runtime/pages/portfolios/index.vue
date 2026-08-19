@@ -1,17 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader
-      :title="pageTitle"
-      description="Find and join portfolios, or create your own Portfolio Console."
-    />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-building-2"
+    secondary-label="Portfolio tools"
+  >
+    <PortfolioCollectionManager />
 
-    <UPageBody>
-      <!-- Console CTA family: actions live in PortfolioCTA; browse lives in PortfolioCollectionManager. -->
+    <template #secondary>
       <PortfolioCTA />
-
-      <PortfolioCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -35,10 +35,13 @@ definePageMeta({
   layout: 'default',
   name: 'PortfoliosIndexPage',
   title: 'Portfolios',
-  description: 'Find and join portfolios, or create your own Portfolio Console.',
+  description:
+    'Find and join portfolios, or create your own Portfolio Console.',
 })
 
 const pageTitle = 'Portfolios'
+const pageDescription =
+  'Browse property portfolios and open the tools for managing one.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

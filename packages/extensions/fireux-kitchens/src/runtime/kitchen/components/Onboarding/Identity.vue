@@ -39,10 +39,10 @@
 </template>
 
 <script setup lang="ts">
-import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/place/models/place-public.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
 defineProps<{
-  place: PublicPlaceDetailProjection
+  place: Place
   displayName: string
   editable: boolean
 }>()

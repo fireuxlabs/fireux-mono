@@ -1,12 +1,11 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
-import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
-import {
-  hasExactPublicPlaceProjectionShape,
-  normalizePublicPlaceProjection,
-} from 'fireux-places/runtime/place/utils/public-place-projection'
+import type {
+  Place,
+  PlaceStored,
+} from 'fireux-places/runtime/place/models/place.model'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { CompanyDefaults, type Company } from '../../models/company.model.ts'
-import type { PublicCompanyProjection } from '../../models/company-public.model.ts'
 
 const stamp: FirebaseTimestamp = {
   seconds: 1_784_534_400,
@@ -16,7 +15,7 @@ const stamp: FirebaseTimestamp = {
 export type CompanyDemoTarget = {
   company: Company
   place: PlaceStored
-  publicCompany: PublicCompanyProjection
+  resolvedPlace: Place
 }
 
 type CompanyDemoSeed = {
@@ -63,14 +62,9 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
       by: 'demo',
     },
   }
-  const publicCompany = normalizePublicPlaceProjection({ ...place })
-  if (
-    !publicCompany ||
-    !hasExactPublicPlaceProjectionShape({ ...publicCompany })
-  ) {
-    throw new Error(
-      `Company Demo ${seed.id} requires one exact public Place projection.`
-    )
+  const resolvedPlace = normalizePlace(seed.id, place)
+  if (!resolvedPlace) {
+    throw new Error(`Company Demo ${seed.id} requires one canonical Place.`)
   }
 
   return {
@@ -81,7 +75,7 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
       updated: { at: stamp },
     },
     place,
-    publicCompany,
+    resolvedPlace,
   }
 }
 
@@ -125,8 +119,7 @@ for (const item of companyDemoTargets) {
     !companyId ||
     companyIds.has(companyId) ||
     companyId !== placeId ||
-    item.publicCompany.id !== placeId ||
-    !hasExactPublicPlaceProjectionShape({ ...item.publicCompany }) ||
+    item.resolvedPlace.id !== placeId ||
     !item.place.name ||
     !item.place.image_url ||
     item.place.place_type !== 'physical' ||
@@ -147,6 +140,6 @@ export const companyDemoRecords = companyDemoTargets.map((item) => item.company)
 
 export const companyDemoPlaces = companyDemoTargets.map((item) => item.place)
 
-export const companyDemoPublicProjections = companyDemoTargets.map(
-  (item) => item.publicCompany
+export const companyDemoResolvedPlaces = companyDemoTargets.map(
+  (item) => item.resolvedPlace
 )

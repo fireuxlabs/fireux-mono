@@ -10,6 +10,7 @@
 // Concurrent edit — 2026-07-21 23:02 CEST — Console authority alignment: separate target membership reads from operator mutations.
 // Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: require complete Supplier support and prevent zero-segment descendant bypass.
 // Concurrent edit — 2026-07-26 — Ingredient authority: keep canonical roots server-only and validate Kitchen references against active roots.
+// Concurrent edit — 2026-08-19 — Place realtime: allow exact canonical Place reads without opening collection queries or writes.
 // @fireux-rules-template-source
 // @fireux-ecosystem-rules foundation
 // @fireux-ecosystem-rules identity-validation
@@ -18,4 +19,5 @@
 // @fireux-ecosystem-rules app-support
 // @fireux-ecosystem-rules kitchen-operations
 // @fireux-ecosystem-rules kitchen-workflow
+// @fireux-ecosystem-rules place-identity
 // @fireux-ecosystem-rules public-profiles

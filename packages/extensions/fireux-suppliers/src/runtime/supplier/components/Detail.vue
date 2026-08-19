@@ -1,14 +1,11 @@
 <template>
   <UPage class="supplier-detail" :style="detailStyle">
     <UPageBody class="pagebody">
-      <UPageCard v-if="pending" variant="subtle">
-        <p class="text-sm text-dimmed">Loading supplier…</p>
-      </UPageCard>
-      <UPageCard
-        v-else-if="!supplier"
-        title="Supplier not found"
-        description="This supplier is not available."
-        variant="subtle"
+      <SupplierDetailState
+        v-if="outcome !== 'ready' || !supplier || !place"
+        :outcome="outcome"
+        :has-supplier="Boolean(supplier && place)"
+        @refresh="emit('refresh')"
       />
 
       <article v-else class="supplier-detail__page">
@@ -24,51 +21,26 @@
               class="supplier-detail__back"
             />
           </nav>
-          <PlaceHeader v-if="placePresentation" :place="placePresentation" />
+          <PlaceHeader v-if="headerPresentation" :place="headerPresentation" />
         </div>
 
-        <div class="supplier-detail__content">
-          <main class="supplier-detail__editorial">
+        <div
+          class="supplier-detail__content"
+          :class="{
+            'supplier-detail__content--information-only': !hasEditorialContent,
+          }"
+        >
+          <main v-if="hasEditorialContent" class="supplier-detail__editorial">
             <section v-if="about" class="supplier-detail__about">
               <h2 class="fx-type-section-title">About {{ name }}</h2>
               <p class="supplier-detail__story fx-type-body">{{ about }}</p>
             </section>
 
             <PlaceDetailGallery
-              v-if="placePresentation?.gallery_images.length"
+              v-if="headerPresentation?.gallery_images.length"
               :name="name"
-              :images="placePresentation.gallery_images"
+              :images="headerPresentation.gallery_images"
             />
-
-            <section v-if="items.length" class="supplier-detail__catalogue">
-              <h2 class="fx-type-section-title">Catalogue</h2>
-              <div class="supplier-detail__items">
-                <UCard v-for="item in items" :key="item.id" variant="subtle">
-                  <p class="fx-type-card-heading">
-                    {{ item.name || item.product_id }}
-                  </p>
-                  <p v-if="item.description" class="text-sm text-toned">
-                    {{ item.description }}
-                  </p>
-                  <div class="supplier-detail__item-facts">
-                    <UBadge
-                      v-if="item.pack_size_label"
-                      color="neutral"
-                      variant="soft"
-                    >
-                      {{ item.pack_size_label }}
-                    </UBadge>
-                    <UBadge
-                      v-if="item.availability_state"
-                      color="neutral"
-                      variant="soft"
-                    >
-                      {{ item.availability_state }}
-                    </UBadge>
-                  </div>
-                </UCard>
-              </div>
-            </section>
           </main>
 
           <aside class="supplier-detail__aside">
@@ -102,18 +74,19 @@
                 </UBadge>
               </div>
             </UCard>
-            <SupplierPublicOperatorPanel :supplier="supplier" />
+            <SupplierDetailOperatorPanel :supplier="supplier" />
           </aside>
         </div>
 
         <DevDebugPanel
+          v-if="showDebug"
           object-origin="fetched"
           launcher
           include-route
           title="Supplier DTO"
-          context="Supplier detail page · suppliers/[slug] · Supplier and linked Place"
-          :objects="supplier"
-          :derived="{ place: placePresentation }"
+          context="Supplier detail page · suppliers/[slug] · canonical Supplier and linked Place"
+          :objects="{ supplier, place }"
+          :derived="{ headerPresentation }"
           :default-open="false"
         />
       </article>
@@ -123,31 +96,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAsyncData } from '#imports'
-import type { PublicCompanyDetailResponse } from 'fireux-companies/runtime/place/models/company-public.model'
-import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/place/models/place-public.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { SupplierDetailOutcome } from '../composables/useSupplierDetail'
+import type { Supplier } from '../models/Supplier.model'
 
 const props = defineProps<{
-  supplier: Record<string, any> | null
-  pending: boolean
+  supplier: Supplier | null
+  place: Place | null
+  outcome: SupplierDetailOutcome
 }>()
+const emit = defineEmits<{ refresh: [] }>()
 const clean = (value: unknown) => String(value ?? '').trim()
 const supplier = computed(() => props.supplier)
-const companyId = computed(() => clean(supplier.value?.company_id))
-const companyPath = computed(() =>
-  companyId.value ? `/api/companies/${encodeURIComponent(companyId.value)}` : ''
-)
-const { data: companyResponse } =
-  useAsyncData<PublicCompanyDetailResponse | null>(
-    () => `supplier-company|${companyId.value}`,
-    () =>
-      companyPath.value
-        ? $fetch<PublicCompanyDetailResponse>(companyPath.value)
-        : Promise.resolve(null),
-    {
-      watch: [companyPath],
-    }
-  )
 const name = computed(
   () => clean(supplier.value?.supplier_organization_name) || 'Supplier'
 )
@@ -164,11 +124,8 @@ const deliveryAreas = computed<string[]>(() =>
     ? supplier.value.supplier_delivery_areas.map(clean).filter(Boolean)
     : []
 )
-const items = computed(() =>
-  Array.isArray(supplier.value?.items) ? supplier.value.items : []
-)
-const placePresentation = computed<PublicPlaceDetailProjection | null>(() => {
-  const place = companyResponse.value?.item
+const headerPresentation = computed<Place | null>(() => {
+  const place = props.place
   if (!place) return null
   return {
     ...place,
@@ -183,11 +140,15 @@ const placePresentation = computed<PublicPlaceDetailProjection | null>(() => {
   }
 })
 const detailStyle = computed(() => {
-  const color = clean(placePresentation.value?.media_backdrop_color)
+  const color = clean(headerPresentation.value?.media_backdrop_color)
   return color
     ? { '--fx-entity-accent': color, '--fx-entity-media-bg': color }
     : undefined
 })
+const hasEditorialContent = computed(() =>
+  Boolean(about.value || headerPresentation.value?.gallery_images.length)
+)
+const showDebug = import.meta.dev
 </script>
 
 <style scoped src="./detail.css"></style>

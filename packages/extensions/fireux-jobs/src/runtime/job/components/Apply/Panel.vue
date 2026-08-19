@@ -73,12 +73,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { PublicJobApplicationDoorway } from '../../models/job-public.model.ts'
+import type { JobApplicationDoorway } from '../../models/job-directory.model.ts'
 import { applyToJobRequest } from '../../composables/hiring/jobHiringClient'
 
 const props = defineProps<{
   jobId: string
-  applicationDoorway?: PublicJobApplicationDoorway
+  applicationDoorway?: JobApplicationDoorway
 }>()
 
 const message = ref('')

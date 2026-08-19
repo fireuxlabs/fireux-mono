@@ -37,15 +37,14 @@ type WidenLiteral<T> =
  * Family: Domain
  * Storage: root canonical record plus app-scoped record
  * Root storage path: /suppliers/<supplierId>
- * Public route: /suppliers/<slug>
+ * Detail route: /suppliers/<slug>
  * App path: /apps/<appId>/suppliers/<supplierId>
  * Child scope: /apps/<appId>/suppliers/<supplierId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Supplier is a domain entity with one canonical root and an app-hosted
- *   access-support record, not a user profile. Public reads are a separate contract.
+ * - Supplier is a domain entity with one canonical readable root and an
+ *   app-hosted access-support record, not a user profile.
  * - The path should read as supplier identity rather than user identity.
- * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier console governance belongs to the app-hosted supplier record.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
@@ -76,7 +75,6 @@ export const SupplierEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  publicRead: 'to-confirm',
   console: true,
   root: SupplierStorage.path,
   appSupportPath: AppSupplierStorage.path,
@@ -88,7 +86,7 @@ export const SupplierDefaults = {
   company_id: '',
   slug: '',
 
-  // Public-facing supplier identity
+  // Supplier identity
   supplier_organization_name: '',
   tagline: '',
   supplier_headline: '',

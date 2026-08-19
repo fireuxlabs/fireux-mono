@@ -1,17 +1,14 @@
 <template>
   <article class="card card--cell menu-card-cell" data-menu-card-cell>
     <NuxtLink :to="browseTo" class="menu-card-cell__identity">
-      <span
-        class="menu-card-cell__media"
-        :class="avatarClass"
-      >
+      <span class="menu-card-cell__media" :class="avatarClass">
         <img
           v-if="kitchenImageUrl"
           :src="kitchenImageUrl"
           :alt="kitchenName || menuName"
           class="menu-card-cell__image"
           loading="lazy"
-        >
+        />
         <UIcon
           v-else
           name="i-lucide-book-open"
@@ -64,11 +61,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuCardPresentation } from '../../composables/useMenuCardPresentation'
-import type { PublicMenuIndexItem } from '../../models/menu-index.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
 import type { MenuRouteScope } from '../../../kitchen/utils/kitchen-menu-route'
 
 const props = defineProps<{
-  menu: PublicMenuIndexItem
+  menu: MenuDirectoryEntry
   routeScope: MenuRouteScope
 }>()
 

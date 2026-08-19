@@ -1,9 +1,9 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, setResponseHeaders } from 'h3'
-import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/supplier/models/supplier-public.model'
+import type { Supplier } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 
 export default defineEventHandler(
-  async (event): Promise<PublicSupplierIndex> => {
+  async (event): Promise<{ suppliers: Supplier[] }> => {
     const config = useRuntimeConfig(event)
     const baseUrl = String(config.supplierDirectoryBaseUrl || '')
       .trim()
@@ -21,6 +21,8 @@ export default defineEventHandler(
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'private, max-age=30',
     })
-    return await $fetch<PublicSupplierIndex>(`${baseUrl}/api/public/suppliers`)
+    return {
+      suppliers: await $fetch<Supplier[]>(`${baseUrl}/api/suppliers`),
+    }
   }
 )

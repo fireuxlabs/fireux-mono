@@ -1,22 +1,11 @@
 <template>
   <UPage class="kitchen-detail-surface" :style="detailStyle">
     <UPageBody class="pagebody">
-      <UPageCard v-if="outcome === 'pending'" variant="subtle">
-        <p class="text-sm text-dimmed">Loading kitchen…</p>
-      </UPageCard>
-
-      <UPageCard
-        v-else-if="outcome === 'error'"
-        title="Kitchen unavailable"
-        description="This kitchen could not be loaded. Please try again."
-        variant="subtle"
-      />
-
-      <UPageCard
-        v-else-if="!kitchen"
-        title="Kitchen not found"
-        description="This kitchen does not exist or is not public-ready."
-        variant="subtle"
+      <KitchenDetailState
+        v-if="outcome !== 'ready' || !kitchen || !place || !presentation"
+        :outcome="outcome"
+        :has-kitchen="Boolean(kitchen && place && presentation)"
+        @refresh="emit('refresh')"
       />
 
       <article v-else class="kitchen-detail">
@@ -56,9 +45,9 @@
             </section>
 
             <PlaceDetailGallery
-              v-if="placePresentation?.gallery_images.length"
+              v-if="galleryImages.length"
               :name="kitchenName"
-              :images="placePresentation.gallery_images"
+              :images="galleryImages"
             />
 
             <KitchenDetailMenus
@@ -75,6 +64,18 @@
             <KitchenDetailOperatorPanel :kitchen="displayKitchen" />
           </aside>
         </div>
+
+        <DevDebugPanel
+          v-if="showDebug"
+          object-origin="fetched"
+          launcher
+          include-route
+          title="Kitchen"
+          context="Kitchen detail page · kitchens/[slug] · canonical Kitchen and linked Place"
+          :objects="{ kitchen, place }"
+          :derived="{ presentation: displayKitchen, resolvedFulfilment }"
+          :default-open="false"
+        />
       </article>
     </UPageBody>
   </UPage>
@@ -85,17 +86,21 @@ import { useFetch } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, ref, watch } from 'vue'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import type { KitchenFulfilmentConfig } from '../../models/kitchen.model.ts'
 import type {
-  KitchenPublicIdentityEdit,
-  PublicKitchenDetail,
-} from '../../models/kitchen-index.model.ts'
+  Kitchen,
+  KitchenFulfilmentConfig,
+} from '../../models/kitchen.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type {
+  KitchenDetailPresentation,
+  KitchenIdentityEdit,
+} from '../../models/kitchen-detail.model.ts'
 import type { KitchenDetailOutcome } from '../../composables/useKitchenDetail'
-import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/place/models/place-public.model'
 
 const props = defineProps<{
-  kitchen?: PublicKitchenDetail | null
+  kitchen?: Kitchen | null
+  place?: Place | null
+  presentation?: KitchenDetailPresentation | null
   outcome: KitchenDetailOutcome
 }>()
 
@@ -103,29 +108,30 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-const kitchen = computed(
-  () => props.kitchen as KitchenSurface | null | undefined
-)
-const identityOverride = ref<KitchenPublicIdentityEdit | null>(null)
+const kitchen = computed(() => props.kitchen)
+const place = computed(() => props.place)
+const identityOverride = ref<KitchenIdentityEdit | null>(null)
 watch(
-  () => props.kitchen,
+  () => props.presentation,
   () => {
     identityOverride.value = null
   }
 )
-const displayKitchen = computed<PublicKitchenDetail | null>(() => {
-  if (!props.kitchen) return null
+const displayKitchen = computed<KitchenDetailPresentation | null>(() => {
+  if (!props.presentation) return null
   const identity = identityOverride.value
-  if (!identity) return props.kitchen
+  if (!identity) return props.presentation
   const displayName =
-    identity.display_name || props.kitchen.name || props.kitchen.display_name
-  const tagline = identity.tagline || props.kitchen.brand_tagline
+    identity.display_name ||
+    props.presentation.name ||
+    props.presentation.display_name
+  const tagline = identity.tagline || props.presentation.brand_tagline
   const imageUrl =
     identity.card_image_url ||
-    props.kitchen.display_image_url ||
-    props.kitchen.image_url
+    props.presentation.display_image_url ||
+    props.presentation.image_url
   return {
-    ...props.kitchen,
+    ...props.presentation,
     name: displayName,
     display_name: displayName,
     ...(tagline ? { tagline, brand_tagline: tagline } : {}),
@@ -140,14 +146,14 @@ const { isAdmin, isDeveloper } = useUser()
 const canEditIdentity = computed(() =>
   Boolean(
     (isAdmin.value || isDeveloper.value) &&
-      (role === 'global' || props.kitchen?.management_app_id === appId)
+      (role === 'global' || props.presentation?.management_app_id === appId)
   )
 )
-const applyIdentity = (identity: KitchenPublicIdentityEdit) => {
+const applyIdentity = (identity: KitchenIdentityEdit) => {
   identityOverride.value = identity
   emit('refresh')
 }
-const locator = computed(() => String(props.kitchen?.slug || '').trim())
+const locator = computed(() => String(props.presentation?.slug || '').trim())
 const kitchenName = computed(() =>
   String(
     displayKitchen.value?.display_name ||
@@ -159,37 +165,11 @@ const kitchenAbout = computed(() =>
   String(displayKitchen.value?.about || '').trim()
 )
 const clean = (value: unknown) => String(value ?? '').trim()
-const placePresentation = computed<PublicPlaceDetailProjection | null>(() => {
+const galleryImages = computed(() => {
   const kitchen = displayKitchen.value
-  if (!kitchen) return null
-  const gallery = Array.isArray(kitchen.food_gallery)
+  return Array.isArray(kitchen?.food_gallery)
     ? kitchen.food_gallery.map(clean).filter(Boolean)
     : []
-  return {
-    id: clean(kitchen.place_id || kitchen.id),
-    name: kitchenName.value,
-    place_type: 'physical',
-    short_name: clean(kitchen.short_name),
-    brand_tagline: clean(kitchen.tagline || kitchen.brand_tagline),
-    short_address: clean(kitchen.short_address || kitchen.formatted_address),
-    image_url: clean(kitchen.image_url),
-    media_backdrop_color: clean(kitchen.media_backdrop_color) as
-      | `#${string}`
-      | '',
-    image_shade: 'none',
-    verified: false,
-    slug: clean(kitchen.slug),
-    about: kitchenAbout.value,
-    cover_image: clean(kitchen.cover_image),
-    gallery_images: gallery,
-    logo_image: clean(kitchen.logo_image_url),
-    wordmark_image: clean(kitchen.wordmark_image),
-    business_hours: { windows: [] },
-    website: clean(kitchen.website),
-    ...(clean(kitchen.google_maps_url)
-      ? { google_maps_url: clean(kitchen.google_maps_url) }
-      : {}),
-  }
 })
 const detailStyle = computed(() => {
   const color = clean(displayKitchen.value?.media_backdrop_color)
@@ -217,6 +197,7 @@ const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
 const resolvedFulfilment = computed(
   () => fulfilmentData.value || emptyFulfilment
 )
+const showDebug = import.meta.dev
 </script>
 
 <style scoped src="./detail.css"></style>

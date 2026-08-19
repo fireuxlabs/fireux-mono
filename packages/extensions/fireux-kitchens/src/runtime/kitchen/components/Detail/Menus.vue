@@ -20,10 +20,7 @@
 
     <div class="kitchen-menus__body">
       <ClientOnly>
-        <div
-          v-if="activeSessions.length"
-          class="kitchen-menus__sessions"
-        >
+        <div v-if="activeSessions.length" class="kitchen-menus__sessions">
           <UButton
             v-for="session in activeSessions"
             :key="session.key"
@@ -43,7 +40,11 @@
         {{ defaultChromeLabels.loadingMenus }}
       </div>
 
-      <div v-else-if="menusUnavailable" class="kitchen-menus__state" role="alert">
+      <div
+        v-else-if="menusUnavailable"
+        class="kitchen-menus__state"
+        role="alert"
+      >
         <UIcon name="i-lucide-circle-alert" />
         {{ defaultChromeLabels.menusUnavailable }}
       </div>
@@ -69,7 +70,7 @@
 import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
-import { usePublicMenuIndex } from '../../../menu/composables/usePublicMenuIndex'
+import { useMenuCollection } from '../../../menu/composables/useMenuCollection'
 import {
   orderSessionContextForOrderType,
   useOrderSessionSummaries,
@@ -87,7 +88,9 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
+const kitchenSlug = computed(() =>
+  String((props.kitchen as any)?.slug ?? '').trim()
+)
 const defaultChromeLabels = {
   menus: 'Menus',
   openMenus: 'See all menus',
@@ -96,18 +99,20 @@ const defaultChromeLabels = {
   noMenusAvailable: 'No menus available',
 }
 const { sessions: activeSessions } = useOrderSessionSummaries(kitchenSlug)
-const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
-const menuIndex = usePublicMenuIndex({
+const menuRouteScope = computed(() =>
+  directoryMenuRouteScope(kitchenSlug.value)
+)
+const menuIndex = useMenuCollection({
   routeScope: menuRouteScope,
   pageSize: 4,
 })
 
 const menusLoading = computed(() => menuIndex.pending.value)
-const menusUnavailable = computed(() =>
-  menuIndex.outcome.value.kind === 'unavailable'
+const menusUnavailable = computed(
+  () => menuIndex.outcome.value.kind === 'unavailable'
 )
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
-const sortedMenus = computed(() => menuIndex.menus.value)
+const sortedMenus = computed(() => menuIndex.collection.value)
 
 const preserveSproochliLanguage = (to: string) => {
   const language = normalizeSproochliLanguage(route.query.sproochli)
@@ -128,15 +133,17 @@ const menusIndexLink = computed(() =>
 
 const sessionLink = (session: MenuOrderSessionSummary) => {
   const context = orderSessionContextForOrderType(session.orderType)
-  const menuId = session.firstMenuId || sortedMenus.value.find((menu) =>
-    menu.contexts?.includes(context)
-  )?.id
+  const menuId =
+    session.firstMenuId ||
+    sortedMenus.value.find((menu) => menu.contexts?.includes(context))?.id
 
-  return preserveSproochliLanguage(menuRoutePath({
-    scope: menuRouteScope.value,
-    menuId,
-    context,
-  }))
+  return preserveSproochliLanguage(
+    menuRoutePath({
+      scope: menuRouteScope.value,
+      menuId,
+      context,
+    })
+  )
 }
 </script>
 

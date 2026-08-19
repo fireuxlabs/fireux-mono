@@ -5,7 +5,7 @@
 // Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: lock the canonical Kiosk order projection.
 
 import assert from 'node:assert/strict'
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
 import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-context.model.ts'
@@ -68,7 +68,59 @@ const appMenuLayouts = () => {
   return layouts
 }
 
-export async function run() {
+export async function run({ repoRoot = process.cwd() } = {}) {
+  const menuRuntime = path.join(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/menu'
+  )
+  const readSource = (relativePath) =>
+    readFileSync(path.join(menuRuntime, relativePath), 'utf8')
+  const directoryModel = readSource('models/menu-directory.model.ts')
+  const collection = readSource('composables/useMenuCollection.ts')
+  const manager = readSource('components/Collection/Manager.vue')
+  const directoryReader = readSource('server/index/read.ts')
+  const directoryContext = readSource('server/index/context.ts')
+  const directoryProjection = readSource('server/index/projection.ts')
+  const directoryHttp = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/server/api/menus/index.get.ts'
+    ),
+    'utf8'
+  )
+
+  for (const retiredPath of [
+    'models/menu-index.model.ts',
+    'composables/usePublicMenuIndex.ts',
+    'composables/useMenuDirectory.ts',
+    'composables/firestore/fetch/useMenuCollection.ts',
+  ]) {
+    assert.equal(
+      existsSync(path.join(menuRuntime, retiredPath)),
+      false,
+      `Retired Menu Directory path must not return: ${retiredPath}`
+    )
+  }
+  assert.match(directoryModel, /type MenuDirectoryEntry/)
+  assert.match(directoryModel, /type MenuDirectoryPage/)
+  assert.doesNotMatch(directoryModel, /PublicMenuIndex|PUBLIC_MENU_INDEX/)
+  assert.match(collection, /function useMenuCollection/)
+  assert.match(collection, /collection:\s*ComputedRef<MenuDirectoryEntry\[\]>/)
+  assert.match(collection, /MenuDirectoryOutcome/)
+  assert.doesNotMatch(collection, /PublicMenuIndex|usePublicMenuIndex/)
+  assert.match(manager, /MenuCollectionController/)
+  assert.match(manager, /props\.index\.collection\.value/)
+  assert.match(directoryHttp, /getQuery\(event\)/)
+  assert.match(directoryHttp, /readMenuDirectoryPage/)
+  assert.doesNotMatch(directoryHttp, /getRuntimeFirestore|\.collection\(/)
+  assert.match(directoryReader, /ReadMenuDirectoryPageInput/)
+  assert.match(directoryReader, /projectMenuDirectoryEntry/)
+  assert.match(directoryReader, /readMenuDirectoryContext/)
+  assert.doesNotMatch(directoryReader, /H3Event|getQuery\(/)
+  assert.match(directoryContext, /MenuDirectoryContext/)
+  assert.match(directoryProjection, /MenuDirectoryDocument/)
+  assert.match(directoryProjection, /MenuDirectoryEntry/)
+
   assert.deepEqual(
     appMenuLayouts(),
     [],
@@ -112,12 +164,18 @@ export async function run() {
     menuId: MENU_ID,
     context: 'generic',
   })
-  assert.equal(menuRoutePath({ scope: rootScope, menuId: MENU_ID }),
-    `/menus/${MENU_ID}`)
-  assert.equal(menuRoutePath({ scope: tenantScope, menuId: MENU_ID }),
-    `/${MENU_ID}`)
-  assert.equal(menuRoutePath({ scope: directoryScope, menuId: MENU_ID }),
-    `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`)
+  assert.equal(
+    menuRoutePath({ scope: rootScope, menuId: MENU_ID }),
+    `/menus/${MENU_ID}`
+  )
+  assert.equal(
+    menuRoutePath({ scope: tenantScope, menuId: MENU_ID }),
+    `/${MENU_ID}`
+  )
+  assert.equal(
+    menuRoutePath({ scope: directoryScope, menuId: MENU_ID }),
+    `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`
+  )
   assert.equal(
     menuCanonicalPath({
       scope: rootScope,
@@ -171,7 +229,9 @@ export async function run() {
     '/menus/lunch%20%26%20dinner'
   )
 
-  for (const context of MenuRouteContexts.filter((value) => value !== 'generic')) {
+  for (const context of MenuRouteContexts.filter(
+    (value) => value !== 'generic'
+  )) {
     const contextualId = menuContextualMenuId(MENU_ID, context)
 
     assert.equal(contextualId, `${MENU_ID}.${context}`)

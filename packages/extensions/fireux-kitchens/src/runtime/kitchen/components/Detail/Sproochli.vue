@@ -5,7 +5,9 @@
       :selected-language="selectedLanguage"
       :default-language="sproochli.default_language"
       show-when-single-option
-      :copy="{ chooseLanguage: 'Choose a language for this Kitchen and its menus' }"
+      :copy="{
+        chooseLanguage: 'Choose a language for this Kitchen and its menus',
+      }"
     />
   </ClientOnly>
 </template>
@@ -18,10 +20,10 @@ import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageOptions,
 } from 'fireux-sproochli/runtime/sproochli'
-import type { PublicKitchenDetail } from '../../models/kitchen-index.model.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
 
 const props = defineProps<{
-  sproochli: NonNullable<PublicKitchenDetail['sproochli']>
+  sproochli: NonNullable<KitchenDetailPresentation['sproochli']>
 }>()
 
 const route = useRoute()
@@ -36,7 +38,7 @@ const languageOptions = computed(() =>
 )
 const selectedLanguage = computed(() => {
   const requested = normalizeSproochliLanguage(route.query.sproochli)
-  return languageOptions.value.some(option => option.code === requested)
+  return languageOptions.value.some((option) => option.code === requested)
     ? requested
     : ''
 })

@@ -2,10 +2,10 @@ import { useAsyncData } from '#imports'
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
-  PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
-  type PublicKitchenIndexItem,
-  type PublicKitchenIndexPage,
-} from '../../../models/kitchen-index.model.ts'
+  KITCHEN_DIRECTORY_MAX_PAGE_SIZE,
+  type KitchenDirectoryEntry,
+  type KitchenDirectoryPage,
+} from '../../../models/kitchen-directory.model.ts'
 
 type KitchenCollectionControls = {
   pending: ComputedRef<boolean>
@@ -14,7 +14,7 @@ type KitchenCollectionControls = {
 }
 
 export type UseKitchenCollectionReturn = KitchenCollectionControls & {
-  kitchens: ComputedRef<PublicKitchenIndexItem[]>
+  collection: ComputedRef<KitchenDirectoryEntry[]>
   count: ComputedRef<number>
   canViewHidden: ComputedRef<boolean>
   ready: Promise<void>
@@ -29,12 +29,12 @@ export type UseKitchenCollectionReturn = KitchenCollectionControls & {
 export function useKitchenCollection(): UseKitchenCollectionReturn {
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => String(currentUser.value?.uid || '').trim())
-  const endpoint = `/api/kitchens?limit=${PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE}`
-  const state = useAsyncData<PublicKitchenIndexPage>(
-    `kitchen-collection|limit=${PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE}`,
-    () => $fetch<PublicKitchenIndexPage>(endpoint)
+  const endpoint = `/api/kitchens?limit=${KITCHEN_DIRECTORY_MAX_PAGE_SIZE}`
+  const state = useAsyncData<KitchenDirectoryPage>(
+    `kitchen-collection|limit=${KITCHEN_DIRECTORY_MAX_PAGE_SIZE}`,
+    () => $fetch<KitchenDirectoryPage>(endpoint)
   )
-  const hiddenPage = ref<PublicKitchenIndexPage | null>(null)
+  const hiddenPage = ref<KitchenDirectoryPage | null>(null)
   let hiddenGeneration = 0
 
   async function requestHidden() {
@@ -47,11 +47,12 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
       !hasAuthState.value ||
       !user ||
       user.uid !== requestUid
-    ) return
+    )
+      return
 
     try {
       const token = await user.getIdToken()
-      const page = await $fetch<PublicKitchenIndexPage>(
+      const page = await $fetch<KitchenDirectoryPage>(
         `${endpoint}&includeHidden=true`,
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -66,7 +67,9 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   if (import.meta.client) {
     watch(
       [hasAuthState, uid],
-      () => { void requestHidden() },
+      () => {
+        void requestHidden()
+      },
       { immediate: true, flush: 'post' }
     )
   }
@@ -75,16 +78,16 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   const loadMoreError = ref<unknown>(null)
   const canViewHidden = computed(() => Boolean(hiddenPage.value))
   const activePage = computed(() => hiddenPage.value || state.data.value)
-  const kitchens = computed<PublicKitchenIndexItem[]>(
+  const collection = computed<KitchenDirectoryEntry[]>(
     () => activePage.value?.items ?? []
   )
-  const count = computed(() => kitchens.value.length)
+  const count = computed(() => collection.value.length)
   const nextCursor = computed(() => activePage.value?.nextCursor || '')
   const hasMore = computed(() => Boolean(nextCursor.value))
   const outcome = computed<'pending' | 'error' | 'empty' | 'ready'>(() => {
     if (state.pending.value) return 'pending'
     if (state.error.value || !state.data.value) return 'error'
-    return kitchens.value.length ? 'ready' : 'empty'
+    return collection.value.length ? 'ready' : 'empty'
   })
 
   async function loadMore() {
@@ -96,7 +99,7 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
       const user = currentUser.value
       const includeHidden = canViewHidden.value && Boolean(user)
       const token = includeHidden ? await user!.getIdToken() : ''
-      const nextPage = await $fetch<PublicKitchenIndexPage>(
+      const nextPage = await $fetch<KitchenDirectoryPage>(
         `${endpoint}&cursor=${encodeURIComponent(cursor)}${includeHidden ? '&includeHidden=true' : ''}`,
         includeHidden
           ? { headers: { Authorization: `Bearer ${token}` } }
@@ -105,7 +108,7 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
       const current = activePage.value
       if (!current) return false
       const items = new Map(
-        current.items.map((item: PublicKitchenIndexItem) => [item.id, item])
+        current.items.map((item: KitchenDirectoryEntry) => [item.id, item])
       )
       for (const item of nextPage.items) items.set(item.id, item)
       const merged = {
@@ -124,7 +127,7 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   }
 
   return {
-    kitchens,
+    collection,
     count,
     canViewHidden,
     pending: computed(() => state.pending.value),

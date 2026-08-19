@@ -10,7 +10,7 @@ import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
   suggestPlaceCurrencyCode,
-} from '../../utils/place-spine'
+} from '../../../utils/place-spine'
 import { resolvePlacesApiKey } from '../../integration/google/places-api-key'
 import { badRequest, record, requestRecord, text } from './input'
 

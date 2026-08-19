@@ -19,6 +19,7 @@ export type BlogPostTranslation = {
   keywords?: string[]
   tags?: string[]
   featuredImage?: string
+  featuredImageAlt?: string
   socialImage?: string
   readingTime?: string
   cta_text?: string
@@ -97,6 +98,7 @@ export const BlogPostModel = {
   tags: [] as string[],
   canonicalUrl: '',
   featuredImage: '',
+  featuredImageAlt: '',
   socialImage: '',
   readingTime: '',
   cta_link: '',

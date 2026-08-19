@@ -11,6 +11,7 @@ export default defineFireuxConfig({
   designPack: { preset: 'sci-fire' },
   consoles: ['project'],
   seo: {
+    siteUrl: 'https://fireux.app',
     staticPaths: ['/apps', '/ecosystems', '/ecosystems/werkbox'],
     sitemapDocuments: ['/sitemaps/directory.xml'],
     noindexPaths: ['/apps/fireux-blank'],

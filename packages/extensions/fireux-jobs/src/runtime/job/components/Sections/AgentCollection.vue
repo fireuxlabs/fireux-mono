@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep owner postings linked to authenticated authoring.
+// Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: keep owner postings linked to authenticated tools.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: consume the server-bounded current-author collection directly.
 import { computed } from 'vue'
 import { useJobCollection } from '../../composables/firestore/fetch/useJobCollection.ts'

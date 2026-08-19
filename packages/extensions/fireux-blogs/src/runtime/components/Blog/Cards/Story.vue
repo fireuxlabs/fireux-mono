@@ -50,6 +50,7 @@ type StoryProps = Pick<
   | 'title'
   | 'summary'
   | 'imageUrl'
+  | 'imageAlt'
   | 'author'
   | 'authorAvatarUrl'
   | 'authorHandle'
@@ -113,7 +114,7 @@ const authors = computed(() => [
 ])
 const image = computed(() => ({
   src: props.imageUrl,
-  alt: '',
+  alt: props.imageAlt,
   loading: (props.lead ? 'eager' : 'lazy') as 'eager' | 'lazy',
   decoding: 'async' as const,
   ...(props.lead ? { fetchpriority: 'high' } : {}),

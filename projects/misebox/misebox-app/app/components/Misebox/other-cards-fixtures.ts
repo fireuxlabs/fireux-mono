@@ -1,7 +1,9 @@
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
-import type { PublicMenuIndexItem } from 'fireux-kitchens/runtime/menu/models/menu-index.model'
+import type { MenuDirectoryEntry } from 'fireux-kitchens/runtime/menu/models/menu-directory.model'
 
-export const dishImage = miseboxDemoMediaUrl('kitchens/deanos/menu/deanos-classic.jpg')
+export const dishImage = miseboxDemoMediaUrl(
+  'kitchens/deanos/menu/deanos-classic.jpg'
+)
 export const ingredientImage = '/img/showcase/ingredients/beef-mince.jpg'
 export const routeScope = { kind: 'root' } as const
 
@@ -73,7 +75,7 @@ export const menu = {
     kitchen_slug: 'card-specimen-kitchen',
     kitchen_name: 'Card Specimen Kitchen',
   },
-} as const satisfies PublicMenuIndexItem
+} as const satisfies MenuDirectoryEntry
 
 export const ingredientCard = {
   slug: 'beef-mince',

@@ -65,7 +65,6 @@ export const UserEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'identity-database',
   appSupport: 'membership-record',
-  publicRead: 'projection',
   root: UserStorage.path,
   appSupportPath: AppUserStorage.path,
 })

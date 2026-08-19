@@ -46,7 +46,6 @@ export const ProductEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  publicRead: 'projection',
   console: false,
   root: ProductStorage.path,
   notes: [

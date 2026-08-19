@@ -10,8 +10,10 @@ import path from 'node:path'
 import process from 'node:process'
 import { deleteApp, initializeApp } from 'firebase-admin/app'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
+import { getStorage } from 'firebase-admin/storage'
 import { resolveFirebaseAdminCredential } from './_lib/firebase-admin-credentials.mjs'
 import { mcpSkillCreate } from './_lib/firestore-mutations/mcp-skill-create.mjs'
+import { mcpSkillUpdate } from './_lib/firestore-mutations/mcp-skill-update.mjs'
 import { defineFirestoreMutationTarget } from '../packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts'
 import {
   assertBlogEditorialApproval,
@@ -25,11 +27,13 @@ const APP_ID = 'fireux-app'
 const ECOSYSTEM_ID = 'fireux'
 const ACTOR = 'system:local-blog-publisher'
 const PUBLIC_ORIGIN = 'https://fireux.app'
+const STORAGE_BUCKET = 'fireux-2005.firebasestorage.app'
 
 const args = Object.fromEntries(process.argv.slice(2).map((token) => {
   const [key, ...rest] = token.replace(/^--/, '').split('=')
   return [key, rest.length ? rest.join('=') : true]
 }))
+const updateMode = args.update === true
 const text = value => String(value ?? '').trim()
 const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex')
 const escapeHtml = value => text(value)
@@ -129,6 +133,20 @@ function readPost(filePath, source) {
     throw new Error(`${filePath}: title, metaDescription, and a canonical lowercase slug are required.`)
   }
   if (metadata.status !== 'draft') throw new Error(`${filePath}: local publishing input must start as status: draft.`)
+  const featuredImageFile = text(metadata.featuredImageFile)
+  const featuredImageAlt = text(metadata.featuredImageAlt)
+  if (featuredImageFile && !featuredImageAlt) {
+    throw new Error(`${filePath}: featuredImageAlt is required with featuredImageFile.`)
+  }
+  const featuredImageObject = featuredImageFile
+    ? `blogs/${slug}/featured.png`
+    : ''
+  const featuredImageToken = featuredImageObject
+    ? hash({ slug, featuredImageObject }).slice(0, 32)
+    : ''
+  const featuredImageUrl = featuredImageObject
+    ? `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodeURIComponent(featuredImageObject)}?alt=media&token=${featuredImageToken}`
+    : `${PUBLIC_ORIGIN}/img/app/cover.png`
   const content = markdownToHtml(markdown)
   const words = markdown.replace(/^#.*$/gm, '').trim().split(/\s+/).filter(Boolean).length
   const post = {
@@ -152,8 +170,9 @@ function readPost(filePath, source) {
     keywords: cleanStringArray(metadata.keywords, 'keywords', filePath),
     tags: cleanStringArray(metadata.tags, 'tags', filePath),
     canonicalUrl: `${PUBLIC_ORIGIN}/blog/${slug}`,
-    featuredImage: `${PUBLIC_ORIGIN}/img/app/cover.png`,
-    socialImage: `${PUBLIC_ORIGIN}/img/app/thumbnail.png`,
+    featuredImage: featuredImageUrl,
+    featuredImageAlt: featuredImageAlt || title,
+    socialImage: featuredImageUrl,
     readingTime: `${Math.max(1, Math.ceil(words / 200))} min`,
     cta_link: `${PUBLIC_ORIGIN}/get-started`,
     cta_text: 'Start your App',
@@ -168,6 +187,11 @@ function readPost(filePath, source) {
   }
   return {
     file: path.relative(process.cwd(), filePath),
+    featuredImageFile: featuredImageFile
+      ? path.resolve(process.cwd(), featuredImageFile)
+      : '',
+    featuredImageObject,
+    featuredImageToken,
     post,
     findings: reviewBlogEditorialContent(post),
   }
@@ -190,17 +214,37 @@ const app = initializeApp({ credential: auth.credential, projectId: PROJECT_ID }
 const db = getFirestore(app, DATABASE_ID)
 const existing = await db.getAll(...entries.map(entry => db.doc(`${COLLECTION_ID}/${entry.post.slug}`)))
 const collisions = existing.filter(snapshot => snapshot.exists).map(snapshot => snapshot.id)
-if (collisions.length) throw new Error(`Blog posts already exist: ${collisions.join(', ')}`)
+if (!updateMode && collisions.length) throw new Error(`Blog posts already exist: ${collisions.join(', ')}`)
+if (updateMode && collisions.length !== entries.length) {
+  throw new Error('Update mode requires every Blog post to exist already.')
+}
+for (const entry of entries) {
+  if (!entry.featuredImageFile) continue
+  const imageBytes = await readFile(entry.featuredImageFile)
+  entry.featuredImageSha256 = createHash('sha256').update(imageBytes).digest('hex')
+  entry.featuredImageToken = entry.featuredImageSha256.slice(0, 32)
+  const versionedImageUrl = `https://firebasestorage.googleapis.com/v0/b/${STORAGE_BUCKET}/o/${encodeURIComponent(entry.featuredImageObject)}?alt=media&token=${entry.featuredImageToken}`
+  entry.post.featuredImage = versionedImageUrl
+  entry.post.socialImage = versionedImageUrl
+  const [exists] = await getStorage(app).bucket(STORAGE_BUCKET).file(entry.featuredImageObject).exists()
+  if (!updateMode && exists) throw new Error(`Blog image already exists: ${entry.featuredImageObject}`)
+}
 
 const plan = {
   format: 'fireux-blog-publication-plan/1',
   project_id: PROJECT_ID,
   database_id: DATABASE_ID,
-  creates: entries.map(entry => ({
+  operation: updateMode ? 'update' : 'create',
+  posts: entries.map(entry => ({
     file: entry.file,
     slug: entry.post.slug,
     title: entry.post.title,
     reading_time: entry.post.readingTime,
+    featured_image_file: entry.featuredImageFile
+      ? path.relative(process.cwd(), entry.featuredImageFile)
+      : '',
+    featured_image_alt: entry.post.featuredImageAlt,
+    featured_image_sha256: entry.featuredImageSha256 || '',
     findings: entry.findings,
   })),
 }
@@ -216,17 +260,42 @@ for (const entry of entries) assertBlogEditorialApproval(entry.post)
 const target = defineFirestoreMutationTarget({
   key: 'fireux.blog-posts',
   lane: 'mcp-skill',
-  verbs: ['create'],
+  verbs: updateMode ? ['update'] : ['create'],
   database: { kind: 'named', databaseId: DATABASE_ID },
   collectionPath: COLLECTION_ID,
 })
 const now = Timestamp.now()
 for (const entry of entries) {
-  await mcpSkillCreate(app, target, entry.post.slug, {
-    ...entry.post,
-    created: { at: now, by: ACTOR, app_id: APP_ID },
-    updated: { at: now, by: ACTOR },
-  })
+  const imageFile = entry.featuredImageObject
+    ? getStorage(app).bucket(STORAGE_BUCKET).file(entry.featuredImageObject)
+    : null
+  try {
+    if (imageFile) {
+      await imageFile.save(await readFile(entry.featuredImageFile), {
+        resumable: false,
+        metadata: {
+          contentType: 'image/png',
+          cacheControl: 'public,max-age=31536000,immutable',
+          metadata: { firebaseStorageDownloadTokens: entry.featuredImageToken },
+        },
+      })
+    }
+    if (updateMode) {
+      await mcpSkillUpdate(app, target, entry.post.slug, {
+        ...entry.post,
+        updated: { at: now, by: ACTOR },
+      })
+    } else {
+      await mcpSkillCreate(app, target, entry.post.slug, {
+        ...entry.post,
+        created: { at: now, by: ACTOR, app_id: APP_ID },
+        updated: { at: now, by: ACTOR },
+      })
+    }
+  } catch (error) {
+    if (imageFile && !updateMode) await imageFile.delete({ ignoreNotFound: true })
+    throw error
+  }
 }
 
 const verified = await db.getAll(...entries.map(entry => db.doc(`${COLLECTION_ID}/${entry.post.slug}`)))
@@ -235,8 +304,9 @@ if (verified.some(snapshot => !snapshot.exists || snapshot.data()?.visibility !=
 }
 console.log(JSON.stringify({
   mode: 'apply',
+  operation: updateMode ? 'update' : 'create',
   ok: true,
-  created: verified.map(snapshot => ({ slug: snapshot.id, url: `${PUBLIC_ORIGIN}/blog/${snapshot.id}` })),
+  posts: verified.map(snapshot => ({ slug: snapshot.id, url: `${PUBLIC_ORIGIN}/blog/${snapshot.id}` })),
   plan_sha256: planSha256,
 }, null, 2))
 await deleteApp(app)

@@ -141,6 +141,33 @@ requirement, report the exact missing seam before broad edits.
   switch. Operational `scripts/` are outside this product-source boundary and
   remain governed by script safety, usage, and lifecycle guards.
 
+## Parallel AI work and integration ownership
+
+- Cross-machine task ownership uses the repository skill at
+  `.agents/skills/fireux-handoff/SKILL.md`. Git carries the verified code
+  checkpoint; its continuation capsule carries only task reasoning that
+  current source, history, guards, and living context cannot reconstruct.
+- Every concurrent repository worker uses its own local clone or Git worktree
+  and its own branch. Never let two workers edit the same branch concurrently.
+- Designate one task as the integration lead before parallel implementation
+  begins. The integration lead owns the target branch, acceptance criteria,
+  architectural consistency, integration decisions, and final verification.
+- Specialist tasks own bounded candidate changes. Their handoff must state
+  assumptions, decisions, changed files, verification results, and unresolved
+  risks.
+- The integration lead inspects the complete diffs and relevant commit history
+  before integrating. A conflict-free Git merge is not evidence that two
+  changes are logically compatible.
+- Do not merge parallel branches mechanically. Select the strongest coherent
+  foundation, then merge, cherry-pick, or manually incorporate only compatible
+  work from the other branches.
+- Review the combined result for duplicated logic, inconsistent abstractions,
+  security regressions, and unrelated changes. Run focused checks while
+  integrating and the repository's complete handoff verification afterward.
+- Only the integration lead may present the combined result as ready. Product
+  or architectural decisions with meaningful trade-offs remain subject to
+  user approval.
+
 ## Authority
 
 - Current code, executable guards, and tests are implementation truth.
@@ -203,32 +230,34 @@ requirement, report the exact missing seam before broad edits.
   page facts, permissions, and profile presentation; App owns the equivalent
   App family. Do not introduce a cross-entity detail engine merely to remove
   repeated pending, missing, failure, status, or SEO lines.
-- Align sibling pages by contract and anatomy: one bounded object, derived
-  facts, route facts, truthful HTTP status, semantic theme tokens, and named
-  entity presentation. Small readable duplication is preferable to runtime
-  registries, generic page metadata, component-path configuration, or
-  environment branches in Core.
+- Align sibling pages by contract and anatomy: one canonical Entity plus named
+  related records, derived facts, route facts, truthful HTTP status, semantic
+  theme tokens, and named entity presentation. Small readable duplication is
+  preferable to runtime registries, generic page metadata, component-path
+  configuration, or environment branches in Core.
 - A project may own a detail page when its authority or product composition is
   genuinely different. FireUX owns its platform-directory App detail; ordinary
   ecosystem Apps inherit the Core App detail. Keep the two aligned as siblings
   without pretending that their readers and page responsibilities are equal.
-- Use `Public` only where it names a real publication, DTO, endpoint, Rules, or
-  privacy boundary. Ordinary components, composables, and page variables use
-  the entity name; protected material is named `Private` explicitly.
-- Start at `docs/concepts/family-public-detail.md` and the nearest entity page,
-  reader, projection, and presentation before changing this family.
+- Do not prefix normal Entity types, endpoints, components, composables, or
+  routes with `Public`. A root Entity document is the readable canonical
+  Entity. Material that cannot be returned with it belongs physically under
+  Auth, App access, Team, Finance, or an operational owner. Standard protocol
+  terms such as HTTP `Cache-Control: public` retain their defined meaning.
+- Start at `docs/concepts/family-entity-detail.md` and the nearest entity page,
+  reader and presentation before changing this family.
 
 ## Entity capability families
 
 - An entity family owns the complete boundary for one entity: canonical model
-  and identity, authorized reads, bounded projections, lifecycle commands,
-  validation and policy, derived facts, view projections, events, and the
+  and identity, authorized reads, lifecycle commands, validation and policy,
+  derived facts, named Directory/presentation views, events, and the
   page, Console, or Tool adapters that consume those capabilities. It is not
   one umbrella composable and it is not CRUD symmetry for its own sake.
-- Use responsibility names consistently: `useXDetail` for one routable bounded
+- Use responsibility names consistently: `useXDetail` for one routable
   object, `useXFetch` for an authorized canonical or operational read,
   `useXCollection` for a list, `useXCreate/Update/Delete` for commands, and
-  `useXInterface` for presentation projection. A family exposes only the seams
+  `useXInterface` for presentation mapping. A family exposes only the seams
   it genuinely supports.
 - `useXDetail` owns `ready`, `pending`, `error`, `refresh`, `statusCode`,
   `missing`, `failed`, and `outcome`, while returning the entity under its real
@@ -291,24 +320,20 @@ requirement, report the exact missing seam before broad edits.
 - An unqualified entity collection is the canonical/default collection. Use
   `XCollection`, `useXCollection()`, and `XCollectionManager` for that default
   family.
-- Default does not mean wholly public. A canonical root may contain exposed
-  fields alongside protected structures such as `entity.private {}`. Public
-  access is defined by field policy, Rules, or a bounded projection; it is not
-  part of the collection's identity.
-- Firestore document reads are whole-document reads; Rules do not redact a
-  protected nested object from an otherwise readable document. A guest-facing
-  collection therefore needs a bounded server projection or separately owned
-  storage whenever its canonical roots contain protected fields.
+- A root Entity document is wholly readable as that Entity. Do not place a
+  protected `entity.private {}` object inside it: Firestore document reads are
+  whole-document reads and Rules cannot redact nested fields. Move protected
+  material to its honest separately authorized owner instead.
 - A bounded collection must name its scope, for example Kitchen Menus,
   Supplier Items, App Users, or Portfolio Properties. Scoped collections do
   not masquerade as the default collection to reuse its manager.
 - API versus direct Firestore is an authority/transport decision, not a
-  collection-family name. A default collection may use a bounded server
-  projection when joins, publication, privacy, or server-only validation make
+  collection-family name. A default collection may use a server reader when
+  joins, cross-database access, SSR status, or server-only validation make
   raw client reads unsafe.
-- Do not add `Public` to ordinary collection family names. Reserve `Public`
-  for a DTO, projection, endpoint, access policy, or another boundary where
-  the distinction is technically necessary.
+- Do not add `Public` to ordinary collection family names, Entity types,
+  endpoints, DTOs, components, or composables. Use product terms such as
+  `published` only for an actual lifecycle/eligibility state.
 
 ## Entity canon
 
@@ -408,11 +433,13 @@ requirement, report the exact missing seam before broad edits.
   `user-handle-state` roots, compatibility reads, or duplicate writers.
 - App-support records contain only their declared access, membership, profile,
   or operational delta. They do not copy root identity or payload.
-- Public projections are bounded transport shapes derived from valid canonical
-  roots. Classify one owning family at a time through
-  `scripts/_lib/entity-matrix.mjs`, `scripts/guards/entity-matrix.mjs`, and
-  `docs/concepts/entities.md`; do not infer Entity status from folders,
-  collections, routes, or UI symmetry.
+- A root Entity reader returns that canonical Entity. Transport may add paging
+  metadata, named related records, or an honestly named presentation view, but
+  it does not rename, filter, or replace the Entity as a privacy mechanism.
+  Protected material belongs under its actual owner. Classify one owning
+  family at a time through `scripts/_lib/entity-matrix.mjs`,
+  `scripts/guards/entity-matrix.mjs`, and `docs/concepts/entities.md`; do not
+  infer Entity status from folders, collections, routes, or UI symmetry.
 
 ## Shared UI baseline and design packs
 
@@ -615,18 +642,17 @@ requirement, report the exact missing seam before broad edits.
   arrays, are profile authority. AppUser never duplicates Console entity
   ownership or access; each entity family's App-support records are that
   authority.
-- Public User list and detail projections remain canonical-identity DTOs. On a
-  tenant runtime, candidate visibility comes only from exact valid
+- User list and detail readers return canonical User identities. On a tenant
+  runtime, candidate visibility comes only from exact valid
   `apps/{appId}/users/{uid}` memberships before the root User join; a guessed
   global handle never establishes tenant visibility. Global runtimes retain
   the ecosystem-wide User catalogue.
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
-- Authenticated dashboard surfaces consume the exact current App and caller
-  membership through a bounded server projection. They do not raw-read private
-  App or App-user authority from browser Firestore merely to render overview
-  state.
+- Authenticated dashboard surfaces consume the canonical current App plus the
+  caller's separately owned membership through a server reader. They do not
+  browser-read App-user authority merely to render overview state.
 - The signed-in User's owner-only `private/account` state follows the same
   boundary through `/api/internal/user/account`; onboarding and dashboard
   availability must not depend on browser Firestore Rules permitting that
@@ -768,16 +794,16 @@ requirement, report the exact missing seam before broad edits.
 ## Shared marketplace authority
 
 - Bringli owns canonical Supplier identity, Catalogue and Supplier Items through
-  `fireux-suppliers`. Misebox Kitchens and marketplace Apps consume bounded
-  Supplier projections; they do not read Bringli Firestore directly or create
-  another Supplier authority.
+  `fireux-suppliers`. Misebox Kitchens and marketplace Apps consume canonical
+  Supplier records through the Bringli server boundary; they do not read
+  Bringli Firestore directly or create another Supplier authority.
 - `fireux-marketplace` owns App-local Supplier publication Listings, customer
   baskets, and private offline marketplace Order Records. Buyer and seller are
   product surfaces, not AppUser roles. The unshipped Store/Offer prototype is
   migration debt and is not a compatibility contract.
 - Supplier operators manage Supplier truth in Bringli; marketplace App Admins
-  moderate Listings. Public readers consume bounded joined Supplier, Listing
-  and Item projections, while all writes and Order reads use trusted
+  moderate Listings. Marketplace readers compose the named Supplier, Listing,
+  and Item records they require, while all writes and Order reads use trusted
   fixed-runtime endpoints.
 - Marketplace prices reuse Finance minor-unit money, but catalogue prices and
   offline order requests do not emit FinancialFacts. MarketplaceOrder and
@@ -844,14 +870,17 @@ Found` page. An app may pass `--verify-text` for one public source-defined
 
 ## Shared Job authority
 
-- `fireux-jobs` owns one Job root shape and trusted author/public boundary for
+- `fireux-jobs` owns one Job root shape and trusted author/read boundary for
   every ecosystem. The current Agent/User is explicit owner authority;
   creator stamps remain audit-only.
 - Canonical Company and Place ids are required relationships. App configuration
   may select an explicit product-neutral category allowlist or the shared
   all-category scope plus presentation copy, but may not select a workplace
   entity, materializer, or alternate stored shape. Invalid runtime role or
-  tenant identity always makes the public Job projection ineligible.
+  tenant identity always makes the Job Directory read ineligible.
+- Exact detail returns the canonical Job plus its named Company and Place
+  records. The paginated Directory alone uses `JobDirectoryEntry` for joined
+  card facts and JSON-safe schedule values; it is a view, not another Job.
 - Optional compensation uses the Finance minor-unit money primitive plus a pay
   unit. It is a mutable offer term, not a FinancialFact producer.
 - `fireux-jobs` also owns the private Application and Engagement lifecycle.
@@ -860,8 +889,8 @@ Found` page. An app may pass `--verify-text` for one public source-defined
 - A tenant App owns applications for Jobs it sourced. A broader ecosystem Job
   catalogue derives the return doorway from that source App's canonical active
   `apps/{appId}` identity and HTTPS `social_links.website`; changing a hostname
-  never requires an App rebuild. Job DTOs never expose source App identity or
-  invent a second application path.
+  never requires an App rebuild. Job Directory entries do not duplicate source
+  App identity or invent a second application path.
 - Direct hiring means the named employer employs and pays the worker. The
   platform records the offer, both parties' actions, the agreed Job revision,
   and versioned acknowledgement of that relationship; it is not the employer,
@@ -1088,6 +1117,10 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   it only through the renderer's explicit `--write` mode.
 - Deploy and migration commands verify, but never regenerate, that artifact.
   App `firebase.json` files do not own main Firestore Rules.
+- Ecosystems that install Place allow only exact `get` access to canonical
+  `places/{placeId}` records so an already-open Place detail can subscribe for
+  changes after its server render. Place collection listing and every browser
+  write remain denied; protected material must live outside the root Place.
 
 ## Living context
 

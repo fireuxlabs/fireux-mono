@@ -1,6 +1,6 @@
 # Pages
 
-Updated: 2026-08-03
+Updated: 2026-08-19
 Ref: 8287d99bb
 Role: map, not canon
 
@@ -12,7 +12,7 @@ Map how route pages should be built and where consensus is still forming.
 
 - Parent: nuxt4.md
 - Child: family-entity-directory.md
-- Child: family-public-detail.md
+- Child: family-entity-detail.md
 - Child: family-console-entity.md
 - Child: family-menu.md
 
@@ -49,8 +49,8 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Common route families
 
-- Public index: `/xs`.
-- Public detail: `/xs/[id-or-slug]`.
+- Entity Directory: `/xs`.
+- Entity Detail: `/xs/[id-or-slug]`.
 - Factual console-operation index: `/operations`; entries point to working
   `/console/*` operation routes and are distinct from authored `/solutions`.
   One app-wide index groups entries by Console and may expose stable anchors.
@@ -106,8 +106,8 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Index page notes
 
-- Public/root entity indexes should use `XCollectionManager`.
-- `XCollectionManager` should fetch the root/public entity collection itself.
+- Root Entity Directory pages should use `XCollectionManager`.
+- `XCollectionManager` should fetch its bounded entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Console indexes render `ConsoleXIndex`.
 - Internal dev previews and component labs live under `/dev`.
@@ -125,10 +125,10 @@ Map how route pages should be built and where consensus is still forming.
 
 - Console route shells follow `console.md`; domain differences live below the
   route page.
-- Public index presentation and authority differences live in
+- Entity Directory presentation and authority differences live in
   `family-entity-directory.md`.
-- Public detail route identity and operator-panel differences live in
-  `family-public-detail.md`.
+- Entity Detail route identity and operator-panel differences live in
+  `family-entity-detail.md`.
 - Tenant route omission versus global explicit scope lives in
   `family-tenant-global.md`.
 - Menu routes use the stronger guarded contract in `family-menu.md`.
@@ -138,10 +138,10 @@ Map how route pages should be built and where consensus is still forming.
 ## Alignment roadmap
 
 - Now: keep route pages thin and preserve truthful route/HTTP outcomes.
-- Next: classify remaining public indexes and settle detail route identity per
+- Next: classify remaining Entity Directories and settle detail route identity per
   entity.
 - Later: guard page families only after their structural and product deltas are
   explicit.
 
-The unresolved public-detail members and Menu migrations are registered in
+The unresolved Entity Detail members and Menu migrations are registered in
 their family maps. Do not maintain a second question list here.

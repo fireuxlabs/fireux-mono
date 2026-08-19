@@ -846,10 +846,9 @@ export async function run(ctx) {
       file: 'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts',
       markers: [
         'place: PlaceStored',
-        'publicCompany: PublicCompanyProjection',
-        'normalizePublicPlaceProjection',
-        'hasExactPublicPlaceProjectionShape',
-        'item.publicCompany.id !== placeId',
+        'resolvedPlace: Place',
+        'normalizePlace(seed.id, place)',
+        'item.resolvedPlace.id !== placeId',
         '!item.place.image_url',
         'companyId !== placeId',
         'Object.keys(item.company)',
@@ -1004,18 +1003,18 @@ export async function run(ctx) {
   if (
     ![
       'projectSupplierDemoWorld',
-      'companyTarget.publicCompany',
+      'companyTarget.resolvedPlace',
       'clean(target.place.id) !== companyId',
-      'clean(target.publicCompany.id) !== companyId',
+      'clean(target.resolvedPlace.id) !== companyId',
       "'place_id' in scenario.supplier",
-      'companyPlace: companyTarget.publicCompany',
+      'companyPlace: companyTarget.resolvedPlace',
     ].every((marker) => supplierDemoWorldSource.includes(marker))
   ) {
     violations.push({
       code: 'supplier-demo-world-projection',
       file: supplierDemoWorldFile,
       message:
-        'Supplier Demo must compose Supplier/AppSupplier with a same-id Company/Place public projection without copying a direct Place edge.',
+        'Supplier Demo must compose Supplier/AppSupplier with the same-id canonical Company Place without copying a direct Place edge.',
     })
   }
   if (existsSync(familyScenarioJitiExecutable)) {

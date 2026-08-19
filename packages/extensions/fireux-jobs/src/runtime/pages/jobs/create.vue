@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: send new private drafts to the authenticated edit route.
+// Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: send new drafts to the authenticated edit route.
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useHead, useRouter } from 'nuxt/app'
 import { computed, ref } from 'vue'

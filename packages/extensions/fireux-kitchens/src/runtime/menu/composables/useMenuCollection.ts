@@ -1,1 +1,236 @@
-export { useMenuCollection } from './firestore/fetch/useMenuCollection'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import {
+  computed,
+  ref,
+  toValue,
+  type ComputedRef,
+  type MaybeRefOrGetter,
+  type Ref,
+} from 'vue'
+import type { RouteRecordNormalized } from 'vue-router'
+import { useAsyncData, useRouter } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import {
+  MENU_DIRECTORY_MAX_PAGE_SIZE,
+  MENU_DIRECTORY_PAGE_SIZE,
+  type MenuDirectoryEntry,
+  type MenuDirectoryPage,
+} from '../models/menu-directory.model.ts'
+import {
+  menuRoutePath,
+  rootMenuRouteScope,
+  tenantMenuRouteScope,
+  type MenuRouteScope,
+} from '../../kitchen/utils/kitchen-menu-route'
+
+export type MenuDirectoryOutcome =
+  | { kind: 'loading' }
+  | { kind: 'unavailable' }
+  | { kind: 'empty' }
+  | { kind: 'redirect'; path: string }
+  | { kind: 'list' }
+
+type UseMenuCollectionOptions = {
+  routeScope?: MaybeRefOrGetter<MenuRouteScope>
+  pageSize?: number
+}
+
+type MenuCollectionControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'refresh'
+>
+
+export type UseMenuCollectionReturn = MenuCollectionControls & {
+  collection: ComputedRef<MenuDirectoryEntry[]>
+  error: ComputedRef<Error | NuxtError<unknown> | null>
+  ready: Promise<void>
+  routeScope: ComputedRef<MenuRouteScope>
+  outcome: ComputedRef<MenuDirectoryOutcome>
+  statusCode: ComputedRef<number | null>
+  hasMore: ComputedRef<boolean>
+  loadingMore: Ref<boolean>
+  loadMoreError: Ref<unknown>
+  loadMore: () => Promise<boolean>
+  menuLink: (menuId: string) => string
+}
+
+export function useMenuCollection(
+  options: UseMenuCollectionOptions = {}
+): UseMenuCollectionReturn {
+  const fireux = useFireUXConfig()
+  const router = useRouter()
+  const routeScope = computed(() =>
+    options.routeScope
+      ? toValue(options.routeScope)
+      : fireux.isTenant
+        ? tenantMenuRouteScope()
+        : rootMenuRouteScope()
+  )
+  const kitchenSlug = computed(() =>
+    routeScope.value.kind === 'directory'
+      ? String(routeScope.value.kitchenSlug || '').trim()
+      : ''
+  )
+  const pageSize = normalizePageSize(options.pageSize)
+  const baseEndpoint = computed(() => {
+    const query = new URLSearchParams({ limit: String(pageSize) })
+    if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
+
+    return `/api/menus?${query.toString()}`
+  })
+  const key = computed(() =>
+    [
+      'menu-directory',
+      `app=${encodeURIComponent(fireux.appId || 'app')}`,
+      `scope=${routeScope.value.kind}`,
+      `kitchen=${encodeURIComponent(kitchenSlug.value)}`,
+      `limit=${pageSize}`,
+    ].join('|')
+  )
+  const state = useAsyncData<MenuDirectoryPage>(
+    key,
+    () => $fetch<MenuDirectoryPage>(baseEndpoint.value),
+    { watch: [baseEndpoint] }
+  )
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
+  const ready = state.then(() => undefined)
+  const collection = computed<MenuDirectoryEntry[]>(
+    () => state.data.value?.items ?? []
+  )
+  const nextCursor = computed(() => state.data.value?.nextCursor ?? null)
+  const hasMore = computed(() => Boolean(nextCursor.value))
+  const tenantRouteCollisions = computed<MenuDirectoryEntry[]>(() =>
+    routeScope.value.kind === 'tenant'
+      ? collection.value.filter(
+          (menu: MenuDirectoryEntry) =>
+            !router
+              .resolve(menuLink(menu.id))
+              .matched.some(
+                (record: RouteRecordNormalized) =>
+                  record.meta.menuProjection === true
+              )
+        )
+      : []
+  )
+  const routePolicyError = computed<Error | null>(() =>
+    tenantRouteCollisions.value.length
+      ? new Error(
+          `Tenant Menu ids collide with existing root routes: ${tenantRouteCollisions.value
+            .map((menu: MenuDirectoryEntry) => menu.id)
+            .join(', ')}`
+        )
+      : null
+  )
+  const error = computed(() => state.error.value || routePolicyError.value)
+  const redirectSingleTenant = computed(
+    () => routeScope.value.kind === 'tenant'
+  )
+  const outcome = computed<MenuDirectoryOutcome>(() => {
+    if (state.pending.value) return { kind: 'loading' }
+    if (error.value || !state.data.value) return { kind: 'unavailable' }
+    if (!collection.value.length) return { kind: 'empty' }
+
+    if (
+      redirectSingleTenant.value &&
+      collection.value.length === 1 &&
+      !hasMore.value
+    ) {
+      return {
+        kind: 'redirect',
+        path: menuLink(collection.value[0]?.id || ''),
+      }
+    }
+
+    return { kind: 'list' }
+  })
+  const statusCode = computed(() =>
+    routePolicyError.value ? 500 : requestStatusCode(state.error.value)
+  )
+
+  function menuLink(menuId: string) {
+    return menuRoutePath({
+      scope: routeScope.value,
+      menuId,
+    })
+  }
+
+  async function loadMore() {
+    const cursor = nextCursor.value
+    if (!cursor || loadingMore.value) return false
+
+    loadingMore.value = true
+    loadMoreError.value = null
+    try {
+      const separator = baseEndpoint.value.includes('?') ? '&' : '?'
+      const page = await $fetch<MenuDirectoryPage>(
+        `${baseEndpoint.value}${separator}cursor=${encodeURIComponent(cursor)}`
+      )
+      const current = state.data.value
+      if (!current) return false
+
+      const items = new Map<string, MenuDirectoryEntry>(
+        current.items.map((item: MenuDirectoryEntry) => [item.id, item])
+      )
+      for (const item of page.items) items.set(item.id, item)
+
+      state.data.value = {
+        ...page,
+        items: [...items.values()],
+      }
+      return true
+    } catch (error) {
+      loadMoreError.value = error
+      return false
+    } finally {
+      loadingMore.value = false
+    }
+  }
+
+  return {
+    collection,
+    pending: state.pending,
+    error,
+    refresh: state.refresh,
+    ready,
+    routeScope,
+    outcome,
+    statusCode,
+    hasMore,
+    loadingMore,
+    loadMoreError,
+    loadMore,
+    menuLink,
+  }
+}
+
+export type MenuCollectionController = UseMenuCollectionReturn
+
+function normalizePageSize(value: unknown) {
+  const pageSize = Number(value ?? MENU_DIRECTORY_PAGE_SIZE)
+
+  return Number.isInteger(pageSize) && pageSize > 0
+    ? Math.min(pageSize, MENU_DIRECTORY_MAX_PAGE_SIZE)
+    : MENU_DIRECTORY_PAGE_SIZE
+}
+
+function requestStatusCode(value: unknown) {
+  if (!value) return null
+
+  const error = value as {
+    status?: number
+    statusCode?: number
+    data?: { status?: number; statusCode?: number }
+  }
+  const statusCode = Number(
+    error.statusCode ||
+      error.status ||
+      error.data?.statusCode ||
+      error.data?.status ||
+      500
+  )
+
+  return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599
+    ? statusCode
+    : 500
+}

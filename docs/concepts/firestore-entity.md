@@ -1,6 +1,6 @@
 # Firestore entity stack family
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -137,15 +137,17 @@ Example Firestore stack names, not automatic entity proof:
 
 ## Accepted storage deltas
 
-- Some entities are canonical roots; public readability is a separate contract.
+- A root Entity document is its canonical readable Entity. Protected material
+  belongs in a separately authorized record under its honest owner.
 - Some entities and records have `parent-scoped` identity.
 - Some root entities have a separate App support record. That support record is
   not another entity scope or fallback identity.
 - An app-private profile record uses only the app-scoped path, records its id on
-  `AppUser.profiles`, and must not acquire a root collection or public index.
+  `AppUser.profiles`, and must not acquire a root Entity collection or Entity
+  Directory.
 - Every root profile record is domain-only and uses its document id as the
-  canonical `/users/{uid}` join key. Public presentation joins or projects
-  that User; root profile documents never embed a User summary.
+  canonical `/users/{uid}` join key. Presentation joins that canonical User;
+  root profile documents never embed a User summary.
 - Every App profile delta record is non-identity support: it does not duplicate
   public User identity, and successful create/repair records the profile id on
   `AppUser.profiles`. Root-backed profiles separately retain their public root
@@ -167,6 +169,10 @@ Example Firestore stack names, not automatic entity proof:
   collection binding; the FireUX admin server boundary owns that read.
 - Deployed Firestore rules must independently deny unauthorized direct Project
   reads; this repository does not currently carry or test that remote ruleset.
+- Place detail is the bounded live-read exception: its server API supplies the
+  initial root record and the browser subscribes to the exact same
+  `places/{placeId}` document. Rules allow `get` only—not collection `list` or
+  browser writes—and a failed listener does not erase the last good Place.
 
 ## Root plus App support contract
 

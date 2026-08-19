@@ -13,7 +13,7 @@ Map component folder and naming conventions.
 - Parent: nuxt-ui.md
 - Child: family-console-entity.md
 - Child: family-entity-directory.md
-- Child: family-public-detail.md
+- Child: family-entity-detail.md
 - Child: card-family.md
 
 ## Horizontal links

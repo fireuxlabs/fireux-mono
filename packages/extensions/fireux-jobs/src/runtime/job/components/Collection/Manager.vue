@@ -151,8 +151,8 @@
         object-origin="fetched"
         launcher
         include-route
-        title="Jobs (Public JSON)"
-        context="collection manager · jobs · bounded public projection"
+        title="Jobs Directory"
+        context="collection manager · jobs · bounded Directory entries"
         :objects="devJsonData"
         :derived="{}"
         :default-open="false"
@@ -168,8 +168,8 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { PublicJobProjection } from '../../models/job-public.model.ts'
-import { usePublicJobCollection } from '../../composables/public/usePublicJobCollection'
+import type { JobDirectoryEntry } from '../../models/job-directory.model.ts'
+import { useJobDirectory } from '../../composables/useJobDirectory'
 import { useJobInterface } from '../../composables/firestore/utils/view/useJobInterface'
 
 const props = withDefaults(
@@ -198,8 +198,8 @@ const props = withDefaults(
   }
 )
 
-const fetched = usePublicJobCollection()
-const collection = computed<PublicJobProjection[]>(() => fetched.jobs.value)
+const fetched = useJobDirectory()
+const collection = computed<JobDirectoryEntry[]>(() => fetched.jobs.value)
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
@@ -236,7 +236,7 @@ const {
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    PublicJobProjection,
+    JobDirectoryEntry,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,

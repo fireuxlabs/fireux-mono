@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { navigateTo, setResponseStatus, useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { usePublicMenuIndex } from '../../menu/composables/usePublicMenuIndex'
+import { useMenuCollection } from '../../menu/composables/useMenuCollection'
 
 definePageMeta({
   tag: 'menus',
@@ -25,7 +25,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const menuIndex = usePublicMenuIndex()
+const menuIndex = useMenuCollection()
 
 await menuIndex.ready
 if (import.meta.server && menuIndex.statusCode.value) {

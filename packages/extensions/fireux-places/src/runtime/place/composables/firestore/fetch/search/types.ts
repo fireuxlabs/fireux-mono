@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: remove browser Firestore search types.
 import type { BasePlace } from '../../../../models/place.model.ts'
 
 export type BasePlaceRecord = BasePlace & { collection?: string }

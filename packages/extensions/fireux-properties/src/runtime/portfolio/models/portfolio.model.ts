@@ -57,7 +57,6 @@ export const PortfolioEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  publicRead: 'to-confirm',
   console: true,
   root: PortfolioStorage.root,
   appSupportPath: PortfolioStorage.appSupport,

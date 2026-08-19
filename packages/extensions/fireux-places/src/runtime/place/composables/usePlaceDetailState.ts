@@ -1,23 +1,23 @@
 import { useState } from '#imports'
 import { computed, type MaybeRefOrGetter, toValue } from 'vue'
-import type { PublicPlaceDetailResponse } from '../models/place-public.model.ts'
+import type { PlaceDetailResponse } from '../models/place-read.model.ts'
 
-const STATE_KEY = 'fireux-place-detail-projections'
+const STATE_KEY = 'fireux-place-details'
 
 export function usePlaceDetailState() {
-  const projections = useState<Record<string, PublicPlaceDetailResponse>>(
+  const entries = useState<Record<string, PlaceDetailResponse>>(
     STATE_KEY,
     () => ({})
   )
 
-  const projection = (id: MaybeRefOrGetter<string>) =>
-    computed(() => projections.value[String(toValue(id) || '').trim()] || null)
+  const entry = (id: MaybeRefOrGetter<string>) =>
+    computed(() => entries.value[String(toValue(id) || '').trim()] || null)
 
-  const publish = (response: PublicPlaceDetailResponse) => {
-    const id = String(response.item?.id || '').trim()
+  const publish = (response: PlaceDetailResponse) => {
+    const id = String(response.place?.id || '').trim()
     if (!id) return
-    projections.value = { ...projections.value, [id]: response }
+    entries.value = { ...entries.value, [id]: response }
   }
 
-  return { projection, publish }
+  return { entry, publish }
 }

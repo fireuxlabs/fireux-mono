@@ -11,7 +11,7 @@ Kitchen-scoped structured content, public route projections, or ordering.
 
 ## Links
 
-- Parents: `family-entity-directory.md`, `family-public-detail.md`,
+- Parents: `family-entity-directory.md`, `family-entity-detail.md`,
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
 - Horizontal: `entities.md`, `firestore-entity.md`, `console.md`,
@@ -56,7 +56,7 @@ independently edited KitchenMenu and inherits the parent renderer's style.
 
 - Public Menu reads use bounded server projections. Raw Menu or KitchenMenu
   Firestore rows are not the guest transport.
-- `usePublicMenuIndex` owns public index outcomes, pagination, tenant redirect
+- `useMenuCollection` owns Menu Directory outcomes, pagination, tenant redirect
   policy, and links.
 - `useMenu` owns one resolved public detail projection, render kind, safe
   failure state, and relative Menu/index/QR paths.
@@ -168,7 +168,7 @@ Public Menu presentation is resolved, not copied:
 The bounded public presentation exposes the effective theme plus
 `themeSource: menu | kitchen | place-default` for inspectable provenance. The
 public manifest combines those layers for rendering. App support records
-remain access-only. The Menu index stays in host App chrome; Menu detail may
+remain access-only. The Menu Directory stays in host App chrome; Menu detail may
 use the resolved Menu canvas and package-owned Menu layout.
 
 When Sproochli is attached, the Kitchen's `default_language` also supplies the
@@ -184,7 +184,7 @@ map.
 
 ## Component and ownership boundaries
 
-- `runtime/menu/components/Index` owns Menu index composition.
+- `runtime/menu/components/Index` owns Menu Directory composition.
 - `runtime/menu/components/Browse` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
 - `runtime/kitchen/components/Console/Operations/Menus` owns upload,
@@ -234,7 +234,7 @@ Start with:
   `models/kitchen/menu/kitchen-menu.model.ts`.
 - Route grammar: `utils/kitchen-menu-route.ts`.
 - Ownership resolution: `runtime/menu/server/ownership/public-target.ts`.
-- Menu index: `runtime/menu/composables/usePublicMenuIndex.ts`.
+- Menu Directory: `runtime/menu/composables/useMenuCollection.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
 - Console operation:
   `runtime/kitchen/composables/console/operations/Menus`.

@@ -23,7 +23,6 @@ export const CustomerOrderLinkRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  publicRead: 'none',
   console: false,
   parent: 'User',
   scoped: CustomerOrderLinkStorage.path,

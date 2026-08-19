@@ -2,10 +2,8 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: stage only colours overriding the linked Place.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep the Kitchen adapter over useKitchenCreate.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import type {
-  PublicPlaceDetailProjection,
-  PublicPlaceDetailResponse,
-} from 'fireux-places/runtime/place/models/place-public.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceDetailResponse } from 'fireux-places/runtime/place/models/place-read.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
@@ -38,7 +36,7 @@ function errorMessage(error: unknown) {
 }
 
 export function useKitchenOnboarding() {
-  const place = ref<PublicPlaceDetailProjection | null>(null)
+  const place = ref<Place | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const displayName = ref('')
   const paletteOverride = ref<SparseBrandPalette>({})
@@ -168,16 +166,16 @@ export function useKitchenOnboarding() {
         throw new Error('Kitchen onboarding preview was invalid.')
       }
 
-      const response = await $fetch<PublicPlaceDetailResponse>(
+      const response = await $fetch<PlaceDetailResponse>(
         `/api/places/${encodeURIComponent(resolvedPreview.place_id)}`
       )
       if (sequence !== selectionSequence) return false
-      if (!response?.item || response.item.id !== resolvedPreview.place_id) {
+      if (!response?.place || response.place.id !== resolvedPreview.place_id) {
         throw new Error('The linked Place is unavailable.')
       }
 
       preview.value = resolvedPreview
-      place.value = response.item
+      place.value = response.place
       displayName.value = resolvedPreview.existing
         ? text(resolvedPreview.display_name)
         : ''

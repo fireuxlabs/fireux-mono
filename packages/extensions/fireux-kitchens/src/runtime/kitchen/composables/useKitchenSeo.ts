@@ -1,15 +1,15 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Kitchen } from '../models/kitchen.model.ts'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).slice(0, 180)
 
 export function buildKitchenJsonLd(
-  kitchen: Partial<Kitchen> | null | undefined
+  kitchen: Partial<KitchenDetailPresentation> | null | undefined
 ) {
   const entry = kitchen as
-    | (Partial<Kitchen> & Record<string, unknown>)
+    | (Partial<KitchenDetailPresentation> & Record<string, unknown>)
     | null
     | undefined
   const name = clean(entry?.display_name || entry?.name)
@@ -29,13 +29,15 @@ export function buildKitchenJsonLd(
 }
 
 export function useKitchenSeo(
-  kitchen: MaybeRefOrGetter<Partial<Kitchen> | null | undefined>
+  kitchen: MaybeRefOrGetter<
+    Partial<KitchenDetailPresentation> | null | undefined
+  >
 ) {
   const entry = computed(() => toValue(kitchen))
   const view = computed(
     () =>
       entry.value as
-        | (Partial<Kitchen> & Record<string, unknown>)
+        | (Partial<KitchenDetailPresentation> & Record<string, unknown>)
         | null
         | undefined
   )

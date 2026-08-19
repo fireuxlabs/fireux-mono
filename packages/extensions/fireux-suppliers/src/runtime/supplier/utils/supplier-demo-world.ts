@@ -1,4 +1,4 @@
-import type { PublicCompanyProjection } from 'fireux-companies/runtime/place/models/company-public.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { AppSupplier, Supplier } from '../models/Supplier.model.ts'
 import {
   useSupplierInterface,
@@ -12,7 +12,7 @@ type SupplierCompanyDemoTargetLike = {
   place: {
     id?: string | null
   }
-  publicCompany: PublicCompanyProjection
+  resolvedPlace: Place
 }
 
 type SupplierDemoScenarioLike = {
@@ -24,7 +24,7 @@ export type ProjectedSupplierDemoScenario<
   TScenario extends SupplierDemoScenarioLike,
 > = Omit<TScenario, 'supplier'> & {
   supplier: SupplierSurface
-  companyPlace: PublicCompanyProjection
+  companyPlace: Place
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -42,7 +42,7 @@ export function projectSupplierDemoWorld<
       !companyId ||
       companyTargetById.has(companyId) ||
       clean(target.place.id) !== companyId ||
-      clean(target.publicCompany.id) !== companyId
+      clean(target.resolvedPlace.id) !== companyId
     ) {
       throw new Error(
         `Supplier Demo Company/Place target is invalid: ${companyId || '(missing-id)'}`
@@ -73,7 +73,7 @@ export function projectSupplierDemoWorld<
     const supplier = surface({
       supplier: scenario.supplier,
       appSupport: scenario.appSupport,
-      companyPlace: companyTarget.publicCompany,
+      companyPlace: companyTarget.resolvedPlace,
     })
     if (!supplier) {
       throw new Error(`Supplier Demo surface is incomplete: ${supplierId}`)
@@ -83,7 +83,7 @@ export function projectSupplierDemoWorld<
     return {
       ...scenario,
       supplier,
-      companyPlace: companyTarget.publicCompany,
+      companyPlace: companyTarget.resolvedPlace,
     }
   })
 }

@@ -1,7 +1,7 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { KitchenMenuStorage } from '../../models/kitchen-menu.model.ts'
-import type { PublicMenuIndexKitchen } from '../../models/menu-index.model.ts'
+import type { MenuDirectoryKitchen } from '../../models/menu-directory.model.ts'
 import {
   menuKitchenIdentity,
   menuKitchenOperationHours,
@@ -9,18 +9,18 @@ import {
 } from '../ownership/kitchen-scope'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantPublicMenuScope } from '../ownership/public-target'
-import type { MenuIndexDocument } from './projection'
+import type { MenuDirectoryDocument } from './projection'
 
-export type MenuIndexContext = {
-  kitchen?: PublicMenuIndexKitchen
+export type MenuDirectoryContext = {
+  kitchen?: MenuDirectoryKitchen
   kitchenName?: string
   kitchenOperationHours?: ReturnType<typeof menuKitchenOperationHours>
   menuData?: Record<string, unknown>
 }
 
-export async function readMenuIndexContext(
+export async function readMenuDirectoryContext(
   db: ReturnType<typeof getRuntimeFirestore>,
-  documents: MenuIndexDocument[]
+  documents: MenuDirectoryDocument[]
 ) {
   const sources = documents.map((document) => ({
     document,
@@ -43,7 +43,7 @@ export async function readMenuIndexContext(
       references.set(menuRef.path, menuRef)
     }
   }
-  if (!references.size) return new Map<string, MenuIndexContext>()
+  if (!references.size) return new Map<string, MenuDirectoryContext>()
   const snapshots = await db.getAll(...references.values())
   const dataByPath = new Map(
     snapshots.map((snapshot) => [
@@ -117,10 +117,10 @@ export async function readMenuIndexContext(
   )
 }
 
-export async function readScopedMenuIndexContext(
+export async function readScopedMenuDirectoryContext(
   db: ReturnType<typeof getRuntimeFirestore>,
   scope: TenantPublicMenuScope
-): Promise<MenuIndexContext> {
+): Promise<MenuDirectoryContext> {
   const [appKitchenSnap, placeData] = await Promise.all([
     db.collection(`apps/${scope.appId}/kitchens`).doc(scope.kitchenId).get(),
     readMenuKitchenPlaceData(scope.kitchenId),

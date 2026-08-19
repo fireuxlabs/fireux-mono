@@ -10,7 +10,7 @@ import {
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { projectPublicCompany } from 'fireux-companies/runtime/place/server/company/public-projection'
-import { projectPublicPlace } from 'fireux-places/runtime/place/server/identity/public-projection'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   AuthorJobListResponse,
   AuthorJobResponse,
@@ -117,11 +117,11 @@ export function assertCanonicalReferences(
     values.get(`companies/${job.company_id}`) || {},
     values.get(`places/${job.company_id}`) || {}
   )
-  const place = projectPublicPlace(
+  const place = normalizePlace(
     job.place_id,
     values.get(`places/${job.place_id}`) || {}
   )
-  if (!company || !place) {
+  if (!company) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Job Company and Place relationships must be canonical.',

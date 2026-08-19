@@ -1,15 +1,12 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { PublicPlaceDetailProjection } from '../models/place-public.model.ts'
-import { PlaceStorage } from '../models/place.model.ts'
+import { PlaceStorage, type Place } from '../models/place.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>
   clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
-export function buildPlaceJsonLd(
-  place: PublicPlaceDetailProjection | null | undefined
-) {
+export function buildPlaceJsonLd(place: Place | null | undefined) {
   const name = clean(place?.name)
   const id = clean(place?.id)
   if (!name || !id || place?.verified !== true) return null
@@ -27,9 +24,7 @@ export function buildPlaceJsonLd(
   }
 }
 
-export function usePlaceSeo(
-  place: MaybeRefOrGetter<PublicPlaceDetailProjection | null | undefined>
-) {
+export function usePlaceSeo(place: MaybeRefOrGetter<Place | null | undefined>) {
   const entry = computed(() => toValue(place))
   const id = computed(() => clean(entry.value?.id))
   const isPublic = computed(() =>

@@ -73,8 +73,8 @@
           object-origin="fetched"
           launcher
           include-route
-          title="Place DTO"
-          context="Place detail page · places/[id] · bounded projection"
+          title="Place"
+          context="Place detail page · places/[id] · canonical Entity"
           :objects="place"
           :derived="{}"
           :contract="placeDebugContract"
@@ -89,16 +89,16 @@
 import { setResponseStatus } from '#imports'
 import { usePlaceDetail } from '../composables/usePlaceDetail'
 import {
-  PublicPlaceDetailDebugModel,
-  PublicPlaceDetailDebugRequiredPaths,
-} from '../models/place-public.model.ts'
+  PlaceDetailDebugModel,
+  PlaceDetailDebugRequiredPaths,
+} from '../models/place-read.model.ts'
 
 defineOptions({ name: 'PlaceDetail' })
 
 const props = defineProps<{ locator: string }>()
 const placeDebugContract = {
-  model: PublicPlaceDetailDebugModel,
-  requiredPaths: [...PublicPlaceDetailDebugRequiredPaths],
+  model: PlaceDetailDebugModel,
+  requiredPaths: [...PlaceDetailDebugRequiredPaths],
 }
 const detail = usePlaceDetail(props)
 

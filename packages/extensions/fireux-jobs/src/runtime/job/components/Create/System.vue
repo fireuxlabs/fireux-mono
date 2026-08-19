@@ -1,5 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: include configured category identity in create diagnostics. -->
-<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: send new private drafts to the authenticated edit route. -->
+<!-- Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: send new drafts to the authenticated edit route. -->
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: diagnose the canonical Job authoring shape. -->
 <template>
   <div class="space-y-3">

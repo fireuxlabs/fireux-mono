@@ -143,14 +143,14 @@
     </div>
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -160,9 +160,6 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: consume the bounded public Kitchen/Place projection without page-local search false negatives.
-// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: distinguish authorized all-Kitchen results from the public directory.
-// Concurrent edit — 2026-07-24 17:12 CEST — Collection canon: consume the projection through useKitchenCollection.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -205,7 +202,7 @@ const props = withDefaults(
 
 const fetched = useKitchenCollection()
 const collectionSurface = computed<KitchenCollectionItem[]>(
-  () => fetched.kitchens.value ?? []
+  () => fetched.collection.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)

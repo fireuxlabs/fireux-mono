@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-named Job collection aliases.
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: reserve this raw collection read for authenticated authoring and dev surfaces.
+// Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: reserve this root collection read for authenticated and dev surfaces.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: replace raw root collection reads with the bounded current-author endpoint.
 import { computed, onMounted, ref } from 'vue'
 import { fetchAuthorJobs } from '../../author/jobAuthorClient'

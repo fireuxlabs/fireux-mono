@@ -1,22 +1,18 @@
-// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: replace raw browser root reads with bounded exact API reads.
 import { useAsyncData } from '#imports'
 import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
-import type {
-  PublicPlaceDetailResponse,
-  PublicPlaceProjection,
-} from '../../../models/place-public.model.ts'
+import type { PlaceDetailResponse } from '../../../models/place-read.model.ts'
 import type { Place } from '../../../models/place.model.ts'
 import { usePlaceDetailState } from '../../usePlaceDetailState'
 
 type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>
-type PublicPlaceReadOutcome = 'idle' | 'pending' | 'error' | 'missing' | 'ready'
+type PlaceReadOutcome = 'idle' | 'pending' | 'error' | 'missing' | 'ready'
 type PlaceFetchFactoryReturn = { place: PlaceFetchFunction }
 type PlaceFetchDetailReturn = {
   place: ComputedRef<Place | null>
   pending: ComputedRef<boolean>
   error: Ref<unknown>
-  outcome: ComputedRef<PublicPlaceReadOutcome>
+  outcome: ComputedRef<PlaceReadOutcome>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
   failed: ComputedRef<boolean>
@@ -26,7 +22,6 @@ type PlaceFetchDetailReturn = {
 }
 
 const cleanLocator = (value: unknown) => String(value ?? '').trim()
-const asPlace = (value: PublicPlaceProjection): Place => value as Place
 const readStatusCode = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0
   const error = value as {
@@ -49,11 +44,9 @@ function createPlaceFetcher(): PlaceFetchFunction {
     cache.set(id, place)
     if (!id || import.meta.server) return place
 
-    void $fetch<PublicPlaceDetailResponse>(
-      `/api/places/${encodeURIComponent(id)}`
-    )
+    void $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`)
       .then((response) => {
-        place.value = response?.item ? asPlace(response.item) : undefined
+        place.value = response?.place
       })
       .catch(() => {
         place.value = undefined
@@ -74,24 +67,20 @@ export function usePlaceFetch(
   const locator = isRef(id)
     ? computed(() => cleanLocator(id.value))
     : computed(() => cleanLocator(id))
-  const state = useAsyncData<PublicPlaceDetailResponse | null>(
-    () => `public-place-detail|${locator.value || 'none'}`,
+  const state = useAsyncData<PlaceDetailResponse | null>(
+    () => `place-detail|${locator.value || 'none'}`,
     async () => {
       if (!locator.value) return null
-      return $fetch<PublicPlaceDetailResponse>(
+      return $fetch<PlaceDetailResponse>(
         `/api/places/${encodeURIComponent(locator.value)}`
       )
     },
     { server: true, watch: [locator] }
   )
-  const { projection } = usePlaceDetailState()
-  const localProjection = projection(locator)
-  const place = computed<Place | null>(() =>
-    localProjection.value?.item
-      ? asPlace(localProjection.value.item)
-      : state.data.value?.item
-        ? asPlace(state.data.value.item)
-        : null
+  const { entry } = usePlaceDetailState()
+  const localEntry = entry(locator)
+  const place = computed<Place | null>(
+    () => localEntry.value?.place || state.data.value?.place || null
   )
   const pending = computed(() => state.pending.value)
   const statusCode = computed(() => readStatusCode(state.error.value))
@@ -103,7 +92,7 @@ export function usePlaceFetch(
   const failed = computed(
     () => Boolean(state.error.value) && statusCode.value !== 404
   )
-  const outcome = computed<PublicPlaceReadOutcome>(() => {
+  const outcome = computed<PlaceReadOutcome>(() => {
     if (!locator.value) return 'idle'
     if (state.pending.value) return 'pending'
     if (failed.value) return 'error'

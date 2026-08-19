@@ -170,7 +170,6 @@ export const KitchenEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  publicRead: 'projection',
   console: true,
   root: KitchenStorage.path,
   appSupportPath: AppKitchenStorage.path,

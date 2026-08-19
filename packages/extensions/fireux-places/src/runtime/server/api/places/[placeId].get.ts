@@ -1,39 +1,39 @@
-// Concurrent edit — 2026-07-21 14:41 CEST — Place public projection: exact-load one Place without caching negative materialization races.
-// Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: return the detail-only locale projection.
 import {
   createError,
   defineEventHandler,
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicPlaceDetailResponse } from '../../../place/models/place-public.model.ts'
-import { PlaceStorage } from '../../../place/models/place.model.ts'
-import { projectPublicPlaceDetail } from '../../../place/server/identity/public-projection'
+import type { PlaceDetailResponse } from '../../../place/models/place-read.model.ts'
+import { readPlace } from '../../../place/server/identity/read'
 
-export default defineEventHandler(async (event): Promise<PublicPlaceDetailResponse> => {
-  const locator = requireFirestoreDocumentId(getRouterParam(event, 'placeId'), 'Place id')
-  const db = getRuntimeFirestore()
-  const exact = await db.collection(PlaceStorage.collection).doc(locator).get().catch(() => {
-    throw createError({ statusCode: 503, statusMessage: 'Place could not be read.' })
-  })
-  if (exact.exists) {
-    const item = projectPublicPlaceDetail(exact.id, exact.data() || {})
-    if (item) return success(event, item)
-    throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
+export default defineEventHandler(
+  async (event): Promise<PlaceDetailResponse> => {
+    const locator = requireFirestoreDocumentId(
+      getRouterParam(event, 'placeId'),
+      'Place id'
+    )
+    const place = await readPlace(locator).catch(() => {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Place could not be read.',
+      })
+    })
+    if (!place)
+      throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
+    return success(event, place)
   }
-
-  throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
-})
+)
 
 function success(
   event: Parameters<typeof setResponseHeaders>[0],
-  item: PublicPlaceDetailResponse['item']
-): PublicPlaceDetailResponse {
+  place: PlaceDetailResponse['place']
+): PlaceDetailResponse {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+    'Cache-Control':
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
   })
-  return { item }
+  return { place }
 }

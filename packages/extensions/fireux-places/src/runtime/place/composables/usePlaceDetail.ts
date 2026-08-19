@@ -1,18 +1,18 @@
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed } from 'vue'
+import { computed, shallowRef, watch } from 'vue'
 import { usePlaceFetch, usePlaceSeo } from './firestore/usePlace'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
 } from '../models/place.model.ts'
 import { PlaceStorage, type Place } from '../models/place.model.ts'
-import { projectPublicPlaceDetail } from '../utils/public-place-projection'
+import { normalizePlace } from '../utils/normalize-place'
 
 export function usePlaceDetail(props: { locator: string }) {
   const locator = computed(() => String(props.locator || '').trim())
   const {
-    place: projectedPlace,
+    place: loadedPlace,
     outcome,
     statusCode,
     missing,
@@ -21,12 +21,8 @@ export function usePlaceDetail(props: { locator: string }) {
     ready,
   } = usePlaceFetch(locator)
 
-  const { isAdmin, isDeveloper } = useUser()
-  const liveLocator = computed(() =>
-    import.meta.client && (isAdmin.value || isDeveloper.value)
-      ? locator.value
-      : ''
-  )
+  const { isAdmin } = useUser()
+  const liveLocator = computed(() => (import.meta.client ? locator.value : ''))
   const { firestoreFetchDoc } = useFirestoreRead()
   const livePlaceRead = firestoreFetchDoc<Place>(
     PlaceStorage.collection,
@@ -34,14 +30,26 @@ export function usePlaceDetail(props: { locator: string }) {
   )
   const livePlace = computed(() => {
     const value = livePlaceRead.value
-    return value
-      ? projectPublicPlaceDetail(
-          locator.value,
-          value as unknown as Record<string, unknown>
-        )
-      : null
+    return value ? normalizePlace(locator.value, value) : null
   })
-  const place = computed(() => livePlace.value || projectedPlace.value)
+  const lastGoodPlace = shallowRef<Place | null>(null)
+  watch(
+    loadedPlace,
+    (value) => {
+      if (value) lastGoodPlace.value = value
+    },
+    { immediate: true }
+  )
+  watch(
+    livePlace,
+    (value) => {
+      if (value) lastGoodPlace.value = value
+    },
+    { immediate: true }
+  )
+  const place = computed(
+    () => lastGoodPlace.value || loadedPlace.value || livePlace.value
+  )
   const showDebug = import.meta.dev
   const detailStyle = computed(() => {
     const palette = place.value?.brand_palette

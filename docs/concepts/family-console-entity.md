@@ -122,7 +122,7 @@ Index outcome contract.
 
 | Difference                                                                          | State        | Required direction                                                                                                                   |
 | ----------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Supplier and Portfolio public-read contracts remain `to-confirm`                    | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity                                                      |
+| Supplier readers return canonical Supplier and related Place Entities               | `accepted`   | Preserve both canonical records; Console consumers must not manufacture replacement Entity DTOs                                     |
 | Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
 | Kitchen authored route slug differs from stable root identity                       | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID      |
 | Console Entity implementation uses `runtime/<entity>/<technical role>`              | `accepted`   | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                  |
@@ -166,8 +166,9 @@ composition delta, not permission to fork the Console Index spine.
   guarded across Live, Demo, and Test sources.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
   AppKitchen access support payload-free.
-- Reconcile Supplier and Portfolio root validation before confirming public
-  projections.
+- Preserve canonical Supplier and related Place records in Console readers;
+  Portfolio remains its canonical readable root with scoped and private work
+  owned separately.
 - Keep every Entity operation catalogue limited to the Operations listed in
   `console.md`; baked-in capabilities never enter operation-only consumers.
 

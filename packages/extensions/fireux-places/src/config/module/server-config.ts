@@ -6,7 +6,6 @@ import {
 
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: register Place reads and the trusted configuration mutation boundary.
 // Concurrent edit — 2026-07-21 14:08 CEST — Werkbox Firebase hardening: register authenticated idempotent Place materialization.
-// Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: register bounded public Place reads.
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: register preview and trusted completion seams.
 // Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: register the trusted root removal boundary.
 const serverHandlers = [

@@ -5,8 +5,8 @@ import {
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
 } from 'fireux-core/runtime/server/utils/seo-sitemaps'
-import { PUBLIC_JOB_INDEX_MAX_PAGE_SIZE } from '../../job/models/job-public.model.ts'
-import { readPublicJobIndexPage } from '../../job/server/index/public-index.ts'
+import { JOB_DIRECTORY_MAX_PAGE_SIZE } from '../../job/models/job-directory.model.ts'
+import { readJobDirectoryPage } from '../../job/server/index/read.ts'
 
 const MAX_SITEMAP_URLS = 50_000
 
@@ -18,9 +18,9 @@ export default defineEventHandler(async (event) => {
   let hasMore = false
 
   while (paths.length < MAX_SITEMAP_URLS) {
-    const page = await readPublicJobIndexPage(event, {
+    const page = await readJobDirectoryPage(event, {
       cursor,
-      limit: PUBLIC_JOB_INDEX_MAX_PAGE_SIZE,
+      limit: JOB_DIRECTORY_MAX_PAGE_SIZE,
     })
     paths.push(
       ...page.items.map((item) => `/jobs/${encodeURIComponent(item.id)}`)

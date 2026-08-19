@@ -9,7 +9,7 @@ import { PlaceStorage } from '../../../models/place.model.ts'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
-} from '../../utils/place-spine'
+} from '../../../utils/place-spine'
 import {
   record,
   requireMemberRole,

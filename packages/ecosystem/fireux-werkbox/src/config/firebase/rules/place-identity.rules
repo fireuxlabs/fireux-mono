@@ -1,0 +1,7 @@
+// @fireux-ecosystem-rules-fragment werkbox/place-identity
+    // Place detail subscriptions exact-read known canonical Place ids. Index
+    // and search remain server-owned, and every browser write remains denied.
+    match /places/{placeId} {
+      allow get: if resource != null;
+      allow list, create, update, delete: if false;
+    }

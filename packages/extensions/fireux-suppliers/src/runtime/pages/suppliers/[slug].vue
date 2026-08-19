@@ -1,8 +1,14 @@
 <template>
-  <SupplierDetail :supplier="supplierRecord" :pending="pending" />
+  <SupplierDetail
+    :supplier="supplier"
+    :place="place"
+    :outcome="outcome"
+    @refresh="refresh"
+  />
 </template>
 
 <script setup lang="ts">
+import { setResponseStatus } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useSupplierDetail } from '../../supplier/composables/useSupplierDetail'
 import { useSupplierSeo } from '../../supplier/composables/useSupplierSeo'
@@ -16,8 +22,23 @@ definePageMeta({
 
 const routeKey = useRouteParam('slug')
 
-const { supplier: supplierRecord, pending } = useSupplierDetail(routeKey, {
-  key: 'slug',
-})
-useSupplierSeo(supplierRecord)
+const {
+  supplier,
+  place,
+  ready,
+  refresh,
+  outcome,
+  missing,
+  failed,
+  statusCode,
+} = useSupplierDetail(routeKey)
+
+await ready
+if (import.meta.server && missing.value) {
+  setResponseStatus(404)
+} else if (import.meta.server && failed.value) {
+  setResponseStatus(statusCode.value || 503)
+}
+
+useSupplierSeo(supplier)
 </script>

@@ -157,7 +157,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     read(repoRoot, 'scripts/data/misebox-ingredient-catalog-completion.json')
   )
 
-  assert.match(model, /publicRead:\s*'projection'/)
+  assert.match(model, /identity:\s*'root'/)
   assert.match(foodGroupModel, /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/)
   assert.match(foodGroupModel, /\bexport const resolveIngredientFoodGroup\b/)
   assert.match(

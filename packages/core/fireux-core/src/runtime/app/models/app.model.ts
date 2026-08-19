@@ -86,7 +86,6 @@ export const AppEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  publicRead: 'projection',
   root: AppStorage.path,
 })
 

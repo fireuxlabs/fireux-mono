@@ -1,17 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader
-      :title="pageTitle"
-      description="Supplier identity, catalogue work, items, ingredients and team access in one Misebox Console."
-    />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-truck"
+    secondary-label="Supplier tools"
+  >
+    <SupplierCollectionManager />
 
-    <UPageBody>
-      <!-- Console CTA family: actions live in SupplierCTA; browse lives in SupplierCollectionManager. -->
+    <template #secondary>
       <SupplierCTA />
-
-      <SupplierCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -32,10 +32,12 @@ definePageMeta({
   layout: 'default',
   name: 'SuppliersIndexPage',
   title: 'Suppliers',
-  description: 'Open a Supplier Console or browse public Supplier identities.',
+  description: 'Browse supplier identities, catalogues and delivery areas.',
 })
 
 const pageTitle = 'Suppliers'
+const pageDescription =
+  'Browse supplier identities, catalogues and delivery areas.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 </script>

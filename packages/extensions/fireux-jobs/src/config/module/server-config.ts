@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: register bounded Agent and Professional routes.
 // Concurrent edit — 2026-07-20 17:44 CEST — Repo Efficiency Pass 2 of 6: register trusted Jobs profile provisioners.
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: register bounded Job index and exact detail routes.
+// Concurrent edit — 2026-07-21 12:53 CEST — Job reads: register bounded Directory and exact detail routes.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: register fixed-scope author lifecycle and structured Professional mutation routes.
 import type { Resolver } from '@nuxt/kit'
 import {
@@ -71,14 +71,14 @@ const serverHandlers = [
     handler: './runtime/server/api/internal/job-engagements/[id].patch',
   },
   {
-    route: '/api/public/jobs',
+    route: '/api/jobs',
     method: 'get',
-    handler: './runtime/server/api/public/jobs.get',
+    handler: './runtime/server/api/jobs.get',
   },
   {
-    route: '/api/public/jobs/:id',
+    route: '/api/jobs/:id',
     method: 'get',
-    handler: './runtime/server/api/public/jobs/[id].get',
+    handler: './runtime/server/api/jobs/[id].get',
   },
   {
     route: '/sitemaps/jobs.xml',

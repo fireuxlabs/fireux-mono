@@ -133,6 +133,43 @@ export async function run(ctx) {
     )
   }
 
+  const kitchenComponentsPath = path.join(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/config/module/components-config.ts'
+  )
+  if (existsSync(kitchenComponentsPath)) {
+    const source = readFileSync(kitchenComponentsPath, 'utf8')
+    const consoleRegistration = source.indexOf(
+      "registerComponentsDir(resolver, './runtime/kitchen/components/Console'"
+    )
+    const kitchenRegistration = source.indexOf(
+      "registerComponentsDir(resolver, './runtime/kitchen/components',"
+    )
+    const consoleBlock = source.slice(
+      consoleRegistration,
+      kitchenRegistration > consoleRegistration
+        ? kitchenRegistration
+        : consoleRegistration
+    )
+
+    if (
+      consoleRegistration < 0 ||
+      kitchenRegistration < 0 ||
+      consoleRegistration > kitchenRegistration ||
+      !/prefix:\s*['"]ConsoleKitchen['"]/.test(consoleBlock) ||
+      !/priority:\s*[1-9]\d*/.test(consoleBlock)
+    ) {
+      throw new Error(
+        [
+          '[guard] ❌ Kitchen Console component registration is unstable.',
+          '  - Register the Console subtree before the broader Kitchen directory.',
+          '  - Give the Console subtree explicit positive priority and the ConsoleKitchen prefix.',
+          '  - Keep Console/** excluded from the broader Kitchen registration.',
+        ].join('\n')
+      )
+    }
+  }
+
   for (const family of PACKAGE_FAMILIES) {
     const familyRoot = path.join(repoRoot, 'packages', family)
     for (const packageName of childDirectories(familyRoot)) {

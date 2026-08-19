@@ -21,6 +21,7 @@ export type PublicBlogPostProjection = {
   tags: string[]
   canonicalUrl: string
   featuredImage: string
+  featuredImageAlt: string
   socialImage: string
   readingTime: string
   cta_link: string

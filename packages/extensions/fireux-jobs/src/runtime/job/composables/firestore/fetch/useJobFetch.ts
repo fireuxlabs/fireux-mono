@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: keep Job fetches domain-neutral and unhydrated.
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: reserve raw exact reads for authenticated authoring surfaces.
+// Concurrent edit — 2026-07-21 12:53 CEST — Job authoring: reserve root exact reads for authenticated surfaces.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: exact-load through the author-only server route.
 import {
   computed,

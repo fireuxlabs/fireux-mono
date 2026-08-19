@@ -1,12 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-building-2"
+    secondary-label="Company tools"
+  >
+    <CompanyCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <CompanyCTA />
-      <CompanyCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -30,10 +35,8 @@ definePageMeta({
 })
 
 const pageTitle = 'Companies'
-const pageDescription =
-  'Browse companies and public business profiles.'
+const pageDescription = 'Browse companies and their business profiles.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-
 </script>

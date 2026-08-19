@@ -5,7 +5,9 @@
 // @fireux-rules-fragments open,owner,membership-path,text,bounded,avatar,owner-stamp,join-validator,membership-block,overlay-validator,close
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: compose the Werkbox release source from Core fragments and ecosystem policy.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: allow bounded optional biography in public User presentation.
+// Concurrent edit — 2026-08-19 — Place realtime: allow exact canonical Place reads without opening collection queries or writes.
 // @fireux-rules-template-source
 // @fireux-ecosystem-rules foundation-user
 // @fireux-ecosystem-rules app-authority
+// @fireux-ecosystem-rules place-identity
 // @fireux-ecosystem-rules public-profiles

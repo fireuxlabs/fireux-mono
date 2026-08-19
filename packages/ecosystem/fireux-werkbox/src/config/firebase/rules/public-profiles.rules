@@ -109,9 +109,6 @@
     match /jobs/{document=**} {
       allow get, list, create, update, delete: if false;
     }
-    match /places/{document=**} {
-      allow get, list, create, update, delete: if false;
-    }
     match /companies/{document=**} {
       allow get, list, create, update, delete: if false;
     }

@@ -1,65 +1,71 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p v-if="description">{{ description }}</p>
-        </div>
+  <section class="collection-directory property-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
         >
-          <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge v-if="showCount && isSettled" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="properties"
-      state="loading"
-      surface="bare"
+      title="Loading properties"
+      description="Finding properties…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="properties"
-      state="error"
-      surface="bare"
+      title="Properties unavailable"
       description="Properties could not be loaded. Please try again."
-    />
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
-    <div v-else-if="cardsFiltered.length">
-      <PropertyCollectionList
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
+    <div v-else-if="cardsFiltered.length" class="grid gap-4">
+      <PropertyCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <PropertyCardsPill
             v-bind="card"
@@ -69,41 +75,40 @@
           />
         </template>
         <template #cell="{ card }">
-          <PropertyCardsCell
-            v-bind="card"
-            :link="false"
-            :show-meta="true"
-          />
+          <PropertyCardsCell v-bind="card" :link="false" :show-meta="true" />
         </template>
       </PropertyCollectionList>
 
-      <UButton
-        v-if="hasMore"
-        label="Load more properties"
-        color="neutral"
+      <UAlert
+        v-if="loadMoreError"
+        color="error"
         variant="soft"
-        :loading="loadingMore"
-        @click="loadMore"
+        icon="i-lucide-circle-alert"
+        title="More properties could not be loaded"
+        description="The properties already shown are still available."
       />
 
-      <MoleculesStateCard
-        v-if="loadMoreError"
-        entity="properties"
-        state="error"
-        surface="bare"
-        description="More properties could not be loaded. Please try again."
-      />
+      <div v-if="hasMore" class="flex justify-center">
+        <UButton
+          label="Load more properties"
+          color="neutral"
+          variant="soft"
+          :loading="loadingMore"
+          :disabled="loadingMore"
+          @click="loadMore"
+        />
+      </div>
     </div>
 
-    <div v-else>
-      <MoleculesStateCard
-        entity="properties"
-        state="empty"
-        surface="bare"
+    <div v-else class="grid gap-4">
+      <CollectionDirectoryState
+        icon="i-lucide-house"
         :title="query ? 'No matching properties' : 'No properties yet'"
-        :description="query
-          ? 'Try a different property name.'
-          : 'Published properties will appear here when they are available.'"
+        :description="
+          query
+            ? 'Try a different property name.'
+            : 'Published properties will appear here when they are available.'
+        "
       />
 
       <UButton
@@ -115,30 +120,31 @@
         @click="loadMore"
       />
 
-      <MoleculesStateCard
+      <UAlert
         v-if="loadMoreError"
-        entity="properties"
-        state="error"
-        surface="bare"
+        color="error"
+        variant="soft"
+        icon="i-lucide-circle-alert"
+        title="More properties could not be loaded"
         description="More properties could not be loaded. Please try again."
       />
     </div>
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -204,7 +210,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Properties',
-    description: 'Browse property records available to this runtime.',
+    description: 'Browse properties available through this app.',
     searchPlaceholder: 'Search properties...',
     showSearch: true,
     showVariantToggle: true,
@@ -225,10 +231,8 @@ const loadMoreError = computed(() => fetched.loadMoreError.value)
 const loadMore = async () => {
   await fetched.loadMore()
 }
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Properties'))
 const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>
@@ -269,5 +273,4 @@ const devJsonTitle = computed(() =>
 const devJsonContext = computed(() =>
   String(props.devJsonContext || 'collection manager · properties').trim()
 )
-
 </script>

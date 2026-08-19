@@ -7,14 +7,14 @@ import {
 
 const serverHandlers = [
   {
-    route: '/api/public/suppliers',
+    route: '/api/suppliers',
     method: 'get',
-    handler: './runtime/server/api/public/suppliers.get',
+    handler: './runtime/server/api/suppliers/index.get',
   },
   {
-    route: '/api/public/suppliers/:id',
+    route: '/api/suppliers/:id',
     method: 'get',
-    handler: './runtime/server/api/public/suppliers/[id].get',
+    handler: './runtime/server/api/suppliers/[id].get',
   },
   {
     route: '/api/suppliers/onboarding/complete',

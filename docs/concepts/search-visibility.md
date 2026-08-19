@@ -23,7 +23,7 @@ Entity's `composables` role, not inside its Firestore adapter.
 
 - Parent: `spine.md`
 - Route families: `pages.md`, `family-entity-directory.md`,
-  `family-public-detail.md`, `family-tenant-global.md`, `family-menu.md`
+  `family-entity-detail.md`, `family-tenant-global.md`, `family-menu.md`
 - Factual language: `product-language.md`
 - Locale and reviewed copy: `translation.md`
 - Privacy: `privacy-measurement.md`, `server-api.md`
@@ -115,7 +115,7 @@ sitemap.
 - Canonicals use the configured production App origin, never an arbitrary
   request host when a reviewed origin exists.
 - A canonical route key must match the route-family decision in
-  `family-public-detail.md`; storage identity and authored slugs are not
+  `family-entity-detail.md`; storage identity and authored slugs are not
   interchangeable fallbacks.
 - Social images are absolute public URLs owned by the entity, App, ecosystem,
   or canonical brand family.
@@ -155,8 +155,8 @@ provider.
   route. A convenient root query is not valid when public state depends on
   tenant scope, joins, or server-only validation.
 - Jobs is the proving bounded sibling: its category, tenant, publication,
-  Company, and Place contract uses one projection-backed reader for the public
-  JSON index and its extension-owned sitemap document. It must never fall back
+  Company, and Place contract uses one `readJobDirectoryPage` owner for the
+  JSON Directory and its extension-owned sitemap document. It must never fall back
   to the generic visibility-only root provider.
 - Kitchens follow the same transport rule with their own domain gates: JSON
   and XML share one reader that applies boolean root visibility, management,
@@ -244,7 +244,7 @@ templates have measurable baselines.
 | ------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------- |
 | Core owns runtime robots while Apps add bounded route policy       | `accepted`   | Transport is shared; genuine private route families remain App-owned config                                   |
 | Entity sitemap route identity may be document ID or authored field | `accepted`   | Route-family identity decisions differ; every provider must declare the choice explicitly                     |
-| Jobs requires a custom projection-backed sitemap                   | `accepted`   | JSON and XML share the bounded public reader; generic visibility-only discovery stays prohibited              |
+| Jobs requires a custom Directory-backed sitemap                    | `accepted`   | JSON and XML share `readJobDirectoryPage`; generic visibility-only discovery stays prohibited                 |
 | Kitchens require a custom projection-backed sitemap                | `accepted`   | JSON and XML share App, support, Place, publication, and Test gates before emitting a Kitchen route           |
 | Many project landings call `useSeoMeta` directly                   | `drift`      | FireUX, Misebox, and Interlaken are proofs; migrate remaining Apps without copying their facts                |
 | Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                          |
@@ -284,7 +284,7 @@ iterating and `pnpm guard` before repository handoff.
 
 - Keep exact sitemap route identity and shared private-route protection guarded.
 - Keep Core as the only runtime robots owner.
-- Keep Jobs JSON and sitemap discovery on the same bounded public reader.
+- Keep Jobs JSON and sitemap discovery on the same bounded Directory reader.
 - Keep Kitchen JSON and sitemap discovery on its relationship-aware public
   reader.
 - Keep FireUX, Misebox, and Interlaken landing metadata and connected graphs

@@ -1,5 +1,4 @@
-// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: resolve Google candidates through the exact public Place endpoint.
-import type { PublicPlaceDetailResponse } from '../../../../models/place-public.model.ts'
+import type { PlaceDetailResponse } from '../../../../models/place-read.model.ts'
 import type { MapToBasePlace } from './types'
 
 export const resolveExistingPlace = async (
@@ -7,10 +6,10 @@ export const resolveExistingPlace = async (
   mapToCard: MapToBasePlace
 ) => {
   try {
-    const response = await $fetch<PublicPlaceDetailResponse>(
+    const response = await $fetch<PlaceDetailResponse>(
       `/api/places/${encodeURIComponent(id)}`
     )
-    return response?.item ? mapToCard(response.item, 'places') : null
+    return response?.place ? mapToCard(response.place, 'places') : null
   } catch {
     return null
   }

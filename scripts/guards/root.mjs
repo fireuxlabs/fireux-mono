@@ -11,6 +11,7 @@ import {
 
 const ALLOWED_ROOT_DIRS = new Set([
   // VCS / tooling
+  '.agents',
   '.git',
   '.github',
   '.vscode',

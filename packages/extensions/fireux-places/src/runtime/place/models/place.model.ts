@@ -23,7 +23,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 
 export const PlaceStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'places/{placeId}',
   collection: 'places',
   idParam: 'placeId',
@@ -36,12 +36,11 @@ export const PlaceEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  publicRead: 'projection',
   console: false,
   root: PlaceStorage.path,
   notes: [
     'Place owns shared location identity independently of Kitchen, Company, Property, and Job relationships.',
-    'Public consumers receive bounded projections rather than canonical Place roots.',
+    'Place readers return the canonical Place; protected material belongs under another owner rather than inside this root.',
   ],
 })
 
@@ -222,13 +221,13 @@ export type GooglePlace = BasePlace & {
   business_hours?: PlaceBusinessHours
 }
 
-export type PlaceStored = Pick<
-  Place,
-  'id' | 'name' | 'place_type' | 'source'
-> & Partial<Omit<Place, 'id' | 'name' | 'place_type' | 'source'>>
+export type PlaceStored = Pick<Place, 'id' | 'name' | 'place_type' | 'source'> &
+  Partial<Omit<Place, 'id' | 'name' | 'place_type' | 'source'>>
 
 export type PlaceCreateInput = Omit<PlaceStored, 'created' | 'updated'>
-export type PlaceUpdateInput = Partial<Omit<Place, 'id' | 'created' | 'updated'>>
+export type PlaceUpdateInput = Partial<
+  Omit<Place, 'id' | 'created' | 'updated'>
+>
 
 /** Create/update input used by Place create flows. */
 export type PlaceUpsertInput = PlaceCreateInput

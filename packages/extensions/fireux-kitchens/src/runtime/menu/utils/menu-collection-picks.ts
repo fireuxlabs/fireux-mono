@@ -1,4 +1,4 @@
-import type { PublicMenuIndexItem } from '../models/menu-index.model.ts'
+import type { MenuDirectoryEntry } from '../models/menu-directory.model.ts'
 import type { MenuRouteContext } from '../models/menu-context.model.ts'
 import { readWeekdayTimeOpenState } from '../../utils/weekday-time'
 
@@ -9,7 +9,7 @@ export const MenuCollectionPickValues = [
   'pre_order',
 ] as const
 
-export type MenuCollectionPick = typeof MenuCollectionPickValues[number]
+export type MenuCollectionPick = (typeof MenuCollectionPickValues)[number]
 
 export const menuCollectionPickProfiles: ReadonlyArray<{
   value: MenuCollectionPick
@@ -29,7 +29,7 @@ const contextPicks = new Set<MenuCollectionPick>([
 ])
 
 export function menuMatchesCollectionPicks(
-  menu: PublicMenuIndexItem,
+  menu: MenuDirectoryEntry,
   picks: readonly MenuCollectionPick[],
   now = new Date()
 ) {
@@ -39,10 +39,8 @@ export function menuMatchesCollectionPicks(
 
   return picks.every((pick) => {
     if (pick === 'open_now') {
-      return readWeekdayTimeOpenState(
-        menu.service_hours?.operation_hours,
-        now
-      ).open
+      return readWeekdayTimeOpenState(menu.service_hours?.operation_hours, now)
+        .open
     }
 
     return contextPicks.has(pick) && contexts.has(pick as MenuRouteContext)

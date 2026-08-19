@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: resolve Google candidates without a browser Firestore dependency.
 import { fetchGoogle, getLastPlacesAutocompleteDebug } from '../google/usePlacesGoogle'
 import { resolveExistingPlace } from './resolveExistingPlace'
 import type { MapToBasePlace, SearchStage } from './types'

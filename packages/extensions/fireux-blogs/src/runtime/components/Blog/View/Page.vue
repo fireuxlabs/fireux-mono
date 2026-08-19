@@ -11,7 +11,7 @@
     <div v-if="post.featuredImage" class="rounded-lg overflow-hidden bg-muted">
       <img
         :src="post.featuredImage"
-        :alt="post.title"
+        :alt="post.featuredImageAlt || post.title"
         class="w-full h-auto object-cover"
       />
     </div>

@@ -1,28 +1,39 @@
 import { FieldPath } from 'firebase-admin/firestore'
-import { createError, getQuery, type H3Event } from 'h3'
+import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { MenuStorage } from '../../models/menu.model.ts'
 import { KitchenMenuStorage } from '../../models/kitchen-menu.model.ts'
 import {
-  PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
-  PUBLIC_MENU_INDEX_PAGE_SIZE,
-  type PublicMenuIndexPage,
-  type PublicMenuIndexScope,
-} from '../../models/menu-index.model.ts'
+  MENU_DIRECTORY_MAX_PAGE_SIZE,
+  MENU_DIRECTORY_PAGE_SIZE,
+  type MenuDirectoryPage,
+  type MenuDirectoryScope,
+} from '../../models/menu-directory.model.ts'
 import {
   resolveDirectoryPublicMenuScope,
   resolveTenantPublicMenuScope,
 } from '../ownership/public-target'
-import { readMenuIndexContext, readScopedMenuIndexContext } from './context'
-import { projectMenuIndexItem, type MenuIndexDocument } from './projection'
+import {
+  readMenuDirectoryContext,
+  readScopedMenuDirectoryContext,
+} from './context'
+import {
+  projectMenuDirectoryEntry,
+  type MenuDirectoryDocument,
+} from './projection'
 
-export async function readMenuIndex(
-  event: H3Event
-): Promise<PublicMenuIndexPage> {
+export type ReadMenuDirectoryPageInput = {
+  kitchenSlug?: unknown
+  cursor?: unknown
+  limit?: unknown
+}
+
+export async function readMenuDirectoryPage(
+  input: ReadMenuDirectoryPageInput = {}
+): Promise<MenuDirectoryPage> {
   const db = getRuntimeFirestore()
-  const query = getQuery(event)
   const tenantScope = await resolveTenantPublicMenuScope()
-  const kitchenSlug = text(query.kitchenSlug)
+  const kitchenSlug = text(input.kitchenSlug)
   if (tenantScope && kitchenSlug) {
     throw createError({ statusCode: 404, statusMessage: 'Menus not found.' })
   }
@@ -31,7 +42,7 @@ export async function readMenuIndex(
       ? await resolveDirectoryPublicMenuScope(kitchenSlug)
       : null
   const scopedKitchen = tenantScope || directoryScope
-  const scope: PublicMenuIndexScope = tenantScope
+  const scope: MenuDirectoryScope = tenantScope
     ? { kind: 'tenant', kitchenSlug: tenantScope.kitchenSlug }
     : directoryScope
       ? { kind: 'directory', kitchenSlug: directoryScope.kitchenSlug }
@@ -39,8 +50,8 @@ export async function readMenuIndex(
   const collectionPath = scopedKitchen
     ? `apps/${scopedKitchen.appId}/kitchens/${scopedKitchen.kitchenId}/${KitchenMenuStorage.collection}`
     : MenuStorage.rootCollection
-  const limit = pageSize(query.limit)
-  const requestedCursor = text(query.cursor)
+  const limit = pageSize(input.limit)
+  const requestedCursor = text(input.cursor)
   const cursor = decodeCursor(requestedCursor)
   if (requestedCursor && !cursor) {
     throw createError({
@@ -58,19 +69,19 @@ export async function readMenuIndex(
   const snap = await menuQuery.get()
   const hasMore = snap.docs.length > limit
   const pageDocs = hasMore ? snap.docs.slice(0, limit) : snap.docs
-  const documents: MenuIndexDocument[] = pageDocs.map((doc) => ({
+  const documents: MenuDirectoryDocument[] = pageDocs.map((doc) => ({
     id: doc.id,
     data: doc.data(),
   }))
   const context = scopedKitchen
     ? new Map()
-    : await readMenuIndexContext(db, documents)
+    : await readMenuDirectoryContext(db, documents)
   const scopedContext = scopedKitchen
-    ? await readScopedMenuIndexContext(db, scopedKitchen)
+    ? await readScopedMenuDirectoryContext(db, scopedKitchen)
     : null
   const items = documents
     .map((document) =>
-      projectMenuIndexItem(
+      projectMenuDirectoryEntry(
         document,
         scopedKitchen,
         scopedContext || context.get(document.id)
@@ -87,8 +98,8 @@ export async function readMenuIndex(
 function pageSize(value: unknown) {
   const size = Number(value)
   return Number.isInteger(size) && size > 0
-    ? Math.min(size, PUBLIC_MENU_INDEX_MAX_PAGE_SIZE)
-    : PUBLIC_MENU_INDEX_PAGE_SIZE
+    ? Math.min(size, MENU_DIRECTORY_MAX_PAGE_SIZE)
+    : MENU_DIRECTORY_PAGE_SIZE
 }
 
 function encodeCursor(value: string) {

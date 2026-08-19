@@ -136,11 +136,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   for (const token of [
     "lane: 'mcp-skill'",
-    "verbs: ['create']",
+    "verbs: updateMode ? ['update'] : ['create']",
     "databaseId: DATABASE_ID",
     'mcpSkillCreate(app, target',
+    'mcpSkillUpdate(app, target',
     'assertBlogEditorialApproval(entry.post)',
     'plan_sha256',
+    'featured_image_sha256',
     '--confirm=',
     "snapshot.data()?.visibility !== 'public'",
   ]) {

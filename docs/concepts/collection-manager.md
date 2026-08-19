@@ -1,6 +1,6 @@
 # Collection manager family
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -24,15 +24,14 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Working language
 
 - Collection manager: visual/list/search/card manager for a collection family.
-- Default collection: the unqualified canonical entity collection. Its
-  identity says nothing about which root fields are publicly readable.
+- Default collection: the unqualified canonical Entity collection.
 - Default collection manager: collection manager for that unqualified entity
   collection and its index route.
 - Scoped collection: a collection bounded by a named parent or context, such
   as Kitchen Menus, Supplier Items, App Users, or Portfolio Properties.
 - Default source: collection manager fetches its own default collection.
 - Self-contained row: a collection row has every exposed list/card field needed by `useXInterface()`.
-- Synced snapshot: denormalized public fields copied onto the row from source truth by a migration/sync seam.
+- Synced snapshot: denormalized presentation fields copied onto the row from source truth by a migration/sync seam.
 - Linked enrichment: extra live reads or API joins that add named linked truth
   to a record. This is not the default collection-manager shape.
 - Interface: `useXInterface()` maps fetched collection rows into cards.
@@ -53,7 +52,8 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - Root Simple Collection Manager: fetch the default collection and render through `useXInterface()` with authored row fields.
 - Root Synced Snapshot Collection Manager: fetch a default collection whose list/card fields are deliberately copied from source truth by an explicit sync seam.
-- Root Projected Collection Manager: fetch a safe server projection because raw roots contain fields that should not power the default browse UI.
+- Root Joined Collection Manager: fetch canonical Entities plus named related
+  records when list presentation requires an explicit server-owned join.
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
 ## Root Simple Collection Manager members
@@ -63,11 +63,10 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - `Product`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
 
-## Root Projected Collection Manager members
+## Root Joined Collection Manager members
 
-- `Company` receives a bounded public Company/Place projection. The canonical
-  Company root is a stamps-only same-id role marker; Place remains the display
-  authority and no Place fields are copied onto Company.
+- `Company` resolves its stamps-only same-id role marker to the canonical Place;
+  its remaining prefixed transport names are migration debt.
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
   rows stay sparse and no longer copy shared Place fields. Only published,
   non-test Kitchens with a slug and an existing explicit Place reference enter
@@ -95,11 +94,9 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
 - Company roots stay stamps-only; Company list and detail reads join the
   same-id Place through the bounded server projection.
-- `Place` collection rows always serialize the same bounded ten-key
-  `PublicPlaceProjection`. Live roots and Demo roots may remain sparse/full
-  according to their owning source, but both derive the identical collection
-  JSON shape; unavailable optional display values serialize as empty strings,
-  `image_shade: 'none'`, or `verified: false`.
+- `Place` index transport pages canonical `Place[]`. Live and Demo roots use the
+  same `normalizePlace` utility to complete sparse stored truth without
+  manufacturing another Place type.
 - Domain parents may cascade into their domain children. Job roots do not copy
   Company or Place display snapshots; their public projection owns the joins.
 - `User` is the only stored public identity. Profile writes and sync scripts must not copy it into root or app profile rows.
@@ -117,11 +114,11 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   records internally.
 - A route-policy controller is a narrow accepted delta when the route must use
   the same bounded request to choose an HTTP outcome before rendering. The
-  Menu index passes `usePublicMenuIndex` explicitly for tenant redirect versus
+  Menu Directory passes `useMenuCollection` explicitly for tenant redirect versus
   list policy; it does not pass a raw `collection`, and the controller remains
   the sole fetch/pagination owner.
 - If list/card truth lives elsewhere, use an explicit sync seam or a bounded
-  public projection according to the family's declared index class.
+  Directory view according to the family's declared index class.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
 ## Data-state contract
@@ -231,20 +228,20 @@ Root Simple Collection Managers
 
 Root Projected Collection Managers
 
-| Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                 |
-| -------------- | ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join the same-id Place and canonical App support without copied snapshots or client N+1 reads.                  |
-| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests resolve Kitchen and Supplier links without exposing raw root documents.                 |
-| `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                      |
-| `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                     |
-| `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                                         |
-| `Blog`         | `/api/public/blogs`                                  | Server projection         | The public editorial manager uses a content-free index DTO and endpoint-owned cursor pagination; admin/dev retain their scoped root manager. |
-| `Chef`         | `/api/public/chefs`                                  | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                                                |
-| `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                                         |
-| `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                                      |
-| `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                 |
-| `Job`          | `/api/public/jobs`                                   | Server Company/Place join | Exact open/public roots join bounded employer and work-location display truth; raw ids, owner, source, and stamps stay private.              |
-| `Company`      | `/api/companies`                                     | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.                        |
+| Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                      |
+| -------------- | ---------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join the same-id Place and canonical App support without copied snapshots or client N+1 reads.                       |
+| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests resolve Kitchen and Supplier links without exposing raw root documents.                      |
+| `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                           |
+| `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                          |
+| `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                                              |
+| `Blog`         | `/api/public/blogs`                                  | Server projection         | The public editorial manager uses a content-free index DTO and endpoint-owned cursor pagination; admin/dev retain their scoped root manager.      |
+| `Chef`         | `/api/public/chefs`                                  | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                                                     |
+| `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                                              |
+| `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                                           |
+| `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                      |
+| `Job`          | `/api/jobs`                                          | Server Company/Place join | The paginated Directory joins bounded employer and work-location display truth; exact detail returns the canonical Job and named related records. |
+| `Company`      | `/api/companies`                                     | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.                             |
 
 Scoped/provided collection surfaces
 

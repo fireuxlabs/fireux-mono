@@ -1,4 +1,11 @@
-import { defineEventHandler } from 'h3'
-import { readMenuIndex } from '../../../menu/server/index/read'
+import { defineEventHandler, getQuery } from 'h3'
+import { readMenuDirectoryPage } from '../../../menu/server/index/read'
 
-export default defineEventHandler(readMenuIndex)
+export default defineEventHandler((event) => {
+  const query = getQuery(event)
+  return readMenuDirectoryPage({
+    kitchenSlug: query.kitchenSlug,
+    cursor: query.cursor,
+    limit: query.limit,
+  })
+})

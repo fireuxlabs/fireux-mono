@@ -35,7 +35,7 @@ import {
   allowedPlaceSocialKeys as allowedSocialKeys,
   optionalPlaceTextFields as optionalTextFields,
 } from './mutation-fields'
-import { readPlaceDetailProjection } from './read-projection'
+import { readPlace } from './read'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -368,13 +368,13 @@ export async function mutatePlace(
     })
   })
 
-  const item = await readPlaceDetailProjection(id)
-  if (!item) {
+  const place = await readPlace(id)
+  if (!place) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Updated Place projection is unavailable.',
+      statusMessage: 'Updated Place is unavailable.',
     })
   }
 
-  return { item }
+  return { place }
 }

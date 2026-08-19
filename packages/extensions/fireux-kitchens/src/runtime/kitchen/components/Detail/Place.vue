@@ -4,10 +4,7 @@
   </UPageCard>
 
   <div v-else-if="placeProfile" class="space-y-4">
-    <PlaceCardsProfile
-      :model="placeProfile"
-      :show-google-hours="false"
-    />
+    <PlaceCardsProfile :model="placeProfile" :show-google-hours="false" />
 
     <UPageCard
       v-if="operationHourLines.length"
@@ -16,11 +13,7 @@
     >
       <div class="space-y-3">
         <ClientOnly>
-          <UBadge
-            :color="operationHoursChipColor"
-            variant="soft"
-            class="w-fit"
-          >
+          <UBadge :color="operationHoursChipColor" variant="soft" class="w-fit">
             {{ operationHoursChipLabel }}
           </UBadge>
         </ClientOnly>
@@ -45,7 +38,7 @@ import { computed } from 'vue'
 import {
   usePlaceFetch,
   usePlaceInterface,
-} from 'fireux-places/runtime/composables/fireux/firestore/place/usePlace'
+} from 'fireux-places/runtime/place/composables/firestore/usePlace'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import { useMenuServiceComputed } from '../../../menu/composables/firestore/useMenu'
 import {
@@ -58,9 +51,7 @@ const props = defineProps<{
   kitchen: KitchenSurface | null
 }>()
 
-const placeId = computed(() =>
-  String(props.kitchen?.place_id || '').trim()
-)
+const placeId = computed(() => String(props.kitchen?.place_id || '').trim())
 const { place, pending } = usePlaceFetch(placeId)
 const { profile } = usePlaceInterface()
 const placeWithKitchenLogoTone = computed(() => {
@@ -73,9 +64,7 @@ const placeWithKitchenLogoTone = computed(() => {
   }
 })
 const placeProfile = computed(() => profile(placeWithKitchenLogoTone.value))
-const operationHours = computed(() =>
-  readKitchenOperationHours(props.kitchen)
-)
+const operationHours = computed(() => readKitchenOperationHours(props.kitchen))
 const operationHourLines = computed(() =>
   weekdayTimeLines(operationHours.value)
 )

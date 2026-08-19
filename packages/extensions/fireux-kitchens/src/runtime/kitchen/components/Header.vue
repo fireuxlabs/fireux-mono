@@ -4,12 +4,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/place/models/place-public.model'
-import type { KitchenSurface } from '../composables/firestore/utils/view/useKitchenInterface'
+import type { PlaceHeaderPresentation } from 'fireux-places/runtime/place/models/place-presentation.model'
+import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
 
 defineOptions({ name: 'KitchenHeader' })
 
-const props = defineProps<{ kitchen: KitchenSurface | null }>()
+const props = defineProps<{ kitchen: KitchenDetailPresentation | null }>()
 const clean = (value: unknown) => String(value ?? '').trim()
 const raw = computed(() => (props.kitchen || {}) as Record<string, any>)
 const identity = computed(() =>
@@ -20,13 +20,9 @@ const identity = computed(() =>
 const name = computed(
   () => clean(raw.value.display_name || raw.value.name) || 'Kitchen'
 )
-const placePresentation = computed<PublicPlaceDetailProjection | null>(() => {
+const placePresentation = computed<PlaceHeaderPresentation | null>(() => {
   if (!props.kitchen) return null
-  const gallery = Array.isArray(raw.value.food_gallery)
-    ? raw.value.food_gallery.map(clean).filter(Boolean)
-    : []
   return {
-    id: clean(raw.value.place_id || raw.value.id),
     name: name.value,
     place_type: 'physical',
     short_name: clean(raw.value.short_name),
@@ -40,16 +36,13 @@ const placePresentation = computed<PublicPlaceDetailProjection | null>(() => {
     ) as `#${string}` | '',
     image_shade: 'none',
     verified: false,
-    slug: clean(raw.value.slug),
-    about: clean(raw.value.about),
     cover_image: clean(raw.value.cover_image),
-    gallery_images: gallery,
     logo_image: clean(
       identity.value.logo_image_url || raw.value.logo_image_url
     ),
     wordmark_image: clean(raw.value.wordmark_image),
-    business_hours: { windows: [] },
     website: clean(raw.value.website),
+    brand_palette: {},
     ...(clean(raw.value.google_maps_url)
       ? { google_maps_url: clean(raw.value.google_maps_url) }
       : {}),

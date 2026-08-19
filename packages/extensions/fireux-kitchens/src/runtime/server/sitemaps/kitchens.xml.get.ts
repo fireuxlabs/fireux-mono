@@ -5,8 +5,8 @@ import {
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
 } from 'fireux-core/runtime/server/utils/seo-sitemaps'
-import { PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE } from '../../kitchen/models/kitchen-index.model.ts'
-import { readPublicKitchenIndexPage } from '../../kitchen/server/index/public-index.ts'
+import { KITCHEN_DIRECTORY_MAX_PAGE_SIZE } from '../../kitchen/models/kitchen-directory.model.ts'
+import { readKitchenDirectoryPage } from '../../kitchen/server/index/read.ts'
 
 const MAX_SITEMAP_URLS = 50_000
 
@@ -18,9 +18,9 @@ export default defineEventHandler(async (event) => {
   let hasMore = false
 
   while (paths.length < MAX_SITEMAP_URLS) {
-    const page = await readPublicKitchenIndexPage({
+    const page = await readKitchenDirectoryPage({
       cursor,
-      limit: PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
+      limit: KITCHEN_DIRECTORY_MAX_PAGE_SIZE,
     })
     paths.push(
       ...page.items.map((item) => `/kitchens/${encodeURIComponent(item.slug)}`)

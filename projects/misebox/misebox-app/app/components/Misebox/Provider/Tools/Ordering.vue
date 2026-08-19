@@ -1,8 +1,5 @@
 <template>
-  <MiseboxProviderFrame
-    :title="toolTitle"
-    :description="toolDescription"
-  >
+  <MiseboxProviderFrame :title="toolTitle" :description="toolDescription">
     <MenuCollectionManager
       id="misebox-ordering-menus"
       :index="menuIndex"
@@ -14,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePublicMenuIndex } from 'fireux-kitchens/runtime/menu/composables/usePublicMenuIndex'
+import { useMenuCollection } from 'fireux-kitchens/runtime/menu/composables/useMenuCollection'
 
 type ToolResponse = {
   tool: {
@@ -23,21 +20,24 @@ type ToolResponse = {
   }
 }
 
-const props = withDefaults(defineProps<{
-  title?: string
-  description?: string
-}>(), {
-  title: '',
-  description: '',
-})
+const props = withDefaults(
+  defineProps<{
+    title?: string
+    description?: string
+  }>(),
+  {
+    title: '',
+    description: '',
+  }
+)
 
 const { data } = await useFetch<ToolResponse>('/api/tools/ordering')
-const menuIndex = usePublicMenuIndex()
+const menuIndex = useMenuCollection()
 
-const toolTitle = computed(() =>
-  props.title || data.value?.tool.title || 'Misebox ordering'
+const toolTitle = computed(
+  () => props.title || data.value?.tool.title || 'Misebox ordering'
 )
-const toolDescription = computed(() =>
-  props.description || data.value?.tool.description || ''
+const toolDescription = computed(
+  () => props.description || data.value?.tool.description || ''
 )
 </script>

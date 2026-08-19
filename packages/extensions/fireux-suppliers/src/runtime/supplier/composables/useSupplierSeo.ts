@@ -12,7 +12,9 @@ export function buildSupplierJsonLd(
   const name = clean(supplier?.supplier_organization_name)
   const id = clean(supplier?.id)
   const state = clean(supplier?.state)
-  if (!name || !id || !['public', 'official'].includes(state)) return null
+  if (!name || !id || (state && !['public', 'official'].includes(state))) {
+    return null
+  }
 
   return {
     '@context': 'https://schema.org',
@@ -32,9 +34,12 @@ export function useSupplierSeo(
   const id = computed(() => clean(entry.value?.id))
   const slug = computed(() => clean(entry.value?.slug))
   const state = computed(() => clean(entry.value?.state))
-  const isPublic = computed(() =>
+  const routeId = computed(() => slug.value || id.value)
+  const isPublished = computed(() =>
     Boolean(
-      id.value && slug.value && ['public', 'official'].includes(state.value)
+      id.value &&
+        routeId.value &&
+        (!state.value || ['public', 'official'].includes(state.value))
     )
   )
 
@@ -52,12 +57,12 @@ export function useSupplierSeo(
     ),
     image: computed(() => clean(entry.value?.supplier_image)),
     path: computed(() =>
-      slug.value
-        ? `/${SupplierStorage.collection}/${encodeURIComponent(slug.value)}`
+      routeId.value
+        ? `/${SupplierStorage.collection}/${encodeURIComponent(routeId.value)}`
         : ''
     ),
     robots: computed(() =>
-      isPublic.value ? 'index, follow' : 'noindex, nofollow'
+      isPublished.value ? 'index, follow' : 'noindex, nofollow'
     ),
     jsonLd: computed(() => buildSupplierJsonLd(entry.value)),
   })

@@ -67,7 +67,6 @@ export const ProjectEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'fireux-control-plane',
   appSupport: 'access-record',
-  publicRead: 'projection',
   console: true,
   root: ProjectStorage.path,
   appSupportPath: AppProjectStorage.path,

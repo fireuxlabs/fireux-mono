@@ -1,10 +1,16 @@
-import type { Place, PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type {
+  Place,
+  PlaceImageShade,
+} from 'fireux-places/runtime/place/models/place.model'
 import type { CurrencyDisplayFormat } from '../../../../../models/shared/currency-display.model.ts'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { Kitchen, KitchenMenusConfig } from '../../../../models/kitchen.model.ts'
-import type { PublicKitchenImageKind } from '../../../../models/kitchen-index.model.ts'
+import type {
+  Kitchen,
+  KitchenMenusConfig,
+} from '../../../../models/kitchen.model.ts'
+import type { KitchenDirectoryImageKind } from '../../../../models/kitchen-directory.model.ts'
 
 export namespace KitchenCard {
   export type Card = {
@@ -28,7 +34,7 @@ export namespace KitchenCard {
 
     // Image tone metadata
     imageShade?: PlaceImageShade
-    imageKind?: PublicKitchenImageKind
+    imageKind?: KitchenDirectoryImageKind
 
     // Search collection (optional)
     collection?: string
@@ -78,7 +84,7 @@ export type KitchenSurface = {
   display_image_url?: string
   logo_image_url?: string
   image_shade?: PlaceImageShade
-  image_kind?: PublicKitchenImageKind
+  image_kind?: KitchenDirectoryImageKind
   media_backdrop_color?: string
   claimed_by?: string
   brand_tagline?: string
@@ -95,38 +101,43 @@ export type KitchenSurface = {
 
 export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
   kitchen?: TKitchen | null | undefined
-  place?: Partial<Pick<
-    Place,
-    | 'name'
-    | 'short_name'
-    | 'brand_tagline'
-    | 'about'
-    | 'short_address'
-    | 'formatted_address'
-    | 'address'
-    | 'lat'
-    | 'lng'
-    | 'timezone'
-    | 'image_url'
-    | 'cover_image'
-    | 'gallery_images'
-    | 'image_shade'
-    | 'phone'
-    | 'email'
-    | 'website'
-    | 'google_maps_url'
-    | 'social_links'
-    | 'place_type'
-    | 'types'
-    | 'tags'
-    | 'price_level'
-    | 'default_currency_code'
-    | 'business_hours'
-    | 'claimed_by'
-    | 'verified'
-    | 'slug'
-    | 'search_term'
-  >> | null | undefined
+  place?:
+    | Partial<
+        Pick<
+          Place,
+          | 'name'
+          | 'short_name'
+          | 'brand_tagline'
+          | 'about'
+          | 'short_address'
+          | 'formatted_address'
+          | 'address'
+          | 'lat'
+          | 'lng'
+          | 'timezone'
+          | 'image_url'
+          | 'cover_image'
+          | 'gallery_images'
+          | 'image_shade'
+          | 'phone'
+          | 'email'
+          | 'website'
+          | 'google_maps_url'
+          | 'social_links'
+          | 'place_type'
+          | 'types'
+          | 'tags'
+          | 'price_level'
+          | 'default_currency_code'
+          | 'business_hours'
+          | 'claimed_by'
+          | 'verified'
+          | 'slug'
+          | 'search_term'
+        >
+      >
+    | null
+    | undefined
   scope?: Record<string, unknown> | null | undefined
   routeScope?: KitchenSurface['route_scope']
 }

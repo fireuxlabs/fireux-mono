@@ -18,6 +18,7 @@ export namespace BlogCard {
     // Media (empty string means unset)
     avatarUrl: string
     imageUrl: string
+    imageAlt: string
 
     // Primary display fields
     subtitle: string
@@ -65,6 +66,7 @@ export function useBlogInterface() {
     const authorHandle = safeString((post.author as any)?.handle)
     const imageUrl =
       safeString(post.featuredImage) || safeString(post.socialImage)
+    const imageAlt = safeString(post.featuredImageAlt) || safeString(post.title)
     const id = safeString(post.slug).trim()
     const title = safeString(post.title)
     const readingTime = safeString(post.readingTime)
@@ -85,6 +87,7 @@ export function useBlogInterface() {
 
       avatarUrl: authorAvatarUrl,
       imageUrl,
+      imageAlt,
       subtitle: [author, readingTime].filter(Boolean).join(' · '),
 
       title,

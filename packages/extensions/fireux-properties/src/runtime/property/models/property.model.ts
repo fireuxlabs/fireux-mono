@@ -48,7 +48,6 @@ export const PropertyEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  publicRead: 'projection',
   console: true,
   root: PropertyStorage.root,
   appSupportPath: PropertyStorage.appSupport,

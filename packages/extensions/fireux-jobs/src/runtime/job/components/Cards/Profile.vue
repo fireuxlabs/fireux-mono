@@ -1,5 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: expose category and workplace fields in Job debug output. -->
-<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep source App scope out of shared presentation. -->
+<!-- Concurrent edit — 2026-07-21 13:09 CEST — Job presentation: keep source App scope out of shared cards. -->
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: present canonical employer, Place, contract, schedule, and compensation truth. -->
 <template>
   <UCard v-if="card || job">

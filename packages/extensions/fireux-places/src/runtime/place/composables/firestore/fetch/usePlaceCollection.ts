@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-21 14:38 CEST — Place public projection: consume and paginate the bounded public directory instead of raw roots.
 import { useAsyncData } from '#imports'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import {
@@ -6,10 +5,9 @@ import {
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
-  PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE,
-  type PublicPlaceIndexPage,
-  type PublicPlaceProjection,
-} from '../../../models/place-public.model.ts'
+  PLACE_INDEX_MAX_PAGE_SIZE,
+  type PlaceIndexPage,
+} from '../../../models/place-read.model.ts'
 import type { Place } from '../../../models/place.model.ts'
 
 export type UsePlaceCollectionReturn = {
@@ -28,16 +26,12 @@ export type UsePlaceCollectionReturn = {
 }
 
 export function usePlaceCollection(): UsePlaceCollectionReturn {
-  const state = useAsyncData<PublicPlaceIndexPage>(
-    `public-place-index|limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}`,
+  const state = useAsyncData<PlaceIndexPage>(
+    `place-index|limit=${PLACE_INDEX_MAX_PAGE_SIZE}`,
     () =>
-      $fetch<PublicPlaceIndexPage>(
-        `/api/places?limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}`
-      )
+      $fetch<PlaceIndexPage>(`/api/places?limit=${PLACE_INDEX_MAX_PAGE_SIZE}`)
   )
-  const collection = computed<Place[]>(
-    () => (state.data.value?.items ?? []) as Place[]
-  )
+  const collection = computed<Place[]>(() => state.data.value?.items ?? [])
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
   const nextCursor = computed(() => state.data.value?.nextCursor ?? '')
@@ -63,14 +57,14 @@ export function usePlaceCollection(): UsePlaceCollectionReturn {
     loadingMore.value = true
     loadMoreError.value = null
     try {
-      const page = await $fetch<PublicPlaceIndexPage>(
-        `/api/places?limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}&cursor=${encodeURIComponent(cursor)}`
+      const page = await $fetch<PlaceIndexPage>(
+        `/api/places?limit=${PLACE_INDEX_MAX_PAGE_SIZE}&cursor=${encodeURIComponent(cursor)}`
       )
       const current = state.data.value
       if (!current) return false
 
-      const items = new Map<string, PublicPlaceProjection>(
-        current.items.map((item: PublicPlaceProjection) => [item.id, item])
+      const items = new Map<string, Place>(
+        current.items.map((item) => [item.id, item])
       )
       for (const item of page.items) items.set(item.id, item)
       state.data.value = {

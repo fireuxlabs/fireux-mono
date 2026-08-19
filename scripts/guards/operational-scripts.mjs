@@ -458,6 +458,17 @@ async function assertRulesReleaseBackup(repoRoot) {
     'const rollbackRuleset = await getRuleset',
   ])
   assertProtectedRulesBackup(misebox)
+  for (const token of [
+    'existing Place exact read is available without authentication',
+    'missing Place exact read remains denied',
+    'Place collection list remains denied',
+    'browser cannot create a Place',
+  ]) {
+    assert.ok(
+      misebox.includes(token),
+      `Misebox Rules harness must retain ${token}.`
+    )
+  }
 
   const werkbox = await readFile(
     path.join(repoRoot, 'scripts/deploy-werkbox-firestore-rules.mjs'),
@@ -620,7 +631,8 @@ async function assertWerkboxRulesSurface(repoRoot) {
     'match /ecosystems/{ecosystemId}',
     "request.auth.token.firebase.sign_in_provider != 'anonymous'",
     'match /jobs/{document=**}',
-    'match /places/{document=**}',
+    'match /places/{placeId}',
+    'allow get: if resource != null;',
     'match /companies/{document=**}',
     'match /products/{document=**}',
     'match /blogs/{document=**}',
@@ -629,6 +641,11 @@ async function assertWerkboxRulesSurface(repoRoot) {
   ]) {
     assert.ok(rules.includes(token), `Werkbox Rules must retain ${token}.`)
   }
+  assert.match(
+    rules,
+    /match \/places\/\{placeId\}\s*\{[\s\S]*?allow get:\s*if resource != null;[\s\S]*?allow list, create, update, delete:\s*if false;[\s\S]*?\}/,
+    'Werkbox Place Rules must allow exact reads while denying list and browser writes.'
+  )
   assert.doesNotMatch(
     rules,
     /request\.auth\.uid\s*==\s*['"][A-Za-z0-9_-]{20,}['"]/

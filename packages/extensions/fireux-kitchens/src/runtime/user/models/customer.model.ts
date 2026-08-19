@@ -26,7 +26,6 @@ export const CustomerProfileRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  publicRead: 'none',
   console: false,
   parent: 'User',
   scoped: CustomerStorage.path,

@@ -275,7 +275,7 @@ export const APP_REGISTRY = {
           'http://localhost:3001/img/landing/kitchen-operations-hero-v2.png',
         jsonLdTypes: ['Organization', 'WebSite', 'WebPage'],
       }),
-      jobIndexApiContract('/api/public/jobs?limit=1'),
+      jobIndexApiContract('/api/jobs?limit=1'),
       kitchenIndexApiContract('/api/kitchens?limit=48&visibility=published'),
       kitchenDetailApiContract('/api/kitchens/la-tapberne', 'la-tapberne'),
       missingKitchenDetailApiContract(
@@ -479,7 +479,7 @@ export const APP_REGISTRY = {
     port: 3002,
     consoles: [],
     smokeRoutes: [...SHARED_ROUTES, '/jobs'],
-    httpContracts: [jobIndexApiContract('/api/public/jobs?limit=1')],
+    httpContracts: [jobIndexApiContract('/api/jobs?limit=1')],
     launchOrder: 3,
   },
   richies: {

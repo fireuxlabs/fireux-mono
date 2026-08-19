@@ -1,7 +1,7 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
-import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
+import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
 import {
@@ -89,7 +89,7 @@ export function useKitchenInterface() {
     } as TKitchen & KitchenSurface
     for (const key of placeBaselineKeys) {
       if (Object.hasOwn(place, key)) {
-        (merged as Record<string, unknown>)[key] = place[key]
+        ;(merged as Record<string, unknown>)[key] = place[key]
       }
     }
     const identityDelta = {
@@ -104,7 +104,7 @@ export function useKitchenInterface() {
       delete identityDelta.gallery
     }
     if (Object.keys(identityDelta).length) {
-      (merged as Record<string, unknown>).identity = identityDelta
+      ;(merged as Record<string, unknown>).identity = identityDelta
     } else {
       delete (merged as Record<string, unknown>).identity
     }
@@ -117,7 +117,10 @@ export function useKitchenInterface() {
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenIdentity(merged)
-    const managementTarget = readKitchenManagementTarget(merged, fireux.ecosystem)
+    const managementTarget = readKitchenManagementTarget(
+      merged,
+      fireux.ecosystem
+    )
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -133,7 +136,7 @@ export function useKitchenInterface() {
       display_image_url: safeString(place.image_url),
       image_shade: identity.imageShade || merged.image_shade,
       food_gallery: Array.isArray(place.gallery_images)
-        ? place.gallery_images as string[]
+        ? (place.gallery_images as string[])
         : [],
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,
@@ -166,9 +169,7 @@ export function useKitchenInterface() {
     )
 
     const visible = kitchen.visible !== false
-    const badges = visible
-      ? []
-      : ['Hidden']
+    const badges = visible ? [] : ['Hidden']
 
     return {
       id,
@@ -191,7 +192,8 @@ export function useKitchenInterface() {
         : placeImageUrl
           ? kitchen.image_shade
           : identity.imageShade || kitchen.image_shade,
-      imageKind: kitchen.image_kind ||
+      imageKind:
+        kitchen.image_kind ||
         (cardImageUrl || (!placeImageUrl && identity.logoImageUrl)
           ? 'brand'
           : 'photograph'),
@@ -240,17 +242,14 @@ export function useKitchenInterface() {
       ? target.food_gallery
       : []
     const hasKitchenDisplayData = Boolean(
-      displayName ||
-        tagline ||
-        imageUrl ||
-        foodGallery.length
+      displayName || tagline || imageUrl || foodGallery.length
     )
 
     if (!id || !hasKitchenDisplayData) return null
 
-    const badges = [
-      target.show === false ? 'Hidden' : '',
-    ].filter((badge): badge is string => Boolean(badge))
+    const badges = [target.show === false ? 'Hidden' : ''].filter(
+      (badge): badge is string => Boolean(badge)
+    )
     const title = displayName || 'Kitchen'
     const card: KitchenCard.Card = {
       id,

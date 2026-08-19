@@ -57,7 +57,7 @@ import { run as runEntityUpdateContract } from './guards/entity-update-contract.
 import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
 import { run as runEntityManagement } from './guards/entity-management.mjs'
 import { run as runAppUserAccess } from './guards/user-app-access.mjs'
-import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
+import { run as runKitchenEntity } from './guards/kitchen-entity.mjs'
 import { run as runIngredientAuthority } from './guards/ingredient-authority.mjs'
 import { run as runSupplyChainAuthority } from './guards/supply-chain-authority.mjs'
 import { run as runKitchenFoodAuthority } from './guards/kitchen-food-authority.mjs'
@@ -119,7 +119,7 @@ const guards = [
   { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
   { key: 'entity-management', run: runEntityManagement },
   { key: 'user-app-access', run: runAppUserAccess },
-  { key: 'kitchen-public-projection', run: runKitchenPublicProjection },
+  { key: 'kitchen-entity', run: runKitchenEntity },
   { key: 'ingredient-authority', run: runIngredientAuthority },
   { key: 'supply-chain-authority', run: runSupplyChainAuthority },
   { key: 'kitchen-food-authority', run: runKitchenFoodAuthority },

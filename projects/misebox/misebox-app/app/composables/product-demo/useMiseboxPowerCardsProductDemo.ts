@@ -7,8 +7,8 @@ import type {
   MenuManifestItem,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type {
-  PublicMenuIndexItem,
-} from 'fireux-kitchens/runtime/menu/models/menu-index.model'
+  MenuDirectoryEntry,
+} from 'fireux-kitchens/runtime/menu/models/menu-directory.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
 import {
   projectSupplierDemoWorld,
@@ -30,7 +30,7 @@ export type MiseboxPowerCardsProductDemo = {
       imageShade: PlaceImageShade
       prop: string
     }[]
-    menu: PublicMenuIndexItem
+    menu: MenuDirectoryEntry
     dish: {
       id: string
       title: string

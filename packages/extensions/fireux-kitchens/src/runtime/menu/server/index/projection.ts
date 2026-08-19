@@ -1,21 +1,21 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { PublicMenuIndexItem } from '../../models/menu-index.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
 import { readMenuOrderingConfig } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
 import type { TenantPublicMenuScope } from '../ownership/public-target'
-import type { MenuIndexContext } from './context'
+import type { MenuDirectoryContext } from './context'
 
-export type MenuIndexDocument = {
+export type MenuDirectoryDocument = {
   id: string
   data: Record<string, unknown>
 }
 
-export function projectMenuIndexItem(
-  document: MenuIndexDocument,
+export function projectMenuDirectoryEntry(
+  document: MenuDirectoryDocument,
   scopedKitchen?: TenantPublicMenuScope | null,
-  context: MenuIndexContext = {}
-): PublicMenuIndexItem | null {
+  context: MenuDirectoryContext = {}
+): MenuDirectoryEntry | null {
   const { id, data } = document
   if (readRecordString(data, 'status') !== 'published') return null
   const source = scopedKitchen
@@ -33,7 +33,7 @@ export function projectMenuIndexItem(
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
-  const publicSource = hasSource
+  const directorySource = hasSource
     ? {
         app_id: source.app_id || '',
         kitchen_id: source.kitchen_id || '',
@@ -66,6 +66,6 @@ export function projectMenuIndexItem(
     ...(ordering?.service_hours
       ? { service_hours: ordering.service_hours }
       : {}),
-    ...(publicSource ? { source: publicSource } : {}),
+    ...(directorySource ? { source: directorySource } : {}),
   }
 }

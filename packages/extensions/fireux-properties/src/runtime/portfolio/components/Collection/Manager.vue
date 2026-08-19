@@ -1,60 +1,57 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p v-if="description">{{ description }}</p>
-        </div>
+  <section class="collection-directory portfolio-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
         >
-          <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-
-            <UBadge v-if="showCount && isSettled" variant="soft">
-              {{ countLabel }}
-            </UBadge>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="portfolios"
-      state="loading"
-      surface="bare"
+      title="Loading portfolios"
+      description="Finding portfolios…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="portfolios"
-      state="error"
-      surface="bare"
+      title="Portfolios unavailable"
       description="Portfolios could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
     />
 
     <PortfolioCollectionList
@@ -78,32 +75,32 @@
       </template>
     </PortfolioCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="portfolios"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-building-2"
       :title="query ? 'No matching portfolios' : 'No portfolios yet'"
-      :description="query
-        ? 'Try a different portfolio name.'
-        : 'Portfolios will appear here when they are available.'"
+      :description="
+        query
+          ? 'Try a different portfolio name.'
+          : 'Portfolios will appear here when they are available.'
+      "
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -135,7 +132,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Available Portfolios',
-    description: 'Browse portfolios available in this workspace.',
+    description: 'Browse property portfolios available through this app.',
     link: true,
     showBadges: true,
     searchPlaceholder: 'Search portfolios…',
@@ -156,10 +153,8 @@ const {
 const fetched = usePortfolioCollection()
 const rawCollection = computed(() => fetched.portfolios.value)
 const outcome = computed(() => fetched.outcome.value)
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(rawCollection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)
@@ -171,8 +166,9 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const collection = computed<Portfolio[]>(() =>
-  rawCollection.value
-    .filter((portfolio): portfolio is Portfolio => Boolean(makeCard(portfolio)))
+  rawCollection.value.filter((portfolio): portfolio is Portfolio =>
+    Boolean(makeCard(portfolio))
+  )
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -207,5 +203,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-
 </script>

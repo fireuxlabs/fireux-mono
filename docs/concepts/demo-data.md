@@ -1,13 +1,13 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
 ## Purpose
 
 Map the deterministic read-only Demo records and their two named consumers:
-Console Demo Data and a project's public Product Demo. Shared canonical roots
+Console Demo Data and a project's Product Demo. Shared canonical roots
 remain real data even when a Demo record links to them.
 
 ## Vertical links
@@ -23,7 +23,7 @@ remain real data even when a Demo record links to them.
 
 ## Current contract
 
-- Demo World is scenario data, not canonical storage, live public-content
+- Demo World is scenario data, not canonical storage, live website-content
   authority, dev preview content, test data, or simulation data.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
@@ -40,9 +40,8 @@ remain real data even when a Demo record links to them.
 - Every Kitchen Demo target includes one same-id access-only AppKitchen fixture
   and one linked Demo Place. Demo Kitchen roots never duplicate Place media or
   location presentation, and their App scope names the same parent App as that
-  support fixture. Each target also derives the same exact bounded
-  `PublicPlaceProjection` key set as the Live Place collection without
-  flattening its full Demo Place root. Writable Test Kitchen creation
+  support fixture. Each target resolves its linked sparse Place through the
+  same canonical `normalizePlace` contract as Live reads. Writable Test Kitchen creation
   atomically creates the equivalent Kitchen, Test Place, and App support pair
   in the simulation database.
 - Supplier Demo targets pair the Supplier root with same-id access-only
@@ -51,7 +50,7 @@ remain real data even when a Demo record links to them.
   Each linked Company is a stamps-only role root paired with its same-id sparse
   Place; Supplier never gains a duplicate `place_id`. The Supplier owns its
   logo, while the linked Place owns address and location imagery. Demo
-  consumers compose the bounded same-id Company/Place projection at read time:
+  consumers compose the canonical same-id Company/Place relationship at read time:
   a location card prefers the Place image and an avatar prefers the Supplier
   logo, without copying either field across roots. SupplierItem-to-Product
   roots remain unresolved and are not manufactured by Demo.

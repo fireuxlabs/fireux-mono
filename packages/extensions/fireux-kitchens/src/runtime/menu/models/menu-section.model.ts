@@ -24,7 +24,6 @@ export const MenuSectionRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  publicRead: 'none',
   parent: 'KitchenMenu',
   scoped: MenuSectionStorage.path,
   notes: [

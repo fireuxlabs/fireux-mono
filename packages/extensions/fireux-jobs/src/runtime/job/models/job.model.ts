@@ -1,6 +1,5 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: add categories and managed job type.
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: declare the completed bounded public-read contract.
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make Agent authority, Place identity, scheduling, and compensation explicit.
 
@@ -14,9 +13,8 @@ import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
  * Current entity map: docs/concepts/entities.md
  *
  * Family: Domain Root
- * Storage: one private canonical root in the owning App database
+ * Storage: one canonical root in the owning App database
  * Root path: /jobs/<jobId>
- * Public read: bounded server projection only
  * Authority: the Agent/User named by `owner_id`; audit stamps never grant access
  */
 export const JobStorage = {
@@ -33,13 +31,12 @@ export const JobEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  publicRead: 'projection',
   console: false,
   root: JobStorage.path,
   notes: [
     'The owning Agent/User is explicit in root owner scope; created.by remains audit-only.',
     'Company and canonical Place relationships are stored by id without product-specific workplace identity.',
-    'Public index and exact detail reads use a bounded server projection; browsers never receive raw Job roots.',
+    'Detail reads return the canonical Job; the paginated Directory uses a named joined card view.',
   ],
 })
 

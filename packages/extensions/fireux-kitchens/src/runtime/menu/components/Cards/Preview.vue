@@ -51,11 +51,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuCardPresentation } from '../../composables/useMenuCardPresentation'
-import type { PublicMenuIndexItem } from '../../models/menu-index.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
 import type { MenuRouteScope } from '../../../kitchen/utils/kitchen-menu-route'
 
 const props = defineProps<{
-  menu: PublicMenuIndexItem
+  menu: MenuDirectoryEntry
   routeScope: MenuRouteScope
 }>()
 

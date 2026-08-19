@@ -1,8 +1,10 @@
 import { useFetch } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { SupplierStorage } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
-import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/supplier/models/supplier-public.model'
+import {
+  SupplierStorage,
+  type Supplier,
+} from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../firestore/utils/paths/useKitchenChildCollection'
@@ -68,21 +70,14 @@ export function useKitchenSupplierFetch(
       : ''
   )
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const supplierNetwork = useFetch<PublicSupplierIndex>('/api/supply/suppliers', {
-    key: 'bringli-public-suppliers',
+  const supplierNetwork = useFetch<{ suppliers: Supplier[] }>('/api/supply/suppliers', {
+    key: 'bringli-suppliers',
     immediate: isEnabled.value,
   })
 
   const supplierLinks = computed<SupplierDoc[]>(() => supplierLinksRef.value ?? [])
-  const networkSuppliers = computed<SupplierDoc[]>(() =>
-    (supplierNetwork.data.value?.suppliers ?? []).map((entry: PublicSupplierIndex['suppliers'][number]) => ({
-      ...entry,
-      supplier_organization_name: entry.organization_name,
-      supplier_headline: entry.headline,
-      supplier_image: entry.image_url,
-      supplier_item_categories: entry.categories,
-      supplier_delivery_areas: entry.delivery_areas,
-    }))
+  const networkSuppliers = computed<SupplierDoc[]>(
+    () => (supplierNetwork.data.value?.suppliers ?? []) as SupplierDoc[]
   )
 
   const canonicalSupplierById = computed(() => {

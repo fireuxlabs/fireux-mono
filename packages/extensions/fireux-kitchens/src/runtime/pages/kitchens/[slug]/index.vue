@@ -7,6 +7,8 @@
     <KitchenDetail
       v-else
       :kitchen="kitchen"
+      :place="place"
+      :presentation="presentation"
       :outcome="outcome"
       @refresh="refresh"
     />
@@ -19,7 +21,6 @@ import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
 import { useKitchenSeo } from '../../../kitchen/composables/useKitchenSeo'
-import type { Kitchen } from '../../../kitchen/models/kitchen.model.ts'
 
 definePageMeta({
   layout: false,
@@ -43,10 +44,19 @@ const routeLocator = computed(() =>
 )
 const recoveryDescription =
   'This kitchen is not accepting collection orders here right now.'
-const { kitchen, ready, refresh, outcome, missing, failed, statusCode } =
-  useKitchenDetail(
-    computed(() => (isCollectionRecovery.value ? '' : routeLocator.value))
-  )
+const {
+  kitchen,
+  place,
+  presentation,
+  ready,
+  refresh,
+  outcome,
+  missing,
+  failed,
+  statusCode,
+} = useKitchenDetail(
+  computed(() => (isCollectionRecovery.value ? '' : routeLocator.value))
+)
 
 if (isCollectionRecovery.value) {
   if (import.meta.server) setResponseStatus(404)
@@ -59,7 +69,7 @@ if (isCollectionRecovery.value) {
   }
 }
 
-useKitchenSeo(computed(() => kitchen.value as Partial<Kitchen> | null))
+useKitchenSeo(presentation)
 useSeoMeta({
   title: () =>
     isCollectionRecovery.value ? 'Collection unavailable' : undefined,

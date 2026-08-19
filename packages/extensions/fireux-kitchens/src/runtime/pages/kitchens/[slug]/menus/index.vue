@@ -1,7 +1,5 @@
 <template>
-  <MenuIndex
-    :index="menuIndex"
-  />
+  <MenuIndex :index="menuIndex" />
 </template>
 
 <script setup lang="ts">
@@ -10,7 +8,7 @@ import { setResponseStatus, useHead, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { directoryMenuRouteScope } from '../../../../kitchen/utils/kitchen-menu-route'
-import { usePublicMenuIndex } from '../../../../menu/composables/usePublicMenuIndex'
+import { useMenuCollection } from '../../../../menu/composables/useMenuCollection'
 
 definePageMeta({
   name: 'KitchenMenusIndexPage',
@@ -22,7 +20,7 @@ const kitchenSlug = useRouteParam('slug')
 const menuRouteScope = computed(() =>
   directoryMenuRouteScope(kitchenSlug.value)
 )
-const menuIndex = usePublicMenuIndex({ routeScope: menuRouteScope })
+const menuIndex = useMenuCollection({ routeScope: menuRouteScope })
 const { appName } = useFireUXConfig()
 
 await menuIndex.ready

@@ -383,11 +383,11 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/targets.ts',
   kitchenTargetHttp:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
-  kitchenPublicProjection:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-projection.ts',
+  kitchenIdentityRead:
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts',
   kitchenRouteIdentity:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/route-identity.ts',
-  kitchenPublicDetail:
+  kitchenDetailHttp:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[slug].get.ts',
   kitchenTargetResolver:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/console-targets.ts',
@@ -458,7 +458,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(
     source.placeModel,
-    /export const PlaceStorage = \{[\s\S]*shape:\s*'public\/root'[\s\S]*path:\s*'places\/\{placeId\}'/
+    /export const PlaceStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'places\/\{placeId\}'/
   )
   assert.match(source.placeModel, /export const PlaceDefaults = \{/)
   assert.doesNotMatch(source.placeModel, /export const PlaceModel = \{/)
@@ -880,7 +880,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.supplierOnboarding,
-    /projectPublicPlace\(companyId,\s*place\.data \|\| \{\}\)/,
+    /normalizePlace\(companyId,\s*place\.data \|\| \{\}\)/,
     'Supplier onboarding must validate the Company same-ID Place.'
   )
   assert.doesNotMatch(
@@ -981,16 +981,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen Console targets must inherit the canonical Place logo when the Kitchen root has no override.'
   )
   assert.match(
-    source.kitchenPublicProjection,
+    source.kitchenIdentityRead,
     /cardImageUrl\s*\|\|\s*parts\.place\.coverImage\s*\|\|\s*parts\.place\.imageUrl/,
     'The public Kitchen directory must resolve the Kitchen card override, then Place cover, then Place image.'
   )
   assert.match(source.kitchenRouteIdentity, /where\('slug', '==', slug\)/)
   assert.match(source.kitchenRouteIdentity, /limit\(2\)/)
   assert.match(source.kitchenRouteIdentity, /matches\.size > 1/)
-  assert.match(source.kitchenPublicDetail, /readKitchenByRouteSlug\(db, slug\)/)
+  assert.match(source.kitchenDetailHttp, /readKitchenByRouteSlug\(db, slug\)/)
   assert.doesNotMatch(
-    source.kitchenPublicDetail,
+    source.kitchenDetailHttp,
     /\.doc\(slug\)/,
     'Kitchen public detail must resolve its authored route slug without treating it as root identity.'
   )
@@ -1054,8 +1054,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenDemoTargets,
-    /publicPlace:\s*PublicPlaceProjection[\s\S]*normalizePublicPlaceProjection[\s\S]*hasExactPublicPlaceProjectionShape\(item\.publicPlace\)/,
-    'Every Demo Kitchen target must expose its Place through the exact shared public collection-row projection.'
+    /place:\s*Place[\s\S]*normalizePlace\(targetPlace\.id,\s*targetPlace\)[\s\S]*place:\s*resolvedPlace/,
+    'Every Demo Kitchen target must expose its canonical normalized Place.'
   )
   assert.match(
     source.kitchenDemoTargets,

@@ -888,14 +888,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-jobs/src/runtime/job/models/job.model.ts'
   const jobAuthorModelPath =
     'packages/extensions/fireux-jobs/src/runtime/job/models/job-author.model.ts'
-  const jobPublicModelPath =
-    'packages/extensions/fireux-jobs/src/runtime/job/models/job-public.model.ts'
+  const jobDirectoryModelPath =
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job-directory.model.ts'
   const jobAuthorServerPath =
     'packages/extensions/fireux-jobs/src/runtime/job/server/identity/author.ts'
   const jobValidationPath =
     'packages/extensions/fireux-jobs/src/runtime/job/server/core/validation.ts'
-  const jobPublicProjectionPath =
-    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/public-projection.ts'
+  const jobReadPath =
+    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/read.ts'
   const jobRuntimeScopePath =
     'packages/extensions/fireux-jobs/src/runtime/job/server/core/runtime.ts'
   const jobPermissionsPath =
@@ -906,9 +906,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-jobs/src/runtime/components/Agent/Create/System.vue'
   const jobModel = read(repoRoot, jobModelPath)
   const jobAuthorModel = read(repoRoot, jobAuthorModelPath)
+  const jobDirectoryModel = read(repoRoot, jobDirectoryModelPath)
   const jobAuthorServer = read(repoRoot, jobAuthorServerPath)
   const jobValidation = read(repoRoot, jobValidationPath)
-  const jobPublicProjection = read(repoRoot, jobPublicProjectionPath)
+  const jobRead = read(repoRoot, jobReadPath)
   const jobPermissions = read(repoRoot, jobPermissionsPath)
   const jobPublishSurface = read(repoRoot, jobPublishSurfacePath)
   const agentProvisionSurface = read(repoRoot, agentProvisionSurfacePath)
@@ -988,6 +989,33 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(jobAuthorModel, /JobCreateIntent\s*=\s*JobCreateInput/)
   assert.match(jobAuthorModel, /JobPatchIntent\s*=\s*JobUpdateInput/)
+  assert.deepEqual(typeFields(jobDirectoryModel, 'JobDetailResponse'), [
+    'applicationDoorway',
+    'company',
+    'companyPlace',
+    'job',
+    'place',
+  ])
+  assert.deepEqual(typeFields(jobDirectoryModel, 'JobDirectoryEntry'), [
+    'application_doorway',
+    'category_id',
+    'company',
+    'company_id',
+    'compensation',
+    'contract_type',
+    'description',
+    'end_at',
+    'id',
+    'management_mode',
+    'openings_count',
+    'place',
+    'place_id',
+    'start_at',
+    'status',
+    'title',
+    'visibility',
+  ])
+  assert.doesNotMatch(jobDirectoryModel, /\bPublicJob/)
   assert.match(
     jobPermissions,
     /appUser\.value\?\.profiles\.includes\(['"]agent['"]\)/
@@ -1027,28 +1055,28 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     jobAuthorServer,
     /return canonicalJobRoot\(snapshot\.id, snapshot\.data\(\)\)/
   )
-  assert.match(jobPublicProjection, /const job = canonicalJobRoot\(id, data\)/)
+  assert.match(jobRead, /const job = canonicalJobRoot\(id, data\)/)
   assert.match(
-    jobPublicProjection,
+    jobRead,
     /const eligible\s*=\s*validRole\s*&&\s*\(role\s*!==\s*['"]tenant['"]\s*\|\|\s*isFirestoreDocumentId\(appId\)\)/
   )
   assert.match(
-    jobPublicProjection,
+    jobRead,
     /categoryScope:\s*eligible\s*&&\s*jobs\.categoryScope\s*===\s*['"]all['"]\s*\?\s*['"]all['"]\s*:\s*['"]allowlist['"]/
   )
 
   const jobRootSurfacePaths = new Set([
     jobModelPath,
     jobAuthorModelPath,
-    jobPublicModelPath,
+    jobDirectoryModelPath,
     jobAuthorServerPath,
     jobValidationPath,
-    jobPublicProjectionPath,
+    jobReadPath,
     jobRuntimeScopePath,
     'packages/extensions/fireux-jobs/src/runtime/job/composables/useJobPermissions.ts',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.get.ts',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.post.ts',
-    'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs.get.ts',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/jobs.get.ts',
   ])
   for (const relativeRoot of [
     'packages/extensions/fireux-jobs/src/runtime/job/components',
@@ -1056,7 +1084,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-jobs/src/runtime/job/composables',
     'packages/extensions/fireux-jobs/src/runtime/pages/jobs',
     'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs',
-    'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/jobs',
   ]) {
     for (const file of filesBelow(path.join(repoRoot, relativeRoot))) {
       if (!/\.(?:ts|vue)$/.test(file)) continue
@@ -1126,30 +1154,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(driftToolbar, /useDevDriftCopyMeta|migration\s*[,}]/)
 
-  const publicPlaceModel = read(
+  const placeReadModel = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/place/models/place-public.model.ts'
+    'packages/extensions/fireux-places/src/runtime/place/models/place-read.model.ts'
   )
-  const publicPlaceNormalizer = read(
+  const placeNormalizer = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/place/utils/public-place-projection.ts'
+    'packages/extensions/fireux-places/src/runtime/place/utils/normalize-place.ts'
   )
-  const publicPlaceServerProjection = read(
+  const placeReader = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/place/server/identity/public-projection.ts'
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/read.ts'
   )
-  const placePublicStoryEditor = read(
+  const placeDetail = read(
     repoRoot,
-    'packages/extensions/fireux-places/src/runtime/place/components/Edit/PublicStory.vue'
+    'packages/extensions/fireux-places/src/runtime/place/composables/usePlaceDetail.ts'
   )
-  assert.match(placePublicStoryEditor, /\buseImageStorage\b/)
-  assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/cover/)
-  assert.match(
-    placePublicStoryEditor,
-    /places\/\$\{placeId\.value\}\/gallery\//
+  const placeStoryEditor = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/place/components/Edit/Story.vue'
   )
+  assert.match(placeStoryEditor, /\buseImageStorage\b/)
+  assert.match(placeStoryEditor, /places\/\$\{placeId\.value\}\/cover/)
+  assert.match(placeStoryEditor, /places\/\$\{placeId\.value\}\/gallery\//)
   assert.doesNotMatch(
-    placePublicStoryEditor,
+    placeStoryEditor,
     /Cover image URL|Gallery image URL|type="url"/
   )
   assert.match(placeMediaMutation, /requireFirebaseStorageDownloadUrl/)
@@ -1158,44 +1187,91 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/wordmark/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/cover/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/gallery\//)
-  assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [
-    'brand_tagline',
-    'id',
-    'image_shade',
-    'image_url',
-    'media_backdrop_color',
-    'name',
-    'place_type',
-    'short_address',
-    'short_name',
-    'slug',
-    'verified',
-  ])
+  assert.match(
+    placeReadModel,
+    /export type PlaceIndexPage\s*=\s*\{[\s\S]*items:\s*Place\[\]/,
+    'Place index transport must page canonical Place records.'
+  )
+  assert.match(
+    placeReadModel,
+    /export type PlaceDetailResponse\s*=\s*\{[\s\S]*place:\s*Place/,
+    'Place detail transport must name the canonical Place directly.'
+  )
+  assert.match(
+    placeNormalizer,
+    /\.\.\.PlaceDefaults,[\s\S]*\.\.\.source,[\s\S]*id,[\s\S]*name,[\s\S]*place_type:\s*placeType/,
+    'The shared Place normalizer must complete sparse stored truth without replacing the Entity.'
+  )
+  assert.match(
+    placeReader,
+    /latest\.exists\s*\?\s*normalizePlace\(latest\.id,\s*latest\.data\(\)\)\s*:\s*null/,
+    'The server Place reader must return the same canonical Place normalization.'
+  )
+  assert.doesNotMatch(placeReadModel, /PublicPlace|Projection/)
+  assert.doesNotMatch(placeNormalizer, /PublicPlace|Projection/)
+  assert.doesNotMatch(placeReader, /PublicPlace|Projection/)
+  assert.match(
+    placeDetail,
+    /const liveLocator = computed\(\(\) =>[\s\S]*?import\.meta\.client\s*\?\s*locator\.value\s*:\s*''[\s\S]*?\)/,
+    'Place detail must subscribe every browser visitor to the exact canonical Place.'
+  )
+  assert.match(
+    placeDetail,
+    /watch\(\s*loadedPlace,[\s\S]*?if \(value\) lastGoodPlace\.value = value/,
+    'Place detail must retain the server-loaded Place as its initial and fallback value.'
+  )
+  assert.match(
+    placeDetail,
+    /watch\(\s*livePlace,[\s\S]*?if \(value\) lastGoodPlace\.value = value/,
+    'Place detail must publish successful listener updates without clearing the last good Place.'
+  )
   assert.doesNotMatch(
-    publicPlaceModel,
-    /^  (?:brand_tagline|image_shade|image_url|short_address|short_name|slug|verified)\?:/m,
-    'Public Place collection rows must serialize one exact key set.'
+    placeDetail,
+    /isDeveloper/,
+    'Place detail reactivity must not be restricted to developer or admin visitors.'
   )
-  assert.match(
-    publicPlaceNormalizer,
-    /return \{\s*id,\s*name,\s*place_type:\s*type,\s*short_name:[\s\S]*brand_tagline:[\s\S]*short_address:[\s\S]*image_url:[\s\S]*image_shade:[\s\S]*verified:[\s\S]*slug:/,
-    'The shared Place normalizer must materialize every public collection-row key.'
-  )
-  assert.match(
-    publicPlaceServerProjection,
-    /normalizePublicPlaceProjection\(\{[\s\S]*return result/,
-    'The Live Place API must use the shared exact public collection-row normalizer.'
-  )
-  assert.match(
-    publicPlaceModel,
-    /PublicPlaceDetailProjection[\s\S]*cover_image:\s*string[\s\S]*gallery_images:\s*string\[\][\s\S]*logo_image:\s*string[\s\S]*wordmark_image:\s*string[\s\S]*business_hours:\s*PlaceBusinessHours[\s\S]*website:\s*string/,
-    'The bounded Place detail must materialize its stable presentation contract.'
-  )
-  assert.match(
-    publicPlaceServerProjection,
-    /cover_image:\s*coverImage[\s\S]*gallery_images:\s*galleryImages[\s\S]*logo_image:\s*logoImage[\s\S]*wordmark_image:\s*wordmarkImage[\s\S]*business_hours:\s*businessHours\s*\|\|\s*\{\s*windows:\s*\[\]\s*\}[\s\S]*website,/,
-    'The Live Place detail must project normalized Place-owned business hours.'
-  )
+  for (const ecosystem of ['bringli', 'misebox', 'werkbox']) {
+    const packageName = `fireux-${ecosystem}`
+    const rules = read(
+      repoRoot,
+      `packages/ecosystem/${packageName}/src/config/firebase/rules/place-identity.rules`
+    )
+    const template = read(
+      repoRoot,
+      `packages/ecosystem/${packageName}/src/config/firebase/firestore.template.rules`
+    )
+    assert.match(template, /@fireux-ecosystem-rules place-identity/)
+    assert.match(
+      rules,
+      /match \/places\/\{placeId\}\s*\{[\s\S]*?allow get:\s*if resource != null;[\s\S]*?allow list, create, update, delete:\s*if false;[\s\S]*?\}/,
+      `${packageName} must allow only exact Place reads for browser detail subscriptions.`
+    )
+    assert.doesNotMatch(
+      rules,
+      /allow (?:read|list|create|update|delete):\s*if true;/
+    )
+  }
+  for (const retiredPlacePath of [
+    'packages/extensions/fireux-places/src/runtime/place/models/place-public.model.ts',
+    'packages/extensions/fireux-places/src/runtime/place/utils/public-place-projection.ts',
+    'packages/extensions/fireux-places/src/runtime/place/server/identity/public-projection.ts',
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, retiredPlacePath)),
+      false,
+      `${retiredPlacePath} must not restore a duplicate Place Entity.`
+    )
+  }
+  for (const placeFile of filesBelow(
+    path.join(repoRoot, 'packages/extensions/fireux-places/src/runtime/place')
+  )) {
+    if (!/\.(?:ts|vue)$/.test(placeFile)) continue
+    assert.doesNotMatch(
+      readFileSync(placeFile, 'utf8'),
+      /\bPublicPlace[A-Za-z0-9_]*\b/,
+      `${path.relative(repoRoot, placeFile)} must use canonical Place or a named presentation contract.`
+    )
+  }
 
   const companyModel = read(
     repoRoot,
@@ -1230,7 +1306,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(canonicalCompany, /hasExactKeys\(stamp,\s*\['at'\]\)/)
   assert.match(
     companyMaterializer,
-    /projectPublicPlace\(id,\s*placeSnapshot\.data \|\| \{\}\)/
+    /normalizePlace\(id,\s*placeSnapshot\.data \|\| \{\}\)/
   )
   assert.match(
     companyMaterializer,
@@ -1238,11 +1314,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     publicCompanyModel,
-    /export type PublicCompanyProjection = PublicPlaceProjection/
+    /export type PublicCompanyProjection = Place/
   )
   assert.match(
     publicCompanyModel,
-    /export type PublicCompanyDetailProjection = PublicPlaceDetailProjection/
+    /export type PublicCompanyDetailProjection = Place/
   )
   assert.match(
     publicCompanyProjection,
@@ -1250,13 +1326,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     publicCompanyProjection,
-    /projectPublicCompanyDetail[\s\S]*projectPublicPlaceDetail\(id,\s*placeValue\)/
+    /projectPublicCompanyDetail[\s\S]*normalizePlace\(id,\s*placeValue\)/
   )
   assert.match(publicCompanyProjection, /return place/)
   assert.doesNotMatch(
     publicCompanyProjection,
     /\.\.\.\(place\./,
-    'Company public reads must not maintain a second optional copy of the exact Place projection.'
+    'Company reads must not maintain a second optional copy of the canonical Place.'
   )
 
   assert.equal(

@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-24 17:35 CEST — Kitchen public family: resolve exact public detail through the shared projection.
 import {
   createError,
   defineEventHandler,
@@ -7,18 +6,18 @@ import {
 } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type { PublicKitchenDetailResponse } from '../../../kitchen/models/kitchen-index.model.ts'
+import type { KitchenDetailResponse } from '../../../kitchen/models/kitchen-detail.model.ts'
 import {
-  hydrateKitchenPublicDocuments,
-  projectPublicKitchenDetail,
-  type KitchenPublicDirectoryScope,
-} from '../../../kitchen/server/identity/public-projection.ts'
+  readKitchenRelatedRecords,
+  projectKitchenDetail,
+  type KitchenReadScope,
+} from '../../../kitchen/server/identity/read.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 export default defineEventHandler(
-  async (event): Promise<PublicKitchenDetailResponse> => {
+  async (event): Promise<KitchenDetailResponse> => {
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control':
@@ -53,34 +52,27 @@ export default defineEventHandler(
       data,
     }
     const fireux = useFireUXConfig()
-    const directoryScope: KitchenPublicDirectoryScope = {
-      appId: fireux.appId,
-      ecosystemId: text(fireux.ecosystemId || fireux.ecosystem),
-      role: fireux.role,
+    const readScope: KitchenReadScope = {
       ecosystem: fireux.ecosystem,
     }
-    const dataByPath = await hydrateKitchenPublicDocuments(
+    const dataByPath = await readKitchenRelatedRecords(
       db,
       [document],
-      directoryScope
+      readScope
     ).catch(() => {
       throw createError({
         statusCode: 503,
         statusMessage: 'Kitchen relationships could not be read.',
       })
     })
-    const item = projectPublicKitchenDetail(
-      document,
-      dataByPath,
-      directoryScope
-    )
-    if (!item) {
+    const detail = projectKitchenDetail(document, dataByPath, readScope)
+    if (!detail) {
       throw createError({
         statusCode: 503,
         statusMessage: 'The Kitchen is not canonical.',
       })
     }
 
-    return { item }
+    return detail
   }
 )

@@ -121,12 +121,11 @@ Before each task:
   Supplier onboarding requires that complete relationship and validates both
   records inside the trusted creation transaction; an empty `company_id` is
   not a valid Supplier root.
-  The shared Supplier surface projector keeps the Supplier-owned logo separate
-  from the bounded Company/Place location projection. Current Demo scenarios
-  prove that chain and resolve Place imagery at read time; they never add
-  `Supplier.place_id` or copy Place presentation onto the Supplier root.
-  Live Supplier consumers must provide the same bounded Company projection
-  before claiming equivalent location enrichment.
+  Supplier readers return the canonical Supplier and resolve its canonical
+  Company/Place separately. Current Demo scenarios prove that chain and resolve
+  Place imagery at read time; they never add `Supplier.place_id` or copy Place
+  presentation onto the Supplier root. Live Supplier consumers must resolve the
+  same Company/Place relationship before claiming equivalent location context.
 - Product-neutral money and immutable FinancialFact primitives belong to
   `fireux-finance`. Kitchen retains Order and KitchenSale lifecycle ownership;
   a trusted `ready -> completed` transaction creates the same-id Sale and its
@@ -183,7 +182,7 @@ Before each task:
   expenses, wages, VAT, labour, cashflow, profit, and P&L stay absent until
   their owning domains expose authoritative dated producers.
 - Misebox Jobs use the same Agent-owned, Company/Place-linked root and trusted
-  author/public APIs as Werkbox. Hospitality is only a configured category and
+  author/read APIs as Werkbox. Hospitality is only a configured category and
   presentation delta; Kitchen is never Job identity and Job creation never
   materializes a Kitchen.
 - Misebox tenant Apps may compose that shared Jobs family with a hospitality
@@ -203,8 +202,8 @@ Before each task:
   that same localized DTO.
 - Misebox may compose Kitchen materialization for a Professional Experience
   Place reference. That adapter is profile-specific, delegates creation to
-  `fireux-kitchens`, and must not enter the Job model, authoring flow, or public
-  projection.
+  `fireux-kitchens`, and must not enter the Job model, authoring flow, or
+  Directory view.
 - `defineFireuxConfig` loads `fireux-misebox` automatically from
   `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
   capabilities; the ecosystem package is not an umbrella dependency bundle.
@@ -527,7 +526,7 @@ Before each task:
   separately verified membership, Rules, and existing-Job migration.
 - Bringli is the canonical Supplier product and supply-network host. Misebox
   loads `fireux-suppliers` in consumer mode only: it receives shared Supplier
-  presentation and bounded projection contracts, but no Supplier public routes,
+  presentation and canonical read contracts, but no Supplier routes,
   Supplier Console, onboarding, sitemap, or direct Supplier storage authority.
   Kitchen `Suppliers` remains the seamless Kitchen-side sourcing and procurement
   Operation; it owns Kitchen selections, preferences, delivery receipt and cost

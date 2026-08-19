@@ -69,12 +69,36 @@ skipping is a valid editorial outcome.
 The FireUX App also has a local operational publisher for reviewed Markdown
 drafts. It is a second transport into the same Blog-owned contract, not another
 storage or publication authority: it fixes the FireUX Project and named
-database, uses a create-only typed MCP/Skill target, plans without writing,
-requires the plan hash plus all three editorial approvals, rejects collisions,
-and verifies each public record after creation. Use
+database, uses a typed MCP/Skill create or explicit update target, plans without
+writing, requires the plan hash plus all three editorial approvals, rejects
+unexpected record state, and verifies each public record after mutation. Use
 `pnpm publish:fireux-blog -- --project=fireux-2005 --database=fireux --files=<draft.md>`
 to produce a plan; applying additionally requires `--apply`, the reported
 `--confirm` hash, and `--privacy-reviewed --facts-reviewed --names-approved`.
+Updating an existing reviewed post additionally requires `--update`; without
+that explicit flag, the publisher remains create-only and rejects collisions.
+
+## Future audience evidence
+
+Blog audience counts are `to-confirm` and must not introduce a Blog-local
+tracking system. Revisit them only after the shared privacy-first measurement
+family in `privacy-measurement.md` exists and deliberately permits the required
+projection.
+
+The preferred presentation is:
+
+- an authorized FireUX developer or Blog admin may see the exact aggregate;
+- a public reader may see the exact aggregate only at 100 views or more;
+- a smaller public aggregate may display `<100 views`;
+- absent or unavailable measurement displays nothing rather than implying
+  zero.
+
+Use `views`, not `people` or `reads`, unless the implemented measurement can
+truthfully prove unique people or completed reading. The intended aggregate
+must remain server-validated, bot-filtered, identifier-free, retention-bounded,
+and free of event-level visitor records. Its implementation requires a privacy
+and public-projection decision in the shared measurement spine before Blog UI
+or storage changes begin.
 
 ## Ownership and boundaries
 

@@ -33,13 +33,13 @@
 </template>
 
 <script setup lang="ts">
-import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/place/models/place-public.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { computed } from 'vue'
 import type { KitchenOnboardingPreview } from '../../models/kitchen-onboarding.model.ts'
 
 const props = defineProps<{
-  place: PublicPlaceDetailProjection
+  place: Place
   preview: KitchenOnboardingPreview
   effectiveName: string
   paletteOverride: SparseBrandPalette

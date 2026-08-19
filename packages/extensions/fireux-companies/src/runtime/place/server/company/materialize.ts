@@ -11,7 +11,7 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { projectPublicPlace } from 'fireux-places/runtime/place/server/identity/public-projection'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { canonicalCompanyRole } from './canonical'
 
 type CompanyMaterializeRequest = {
@@ -70,7 +70,7 @@ export async function materializeCompany(
       ])
       if (
         !placeSnapshot.exists ||
-        !projectPublicPlace(id, placeSnapshot.data || {})
+        !normalizePlace(id, placeSnapshot.data || {})
       ) {
         throw createError({
           statusCode: 409,

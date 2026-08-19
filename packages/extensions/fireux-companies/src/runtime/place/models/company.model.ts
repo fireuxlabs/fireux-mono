@@ -30,7 +30,6 @@ export const CompanyRoleRecord = defineFireuxEntity({
   identity: 'root',
   authority: 'parent',
   appSupport: 'none',
-  publicRead: 'projection',
   console: false,
   root: CompanyStorage.path,
   parent: 'Place',

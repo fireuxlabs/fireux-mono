@@ -148,8 +148,8 @@ import { computed, ref } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
-import type { PublicMenuIndexController } from '../../composables/usePublicMenuIndex'
-import type { PublicMenuIndexItem } from '../../models/menu-index.model.ts'
+import type { MenuCollectionController } from '../../composables/useMenuCollection'
+import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
 import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
 import {
   menuMatchesCollectionPicks,
@@ -166,7 +166,7 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell' | 'preview'
-    index: PublicMenuIndexController
+    index: MenuCollectionController
   }>(),
   {
     title: 'Live menus',
@@ -180,8 +180,8 @@ const props = withDefaults(
 )
 
 const { interface: makeMenuCard } = useMenuInterface()
-const collection = computed<PublicMenuIndexItem[]>(
-  () => props.index.menus.value
+const collection = computed<MenuDirectoryEntry[]>(
+  () => props.index.collection.value
 )
 const outcome = computed(() => props.index.outcome.value)
 const isLoading = computed(
@@ -192,8 +192,8 @@ const isSettled = computed(
 )
 const selectedPicks = ref<MenuCollectionPick[]>([])
 const { now: serviceNow } = useKitchenServiceNow()
-const pickedCollection = computed<PublicMenuIndexItem[]>(() =>
-  collection.value.filter((menu: PublicMenuIndexItem) =>
+const pickedCollection = computed<MenuDirectoryEntry[]>(() =>
+  collection.value.filter((menu: MenuDirectoryEntry) =>
     menuMatchesCollectionPicks(menu, selectedPicks.value, serviceNow.value)
   )
 )
@@ -204,7 +204,7 @@ const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15
 )
 
-const makeCard = (menu: PublicMenuIndexItem) =>
+const makeCard = (menu: MenuDirectoryEntry) =>
   makeMenuCard({
     ...menu,
     image_url: menu.kitchen?.logo_image_url,
@@ -213,7 +213,7 @@ const makeCard = (menu: PublicMenuIndexItem) =>
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    PublicMenuIndexItem,
+    MenuDirectoryEntry,
     NonNullable<ReturnType<typeof makeMenuCard>>,
     'preview' | 'cell' | 'pill'
   >({
@@ -246,7 +246,7 @@ const loadMore = async () => {
   await props.index.loadMore()
 }
 
-const guestSurfaces = (contexts: PublicMenuIndexItem['contexts'] = []) => [
+const guestSurfaces = (contexts: MenuDirectoryEntry['contexts'] = []) => [
   'browse',
   ...contexts,
 ]
@@ -260,7 +260,7 @@ const devDerived = computed(() => ({
   family: 'Root Simple Collection Manager',
   source: {
     rootPath: 'menus',
-    hydration:
+    relatedRecords:
       'One bounded server batch per page resolves current Kitchen identity, effective service hours, and referenced KitchenMenu guest-ordering contexts. Detail resolves content and theme.',
   },
   controls: {

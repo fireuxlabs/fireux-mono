@@ -13,7 +13,7 @@ domain capability, and intentionally App-owned branded presentation.
 ## Links
 
 - Parent: `pages.md`
-- Children: `family-public-detail.md`, `family-menu.md`
+- Children: `family-entity-detail.md`, `family-menu.md`
 - Horizontal: `collection-manager.md`, `components.md`, `composables.md`,
   `entities.md`, `runtime-filesystem.md`
 
@@ -58,17 +58,20 @@ visible when only an incremental read fails.
 
 An Entity chooses the smallest honest read boundary:
 
-- A bounded server projection is required when privacy, publication, joins,
-  cross-database authority, or server credentials matter.
+- A root Entity reader returns the canonical Entity type. A server reader is
+  required when joins, cross-database authority, server credentials, or SSR
+  status matter; it composes named records instead of inventing `PublicX`.
 - A live client collection is valid when Rules already expose the intended
   canonical rows and immediate reactivity is the product contract.
+- A named `XDirectoryEntry` may reduce payload for a large collection, but it
+  is a Directory view rather than a second Entity or privacy filter.
 - A controller is required when the same Entity has multiple real scopes, such
   as Ecosystem Apps versus platform Apps.
 - Scoped children use named scoped surfaces; they do not masquerade as a root
   collection manager.
 
-The visual family does not dictate transport. Server projection and live
-Firestore collection members still share the same outcome anatomy.
+The visual family does not dictate transport. Server and live Firestore
+collection members still share the same outcome anatomy.
 
 ## Current members
 
@@ -77,12 +80,16 @@ Firestore collection members still share the same outcome anatomy.
 | Place                                 | reference                | Entity-family filters, bounded pagination, operator doorway   |
 | Job                                   | differentiated sibling   | editorial hero, publication gate, author actions, pagination  |
 | Menu                                  | differentiated sibling   | tenant/Kitchen route scope, redirect policy, preview cards    |
-| User                                  | ordinary sibling         | bounded identity projection and current-user reconciliation   |
+| User                                  | ordinary sibling         | canonical identity and current-user reconciliation            |
 | App                                   | controller-owned sibling | Ecosystem and platform controllers, current-user App section  |
 | Ecosystem                             | controller-owned sibling | platform scope and aggregate App count                        |
 | Ingredient                            | utility sibling          | vocabulary filters and no Directory creation doorway          |
 | Product                               | ordinary default sibling | live tenant-scoped collection and optional management doorway |
 | Kitchen and named profile Directories | ordinary siblings        | domain cards, filters and doorway copy                        |
+| Supplier                              | ordinary sibling         | supplier identity, catalogue facts and management doorway     |
+| Portfolio                             | ordinary sibling         | property-group identity and management doorway                |
+| Property                              | paginated sibling        | bounded pagination and intentionally unlinked cards today     |
+| Company                               | joined sibling           | complete Company/Place pairs and bounded pagination           |
 
 ## App-owned branded families
 
@@ -93,7 +100,7 @@ CSS.
 
 They inherit lower contracts where sensible:
 
-- Entity readers and bounded projections;
+- Entity readers and named Directory views;
 - truthful loading, unavailable, empty, and ready semantics;
 - accessibility and responsive fundamentals;
 - Core semantic tokens and Nuxt UI primitives.
@@ -119,9 +126,10 @@ not drift.
 
 Use Directory for the browse surface. Use `published` only where publication
 is a real eligibility contract and `protected` where access is restricted.
-Do not use `Public` merely to mean a normal website route or unauthenticated
-page. Existing endpoint, DTO, Rules, and projection identifiers retain that
-term only where they encode a genuine privacy or publication boundary.
+Do not use `Public` to name a normal website route, Entity, endpoint, DTO, or
+component. Duplicate `PublicX` root identifiers are migration debt. Standard
+protocol terms such as the HTTP `Cache-Control: public` directive retain their
+defined meaning; they do not name FireUX Entities or surfaces.
 
 ## Verification
 
@@ -139,6 +147,26 @@ When this family changes:
 - Entity filters, actions, card facts, read authority, and route policy remain
   legitimate domain deltas.
 - Yellow Velo and Interlaken aesthetic families remain App-owned.
-- Supplier, Portfolio, Property, Company, and editorial Blog presentation are
-  outside this completed proving pass; align them only after comparing their
-  actual product jobs with the proven family.
+- Supplier, Portfolio, Property, and Company are aligned ordinary Directory
+  siblings. Their collection authority and management doorways remain
+  Entity-owned.
+- Place index transport pages canonical `Place[]`; it no longer maintains a
+  second Place projection model.
+- Kitchen uses one bounded `KitchenDirectoryEntry` view because its cards join
+  canonical Kitchen, Place, and AppKitchen support records. The API and sitemap
+  delegate to the same `readKitchenDirectoryPage` owner; neither introduces a
+  replacement Kitchen Entity.
+- Supplier Directory reads canonical `Supplier[]` through its live root
+  collection. Its different transport does not change the shared outcome
+  anatomy.
+- Menu uses `MenuDirectoryEntry` and `MenuDirectoryPage` because its cards
+  resolve bounded Kitchen identity, service hours, route contexts, and source
+  identity. `useMenuCollection` owns client outcomes and pagination while
+  `readMenuDirectoryPage` owns the server read for all Menu Directory scopes.
+- Job uses `JobDirectoryEntry` and `JobDirectoryPage` because its paginated
+  cards join Company/Place display facts and JSON-safe schedule values.
+  `readJobDirectoryPage` owns the shared JSON and sitemap read; exact detail
+  returns the canonical Job plus its named related records.
+- Editorial Blog presentation remains outside this completed proving pass;
+  compare its authored-content job before deciding whether it shares the
+  ordinary Directory shell.

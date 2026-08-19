@@ -22,7 +22,6 @@ const CLASSIFICATION_TYPES = {
   identity: 'FireuxEntityIdentity',
   authority: 'FireuxEntityAuthority',
   appSupport: 'FireuxEntityAppSupport',
-  publicRead: 'FireuxEntityPublicRead',
 }
 
 const CLASSIFICATION_KEYS = [
@@ -32,7 +31,6 @@ const CLASSIFICATION_KEYS = [
   'identity',
   'authority',
   'appSupport',
-  'publicRead',
   'console',
   'parent',
 ]
@@ -302,14 +300,6 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
       paths.appSupport,
       true,
       `${label} must declare appSupportPath.`
-    )
-  }
-
-  if (classification.publicRead === 'direct-root') {
-    assert.equal(
-      classification.identity,
-      'root',
-      `${label} direct public reads require root identity.`
     )
   }
 

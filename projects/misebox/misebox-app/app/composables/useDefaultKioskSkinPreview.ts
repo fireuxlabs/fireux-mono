@@ -8,7 +8,7 @@ const interlakenPizza = {
 } as const
 
 type PlaceIdentityAssets = {
-  item: {
+  place: {
     brand_tagline?: string
     cover_image?: string
     logo_image?: string
@@ -26,7 +26,9 @@ export async function useDefaultKioskSkinPreview() {
   ])
 
   if (payload.kind !== 'manifest') {
-    throw new Error('Interlaken Pizza does not expose a renderable Menu manifest.')
+    throw new Error(
+      'Interlaken Pizza does not expose a renderable Menu manifest.'
+    )
   }
 
   const manifest = {
@@ -48,9 +50,9 @@ export async function useDefaultKioskSkinPreview() {
     },
     presentation: {
       ...payload.manifest.presentation,
-      kitchenImageUrl: place.item.cover_image,
-      kitchenLogoImageUrl: place.item.logo_image,
-      kitchenWordmarkImageUrl: place.item.wordmark_image,
+      kitchenImageUrl: place.place.cover_image,
+      kitchenLogoImageUrl: place.place.logo_image,
+      kitchenWordmarkImageUrl: place.place.wordmark_image,
     },
   }
 
@@ -59,7 +61,7 @@ export async function useDefaultKioskSkinPreview() {
     kitchen: {
       id: manifest.source.kitchenId,
       label: manifest.presentation.kitchenName,
-      tagline: String(place.item.brand_tagline || '').trim(),
+      tagline: String(place.place.brand_tagline || '').trim(),
     },
   }
 }

@@ -4,5 +4,6 @@
 // @fireux-rules-artifact scripts/firebase/bringli/firestore.rules
 // @fireux-rules-fragments open,close
 // Concurrent edit — 2026-08-04 — Ecosystem Rules spine: establish an ecosystem-owned default-deny release source.
+// Concurrent edit — 2026-08-19 — Place realtime: allow exact canonical Place reads while retaining default deny.
 // @fireux-rules-template-source
-// @fireux-ecosystem-rules default-deny
+// @fireux-ecosystem-rules place-identity

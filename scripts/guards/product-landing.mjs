@@ -2840,12 +2840,12 @@ export async function run(ctx) {
   for (const required of [
     '<MenuCollectionManager',
     ':index="menuIndex"',
-    'import { usePublicMenuIndex }',
-    'const menuIndex = usePublicMenuIndex()',
+    'import { useMenuCollection }',
+    'const menuIndex = useMenuCollection()',
   ]) {
     if (!miseboxOrderingTool.includes(required)) {
       violations.push(
-        `${MISEBOX_ORDERING_TOOL_PATH}: must select published Menus through the shared public Menu index (${required})`
+        `${MISEBOX_ORDERING_TOOL_PATH}: must select published Menus through the shared Menu Directory (${required})`
       )
     }
   }

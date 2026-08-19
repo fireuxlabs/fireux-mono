@@ -87,6 +87,7 @@ type BlogPostLocalizedFields = {
   keywords: string[]
   tags: string[]
   featuredImage: string
+  featuredImageAlt: string
   socialImage: string
   readingTime: string
   cta_text: string
@@ -107,6 +108,7 @@ function readLocalizedFields(
     keywords: strings(data.keywords, 30, 120),
     tags: strings(data.tags, 30, 120),
     featuredImage: httpsUrl(data.featuredImage),
+    featuredImageAlt: text(data.featuredImageAlt, 500),
     socialImage: httpsUrl(data.socialImage),
     readingTime: text(data.readingTime, 40),
     cta_text: text(data.cta_text, 120),
@@ -162,6 +164,8 @@ function readLocalizedFields(
           : rootFields.tags,
       featuredImage:
         httpsUrl(translation.featuredImage) || rootFields.featuredImage,
+      featuredImageAlt:
+        text(translation.featuredImageAlt, 500) || rootFields.featuredImageAlt,
       socialImage:
         httpsUrl(translation.socialImage) || rootFields.socialImage,
       readingTime:
@@ -200,6 +204,7 @@ export function projectPublicBlogPost(
     keywords,
     tags,
     featuredImage,
+    featuredImageAlt,
     socialImage,
     readingTime,
     cta_text,
@@ -240,6 +245,7 @@ export function projectPublicBlogPost(
     tags,
     canonicalUrl: httpsUrl(data.canonicalUrl),
     featuredImage,
+    featuredImageAlt,
     socialImage,
     readingTime,
     cta_link: httpsUrl(data.cta_link),

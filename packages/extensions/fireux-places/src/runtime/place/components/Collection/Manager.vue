@@ -1,4 +1,3 @@
-<!-- Concurrent edit — 2026-07-21 14:38 CEST — Place public projection: expose explicit bounded directory pagination. -->
 <template>
   <section class="collection-directory place-directory">
     <CollectionDirectoryHeader

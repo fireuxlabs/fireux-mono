@@ -79,7 +79,7 @@ export async function run(ctx) {
 
   validateMiseboxCardSpecimen(repoRoot, violations)
   validateEntityDirectoryPresentation(repoRoot, violations)
-  validatePublicEntityPresentation(repoRoot, violations)
+  validateEntityDetailPresentation(repoRoot, violations)
 
   if (violations.length) {
     throw new Error(
@@ -118,6 +118,10 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
     'packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue',
     'packages/extensions/fireux-products/src/runtime/pages/products/index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/index.vue',
+    'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue',
+    'packages/extensions/fireux-properties/src/runtime/pages/portfolios/index.vue',
+    'packages/extensions/fireux-properties/src/runtime/pages/properties/index.vue',
+    'packages/extensions/fireux-companies/src/runtime/pages/companies/index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/menu/components/Index/Index.vue',
   ]
   const ordinaryManagers = [
@@ -128,6 +132,10 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
     'packages/extensions/fireux-jobs/src/runtime/job/components/Collection/Manager.vue',
     'packages/extensions/fireux-products/src/runtime/product/components/Collection/Manager.vue',
     'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Collection/Manager.vue',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Collection/Manager.vue',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/components/Collection/Manager.vue',
+    'packages/extensions/fireux-properties/src/runtime/property/components/Collection/Manager.vue',
+    'packages/extensions/fireux-companies/src/runtime/place/components/Company/Collection/Manager.vue',
     'packages/extensions/fireux-kitchens/src/runtime/menu/components/Collection/Manager.vue',
   ]
   const brandedRoutes = [
@@ -212,7 +220,7 @@ function validateMiseboxCardSpecimen(repoRoot, violations) {
   }
 }
 
-function validatePublicEntityPresentation(repoRoot, violations) {
+function validateEntityDetailPresentation(repoRoot, violations) {
   const coreDirectoryCardPath =
     'packages/core/fireux-core/src/runtime/components/public/EntityDirectoryCard.vue'
   const consumers = new Map([
@@ -230,6 +238,10 @@ function validatePublicEntityPresentation(repoRoot, violations) {
     ],
     [
       'packages/extensions/fireux-places/src/runtime/place/components/Detail.vue',
+      'PlaceHeader',
+    ],
+    [
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Detail.vue',
       'PlaceHeader',
     ],
   ])
@@ -266,6 +278,60 @@ function validatePublicEntityPresentation(repoRoot, violations) {
     const source = readFileSync(absolutePath, 'utf8')
     if (!source.includes(`<${componentName}`)) {
       violations.push(`${consumerPath} (must consume Core ${componentName})`)
+    }
+  }
+
+  const supplierDetailPath =
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Detail.vue'
+  const supplierDetailSource = readFileSync(
+    path.join(repoRoot, supplierDetailPath),
+    'utf8'
+  )
+  if (
+    supplierDetailSource.includes('useAsyncData') ||
+    !supplierDetailSource.includes('const place = props.place') ||
+    !supplierDetailSource.includes('SupplierDetailState')
+  ) {
+    violations.push(
+      `${supplierDetailPath} (must render the server-resolved canonical Place beside the canonical Supplier)`
+    )
+  }
+
+  const supplierDetailReaderPath =
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierDetail.ts'
+  const supplierDetailReader = readFileSync(
+    path.join(repoRoot, supplierDetailReaderPath),
+    'utf8'
+  )
+  for (const contract of [
+    'firestoreFetchDoc<Supplier>',
+    'firestoreFetchDoc<Place>',
+    'lastGoodSupplier',
+    'lastGoodPlace',
+  ]) {
+    if (!supplierDetailReader.includes(contract)) {
+      violations.push(
+        `${supplierDetailReaderPath} (missing live canonical Entity Detail contract: ${contract})`
+      )
+    }
+  }
+
+  const supplierRoutePath =
+    'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue'
+  const supplierRouteSource = readFileSync(
+    path.join(repoRoot, supplierRoutePath),
+    'utf8'
+  )
+  for (const contract of [
+    'useSupplierDetail',
+    'await ready',
+    'setResponseStatus(404)',
+    'setResponseStatus(statusCode.value || 503)',
+  ]) {
+    if (!supplierRouteSource.includes(contract)) {
+      violations.push(
+        `${supplierRoutePath} (missing Entity Detail contract: ${contract})`
+      )
     }
   }
 }

@@ -71,12 +71,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PublicPlaceDetailProjection } from '../../models/place-public.model.ts'
+import type { Place } from '../../models/place.model.ts'
 
 defineOptions({ name: 'PlaceDetailVisitInfo' })
 
 const props = defineProps<{
-  place: PublicPlaceDetailProjection
+  place: Place
   websiteLabel: string
   hasVisitDetails: boolean
   facts: Array<{ label: string; value: string }>

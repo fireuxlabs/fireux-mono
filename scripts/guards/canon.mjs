@@ -440,7 +440,7 @@ function checkCollectionManagerContract(repoRoot) {
 
       if (COLLECTION_MANAGER_PROP_RE.test(raw)) {
         violations.push(
-          `- Collection manager must fetch its own public/root collection, not accept a collection prop: ${normalized}`
+          `- Collection manager must fetch its own root Entity collection, not accept a collection prop: ${normalized}`
         )
       }
 
@@ -922,7 +922,7 @@ export async function run(ctx) {
       '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity,team,operations,sundries}/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
-      '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
+      '- Keep XCollectionManager for root Entity browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
       '- Collection manager debug must load on DevDebugPanel open and unload on close so closed panels do no work',
       '- Use useRouteParam() or readRouteParam() instead of repeating String(route.params.*).trim()',
     ]

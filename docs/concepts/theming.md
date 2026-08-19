@@ -371,7 +371,7 @@ sources exist.
   `packages/ecosystem/fireux-misebox/src/runtime/kitchen-basic-presentation.ts`
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-projection.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`
   and `runtime/kitchen/components/Collection/Manager.vue`
 - Guard: `scripts/guards/landing-templates.mjs`
 

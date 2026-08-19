@@ -1,8 +1,8 @@
 // @fireux-script
-// last_used: 2026-08-18
+// last_used: 2026-08-19
 // usage_note: protects the entity-scoped Nuxt runtime and rejects completed legacy placements.
 
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { entityMatrix } from '../_lib/entity-matrix.mjs'
 
@@ -96,6 +96,13 @@ const LEGACY_ENTITY_PATHS = [
   'packages/extensions/fireux-kitchens/src/runtime/server/kitchen',
   'packages/extensions/fireux-kitchens/src/runtime/server/menu',
   'packages/extensions/fireux-kitchens/src/runtime/server/ingredient',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-identity.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/public-projection.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/public-index.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-index.model.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/usePublicMenuIndex.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/useMenuDirectory.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/fetch/useMenuCollection.ts',
 
   // Confirmed parent-owned records and Console operations.
   'packages/extensions/fireux-companies/src/runtime/components/Company',
@@ -130,6 +137,55 @@ const LEGACY_ENTITY_PATHS = [
   'packages/extensions/fireux-products/src/runtime/models/core/user.ext.ts',
   'packages/extensions/fireux-blogs/src/runtime/models/core/user.ext.ts',
 ]
+
+const RETIRED_ENTITY_IMPORTS = new Map([
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/user/components/Delivery/CoverageMap.vue',
+    ['fireux-places/runtime/composables/fireux/places/useGoogleMaps'],
+  ],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface.ts',
+    [
+      'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress',
+    ],
+  ],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Detail/Place.vue',
+    ['fireux-places/runtime/composables/fireux/firestore/place/usePlace'],
+  ],
+  [
+    'packages/core/fireux-core/src/runtime/composables/forms/useEditableStringField.ts',
+    ["from '../fireux/utils/slug/normalizeSlug'"],
+  ],
+  [
+    'packages/extensions/fireux-jobs/src/runtime/server/api/jobs/[id].get.ts',
+    ['../../../utils/job/public-projection.ts'],
+  ],
+  [
+    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/author.ts',
+    ['fireux-places/runtime/place/server/identity/public-projection'],
+  ],
+  [
+    'packages/extensions/fireux-jobs/src/runtime/job/server/identity/read.ts',
+    ['fireux-places/runtime/place/server/identity/public-projection'],
+  ],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/reports/gross-sales.get.ts',
+    ['server/kitchen/operations/sales/gross-sales-report.ts'],
+  ],
+  [
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/index.ts',
+    ['fireux-kitchens/runtime/server/kitchen/'],
+  ],
+  [
+    'packages/extensions/fireux-places/src/runtime/place/server/index/onboarding/context.ts',
+    ["from '../../utils/place-spine'"],
+  ],
+  [
+    'packages/extensions/fireux-places/src/runtime/place/server/index/onboarding/values.ts',
+    ["from '../../utils/place-spine'"],
+  ],
+])
 
 function hasAuthoredFile(target) {
   if (!existsSync(target)) return false
@@ -204,6 +260,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     const target = path.join(repoRoot, relativePath)
     if (existsSync(target) && !readdirSafe(target)) {
       violations.push(`${relativePath}: completed legacy Entity path returned`)
+    }
+  }
+
+  for (const [relativePath, retiredImports] of RETIRED_ENTITY_IMPORTS) {
+    const source = readFileSync(path.join(repoRoot, relativePath), 'utf8')
+    for (const retiredImport of retiredImports) {
+      if (source.includes(retiredImport)) {
+        violations.push(
+          `${relativePath}: retired Entity import returned (${retiredImport})`
+        )
+      }
     }
   }
 

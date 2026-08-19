@@ -12,7 +12,6 @@ export type {
   MenuItemPriceOption,
 } from '../../models/menu-item.model.ts'
 export type { MenuSection } from '../../models/menu-section.model.ts'
-export { useMenuCollection } from './fetch/useMenuCollection'
 export { useKitchenMenuCollection } from './fetch/useKitchenMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
 export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'
@@ -48,7 +47,7 @@ type UseMenuOptions = {
  * - docs/fireux-canon.md
  * - packages/extensions/fireux-kitchens/docs/contract.md
  *
- * Menu records live under app-scoped Kitchen records. Public routes render
+ * Menu records live under app-scoped Kitchen records. Website routes render
  * eligible published menus from that same app-scoped Kitchen child stack.
  */
 export function useMenu(

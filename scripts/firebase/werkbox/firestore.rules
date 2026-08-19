@@ -500,6 +500,12 @@ service cloud.firestore {
           validOwnerUpdateStamp(request.resource.data, userId);
       }
     }
+    // Place detail subscriptions exact-read known canonical Place ids. Index
+    // and search remain server-owned, and every browser write remains denied.
+    match /places/{placeId} {
+      allow get: if resource != null;
+      allow list, create, update, delete: if false;
+    }
     function isValidAgent(data) {
       return data.keys().size() == 14 &&
         data.keys().hasAll([
@@ -608,9 +614,6 @@ service cloud.firestore {
     // makes that ownership visible; the final wildcard closes every unknown
     // or newly introduced path unless it receives a reviewed positive rule.
     match /jobs/{document=**} {
-      allow get, list, create, update, delete: if false;
-    }
-    match /places/{document=**} {
       allow get, list, create, update, delete: if false;
     }
     match /companies/{document=**} {

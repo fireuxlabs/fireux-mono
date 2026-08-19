@@ -24,7 +24,7 @@ import {
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
-import { projectPublicPlace } from 'fireux-places/runtime/place/server/identity/public-projection'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   SupplierOnboardingAction,
   SupplierOnboardingCompleteResult,
@@ -245,7 +245,7 @@ export async function completeSupplierOnboarding(
       !company.exists ||
       !canonicalCompanyRole(companyId, company.data) ||
       !place.exists ||
-      !projectPublicPlace(companyId, place.data || {})
+      !normalizePlace(companyId, place.data || {})
     ) {
       fail(
         409,

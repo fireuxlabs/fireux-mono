@@ -94,16 +94,16 @@
 import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { PublicMenuIndexController } from '../../composables/usePublicMenuIndex'
+import type { MenuCollectionController } from '../../composables/useMenuCollection'
 
 const props = defineProps<{
-  index: PublicMenuIndexController
+  index: MenuCollectionController
 }>()
 
 const fireux = useFireUXConfig()
 const isTenant = fireux.isTenant
 const index = props.index
-const menus = computed(() => index.menus.value)
+const menus = computed(() => index.collection.value)
 const pending = computed(() => index.pending.value)
 const error = computed(() => index.error.value)
 const outcome = computed(() => index.outcome.value)

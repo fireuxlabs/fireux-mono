@@ -2,9 +2,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import type {
-  PublicJobCompanyProjection,
-  PublicJobPlaceProjection,
-} from '../../../../models/job-public.model.ts'
+  JobCompanySummary,
+  JobPlaceSummary,
+} from '../../../../models/job-directory.model.ts'
 import {
   JobStorage,
   type Job,
@@ -28,8 +28,8 @@ export type JobView = Pick<
 > & {
   company_id?: string
   place_id?: string
-  company?: PublicJobCompanyProjection
-  place?: PublicJobPlaceProjection
+  company?: JobCompanySummary
+  place?: JobPlaceSummary
   start_at: Job['start_at'] | string | null
   end_at: Job['end_at'] | string | null
 }
@@ -63,7 +63,7 @@ export namespace JobCard {
 const titleCase = (value: unknown) =>
   safeString(value)
     .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, character => character.toUpperCase())
+    .replace(/\b\w/g, (character) => character.toUpperCase())
 
 export function formatJobContractType(value: JobContractType): string {
   return titleCase(value)
@@ -116,9 +116,10 @@ function jobDate(value: JobView['start_at']): Date | null {
     seconds?: number
     toDate?: () => Date
   }
-  const date = typeof source.toDate === 'function'
-    ? source.toDate()
-    : new Date(Number(source.seconds ?? Number.NaN) * 1_000)
+  const date =
+    typeof source.toDate === 'function'
+      ? source.toDate()
+      : new Date(Number(source.seconds ?? Number.NaN) * 1_000)
   return Number.isFinite(date.getTime()) ? date : null
 }
 
@@ -133,7 +134,8 @@ export function formatJobSchedule(
     dateStyle: 'medium',
     timeStyle: 'short',
   })
-  if (start && end) return `${formatter.format(start)} – ${formatter.format(end)}`
+  if (start && end)
+    return `${formatter.format(start)} – ${formatter.format(end)}`
   if (start) return `Starts ${formatter.format(start)}`
   return `Ends ${formatter.format(end as Date)}`
 }
@@ -160,7 +162,9 @@ export function useJobInterface() {
       to: id ? `/${JobStorage.collection}/${encodeURIComponent(id)}` : '',
       imageUrl: safeString(job.place?.image_url || job.company?.image_url),
       title: safeString(job.title),
-      subtitle: [companyName, placeAddress || placeName].filter(Boolean).join(' · '),
+      subtitle: [companyName, placeAddress || placeName]
+        .filter(Boolean)
+        .join(' · '),
       summary: safeString(job.description),
       status: job.status,
       description: safeString(job.description),

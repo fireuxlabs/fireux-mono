@@ -19,7 +19,6 @@ export const MenuSourceUploadRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  publicRead: 'none',
   parent: 'Kitchen',
   scoped: MenuSourceUploadStorage.path,
   notes: [

@@ -1,0 +1,15 @@
+// @fireux-ecosystem-rules-fragment bringli/place-identity
+// @fireux-core-rules open
+    // Place detail subscriptions exact-read known canonical Place ids. Index
+    // and search remain server-owned, and every browser write remains denied.
+    match /places/{placeId} {
+      allow get: if resource != null;
+      allow list, create, update, delete: if false;
+    }
+
+    // This ecosystem owns its deployable Rules surface. Further domain
+    // policies require reviewed ecosystem-local fragments.
+    match /{document=**} {
+      allow read, write: if request.auth != null && false;
+    }
+// @fireux-core-rules close

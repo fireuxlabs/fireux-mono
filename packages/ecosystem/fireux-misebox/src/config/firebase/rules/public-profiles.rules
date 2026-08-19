@@ -326,6 +326,6 @@
     }
 
     // ===============================================================
-    // All remaining collections are denied by default. Public domain reads
-    // must use a domain-specific projection or an explicit validated rule.
+    // All remaining collections are denied by default. Domain reads require
+    // an explicit reviewed rule or a server-owned reader.
 // @fireux-core-rules close

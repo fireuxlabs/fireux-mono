@@ -1,79 +1,104 @@
 <!-- Concurrent edit — 2026-07-21 14:38 CEST — Company public projection: expose explicit bounded directory pagination. -->
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
+  <section class="collection-directory company-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div class="collection-manager__controls">
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge
-              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-              variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
+        >
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="companies"
-      state="loading"
-      surface="bare"
+      title="Loading companies"
+      description="Finding companies…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="companies"
-      state="error"
-      surface="bare"
-    />
-
-    <CompanyCollectionList
-      v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
+      title="Companies unavailable"
+      description="Companies could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
     >
-      <template #pill="{ card }">
-        <CompanyCardsPill v-bind="card" :link="linkEnabled" />
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
       </template>
-      <template #cell="{ card }">
-        <CompanyCardsCell v-bind="card" :link="linkEnabled" />
-      </template>
-    </CompanyCollectionList>
+    </CollectionDirectoryState>
 
-    <MoleculesStateCard
+    <div v-else-if="cardsFiltered.length" class="grid gap-4">
+      <CompanyCollectionList :cards="cardsFiltered" :variant="variant">
+        <template #pill="{ card }">
+          <CompanyCardsPill v-bind="card" :link="linkEnabled" />
+        </template>
+        <template #cell="{ card }">
+          <CompanyCardsCell v-bind="card" :link="linkEnabled" />
+        </template>
+      </CompanyCollectionList>
+
+      <UAlert
+        v-if="loadMoreError"
+        color="error"
+        variant="soft"
+        icon="i-lucide-circle-alert"
+        title="More companies could not be loaded"
+        description="The companies already shown are still available."
+      />
+
+      <div v-if="hasMore" class="flex justify-center">
+        <UButton
+          label="Load more companies"
+          variant="soft"
+          color="neutral"
+          :loading="loadingMore"
+          :disabled="loadingMore"
+          @click="handleLoadMore"
+        />
+      </div>
+    </div>
+
+    <CollectionDirectoryState
       v-else
-      entity="companies"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-building-2"
       :title="query ? 'No companies match your search' : 'No companies yet'"
       :description="
         query
@@ -82,38 +107,21 @@
       "
     />
 
-    <div v-if="hasMore" class="mt-4 flex justify-center">
-      <UButton
-        size="xs"
-        variant="soft"
-        color="neutral"
-        :loading="loadingMore"
-        :disabled="loadingMore"
-        @click="handleLoadMore"
-      >
-        Load more companies
-      </UButton>
-    </div>
-
-    <p v-if="loadMoreError" class="mt-2 text-center text-sm text-error">
-      More companies could not be loaded.
-    </p>
-
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Companies (JSON)'"
         context="collection manager · companies"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -139,7 +147,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Companies',
-    description: 'Browse company records built on claimed places.',
+    description: 'Browse companies and their business profiles.',
     link: true,
     searchPlaceholder: 'Search companies…',
     showSearch: true,
@@ -164,7 +172,7 @@ const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>
-  String(props.description || 'Browse company records built on claimed places.')
+  String(props.description || 'Browse companies and their business profiles.')
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>

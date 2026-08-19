@@ -384,11 +384,11 @@ export async function run({ repoRoot }) {
   )
   const jobsApi = read(
     repoRoot,
-    'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs.get.ts'
+    'packages/extensions/fireux-jobs/src/runtime/server/api/jobs.get.ts'
   )
   const jobsIndex = read(
     repoRoot,
-    'packages/extensions/fireux-jobs/src/runtime/job/server/index/public-index.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/server/index/read.ts'
   )
   const jobsSitemap = read(
     repoRoot,
@@ -404,21 +404,21 @@ export async function run({ repoRoot }) {
     violations.push('Jobs must register its sitemap XML handler.')
   }
   for (const source of [jobsApi, jobsSitemap]) {
-    if (!source.includes('readPublicJobIndexPage')) {
+    if (!source.includes('readJobDirectoryPage')) {
       violations.push(
-        'Jobs JSON and sitemap transport must share the bounded public index reader.'
+        'Jobs JSON and sitemap transport must share the bounded Directory reader.'
       )
       break
     }
   }
   for (const gate of [
-    'readPublicJobRuntimeScope',
-    'isPublicJobCandidate',
-    'projectPublicJob',
+    'readJobReadScope',
+    'isJobDirectoryCandidate',
+    'projectJobDirectoryEntry',
   ]) {
     if (!jobsIndex.includes(gate)) {
       violations.push(
-        `Jobs sitemap reader must retain the ${gate} public gate.`
+        `Jobs sitemap reader must retain the ${gate} eligibility gate.`
       )
     }
   }
@@ -442,7 +442,7 @@ export async function run({ repoRoot }) {
   )
   const kitchensIndex = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/public-index.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/read.ts'
   )
   const kitchensSitemap = read(
     repoRoot,
@@ -462,27 +462,21 @@ export async function run({ repoRoot }) {
   if (!kitchensServerConfig.includes("route: '/sitemaps/kitchens.xml'")) {
     violations.push('Kitchens must register its sitemap XML handler.')
   }
-  if (!kitchensSitemap.includes('readPublicKitchenIndexPage')) {
+  if (!kitchensSitemap.includes('readKitchenDirectoryPage')) {
     violations.push('Kitchen sitemap must use the bounded discovery reader.')
   }
-  for (const gate of [
-    'hydrateKitchenPublicDocuments',
-    'projectPublicKitchenIndexItem',
-  ]) {
-    if (!kitchensApi.includes(gate)) {
-      violations.push(
-        `Kitchen collection transport must retain the ${gate} root projection.`
-      )
-    }
+  if (!kitchensApi.includes('readKitchenDirectoryPage')) {
+    violations.push(
+      'Kitchen collection transport must delegate to its Directory reader.'
+    )
   }
   for (const gate of [
-    'isPublishedKitchen',
-    'hydrateKitchenPublicDocuments',
-    'projectPublicKitchenIndexItem',
+    'readKitchenRelatedRecords',
+    'projectKitchenDirectoryEntry',
   ]) {
     if (!kitchensIndex.includes(gate)) {
       violations.push(
-        `Kitchen sitemap reader must retain the ${gate} public gate.`
+        `Kitchen Directory reader must retain the ${gate} read gate.`
       )
     }
   }

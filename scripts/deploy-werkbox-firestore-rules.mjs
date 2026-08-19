@@ -424,7 +424,8 @@ function assertPinnedSource(value) {
     "appId in ['cleanbox-app', 'richies-reinigung']",
     'match /ecosystems/{ecosystemId}',
     'match /jobs/{document=**}',
-    'match /places/{document=**}',
+    'match /places/{placeId}',
+    'allow get: if resource != null;',
     'match /companies/{document=**}',
     'match /products/{document=**}',
     'match /blogs/{document=**}',
@@ -840,13 +841,16 @@ function buildSecurityTests(databaseId) {
     list('raw Professional list denied', 'DENY', databaseId, 'professionals', ownerId),
   ]
 
-  for (const root of ['jobs', 'places', 'companies', 'products', 'blogs']) {
+  for (const root of ['jobs', 'companies', 'products', 'blogs']) {
     tests.push(
       read(`${root} raw domain get denied`, 'DENY', databaseId, `${root}/probe`, ownerId, {}),
       create(`${root} raw domain create denied`, 'DENY', databaseId, `${root}/probe`, ownerId, {}, writeTime)
     )
   }
   tests.push(
+    read('Place exact canonical get allowed', 'ALLOW', databaseId, 'places/probe', null, {}),
+    list('Place collection list denied', 'DENY', databaseId, 'places', ownerId),
+    create('Place browser create denied', 'DENY', databaseId, 'places/probe', ownerId, {}, writeTime),
     read('unknown root defaults to deny', 'DENY', databaseId, 'future-domain/probe', ownerId, {}),
     create('unknown nested path defaults to deny', 'DENY', databaseId, 'apps/cleanbox-app/private/secrets/probe', adminId, {}, writeTime, adminMocks),
     read('migration evidence denied to clients', 'DENY', databaseId, MIGRATION_MARKER_PATH, adminId, {})

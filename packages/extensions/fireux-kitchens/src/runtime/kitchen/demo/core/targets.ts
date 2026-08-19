@@ -1,5 +1,4 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
-import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/place/utils/public-place-projection'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import {
   deanosKitchenDemoIdentity,
@@ -283,10 +282,8 @@ for (const item of kitchenDemoTargets) {
       String(item.kitchen.identity.display_name ?? '').trim() ||
     item.appId !== item.identity.appId ||
     item.appSupport.id !== kitchenId ||
-    item.publicPlace.id !== placeId ||
     !logoImageUrl ||
     placeMedia.includes(logoImageUrl) ||
-    !hasExactPublicPlaceProjectionShape(item.publicPlace) ||
     item.appSupport.join_requests.length !== 0 ||
     new Set(teamIds).size !== teamIds.length ||
     new Set(operatorIds).size !== operatorIds.length ||

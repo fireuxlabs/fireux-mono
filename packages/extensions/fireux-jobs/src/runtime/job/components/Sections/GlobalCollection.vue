@@ -61,21 +61,21 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: render category while source App scope stays server-only.
+// Concurrent edit — 2026-07-21 13:09 CEST — Job Directory: render category while source App scope stays server-owned.
 import { computed } from 'vue'
-import { usePublicJobCollection } from '../../composables/public/usePublicJobCollection.ts'
-import type { PublicJobProjection } from '../../models/job-public.model.ts'
+import { useJobDirectory } from '../../composables/useJobDirectory.ts'
+import type { JobDirectoryEntry } from '../../models/job-directory.model.ts'
 
-const { jobs: publicJobs, outcome: sourceOutcome } = usePublicJobCollection()
+const { jobs: directoryJobs, outcome: sourceOutcome } = useJobDirectory()
 
-const jobs = computed<PublicJobProjection[]>(() => publicJobs.value ?? [])
+const jobs = computed<JobDirectoryEntry[]>(() => directoryJobs.value ?? [])
 const outcome = computed(() => sourceOutcome.value)
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
 const total = computed(() => jobs.value.length)
 
-const badgeColor = (status?: PublicJobProjection['status']) => {
+const badgeColor = (status?: JobDirectoryEntry['status']) => {
   if (status === 'open') return 'success'
   return 'neutral'
 }

@@ -1,10 +1,13 @@
-// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: search projected Places without browser Firestore access.
 import { ref, watch } from 'vue'
-import { type BasePlace, type PlaceImageShade, type PlaceSource } from '../../../../models/place.model.ts'
+import {
+  type BasePlace,
+  type PlaceImageShade,
+  type PlaceSource,
+} from '../../../../models/place.model.ts'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
-import { searchPublicPrimary } from './searchPublicPrimary'
+import { searchPrimary } from './searchPrimary'
 import { searchGoogle } from './searchGoogle'
 
 type UsePlaceSearchOptions = {
@@ -28,13 +31,16 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
     if (!id) return null
     const name = String((base as any)?.name ?? '').trim()
     const shortName = String((base as any)?.short_name ?? '').trim()
-    const formattedAddress = String((base as any)?.formatted_address ?? '').trim()
+    const formattedAddress = String(
+      (base as any)?.formatted_address ?? ''
+    ).trim()
     const shortAddress = String((base as any)?.short_address ?? '').trim()
     const imageUrl = String((base as any)?.image_url ?? '').trim()
     const imageShade = (base as any)?.image_shade as PlaceImageShade | undefined
     const source = (base as any)?.source as PlaceSource | undefined
     const claimedBy = String((base as any)?.claimed_by ?? '').trim()
-    const collection = String((base as any)?.collection ?? '').trim() || undefined
+    const collection =
+      String((base as any)?.collection ?? '').trim() || undefined
     const lat = Number((base as any)?.lat)
     const lng = Number((base as any)?.lng)
     return {
@@ -76,7 +82,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       let primaryDebug: Record<string, unknown> | null = null
 
       try {
-        const primary = await searchPublicPrimary({
+        const primary = await searchPrimary({
           term,
           termNormalized,
           mapToCard: mapToBasePlace,

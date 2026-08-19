@@ -1,60 +1,57 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p v-if="description">{{ description }}</p>
-        </div>
+  <section class="collection-directory supplier-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
         >
-          <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-
-            <UBadge v-if="showCount && isSettled" variant="soft">
-              {{ countLabel }}
-            </UBadge>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="suppliers"
-      state="loading"
-      surface="bare"
+      title="Loading suppliers"
+      description="Finding suppliers…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="suppliers"
-      state="error"
-      surface="bare"
+      title="Suppliers unavailable"
       description="Suppliers could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
     />
 
     <SupplierCollectionList
@@ -78,32 +75,32 @@
       </template>
     </SupplierCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="suppliers"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-truck"
       :title="query ? 'No matching suppliers' : 'No suppliers yet'"
-      :description="query
-        ? 'Try a different supplier name.'
-        : 'Suppliers will appear here when they are available.'"
+      :description="
+        query
+          ? 'Try a different supplier name.'
+          : 'Suppliers will appear here when they are available.'
+      "
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -132,7 +129,8 @@ const props = withDefaults(
   }>(),
   {
     title: 'Suppliers',
-    description: 'Browse supplier records available to this runtime.',
+    description:
+      'Find suppliers and explore their identities, catalogues and delivery areas.',
     link: true,
     showBadges: true,
     searchPlaceholder: 'Search suppliers…',
@@ -148,14 +146,13 @@ const props = withDefaults(
 const fetched = useSupplierCollection()
 const rawCollection = computed(() => fetched.suppliers.value)
 const outcome = computed(() => fetched.outcome.value)
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(rawCollection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Suppliers'))
 const description = computed(() =>
   String(
-    props.description || 'Browse supplier records available to this runtime.'
+    props.description ||
+      'Find suppliers and explore their identities, catalogues and delivery areas.'
   )
 )
 const linkEnabled = computed(() => props.link !== false)
@@ -184,8 +181,9 @@ const {
 } = useSupplierInterface()
 
 const collection = computed<Supplier[]>(() =>
-  rawCollection.value
-    .filter((entry): entry is Supplier => Boolean(makeCard(entry as Supplier)))
+  rawCollection.value.filter((entry): entry is Supplier =>
+    Boolean(makeCard(entry as Supplier))
+  )
 )
 const totalCount = computed(() => collection.value.length)
 
@@ -209,5 +207,4 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-
 </script>

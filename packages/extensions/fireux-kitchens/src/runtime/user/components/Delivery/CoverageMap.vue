@@ -5,22 +5,13 @@
     aria-label="Delivery coverage map"
   >
     <div class="delivery-coverage-map__canvas">
-      <div
-        ref="mapEl"
-        class="delivery-coverage-map__google"
-      />
+      <div ref="mapEl" class="delivery-coverage-map__google" />
 
-      <p
-        v-if="mapMessage"
-        class="delivery-coverage-map__message"
-      >
+      <p v-if="mapMessage" class="delivery-coverage-map__message">
         {{ mapMessage }}
       </p>
 
-      <p
-        v-if="mapError"
-        class="delivery-coverage-map__error"
-      >
+      <p v-if="mapError" class="delivery-coverage-map__error">
         {{ mapError }}
       </p>
     </div>
@@ -29,7 +20,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useGoogleMaps } from 'fireux-places/runtime/composables/fireux/places/useGoogleMaps'
+import { useGoogleMaps } from 'fireux-places/runtime/place/composables/useGoogleMaps'
 import {
   extendBoundsWithLocalZones,
   fitDeliveryZoneBounds,
@@ -142,9 +133,8 @@ onMounted(async () => {
   } catch (error) {
     if (!isMounted.value) return
     mapMessage.value = ''
-    mapError.value = error instanceof Error
-      ? error.message
-      : 'Google Maps could not load.'
+    mapError.value =
+      error instanceof Error ? error.message : 'Google Maps could not load.'
   }
 })
 
@@ -210,9 +200,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
   aspect-ratio: 16 / 8;
   max-height: 20rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text, var(--ui-text)) 14%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--menu-text, var(--ui-text)) 14%, transparent);
   border-radius: calc(var(--ui-radius) * 4);
-  background: color-mix(in srgb, var(--menu-bg, var(--ui-bg)) 90%, var(--menu-text, var(--ui-text)));
+  background: color-mix(
+    in srgb,
+    var(--menu-bg, var(--ui-bg)) 90%,
+    var(--menu-text, var(--ui-text))
+  );
 }
 
 .delivery-coverage-map--compact .delivery-coverage-map__canvas {

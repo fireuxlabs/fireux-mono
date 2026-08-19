@@ -1,5 +1,5 @@
 <template>
-  <PlacePublicEdit :locator="routeLocator" />
+  <PlaceEditPage :locator="routeLocator" />
 </template>
 
 <script setup lang="ts">

@@ -746,7 +746,6 @@ async function buildSecurityTests() {
     'ingredients',
     'jobs',
     'menus',
-    'places',
     'portfolios',
     'products',
     'projects',
@@ -3674,6 +3673,25 @@ async function buildSecurityTests() {
       'DENY',
       'security-probes/probe',
       strangerId
+    ),
+    readResource(
+      'existing Place exact read is available without authentication',
+      'ALLOW',
+      'places/security-probe',
+      '',
+      { name: 'Security probe', place_type: 'physical' }
+    ),
+    read(
+      'missing Place exact read remains denied',
+      'DENY',
+      'places/security-missing'
+    ),
+    list('Place collection list remains denied', 'DENY', 'places'),
+    deniedCreate(
+      'browser cannot create a Place',
+      'places/security-probe',
+      strangerId,
+      { name: 'Forged Place', place_type: 'physical' }
     ),
     ...defaultDeniedRoots.flatMap((collectionName) => [
       read(

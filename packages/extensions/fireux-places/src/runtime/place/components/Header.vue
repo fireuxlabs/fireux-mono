@@ -107,10 +107,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { PublicPlaceDetailProjection } from '../models/place-public.model.ts'
+import type { PlaceHeaderPresentation } from '../models/place-presentation.model.ts'
 
 defineOptions({ name: 'PlaceHeader' })
-const props = defineProps<{ place: PublicPlaceDetailProjection }>()
+const props = defineProps<{ place: PlaceHeaderPresentation }>()
 
 type PlaceHeaderAction = {
   key: 'directions' | 'website'

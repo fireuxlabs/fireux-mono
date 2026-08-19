@@ -9,7 +9,7 @@ import type {
   PlaceBusinessHours,
   PlaceSocialLinks,
 } from '../../../models/place.model.ts'
-import type { PublicPlaceDetailResponse } from '../../../models/place-public.model.ts'
+import type { PlaceDetailResponse } from '../../../models/place-read.model.ts'
 import { usePlaceDetailState } from '../../usePlaceDetailState'
 import { normalizePlaceBusinessHours } from '../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
@@ -78,17 +78,14 @@ export async function updatePlaceDocument(
   const user = await useRequireUser()
   const token = await user.getIdToken()
 
-  return $fetch<PublicPlaceDetailResponse>(
-    `/api/places/${encodeURIComponent(id)}`,
-    {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-      body: {
-        patch,
-        ...resolvedAuthority(options),
-      },
-    }
-  )
+  return $fetch<PlaceDetailResponse>(`/api/places/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` },
+    body: {
+      patch,
+      ...resolvedAuthority(options),
+    },
+  })
 }
 
 /**
@@ -100,7 +97,7 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   const update = async (id: string, patch: PlaceBrowserPatch) => {
     const response = await updatePlaceDocument(id, patch, options)
     publish(response)
-    return response.item
+    return response.place
   }
 
   async function updateName(value: string, ctx: UpdateCtx) {
