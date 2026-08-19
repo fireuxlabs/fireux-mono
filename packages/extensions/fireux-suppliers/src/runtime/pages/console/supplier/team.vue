@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Supplier Team">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Supplier Team" />
+            <ConsoleAICapabilityPlaceholder capability="Supplier Team" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

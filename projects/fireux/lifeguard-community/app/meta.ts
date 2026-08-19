@@ -1,7 +1,7 @@
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const metaContent = defineFireuxMeta({
-  app: { id: 'lifeguard-community', name: 'Lifeguard Community', ecosystem: 'slap' },
+  app: { id: 'lifeguard-community', name: 'Lifeguard Community', ecosystem: 'fireux' },
   copy: {
     big_personality: 'Lifeguard Community',
     headline: 'A community for lifeguards.',

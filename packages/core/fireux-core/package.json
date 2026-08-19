@@ -38,6 +38,10 @@
       "types": "./src/runtime/*.scss",
       "default": "./src/runtime/*.scss"
     },
+    "./runtime/app/components/ErrorPage": {
+      "types": "./src/runtime/app/components/ErrorPage.vue",
+      "default": "./src/runtime/app/components/ErrorPage.vue"
+    },
     "./runtime/*": {
       "types": "./src/runtime/*.ts",
       "default": "./src/runtime/*.ts"

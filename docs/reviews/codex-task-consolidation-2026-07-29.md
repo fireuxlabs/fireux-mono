@@ -15,18 +15,18 @@ Current source, executable guards, `AGENTS.md`, and the living
 
 ## Consolidated task families
 
-| Task family found in Codex | Durable destination |
-| --- | --- |
-| Repo, canon, entity architecture, family alignment | `docs/ai/gpt-context.md`, `docs/concepts/spine.md`, `docs/concepts/entities.md`, and the entity guards |
-| Misebox, Places, Kitchens, onboarding, media | `docs/ai/misebox-context.md`, `docs/concepts/place-kitchen-media.md`, `docs/concepts/family-public-index.md`, and `docs/concepts/family-public-detail.md` |
-| Menu design, menu funnel, ordering, allergy acknowledgement | `docs/concepts/family-menu.md`, `docs/concepts/menu-ordering.md`, and current `fireux-kitchens` source |
-| Sproochli, Interlaken Essen copy, translation memory | `docs/concepts/translation.md`, `docs/ai/misebox-context.md`, the Sproochli copy guard, and current translation source |
-| Jobs and local/global Misebox hiring | `docs/ai/misebox-context.md`, current `fireux-jobs` source, and its focused hiring and doorway tests |
-| Console organisation, Cards, CSS, public presentation | `docs/concepts/console.md`, `docs/concepts/card-family.md`, `docs/concepts/components.md`, the public-family maps, and component/CSS guards |
-| Demo data and Demo media | `docs/concepts/demo-data.md`, `docs/ai/misebox-context.md`, the guarded media manifest, and publishing/audit scripts |
-| Finance and Deanos reporting | `docs/concepts/finance.md`, `docs/ai/misebox-context.md`, and current Kitchen Finance source |
-| Blogs, profiles, project users, app monitoring | The matching concept maps and current bounded server projections |
-| BuenoHost and Werkbox work | `docs/ai/buenohost-context.md` and `docs/ai/werkbox-context.md` respectively |
+| Task family found in Codex                                  | Durable destination                                                                                                                                           |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo, canon, entity architecture, family alignment          | `docs/ai/gpt-context.md`, `docs/concepts/spine.md`, `docs/concepts/entities.md`, and the entity guards                                                        |
+| Misebox, Places, Kitchens, onboarding, media                | `docs/ai/misebox-context.md`, `docs/concepts/place-kitchen-media.md`, `docs/concepts/family-entity-directory.md`, and `docs/concepts/family-public-detail.md` |
+| Menu design, menu funnel, ordering, allergy acknowledgement | `docs/concepts/family-menu.md`, `docs/concepts/menu-ordering.md`, and current `fireux-kitchens` source                                                        |
+| Sproochli, Interlaken Essen copy, translation memory        | `docs/concepts/translation.md`, `docs/ai/misebox-context.md`, the Sproochli copy guard, and current translation source                                        |
+| Jobs and local/global Misebox hiring                        | `docs/ai/misebox-context.md`, current `fireux-jobs` source, and its focused hiring and doorway tests                                                          |
+| Console organisation, Cards, CSS, public presentation       | `docs/concepts/console.md`, `docs/concepts/card-family.md`, `docs/concepts/components.md`, the public-family maps, and component/CSS guards                   |
+| Demo data and Demo media                                    | `docs/concepts/demo-data.md`, `docs/ai/misebox-context.md`, the guarded media manifest, and publishing/audit scripts                                          |
+| Finance and Deanos reporting                                | `docs/concepts/finance.md`, `docs/ai/misebox-context.md`, and current Kitchen Finance source                                                                  |
+| Blogs, profiles, project users, app monitoring              | The matching concept maps and current bounded server projections                                                                                              |
+| BuenoHost and Werkbox work                                  | `docs/ai/buenohost-context.md` and `docs/ai/werkbox-context.md` respectively                                                                                  |
 
 ## Durable decisions retained
 

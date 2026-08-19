@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared public-directory chrome and truthful projected outcomes. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared Directory chrome and truthful projected outcomes. -->
 <template>
   <section id="open-jobs" class="collection-directory job-directory">
     <CollectionDirectoryHeader :title="title" :description="description">
@@ -18,9 +18,11 @@
           color="neutral"
           variant="ghost"
           :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
-          :aria-label="variant === 'pill'
-            ? 'Switch to card view'
-            : 'Switch to compact view'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
           @click="toggleVariant"
         />
 
@@ -50,7 +52,17 @@
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-    />
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
     <div v-else-if="cardsFiltered.length">
       <JobCollectionList :cards="cardsFiltered" :variant="variant">
@@ -84,16 +96,20 @@
     <div v-else>
       <CollectionDirectoryState
         icon="i-lucide-briefcase-business"
-        :title="query
-          ? 'No matching jobs'
-          : hasMore
-            ? 'More published jobs may be available'
-            : 'No published jobs yet'"
-        :description="query
-          ? 'Try a different role, employer, or location.'
-          : hasMore
-            ? 'Continue through the bounded directory to check the remaining listings.'
-            : 'Published opportunities will appear here when employers make them public.'"
+        :title="
+          query
+            ? 'No matching jobs'
+            : hasMore
+              ? 'More published jobs may be available'
+              : 'No published jobs yet'
+        "
+        :description="
+          query
+            ? 'Try a different role, employer, or location.'
+            : hasMore
+              ? 'Continue through the bounded directory to check the remaining listings.'
+              : 'Published opportunities will appear here when employers make them public.'
+        "
       >
         <template v-if="!query && !hasMore" #actions>
           <UButton
@@ -131,14 +147,14 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Jobs (Public JSON)"
         context="collection manager · jobs · bounded public projection"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -170,7 +186,8 @@ const props = withDefaults(
   }>(),
   {
     title: 'Open opportunities',
-    description: 'Explore roles, meet the employer, and understand the work before you apply.',
+    description:
+      'Explore roles, meet the employer, and understand the work before you apply.',
     link: true,
     searchPlaceholder: 'Search jobs…',
     showSearch: true,
@@ -190,16 +207,19 @@ const loadMoreError = computed(() => fetched.loadMoreError.value)
 const onLoadMore = (): void => {
   void fetched.loadMore()
 }
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
-const description = computed(() => String(
-  props.description || 'Choose a published job to review its details.'
-))
+const description = computed(() =>
+  String(props.description || 'Choose a published job to review its details.')
+)
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search jobs…'))
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search jobs…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
@@ -220,7 +240,7 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: job => makeCard(job),
+    makeCard: (job) => makeCard(job),
     initialVariant: props.initialVariant,
   })
 

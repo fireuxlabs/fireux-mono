@@ -1,22 +1,22 @@
 <template>
-  <UPage>
-    <UPageHeader
-      title="Apps"
-      description="Browse published apps across the FireUX platform."
+  <DirectorySurface
+    eyebrow="Discover"
+    title="Apps"
+    description="Browse published Apps across the FireUX platform."
+    icon="i-lucide-app-window"
+    secondary-label="Your Apps"
+  >
+    <AppCollectionManager
+      :controller="appsController"
+      title="Platform Apps"
+      description="Published App projections from their owning Projects and Ecosystems."
     />
 
-    <UPageBody>
-      <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
-      <AppCTA :controller="appsController" />
+    <template #secondary>
       <AppCollectionMine :controller="appsController" />
-
-      <AppCollectionManager
-        :controller="appsController"
-        title="Platform directory"
-        description="Published App projections from their owning Projects and Ecosystems."
-      />
-    </UPageBody>
-  </UPage>
+      <AppCTA :controller="appsController" />
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

@@ -11,7 +11,9 @@
   .market-footer {
     position: static;
     justify-content: center;
-    margin: calc(var(--spacing) * 8) clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16)) calc(var(--spacing) * 12);
+    margin: calc(var(--spacing) * 8)
+      clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+      calc(var(--spacing) * 12);
   }
 }
 
@@ -39,11 +41,10 @@
   .market-storefront__intro {
     order: 2;
   }
-
 }
 
 @media (max-width: 40rem) {
-  .market-app .public-index__hero {
+  .market-app .directory-surface__hero {
     padding-top: calc(var(--spacing) * 22);
   }
 
@@ -130,7 +131,11 @@
   }
 
   .market-backdrop::after {
-    background: linear-gradient(180deg, transparent 40%, var(--market-ink) 100%);
+    background: linear-gradient(
+      180deg,
+      transparent 40%,
+      var(--market-ink) 100%
+    );
   }
 
   .market-backdrop img {
@@ -152,12 +157,20 @@
 
   .market-landing {
     align-items: end;
-    background: linear-gradient(180deg, transparent 36svh, var(--market-ink) 58svh);
+    background: linear-gradient(
+      180deg,
+      transparent 36svh,
+      var(--market-ink) 58svh
+    );
   }
 
   .market-browse {
     align-items: start;
-    background: linear-gradient(180deg, transparent 46svh, var(--market-ink) 78svh);
+    background: linear-gradient(
+      180deg,
+      transparent 46svh,
+      var(--market-ink) 78svh
+    );
   }
 
   .market-browse__columns {
@@ -193,7 +206,11 @@
 
   .market-register {
     align-items: start;
-    background: linear-gradient(180deg, transparent 26svh, var(--market-ink) 50svh);
+    background: linear-gradient(
+      180deg,
+      transparent 26svh,
+      var(--market-ink) 50svh
+    );
   }
 
   .market-register__content {
@@ -202,7 +219,11 @@
 
   .market-personal {
     padding-top: calc(var(--spacing) * 27);
-    background: linear-gradient(180deg, transparent 32svh, var(--market-ink) 56svh);
+    background: linear-gradient(
+      180deg,
+      transparent 32svh,
+      var(--market-ink) 56svh
+    );
   }
 
   .market-personal__header {
@@ -247,7 +268,11 @@
 
   .market-storefront {
     padding-top: calc(var(--spacing) * 26);
-    background: linear-gradient(180deg, transparent 32svh, var(--market-ink) 58svh);
+    background: linear-gradient(
+      180deg,
+      transparent 32svh,
+      var(--market-ink) 58svh
+    );
   }
 
   .market-storefront__hero {
@@ -271,7 +296,8 @@
 
   .market-footer {
     position: static;
-    margin: calc(var(--spacing) * 8) calc(var(--spacing) * 4) calc(calc(var(--spacing) * 22) + env(safe-area-inset-bottom));
+    margin: calc(var(--spacing) * 8) calc(var(--spacing) * 4)
+      calc(calc(var(--spacing) * 22) + env(safe-area-inset-bottom));
     flex-direction: column;
     gap: calc(var(--spacing) * 1.2);
     text-align: center;

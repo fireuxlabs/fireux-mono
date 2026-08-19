@@ -5,8 +5,8 @@ import {
   normalizeConsoleFamily,
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
-} from '../app/ui/nav/consoleRoutes'
-import { useConsole } from '../app/ui/nav/useConsole'
+} from './consoleRoutes'
+import { useConsole } from './useConsole'
 
 type ConsoleEntryFamily = {
   key: ConsoleFamily

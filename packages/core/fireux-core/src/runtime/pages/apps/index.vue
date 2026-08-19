@@ -1,16 +1,22 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody>
-      <!-- Core/platform CTA family: AppCTA starts onboarding; My apps is scoped, browse is the public collection. -->
-      <AppCTA :controller="appsController" />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-app-window"
+    secondary-label="Your Apps"
+  >
+    <AppCollectionManager
+      :controller="appsController"
+      title="Ecosystem Apps"
+      description="Browse Apps available through this Ecosystem."
+    />
+
+    <template #secondary>
       <AppCollectionMine :controller="appsController" />
-      <AppCollectionManager
-        :controller="appsController"
-        title="Ecosystem directory"
-      />
-    </UPageBody>
-  </UPage>
+      <AppCTA :controller="appsController" />
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

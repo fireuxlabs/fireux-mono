@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Properties">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Portfolio Properties" />
+            <ConsoleAICapabilityPlaceholder capability="Portfolio Properties" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

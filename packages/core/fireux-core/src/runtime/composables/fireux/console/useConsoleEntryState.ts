@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useAuth } from '../app/firebase/useAuth'
+import { useAuth } from '../firebase/useAuth'
 
 export type ConsoleAuthPhase = 'loading' | 'guest' | 'signed-in'
 

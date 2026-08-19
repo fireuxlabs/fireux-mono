@@ -15,7 +15,7 @@ about them and where current coverage is incomplete.
 
 - Firestore stack: `docs/concepts/firestore-entity.md`
 - Console family: `docs/concepts/family-console-entity.md`
-- Public index: `docs/concepts/family-public-index.md`
+- Entity Directory: `docs/concepts/family-entity-directory.md`
 - Public detail: `docs/concepts/family-public-detail.md`
 - Menu family: `docs/concepts/family-menu.md`
 - Finance records: `docs/concepts/finance.md`

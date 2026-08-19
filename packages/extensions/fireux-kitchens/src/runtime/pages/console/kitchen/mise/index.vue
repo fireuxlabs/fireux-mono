@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Mise">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Mise" />
+            <ConsoleAICapabilityPlaceholder capability="Mise" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

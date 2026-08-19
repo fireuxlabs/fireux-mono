@@ -11,7 +11,7 @@ Map how route pages should be built and where consensus is still forming.
 ## Vertical links
 
 - Parent: nuxt4.md
-- Child: family-public-index.md
+- Child: family-entity-directory.md
 - Child: family-public-detail.md
 - Child: family-console-entity.md
 - Child: family-menu.md
@@ -126,7 +126,7 @@ Map how route pages should be built and where consensus is still forming.
 - Console route shells follow `console.md`; domain differences live below the
   route page.
 - Public index presentation and authority differences live in
-  `family-public-index.md`.
+  `family-entity-directory.md`.
 - Public detail route identity and operator-panel differences live in
   `family-public-detail.md`.
 - Tenant route omission versus global explicit scope lives in

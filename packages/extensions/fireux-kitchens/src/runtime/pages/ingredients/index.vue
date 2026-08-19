@@ -1,12 +1,13 @@
-<!-- Concurrent edit — 2026-07-22 14:20 CEST — Ingredients public index pass: remove the create CTA from the public collection. -->
+<!-- Ingredient creation stays in protected management; this route is the Directory. -->
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-
-    <UPageBody>
-      <IngredientCollectionManager />
-    </UPageBody>
-  </UPage>
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-carrot"
+  >
+    <IngredientCollectionManager />
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <PublicIndexSurface
+  <DirectorySurface
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
       <ProfessionalCTA />
     </template>
-  </PublicIndexSurface>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

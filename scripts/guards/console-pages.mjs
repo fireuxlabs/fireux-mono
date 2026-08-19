@@ -20,8 +20,8 @@ const CONSOLE_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue'
 const CONSOLE_SHARED_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue'
-const CONSOLE_OPERATION_AI_PLACEHOLDER =
-  'packages/extensions/fireux-ai/src/runtime/components/Console/AI/OperationPlaceholder.vue'
+const CONSOLE_AI_CAPABILITY_PLACEHOLDER =
+  'packages/extensions/fireux-ai/src/runtime/components/Console/AI/CapabilityPlaceholder.vue'
 const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
@@ -219,10 +219,10 @@ export async function run(ctx) {
 }
 
 function validateConsoleOperationAIPlaceholder(repoRoot, violations) {
-  const placeholderPath = path.join(repoRoot, CONSOLE_OPERATION_AI_PLACEHOLDER)
+  const placeholderPath = path.join(repoRoot, CONSOLE_AI_CAPABILITY_PLACEHOLDER)
   if (!existsSync(placeholderPath)) {
     violations.push(
-      `${CONSOLE_OPERATION_AI_PLACEHOLDER} (FireUX AI Operation placeholder is missing)`
+      `${CONSOLE_AI_CAPABILITY_PLACEHOLDER} (FireUX AI capability placeholder is missing)`
     )
     return
   }

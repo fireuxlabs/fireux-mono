@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar :title="navTitle">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Portfolio Identity" />
+            <ConsoleAICapabilityPlaceholder capability="Portfolio Identity" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

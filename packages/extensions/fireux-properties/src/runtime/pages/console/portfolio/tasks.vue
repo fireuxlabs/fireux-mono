@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Tasks">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Portfolio Tasks" />
+            <ConsoleAICapabilityPlaceholder capability="Portfolio Tasks" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Calendar">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Property Calendar" />
+            <ConsoleAICapabilityPlaceholder capability="Property Calendar" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

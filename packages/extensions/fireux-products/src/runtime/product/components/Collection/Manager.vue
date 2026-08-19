@@ -1,60 +1,57 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p v-if="description">{{ description }}</p>
-        </div>
+  <section class="collection-directory product-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
         >
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge
-              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-              variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="products"
-      state="loading"
-      surface="bare"
+      title="Loading products"
+      description="Finding products…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="products"
-      state="error"
-      surface="bare"
+      title="Products unavailable"
+      description="Products could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
     />
 
     <ProductCollectionList
@@ -70,11 +67,9 @@
       </template>
     </ProductCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="products"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-box"
       :title="query ? 'No products match your search' : 'No products yet'"
       :description="
         query
@@ -84,20 +79,20 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Products (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -135,9 +130,12 @@ const props = withDefaults(
 )
 
 const fetched = useProductCollection()
-const collection = computed<FirebaseProduct[]>(() => fetched.products.value ?? [])
+const collection = computed<FirebaseProduct[]>(
+  () => fetched.products.value ?? []
+)
 const outcome = computed(() => fetched.outcome.value)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Products'))
 const description = computed(() =>
   String(

@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Financial Signals">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Portfolio Finance" />
+            <ConsoleAICapabilityPlaceholder capability="Portfolio Finance" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

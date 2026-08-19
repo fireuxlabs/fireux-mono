@@ -1,14 +1,14 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: pre-create family console and selection state for navigation.
 import { computed } from 'vue'
 import { useRoute } from '#imports'
-import { useNav } from '../app/navigation/useNav'
+import { useNav } from '../../navigation/useNav'
 import {
   normalizeConsoleFamily,
   consoleFamilyFromRouteContext,
-} from '../app/ui/nav/consoleRoutes'
-import { useConsole } from '../app/ui/nav/useConsole'
-import { useConsoleSelection } from '../app/ui/nav/useConsoleSelection'
-import type { NavItem, NavPosition } from '../app/navigation/types'
+} from './consoleRoutes'
+import { useConsole } from './useConsole'
+import { useConsoleSelection } from './useConsoleSelection'
+import type { NavItem, NavPosition } from '../../navigation/types'
 
 function normalizePath(value: unknown): string {
   return String(value || '')

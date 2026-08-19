@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar :title="navTitle">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Supplier Identity" />
+            <ConsoleAICapabilityPlaceholder capability="Supplier Identity" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

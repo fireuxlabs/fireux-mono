@@ -8,16 +8,16 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project slap-45389 --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --auth-domains lifeguard-community.web.app --app-domain https://lifeguard-community.web.app --verify-text \"A community for lifeguards.\"",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --only hosting --auth-domains lifeguard-community.web.app --app-domain https://lifeguard-community.web.app --verify-text \"A community for lifeguards.\""
+    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project fireux-2005 --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --auth-domains lifeguard-community-fireux-2005.web.app --app-domain https://lifeguard-community-fireux-2005.web.app --verify-text \"A community for lifeguards.\"",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --only hosting --auth-domains lifeguard-community-fireux-2005.web.app --app-domain https://lifeguard-community-fireux-2005.web.app --verify-text \"A community for lifeguards.\""
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
-    "fireux-slap": "workspace:*",
+    "fireux-fireux": "workspace:*",
     "nuxt": "4.4.6",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

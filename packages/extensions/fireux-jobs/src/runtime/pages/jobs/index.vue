@@ -1,6 +1,6 @@
-<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the public-index shell with discovery before author actions. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the Directory shell with discovery before author actions. -->
 <template>
-  <PublicIndexSurface
+  <DirectorySurface
     eyebrow="Open jobs, direct hiring"
     :title="pageTitle"
     :description="pageDescription"
@@ -36,7 +36,7 @@
     <template #secondary>
       <JobCTA />
     </template>
-  </PublicIndexSurface>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

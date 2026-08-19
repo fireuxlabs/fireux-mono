@@ -8,9 +8,9 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
-    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project slap-45389 --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --auth-domains holzworm-slap-45389.web.app --app-domain https://holzworm-slap-45389.web.app --verify-text \"Lasergravur auf Holz.\"",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --only hosting --auth-domains holzworm-slap-45389.web.app --app-domain https://holzworm-slap-45389.web.app --verify-text \"Lasergravur auf Holz.\"",
+    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project fireux-2005 --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --auth-domains holzworm-fireux-2005.web.app --app-domain https://holzworm-fireux-2005.web.app --verify-text \"Lasergravur auf Holz.\"",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json --only hosting --auth-domains holzworm-fireux-2005.web.app --app-domain https://holzworm-fireux-2005.web.app --verify-text \"Lasergravur auf Holz.\"",
     "check:env": "node ../../../scripts/check-env.mjs"
   },
   "dependencies": {
@@ -18,7 +18,7 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
-    "fireux-slap": "workspace:*",
+    "fireux-fireux": "workspace:*",
     "nuxt": "4.4.6",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

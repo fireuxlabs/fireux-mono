@@ -1,75 +1,81 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
-
-        <div class="collection-manager__controls">
-          <div
-            class="ml-auto flex w-full flex-wrap items-center justify-end gap-2"
+  <section class="collection-directory ingredient-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <div class="flex w-full flex-wrap items-center justify-end gap-2">
+          <USelect
+            v-model="category"
+            size="xs"
+            :items="categoryOptions"
+            aria-label="Filter Ingredient category"
+            class="min-w-36 shrink-0"
+          />
+          <USelect
+            v-model="kind"
+            size="xs"
+            :items="kindOptions"
+            aria-label="Filter Ingredient kind"
+            class="min-w-36 shrink-0"
+          />
+          <UInput
+            v-if="showSearchInput"
+            v-model="query"
+            size="xs"
+            :placeholder="searchPlaceholder"
+            :aria-label="searchPlaceholder"
+            class="min-w-36 shrink-0"
+          />
+          <UButton
+            v-if="showVariantToggle"
+            size="xs"
+            variant="ghost"
+            :icon="
+              variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+            "
+            :aria-label="
+              variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'
+            "
+            @click="toggleVariant"
+          />
+          <span
+            v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+            class="collection-directory__count"
           >
-            <USelect
-              v-model="category"
-              size="xs"
-              :items="categoryOptions"
-              aria-label="Filter Ingredient category"
-              class="min-w-36 shrink-0"
-            />
-            <USelect
-              v-model="kind"
-              size="xs"
-              :items="kindOptions"
-              aria-label="Filter Ingredient kind"
-              class="min-w-36 shrink-0"
-            />
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-              class="min-w-36 shrink-0"
-            />
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge
-              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-              variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
+            {{ countLabel }}
+          </span>
         </div>
-      </div>
-    </template>
+      </template>
+    </CollectionDirectoryHeader>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="ingredients"
-      state="loading"
-      surface="bare"
+      title="Loading ingredients"
+      description="Finding ingredients…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="ingredients"
-      state="error"
-      surface="bare"
-    />
+      title="Ingredients unavailable"
+      description="Ingredients could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
     <IngredientCollectionList
       v-else-if="cardsFiltered.length"
@@ -89,11 +95,9 @@
       </template>
     </IngredientCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="ingredients"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-carrot"
       :title="
         query
           ? 'No ingredients match your search'
@@ -111,21 +115,21 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="devJsonDefaultOpen"
         :hide-when-empty="devJsonHideWhenEmpty"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">

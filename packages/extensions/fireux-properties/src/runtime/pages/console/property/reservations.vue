@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Reservations">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Property Reservations" />
+            <ConsoleAICapabilityPlaceholder capability="Property Reservations" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

@@ -1,6 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-27
-// usage_note: guard component naming, resolved imports, and prop-driven Cards authority.
+// last_used: 2026-08-19
+// usage_note: guard component naming, Entity Directory composition, resolved imports, and prop-driven Cards authority.
 // FILE: scripts/guards/components.mjs
 // Component registration guard.
 
@@ -60,8 +60,7 @@ const CARD_SUPPORT_PATHS = new Set([
 ])
 const CARD_DATA_AUTHORITY_RE =
   /\b(?:useAsyncData|useFetch|\$fetch|useFirestore|useCollection|useDocument|onSnapshot|getDoc|getDocs|use[A-Z][A-Za-z0-9]*(?:Collection|Fetch))\s*\(/
-const CARD_STORAGE_IMPORT_RE =
-  /from\s+["'](?:firebase\/firestore|vuefire)["']/
+const CARD_STORAGE_IMPORT_RE = /from\s+["'](?:firebase\/firestore|vuefire)["']/
 const CARD_ANATOMY_RE = new Map([
   ['Cell.vue', /\b(?:card--cell|fx-card--cell)\b/],
   ['Pill.vue', /class\s*=\s*["'][^"']*\bpill\b/],
@@ -79,6 +78,7 @@ export async function run(ctx) {
   }
 
   validateMiseboxCardSpecimen(repoRoot, violations)
+  validateEntityDirectoryPresentation(repoRoot, violations)
   validatePublicEntityPresentation(repoRoot, violations)
 
   if (violations.length) {
@@ -102,6 +102,95 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ component naming valid')
+}
+
+function validateEntityDirectoryPresentation(repoRoot, violations) {
+  const surfacePath =
+    'packages/core/fireux-core/src/runtime/components/Directory/Surface.vue'
+  const retiredSurfacePath =
+    'packages/core/fireux-core/src/runtime/components/public/IndexSurface.vue'
+  const ordinaryConsumers = [
+    'packages/core/fireux-core/src/runtime/pages/apps/index.vue',
+    'packages/core/fireux-core/src/runtime/pages/users/index.vue',
+    'projects/fireux/fireux-app/app/pages/apps/index.vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
+    'packages/extensions/fireux-places/src/runtime/pages/places/index.vue',
+    'packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue',
+    'packages/extensions/fireux-products/src/runtime/pages/products/index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/menu/components/Index/Index.vue',
+  ]
+  const ordinaryManagers = [
+    'packages/core/fireux-core/src/runtime/app/components/Collection/Manager.vue',
+    'packages/core/fireux-core/src/runtime/ecosystem/components/Collection/Manager.vue',
+    'packages/core/fireux-core/src/runtime/user/components/Collection/Manager.vue',
+    'packages/extensions/fireux-places/src/runtime/place/components/Collection/Manager.vue',
+    'packages/extensions/fireux-jobs/src/runtime/job/components/Collection/Manager.vue',
+    'packages/extensions/fireux-products/src/runtime/product/components/Collection/Manager.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/components/Collection/Manager.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/menu/components/Collection/Manager.vue',
+  ]
+  const brandedRoutes = [
+    'projects/slap/yellow-velo/app/pages/products/index.vue',
+    'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
+  ]
+
+  const absoluteSurfacePath = path.join(repoRoot, surfacePath)
+  if (!existsSync(absoluteSurfacePath)) {
+    violations.push(`${surfacePath} (missing shared Entity Directory surface)`)
+  } else {
+    const source = readFileSync(absoluteSurfacePath, 'utf8')
+    if (
+      !source.includes("name: 'DirectorySurface'") ||
+      !source.includes('directory-surface__hero')
+    ) {
+      violations.push(
+        `${surfacePath} (must retain the named semantic Directory surface contract)`
+      )
+    }
+  }
+
+  if (existsSync(path.join(repoRoot, retiredSurfacePath))) {
+    violations.push(
+      `${retiredSurfacePath} (retired generic browse-surface name)`
+    )
+  }
+
+  for (const consumerPath of ordinaryConsumers) {
+    const absolutePath = path.join(repoRoot, consumerPath)
+    if (!existsSync(absolutePath)) continue
+    const source = readFileSync(absolutePath, 'utf8')
+    if (!source.includes('<DirectorySurface')) {
+      violations.push(
+        `${consumerPath} (ordinary Entity Directory must consume DirectorySurface)`
+      )
+    }
+  }
+
+  for (const managerPath of ordinaryManagers) {
+    const absolutePath = path.join(repoRoot, managerPath)
+    if (!existsSync(absolutePath)) continue
+    const source = readFileSync(absolutePath, 'utf8')
+    if (
+      !source.includes('<CollectionDirectoryHeader') ||
+      !source.includes('<CollectionDirectoryState')
+    ) {
+      violations.push(
+        `${managerPath} (ordinary Entity manager must use shared Directory header and state anatomy)`
+      )
+    }
+  }
+
+  for (const routePath of brandedRoutes) {
+    const absolutePath = path.join(repoRoot, routePath)
+    if (!existsSync(absolutePath)) continue
+    const source = readFileSync(absolutePath, 'utf8')
+    if (source.includes('<DirectorySurface')) {
+      violations.push(
+        `${routePath} (App-owned branded family must retain its named presentation instead of the ordinary Directory shell)`
+      )
+    }
+  }
 }
 
 function validateMiseboxCardSpecimen(repoRoot, violations) {
@@ -148,7 +237,9 @@ function validatePublicEntityPresentation(repoRoot, violations) {
   for (const componentPath of [coreDirectoryCardPath]) {
     const absolutePath = path.join(repoRoot, componentPath)
     if (!existsSync(absolutePath)) {
-      violations.push(`${componentPath} (missing shared public-entity presentation seam)`)
+      violations.push(
+        `${componentPath} (missing shared public-entity presentation seam)`
+      )
       continue
     }
 
@@ -174,9 +265,7 @@ function validatePublicEntityPresentation(repoRoot, violations) {
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
     if (!source.includes(`<${componentName}`)) {
-      violations.push(
-        `${consumerPath} (must consume Core ${componentName})`
-      )
+      violations.push(`${consumerPath} (must consume Core ${componentName})`)
     }
   }
 }
@@ -323,6 +412,8 @@ function targetExists(target) {
   return (
     existsSync(target) &&
     statSync(target).isDirectory() &&
-    IMPORT_INDEX_FILES.some((fileName) => existsSync(path.join(target, fileName)))
+    IMPORT_INDEX_FILES.some((fileName) =>
+      existsSync(path.join(target, fileName))
+    )
   )
 }

@@ -51,7 +51,17 @@
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-    />
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
     <UserCollectionList
       v-else-if="cardsFiltered.length"
@@ -86,14 +96,14 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Users (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
       />
     </div>
@@ -158,8 +168,8 @@ const props = withDefaults(
   }
 )
 
-// Public index family: the server projection owns the browse DTO and prevents
-// private sibling records from entering the public surface.
+// The server projection owns the Directory DTO and prevents protected sibling
+// records from entering this surface.
 const { appId, isTenant } = useFireUXConfig()
 const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
   key: `public-users-index-${isTenant ? appId : 'global'}`,

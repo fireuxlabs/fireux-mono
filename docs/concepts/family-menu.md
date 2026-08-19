@@ -11,7 +11,7 @@ Kitchen-scoped structured content, public route projections, or ordering.
 
 ## Links
 
-- Parents: `family-public-index.md`, `family-public-detail.md`,
+- Parents: `family-entity-directory.md`, `family-public-detail.md`,
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
 - Horizontal: `entities.md`, `firestore-entity.md`, `console.md`,

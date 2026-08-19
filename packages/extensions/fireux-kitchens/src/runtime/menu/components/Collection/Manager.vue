@@ -56,7 +56,17 @@
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-    />
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="index.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
     <div
       v-else-if="visibleItems.length"
@@ -88,9 +98,11 @@
       v-else
       icon="i-lucide-book-open-check"
       :title="hasActiveFilters ? 'No matching menus' : 'No menus yet'"
-      :description="hasActiveFilters
-        ? 'Try a different menu or kitchen name.'
-        : 'Published menus will appear here when they are ready.'"
+      :description="
+        hasActiveFilters
+          ? 'Try a different menu or kitchen name.'
+          : 'Published menus will appear here when they are ready.'
+      "
     />
 
     <div
@@ -116,8 +128,9 @@
       More menus could not be loaded. Please try again.
     </p>
 
-<DevDebugPanel
-  object-origin="fetched"      launcher
+    <DevDebugPanel
+      object-origin="fetched"
+      launcher
       include-route
       title="Menus (JSON)"
       context="collection manager · menus"
@@ -134,9 +147,7 @@
 import { computed, ref } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import {
-  useMenuInterface,
-} from '../../composables/firestore/utils/view/useMenuInterface'
+import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
 import type { PublicMenuIndexController } from '../../composables/usePublicMenuIndex'
 import type { PublicMenuIndexItem } from '../../models/menu-index.model.ts'
 import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
@@ -169,13 +180,15 @@ const props = withDefaults(
 )
 
 const { interface: makeMenuCard } = useMenuInterface()
-const collection = computed<PublicMenuIndexItem[]>(() => props.index.menus.value)
-const outcome = computed(() => props.index.outcome.value)
-const isLoading = computed(() =>
-  outcome.value.kind === 'loading' || outcome.value.kind === 'redirect'
+const collection = computed<PublicMenuIndexItem[]>(
+  () => props.index.menus.value
 )
-const isSettled = computed(() =>
-  outcome.value.kind === 'list' || outcome.value.kind === 'empty'
+const outcome = computed(() => props.index.outcome.value)
+const isLoading = computed(
+  () => outcome.value.kind === 'loading' || outcome.value.kind === 'redirect'
+)
+const isSettled = computed(
+  () => outcome.value.kind === 'list' || outcome.value.kind === 'empty'
 )
 const selectedPicks = ref<MenuCollectionPick[]>([])
 const { now: serviceNow } = useKitchenServiceNow()
@@ -184,17 +197,19 @@ const pickedCollection = computed<PublicMenuIndexItem[]>(() =>
     menuMatchesCollectionPicks(menu, selectedPicks.value, serviceNow.value)
   )
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => props.showSearch && !props.index.hasMore.value && totalCount.value > 15
 )
 
-const makeCard = (menu: PublicMenuIndexItem) => makeMenuCard({
-  ...menu,
-  image_url: menu.kitchen?.logo_image_url,
-  image_shade: menu.kitchen?.image_shade,
-})
+const makeCard = (menu: PublicMenuIndexItem) =>
+  makeMenuCard({
+    ...menu,
+    image_url: menu.kitchen?.logo_image_url,
+    image_shade: menu.kitchen?.image_shade,
+  })
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
@@ -287,5 +302,4 @@ const devDerived = computed(() => ({
     minmax(min(100%, calc(var(--spacing) * 80)), 1fr)
   );
 }
-
 </style>

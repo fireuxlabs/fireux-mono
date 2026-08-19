@@ -1,61 +1,65 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p v-if="description">{{ description }}</p>
-        </div>
+  <section class="collection-directory app-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
-        >
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
+        <span v-if="showCount && isSettled" class="collection-directory__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UBadge v-if="showCount && isSettled" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="apps"
-      state="loading"
-      surface="bare"
+      title="Loading Apps"
+      description="Finding Apps…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="apps"
-      state="error"
-      surface="bare"
+      title="Apps unavailable"
       description="Apps could not be loaded. Please try again."
-    />
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
 
     <AppCollectionList
       v-else-if="cardsFiltered.length"
@@ -70,32 +74,32 @@
       </template>
     </AppCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      entity="apps"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-app-window"
       :title="query ? 'No apps match your search' : 'No apps yet'"
-      :description="query
-        ? 'Try a different search term.'
-        : 'Once app records are added, they will display here.'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Once app records are added, they will display here.'
+      "
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Apps (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -136,10 +140,12 @@ const props = withDefaults(
 
 const collection = computed<AppViewSource[]>(() => props.controller.apps.value)
 const outcome = computed(() => props.controller.outcome.value)
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
+const refresh = () => props.controller.refresh?.()
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Apps'))
 const description = computed(() =>
   String(

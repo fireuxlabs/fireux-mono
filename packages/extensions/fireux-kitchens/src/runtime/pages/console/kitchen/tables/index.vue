@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Tables">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Tables" />
+            <ConsoleAICapabilityPlaceholder capability="Tables" />
             <UButton
               v-if="canWrite"
               to="/console/kitchen/tables/edit"

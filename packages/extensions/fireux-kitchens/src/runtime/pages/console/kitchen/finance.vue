@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Finance">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Finance" />
+            <ConsoleAICapabilityPlaceholder capability="Finance" />
           </template>
         </LayoutsConsoleNavbar>
 

@@ -6,7 +6,7 @@
     "entryPoint": "lifeguardCommunity"
   }],
   "hosting": {
-    "site": "lifeguard-community",
+    "site": "lifeguard-community-fireux-2005",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

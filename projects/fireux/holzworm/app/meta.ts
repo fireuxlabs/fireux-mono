@@ -1,7 +1,7 @@
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const metaContent = defineFireuxMeta({
-  app: { id: 'holzworm', name: 'Holzworm', ecosystem: 'slap' },
+  app: { id: 'holzworm', name: 'Holzworm', ecosystem: 'fireux' },
   copy: {
     big_personality: 'Lasergravur aus Holz',
     headline: 'Lasergravur auf Holz.',

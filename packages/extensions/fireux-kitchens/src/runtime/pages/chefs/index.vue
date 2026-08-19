@@ -1,5 +1,5 @@
 <template>
-  <PublicIndexSurface
+  <DirectorySurface
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCTA />
     </template>
-  </PublicIndexSurface>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

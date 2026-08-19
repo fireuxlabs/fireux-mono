@@ -22,6 +22,14 @@
         <p v-if="errorDetail" class="mt-2 max-w-xl text-xs text-muted">
           {{ errorDetail }}
         </p>
+        <UButton
+          class="mt-4"
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="index.refresh"
+        />
       </div>
 
       <UPage
@@ -29,10 +37,7 @@
         data-menu-projection="index"
         :data-menu-index-kind="menus.length ? 'list' : 'empty'"
       >
-        <UPageHeader
-          title="Menus"
-          :description="tenantPageDescription"
-        />
+        <UPageHeader title="Menus" :description="tenantPageDescription" />
 
         <UPageBody>
           <div v-if="menus.length" class="space-y-3">
@@ -44,9 +49,7 @@
             />
           </div>
 
-          <p v-else class="text-sm text-dimmed">
-            No published menus.
-          </p>
+          <p v-else class="text-sm text-dimmed">No published menus.</p>
 
           <div v-if="hasMore" class="flex justify-center pt-4">
             <UButton
@@ -67,7 +70,7 @@
       </UPage>
     </template>
 
-    <PublicIndexSurface
+    <DirectorySurface
       v-else
       data-menu-projection="index"
       data-menu-index-kind="collection"
@@ -83,7 +86,7 @@
       <template #secondary>
         <MenuCTA />
       </template>
-    </PublicIndexSurface>
+    </DirectorySurface>
   </div>
 </template>
 
@@ -107,8 +110,8 @@ const outcome = computed(() => index.outcome.value)
 const hasMore = computed(() => index.hasMore.value)
 const loadingMore = computed(() => index.loadingMore.value)
 const loadMoreError = computed(() => index.loadMoreError.value)
-const isScopedIndex = computed(() =>
-  isTenant || index.routeScope.value.kind === 'directory'
+const isScopedIndex = computed(
+  () => isTenant || index.routeScope.value.kind === 'directory'
 )
 const loadMore = async () => {
   await index.loadMore()
@@ -127,6 +130,6 @@ const tenantPageDescription = isTenant
   : 'Browse this kitchen’s live menus.'
 
 useSeoMeta({
-  robots: () => error.value ? 'noindex, nofollow' : undefined,
+  robots: () => (error.value ? 'noindex, nofollow' : undefined),
 })
 </script>

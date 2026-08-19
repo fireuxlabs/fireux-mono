@@ -1,6 +1,6 @@
 // @fireux-rules-template fireux
 // @fireux-rules-project fireux-2005
-// @fireux-rules-databases fireux
+// @fireux-rules-databases fireux,holzworm,lifeguard-community
 // @fireux-rules-artifact scripts/firebase/fireux/firestore.rules
 // @fireux-rules-fragments open,close
 // Concurrent edit — 2026-08-04 — Ecosystem Rules spine: establish an ecosystem-owned default-deny release source.

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Property Identity">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Property Identity" />
+            <ConsoleAICapabilityPlaceholder capability="Property Identity" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

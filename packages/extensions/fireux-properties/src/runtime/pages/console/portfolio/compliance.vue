@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Compliance">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Portfolio Compliance" />
+            <ConsoleAICapabilityPlaceholder capability="Portfolio Compliance" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

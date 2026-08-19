@@ -1067,6 +1067,11 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   recovery expires within 24 hours, and public Google Maps surfaces require an
   explicit load action. `/legal/privacy` owns personal-data policy while
   `/legal/storage` owns the exact storage inventory.
+- Core `/legal` is the shared legal-document index and visible unresolved-review
+  surface for every FireUX-powered App. It may point to concrete risks already
+  proved by current source and official guidance, but it is not legal advice,
+  certification, or a substitute for an executable product gate. Apps do not
+  fork that warning merely to change their brand or ecosystem.
 - Guest chat contact data and message bodies use the trusted `/api/chat`
   boundary. Direct Conversation Firestore access stays closed; the browser
   retains an unguessable, time-bounded recovery capability and the App

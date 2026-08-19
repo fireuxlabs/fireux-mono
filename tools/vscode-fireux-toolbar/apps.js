@@ -171,7 +171,7 @@ const apps = [
   },
   {
     key: 'holzworm',
-    ecosystem: 'slap',
+    ecosystem: 'fireux',
     name: 'Holzworm',
     icon: '$(tools)',
     port: 3030,
@@ -184,7 +184,7 @@ const apps = [
   },
   {
     key: 'lifeguard-community',
-    ecosystem: 'slap',
+    ecosystem: 'fireux',
     name: 'Lifeguard Community',
     icon: '$(heart)',
     port: 3031,

@@ -1,5 +1,5 @@
 <template>
-  <PublicIndexSurface
+  <DirectorySurface
     eyebrow="Discover"
     :title="pageTitle"
     description="Explore kitchens, discover their menus, and find what they are serving."
@@ -10,9 +10,9 @@
 
     <template #secondary>
       <!-- Console CTA family remains the secondary operator doorway. -->
-        <KitchenCTA />
+      <KitchenCTA />
     </template>
-  </PublicIndexSurface>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -33,7 +33,8 @@ definePageMeta({
   layout: 'default',
   name: 'KitchensIndexPage',
   title: 'Kitchens',
-  description: 'Explore kitchens, discover their menus, and see what they are serving.',
+  description:
+    'Explore kitchens, discover their menus, and see what they are serving.',
 })
 
 const pageTitle = 'Kitchens'

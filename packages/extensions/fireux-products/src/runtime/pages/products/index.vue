@@ -1,12 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <DirectorySurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-box"
+    secondary-label="Product tools"
+  >
+    <ProductCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <ProductCTA />
-      <ProductCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
@@ -36,5 +41,4 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
 </script>

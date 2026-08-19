@@ -3,7 +3,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
-import { useAuth } from '../../../composables/composables/fireux/firebase/useAuth'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { EnvCheckResponse } from './env-check.types'
 
 type AppEnvCheckControls = Pick<

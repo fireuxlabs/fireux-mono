@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Stations">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Stations" />
+            <ConsoleAICapabilityPlaceholder capability="Stations" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

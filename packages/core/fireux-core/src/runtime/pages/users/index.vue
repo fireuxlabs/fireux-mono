@@ -1,13 +1,13 @@
 <template>
-  <PublicIndexSurface
+  <DirectorySurface
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-users-round"
   >
-    <!-- Public index family: use the public user projection, not raw identity docs. -->
+    <!-- Directory family: use the bounded User projection, not raw identity docs. -->
     <UserCollectionManager />
-  </PublicIndexSurface>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">

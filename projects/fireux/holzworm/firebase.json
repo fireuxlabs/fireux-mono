@@ -8,7 +8,7 @@
     }
   ],
   "hosting": {
-    "site": "holzworm-slap-45389",
+    "site": "holzworm-fireux-2005",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Drinks">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Drinks" />
+            <ConsoleAICapabilityPlaceholder capability="Drinks" />
           </template>
         </LayoutsConsoleNavbar>
       </template>

@@ -22,6 +22,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps<{ operation: string }>()
-const placeholder = computed(() => `Ask about ${props.operation}…`)
+const props = defineProps<{ capability: string }>()
+const placeholder = computed(() => `Ask about ${props.capability}…`)
 </script>

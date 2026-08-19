@@ -2,7 +2,7 @@
 import { onNuxtReady, useNuxtApp } from '#imports'
 import { computed, ref, toValue, type MaybeRefOrGetter, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../../composables/fireux/composables/fireux/firebase/useAuth'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 
 type AuthRedirectOptions = {
   unauthenticatedPath?: string

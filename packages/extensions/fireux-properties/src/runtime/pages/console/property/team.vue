@@ -5,7 +5,7 @@
       <template #header>
         <LayoutsConsoleNavbar title="Property Team">
           <template #right>
-            <ConsoleAIOperationPlaceholder operation="Property Team" />
+            <ConsoleAICapabilityPlaceholder capability="Property Team" />
           </template>
         </LayoutsConsoleNavbar>
       </template>
