@@ -22,7 +22,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-22 16:08 CEST — Misebox operations shortcuts: keep the hidden Ingredient creator out of entity discovery.
 import { navigateTo, useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
 definePageMeta({
   layout: 'default',

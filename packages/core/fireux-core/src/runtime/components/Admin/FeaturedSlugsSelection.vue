@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useToastify } from '../../composables/fireux/app/ui/useToastify'
+import { useToastify } from '../../composables/ui/useToastify'
 import {
   useAppPublicSettings,
   type AppFeaturedSlugField,

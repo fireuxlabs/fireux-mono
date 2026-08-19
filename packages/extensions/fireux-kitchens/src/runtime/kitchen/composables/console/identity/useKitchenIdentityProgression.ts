@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   readKitchenIdentity,

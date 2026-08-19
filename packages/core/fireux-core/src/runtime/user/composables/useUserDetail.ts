@@ -6,7 +6,7 @@ import {
   type ComputedRef,
   type MaybeRef,
 } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type {
   PublicDetailResponse,
   PublicUserDto,

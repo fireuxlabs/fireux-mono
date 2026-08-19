@@ -1,6 +1,6 @@
 import type { DocumentSnapshot, Query } from 'firebase-admin/firestore'
 import { createError, getQuery, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type {

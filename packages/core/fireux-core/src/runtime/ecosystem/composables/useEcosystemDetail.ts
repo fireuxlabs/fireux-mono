@@ -5,7 +5,7 @@ import type {
   PublicDetailResponse,
   PublicEcosystemDto,
 } from '../../server/utils/public-projection/public-dto.types.ts'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
 export type EcosystemDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 

@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleRecipe } from '../../../../composables/console/operations/Recipes/useKitchenConsoleRecipe'
 import { useRecipeDelete } from '../../../../composables/firestore/recipe/mutations/useRecipeDelete'

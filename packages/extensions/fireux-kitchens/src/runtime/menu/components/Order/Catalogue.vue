@@ -73,7 +73,7 @@ import type { MenuOrderBasketInput } from '../../composables/order/useMenuOrderB
 import {
   resolveMenuBrowseSurfaceCopy,
   type MenuBrowseSurfaceCopy,
-} from '../../content/menu-surface-copy'
+} from '../../utils/menu-surface-copy'
 import { menuSectionLinks } from '../../utils/menu-section-links'
 
 type MenuOrderItemSelection = {

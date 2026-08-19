@@ -38,9 +38,31 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/composables/fireux/seo/useSeo.ts'
   )
 
-  for (const route of ['/dashboard/**', '/account/**', '/member/**']) {
+  for (const route of [
+    '/console/**',
+    '/dashboard/**',
+    '/account/**',
+    '/member/**',
+  ]) {
     if (!config.includes(`'${route}'`)) {
       violations.push(`Core noindex defaults must include ${route}.`)
+    }
+  }
+
+  const entitySeoComposables = [
+    'packages/extensions/fireux-jobs/src/runtime/job/composables/useJobSeo.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenSeo.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/composables/useIngredientSeo.ts',
+    'packages/extensions/fireux-places/src/runtime/place/composables/usePlaceSeo.ts',
+    'packages/extensions/fireux-products/src/runtime/product/composables/useProductSeo.ts',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/useSupplierSeo.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/usePortfolioSeo.ts',
+  ]
+  for (const relative of entitySeoComposables) {
+    if (!existsSync(join(repoRoot, relative))) {
+      violations.push(
+        `${relative}: public Entity SEO must stay with its Entity.`
+      )
     }
   }
   for (const status of ['coming-soon', 'planned', 'later']) {

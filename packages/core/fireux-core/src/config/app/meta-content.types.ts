@@ -46,7 +46,7 @@ export type FireuxMetaOperationConsole = {
 }
 
 export type FireuxMetaOperation = {
-  /** Stable capability key, independent of its current route. */
+  /** Stable Operation key, independent of its current route. */
   id: string
   /** Optional app-wide child key used at /operations/:slug. */
   slug?: string
@@ -198,8 +198,10 @@ export type FireuxMetaContent = {
   lists?: FireuxMetaLists
 
   /**
-   * Factual capability index backed by working Console Operations surfaces.
-   * Operations are not SEO solution pages or generic tools.
+   * Factual index of entity-specific Console Operations.
+   * Index, Overview, Identity, Team, and Notifications are baked-in Console
+   * capabilities and never enter this list. Operations are not SEO solution
+   * pages or generic tools.
    */
   operations?: FireuxMetaOperation[]
 

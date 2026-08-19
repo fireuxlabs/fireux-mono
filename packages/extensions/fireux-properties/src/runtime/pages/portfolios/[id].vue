@@ -37,7 +37,7 @@
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { usePortfolioFetch } from '../../portfolio/composables/firestore/fetch/usePortfolioFetch'
-import { usePortfolioSeo } from '../../portfolio/composables/firestore/utils/usePortfolioSeo'
+import { usePortfolioSeo } from '../../portfolio/composables/usePortfolioSeo'
 import { usePortfolioInterface } from '../../portfolio/composables/firestore/utils/view/usePortfolioInterface'
 
 definePageMeta({

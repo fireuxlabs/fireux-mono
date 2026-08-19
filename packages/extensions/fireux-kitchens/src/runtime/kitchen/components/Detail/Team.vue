@@ -95,7 +95,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: hydrate only selected Kitchen operator UIDs.
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUserFetch } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserFetch'
 import { useUserHydration } from 'fireux-core/runtime/user/composables/firestore/fetch/useUserCollection'
 import {

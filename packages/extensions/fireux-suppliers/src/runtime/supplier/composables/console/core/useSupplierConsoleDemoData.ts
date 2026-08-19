@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazily adapt owner-local Supplier fixtures for console use.
 import type { MaybeRefOrGetter } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/console/useConsoleDemoData'
 import { type SupplierSurface } from '../../firestore/utils/view/useSupplierInterface'
 import { projectSupplierDemoWorld } from '../../../utils/supplier-demo-world'

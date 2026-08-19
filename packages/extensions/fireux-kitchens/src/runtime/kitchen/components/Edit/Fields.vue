@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed } from 'vue'

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose App support path selection directly.
 import { computed, unref, type MaybeRef } from 'vue'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import {
   consoleEntityUsesAppScope,

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   runGuardedServerTransaction,

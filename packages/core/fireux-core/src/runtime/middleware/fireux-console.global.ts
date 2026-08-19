@@ -9,7 +9,7 @@ import {
   consoleFamilyFromRouteContext,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
-} from '../composables/fireux/app/routing/consoleRoutes'
+} from '../composables/fireux/console/consoleRoutes'
 import {
   resolveClientAppAdmin,
   resolveClientAuthState,

@@ -82,7 +82,9 @@ export async function run({ repoRoot }) {
   for (const file of definitionFiles) {
     const stem = file.replace(/\.ts$/, '')
     if (!definitionRegistry.includes(`'./${stem}'`)) {
-      violations.push(`${definitionRoot}/registry.ts: does not register ${file}.`)
+      violations.push(
+        `${definitionRoot}/registry.ts: does not register ${file}.`
+      )
     }
     if (!executorRegistry.includes(`'./${stem}'`)) {
       violations.push(`${executorRoot}/registry.ts: does not register ${file}.`)
@@ -91,7 +93,7 @@ export async function run({ repoRoot }) {
 
   const operationAgents = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/ai/operation-agents.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts'
   )
   if (
     !operationAgents.includes('kitchenTeamAgentToolIds') ||
@@ -138,7 +140,9 @@ export async function run({ repoRoot }) {
   if (
     !teamRuntime.includes('findKitchenTeamServerTool') ||
     teamRuntime.includes("'kitchen.team.") ||
-    /kitchenTeamMember(?:Create|Read|Update|Delete|Invitation)/.test(teamRuntime)
+    /kitchenTeamMember(?:Create|Read|Update|Delete|Invitation)/.test(
+      teamRuntime
+    )
   ) {
     violations.push(
       'Misebox TeamAI runtime must prepare and execute through generic registry lookup.'
@@ -167,7 +171,9 @@ export async function run({ repoRoot }) {
       file
     )
     if (existsSync(retired)) {
-      violations.push(`${retired}: retired duplicate tool metadata must stay removed.`)
+      violations.push(
+        `${retired}: retired duplicate tool metadata must stay removed.`
+      )
     }
   }
 

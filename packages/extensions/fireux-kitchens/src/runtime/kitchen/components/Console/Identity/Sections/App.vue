@@ -117,7 +117,7 @@
 
 <script setup lang="ts">
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type {
   AppPalette,
   AppPaletteLayer,

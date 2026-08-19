@@ -5,7 +5,7 @@ import type {
   SproochliDefaultLanguage,
   SproochliLanguageCode,
 } from 'fireux-sproochli/runtime/sproochli'
-import type { MenuBrowseSurfaceCopy } from '../content/menu-surface-copy'
+import type { MenuBrowseSurfaceCopy } from '../utils/menu-surface-copy'
 import type { KitchenImageShade } from '../../kitchen/models/kitchen.model.ts'
 import type { DishItemKind } from '../../kitchen/models/dish.model.ts'
 import type { MenuKioskSkin } from './kiosk-skin.model.ts'

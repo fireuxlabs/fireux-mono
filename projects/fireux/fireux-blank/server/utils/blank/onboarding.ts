@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: atomically create Blank root and App support.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep access out of Blank root and reject coerced target ids.
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'

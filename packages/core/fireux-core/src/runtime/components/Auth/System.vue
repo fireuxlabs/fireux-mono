@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
 import { useUserInterface } from '../../user/composables/useUserInterface'

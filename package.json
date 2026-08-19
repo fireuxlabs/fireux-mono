@@ -55,6 +55,7 @@
     "gitsave": "bash scripts/gitsave.sh",
     "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
+    "publish:fireux-blog": "node scripts/publish-fireux-blog.mjs",
     "align:onboarding": "node scripts/align-user-app-onboarding.mjs",
     "migrate:console-entity-management": "node scripts/migrate-console-entity-management.mjs",
     "align:user-avatars": "node scripts/align-user-avatars.mjs",

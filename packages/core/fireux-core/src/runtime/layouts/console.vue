@@ -163,14 +163,14 @@ import {
   consoleFamilyFromRouteContext,
   toConsoleFamilyLabel,
   toConsoleFamilyPath,
-} from '../composables/fireux/app/routing/consoleRoutes'
-import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
+} from '../composables/fireux/console/consoleRoutes'
+import { useConsoleNav } from '../composables/fireux/console/useConsoleNav'
 import {
   normalizeConsoleFamily,
   useConsole,
 } from '../composables/fireux/console/useConsole'
 import { useConsoleSelection } from '../composables/fireux/console/useConsoleSelection'
-import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
+import { useConsoleNotifications } from '../composables/fireux/console/useConsoleNotifications'
 
 defineOptions({ name: 'console' })
 

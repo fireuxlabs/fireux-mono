@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { setResponseStatus, useHead, useSeoMeta } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { directoryMenuRouteScope } from '../../../../kitchen/utils/kitchen-menu-route'
 import { usePublicMenuIndex } from '../../../../menu/composables/usePublicMenuIndex'

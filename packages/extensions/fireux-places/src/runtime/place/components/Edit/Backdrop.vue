@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref, watch } from 'vue'
 import type { PlaceMutationAuthority } from '../../composables/firestore/mutations/usePlaceUpdate'

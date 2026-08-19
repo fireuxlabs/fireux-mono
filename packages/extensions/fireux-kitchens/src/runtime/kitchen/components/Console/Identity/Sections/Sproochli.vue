@@ -61,8 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import {

@@ -1,4 +1,4 @@
-import type { FireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import type { FireUXConfig } from '../composables/config/FireUXConfig'
 import type {
   AppOnboardingPlacementOption,
   AppOnboardingPolicy,

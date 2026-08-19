@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -46,11 +46,8 @@ src/runtime/
 │   ├── composables/
 │   ├── models/
 │   ├── server/
-│   ├── content/
 │   ├── demo/
-│   ├── ai/
 │   ├── tools/
-│   ├── types/
 │   └── utils/
 │
 ├── menu/
@@ -67,16 +64,19 @@ src/runtime/
 ```
 
 The examples are ownership shapes, not required folder symmetry. An entity
-carries only the technical roles and product capabilities it actually owns.
-Entity roots use the repository's canonical entity name and do not become
-generic domain, feature, or module buckets.
+carries only the technical roles it actually owns, chosen from the finite
+scoped Nuxt spine: `components`, `composables`, `models`, `server`, `utils`,
+and the optional `demo` and `tools` roles. Entity roots use the repository's
+canonical entity name and do not become generic domain, feature, capability,
+content, AI, asset, or type buckets.
 
-The role list is open to honest technical jobs such as `content`, `demo`,
-`ai`, `tools`, `types`, and `utils`; it is not limited to components,
-composables, models, and server code. The same ownership test applies: root
-`runtime/content`, `runtime/demo`, `runtime/types`, and `runtime/utils` are
-cross-entity shared, while Kitchen-only catalogues, fixtures, contracts, and
-helpers belong under `runtime/kitchen/<role>`.
+The package root may still contain shared roles such as `content`, `types`,
+and `assets` when they genuinely serve several entities or Nuxt registration.
+Inside an Entity, typed catalogues and contracts belong in `models`, runtime
+copy resolution and stateless helpers belong in `utils`, component-owned
+styles belong with `components`, AI orchestration belongs in `composables` or
+`server`, and actual operator tools belong in `tools`. This classification
+keeps the first level predictable without pretending those jobs do not exist.
 
 ## Nuxt boundary
 
@@ -100,6 +100,12 @@ delegate to it.
 Package modules register bounded entity component and composable directories
 through supported Nuxt Kit helpers. Models, server domain code, types, and
 ordinary utilities use explicit imports and need no discovery framework.
+
+Core App proves the complete boundary: App-owned UI, state, models, and server
+jobs live under `runtime/app/{components,composables,models,server}`, while its
+Nuxt handlers remain under `runtime/server/api/**/app/` and delegate inward.
+The App scope does not repeat `app-` in child names such as `membership`,
+`projection`, or `initialization`.
 
 ## Ordering inside an entity
 
@@ -153,12 +159,13 @@ under Console merely because Console consumes them.
   package.
 - An entity's use of a shared primitive remains under that entity when it adds
   entity authority, policy, projection, or lifecycle.
-- AI and Tools live under the owning entity's `ai` and `tools` roles, with
-  operation children only when the operation owns the product capability.
-  Only proven cross-entity mechanics remain shared.
-- Entity-owned product catalogues and Demo Worlds live under that entity's
-  `content` and `demo` roles. Root `runtime/content` and `runtime/demo` remain
-  available only for real cross-entity composition.
+- AI follows its actual technical role: models define agent contracts,
+  composables coordinate client state, server owns trusted execution, and
+  tools owns genuine operator tools. An `ai` Entity-root bucket does not hide
+  those different jobs.
+- Typed Entity catalogues belong in `models`; Entity-owned Demo Worlds belong
+  in `demo`. Root `runtime/content` and `runtime/demo` remain available only
+  for real cross-entity composition.
 - A surface such as Console, Kiosk, Directory, Detail, or Admin may qualify a
   component or composable path; it does not become the owner of the entity.
 - A real entity keeps its own root even when another entity exposes it as an

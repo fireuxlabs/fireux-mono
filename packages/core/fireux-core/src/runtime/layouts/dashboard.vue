@@ -73,10 +73,10 @@
 import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDashboardNav } from '../composables/fireux/app/ui/nav/useDashboardNav'
-import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
-import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'
-import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
+import { useDashboardNav } from '../composables/navigation/useDashboardNav'
+import { useNavGrouping } from '../composables/navigation/useNavGrouping'
+import { useAuthRedirect } from '../user/composables/useAuthRedirect'
+import { useConsoleNotifications } from '../composables/fireux/console/useConsoleNotifications'
 
 defineOptions({ name: 'dashboard' })
 

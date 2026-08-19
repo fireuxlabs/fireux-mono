@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useCustomer } from '../../../composables/customer/useCustomer'
 import { useCustomerUpdate } from '../../../composables/firestore/profiles/Customer/mutations/useCustomerUpdate'

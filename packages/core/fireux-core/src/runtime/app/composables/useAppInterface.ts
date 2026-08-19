@@ -6,7 +6,7 @@ import {
 } from '../models/app.model.ts'
 import type { AppSocialLinks } from '../models/app.model.ts'
 import { resolveAppMediaForView } from './firestore/utils/appMedia'
-import { useResolvedColorMode } from '../../composables/fireux/app/useColorMode'
+import { useResolvedColorMode } from '../../composables/theme/useColorMode'
 
 export namespace AppCard {
   export type Card = {

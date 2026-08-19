@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxConsoleAgent,
 } from 'fireux-ai/runtime/agents/operation-agent'
-import { propertyOperationAgents } from 'fireux-properties/runtime/ai/operation-agents'
+import { propertyOperationAgents } from 'fireux-properties/runtime/property/models/operation-agents'
 
 export const buenoHostAgent = defineFireuxAgentNode({
   id: 'buenohost.ai',

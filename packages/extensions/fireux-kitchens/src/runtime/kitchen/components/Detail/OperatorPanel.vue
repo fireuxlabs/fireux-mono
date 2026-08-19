@@ -61,12 +61,12 @@ import {
   useUser,
   useUserInterface,
 } from 'fireux-core/runtime/user/composables/useUser'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppDetail } from 'fireux-core/runtime/app/composables/useAppDetail'
 import { useKitchenConsoleSelection } from '../../composables/console/core/useKitchenConsoleSelection'
 import { useKitchenConsoleTargetCollection } from '../../composables/console/index/useKitchenConsoleTargetCollection'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import type { PublicActionButton } from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
+import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null

@@ -18,6 +18,8 @@ const CONSOLE_MIDDLEWARE =
   'packages/core/fireux-core/src/runtime/middleware/fireux-console.global.ts'
 const CONSOLE_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue'
+const CONSOLE_SHARED_NAVBAR =
+  'packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue'
 const CONSOLE_OPERATION_AI_PLACEHOLDER =
   'packages/extensions/fireux-ai/src/runtime/components/Console/AI/OperationPlaceholder.vue'
 const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
@@ -64,27 +66,25 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
   'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Console',
   'projects/fireux/fireux-blank/app/components/Console/Blank',
 ]
-const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS.filter(
-  (root) => !root.endsWith('/Blank')
-)
+const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
   'packages/core/fireux-core/src/runtime/project/composables/console/team/useProjectConsoleTeam.ts',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenConsoleTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/team/usePortfolioConsoleTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/property/composables/console/team/usePropertyConsoleTeam.ts',
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/team/useSupplierConsoleTeam.ts',
+  'projects/fireux/fireux-blank/app/composables/fireux/console/blank/team/useBlankConsoleTeam.ts',
 ]
 const CONSOLE_OPERATION_CONTRACTS = {
   project: {
     catalogue: 'projects/fireux/fireux-app/app/meta.ts',
-    operations: ['identity', 'apps', 'ecosystem'],
+    operations: ['apps', 'ecosystem'],
     routeRoot: 'projects/fireux/fireux-app/app/pages/console/project',
   },
   kitchen: {
     catalogue:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/content/operations.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts',
     operations: [
-      'identity',
       'dishes',
       'drinks',
       'ingredients',
@@ -93,7 +93,6 @@ const CONSOLE_OPERATION_CONTRACTS = {
       'orders',
       'recipes',
       'stations',
-      'team',
       'suppliers',
       'tables',
       'finance',
@@ -103,39 +102,71 @@ const CONSOLE_OPERATION_CONTRACTS = {
   },
   supplier: {
     catalogue:
-      'packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts',
-    operations: ['identity', 'catalogue', 'ingredients', 'items', 'team'],
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts',
+    operations: ['catalogue', 'ingredients', 'items'],
     routeRoot:
       'packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier',
   },
   portfolio: {
     catalogue:
-      'packages/extensions/fireux-properties/src/runtime/content/operations.ts',
-    operations: [
-      'identity',
-      'properties',
-      'compliance',
-      'documents',
-      'tasks',
-      'finance',
-      'team',
-    ],
+      'packages/extensions/fireux-properties/src/runtime/portfolio/models/operations.ts',
+    operations: ['properties', 'compliance', 'documents', 'tasks', 'finance'],
     routeRoot:
       'packages/extensions/fireux-properties/src/runtime/pages/console/portfolio',
   },
   property: {
     catalogue:
-      'packages/extensions/fireux-properties/src/runtime/content/operations.ts',
-    operations: ['identity', 'reservations', 'calendar', 'team'],
+      'packages/extensions/fireux-properties/src/runtime/property/models/operations.ts',
+    operations: ['reservations', 'calendar'],
     routeRoot:
       'packages/extensions/fireux-properties/src/runtime/pages/console/property',
   },
   blank: {
     catalogue: 'projects/fireux/fireux-blank/app/meta.ts',
-    operations: ['identity'],
+    operations: [],
     routeRoot: 'projects/fireux/fireux-blank/app/pages/console/blank',
   },
 }
+
+const CONSOLE_BASE_CAPABILITIES = ['overview', 'identity', 'team']
+
+const CONSOLE_AI_CONTRACTS = [
+  {
+    family: 'project',
+    definition:
+      'packages/core/fireux-core/src/runtime/project/models/agent-operations.ts',
+    registration:
+      'packages/ecosystem/fireux-fireux/src/runtime/ai/console-agents.ts',
+  },
+  {
+    family: 'kitchen',
+    definition:
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts',
+    registration:
+      'packages/ecosystem/fireux-misebox/src/runtime/ai/console-agents.ts',
+  },
+  {
+    family: 'supplier',
+    definition:
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/models/operation-agents.ts',
+    registration:
+      'packages/ecosystem/fireux-bringli/src/runtime/ai/console-agents.ts',
+  },
+  {
+    family: 'portfolio',
+    definition:
+      'packages/extensions/fireux-properties/src/runtime/portfolio/models/operation-agents.ts',
+    registration:
+      'packages/ecosystem/fireux-granite/src/runtime/ai/console-agents.ts',
+  },
+  {
+    family: 'property',
+    definition:
+      'packages/extensions/fireux-properties/src/runtime/property/models/operation-agents.ts',
+    registration:
+      'packages/ecosystem/fireux-buenohost/src/runtime/ai/console-agents.ts',
+  },
+]
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -148,6 +179,7 @@ export async function run(ctx) {
   validateConsoleEntityComponentHierarchy(repoRoot, violations)
   validateConsoleMenuCanon(repoRoot, violations)
   validateConsoleOperationContracts(repoRoot, violations)
+  validateConsoleAIContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
   validateKitchenRecipesWorkspace(repoRoot, violations)
 
@@ -187,10 +219,7 @@ export async function run(ctx) {
 }
 
 function validateConsoleOperationAIPlaceholder(repoRoot, violations) {
-  const placeholderPath = path.join(
-    repoRoot,
-    CONSOLE_OPERATION_AI_PLACEHOLDER
-  )
+  const placeholderPath = path.join(repoRoot, CONSOLE_OPERATION_AI_PLACEHOLDER)
   if (!existsSync(placeholderPath)) {
     violations.push(
       `${CONSOLE_OPERATION_AI_PLACEHOLDER} (FireUX AI Operation placeholder is missing)`
@@ -399,20 +428,77 @@ function validateConsoleOperationContracts(repoRoot, violations) {
       }
     }
 
-    const identityRoute = routeCandidatesForIdentity(
-      repoRoot,
-      contract.routeRoot
+    for (const capability of CONSOLE_BASE_CAPABILITIES) {
+      const candidates = routeCandidatesForCapability(
+        repoRoot,
+        contract.routeRoot,
+        capability
+      )
+      if (!candidates.some((candidate) => existsSync(candidate))) {
+        violations.push(
+          `${contract.routeRoot} (every Console requires ${capability})`
+        )
+      }
+      if (
+        contract.catalogue &&
+        (catalogue.includes(`'${family}.${capability}'`) ||
+          new RegExp(`\\[\\s*['\"]${capability}['\"]\\s*,`).test(catalogue))
+      ) {
+        violations.push(
+          `${contract.catalogue} (${capability} is a baked-in Console capability, not an Operation)`
+        )
+      }
+    }
+  }
+
+  const layout = readFileSync(path.join(repoRoot, CONSOLE_LAYOUT), 'utf8')
+  const navbar = readFileSync(
+    path.join(repoRoot, CONSOLE_SHARED_NAVBAR),
+    'utf8'
+  )
+  if (
+    !layout.includes('LayoutsSharedNotificationsSlideover') ||
+    !layout.includes('useConsoleNotifications') ||
+    !navbar.includes('openNotifications()')
+  ) {
+    violations.push(
+      'Core Console shell must provide the baked-in Notifications capability.'
     )
-    if (!identityRoute.some((candidate) => existsSync(candidate))) {
-      violations.push(`${contract.routeRoot} (every Console requires Identity)`)
+  }
+}
+
+function validateConsoleAIContracts(repoRoot, violations) {
+  for (const contract of CONSOLE_AI_CONTRACTS) {
+    const definitionPath = path.join(repoRoot, contract.definition)
+    const registrationPath = path.join(repoRoot, contract.registration)
+    if (!existsSync(definitionPath)) {
+      violations.push(
+        `${contract.definition} (missing ${contract.family} Entity-owned AI definition)`
+      )
+      continue
+    }
+    if (!existsSync(registrationPath)) {
+      violations.push(
+        `${contract.registration} (missing ${contract.family} ecosystem AI registration)`
+      )
+      continue
+    }
+    const registration = readFileSync(registrationPath, 'utf8')
+    const importPath = contract.definition
+      .split('/src/')[1]
+      .replace(/\.ts$/, '')
+    if (!registration.includes(importPath)) {
+      violations.push(
+        `${contract.registration} (must import the ${contract.family} Entity-owned AI definition)`
+      )
     }
   }
 }
 
-function routeCandidatesForIdentity(repoRoot, routeRoot) {
+function routeCandidatesForCapability(repoRoot, routeRoot, capability) {
   return [
-    path.join(repoRoot, routeRoot, 'identity.vue'),
-    path.join(repoRoot, routeRoot, 'identity', 'index.vue'),
+    path.join(repoRoot, routeRoot, `${capability}.vue`),
+    path.join(repoRoot, routeRoot, capability, 'index.vue'),
   ]
 }
 

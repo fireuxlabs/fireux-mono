@@ -148,7 +148,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: label Supplier App support explicitly in Dev storage diagnostics.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'

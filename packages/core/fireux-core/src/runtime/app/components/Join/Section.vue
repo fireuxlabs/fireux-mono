@@ -47,8 +47,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useToastify } from '../../../composables/ui/useToastify'
+import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAppJoinRequest } from '../../composables/firestore/mutations/useAppJoinRequest'
 
 const route = useRoute()

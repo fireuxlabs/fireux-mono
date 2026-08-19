@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenConsoleDish } from '../../../../composables/console/operations/Dishes/useKitchenConsoleDish'
 import { useDishImageUpload } from '../../../../composables/firestore/dish/mutations/useDishImageUpload'
 import { useDishUpdate } from '../../../../composables/firestore/dish/mutations/useDishUpdate'

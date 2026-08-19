@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useHead } from 'nuxt/app'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'

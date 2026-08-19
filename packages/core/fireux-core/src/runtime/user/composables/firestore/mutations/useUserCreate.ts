@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:37 CEST — Repo Efficiency Pass 1 of 6: distinguish fresh bootstrap from a failed App-status check.
 
 import { fetchCurrentAppContext } from '../../../../app/composables/currentAppContext'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { requireUid } from '../../../../composables/fireux/firestore/utils/useEnsureCommon'
 import {
   createCoreUserDocument,

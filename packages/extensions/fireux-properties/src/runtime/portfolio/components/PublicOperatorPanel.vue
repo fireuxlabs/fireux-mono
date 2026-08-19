@@ -57,7 +57,7 @@ import { computed } from 'vue'
 import {
   visiblePublicActionGroups,
   type PublicActionGroup,
-} from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
+} from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 import type { PortfolioSurface } from '../composables/firestore/utils/view/usePortfolioInterface'
 
 const props = defineProps<{

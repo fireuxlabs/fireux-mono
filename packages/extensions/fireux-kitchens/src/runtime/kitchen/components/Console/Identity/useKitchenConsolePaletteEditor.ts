@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import type { ConsolePalette } from 'fireux-core/types/theme'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenConsoleIdentity } from '../../../composables/console/identity/useKitchenConsoleIdentity'
 
 const fallbackConsolePalette: ConsolePalette = {

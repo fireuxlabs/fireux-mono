@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenRecipesWorkspace } from '../../../../composables/console/operations/Recipes/useKitchenRecipesWorkspace'
 import { useRecipeCreate } from '../../../../composables/firestore/recipe/mutations/useRecipeCreate'

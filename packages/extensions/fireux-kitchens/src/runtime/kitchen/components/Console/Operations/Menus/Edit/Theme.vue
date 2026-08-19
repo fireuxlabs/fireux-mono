@@ -70,7 +70,7 @@ import { deleteField } from 'firebase/firestore'
 import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { ConsolePalette } from 'fireux-core/types/theme'
 import { computed, reactive, ref, watch } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../composables/console/operations/Menus/useKitchenConsoleMenu'
 
 const fallback: ConsolePalette = {

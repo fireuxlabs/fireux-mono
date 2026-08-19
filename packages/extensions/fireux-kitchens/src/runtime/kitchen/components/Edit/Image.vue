@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed } from 'vue'
 import { useKitchenAssetUpdate } from '../../composables/firestore/mutations/useKitchenAssetUpdate'
 import { readKitchenIdentity } from '../../utils/kitchen-spine'

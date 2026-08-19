@@ -1,6 +1,6 @@
 # Suppliers
 
-Updated: 2026-08-04
+Updated: 2026-08-19
 Ref: d232cc731
 Role: map, not canon
 
@@ -64,8 +64,8 @@ paths and data, then remove the prototype code and records.
   `packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts`
 - Console core:
   `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/core/useSupplierConsole.ts`
-- Operations:
-  `packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts`
+- Console capability model:
+  `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - Retired Misebox doorway redirect:
   `projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts`
 - Product host: `projects/bringli/bringli-app/nuxt.config.ts`

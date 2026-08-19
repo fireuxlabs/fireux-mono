@@ -4,7 +4,15 @@
 // usage_note: interactive local App launcher backed by the canonical App registry.
 
 import { spawn, spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync } from 'node:fs'
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import net from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
@@ -23,6 +31,17 @@ const firefoxProfilePath = path.join(
   'Application Support',
   'FireUX Launcher',
   'Firefox Profile'
+)
+const firefoxExtensionId = 'running-apps@fireux.dev'
+const firefoxExtensionSourcePath = path.join(
+  repoRoot,
+  'tools',
+  'firefox-running-apps'
+)
+const firefoxExtensionPath = path.join(
+  firefoxProfilePath,
+  'extensions',
+  `${firefoxExtensionId}.xpi`
 )
 const allApps = getAppRegistryEntries().sort(
   (left, right) =>
@@ -94,6 +113,76 @@ let stopped = false
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds))
+}
+
+function syncFirefoxUserPreferences() {
+  const userJsPath = path.join(firefoxProfilePath, 'user.js')
+  const startMarker = '// FireUX launcher preferences: start'
+  const endMarker = '// FireUX launcher preferences: end'
+  const managedPreferences = [
+    startMarker,
+    'user_pref("browser.toolbars.bookmarks.visibility", "always");',
+    'user_pref("extensions.autoDisableScopes", 0);',
+    'user_pref("xpinstall.signatures.required", false);',
+    endMarker,
+  ].join('\n')
+  const existing = existsSync(userJsPath) ? readFileSync(userJsPath, 'utf8') : ''
+  const start = existing.indexOf(startMarker)
+  const end = existing.indexOf(endMarker)
+  const withoutManagedBlock =
+    start >= 0 && end >= start
+      ? `${existing.slice(0, start)}${existing.slice(end + endMarker.length)}`
+      : existing
+  const prefix = withoutManagedBlock.trimEnd()
+
+  writeFileSync(
+    userJsPath,
+    `${prefix ? `${prefix}\n\n` : ''}${managedPreferences}\n`
+  )
+}
+
+function syncFirefoxExtension() {
+  if (!existsSync(firefoxExtensionSourcePath)) {
+    throw new Error(`missing extension source at ${firefoxExtensionSourcePath}`)
+  }
+
+  const extensionsPath = path.dirname(firefoxExtensionPath)
+  const stagingRoot = mkdtempSync(path.join(os.tmpdir(), 'fireux-firefox-'))
+  const stagingPath = path.join(stagingRoot, 'extension')
+
+  try {
+    mkdirSync(extensionsPath, { recursive: true })
+    cpSync(firefoxExtensionSourcePath, stagingPath, { recursive: true })
+    writeFileSync(
+      path.join(stagingPath, 'apps.json'),
+      `${JSON.stringify(
+        allApps.map(({ baseUrl, key, name, port }) => ({
+          baseUrl,
+          key,
+          name,
+          port,
+        })),
+        null,
+        2
+      )}\n`
+    )
+    const archive = spawnSync(
+      '/usr/bin/zip',
+      ['-q', '-r', firefoxExtensionPath, '.'],
+      { cwd: stagingPath, encoding: 'utf8' }
+    )
+    if (archive.error || archive.status !== 0) {
+      throw archive.error ?? new Error(archive.stderr || 'zip failed')
+    }
+    syncFirefoxUserPreferences()
+  } finally {
+    rmSync(stagingRoot, { force: true, recursive: true })
+  }
+}
+
+function prepareFireuxFirefox() {
+  mkdirSync(firefoxProfilePath, { recursive: true })
+  syncFirefoxExtension()
 }
 
 function getListeningPorts() {
@@ -262,7 +351,7 @@ function openBrowser(app) {
     process.platform === 'darwin' && existsSync(firefoxPath)
   if (useFireuxFirefox) {
     try {
-      mkdirSync(firefoxProfilePath, { recursive: true })
+      prepareFireuxFirefox()
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       statusMessage = `Could not prepare the FireUX Firefox profile: ${message}`
@@ -449,6 +538,22 @@ function cleanup(exitCode = 0) {
   process.stdout.write(`${ansi.showCursor}${ansi.restoreScreen}${ansi.reset}`)
   if (process.stdin.isTTY) process.stdin.setRawMode(false)
   process.exit(exitCode)
+}
+
+if (process.argv.includes('--prepare-firefox')) {
+  if (process.platform !== 'darwin' || !existsSync(firefoxPath)) {
+    console.error('[launcher] Firefox Developer Edition is not installed.')
+    process.exit(1)
+  }
+  try {
+    prepareFireuxFirefox()
+    console.log(`[launcher] Prepared the FireUX Firefox profile at ${firefoxProfilePath}`)
+    process.exit(0)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`[launcher] Could not prepare the FireUX Firefox profile: ${message}`)
+    process.exit(1)
+  }
 }
 
 if (!process.stdin.isTTY || !process.stdout.isTTY) {

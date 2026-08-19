@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import type { AppDirectoryEntry } from '../../../models/utils/directory'
 import { AppStorage } from '../../../app/models/app.model.ts'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'

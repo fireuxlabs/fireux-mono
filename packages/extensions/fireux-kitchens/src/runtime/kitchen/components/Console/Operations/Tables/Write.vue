@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleTables } from '../../../../composables/console/operations/Tables/useKitchenConsoleTables'
 import { useKitchenUpdate } from '../../../../composables/firestore/mutations/useKitchenUpdate'

@@ -1,6 +1,6 @@
 # Product language
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -121,8 +121,8 @@ selected-Kitchen reporting Operation. Overview is the Console home. QR is Menu
 tooling; Overview may expose quick access to important Menu QR results without
 owning the Tool. HACCP is a parked future Kitchen Operation until its workspace
 is wired. Training belongs under Team, and Purchasing belongs under Suppliers
-if Kitchen-owned purchasing gains authoritative producers. A historical
-`operations.ts` filename does not change those product meanings. Misebox may
+if Kitchen-owned purchasing gains authoritative producers. The Kitchen
+operation catalogue contains only those selected-Kitchen product meanings. Misebox may
 summarise the Kitchen Console, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.
@@ -184,8 +184,8 @@ or advertise the FireUX ecosystem-creation offer.
 ## Current source
 
 - `packages/core/fireux-core/src/config/app/meta-content.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/content/operations.ts`
-- `packages/extensions/fireux-suppliers/src/runtime/supplier/content/operations.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts`
+- `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue`

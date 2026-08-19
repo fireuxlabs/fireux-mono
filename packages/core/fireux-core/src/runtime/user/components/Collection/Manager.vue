@@ -105,7 +105,7 @@
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: carry public biography through directory cards and live-self hydration.
 import { useFetch } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useUser } from '../../composables/useUser'
 import { useUserInterface } from '../../composables/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'

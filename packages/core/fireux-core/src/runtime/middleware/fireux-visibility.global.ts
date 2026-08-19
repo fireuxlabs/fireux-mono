@@ -1,10 +1,10 @@
 import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 import {
   isNavVisibleForScope,
   normaliseNavVisibility,
-} from '../composables/fireux/app/ui/nav/visibility'
-import type { NavMeta, NavVisibility } from '../composables/fireux/app/nav.types'
+} from '../composables/navigation/visibility'
+import type { NavMeta, NavVisibility } from '../composables/navigation/types'
 
 type RouteMetaWithVisibility = {
   nav?: NavMeta

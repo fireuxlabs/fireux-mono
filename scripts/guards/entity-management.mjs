@@ -9,7 +9,7 @@ const relativeFiles = {
   contract: 'packages/core/fireux-core/src/runtime/models/utils/scope.model.ts',
   resolver: 'packages/core/fireux-core/src/runtime/utils/entity-management.ts',
   runtimeConfig:
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts',
+    'packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts',
   ecosystemType: 'packages/core/fireux-core/src/types/ecosystem.ts',
   appModel: 'packages/core/fireux-core/src/runtime/app/models/app.model.ts',
   kitchen:

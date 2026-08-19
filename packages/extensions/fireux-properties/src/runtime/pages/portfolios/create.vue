@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import PortfolioCreateSystem from '../../portfolio/components/Create/System.vue'
 
 definePageMeta({

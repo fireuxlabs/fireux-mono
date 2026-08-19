@@ -11,7 +11,7 @@ import type {
   ConsoleTargetsResponse,
 } from '../../../../models/utils/console-target.model.ts'
 import { useAuth } from '../firebase/useAuth'
-import { useFireUXConfig } from '../app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { normalizeConsoleFamily } from './useConsole'
 import type { ConsoleTargetOutcome } from './useConsoleIndex'
 

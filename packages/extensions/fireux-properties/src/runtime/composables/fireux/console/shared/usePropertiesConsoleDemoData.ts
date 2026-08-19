@@ -1,5 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/console/useConsoleDemoData'
 import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
 import {

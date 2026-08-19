@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: expose outcomes and enforce App-admin authority for field-level curation updates.
 import { doc, setDoc } from 'firebase/firestore'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from './config/FireUXConfig'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from '../../user/composables/useUser'
 import { useFirestoreResolver } from '../../composables/fireux/firestore/vuefire'

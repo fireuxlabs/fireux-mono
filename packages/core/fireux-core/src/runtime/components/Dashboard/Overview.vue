@@ -108,11 +108,11 @@
 
 <script setup lang="ts">
 import { computed, useRuntimeConfig } from '#imports'
-import type { NavItem } from '../../composables/fireux/app/nav.types'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import type { NavItem } from '../../composables/navigation/types'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext'
-import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
-import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
+import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
+import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useAppInterface } from '../../app/composables/useAppInterface'
 import { useUser } from '../../user/composables/useUser'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'

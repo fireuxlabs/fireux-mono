@@ -5,7 +5,7 @@ import {
   timingSafeEqual,
 } from 'node:crypto'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'

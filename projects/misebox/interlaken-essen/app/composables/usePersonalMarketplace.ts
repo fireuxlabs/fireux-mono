@@ -6,9 +6,9 @@ import type {
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
 import { computed, navigateTo, ref, watch } from '#imports'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntryState'
+import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type {

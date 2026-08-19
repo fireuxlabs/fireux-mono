@@ -107,7 +107,7 @@ function validateConsoleTargetEndpoints({ repoRoot, violations }) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleTargetCollection.ts'
   const friiitesRelative = 'projects/misebox/friiites/nuxt.config.ts'
   const runtimeConfigRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts'
   const familyRuntimeRelative =
     'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleFamilyRuntime.ts'
   const request = readRequiredSource(

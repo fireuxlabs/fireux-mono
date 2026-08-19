@@ -178,7 +178,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useApp } from '../../app/composables/useApp'
 
 type AdminSurfaceMeta = {

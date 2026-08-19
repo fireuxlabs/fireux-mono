@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'

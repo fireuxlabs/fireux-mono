@@ -18,7 +18,7 @@ import { setResponseStatus, useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
-import { useKitchenSeo } from '../../../kitchen/composables/firestore/utils/useKitchenSeo'
+import { useKitchenSeo } from '../../../kitchen/composables/useKitchenSeo'
 import type { Kitchen } from '../../../kitchen/models/kitchen.model.ts'
 
 definePageMeta({

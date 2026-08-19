@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: bind Chef editor only to canonical fields.
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed } from 'vue'
 import { useChefUpdate } from '../../../composables/firestore/profiles/Chef/mutations/useChefUpdate'
 import { useChef } from '../../../composables/chef/useChef'

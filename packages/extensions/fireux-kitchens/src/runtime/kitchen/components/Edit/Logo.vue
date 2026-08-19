@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useKitchenAssetUpdate } from '../../composables/firestore/mutations/useKitchenAssetUpdate'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'

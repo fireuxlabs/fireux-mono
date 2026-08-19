@@ -92,7 +92,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
 import { computed, ref } from 'vue'
-import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
+import { useToastify } from '../../../composables/ui/useToastify'
 import { useAppUpdate } from '../../composables/firestore/mutations/useAppUpdate'
 import { useAppJoinRequests } from '../../composables/firestore/utils/useAppJoinRequests'
 import { useAppUserCollection } from '../../../user/composables/firestore/fetch/useAppUserCollection'

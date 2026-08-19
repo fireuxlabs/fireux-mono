@@ -75,8 +75,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
+import { useNav } from '../../../composables/navigation/useNav'
 
 // Footer uses UFooter + UContainer from Nuxt UI 4
 const fireux = useFireUXConfig()

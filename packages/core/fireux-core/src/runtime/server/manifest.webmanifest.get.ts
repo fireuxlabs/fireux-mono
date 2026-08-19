@@ -1,6 +1,6 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { useAssets } from '../composables/fireux/app/useAssets'
+import { useAssets } from '../app/composables/brand/useAssets'
 import { withBuildVersion } from '../utils/buildVersionUrl'
 
 const DEFAULT_BACKGROUND = '#ffffff'

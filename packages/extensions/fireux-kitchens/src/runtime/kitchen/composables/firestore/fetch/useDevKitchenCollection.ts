@@ -10,7 +10,7 @@ import {
   isRef,
   type Ref,
 } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/place/models/place.model'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'

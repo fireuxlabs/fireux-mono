@@ -113,7 +113,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useJobsConfig } from '../../../composables/fireux/app/useJobsConfig'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import {

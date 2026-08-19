@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'

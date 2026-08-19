@@ -70,7 +70,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
+import { useDevUi } from 'fireux-core/runtime/composables/dev/useDevUi'
 import SupplierCreateWrite from './Write.vue'
 
 const props = defineProps<{

@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { useHead, useRequestURL } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import {
   buildPricingOfferCatalog,
   normalizePricingPlanGroups,

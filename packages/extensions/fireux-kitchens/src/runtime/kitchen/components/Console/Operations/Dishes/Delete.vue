@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { ref } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenConsoleDish } from '../../../../composables/console/operations/Dishes/useKitchenConsoleDish'
 import { useDishDelete } from '../../../../composables/firestore/dish/mutations/useDishDelete'
 

@@ -79,7 +79,7 @@ import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, ref } from 'vue'
 import { useIngredientDetail } from '../../ingredient/composables/useIngredientDetail'
 import { useIngredientInterface } from '../../ingredient/composables/useIngredientInterface'
-import { useIngredientSeo } from '../../ingredient/composables/firestore/utils/useIngredientSeo'
+import { useIngredientSeo } from '../../ingredient/composables/useIngredientSeo'
 
 definePageMeta({
   layout: 'default',

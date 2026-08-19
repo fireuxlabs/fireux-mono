@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: keep raw image URLs out of client Dish creation.
 import { doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

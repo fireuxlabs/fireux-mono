@@ -3,7 +3,7 @@ import type {
   LandingProductIndexContent,
   LandingProductSurface,
 } from 'fireux-core/types/landing-product'
-import { portfolioOperations } from 'fireux-properties/runtime/content/operations'
+import { portfolioOperations } from 'fireux-properties/runtime/portfolio/models/operations'
 
 export const content = {
   hero: {

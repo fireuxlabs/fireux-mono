@@ -60,7 +60,7 @@ import {
     type FormattingFn,
     type UpdateFn,
     type ValidationFn,
-} from '../../../../composables/fireux/app/forms/useEditableStringField';
+} from '../../../../composables/forms/useEditableStringField';
 
 const props = withDefaults(
   defineProps<{

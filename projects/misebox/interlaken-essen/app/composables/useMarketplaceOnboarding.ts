@@ -1,7 +1,7 @@
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
 import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
-import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
+import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUserUpdate } from 'fireux-core/runtime/user/composables/firestore/mutations/useUserUpdate'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'

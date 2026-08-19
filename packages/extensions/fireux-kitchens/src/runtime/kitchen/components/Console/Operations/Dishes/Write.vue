@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useKitchenDishesWorkspace } from '../../../../composables/console/operations/Dishes/useKitchenDishesWorkspace'
 import { useDishCreate } from '../../../../composables/firestore/dish/mutations/useDishCreate'

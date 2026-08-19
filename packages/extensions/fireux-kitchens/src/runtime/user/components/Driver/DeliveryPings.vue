@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useDriverDispatches } from '../../composables/driver/useDriverDispatches'
 import { useDriver } from '../../composables/driver/useDriver'
 import type { DriverDispatchBeacon } from '../../models/driver/dispatch'

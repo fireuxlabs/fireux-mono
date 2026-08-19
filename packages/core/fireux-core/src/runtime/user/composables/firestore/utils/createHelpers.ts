@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: remove browser notification construction from the canonical create helpers.
 
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useUserHandleUpdate } from '../mutations/useUserHandleUpdate'
 import { mutateAppMembership } from './appMembershipMutation'
 import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from '../../../utils/user-avatar'

@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'

@@ -8,7 +8,7 @@ import {
   normalizeConsoleSource,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readConsoleTargetAuthority } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'

@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: remove browser-owned App role, premium, and membership mirror writes.
 // Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: remove browser-authored notification compatibility actions.
 
-import { useFireUXConfig } from '../../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { mutateAppMembership } from '../appMembershipMutation'
 

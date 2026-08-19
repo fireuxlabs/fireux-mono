@@ -7,7 +7,7 @@ import {
   useFirestore,
 } from '../../../vuefire'
 import { computed, isRef } from 'vue'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 import type { Ref } from 'vue'
 import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import type {

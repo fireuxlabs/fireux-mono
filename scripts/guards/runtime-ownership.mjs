@@ -6,17 +6,22 @@ import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import { entityMatrix } from '../_lib/entity-matrix.mjs'
 
+const ENTITY_TECHNICAL_ROLES = new Set([
+  'components',
+  'composables',
+  'models',
+  'server',
+  'utils',
+  'demo',
+  'tools',
+])
+
 const LEGACY_ENTITY_PATHS = [
-  // Core entities. App shell files intentionally remain under components/App
-  // and composables/fireux/app; only canonical App entity capabilities moved.
-  'packages/core/fireux-core/src/runtime/components/App/CTA.vue',
-  'packages/core/fireux-core/src/runtime/components/App/Cards',
-  'packages/core/fireux-core/src/runtime/components/App/Collection',
-  'packages/core/fireux-core/src/runtime/components/App/Create',
-  'packages/core/fireux-core/src/runtime/components/App/Edit',
-  'packages/core/fireux-core/src/runtime/components/App/Initialize',
-  'packages/core/fireux-core/src/runtime/components/App/Join',
-  'packages/core/fireux-core/src/runtime/components/App/Profile.vue',
+  // Core entities. Entity-owned App components and composables use the App
+  // scoped Nuxt spine; the old global App-labelled dumping grounds are closed.
+  'packages/core/fireux-core/src/runtime/components/App',
+  'packages/core/fireux-core/src/runtime/composables/fireux/app',
+  'packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/AppImages.vue',
   'packages/core/fireux-core/src/runtime/components/Console/Project',
   'packages/core/fireux-core/src/runtime/components/Ecosystem',
   'packages/core/fireux-core/src/runtime/components/Project',
@@ -146,6 +151,7 @@ function hasAuthoredFile(target) {
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const violations = []
+  const entityRoots = new Set()
 
   for (const entity of entityMatrix) {
     if (
@@ -161,6 +167,36 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       violations.push(
         `${entity.source}: declared Entity model must live at runtime/<entity>/models`
       )
+      continue
+    }
+
+    entityRoots.add(entity.source.slice(0, entity.source.indexOf('/models/')))
+  }
+
+  for (const relativeRoot of entityRoots) {
+    const root = path.join(repoRoot, relativeRoot)
+    if (!existsSync(root)) {
+      violations.push(
+        `${relativeRoot}: declared Entity runtime root is missing`
+      )
+      continue
+    }
+
+    for (const entry of readdirSync(root, { withFileTypes: true })) {
+      if (entry.name === '.DS_Store') continue
+      const relativeEntry = `${relativeRoot}/${entry.name}`
+      if (!entry.isDirectory()) {
+        violations.push(`${relativeEntry}: loose Entity-root file`)
+        continue
+      }
+      if (
+        !ENTITY_TECHNICAL_ROLES.has(entry.name) &&
+        hasAuthoredFile(path.join(root, entry.name))
+      ) {
+        violations.push(
+          `${relativeEntry}/: Entity root must use a scoped Nuxt technical role`
+        )
+      }
     }
   }
 
@@ -177,7 +213,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
         '[guard] Entity runtime ownership drifted:',
         ...violations.map((violation) => `- ${violation}`),
         '',
-        'Shared/system code stays in the root Nuxt spine. Entity-owned code belongs under runtime/<entity>/<role>.',
+        'Shared/system code stays in the root Nuxt spine. Entity-owned code belongs under runtime/<entity>/{components,composables,models,server,utils,demo,tools}.',
       ].join('\n')
     )
   }

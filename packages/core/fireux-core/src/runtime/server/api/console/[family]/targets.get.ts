@@ -9,7 +9,7 @@ import {
   CONSOLE_TARGET_LIMIT,
   type ConsoleTargetsResponse,
 } from '../../../../../models/utils/console-target.model'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from '../../../../server/utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../../server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from '../../../../server/utils/ids/path'

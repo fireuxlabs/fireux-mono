@@ -6,7 +6,7 @@ import { useKitchenCreate } from './mutations/useKitchenCreate'
 import { useKitchenDelete } from './mutations/useKitchenDelete'
 import { useKitchenPublish } from './mutations/useKitchenPublish'
 import { useKitchenUpdate } from './mutations/useKitchenUpdate'
-import { useKitchenSeo } from './utils/useKitchenSeo'
+import { useKitchenSeo } from '../useKitchenSeo'
 import { useKitchenComputed } from './utils/view/useKitchenComputed'
 import { useKitchenInterface } from './utils/view/useKitchenInterface'
 

@@ -20,7 +20,7 @@ import { resolveSproochliHostStorage } from 'fireux-sproochli/runtime/server/men
 import {
   MENU_BROWSE_SURFACE_COPY_FIELDS,
   resolveMenuBrowseSurfaceCopy,
-} from '../../content/menu-surface-copy'
+} from '../../utils/menu-surface-copy'
 import type { MenuManifest } from '../../models/menu-detail.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

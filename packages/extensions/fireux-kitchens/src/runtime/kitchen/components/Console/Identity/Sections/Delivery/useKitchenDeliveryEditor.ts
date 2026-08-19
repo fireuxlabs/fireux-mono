@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: use linked Place currency and coordinates for Kitchen delivery configuration.
 import type { RadioGroupItem } from '@nuxt/ui'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
 import { useKitchenUpdate } from '../../../../../composables/firestore/mutations/useKitchenUpdate'
 import type {

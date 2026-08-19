@@ -13,7 +13,7 @@ import {
 } from '../../../models/user-account.model.ts'
 import { resolveUserAvatarSource } from '../../../utils/user-avatar'
 import type { CurrentAppMembershipDto } from '../../../../server/utils/public-projection/public-dto.types.ts'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { usePublicUserIdentity } from '../../usePublicUserIdentity'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'

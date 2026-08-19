@@ -1,6 +1,6 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useUser } from '../../../../user/composables/useUser'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../config/FireUXConfig'
 import type { AppViewSource } from '../../useAppInterface'
 
 export function useMyApps(

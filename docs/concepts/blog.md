@@ -1,7 +1,7 @@
 # Blog literature
 
-Updated: 2026-08-18
-Ref: 1fca9417e
+Updated: 2026-08-19
+Ref: 1114d407d
 Role: map, not canon
 
 ## Purpose
@@ -66,6 +66,16 @@ is public, so the publishing admin must separately confirm privacy, factual
 claims, and every remaining name. A scheduled run may produce no article;
 skipping is a valid editorial outcome.
 
+The FireUX App also has a local operational publisher for reviewed Markdown
+drafts. It is a second transport into the same Blog-owned contract, not another
+storage or publication authority: it fixes the FireUX Project and named
+database, uses a create-only typed MCP/Skill target, plans without writing,
+requires the plan hash plus all three editorial approvals, rejects collisions,
+and verifies each public record after creation. Use
+`pnpm publish:fireux-blog -- --project=fireux-2005 --database=fireux --files=<draft.md>`
+to produce a plan; applying additionally requires `--apply`, the reported
+`--confirm` hash, and `--privacy-reviewed --facts-reviewed --names-approved`.
+
 ## Ownership and boundaries
 
 - `fireux-blogs` owns canonical BlogPost shape, storage, projection, and
@@ -85,6 +95,7 @@ skipping is a valid editorial outcome.
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
 - `scripts/guards/blog-authority.mjs`
 - `packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts`
+- `scripts/publish-fireux-blog.mjs`
 - `scripts/guards/sproochli-copy.mjs`
 - `docs/concepts/product-language.md`
 - `docs/concepts/translation.md`

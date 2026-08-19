@@ -55,7 +55,7 @@ import { definePageMeta } from '#imports'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
 import { AppDefaults } from '../../app/models/app.model.ts'
 

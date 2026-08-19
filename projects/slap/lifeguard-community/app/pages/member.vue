@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/useAuthRedirect'
+import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useCommunityDemo } from '../composables/useCommunityDemo'
 definePageMeta({ layout: 'default' })
 useAuthRedirect()

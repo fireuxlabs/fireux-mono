@@ -7,7 +7,7 @@ import type {
   FireuxEntityCreateResult,
   FireuxRootCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

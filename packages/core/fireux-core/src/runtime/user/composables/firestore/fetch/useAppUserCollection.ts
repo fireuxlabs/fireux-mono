@@ -9,7 +9,7 @@ import type {
   AppAdminPeopleResponse,
   PublicUserIdentityDto,
 } from '../../../../server/utils/public-projection/public-dto.types.ts'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
 type AppAdminPeopleState = {

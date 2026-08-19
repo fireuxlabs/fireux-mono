@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: living context
 Scope: repo-wide
@@ -49,10 +49,11 @@ without inventing a parallel marketing vocabulary.
 
 Package runtime filesystem ownership starts at
 `docs/concepts/runtime-filesystem.md`. The root technical spine is reserved for
-cross-entity shared code and Nuxt entrypoints. Entity-owned components,
-composables, models, server behaviour, tools, and other implementation live
-under `src/runtime/<entity>/`, preserving the technical role inside that
-scope. Console is a shared surface, not an entity owner: shared Console
+cross-entity shared code and Nuxt entrypoints. Entity-owned implementation
+lives under the finite scoped spine
+`src/runtime/<entity>/{components,composables,models,server,utils,demo,tools}`;
+`demo` and `tools` remain optional and empty symmetry is forbidden. Console is
+a shared surface, not an entity owner: shared Console
 primitives remain in the root spine, while an entity's Console adapters live
 under that entity. The declared App, Ecosystem, User, Project, Place, Job,
 Marketplace Store, Product, Kitchen, Menu, Ingredient, Supplier, Portfolio,
@@ -318,9 +319,10 @@ requirement, report the exact missing seam before broad edits.
   contracts in a generic Core entity bucket.
 - Root `runtime/models` contains only contracts genuinely shared across
   entities, such as stamps, scope fragments, entity declarations, bounded
-  projection vocabulary, and shared style vocabulary. Normalization, access
-  resolution, formatting, and UI controller state belong in shared or
-  entity-owned `runtime/utils` and `runtime/types`, not in a model library.
+  projection vocabulary, and shared style vocabulary. Entity-owned contracts
+  and typed catalogues belong in that Entity's `models`; normalization and
+  formatting belong in its `utils`; UI controller state belongs in its
+  `composables`.
 - App, Ecosystem, User, and Project models now live in their entity scopes;
   their owned support records moved with them. Root `models/operations`
   retains only genuinely shared coordination records. Do not reintroduce a
@@ -372,8 +374,8 @@ requirement, report the exact missing seam before broad edits.
   by being catalogued. Cross-domain families such as Identity share
   capabilities while retaining named domain agents, authority, and context
   owners.
-  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning entity's
-  `runtime/<entity>/ai/operation-agents` catalogue.
+  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning Entity's
+  `runtime/<entity>/models/operation-agents` catalogue.
 - Operational tools are domain-owned pure definitions under
   `runtime/<entity>/tools/<scope>`. One fully qualified id owns the tool's
   model-facing context, input schema, confirmation and risk policy, human and
@@ -506,11 +508,10 @@ requirement, report the exact missing seam before broad edits.
   `defineFireuxConfig` or public runtime config. Tenant Apps do not acquire the
   ecosystem-owner literature. Main Apps place Core
   `LandingOperationRail` above Section One and supply only their own working
-  Console capabilities. Every Console Entity owns Identity; Identity and Team
-  remain peers of Operations. A complete capability catalogue may feed the
-  landing rail, while an operation-only consumer must use only the Operations
-  listed in `docs/concepts/console.md`. Historical `operations.ts` names do not
-  reclassify Identity or Team. Public product directories never masquerade as
+  Console capabilities. Every Console Entity has Index, Overview, Identity,
+  Team, and shared Notifications; permissions underpin them rather than
+  becoming a navigation page. Entity operation catalogues contain only the
+  Operations listed in `docs/concepts/console.md`. Public product directories never masquerade as
   Operations. That rail sticks
   beneath the header, then exits upward as the shared pricing strip approaches
   the same edge. Pricing exposes no visible heading and compacts without

@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
 
 definePageMeta({

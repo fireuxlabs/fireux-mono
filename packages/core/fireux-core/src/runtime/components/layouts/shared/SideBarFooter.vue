@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../user/composables/useUser'
 import type { UserCard } from '../../../user/composables/useUserInterface'

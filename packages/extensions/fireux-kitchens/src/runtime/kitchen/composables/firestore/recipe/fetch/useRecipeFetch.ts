@@ -1,5 +1,5 @@
 import { doc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import { RecipeStorage, normalizeRecipe, type Recipe } from '../../../../models/recipe.model.ts'

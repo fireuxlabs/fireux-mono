@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import BlogCTA from './CTA.vue'
 import BlogCollectionEditorialManager from './Collection/EditorialManager.vue'
 

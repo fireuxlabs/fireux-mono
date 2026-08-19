@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 16:21 CEST — Repo Efficiency Pass 1 of 6: resolve ecosystem App routing through the DTO boundary and fail closed across ecosystems.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppDetail } from 'fireux-core/runtime/app/composables/useAppDetail'
 import type { MenuRouteContext } from '../../../menu/models/menu-context.model.ts'
 import {

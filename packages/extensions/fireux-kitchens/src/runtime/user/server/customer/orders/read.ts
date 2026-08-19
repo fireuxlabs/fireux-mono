@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: join the concrete Place runtime model and omit absent customer Order values.
 import { getQuery, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { CustomerOrderPage } from '../../../models/customer/order.model.ts'
 import { readCustomerOrderKitchens, kitchenKey } from './kitchens'

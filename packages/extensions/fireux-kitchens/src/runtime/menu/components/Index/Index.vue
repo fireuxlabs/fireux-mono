@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { useSeoMeta } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { PublicMenuIndexController } from '../../composables/usePublicMenuIndex'
 
 const props = defineProps<{

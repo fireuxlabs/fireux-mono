@@ -4,7 +4,7 @@ import {
   defineFireuxConsoleAgent,
   findFireuxOperationAgent,
 } from 'fireux-ai/runtime/agents/operation-agent'
-import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/ai/operation-agents'
+import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 
 export const miseboxAgent = defineFireuxAgentNode({
   id: 'misebox.ai',

@@ -164,7 +164,7 @@
 
 <script setup lang="ts">
 import { computed, ref, useRoute, useRouter } from '#imports'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../composables/useUser'
 import { useUserCreate } from '../../composables/firestore/mutations/useUserCreate'

@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: preserve custom Menu hours while compacting surface policies.
 import { deleteField } from 'firebase/firestore'
 import { computed } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type {
   KitchenMenuUpdateInput,
   MenuOrderingConfig,

@@ -1,5 +1,5 @@
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { useFireUXConfig } from '../app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 
 type Input<T> = T | Ref<T> | ComputedRef<T>
 

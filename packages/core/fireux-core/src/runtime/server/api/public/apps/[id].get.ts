@@ -8,7 +8,7 @@ import {
   type H3Event,
 } from 'h3'
 import { AppStorage } from '../../../../app/models/app.model.ts'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../utils/ids/path'
 import { projectPublicApp } from '../../../../app/server/projection/public-app.dto.ts'

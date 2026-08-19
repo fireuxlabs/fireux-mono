@@ -110,7 +110,7 @@
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: retire the duplicate nested full-Property storage probe.
 // Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: expose child inspection without downstream package imports.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: distinguish Portfolio App support from App-only child data.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   buildDevCollectionSnapshot,
   useDevStorageCollection,

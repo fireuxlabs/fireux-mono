@@ -1,6 +1,6 @@
 # Console entity family
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -26,7 +26,7 @@ map in `console.md`. The family deltas are:
 
 | Member    | Status and reason                                                                                                                                         |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank     | `accepted`: app-local minimal harness; it proves Index, Overview, and read-only Identity without invented Team or Operations                              |
+| Blank     | `accepted`: app-local minimal harness; it proves the complete baked-in Console baseline with factual read-only Team authority and no Operations           |
 | Kitchen   | `accepted`: Place-backed identity, dual Live/Demo targets, real Kitchen people records, and a large operational domain                                    |
 | Supplier  | `accepted`: root + App support target with authority-backed Team today and Supplier-owned Catalogue, Ingredient, and Item operations                      |
 | Portfolio | `accepted`: root + App support target with authority-backed Team and a private-heavy Property, document, task, compliance, and Finance domain             |
@@ -111,7 +111,7 @@ Every Console Entity must share these rules:
 | Kitchen renders Live and Demo target sources                        | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/console-indexes.mjs` and `scripts/guards/demo-data.mjs`                              |
 | Kitchen Team adds members and join requests beyond target authority | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenConsoleTeam` and `Console/Kitchen/Team`                                                                     |
 | Supplier, Portfolio, and Property Team are authority-backed only    | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXConsoleTeam` adapters and `ConsoleTeamPanel`                                                               |
-| Blank omits Team and child Operations                               | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                                                         |
+| Blank has no child Operations                                       | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools          | `projects/fireux/fireux-blank`                                                                                         |
 | Project has no App support or Create                                | `accepted` | Project Team and Operations use private FireUX control-plane authority rather than an App-support onboarding lifecycle                | Project entity declaration and internal control-plane APIs                                                             |
 | Operation folders differ by domain                                  | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | current source uses each owner's `components/Console/Operations` and `composables/console/operations` capability paths |
 
@@ -120,13 +120,12 @@ Index outcome contract.
 
 ## Migration and drift register
 
-| Difference                                                                          | State        | Required direction                                                                                                                     |
-| ----------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Supplier and Portfolio public-read contracts remain `to-confirm`                    | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity                                                        |
-| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed   |
-| Historical Kitchen/Supplier `operations.ts` catalogues include Identity and Team    | `drift`      | Rename or split the complete Console capability catalogue so only the Operations listed in `console.md` enter operation-only consumers |
-| Kitchen authored route slug differs from stable root identity                       | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID        |
-| Console Entity implementation uses `runtime/<entity>/<technical role>`              | `accepted`   | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                    |
+| Difference                                                                          | State        | Required direction                                                                                                                   |
+| ----------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Supplier and Portfolio public-read contracts remain `to-confirm`                    | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity                                                      |
+| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
+| Kitchen authored route slug differs from stable root identity                       | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID      |
+| Console Entity implementation uses `runtime/<entity>/<technical role>`              | `accepted`   | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                  |
 
 ## Component and composable naming
 
@@ -169,8 +168,8 @@ composition delta, not permission to fork the Console Index spine.
   AppKitchen access support payload-free.
 - Reconcile Supplier and Portfolio root validation before confirming public
   projections.
-- Rename or split the historical capability catalogues so Identity and Team
-  cannot be mistaken for Operations.
+- Keep every Entity operation catalogue limited to the Operations listed in
+  `console.md`; baked-in capabilities never enter operation-only consumers.
 
 ### Later
 

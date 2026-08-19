@@ -80,8 +80,8 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/firestore/useKitchen'

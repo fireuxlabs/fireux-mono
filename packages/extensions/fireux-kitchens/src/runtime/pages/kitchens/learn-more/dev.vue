@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 
 definePageMeta({
   layout: 'default',

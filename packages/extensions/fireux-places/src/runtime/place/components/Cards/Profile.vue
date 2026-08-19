@@ -210,7 +210,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSocialLinks } from 'fireux-core/runtime/composables/fireux/app/ui/useSocialLinks'
+import { useSocialLinks } from 'fireux-core/runtime/composables/public/useSocialLinks'
 import { computed, toRefs } from 'vue'
 import type { PlaceProfile } from '../../composables/firestore/utils/view/usePlaceInterface'
 import PlaceGoogleHours from '../GoogleHours.vue'

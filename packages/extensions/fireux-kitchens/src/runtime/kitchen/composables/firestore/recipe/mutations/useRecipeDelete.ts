@@ -1,7 +1,7 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
 import { computed, unref, type Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { RecipeStorage } from '../../../../models/recipe.model.ts'
 import { useKitchenConsoleSelection } from '../../../console/core/useKitchenConsoleSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'

@@ -5,7 +5,7 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { EcosystemStorage } from '../../../../ecosystem/models/ecosystem.model.ts'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../utils/ids/path'

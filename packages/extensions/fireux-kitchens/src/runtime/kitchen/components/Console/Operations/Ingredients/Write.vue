@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenConsoleIngredients } from '../../../../composables/console/operations/Ingredients/useKitchenConsoleIngredients'
 import { useKitchenIngredientSelection } from '../../../../composables/console/operations/Ingredients/mutations/useKitchenIngredientSelection'

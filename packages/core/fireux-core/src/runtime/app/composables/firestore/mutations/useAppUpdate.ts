@@ -4,7 +4,7 @@
 import type { Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
 import type { AppSocialLinks } from '../../../models/app.model.ts'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { mutateAppMembership } from '../../../../user/composables/firestore/utils/appMembershipMutation'

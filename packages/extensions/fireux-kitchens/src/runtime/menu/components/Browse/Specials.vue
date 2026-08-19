@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { MenuManifestContent } from '../../models/menu-detail.model.ts'
-import type { MenuBrowseSurfaceCopy } from '../../content/menu-surface-copy'
+import type { MenuBrowseSurfaceCopy } from '../../utils/menu-surface-copy'
 
 withDefaults(defineProps<{
   currencyCode: string

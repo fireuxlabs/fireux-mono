@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 
 const props = defineProps<{
   currentProfiles?: string[]

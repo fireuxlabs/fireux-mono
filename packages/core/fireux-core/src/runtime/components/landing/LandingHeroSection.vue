@@ -173,9 +173,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
-import { useKeyEntityTags } from '../../composables/fireux/app/routing/useKeyEntityTags'
-import { useAssets } from '../../composables/fireux/app/useAssets'
+import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
+import { useKeyEntityTags } from '../../composables/landing/useKeyEntityTags'
+import { useAssets } from '../../app/composables/brand/useAssets'
 
 type RightPanelItem = {
   title: string

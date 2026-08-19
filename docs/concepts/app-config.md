@@ -25,7 +25,7 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `packages/core/fireux-core/src/config/app/modules.ts`
 - `packages/core/fireux-core/src/config/app/design-packs.ts`
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
-- `packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts`
 
 ## App pattern
 

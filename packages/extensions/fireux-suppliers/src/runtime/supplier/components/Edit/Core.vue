@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: target canonical writes by the supplied entity id.
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed } from 'vue'
 import { useSupplierUpdate } from '../../composables/firestore/mutations/useSupplierUpdate'
 import type { Supplier } from '../../models/Supplier.model.ts'

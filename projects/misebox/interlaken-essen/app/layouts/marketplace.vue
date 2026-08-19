@@ -133,8 +133,8 @@
 import { computed } from '#imports'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntryState'
+import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 

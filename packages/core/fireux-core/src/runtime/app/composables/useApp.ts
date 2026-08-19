@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: preserve canonical App read errors and outcomes.
 import { useAppFetch } from './firestore/fetch/useAppFetch'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from './config/FireUXConfig'
 import { useAppComputed } from './useAppComputed'
 import { useAppInterface } from './useAppInterface'
 

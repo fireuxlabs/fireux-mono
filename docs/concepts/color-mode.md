@@ -13,7 +13,7 @@ Map the Nuxt UI light/dark spine as used by FireUX so app chrome, tenant chrome,
 - Owner: Nuxt UI installs `@nuxtjs/color-mode` when `ui.colorMode` is enabled.
 - Nuxt UI setup: `@nuxt/ui` registers `@nuxtjs/color-mode` with `classSuffix: ''`.
 - Root behavior: `@nuxtjs/color-mode` applies `light` or `dark` to the document root.
-- FireUX compatibility: `packages/core/fireux-core/src/runtime/composables/fireux/app/useColorMode.ts` currently mirrors the same storage/class behavior for shared runtime code.
+- FireUX compatibility: `packages/core/fireux-core/src/runtime/composables/theme/useColorMode.ts` currently mirrors the same storage/class behavior for shared runtime code.
 - Token behavior: custom CSS tokens should react through `:root.dark`, not a loose `.dark` selector.
 - JS display behavior: components that need the current visible mode should use `useResolvedColorMode()`.
 - JS preference behavior: components that edit the user's setting may use `useColorMode()`.

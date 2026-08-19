@@ -1,5 +1,5 @@
 import { computed, unref, type MaybeRef } from 'vue'
-import { useFireUXConfig } from '../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,

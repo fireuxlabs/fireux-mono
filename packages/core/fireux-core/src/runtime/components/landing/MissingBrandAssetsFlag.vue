@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRequiredBrandAssetsStatus } from '../../composables/fireux/app/useRequiredBrandAssetsStatus'
+import { useRequiredBrandAssetsStatus } from '../../app/composables/brand/useRequiredBrandAssetsStatus'
 
 const { pending, hasMissingAssets, missingPaths } = useRequiredBrandAssetsStatus()
 const showFlag = computed(

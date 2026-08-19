@@ -59,7 +59,7 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../composables/console/operations/Menus/useKitchenConsoleMenu'
 import type { KitchenMenuUpdateInput as MenuUpdateInput } from '../../../../../../menu/models/kitchen-menu.model.ts'
 

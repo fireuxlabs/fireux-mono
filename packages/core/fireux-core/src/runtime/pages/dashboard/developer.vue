@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { definePageMeta, useHead } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useApp } from '../../app/composables/useApp'
 import { useUser } from '../../user/composables/useUser'
 

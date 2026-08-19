@@ -1,7 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted, ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { FirebaseProduct } from '../../models/product.model.ts'
 

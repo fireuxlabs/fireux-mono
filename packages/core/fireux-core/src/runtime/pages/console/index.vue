@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
+import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
 
 definePageMeta({
   layout: false,

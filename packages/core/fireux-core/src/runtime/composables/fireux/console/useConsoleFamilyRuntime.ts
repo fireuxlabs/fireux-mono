@@ -1,5 +1,5 @@
 import { useNuxtApp } from '#imports'
-import { useFireUXConfig } from '../app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { normalizeConsoleFamily } from './useConsole'
 
 const registryKey = Symbol.for('fireux.console-family-runtimes')

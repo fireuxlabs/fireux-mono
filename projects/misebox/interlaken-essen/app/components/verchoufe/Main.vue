@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntryState'
 
 defineProps<{
   id?: string

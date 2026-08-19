@@ -40,10 +40,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import { useKitchenFetch } from '../../composables/firestore/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/utils/paths/useKitchenChildCollection'

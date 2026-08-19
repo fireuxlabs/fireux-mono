@@ -48,7 +48,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
-        path: resolver.resolve('./runtime/menu/types/pdf-worker.types.ts'),
+        path: resolver.resolve('./runtime/menu/models/pdf-worker.types.ts'),
       })
     })
     registerReservedRootRouteKeys([

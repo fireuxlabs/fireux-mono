@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import type { H3Event } from 'h3'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { requireFirestoreDocumentId } from '../ids/path'
 import { resolveConsoleCanCreate } from '../../../utils/console-policy'
 import { resolveFireuxEntityManagementForApp } from '../../../utils/entity-management'

@@ -28,7 +28,7 @@ const BROWSER_STORAGE_PATTERN =
 const ALLOWED_STORAGE_FILES = new Set([
   'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsole.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleSelection.ts',
-  'packages/core/fireux-core/src/runtime/composables/fireux/app/useColorMode.ts',
+  'packages/core/fireux-core/src/runtime/composables/theme/useColorMode.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/firebase/account-consent.ts',
   'packages/core/fireux-core/src/runtime/composables/shared/useStoredChoice.ts',
   'packages/core/fireux-core/src/runtime/pages/chat.vue',
@@ -207,7 +207,7 @@ export async function run({ repoRoot }) {
   const colorMode = readFileSync(
     join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/composables/fireux/app/useColorMode.ts'
+      'packages/core/fireux-core/src/runtime/composables/theme/useColorMode.ts'
     ),
     'utf8'
   )

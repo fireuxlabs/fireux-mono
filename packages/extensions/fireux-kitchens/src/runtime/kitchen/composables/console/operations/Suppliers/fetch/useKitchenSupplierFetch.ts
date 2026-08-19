@@ -1,5 +1,5 @@
 import { useFetch } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { SupplierStorage } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/supplier/models/supplier-public.model'

@@ -67,6 +67,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-blogs/src/runtime/components/Blog/Create/Images.vue'
   )
+  const localPublisher = read(repoRoot, 'scripts/publish-fireux-blog.mjs')
 
   for (const token of [
     "publication_scope: 'app'",
@@ -132,5 +133,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(createSubmit, /assertBlogEditorialApproval\(payload\)/)
   for (const token of ['privacy_reviewed', 'facts_reviewed', 'names_approved']) {
     assert.ok(editorialReview.includes(token), `Blog editorial review must retain ${token}.`)
+  }
+  for (const token of [
+    "lane: 'mcp-skill'",
+    "verbs: ['create']",
+    "databaseId: DATABASE_ID",
+    'mcpSkillCreate(app, target',
+    'assertBlogEditorialApproval(entry.post)',
+    'plan_sha256',
+    '--confirm=',
+    "snapshot.data()?.visibility !== 'public'",
+  ]) {
+    assert.ok(localPublisher.includes(token), `Local Blog publishing must retain ${token}.`)
   }
 }

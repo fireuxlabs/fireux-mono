@@ -145,8 +145,7 @@ const RADIUS_CUSTOM_PROPERTY_RE =
   /(--[A-Za-z0-9_-]*radius[A-Za-z0-9_-]*)\s*:\s*([^;}\n]+)/g
 const RADIUS_CUSTOM_PROPERTY_REFERENCE_RE =
   /var\(\s*(--[A-Za-z0-9_-]*radius[A-Za-z0-9_-]*)\b/g
-const ARBITRARY_RADIUS_CLASS_RE =
-  /\brounded(?:-[trblxyse]{1,2})?-\[([^\]]+)\]/g
+const ARBITRARY_RADIUS_CLASS_RE = /\brounded(?:-[trblxyse]{1,2})?-\[([^\]]+)\]/g
 const OUT_OF_SCALE_RADIUS_CLASS_RE =
   /\brounded(?:-[trblxyse]{1,2})?-(?:4xl|5xl|6xl|7xl|8xl|9xl)\b/g
 const ALLOWED_RADIUS_CUSTOM_PROPERTIES = new Set([
@@ -159,15 +158,11 @@ const APPROVED_ARBITRARY_RADIUS_CLASSES = new Map([
     'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Url.vue',
     new Set(['22%']),
   ],
-  [
-    'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
-    new Set(['22%']),
-  ],
+  ['projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue', new Set(['22%'])],
 ])
 const SPACING_DECLARATION_RE =
   /(?<![A-Za-z0-9_-])((?:margin|padding)(?:-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?)?|gap|row-gap|column-gap)\s*:\s*([^;}]+)/g
-const GRID_SPACING_LITERAL_RE =
-  /(-?(?:\d+(?:\.\d+)?|\.\d+))(rem|px)\b/g
+const GRID_SPACING_LITERAL_RE = /(-?(?:\d+(?:\.\d+)?|\.\d+))(rem|px)\b/g
 const SPACING_CUSTOM_PROPERTY_RE =
   /(--[A-Za-z0-9_-]*(?:space|spacing)[A-Za-z0-9_-]*)\s*:\s*([^;}\n]+)/g
 const SPACING_CUSTOM_PROPERTY_REFERENCE_RE =
@@ -176,7 +171,7 @@ const ARBITRARY_SPACING_CLASS_RE =
   /(?<![A-Za-z0-9_-])-?(?:m[trblxyse]?|p[trblxyse]?|gap(?:-[xy])?|space-[xy])-\[([^\]]+)\]/g
 const APPROVED_ARBITRARY_SPACING_CLASSES = new Map()
 const CANONICAL_MENU_SPACING_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/menu/assets/styles/menu-detail/atoms/frame.css'
+  'packages/extensions/fireux-kitchens/src/runtime/menu/components/styles/menu-detail/atoms/frame.css'
 const CANONICAL_MENU_SPACING_PROPERTIES = new Map([
   ['--menu-space-2xs', 'var(--spacing)'],
   ['--menu-space-xs', 'calc(var(--spacing) * 1.6)'],
@@ -235,9 +230,7 @@ const APPROVED_DIRECT_SPACING_VALUES = new Map([
   ],
   [
     'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Surfaces.vue',
-    new Set([
-      'padding:3.75rem 1rem calc(10rem + env(safe-area-inset-bottom))',
-    ]),
+    new Set(['padding:3.75rem 1rem calc(10rem + env(safe-area-inset-bottom))']),
   ],
   [
     'projects/misebox/la-tap-berne/app/components/LaTapBerne/Hero.vue',
@@ -258,8 +251,7 @@ const APPROVED_DIRECT_SPACING_VALUES = new Map([
 const FONT_SIZE_DECLARATION_RE = /\bfont-size\s*:\s*([^;}\n]+)/g
 const FONT_WEIGHT_DECLARATION_RE = /\bfont-weight\s*:\s*([^;}\n]+)/g
 const LINE_HEIGHT_DECLARATION_RE = /\bline-height\s*:\s*([^;}\n]+)/g
-const LETTER_SPACING_DECLARATION_RE =
-  /\bletter-spacing\s*:\s*([^;}\n]+)/g
+const LETTER_SPACING_DECLARATION_RE = /\bletter-spacing\s*:\s*([^;}\n]+)/g
 const FONT_FAMILY_DECLARATION_RE = /\bfont-family\s*:\s*([^;}\n]+)/g
 const FONT_SHORTHAND_DECLARATION_RE = /(?<![A-Za-z0-9_-])font\s*:\s*([^;}\n]+)/g
 const FONT_FAMILY_CUSTOM_PROPERTY_RE =
@@ -385,7 +377,7 @@ const TYPOGRAPHY_LITERAL_EXCLUDED_PREFIXES = [
 ]
 const APPROVED_ARBITRARY_TYPOGRAPHY_CLASSES = new Map([
   [
-    'packages/core/fireux-core/src/runtime/components/App/ErrorPage.vue',
+    'packages/core/fireux-core/src/runtime/app/components/ErrorPage.vue',
     new Set(['tracking-[0.3em]', 'tracking-[0.32em]']),
   ],
   [
@@ -416,10 +408,7 @@ const LEGACY_PAGE_SPACING_RECIPES = [
   /space-y-12\s+pb-16/g,
   /space-y-12\s+pb-16\s+sm:space-y-16\s+sm:pb-20/g,
 ]
-const LEGACY_LIST_SPACING_RECIPES = [
-  /space-y-2\s+pl-5/g,
-  /pl-5\s+space-y-2/g,
-]
+const LEGACY_LIST_SPACING_RECIPES = [/space-y-2\s+pl-5/g, /pl-5\s+space-y-2/g]
 const LEGACY_ENTITY_CARD_RECIPE = [
   'flex',
   'w-full',
@@ -684,15 +673,13 @@ function assertCorePageTransitionArchitecture(repoRoot) {
   const baselineSource = readRequiredSource(NUXT_BASELINE_PATH)
   if (
     baselineSource &&
-    (
-      !/FIREUX_PAGE_TRANSITION\s*=\s*\{[\s\S]*?name:\s*['"]fx-page['"][\s\S]*?mode:\s*['"]out-in['"][\s\S]*?\}\s*as const/.test(
-        baselineSource
-      ) ||
+    (!/FIREUX_PAGE_TRANSITION\s*=\s*\{[\s\S]*?name:\s*['"]fx-page['"][\s\S]*?mode:\s*['"]out-in['"][\s\S]*?\}\s*as const/.test(
+      baselineSource
+    ) ||
       !/function\s+configurePageTransition\b/.test(baselineSource) ||
       !/\bapp\.pageTransition\s*=\s*\{\s*\.\.\.FIREUX_PAGE_TRANSITION\s*\}/.test(
         baselineSource
-      )
-    )
+      ))
   ) {
     violations.push(
       `${NUXT_BASELINE_PATH} must own the native Nuxt fx-page default`
@@ -764,24 +751,20 @@ function assertCoreDesignPackArchitecture(repoRoot) {
   }
 
   for (const required of [
-    "preset: FireuxDesignPackPreset",
-    "fireux-core/runtime/assets/styles/design-packs/sci-fire.css",
+    'preset: FireuxDesignPackPreset',
+    'fireux-core/runtime/assets/styles/design-packs/sci-fire.css',
     'configureAppDesignPack',
     'fx-sci-fire-surface',
     'fx-sci-fire-interactive',
   ]) {
     if (!configSource.includes(required)) {
-      violations.push(
-        `${CORE_DESIGN_PACK_CONFIG_PATH} is missing ${required}`
-      )
+      violations.push(`${CORE_DESIGN_PACK_CONFIG_PATH} is missing ${required}`)
     }
   }
 
   if (
     !fireuxConfigSource.includes('configureAppDesignPack') ||
-    !fireuxConfigSource.includes(
-      'configureAppDesignPack(nuxt, app.designPack)'
-    )
+    !fireuxConfigSource.includes('configureAppDesignPack(nuxt, app.designPack)')
   ) {
     violations.push(
       `${FIREUX_CONFIG_PATH} must apply the optional app design pack after Core CSS`
@@ -826,7 +809,9 @@ function assertCoreDesignPackArchitecture(repoRoot) {
   for (const appPath of SCI_FIRE_PROOF_APP_PATHS) {
     const source = readRequiredSource(appPath)
     if (!/designPack:\s*\{\s*preset:\s*['"]sci-fire['"]\s*\}/.test(source)) {
-      violations.push(`${appPath} must opt into the shared Sci-Fire design pack`)
+      violations.push(
+        `${appPath} must opt into the shared Sci-Fire design pack`
+      )
     }
   }
 
@@ -1202,13 +1187,9 @@ function scan(dir, repoRoot, violations) {
         relativePath,
         target: violations.redundantEntityCardLayout,
         predicate: (classNames) =>
-          [
-            'fx-card--cell',
-            'flex',
-            'w-full',
-            'items-start',
-            'gap-3',
-          ].every((className) => classNames.includes(className)),
+          ['fx-card--cell', 'flex', 'w-full', 'items-start', 'gap-3'].every(
+            (className) => classNames.includes(className)
+          ),
         label: 'fx-card--cell repeats its root layout recipe',
       })
       collectStaticClassAttributeViolations({
@@ -1241,7 +1222,8 @@ function scan(dir, repoRoot, violations) {
         pattern: colorPair.pattern,
         target: violations.legacySemanticColors,
         relativePath,
-        label: (match) => `${match[0].replace(/\s+/g, ' ')} -> ${colorPair.replacement}`,
+        label: (match) =>
+          `${match[0].replace(/\s+/g, ' ')} -> ${colorPair.replacement}`,
       })
     }
 
@@ -1251,7 +1233,8 @@ function scan(dir, repoRoot, violations) {
         pattern: surfacePair.pattern,
         target: violations.legacyGenericSurfaces,
         relativePath,
-        label: (match) => `${match[0].replace(/\s+/g, ' ')} -> ${surfacePair.replacement}`,
+        label: (match) =>
+          `${match[0].replace(/\s+/g, ' ')} -> ${surfacePair.replacement}`,
       })
     }
   }
@@ -1516,7 +1499,8 @@ function collectTypographyValueViolations({ source, relativePath, target }) {
 
     while ((literalMatch = TYPOGRAPHY_LENGTH_LITERAL_RE.exec(value))) {
       const numericValue = Number(literalMatch[1])
-      const pixels = literalMatch[2] === 'rem' ? numericValue * 16 : numericValue
+      const pixels =
+        literalMatch[2] === 'rem' ? numericValue * 16 : numericValue
       const token = TAILWIND_FONT_SIZE_TOKENS.get(pixels)
       if (!token) continue
 
@@ -1629,7 +1613,10 @@ function collectTokenizedDeclarationViolations({
 
   while ((match = pattern.exec(source))) {
     const value = match[1].trim()
-    if (value.includes('var(--font-weight-') || value.includes('var(--leading-')) {
+    if (
+      value.includes('var(--font-weight-') ||
+      value.includes('var(--leading-')
+    ) {
       continue
     }
 
@@ -1670,7 +1657,8 @@ function collectArbitraryTypographyClassViolations({
     return
   }
 
-  const approvedClasses = APPROVED_ARBITRARY_TYPOGRAPHY_CLASSES.get(relativePath)
+  const approvedClasses =
+    APPROVED_ARBITRARY_TYPOGRAPHY_CLASSES.get(relativePath)
   for (const pattern of [
     ARBITRARY_FONT_SIZE_CLASS_RE,
     ARBITRARY_LINE_HEIGHT_CLASS_RE,
@@ -1723,7 +1711,9 @@ function isCanonicalRadiusValue(value) {
 
   return (
     /^var\(--ui-radius(?:,0\.25rem)?\)$/.test(normalized) ||
-    /^calc\(var\(--ui-radius(?:,0\.25rem)?\)\*(?:0\.5|1\.5|2|3|4|6)\)$/.test(normalized)
+    /^calc\(var\(--ui-radius(?:,0\.25rem)?\)\*(?:0\.5|1\.5|2|3|4|6)\)$/.test(
+      normalized
+    )
   )
 }
 

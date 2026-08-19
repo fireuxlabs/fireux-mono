@@ -1,6 +1,6 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { kitchenOperationAgents } from '../../../ai/operation-agents'
+import { kitchenOperationAgents } from '../../../models/operation-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'

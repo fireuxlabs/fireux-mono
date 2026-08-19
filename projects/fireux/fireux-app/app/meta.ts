@@ -128,19 +128,6 @@ export const metaContent = defineFireuxMeta({
   },
   operations: [
     {
-      id: 'project.identity',
-      slug: 'identity',
-      title: 'Identity',
-      description: 'Manage the selected Project identity.',
-      to: '/console/project/identity',
-      console: {
-        id: 'project',
-        name: 'Project console',
-        to: '/console/project',
-      },
-      icon: 'i-lucide-info',
-    },
-    {
       id: 'project.apps',
       slug: 'apps',
       title: 'Apps',

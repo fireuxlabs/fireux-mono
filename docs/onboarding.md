@@ -270,8 +270,8 @@ while any App is warning, failing, or blocked.
 - `packages/core/fireux-core/src/runtime/app/components/Initialize/System.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/utils/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
-- `packages/core/fireux-core/src/runtime/app/server/app-initialization/initialize.ts`
-- `packages/core/fireux-core/src/runtime/app/server/app-projection/ensure.ts`
+- `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`
+- `packages/core/fireux-core/src/runtime/app/server/projection/ensure.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts`
 - `packages/core/fireux-core/src/runtime/app/models/app-onboarding.ts`
 - `packages/core/fireux-core/src/runtime/app/utils/app-onboarding-policy.ts`

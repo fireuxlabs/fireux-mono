@@ -1,6 +1,6 @@
 # Search visibility
 
-Updated: 2026-08-03
+Updated: 2026-08-19
 Ref: 8287d99bb
 Role: map, not canon
 
@@ -12,6 +12,12 @@ exposing private records.
 
 Search visibility is a projection of released public facts. It does not own
 product claims, entity authority, publication decisions, or tenant identity.
+
+Every Console Entity has an explicit search policy. Protected Console routes
+inherit Core's response-header `noindex, nofollow` rule and never require a
+nominal Entity SEO composable. An Entity adds `useXSeo` only when it owns a
+real public route and bounded publication policy; that composable lives in the
+Entity's `composables` role, not inside its Firestore adapter.
 
 ## Links
 

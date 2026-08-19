@@ -9,7 +9,7 @@ import {
   type User,
 } from '../models/user.model.ts'
 import { resolveUserAvatarSource } from '../utils/user-avatar'
-import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
+import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
 
 export namespace UserCard {

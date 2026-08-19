@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { useFetch } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, ref, watch } from 'vue'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'

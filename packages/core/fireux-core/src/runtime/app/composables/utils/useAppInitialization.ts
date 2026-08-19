@@ -1,11 +1,11 @@
 import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
-import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
+import { useToastify } from '../../../composables/ui/useToastify'
 import { useUser } from '../../../user/composables/useUser'
 import { syncAppMediaToStorage } from '../firestore/utils/appMediaSync'
-import type { EnvCheckResponse } from '../../../composables/fireux/app/utils/env-check.types.ts'
+import type { EnvCheckResponse } from '../onboarding/env-check.types.ts'
 import { initializeConfiguredApp } from './initializeConfiguredApp'
-import { useAppEnvCheck } from '../../../composables/fireux/app/utils/useAppEnvCheck'
+import { useAppEnvCheck } from '../onboarding/useAppEnvCheck'
 
 export interface AppInitializationState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>

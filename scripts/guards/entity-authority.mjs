@@ -629,7 +629,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const appInitialization = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/app-initialization/initialize.ts'
+    'packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts'
   )
   const appInitializationEndpoint = read(
     repoRoot,
@@ -651,13 +651,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(appInitializationState, /devMode/)
   const appEnvironmentCheck = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts'
+    'packages/core/fireux-core/src/runtime/app/server/onboarding/environment-check.ts'
   )
   assert.match(appEnvironmentCheck, /\.bucket\(storageBucket\)\s*\.exists\(\)/)
   assert.match(appEnvironmentCheck, /storage\.reachable/)
   const appSettingsEndpoint = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts'
+    'packages/core/fireux-core/src/runtime/app/server/settings/update.ts'
   )
   assert.match(appSettingsEndpoint, /requireFirebaseBearerUser/)
   assert.match(appSettingsEndpoint, /App admin access is required/)

@@ -10,7 +10,7 @@ import { useFirestoreUpdate } from '../../../../composables/fireux/firestore/ope
 import type { UserRefs } from '../fetch/useUserFetch'
 import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate'
 import { useAppUserUpdate } from '../utils/update/useAppUserUpdate'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 
 const loggedInitKeys = new Set<string>()
 

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'

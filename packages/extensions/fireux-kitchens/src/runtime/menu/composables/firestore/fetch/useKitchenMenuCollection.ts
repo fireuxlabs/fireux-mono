@@ -1,4 +1,4 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, unref, type Ref } from 'vue'
 import { KitchenMenuStorage as MenuStorage, type KitchenMenu as Menu } from '../../../models/kitchen-menu.model.ts'

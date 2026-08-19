@@ -5,7 +5,7 @@ import { usePortfolioCollection } from './fetch/usePortfolioCollection'
 import { useAppPortfolioFetch, usePortfolioFetch } from './fetch/usePortfolioFetch'
 import { usePortfolioCreate } from './mutations/usePortfolioCreate'
 import { usePortfolioUpdate } from './mutations/usePortfolioUpdate'
-import { usePortfolioSeo } from './utils/usePortfolioSeo'
+import { usePortfolioSeo } from '../usePortfolioSeo'
 import { usePortfolioComputed } from './utils/view/usePortfolioComputed'
 import { usePortfolioInterface } from './utils/view/usePortfolioInterface'
 

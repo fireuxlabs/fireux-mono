@@ -110,7 +110,7 @@ export async function run({ repoRoot }) {
 
   const mutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/server/app-membership/mutation-contract.ts'
+    'packages/core/fireux-core/src/runtime/app/server/membership/mutation-contract.ts'
   )
   const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
@@ -132,7 +132,7 @@ export async function run({ repoRoot }) {
 
   const context = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/api/internal/app/context.get.ts'
+    'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
   )
   assert.match(context, /profileSnapshots\[index\]\?\.exists/)
   assert.match(

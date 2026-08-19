@@ -55,8 +55,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAppConfig, useSeoMeta } from '#imports'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
-import { useAssets } from '../composables/fireux/app/useAssets'
+import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
+import { useAssets } from '../app/composables/brand/useAssets'
 
 type AssetSurface = 'light' | 'dark'
 

@@ -87,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig';
 import { reactive } from 'vue';
 
 definePageMeta({

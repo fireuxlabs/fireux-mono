@@ -77,9 +77,9 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 import { useRoute } from 'vue-router'
-import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
-import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
-import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
+import { useConsoleEntryState } from '../../../composables/fireux/console/useConsoleEntryState'
+import { useNav } from '../../../composables/navigation/useNav'
+import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../user/composables/useUser'
 

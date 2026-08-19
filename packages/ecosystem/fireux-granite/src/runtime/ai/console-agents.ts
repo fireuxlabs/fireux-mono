@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxConsoleAgent,
 } from 'fireux-ai/runtime/agents/operation-agent'
-import { portfolioOperationAgents } from 'fireux-properties/runtime/ai/operation-agents'
+import { portfolioOperationAgents } from 'fireux-properties/runtime/portfolio/models/operation-agents'
 
 export const graniteAgent = defineFireuxAgentNode({
   id: 'granite.ai',

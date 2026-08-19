@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/content/operations'
+import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
 import { useKitchenConsoleSelection } from 'fireux-kitchens/runtime/kitchen/composables/console/core/useKitchenConsoleSelection'
 import { useKitchenMenuServiceSelection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenMenuServiceSelection'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'

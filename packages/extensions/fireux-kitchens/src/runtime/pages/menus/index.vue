@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { navigateTo, setResponseStatus, useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { usePublicMenuIndex } from '../../menu/composables/usePublicMenuIndex'
 
 definePageMeta({

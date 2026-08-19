@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleNotifications } from '../../../composables/fireux/app/ui/useConsoleNotifications'
+import { useConsoleNotifications } from '../../../composables/fireux/console/useConsoleNotifications'
 
 defineProps<{
   title: string

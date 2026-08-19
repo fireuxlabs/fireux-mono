@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'

@@ -1,6 +1,6 @@
 import { useAsyncData } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type { AppDirectoryEntry } from '../../models/utils/directory'
 import type {
   AppDirectoryController,

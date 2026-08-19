@@ -8,6 +8,71 @@ import path from 'node:path'
 const ADAPTERS = [
   {
     route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/context.get.ts',
+    owner: 'app/server/context/read',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts',
+    owner: 'app/server/onboarding/environment-check',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts',
+    owner: 'app/server/initialization/initialize',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/membership.post.ts',
+    owner: 'app/server/membership/mutate',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/people.get.ts',
+    owner: 'app/server/team/read',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts',
+    owner: 'app/server/settings/update',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/internal/app/sync-media.post.ts',
+    owner: 'app/server/media/sync',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/admins.get.ts',
+    owner: 'app/server/index/admins',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/info.get.ts',
+    owner: 'app/server/index/info',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/meta.get.ts',
+    owner: 'app/server/index/meta',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/operations.get.ts',
+    owner: 'app/server/index/operations',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/solutions.get.ts',
+    owner: 'app/server/index/solutions',
+  },
+  {
+    route:
+      'packages/core/fireux-core/src/runtime/server/api/public/app/status.get.ts',
+    owner: 'app/server/index/status',
+  },
+  {
+    route:
       'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
     owner: 'kitchen/server/core/targets',
   },
@@ -57,6 +122,22 @@ const DELEGATED_OWNERS = [
 ]
 
 const DOMAIN_ROOTS = [
+  {
+    root: 'packages/core/fireux-core/src/runtime/app/server',
+    slices: [
+      'context',
+      'events',
+      'index',
+      'initialization',
+      'media',
+      'membership',
+      'onboarding',
+      'projection',
+      'scope',
+      'settings',
+      'team',
+    ],
+  },
   {
     root: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/server',
     slices: ['ai', 'core', 'identity', 'index', 'operations', 'team'],

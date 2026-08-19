@@ -124,7 +124,7 @@ import { useRoute } from 'vue-router'
 import JobCardsProfile from '../../job/components/Cards/Profile.vue'
 import JobApplyPanel from '../../job/components/Apply/Panel.vue'
 import { usePublicJobFetch } from '../../job/composables/public/usePublicJobFetch'
-import { useJobSeo } from '../../job/composables/firestore/utils/useJobSeo'
+import { useJobSeo } from '../../job/composables/useJobSeo'
 import { useJobInterface } from '../../job/composables/firestore/utils/view/useJobInterface'
 
 const route = useRoute()

@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { computed, setResponseStatus } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useUser } from '../../user/composables/useUser'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 import { useUserDetail } from '../../user/composables/useUserDetail'

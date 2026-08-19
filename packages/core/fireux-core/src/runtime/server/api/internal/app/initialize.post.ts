@@ -1,8 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler } from 'h3'
-import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { requireDevDeveloper } from '../../../utils/auth/developer'
-import { initializeRuntimeApp } from '../../../../app/server/app-initialization/initialize'
+import { initializeRuntimeApp } from '../../../../app/server/initialization/initialize'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireDevDeveloper(event)

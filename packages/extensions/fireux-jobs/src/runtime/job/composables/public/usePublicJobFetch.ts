@@ -3,7 +3,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFireuxJobsConfig } from '../../../composables/config/useFireuxJobsConfig'
 import type {
   PublicJobDetailResponse,

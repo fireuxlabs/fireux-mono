@@ -143,7 +143,7 @@ import {
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useMenu } from '../../composables/useMenu'
 import { useMenuThemeSurface } from '../../composables/useMenuThemeSurface'
-import { resolveMenuBrowseSurfaceCopy } from '../../content/menu-surface-copy'
+import { resolveMenuBrowseSurfaceCopy } from '../../utils/menu-surface-copy'
 import {
   menuCanonicalPath,
   rootMenuRouteScope,

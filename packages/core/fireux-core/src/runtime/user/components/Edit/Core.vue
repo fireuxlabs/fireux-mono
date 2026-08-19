@@ -115,8 +115,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
-import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
+import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
+import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
 import type { User } from '../../models/user.model.ts'
 

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 22:32 CEST — Both-Entity Authority — Property: keep identity and private-manual updates on fixed paths; withhold access mutation.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: use the explicit Property App support path.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {

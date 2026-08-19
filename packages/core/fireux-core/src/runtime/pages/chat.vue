@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed, definePageMeta, onMounted, reactive, ref } from '#imports'
 import { useRoute } from 'vue-router'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 
 type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'

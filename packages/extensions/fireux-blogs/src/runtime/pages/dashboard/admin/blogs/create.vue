@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useBlogPermissions } from '../../../../composables/useBlogPermissions'
 import { useBlogDraftState } from '../../../../composables/fireux/blog/editor/useBlogDraftState'
 import { useBlogCreateSubmit } from '../../../../composables/fireux/blog/editor/useBlogCreateSubmit'

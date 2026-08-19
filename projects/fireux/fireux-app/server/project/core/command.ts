@@ -1,4 +1,4 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import type { ProjectStatus } from 'fireux-core/runtime/project/models/project.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'

@@ -15,7 +15,7 @@
 import { useRoute } from '#imports'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductDetail } from '../../product/composables/useProductDetail'
-import { useProductSeo } from '../../product/composables/firestore/utils/useProductSeo'
+import { useProductSeo } from '../../product/composables/useProductSeo'
 
 const route = useRoute()
 const slug = readRouteParam(route.params.slug)

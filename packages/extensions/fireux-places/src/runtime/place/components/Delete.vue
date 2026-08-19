@@ -20,8 +20,8 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useDeveloperAccess } from 'fireux-core/runtime/composables/fireux/app/useDeveloperAccess'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useDeveloperAccess } from 'fireux-core/runtime/user/composables/useDeveloperAccess'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed, onMounted, ref } from 'vue'
 import type { Place } from '../models/place.model.ts'

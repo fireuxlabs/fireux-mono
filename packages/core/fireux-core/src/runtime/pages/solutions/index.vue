@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import {
   buildPublicPageJsonLd,
   useSeo,

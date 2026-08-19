@@ -5,7 +5,7 @@ import {
   type AppUserAccessTier,
 } from '../../app/utils/app-user-access'
 import type { CurrentAppMembershipDto } from '../../server/utils/public-projection/public-dto.types.ts'
-import { useDeveloperAccess } from '../../composables/fireux/app/useDeveloperAccess'
+import { useDeveloperAccess } from './useDeveloperAccess'
 import type { UserRefs } from './firestore/fetch/useUserFetch'
 
 export type UserAccessTier = AppUserAccessTier

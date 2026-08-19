@@ -3,7 +3,7 @@ import {
   fireuxAgentBaseInstruction,
 } from 'fireux-ai/runtime/agents/instructions'
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/ai/operation-agents'
+import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 import type {
   KitchenTeamPreparedToolCall,
   KitchenTeamToolMember,

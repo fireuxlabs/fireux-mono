@@ -3,7 +3,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   PUBLIC_PROPERTY_INDEX_MAX_PAGE_SIZE,
   PUBLIC_PROPERTY_INDEX_PAGE_SIZE,

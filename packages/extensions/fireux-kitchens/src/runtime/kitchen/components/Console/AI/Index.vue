@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenConsole } from '../../../composables/console/core/useKitchenConsole'
 import CommandResult from './CommandResult.vue'

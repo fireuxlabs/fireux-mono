@@ -61,8 +61,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePublicClaimPanel } from 'fireux-core/runtime/composables/fireux/app/ui/usePublicClaimPanel'
-import type { PublicActionButton } from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
+import { usePublicClaimPanel } from 'fireux-core/runtime/composables/public/usePublicClaimPanel'
+import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 import { usePlaceClaim } from '../composables/firestore/mutations/usePlaceClaim'
 import type { Place } from '../models/place.model.ts'
 

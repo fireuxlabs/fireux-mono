@@ -30,7 +30,7 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 
-import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
+import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import {
   USER_AVATAR_FALLBACK_SRC,
   type UserCard,

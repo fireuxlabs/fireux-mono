@@ -1,6 +1,6 @@
 # Console
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -79,9 +79,11 @@ paths and delegate inward.
   a real collaboration lifecycle. Hand-authored route order does not redefine
   those groups. AI belongs at a product-owned doorway or inside a bounded
   Operation; it is not a generic Console navigation family.
-- Misebox owns Kitchen AI at its `/` product doorway. There is no generic
-  Console Agent route. Do not add generic or family-local Agent routes without
-  a separately proven product requirement.
+- Every Console Entity owns its AI capability definition beside its Entity
+  models. The ecosystem composes and registers that definition with FireUX AI;
+  Core does not depend on the AI extension. Tools and execution remain optional
+  named capabilities, so the baseline does not manufacture empty AI routes.
+  There is no generic Console Agent route.
 - Create belongs to the target selector lifecycle at `/console/{family}`. A
   create route may remain as the selector's action target, but it never appears
   in selected-workspace navigation.
@@ -149,14 +151,19 @@ The visible Console tree is the naming authority for entity server and client
 slices. `Index` is the selection and Create doorway; Create is not a selected
 workspace peer.
 
-| Entity    | Peer capabilities               | Operations                                                                                      |
-| --------- | ------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Project   | Index, Overview, Identity, Team | Apps, Ecosystem                                                                                 |
-| Kitchen   | Index, Overview, Identity, Team | Dishes, Drinks, Ingredients, Menus, Mise, Orders, Recipes, Stations, Suppliers, Tables, Finance |
-| Supplier  | Index, Overview, Identity, Team | Catalogue, Ingredients, Items                                                                   |
-| Portfolio | Index, Overview, Identity, Team | Properties, Compliance, Documents, Tasks, Finance                                               |
-| Property  | Index, Overview, Identity, Team | Reservations, Calendar                                                                          |
-| Blank     | Index, Overview, Identity       | —                                                                                               |
+Every Console bakes in Index, Overview, Identity, Team, and Notifications.
+Permissions govern those capabilities and every Operation; they are authority,
+not another navigation page. Notifications belongs to the shared shell rather
+than an Entity component bucket.
+
+| Entity    | Operations                                                                                      |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| Project   | Apps, Ecosystem                                                                                 |
+| Kitchen   | Dishes, Drinks, Ingredients, Menus, Mise, Orders, Recipes, Stations, Suppliers, Tables, Finance |
+| Supplier  | Catalogue, Ingredients, Items                                                                   |
+| Portfolio | Properties, Compliance, Documents, Tasks, Finance                                               |
+| Property  | Reservations, Calendar                                                                          |
+| Blank     | —                                                                                               |
 
 Ignition is separate Project intake/admin, not a Project Operation. A missing
 server folder is valid when a visible capability has no server-owned
@@ -164,13 +171,14 @@ behaviour; the map does not require empty symmetry.
 
 ## Component bucket shape
 
-- Console families carry only the peer buckets their real lifecycle needs.
-  Every current Console Entity except Blank has Team; Project Team is a real
-  peer capability, not a Project Operation.
+- Every Console Entity carries Overview, Identity, and Team beside its Index.
+  Project and Blank may expose factual read-only Team authority without
+  manufacturing domain membership tools.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
 - Do not mix an entity's `Console/Overview.vue` with `Console/Overview/*`; use
   `runtime/<entity>/components/Console/Overview/Index.vue`.
-- `Team` sits beside `Operations` only when the entity has a real collaboration lifecycle.
+- `Team` always sits beside `Operations`; richer membership workflows remain
+  optional domain-owned behaviour.
 - `Operations` is for selected-target work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
 
@@ -286,13 +294,10 @@ behaviour; the map does not require empty symmetry.
   Overview, Index/Create, dev tooling, and child/detail routes are also not
   Operations. A selected-target report such as Kitchen Finance is an Operation
   when it has its own operational workspace.
-- A Console capability catalogue may feed a landing or discovery surface, but
-  it must preserve this classification. The current Kitchen and Supplier
-  `runtime/content/operations.ts` arrays still include Identity and Team under
-  a historical `Operations` name; that is migration drift in the catalogue,
-  not authority to redefine the Console tree. Move those catalogues to their
-  entity `content` scopes and give the complete list a capability-accurate name
-  before using it as the operation-only source.
+- An Entity `models/operations.ts` catalogue contains only entity-specific
+  selected-target Operations. Landing, discovery, and operation AI consumers
+  may use that list without accidentally publishing baked-in Console
+  capabilities as Operations.
 - Operations must not leak into Firestore entity root folders.
 - Operation-AI presentation belongs to FireUX AI. Core supplies only neutral
   Console composition slots, while each Entity Operation explicitly decides

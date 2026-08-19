@@ -1,4 +1,4 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/place/models/place.model'

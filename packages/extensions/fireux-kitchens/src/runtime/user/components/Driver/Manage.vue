@@ -70,7 +70,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: display Driver identity from canonical User by uid.
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { reactive, ref, watchEffect } from 'vue'
 import { useDriverFetch } from '../../composables/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverUpdate } from '../../composables/firestore/profiles/Driver/mutations/useDriverUpdate'

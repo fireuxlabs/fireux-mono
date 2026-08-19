@@ -6,7 +6,7 @@ import type {
   FireuxConsoleConfig,
   FireuxConsoleFamilyConfig,
 } from '../../../../config/app/types'
-import { useFireUXConfig } from '../app/FireUXConfig'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 
 export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
 export type ConsoleSource = 'live' | 'test' | 'demo'

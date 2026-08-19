@@ -57,7 +57,7 @@
 import { computed } from 'vue'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
-import type { MenuBrowseSurfaceCopy } from '../../content/menu-surface-copy'
+import type { MenuBrowseSurfaceCopy } from '../../utils/menu-surface-copy'
 import { menuSectionLinks } from '../../utils/menu-section-links'
 
 const props = withDefaults(

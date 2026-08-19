@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({

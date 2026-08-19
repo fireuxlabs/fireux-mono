@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useProjectConsoleSelection } from 'fireux-core/runtime/project/composables/console/core/useProjectConsoleSelection'
 import { useProjectCollection } from 'fireux-core/runtime/project/composables/useProjectCollection'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'

@@ -1,6 +1,6 @@
 # Translation and reviewed copy
 
-Updated: 2026-08-04
+Updated: 2026-08-19
 Ref: d232cc731
 Role: map, not canon
 
@@ -198,7 +198,7 @@ translation state onto Kitchen.
   and
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/resolve.ts`
 - Shared Menu-surface source copy:
-  `packages/extensions/fireux-kitchens/src/runtime/menu/content/menu-surface-copy.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-surface-copy.ts`
 - Translation-memory model:
   `packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts`
 - Host identity and server persistence:

@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "FireUX Running Apps",
+  "version": "1.0.0",
+  "description": "Keeps a bookmarks-toolbar folder in sync with running FireUX development servers.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "running-apps@fireux.dev",
+      "strict_min_version": "109.0"
+    }
+  },
+  "permissions": ["bookmarks", "storage", "http://localhost/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  }
+}

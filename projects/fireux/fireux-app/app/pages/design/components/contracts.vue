@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useColorMode as useFireuxColorMode } from 'fireux-core/runtime/composables/fireux/app/useColorMode'
+import { useColorMode as useFireuxColorMode } from 'fireux-core/runtime/composables/theme/useColorMode'
 import { ref } from 'vue'
 
 // Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.

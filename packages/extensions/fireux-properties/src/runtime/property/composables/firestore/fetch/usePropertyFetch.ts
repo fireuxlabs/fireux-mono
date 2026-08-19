@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 22:32 CEST — Both-Entity Authority — Property: expose fixed root, access, and private-manual reads with schema errors.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: read Property App support through explicit storage names.
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { computed, type Ref } from 'vue'
 import {

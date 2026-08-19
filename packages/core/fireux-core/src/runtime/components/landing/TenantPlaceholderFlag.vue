@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTenantPlaceholderBranding } from '../../composables/fireux/app/useTenantPlaceholderBranding'
+import { useTenantPlaceholderBranding } from '../../app/composables/brand/useTenantPlaceholderBranding'
 
 const { isPlaceholderBranding } = useTenantPlaceholderBranding()
 </script>

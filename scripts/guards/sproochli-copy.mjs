@@ -24,7 +24,7 @@ import {
   MENU_BROWSE_SURFACE_COPY_FIELDS,
   MENU_SURFACE_COPY_VERSION,
   resolveMenuBrowseSurfaceCopy,
-} from '../../packages/extensions/fireux-kitchens/src/runtime/menu/content/menu-surface-copy.ts'
+} from '../../packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-surface-copy.ts'
 import { TranslationMemoryStorage } from '../../packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
 import {
   makeSproochliMenuMemoryKey,

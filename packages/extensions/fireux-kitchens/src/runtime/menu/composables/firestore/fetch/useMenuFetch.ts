@@ -1,5 +1,5 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import {
   useDocument,

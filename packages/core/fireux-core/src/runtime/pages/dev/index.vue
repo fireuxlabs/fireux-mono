@@ -263,8 +263,8 @@
 // Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: inspect raw Apps through the authenticated dev API across all app roles.
 import { computed, ref } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { useAppEnvCheck } from '../../app/composables/onboarding/useAppEnvCheck'
 import { syncAppMediaToStorage } from '../../app/composables/firestore/utils/appMediaSync'
 
 definePageMeta({

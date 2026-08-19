@@ -6,7 +6,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { useFirestoreResolver } from '../vuefire'
-import { useFireUXConfig } from '../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useRequireUser } from '../../firebase/useRequireUser'
 import {
   assertFirestoreMutationVerb,

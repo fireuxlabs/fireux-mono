@@ -10,7 +10,7 @@ import {
 } from 'vue'
 import type { RouteRecordNormalized } from 'vue-router'
 import { useAsyncData, useRouter } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,

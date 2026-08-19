@@ -385,7 +385,7 @@ export function assertCorePwaCacheVersioning(repoRoot) {
   const shell = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/components/App/Shell.vue'
+      'packages/core/fireux-core/src/runtime/app/components/Shell.vue'
     ),
     'utf8'
   )

@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../app/composables/config/FireUXConfig'
 
 definePageMeta({
   layout: 'auth'

@@ -7,7 +7,7 @@ import { useSupplierCreate } from './mutations/useSupplierCreate'
 import { useSupplierCollection } from './fetch/useSupplierCollection'
 import { useAppSupplierFetch, useSupplierFetch } from './fetch/useSupplierFetch'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
-import { useSupplierSeo } from './utils/useSupplierSeo'
+import { useSupplierSeo } from '../useSupplierSeo'
 import { useSupplierComputed } from './utils/view/useSupplierComputed'
 
 export type {

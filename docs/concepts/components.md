@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: map, not canon
 
@@ -282,9 +282,9 @@ the root Console folder.
 
 ## Console bucket rule
 
-- Every entity Console family uses the same peer vocabulary when those
-  capabilities exist: `Index`, `Overview`, `Identity`, `Team`, `Operations`,
-  and optional `Sundries`.
+- Every Console Entity uses `Index`, `Overview`, `Identity`, and `Team`.
+  Entity-specific `Operations` and temporary `Sundries` remain optional.
+  Notifications is supplied once by the shared Console shell.
 - These buckets are directories. Prefer
   `runtime/<entity>/components/Console/Overview/Index.vue` over a peer
   `Overview.vue` file.

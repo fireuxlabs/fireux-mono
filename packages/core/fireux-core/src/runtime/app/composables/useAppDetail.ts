@@ -10,7 +10,7 @@ import type {
   PublicAppDto,
   PublicDetailResponse,
 } from '../../server/utils/public-projection/public-dto.types.ts'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from './config/FireUXConfig'
 
 export type AppDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 

@@ -201,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, reactive, ref } from 'vue'

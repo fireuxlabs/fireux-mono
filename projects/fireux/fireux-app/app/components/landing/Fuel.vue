@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useResolvedColorMode } from 'fireux-core/runtime/composables/fireux/app/useColorMode'
+import { useResolvedColorMode } from 'fireux-core/runtime/composables/theme/useColorMode'
 
 const resolvedMode = useResolvedColorMode()
 const isDark = computed(() => resolvedMode.value === 'dark')

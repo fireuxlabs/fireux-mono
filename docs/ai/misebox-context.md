@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-18
+Updated: 2026-08-19
 Ref: e23268507
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -33,9 +33,7 @@ Before each task:
   Misebox renders that catalogue directly; the FireUX parent may compose the
   same entries into its cross-ecosystem discovery surfaces.
 - Kitchen and Supplier packages own their reusable Console capability
-  catalogues. Their reviewed destinations are
-  `src/runtime/kitchen/content` and `src/runtime/supplier/content`; the current
-  `src/runtime/content/operations.ts` files are migration source. Misebox
+  catalogues beneath their Entity `models` roles. Misebox
   composes those catalogues into one app-wide discovery index grouped by
   Console. A legacy `*Operations` filename does not reclassify Identity or Team
   as Operations.
@@ -295,9 +293,9 @@ Before each task:
   capability notes rather than duplicating a separate onboarding section. A
   Core `LandingOperationRail` provides the horizontally scrolling rail above
   Section One in both Main Apps. Misebox projects the current Kitchen
-  capabilities from the existing typed catalogue and links to their canonical
-  public routes. Identity and Team remain Console peers even while the legacy
-  `operations.ts` source includes them. The rail omits the generic Operations
+  Operations from the existing typed catalogue and links to their canonical
+  public routes. Identity and Team remain baked-in Console peers and never
+  enter that catalogue. The rail omits the generic Operations
   doorway, Console group labels, and Supplier capabilities.
   The first Kitchen Console proof explicitly uses Core's copy-emphasis variant
   so its selected Operation explanation is wider and more prominent than the

@@ -5,6 +5,7 @@ import {
   defineFireuxOperationAgent,
   identityAgentCapabilities,
 } from 'fireux-ai/runtime/agents/operation-agent'
+import { projectAgentOperations } from 'fireux-core/runtime/project/models/agent-operations'
 
 export const fireuxAgent = defineFireuxAgentNode({
   id: 'fireux.ai',
@@ -20,30 +21,24 @@ export const fireuxAgent = defineFireuxAgentNode({
   execution: 'shared-inference',
 })
 
-const projectOperations = [
-  ['identity', 'ProjectIdentityAI'],
-  ['apps', 'ProjectAppsAI'],
-  ['ecosystem', 'ProjectEcosystemAI'],
-] as const
-
-const projectOperationAgents = projectOperations.map(([slug, name]) =>
+const projectOperationAgents = projectAgentOperations.map((operation) =>
   defineFireuxOperationAgent({
-    id: `project.${slug}.ai`,
-    name,
+    id: `project.${operation.slug}.ai`,
+    name: operation.name,
     parentId: 'ProjectAI',
     consoleId: 'project',
-    operationId: `project.${slug}`,
-    operationSlug: slug,
-    ...(slug === 'identity' ? { family: 'identity' } : {}),
+    operationId: `project.${operation.slug}`,
+    operationSlug: operation.slug,
+    ...('family' in operation ? { family: operation.family } : {}),
     contextProviders: [
       {
-        id: `project.${slug}.context`,
+        id: `project.${operation.slug}.context`,
         owner: 'Project',
-        required: slug === 'identity',
+        required: operation.slug === 'identity',
       },
     ],
     capabilities:
-      slug === 'identity'
+      operation.slug === 'identity'
         ? identityAgentCapabilities
         : advisoryAgentCapabilities,
     toolIds: [],

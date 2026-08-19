@@ -149,7 +149,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createError, navigateTo, useAsyncData, useRoute } from '#imports'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import {
   buildPublicPageJsonLd,
   useSeo,

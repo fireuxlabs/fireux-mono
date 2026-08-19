@@ -119,15 +119,15 @@ function checkFireuxCoreContracts(pkgPath) {
   const violations = []
   const runtimeType = source('src/config/app/runtime.ts')
   const runtimeView = source(
-    'src/runtime/composables/fireux/app/FireUXConfig.ts'
+    'src/runtime/app/composables/config/FireUXConfig.ts'
   )
   const pluginConfig = source('src/config/module/plugins-config.ts')
   const onboarding = source('src/runtime/app/components/Create/System.vue')
-  const appShell = source('src/runtime/components/App/Shell.vue')
+  const appShell = source('src/runtime/app/components/Shell.vue')
   const appInitialization = source(
     'src/runtime/app/composables/utils/useAppInitialization.ts'
   )
-  const appStatus = source('src/runtime/server/api/public/app/status.get.ts')
+  const appStatus = source('src/runtime/app/server/index/status.ts')
   const appConfigType = source('src/config/app/types.ts')
   const appConfigBuilder = source('src/config/app/fireux.config.ts')
   const console = source('src/runtime/composables/fireux/console/useConsole.ts')
@@ -293,7 +293,7 @@ function checkFireuxCoreContracts(pkgPath) {
 function checkRuntimeConfigConsumers(repoRoot) {
   const canonicalReader = path.join(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts'
+    'packages/core/fireux-core/src/runtime/app/composables/config/FireUXConfig.ts'
   )
   const roots = ['packages', 'projects'].map((root) =>
     path.join(repoRoot, root)

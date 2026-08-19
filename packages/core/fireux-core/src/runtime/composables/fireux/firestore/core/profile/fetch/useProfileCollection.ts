@@ -14,7 +14,7 @@ import type {
   ProfileRecord,
 } from '../../../../../../models/utils/profile.model'
 import { AppStorage } from '../../../../../../app/models/app.model.ts'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 
 export function useProfileCollection<
   TProfile extends ProfileRecord = ProfileBase

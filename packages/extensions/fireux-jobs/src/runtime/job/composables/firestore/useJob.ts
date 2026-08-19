@@ -7,7 +7,7 @@ import { useJobState } from '../create/useJobState'
 import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobPublish } from './mutations/useJobPublish'
-import { useJobSeo } from './utils/useJobSeo'
+import { useJobSeo } from '../useJobSeo'
 
 export type { Job } from '../../models/job.model.ts'
 

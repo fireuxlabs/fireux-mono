@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: expose separate root and App profile mutation authorities.
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type { ProfileRefs } from '../fetch/useProfileFetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'

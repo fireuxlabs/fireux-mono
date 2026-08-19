@@ -1,6 +1,6 @@
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {

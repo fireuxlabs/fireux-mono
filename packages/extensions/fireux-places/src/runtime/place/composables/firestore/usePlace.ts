@@ -9,7 +9,7 @@ import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
 import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
-import { usePlaceSeo } from './utils/usePlaceSeo'
+import { usePlaceSeo } from '../usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
 import {
   formatPlaceTypeLabel,

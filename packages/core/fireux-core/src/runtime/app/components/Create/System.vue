@@ -220,7 +220,7 @@ import type {
   AppOnboardingDraft,
   AppOnboardingPlacement,
 } from '../../models/app-onboarding'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../user/composables/useUser'
 import { resolveAppOnboardingPolicy } from '../../utils/app-onboarding-policy'
