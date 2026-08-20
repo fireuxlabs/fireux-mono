@@ -26,8 +26,8 @@ const TRACKER_PATTERNS = [
 const BROWSER_STORAGE_PATTERN =
   /(?:window\.)?(?:localStorage|sessionStorage)\s*\.\s*(?:getItem|setItem|removeItem|clear|key)\s*\(|\buseCookie(?:<[^>]+>)?\s*\(|\bindexedDB\.open\s*\(|document\.cookie\s*=|\bcaches\.(?:open|match|delete)\s*\(|serviceWorker\.register\s*\(/
 const ALLOWED_STORAGE_FILES = new Set([
-  'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsole.ts',
-  'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleSelection.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceSelection.ts',
   'packages/core/fireux-core/src/runtime/composables/theme/useColorMode.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/firebase/account-consent.ts',
   'packages/core/fireux-core/src/runtime/composables/shared/useStoredChoice.ts',

@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
-// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep Blank access exclusively in same-id App support.
+// Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: keep Blank access exclusively in same-id App support.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 
@@ -22,11 +22,11 @@ export const BlankStorage = {
 } as const
 
 /**
- * Blank is the smallest console-backed root target used to test the console spine.
+ * Blank is the smallest workspace-backed root target used to test the workspace spine.
  *
  * Canon:
  * - root truth: blanks/{blankId}
- * - app console scope: apps/{appId}/blanks/{blankId}
+ * - app workspace scope: apps/{appId}/blanks/{blankId}
  * - demo targets are static, selectable, and read-only
  * - no test mode, no operations, no child records
  */

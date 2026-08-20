@@ -66,7 +66,7 @@ export const supplierOperationAgents = supplierAgentCapabilitySlugs.map(
       id: `supplier.${slug}.ai`,
       name: definition.name,
       parentId: 'SupplierAI',
-      consoleId: 'supplier',
+      workspaceId: 'supplier',
       operationId: `supplier.${slug}`,
       operationSlug: slug,
       ...('family' in definition ? { family: definition.family } : {}),

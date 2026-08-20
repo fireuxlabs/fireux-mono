@@ -6,7 +6,7 @@ Role: map, not canon
 
 ## Purpose
 
-Map Console operation browse pages whose primary job is to create and read a
+Map Workspace operation browse pages whose primary job is to create and read a
 collection, with record inspection, update, and deletion owned by the child
 detail route.
 
@@ -15,10 +15,10 @@ members are Menu entities or inherit Menu data authority.
 
 ## Links and authority
 
-- Parent: `console.md`
+- Parent: `workspace.md`
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus`
 - Executable contract: `scripts/guards/like-menu-family.mjs`
 
 Current source and the executable guard outrank this map.
@@ -27,7 +27,7 @@ Current source and the executable guard outrank this map.
 
 An adopted member has:
 
-1. a thin route page that owns the Console panel, navbar, and body;
+1. a thin route page that owns the Workspace panel, navbar, and body;
 2. a domain operation entry;
 3. a visible records list;
 4. a separate visible create tool;
@@ -100,7 +100,7 @@ When the family changes:
 1. inspect the Menu reference and the proposed member;
 2. update the member table and accepted differences;
 3. update `scripts/guards/like-menu-family.mjs`;
-4. run the family guard, focused lint/type checks, and the affected Console
+4. run the family guard, focused lint/type checks, and the affected Workspace
    route.
 
 Keep temporary rollout state and speculative member lists out of this map.

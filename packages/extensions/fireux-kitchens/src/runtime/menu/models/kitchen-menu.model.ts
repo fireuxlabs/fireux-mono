@@ -11,7 +11,7 @@ import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model.ts'
 import type { MenuRouteContext, MenuSurface } from './menu-context.model.ts'
 import type { MenuStatus } from './menu.model.ts'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
 /** Kitchen-owned operational Menu record. */
 export const KitchenMenuStorage = {
@@ -166,7 +166,7 @@ type MutableModel<T> = { -readonly [K in keyof T]: T[K] }
 
 export type KitchenMenu = MutableModel<typeof KitchenMenuModel> & {
   /** Optional Menu-owned presentation. Absence inherits the Kitchen theme. */
-  theme?: ConsoleTheme
+  theme?: WorkspaceTheme
 }
 export type KitchenMenuCreateInput = Omit<KitchenMenu, 'created' | 'updated'>
 export type KitchenMenuUpdateInput = Partial<

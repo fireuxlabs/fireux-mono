@@ -1,10 +1,10 @@
-// Console operation catalogue: only selected-Supplier work, never baked-in Console capabilities.
+// Workspace operation catalogue: only selected-Supplier work, never baked-in Workspace capabilities.
 import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
-const supplierConsole = {
+const supplierWorkspace = {
   id: 'supplier',
-  name: 'Supplier console',
-  to: '/console/supplier',
+  name: 'Supplier workspace',
+  to: '/workspace/supplier',
 } as const
 
 export const supplierOperations = [
@@ -13,8 +13,8 @@ export const supplierOperations = [
     slug: 'catalogue',
     title: 'Catalogue',
     description: 'View the selected supplier catalogue.',
-    to: '/console/supplier/catalogue',
-    console: supplierConsole,
+    to: '/workspace/supplier/catalogue',
+    workspace: supplierWorkspace,
     icon: 'i-lucide-library',
   },
   {
@@ -22,8 +22,8 @@ export const supplierOperations = [
     slug: 'ingredients',
     title: 'Ingredients',
     description: 'View ingredients connected to the selected supplier.',
-    to: '/console/supplier/ingredients',
-    console: supplierConsole,
+    to: '/workspace/supplier/ingredients',
+    workspace: supplierWorkspace,
     icon: 'i-lucide-wheat',
   },
   {
@@ -31,8 +31,8 @@ export const supplierOperations = [
     slug: 'items',
     title: 'Items',
     description: 'View items connected to the selected supplier.',
-    to: '/console/supplier/items',
-    console: supplierConsole,
+    to: '/workspace/supplier/items',
+    workspace: supplierWorkspace,
     icon: 'i-lucide-package-open',
   },
 ] satisfies FireuxMetaOperation[]

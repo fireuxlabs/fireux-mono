@@ -53,12 +53,12 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
 
 defineProps<{
   id?: string
 }>()
 
-const { isSignedIn } = useConsoleEntryState()
+const { isSignedIn } = useWorkspaceEntryState()
 const { copy } = useInterlakenCopy()
 </script>

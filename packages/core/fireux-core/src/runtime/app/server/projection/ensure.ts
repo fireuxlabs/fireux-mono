@@ -1,6 +1,6 @@
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
-import type { AppConsoleFamily } from '../../models/app.model.ts'
+import type { AppWorkspaceFamily } from '../../models/app.model.ts'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
@@ -34,8 +34,8 @@ function media(value: unknown) {
   }
 }
 
-function consoleFamilies(config: Readonly<FireUXConfig>): AppConsoleFamily[] {
-  return [...new Set(config.consoles.map(text).filter(Boolean))].sort()
+function workspaceFamilies(config: Readonly<FireUXConfig>): AppWorkspaceFamily[] {
+  return [...new Set(config.workspaces.map(text).filter(Boolean))].sort()
 }
 
 function projectionPayload(
@@ -76,7 +76,7 @@ function projectionPayload(
     media: media(app.media),
     database_id: input.appDatabaseId,
     website_url: websiteUrl,
-    console_families: consoleFamilies(config),
+    workspace_families: workspaceFamilies(config),
     updated: {
       at: FieldValue.serverTimestamp(),
       by: input.actorUid,

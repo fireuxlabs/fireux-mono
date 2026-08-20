@@ -20,7 +20,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: compose Granite-owned portfolio child diagnostics.
 import { computed } from 'vue'
-import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/console/operations/useActivePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
 import GranitePortfolioStorage from '../../components/Dev/PortfolioStorage.vue'
 
 definePageMeta({

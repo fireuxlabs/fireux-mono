@@ -23,7 +23,7 @@ export const reservedGoQrDocSlugs = [
   'api',
   'assets',
   'blog',
-  'console',
+  'workspace',
   'dashboard',
   'docs',
   'get-started',

@@ -95,7 +95,7 @@ export function useKitchenOnboarding() {
       {
         id: 'review',
         label: 'Review',
-        description: 'Confirm the Kitchen, inherited Place defaults, and console access.',
+        description: 'Confirm the Kitchen, inherited Place defaults, and workspace access.',
         icon: 'i-lucide-list-checks',
         validate: () => {
           const identity = validateIdentity()

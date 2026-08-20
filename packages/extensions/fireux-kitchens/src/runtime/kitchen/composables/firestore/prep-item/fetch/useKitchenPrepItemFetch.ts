@@ -7,7 +7,7 @@ import {
   normalizeKitchenPrepItem,
   type KitchenPrepItem,
 } from '../../../../models/prep-item.model.ts'
-import { useKitchenConsoleSelection } from '../../../console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 
 type UseKitchenPrepItemFetchOptions = {
@@ -22,7 +22,7 @@ export function useKitchenPrepItemFetch(
 ) {
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleSelection()
+  const { selectedId } = useKitchenWorkspaceSelection()
   const resolvedPrepItemId = computed(() => String(unref(prepItemId) || '').trim())
   const resolvedKitchenId = computed(() =>
     String(unref(options.kitchenId) || selectedId.value || '').trim()

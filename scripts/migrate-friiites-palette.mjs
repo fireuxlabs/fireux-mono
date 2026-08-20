@@ -2,7 +2,7 @@
 // @fireux-script
 // manual_entrypoint: true
 // last_used: 2026-08-12
-// usage_note: plan or apply the protected sparse Friiites App and Console palette migration.
+// usage_note: plan or apply the protected sparse Friiites App and Workspace palette migration.
 
 import { createHash } from 'node:crypto'
 import { initializeApp } from 'firebase-admin/app'
@@ -118,7 +118,7 @@ const kitchenOverride = text(
   record(kitchen.assets).backdrop_color
 )
 const currentAppPalette = record(record(canonicalApp.theme).palette)
-const currentConsolePalette = record(record(record(support.console).theme).palette)
+const currentWorkspacePalette = record(record(kitchen.theme).palette)
 const acceptedAppPalettes = [RESOLVED_APP_PALETTE, APP_PALETTE_LAYER]
 if (
   Object.keys(currentAppPalette).length &&
@@ -127,10 +127,10 @@ if (
   throw new Error('App already has a different palette; refusing to overwrite it.')
 }
 if (
-  Object.keys(currentConsolePalette).length &&
-  sha256(currentConsolePalette) !== sha256(CONSOLE_PALETTE)
+  Object.keys(currentWorkspacePalette).length &&
+  sha256(currentWorkspacePalette) !== sha256(CONSOLE_PALETTE)
 ) {
-  throw new Error('Console already has a different palette; refusing to overwrite it.')
+  throw new Error('Workspace already has a different palette; refusing to overwrite it.')
 }
 
 const actorUid = text(
@@ -164,13 +164,13 @@ const operations = [
     sourceSha256: sha256(canonicalApp),
     patch: { 'theme.palette': APP_PALETTE_LAYER },
   }]),
-  ...(sha256(currentConsolePalette) === sha256(CONSOLE_PALETTE) ? [] : [{
-    key: 'console',
+  ...(sha256(currentWorkspacePalette) === sha256(CONSOLE_PALETTE) ? [] : [{
+    key: 'kitchen-theme',
     id: KITCHEN_ID,
-    path: paths.support,
-    collectionPath: `apps/${APP_ID}/kitchens`,
-    sourceSha256: sha256(support),
-    patch: { 'console.theme.palette': CONSOLE_PALETTE },
+    path: paths.kitchen,
+    collectionPath: 'kitchens',
+    sourceSha256: sha256(kitchen),
+    patch: { 'theme.palette': CONSOLE_PALETTE },
   }]),
 ]
 const plan = {
@@ -183,7 +183,7 @@ const plan = {
   inheritedIdentityBackdrop: placeBackdrop,
   kitchenIdentityBackdropOverride: kitchenOverride || null,
   resolvedAppPalette: RESOLVED_APP_PALETTE,
-  consolePalette: CONSOLE_PALETTE,
+  workspacePalette: CONSOLE_PALETTE,
   appPaletteLayer: APP_PALETTE_LAYER,
   operations,
 }
@@ -239,15 +239,14 @@ for (const operation of operations) {
   })
 }
 
-const [verifiedKitchen, verifiedApp, verifiedSupport] = await Promise.all([
+const [verifiedKitchen, verifiedApp] = await Promise.all([
   db.doc(paths.kitchen).get(),
   db.doc(paths.app).get(),
-  db.doc(paths.support).get(),
 ])
 if (
   text(record(verifiedKitchen.data()?.assets).backdrop_color) ||
   sha256(record(record(verifiedApp.data()?.theme).palette)) !== sha256(APP_PALETTE_LAYER) ||
-  sha256(record(record(record(verifiedSupport.data()?.console).theme).palette)) !== sha256(CONSOLE_PALETTE)
+  sha256(record(record(verifiedKitchen.data()?.theme).palette)) !== sha256(CONSOLE_PALETTE)
 ) {
   throw new Error(`Post-migration verification failed. Protected preimage: ${backup.path}`)
 }
@@ -261,7 +260,7 @@ console.log(JSON.stringify({
   updatedPaths: operations.map(operation => operation.path),
   resolvedAppPalette: RESOLVED_APP_PALETTE,
   appPaletteLayer: APP_PALETTE_LAYER,
-  consolePalette: CONSOLE_PALETTE,
+  workspacePalette: CONSOLE_PALETTE,
   plan_sha256: planSha256,
   backup,
 }, null, 2))

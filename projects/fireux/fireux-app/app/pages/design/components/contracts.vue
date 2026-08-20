@@ -156,9 +156,9 @@ const contractSolutions = [
 
         <MoleculesCreateCard>
           <template #header>
-            <div class="console-card-header">
-              <h3 class="console-card-header__title">Create project</h3>
-              <p class="console-card-header__description">
+            <div class="workspace-card-header">
+              <h3 class="workspace-card-header__title">Create project</h3>
+              <p class="workspace-card-header__description">
                 The card supplies workflow rhythm; the project owns its fields.
               </p>
             </div>
@@ -295,7 +295,7 @@ const contractSolutions = [
       <div>
         <h2 class="fx-type-section-title">Cross-tree shared patterns</h2>
         <p class="fx-type-caption">
-          These contracts recur across public components, entity cards, console
+          These contracts recur across public components, entity cards, workspace
           surfaces, and route pages without becoming generic business shells.
         </p>
       </div>

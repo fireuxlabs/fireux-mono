@@ -20,10 +20,10 @@ select their own bounded property targets.
 ## Ownership boundaries
 
 - The ecosystem package owns Firebase identity/config and shared brand assets.
-- `fireux-properties` owns reusable Property models, Console surfaces, and
+- `fireux-properties` owns reusable Property models, Workspace surfaces, and
   property behavior.
 - `fireux-reservations` owns Property-scoped reservation truth, channel
-  provenance, availability presentation, and the Property Console booking
+  provenance, availability presentation, and the Property Workspace booking
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
 - Live Reservation PII is server-only. Authenticated package handlers validate
@@ -37,7 +37,7 @@ select their own bounded property targets.
   contact/booking-channel configuration. Persisted same-id AppProperty support
   records own their bounded Property targets and operator/team access; Nuxt
   config does not pin target IDs.
-- Apps that expose the Property Reservation Console use the shared SSR
+- Apps that expose the Property Reservation Workspace use the shared SSR
   Functions deployment shape; static-only hosting cannot provide its trusted
   authenticated server boundary.
 - Project apps do not own a competing `.firebaserc` or duplicate the ecosystem

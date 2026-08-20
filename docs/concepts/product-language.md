@@ -26,9 +26,9 @@ Read and write from the bottom upward:
    Examples: Dish, Menu, Order, KitchenSale, Supplier.
 4. **Operation or report** — what the user does with records.
    Examples: manage Dishes, organise Menus, run Orders, review Kitchen sales.
-5. **Console or product area** — the set of operations available to one
+5. **Workspace or product area** — the set of operations available to one
    working context.
-6. **Ecosystem or App** — the products and consoles it composes.
+6. **Ecosystem or App** — the products and workspaces it composes.
 7. **Landing** — the shortest truthful summary of the proven tree below it.
 
 A parent may summarise or group its descendants. It may not introduce a noun,
@@ -115,15 +115,15 @@ selection, gross sales, completed sales, and average sale. Therefore its
 surface says what can be reviewed; it does not lead with “what the Kitchen
 earned,” automatic conversion, profit, cash, or a generic Finance promise.
 
-The Kitchen Console may summarise its current capability tree. Identity and
-Team are first-class Console peers; they are not Operations. Finance is a
-selected-Kitchen reporting Operation. Overview is the Console home. QR is Menu
+The Kitchen Workspace may summarise its current capability tree. Identity and
+Team are first-class Workspace peers; they are not Operations. Finance is a
+selected-Kitchen reporting Operation. Overview is the Workspace home. QR is Menu
 tooling; Overview may expose quick access to important Menu QR results without
 owning the Tool. HACCP is a parked future Kitchen Operation until its workspace
 is wired. Training belongs under Team, and Purchasing belongs under Suppliers
 if Kitchen-owned purchasing gains authoritative producers. The Kitchen
 operation catalogue contains only those selected-Kitchen product meanings. Misebox may
-summarise the Kitchen Console, ordering, Jobs, Suppliers, and other composed
+summarise the Kitchen Workspace, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.
 
@@ -132,7 +132,7 @@ language is stable.
 - Atom and record language belongs with the model and owning package.
 - Part and operation language belongs with the component/content catalogue
   that owns that behavior.
-- Console language belongs with the Console owner.
+- Workspace language belongs with the Workspace owner.
 - Ecosystem language belongs with the ecosystem package.
 - Landing composition belongs with the App or shared landing adapter, but its
   vocabulary is inherited from the lower owners.
@@ -145,11 +145,11 @@ method and keep source literature beside its owner.
 ## Product surfaces
 
 A product surface is a distinct place where a user or operator uses the App,
-such as a Console, mobile Menu, Kiosk, public profile, guest guide, or
-storefront. An Operation inside a Console is not another product surface.
+such as a Workspace, mobile Menu, Kiosk, public profile, guest guide, or
+storefront. An Operation inside a Workspace is not another product surface.
 
 For authenticated navigation, `Dashboard` names the User and App overview and
-`Console` names the selected operational product area. Do not use `workspace`
+`Workspace` names the selected operational product area. Do not use `workspace`
 as a substitute for either surface. Keep that word only where it literally
 describes repository tooling or a physical workplace.
 
@@ -163,8 +163,8 @@ usage surfaces backed by current routes.
 Pricing separates product access, operating capacity, human service, product
 identity, and new development:
 
-- **Free** is a functional Console with App-owned limits.
-- **Pro** is the fuller self-managed Console at CHF 20/month.
+- **Free** is a functional Workspace with App-owned limits.
+- **Pro** is the fuller self-managed Workspace at CHF 20/month.
 - **Managed** is Pro plus bounded FireUX setup and operating assistance at CHF
   50/month. Ecosystem membership alone does not make the product more expensive.
 - **Your App** is a branded App at CHF 600 setup, followed by Pro or Managed.
@@ -175,7 +175,7 @@ identity, and new development:
   usage are not silently included; new development is quoted separately.
 
 Core `usePricing` owns these common meanings and amounts. Each Main App owns a
-thin `useXPricing` wrapper containing the concrete Console capabilities and
+thin `useXPricing` wrapper containing the concrete Workspace capabilities and
 limits that explain what its Free and Pro tiers contain. Shared pricing
 components receive that result as presentation data. Pricing literature does
 not belong in `nuxt.config.ts` or public runtime config. Tenant Apps do not own
@@ -187,8 +187,8 @@ or advertise the FireUX ecosystem-creation offer.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Dish.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Dish.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`

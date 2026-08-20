@@ -6,7 +6,7 @@ const defaultCopy = (
     | 'app_meta_headline'
     | 'app_meta_positioning'
     | 'app_meta_promise'
-    | 'app_meta_console_bridge'
+    | 'app_meta_workspace_bridge'
     | 'app_meta_seo_description'
 ) => {
   const copy = interlakenPublicCopyEntries[key].translations.gsw
@@ -28,7 +28,7 @@ export const metaContent = defineFireuxMeta({
     headline: defaultCopy('app_meta_headline'),
     positioning_html: defaultCopy('app_meta_positioning'),
     promise_html: defaultCopy('app_meta_promise'),
-    console_bridge_html: defaultCopy('app_meta_console_bridge'),
+    workspace_bridge_html: defaultCopy('app_meta_workspace_bridge'),
   },
   seo: {
     title: 'Interlaken Essen',

@@ -7,12 +7,12 @@ Role: map, not canon
 ## Purpose
 
 Map the deterministic read-only Demo records and their two named consumers:
-Console Demo Data and a project's Product Demo. Shared canonical roots
+Workspace Demo Data and a project's Product Demo. Shared canonical roots
 remain real data even when a Demo record links to them.
 
 ## Vertical links
 
-- Parent: console.md
+- Parent: workspace.md
 - Child: firestore-entity.md
 
 ## Horizontal links
@@ -28,8 +28,8 @@ remain real data even when a Demo record links to them.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
 - Demo has no universal `Place` top level. Its top-level target is the entity
-  selected by the current Console, and every linked root/support record follows
-  that owning family's declaration. Console adapters filter scenarios by their
+  selected by the current Workspace, and every linked root/support record follows
+  that owning family's declaration. Workspace adapters filter scenarios by their
   declared App before projection; a tenant or sibling App never receives
   another App's fixtures.
 - Project, Portfolio, and Blank have no direct Place relationship. Kitchen
@@ -110,7 +110,7 @@ remain real data even when a Demo record links to them.
   deletes.
 - A Kitchen Demo scenario owns Kitchen-shaped team records with stable member
   IDs. Operator audit stamps and Finance transaction closers reference those
-  IDs; Console Team and Finance resolve presentation names from the same
+  IDs; Workspace Team and Finance resolve presentation names from the same
   selected-Kitchen scenario rather than copying local operator strings. Demo
   team/operator access uses a separate read-only `AppKitchen`-shaped support
   fixture composed into the selected-Kitchen surface; those ids do not leak
@@ -128,7 +128,7 @@ remain real data even when a Demo record links to them.
   Mise candidates without mutating any record. Shared dependencies remain
   required while at least one in-service Menu uses them. Deanos' owner-local
   summer defaults are Main `on`, Party `order_led`, and Xmas `off`.
-- Console Demo and Product Demo may share local route-stable Menu service
+- Workspace Demo and Product Demo may share local route-stable Menu service
   selection through the Kitchen-owned Demo composable. That selection is a
   read-only demonstration control: it filters operational Mise and marks
   inactive-only Dishes, Recipes, and Ingredients for presentation, but it
@@ -148,25 +148,25 @@ remain real data even when a Demo record links to them.
 - App-only fixtures live with their project under `app/demo`.
 - Within `runtime/<entity>/demo`, a mature Demo owner keeps entity-wide
   identity/types under `core/`, operation records under
-  `operations/<ExactConsoleOperation>/`, and derived guest or showroom
+  `operations/<ExactWorkspaceOperation>/`, and derived guest or showroom
   projections under optional `presentation/`. Root `scenarios.ts`
   composes and validates those owner-local seams; it does not become a second
   fixture graph.
 - Operation folders are capability-shaped, not parity placeholders. Add an
   exact operation folder only when it owns real records; do not create empty
   folders merely to make unrelated owners or scenarios look symmetrical.
-- An owning Console composable adapter loads fixtures with a dynamic import and
-  `useConsoleDemoData`; inactive Consoles do not import or evaluate them.
+- An owning Workspace composable adapter loads fixtures with a dynamic import and
+  `useWorkspaceDemoData`; inactive Workspaces do not import or evaluate them.
   Cross-owner fixture loading remains forbidden except for an exact guarded
-  relationship already declared by the entity family. Supplier Console Demo
+  relationship already declared by the entity family. Supplier Workspace Demo
   has that narrow exception for its required Company and same-id Place target;
   the shared Supplier projector validates the link before returning a surface.
-- Every Console core that accepts the shared Demo source owns a matching lazy
+- Every Workspace core that accepts the shared Demo source owns a matching lazy
   Demo adapter. Demo targets use the same selected-target and outcome spine as
   Live targets, and operation records remain scoped to their selected Demo
   parent rather than falling through to an empty or remote collection.
 - Selecting Demo deactivates selected Live target and operation providers
-  before they can issue a request. The Kitchen Console index may retain its
+  before they can issue a request. The Kitchen Workspace index may retain its
   bounded authenticated Live target chooser so the user can leave Demo without
   losing sight of their Kitchens; that navigation read does not activate a
   selected Live Kitchen or its operations. The other narrow exception is a
@@ -174,7 +174,7 @@ remain real data even when a Demo record links to them.
   explicitly referenced by a Demo operation record, currently Ingredient.
   This is a bounded reference join, not a Live operation provider or a second Demo
   identity source.
-- `useConsoleDemoData` caches a successful local load and exposes
+- `useWorkspaceDemoData` caches a successful local load and exposes
   `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
 - Each independently loaded project Product Demo surface has one named adapter
   at `app/composables/product-demo/use*ProductDemo.ts`. The adapter declares a
@@ -186,19 +186,19 @@ remain real data even when a Demo record links to them.
   composition time. Canonical Demo Dish records use a deterministic
   file-backed collection provider and pass through the same `normalizeDish`
   and collection-state contract as Live Firestore records. The provider swap
-  does not create a second Dish model or downstream Console collection shape.
+  does not create a second Dish model or downstream Workspace collection shape.
   The still-unpromoted Spec, Prep, Recipe, Mise-requirement, and Finance graph
   remains isolated behind the existing derived adapter until those record
   models are explicitly agreed; it is not canonical Dish storage. Product
   Demo operation-level Mise instead projects the owner-local
-  `KitchenMiseTask` records used by the real Console through the Kitchen-owned
-  summary projector and exposes them as `console.miseTasks`; it does not
+  `KitchenMiseTask` records used by the real Workspace through the Kitchen-owned
+  summary projector and exposes them as `workspace.miseTasks`; it does not
   present that derived requirement graph as a task collection. Menu service
   provenance may be derived from each task's linked Prep item, Recipe, or
   Ingredient and included in the presentation DTO so the consumer can filter
   tasks without rebuilding the production graph.
-  Product Demo operation-level Orders projects the selected Console scenario's
-  canonical `KitchenOrder` fixtures as `console.orders`, derives board rails
+  Product Demo operation-level Orders projects the selected Workspace scenario's
+  canonical `KitchenOrder` fixtures as `workspace.orders`, derives board rails
   from the shared lifecycle helper, and remains read-only.
   Deanos historical completed Orders live under dated Kitchen-owned Services
   in `operations/Orders/history.ts`. Every Order keeps stable source identity,
@@ -211,7 +211,7 @@ remain real data even when a Demo record links to them.
   its source id, service, placed/occurred timestamps, signed CHF minor amount,
   counterparty, summary, status, closer, and inspectable line detail.
   Composition validates the one-to-one relationship and exact arithmetic
-  before any Console or Product Demo consumes it. These rows are not
+  before any Workspace or Product Demo consumes it. These rows are not
   `KitchenSale` records, FinancialFacts, Firestore documents, or customer
   history.
   Stations projects the same ordered `KitchenStation` records. Kitchen
@@ -243,7 +243,7 @@ remain real data even when a Demo record links to them.
   projections; declared immutable HTTPS image requests are presentation
   delivery, not a data join. It cannot resolve canonical Live roots or fall
   back to Live records. Misebox therefore keeps canonical Ingredient resolution
-  in its Console/showroom Product Demo and excludes Ingredient-dependent Cards
+  in its Workspace/showroom Product Demo and excludes Ingredient-dependent Cards
   from the Demo-only orbit. Presentation components must not carry their own
   Deanos Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
 - Public Product Demo pages occupy the reserved `app/pages/demo` route family.
@@ -275,7 +275,7 @@ remain real data even when a Demo record links to them.
 
 ## Authority and refresh
 
-- Entity models, DTOs, and console adapters define current shapes.
+- Entity models, DTOs, and workspace adapters define current shapes.
 - `scripts/guards/demo-data.mjs` enforces location, deferred loading, consumer,
   ownership, and dependency boundaries and executes Kitchen, Company, Supplier,
   Portfolio/Property, Reservation, Blank, and Project scenario composition so
@@ -300,7 +300,7 @@ remain real data even when a Demo record links to them.
   with an absolute external `--source-directory` to validate all required
   source bytes before reviewing any apply hashes.
 - Typecheck every owning package or app whose fixtures or adapters changed.
-- Verify an inactive console reports `idle` and does not invoke its loader.
+- Verify an inactive workspace reports `idle` and does not invoke its loader.
 - Verify a Product Demo's fictional records remain deterministic and perform
   no live operational, test, or simulation storage work. Verify any canonical
   root join is bounded to the stable IDs present in those records.

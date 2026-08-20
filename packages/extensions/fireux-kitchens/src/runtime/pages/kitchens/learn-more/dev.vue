@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Kitchens: Learn More (Dev)"
-      description="Technical reference for kitchen records, runtime modes, and console surfaces."
+      description="Technical reference for kitchen records, runtime modes, and workspace surfaces."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -30,12 +30,12 @@
             <p class="text-dimmed">Public runtime index for kitchen records.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">/console/kitchen</p>
-            <p class="text-dimmed">Canonical kitchen console entry point.</p>
+            <p class="font-mono">/workspace/kitchen</p>
+            <p class="text-dimmed">Canonical kitchen workspace entry point.</p>
           </div>
           <div class="fx-inset-panel">
-            <p class="font-mono">/console/kitchen/&lt;page&gt;</p>
-            <p class="text-dimmed">Scoped kitchen console pages such as menu, recipes, ingredients, and team.</p>
+            <p class="font-mono">/workspace/kitchen/&lt;page&gt;</p>
+            <p class="text-dimmed">Scoped kitchen workspace pages such as menu, recipes, ingredients, and team.</p>
           </div>
         </div>
       </UCard>
@@ -64,6 +64,6 @@ useHead({ title })
 
 useSeoMeta({
   title,
-  description: 'Technical reference for kitchen records, runtime modes, and console surfaces.',
+  description: 'Technical reference for kitchen records, runtime modes, and workspace surfaces.',
 })
 </script>

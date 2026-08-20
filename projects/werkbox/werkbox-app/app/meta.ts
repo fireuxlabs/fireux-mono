@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 12:23 CEST — Cleanbox-to-Werkbox app migration: define truthful Werkbox identity and route metadata.
-// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty console-operation set.
+// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty workspace-operation set.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const metaContent = defineFireuxMeta({
@@ -15,7 +15,7 @@ export const metaContent = defineFireuxMeta({
       'Browse published practical jobs before you join, see who is hiring, and connect directly without an agency in between.',
     promise_html:
       'Professionals reuse one work profile. Employers publish roles and manage direct applications without a hiring commission.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Werkbox currently provides public work, organisation, professional, and hiring surfaces.',
   },
   seo: {
@@ -45,6 +45,6 @@ export const metaContent = defineFireuxMeta({
   operations: [],
   routes: {
     public: ['/', '/categories/cleaning', '/jobs', '/agents', '/professionals'],
-    console: [],
+    workspace: [],
   },
 })

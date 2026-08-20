@@ -43,7 +43,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-list-tree',
     status: 'live',
     keywords: ['restaurant menu management software', 'menu management software'],
-    cta: { label: 'Open kitchen console', to: '/console/kitchen/menus' },
+    cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/menus' },
   },
   {
     slug: 'restaurant-menu-builder',
@@ -52,7 +52,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-panels-top-left',
     status: 'live',
     keywords: ['restaurant menu builder', 'online menu builder for restaurants'],
-    cta: { label: 'Create menu', to: '/console/kitchen/menus' },
+    cta: { label: 'Create menu', to: '/workspace/kitchen/menus' },
   },
   {
     slug: 'allergen-menu-software',
@@ -99,7 +99,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-notebook-tabs',
     status: 'live',
     keywords: ['recipe management software', 'restaurant recipe management'],
-    cta: { label: 'Open recipes', to: '/console/kitchen/recipes' },
+    cta: { label: 'Open recipes', to: '/workspace/kitchen/recipes' },
   },
   {
     slug: 'kitchen-prep-planner',
@@ -108,7 +108,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-clipboard-list',
     status: 'live',
     keywords: ['kitchen prep planner', 'restaurant prep planner'],
-    cta: { label: 'Open mise', to: '/console/kitchen/mise' },
+    cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
   },
   {
     slug: 'restaurant-prep-list',
@@ -117,7 +117,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-list-checks',
     status: 'live',
     keywords: ['restaurant prep list', 'kitchen prep list'],
-    cta: { label: 'Open mise', to: '/console/kitchen/mise' },
+    cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
   },
   {
     slug: 'kitchen-team-management',
@@ -126,7 +126,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-users',
     status: 'planned',
     keywords: ['kitchen team management', 'restaurant team management'],
-    cta: { label: 'Open team', to: '/console/kitchen/team' },
+    cta: { label: 'Open team', to: '/workspace/kitchen/team' },
   },
   {
     slug: 'restaurant-supplier-management',
@@ -135,7 +135,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-truck',
     status: 'planned',
     keywords: ['restaurant supplier management', 'restaurant supplier software'],
-    cta: { label: 'Open suppliers', to: '/console/kitchen/suppliers' },
+    cta: { label: 'Open suppliers', to: '/workspace/kitchen/suppliers' },
   },
   {
     slug: 'restaurant-hiring-software',
@@ -167,11 +167,11 @@ export const miseboxSolutions = [
   {
     slug: 'restaurant-operations-software',
     title: 'Restaurant operations software',
-    description: 'Run menus, dishes, recipes, prep, team, suppliers, orders, and hiring from one kitchen console.',
+    description: 'Run menus, dishes, recipes, prep, team, suppliers, orders, and hiring from one kitchen workspace.',
     icon: 'i-lucide-layout-dashboard',
     status: 'planned',
     keywords: ['restaurant operations software', 'kitchen operations software'],
-    cta: { label: 'Open console', to: '/console/kitchen' },
+    cta: { label: 'Open workspace', to: '/workspace/kitchen' },
   },
 ] satisfies FireuxMetaSolution[]
 

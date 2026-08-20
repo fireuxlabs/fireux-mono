@@ -59,7 +59,7 @@
           <UAlert
             color="neutral"
             variant="soft"
-            title="Project remains a system-console special case"
+            title="Project remains a system-workspace special case"
             description="This inspector reads the FireUX control-plane Project only. Apps and Ecosystems point to it through project_id."
           />
 
@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useProjectConsoleSelection } from 'fireux-core/runtime/project/composables/console/core/useProjectConsoleSelection'
+import { useProjectWorkspaceSelection } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspaceSelection'
 import { useProjectCollection } from 'fireux-core/runtime/project/composables/useProjectCollection'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { ProjectDefaults } from 'fireux-core/runtime/project/models/project.model'
@@ -109,7 +109,7 @@ const projectModelRuntime = ProjectDefaults as unknown as Record<
   unknown
 >
 const { appId } = useFireUXConfig()
-const { selectedId } = useProjectConsoleSelection()
+const { selectedId } = useProjectWorkspaceSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())
 
 const { projects } = useProjectCollection()

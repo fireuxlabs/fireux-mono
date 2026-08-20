@@ -63,8 +63,8 @@ import {
 } from 'fireux-core/runtime/user/composables/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppDetail } from 'fireux-core/runtime/app/composables/useAppDetail'
-import { useKitchenConsoleSelection } from '../../composables/console/core/useKitchenConsoleSelection'
-import { useKitchenConsoleTargetCollection } from '../../composables/console/index/useKitchenConsoleTargetCollection'
+import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/useKitchenWorkspaceSelection'
+import { useKitchenWorkspaceTargetCollection } from '../../composables/workspace/index/useKitchenWorkspaceTargetCollection'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 
@@ -79,53 +79,53 @@ const currentAppId = computed(() => String(appId || '').trim())
 const operatorAppId = computed(() =>
   String(props.kitchen?.management_app_id || currentAppId.value).trim()
 )
-const isTenantConsoleHandoff = computed(() =>
+const isTenantWorkspaceHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
 )
 const { app: operatorApp } = useAppDetail(operatorAppId)
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
-const { kitchens: consoleTargets } = useKitchenConsoleTargetCollection()
-const consoleKitchen = computed(() =>
-  consoleTargets.value.find(kitchen => kitchen.id === kitchenId.value) || null
+const { kitchens: workspaceTargets } = useKitchenWorkspaceTargetCollection()
+const workspaceKitchen = computed(() =>
+  workspaceTargets.value.find(kitchen => kitchen.id === kitchenId.value) || null
 )
-const hasConsoleAccess = computed(() => Boolean(consoleKitchen.value))
+const hasWorkspaceAccess = computed(() => Boolean(workspaceKitchen.value))
 const subjectUserPill = computed(() =>
-  hasConsoleAccess.value ? pill(currentUser.value) : null
+  hasWorkspaceAccess.value ? pill(currentUser.value) : null
 )
 const operatorAppName = computed(() =>
   String((operatorApp.value as any)?.app_short_name || (operatorApp.value as any)?.app_name || '').trim()
 )
 const panelDescription = computed(() =>
-  hasConsoleAccess.value && isTenantConsoleHandoff.value
-    ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app console.`
-    : hasConsoleAccess.value
-    ? 'You have operator access for this kitchen console.'
-    : 'This kitchen has no operators yet. Make a console to manage menus, orders, team, and stations.'
+  hasWorkspaceAccess.value && isTenantWorkspaceHandoff.value
+    ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app workspace.`
+    : hasWorkspaceAccess.value
+    ? 'You have operator access for this kitchen workspace.'
+    : 'This kitchen has no operators yet. Make a workspace to manage menus, orders, team, and stations.'
 )
 const subjectLabel = computed(() =>
-  hasConsoleAccess.value ? 'Signed in as' : ''
+  hasWorkspaceAccess.value ? 'Signed in as' : ''
 )
 const accessBadgeLabel = computed(() =>
-  hasConsoleAccess.value ? 'Operator' : 'No operators'
+  hasWorkspaceAccess.value ? 'Operator' : 'No operators'
 )
 const accessBadgeColor = computed(() =>
-  hasConsoleAccess.value ? 'primary' : 'neutral'
+  hasWorkspaceAccess.value ? 'primary' : 'neutral'
 )
 const accessIcon = computed(() =>
-  hasConsoleAccess.value ? 'i-lucide-key-round' : 'i-lucide-users-round'
+  hasWorkspaceAccess.value ? 'i-lucide-key-round' : 'i-lucide-users-round'
 )
-const canActivateConsole = computed(() =>
-  Boolean(isAdmin.value && !isTenantConsoleHandoff.value)
+const canActivateWorkspace = computed(() =>
+  Boolean(isAdmin.value && !isTenantWorkspaceHandoff.value)
 )
 const showPanel = computed(() =>
-  Boolean(hasConsoleAccess.value || canActivateConsole.value)
+  Boolean(hasWorkspaceAccess.value || canActivateWorkspace.value)
 )
-const consolePath = '/console/kitchen'
-const consoleCreatePath = `${consolePath}/create`
-const consoleCreateTo = computed(() =>
+const workspacePath = '/workspace/kitchen'
+const workspaceCreatePath = `${workspacePath}/create`
+const workspaceCreateTo = computed(() =>
   kitchenId.value
-    ? `${consoleCreatePath}?existingRootId=${encodeURIComponent(kitchenId.value)}`
-    : consoleCreatePath
+    ? `${workspaceCreatePath}?existingRootId=${encodeURIComponent(kitchenId.value)}`
+    : workspaceCreatePath
 )
 const operatorAppOrigin = computed(() =>
   normalizeOrigin(
@@ -134,51 +134,51 @@ const operatorAppOrigin = computed(() =>
   )
 )
 const operationTo = computed(() =>
-  hasConsoleAccess.value
-    ? isTenantConsoleHandoff.value
+  hasWorkspaceAccess.value
+    ? isTenantWorkspaceHandoff.value
       ? operatorAppOrigin.value
-        ? `${operatorAppOrigin.value}${consolePath}`
+        ? `${operatorAppOrigin.value}${workspacePath}`
         : ''
-      : consolePath
-    : canActivateConsole.value
-      ? consoleCreateTo.value
+      : workspacePath
+    : canActivateWorkspace.value
+      ? workspaceCreateTo.value
       : ''
 )
 const operationLabel = computed(() =>
-  hasConsoleAccess.value && isTenantConsoleHandoff.value
-    ? `Open ${operatorAppName.value || 'tenant'} console`
-    : hasConsoleAccess.value
-    ? 'Open console'
-    : 'Make console'
+  hasWorkspaceAccess.value && isTenantWorkspaceHandoff.value
+    ? `Open ${operatorAppName.value || 'tenant'} workspace`
+    : hasWorkspaceAccess.value
+    ? 'Open workspace'
+    : 'Make workspace'
 )
 const operationAction = computed<PublicActionButton | null>(() =>
   operationTo.value
     ? {
         label: operationLabel.value,
         to: operationTo.value,
-        icon: hasConsoleAccess.value
+        icon: hasWorkspaceAccess.value
           ? 'i-lucide-panel-right-open'
           : 'i-lucide-key-round',
-        color: hasConsoleAccess.value ? 'neutral' as const : 'primary' as const,
+        color: hasWorkspaceAccess.value ? 'neutral' as const : 'primary' as const,
         onClick:
-          hasConsoleAccess.value && !isTenantConsoleHandoff.value
-            ? selectConsoleKitchen
+          hasWorkspaceAccess.value && !isTenantWorkspaceHandoff.value
+            ? selectWorkspaceKitchen
             : undefined,
       }
     : null
 )
-const { setKitchenConsoleSelection } = useKitchenConsoleSelection()
+const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 
-async function selectConsoleKitchen(event: MouseEvent) {
-  if (!hasConsoleAccess.value || !kitchenId.value) return
-  if (isTenantConsoleHandoff.value) return
+async function selectWorkspaceKitchen(event: MouseEvent) {
+  if (!hasWorkspaceAccess.value || !kitchenId.value) return
+  if (isTenantWorkspaceHandoff.value) return
 
   event.preventDefault()
-  setKitchenConsoleSelection({
+  setKitchenWorkspaceSelection({
     kitchenId: kitchenId.value,
   })
 
-  await navigateTo(consolePath)
+  await navigateTo(workspacePath)
 }
 
 function normalizeOrigin(value: unknown) {

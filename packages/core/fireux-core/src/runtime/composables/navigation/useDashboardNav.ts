@@ -3,20 +3,20 @@ import type { NavItem, NavPosition } from './types'
 import { computed } from 'vue'
 import { useUser } from '../../user/composables/useUser'
 import { useDeveloperAccess } from '../../user/composables/useDeveloperAccess'
-import { useConsoleEntryCta } from '../fireux/console/useConsoleEntryCta'
+import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
 import { useNav } from './useNav'
 
 const canShowDashboardItem = (
   item: NavItem,
   isAdmin: boolean,
   isDev: boolean,
-  hasConsoleEntry: boolean
+  hasWorkspaceEntry: boolean
 ) => {
   if (item.roles?.includes('admin') && !isAdmin) return false
   if (item.roles?.includes('developer') && !isDev) return false
 
-  if (item.key === 'dashboard-console') {
-    return hasConsoleEntry
+  if (item.key === 'dashboard-workspace') {
+    return hasWorkspaceEntry
   }
 
   return true
@@ -26,14 +26,14 @@ export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
   const { appUser, isAdmin } = useUser()
   const { isDeveloper } = useDeveloperAccess()
-  const { hasConsoleEntry } = useConsoleEntryCta()
+  const { hasWorkspaceEntry } = useWorkspaceEntryCta()
 
   const topPriorityKeys = new Set([
     'dashboard-home',
     'dashboard-user-profile',
     'dashboard-admin',
     'dashboard-developer',
-    'dashboard-console',
+    'dashboard-workspace',
   ])
 
   const baseNavFilter = (item: NavItem) =>
@@ -43,7 +43,7 @@ export const useDashboardNav = () => {
       item,
       isAdmin.value,
       isDeveloper.value,
-      hasConsoleEntry.value
+      hasWorkspaceEntry.value
     )
 
   const resolveItemPosition = (item: NavItem): NavPosition => {

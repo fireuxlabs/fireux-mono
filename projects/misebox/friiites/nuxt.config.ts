@@ -23,8 +23,8 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://friiites.web.app',
   },
-  consoles: ['kitchen'],
-  consoleConfig: {
+  workspaces: ['kitchen'],
+  workspaceConfig: {
     kitchen: {
       canCreate: false,
       allowDemo: false,

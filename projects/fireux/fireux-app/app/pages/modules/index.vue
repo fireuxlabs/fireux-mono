@@ -4,7 +4,7 @@
     <UPageHeader
       headline="FireUX capability family"
       title="Modules"
-      description="Modules add reusable capability to an app. A module may bring records, Console Operations, tools, public surfaces, or several of them together."
+      description="Modules add reusable capability to an app. A module may bring records, Workspace Operations, tools, public surfaces, or several of them together."
     />
 
     <UPageBody>

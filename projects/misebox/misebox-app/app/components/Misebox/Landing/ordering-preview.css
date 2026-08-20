@@ -188,7 +188,7 @@
   width: 100%;
 }
 
-.landing-ordering-preview__console {
+.landing-ordering-preview__workspace {
   width: 100%;
   min-width: 0;
   overflow: hidden;
@@ -210,7 +210,7 @@
   .landing-ordering-preview__scene,
   .landing-ordering-preview__guest,
   .landing-ordering-preview__surface,
-  .landing-ordering-preview__console {
+  .landing-ordering-preview__workspace {
     height: 46rem;
   }
 

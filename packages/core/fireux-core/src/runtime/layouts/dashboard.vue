@@ -76,7 +76,7 @@ import { useRoute } from 'vue-router'
 import { useDashboardNav } from '../composables/navigation/useDashboardNav'
 import { useNavGrouping } from '../composables/navigation/useNavGrouping'
 import { useAuthRedirect } from '../user/composables/useAuthRedirect'
-import { useConsoleNotifications } from '../composables/fireux/console/useConsoleNotifications'
+import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
 
 defineOptions({ name: 'dashboard' })
 
@@ -87,7 +87,7 @@ const activeProfileState = useState<string | null>(
   () => null
 )
 
-const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
+const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const { desktop, baseNavFilter, resolveItemPosition } = useDashboardNav()
 
 useAuthRedirect()

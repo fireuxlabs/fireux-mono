@@ -104,7 +104,7 @@ export async function run({ repoRoot }) {
   )
   assert.doesNotMatch(
     userAppModel,
-    /console_targets/,
+    /workspace_targets/,
     'AppUser must not duplicate entity App-support authority.'
   )
 
@@ -126,8 +126,8 @@ export async function run({ repoRoot }) {
   )
   assert.doesNotMatch(
     initialMembership,
-    /\bconsole_targets:/,
-    'New AppUser memberships must omit empty Console target indexes.'
+    /\bworkspace_targets:/,
+    'New AppUser memberships must omit empty Workspace target indexes.'
   )
 
   const context = read(
@@ -137,9 +137,9 @@ export async function run({ repoRoot }) {
   assert.match(context, /profileSnapshots\[index\]\?\.exists/)
   assert.match(
     context,
-    /console_enabled: access\.hasAdminAuthority \|\| isConfiguredDeveloper/
+    /workspace_enabled: access\.hasAdminAuthority \|\| isConfiguredDeveloper/
   )
-  assert.doesNotMatch(context, /console_targets/)
+  assert.doesNotMatch(context, /workspace_targets/)
   assert.match(context, /has_premium_access: access\.hasPremiumAccess/)
 
   const activeUserFetch = read(
@@ -154,15 +154,15 @@ export async function run({ repoRoot }) {
     'Active User and account state must use bounded server projections.'
   )
 
-  const consoleTargets = read(
+  const workspaceTargets = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleTargets.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceTargets.ts'
   )
-  assert.match(consoleTargets, /useConsoleTargetRequest/)
+  assert.match(workspaceTargets, /useWorkspaceTargetRequest/)
   assert.doesNotMatch(
-    consoleTargets,
+    workspaceTargets,
     /useUserFetch|useCurrentAppContext/,
-    'Generic Console targets must consume the authenticated family projection directly.'
+    'Generic Workspace targets must consume the authenticated family projection directly.'
   )
 
   const routeAuthGuard = read(
@@ -252,7 +252,7 @@ export async function run({ repoRoot }) {
       /match \/private\/targets[\s\S]*allow get, list, create, update, delete: if false;/
     )
     assert.doesNotMatch(rules, /data\.profiles|data\.app_ids/)
-    assert.doesNotMatch(rules, /console_targets/)
+    assert.doesNotMatch(rules, /workspace_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)
     assert.match(rules, /allow create, update, delete: if false;/)
   }

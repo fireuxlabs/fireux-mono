@@ -2,6 +2,7 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -45,7 +46,7 @@ export async function saveKitchenMenuSummaryContext(
       actor,
       kitchenId
     )
-    const menus = record(record(current.supportData.console).menus)
+    const menus = record(current.rootData.menus)
     context = mergeCurrentMenuSummary(text(menus.context), summary)
     if (context.length > CONTEXT_MAX_LENGTH) {
       throw createError({
@@ -53,8 +54,8 @@ export async function saveKitchenMenuSummaryContext(
         statusMessage: `Menu context must not exceed ${CONTEXT_MAX_LENGTH} characters.`,
       })
     }
-    mutations.update(current.supports, kitchenId, {
-      'console.menus.context': context,
+    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+      'menus.context': context,
       updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
     })
   })

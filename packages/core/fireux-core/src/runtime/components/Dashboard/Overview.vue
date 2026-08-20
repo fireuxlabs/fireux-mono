@@ -62,10 +62,10 @@
           :membership="resolvedAppUser"
           :membership-outcome="membershipOutcome"
           :profile-entries="appProfileEntries"
-          :can-open-console="canOpenConsole"
-          :console-path="consoleEntryPath"
-          :console-label="consoleEntryLabel"
-          :console-icon="consoleEntryIcon"
+          :can-open-workspace="canOpenWorkspace"
+          :workspace-path="workspaceEntryPath"
+          :workspace-label="workspaceEntryLabel"
+          :workspace-icon="workspaceEntryIcon"
           :can-manage-app="canManageApp"
           :can-self-join="canSelfJoin"
         />
@@ -111,7 +111,7 @@ import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/navigation/types'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext'
-import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
+import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useDashboardNav } from '../../composables/navigation/useDashboardNav'
 import { useAppInterface } from '../../app/composables/useAppInterface'
 import { useUser } from '../../user/composables/useUser'
@@ -134,8 +134,8 @@ const appContext = useCurrentAppContext()
 const { profile: appToCard } = useAppInterface()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
-const { consoleActions, hasConsoleEntry, consoleEntryPath } =
-  useConsoleEntryCta()
+const { workspaceActions, hasWorkspaceEntry, workspaceEntryPath } =
+  useWorkspaceEntryCta()
 
 const {
   coreUser,
@@ -234,20 +234,20 @@ const runtimeEcosystem = computed(
 const ecosystemName = computed(() =>
   formatEcosystemName(runtimeEcosystem.value?.name)
 )
-const consoleEntryAction = computed(() => consoleActions.value[0] ?? null)
-const consoleEntryLabel = computed(
-  () => consoleEntryAction.value?.label || 'Console'
+const workspaceEntryAction = computed(() => workspaceActions.value[0] ?? null)
+const workspaceEntryLabel = computed(
+  () => workspaceEntryAction.value?.label || 'Workspace'
 )
-const consoleEntryIcon = computed(
-  () => consoleEntryAction.value?.icon || 'i-lucide-panels-top-left'
+const workspaceEntryIcon = computed(
+  () => workspaceEntryAction.value?.icon || 'i-lucide-panels-top-left'
 )
-const canOpenConsole = computed(
+const canOpenWorkspace = computed(
   () =>
     appOutcome.value === 'ready' &&
     membershipOutcome.value === 'ready' &&
-    Boolean(hasConsoleEntry.value) &&
+    Boolean(hasWorkspaceEntry.value) &&
     appUser.value?.role === 'admin' &&
-    appUser.value.console_enabled === true
+    appUser.value.workspace_enabled === true
 )
 const canManageApp = computed(
   () =>

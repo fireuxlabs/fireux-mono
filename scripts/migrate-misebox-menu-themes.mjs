@@ -109,19 +109,18 @@ const db = getFirestore(app, DATABASE_ID)
 const operations = []
 
 for (const fixture of FIXTURES) {
-  const path = `apps/${fixture.appId}/kitchens/${fixture.kitchenId}`
+  const path = `kitchens/${fixture.kitchenId}`
   const snapshot = await db.doc(path).get()
-  if (!snapshot.exists) throw new Error(`Missing AppKitchen: ${path}`)
+  if (!snapshot.exists) throw new Error(`Missing Kitchen: ${path}`)
   const data = snapshot.data() || {}
-  const consoleRecord = record(data.console)
-  const currentPalette = record(record(consoleRecord.theme).palette)
-  const currentLegacyStyle = record(record(consoleRecord.menus).style)
+  const currentPalette = record(record(data.theme).palette)
+  const currentLegacyStyle = record(record(data.menus).style)
   const paletteReady = equal(currentPalette, fixture.palette)
   const legacyReady =
     !fixture.removeLegacyStyle || !Object.keys(currentLegacyStyle).length
   if (paletteReady && legacyReady) continue
   if (!paletteReady && !equal(currentPalette, fixture.expectedPalette)) {
-    throw new Error(`${fixture.key} has an unexpected Console palette.`)
+    throw new Error(`${fixture.key} has an unexpected Workspace palette.`)
   }
   if (
     fixture.removeLegacyStyle &&
@@ -135,7 +134,7 @@ for (const fixture of FIXTURES) {
   operations.push({
     ...fixture,
     path,
-    collectionPath: `apps/${fixture.appId}/kitchens`,
+    collectionPath: 'kitchens',
     actorUid,
     sourceSha256: sha256(data),
   })
@@ -198,9 +197,9 @@ for (const operation of operations) {
     collectionPath: operation.collectionPath,
   })
   await mcpSkillUpdate(app, target, operation.kitchenId, {
-    'console.theme.palette': operation.palette,
+    'theme.palette': operation.palette,
     ...(operation.removeLegacyStyle
-      ? { 'console.menus.style': FieldValue.delete() }
+      ? { 'menus.style': FieldValue.delete() }
       : {}),
     updated: {
       at: FieldValue.serverTimestamp(),
@@ -212,9 +211,8 @@ for (const operation of operations) {
 for (const operation of operations) {
   const verified = await db.doc(operation.path).get()
   const data = verified.data() || {}
-  const consoleRecord = record(data.console)
-  const palette = record(record(consoleRecord.theme).palette)
-  const legacyStyle = record(record(consoleRecord.menus).style)
+  const palette = record(record(data.theme).palette)
+  const legacyStyle = record(record(data.menus).style)
   if (
     !verified.exists ||
     !equal(palette, operation.palette) ||

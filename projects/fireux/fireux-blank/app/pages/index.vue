@@ -3,19 +3,19 @@
     <UPageHeader
       class="pageheader"
       title="FireUX Blank"
-      description="A clean app for shaping the shared console base."
+      description="A clean app for shaping the shared workspace base."
     >
       <template #links>
-        <UButton to="/console/blank" icon="i-lucide-circle-play">
-          Open blank console
+        <UButton to="/workspace/blank" icon="i-lucide-circle-play">
+          Open blank workspace
         </UButton>
       </template>
     </UPageHeader>
 
     <UPageBody class="pagebody">
       <UPageCard
-        title="Blank console"
-        description="Use this app to check the shared console pipeline before domain consoles plug into it."
+        title="Blank workspace"
+        description="Use this app to check the shared workspace pipeline before domain workspaces plug into it."
         variant="subtle"
       />
     </UPageBody>
@@ -38,6 +38,6 @@ definePageMeta({
 useSeoMeta({
   title: 'FireUX Blank',
   description:
-    'A clean app for shaping the shared FireUX console base.',
+    'A clean app for shaping the shared FireUX workspace base.',
 })
 </script>

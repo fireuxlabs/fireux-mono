@@ -5,7 +5,7 @@ import type { H3Event } from 'h3'
 import type {
   FireuxMetaContent,
   FireuxMetaOperation,
-  FireuxMetaOperationConsole,
+  FireuxMetaOperationWorkspace,
 } from '../../../../config/app/meta-content'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -27,15 +27,15 @@ function asStringArray(value: unknown): string[] {
     : []
 }
 
-function normalizeConsole(
+function normalizeWorkspace(
   value: unknown
-): FireuxMetaOperationConsole | undefined {
+): FireuxMetaOperationWorkspace | undefined {
   if (!isRecord(value)) return undefined
 
   const id = asString(value.id)
   const name = asString(value.name)
   const to = asString(value.to)
-  if (!id || !name || !to?.startsWith('/console/')) return undefined
+  if (!id || !name || !to?.startsWith('/workspace/')) return undefined
 
   return { id, name, to }
 }
@@ -47,14 +47,14 @@ function normalizeOperation(value: unknown): FireuxMetaOperation | undefined {
   const title = asString(value.title)
   const description = asString(value.description)
   const to = asString(value.to)
-  const console = normalizeConsole(value.console)
+  const workspace = normalizeWorkspace(value.workspace)
   if (
     !id ||
     !title ||
     !description ||
     !to ||
-    !console ||
-    !to.startsWith(`${console.to}/`)
+    !workspace ||
+    !to.startsWith(`${workspace.to}/`)
   ) {
     return undefined
   }
@@ -68,7 +68,7 @@ function normalizeOperation(value: unknown): FireuxMetaOperation | undefined {
     title,
     description,
     to,
-    console,
+    workspace,
     ...(headline ? { headline } : {}),
     ...(icon ? { icon } : {}),
     ...(slug ? { slug } : {}),

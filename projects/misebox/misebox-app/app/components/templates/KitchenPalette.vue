@@ -22,13 +22,13 @@
         <p>No override stored. Contributes no colour at this layer.</p>
       </article>
 
-      <article v-if="kitchen.consoleProps">
+      <article v-if="kitchen.workspaceProps">
         <header>
-          <strong>Console</strong>
-          <small>{{ kitchen.consoleProps.source }}</small>
+          <strong>Workspace</strong>
+          <small>{{ kitchen.workspaceProps.source }}</small>
         </header>
         <div class="palette__values">
-          <ColorValue v-for="key in consoleKeys" :key="key" :label="label(key)" :value="consoleValues[key]" />
+          <ColorValue v-for="key in workspaceKeys" :key="key" :label="label(key)" :value="workspaceValues[key]" />
         </div>
       </article>
 
@@ -47,15 +47,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppPaletteLayer, ConsolePalette, TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
+import type { AppPaletteLayer, WorkspacePalette, TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
 import ColorValue from './ColorValue.vue'
 
 const props = defineProps<{ kitchen: TemplateOneKitchenSpecimen }>()
 
-const consoleKeys = ['canvas', 'text', 'accent', 'accent_contrast'] as const
+const workspaceKeys = ['canvas', 'text', 'accent', 'accent_contrast'] as const
 const appKeyOrder = ['canvas', 'surface', 'canvas_inverted', 'text', 'text_muted', 'ink', 'accent', 'accent_contrast'] as const
-const consoleValues = computed<Partial<ConsolePalette>>(
-  () => props.kitchen.consoleProps?.palette || {}
+const workspaceValues = computed<Partial<WorkspacePalette>>(
+  () => props.kitchen.workspaceProps?.palette || {}
 )
 const appValues = computed<AppPaletteLayer>(
   () => props.kitchen.appProps?.palette || {}

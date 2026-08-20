@@ -20,12 +20,12 @@ const roadmap = [
   { label: "Manage each app's identity and branding", done: false },
   { label: 'Connect domains', done: false },
   { label: 'See hosting and deployment status', done: false },
-  { label: "Open each app's console", done: false },
+  { label: "Open each app's workspace", done: false },
 ] as const
 
 const action = {
   label: 'Open Apps',
-  to: '/console/project/apps',
+  to: '/workspace/project/apps',
   icon: 'i-lucide-app-window',
 } as const
 

@@ -160,9 +160,9 @@ The Menu ordering funnel demonstrates one controller, one active screen, and
 one action footer. Its domain owns readiness and progression; child screens own
 their decision UI.
 
-### Console operation
+### Workspace operation
 
-Console operation roots compose named `Read`, `Write`, `Tools`, or workflow
+Workspace operation roots compose named `Read`, `Write`, `Tools`, or workflow
 children. A provided domain workspace allows those children to consume one
 selected operational context without a long prop chain.
 

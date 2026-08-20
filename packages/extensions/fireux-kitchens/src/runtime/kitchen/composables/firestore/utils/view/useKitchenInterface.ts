@@ -308,7 +308,7 @@ export function useKitchenInterface() {
     }
   }
 
-  function consoleTarget(
+  function workspaceTarget(
     target?: KitchenSurface | null | undefined
   ): KitchenCell | null {
     const base = buildInterface(target)
@@ -381,7 +381,7 @@ export function useKitchenInterface() {
     identity,
     pill,
     cell,
-    consoleTarget,
+    workspaceTarget,
     preview,
     profile,
   }

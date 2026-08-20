@@ -1,7 +1,7 @@
 <template>
   <section
     class="misebox-handoff"
-    aria-label="Misebox guest Menu and Kitchen Console demonstration"
+    aria-label="Misebox guest Menu and Kitchen Workspace demonstration"
   >
     <div class="misebox-handoff__chapters" aria-label="Product workflow">
       <button
@@ -39,21 +39,21 @@ const chapters = [
     label: 'Publish',
     icon: 'i-lucide-qr-code',
     signal: 'Menu published',
-    consoleLabel: 'Menus',
+    workspaceLabel: 'Menus',
   },
   {
     id: 'prepare',
     label: 'Prepare',
     icon: 'i-lucide-list-checks',
     signal: 'Prep connected',
-    consoleLabel: 'Mise en place',
+    workspaceLabel: 'Mise en place',
   },
   {
     id: 'serve',
     label: 'Serve',
     icon: 'i-lucide-bell-ring',
     signal: 'Order received',
-    consoleLabel: 'Orders',
+    workspaceLabel: 'Orders',
   },
 ] as const
 

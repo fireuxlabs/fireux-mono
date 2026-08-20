@@ -90,7 +90,7 @@ const phases = [
     items: [
       { title: 'Public and QR menus', copy: 'Reliable menu publishing, URLs, PDFs, presentation, and kitchen-owned public identity.' },
       { title: 'Structured kitchen knowledge', copy: 'Menus, dishes, recipes, ingredients, allergens, and suppliers with clear relationships.' },
-      { title: 'Kitchen console foundations', copy: 'Practical identity, menu, prep, team, and operational management surfaces.' },
+      { title: 'Kitchen workspace foundations', copy: 'Practical identity, menu, prep, team, and operational management surfaces.' },
       { title: 'Order and service handoff', copy: 'Carry guest choices into a clear Kitchen queue and move each ticket toward service.' },
     ],
   },

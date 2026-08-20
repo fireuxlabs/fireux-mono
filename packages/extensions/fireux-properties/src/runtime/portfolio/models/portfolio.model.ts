@@ -2,9 +2,9 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Portfolio root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Portfolio access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -53,11 +53,11 @@ export const PortfolioStorage = {
 export const PortfolioEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Portfolio',
-  family: ['portfolio', 'console-entity'],
+  family: ['portfolio', 'workspace-entity'],
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  console: true,
+  workspace: true,
   root: PortfolioStorage.root,
   appSupportPath: PortfolioStorage.appSupport,
 })

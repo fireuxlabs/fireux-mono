@@ -87,7 +87,7 @@ const explicitKitchenSourceAppId = (kitchenData: Record<string, unknown>) => {
     text(runtimeApp().ecosystem)
   )
 
-  return scope.mode === 'console' || scope.mode === 'app'
+  return scope.mode === 'workspace' || scope.mode === 'app'
     ? text(scope.appId)
     : ''
 }

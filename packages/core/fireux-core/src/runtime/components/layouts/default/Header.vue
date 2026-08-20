@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 import { useRoute } from 'vue-router'
-import { useConsoleEntryState } from '../../../composables/fireux/console/useConsoleEntryState'
+import { useWorkspaceEntryState } from '../../../composables/fireux/workspace/useWorkspaceEntryState'
 import { useNav } from '../../../composables/navigation/useNav'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -120,7 +120,7 @@ const mobileItems = computed(() =>
 )
 
 /** Auth */
-const { authPhase, isSignedIn } = useConsoleEntryState()
+const { authPhase, isSignedIn } = useWorkspaceEntryState()
 const { currentUser, avatarSrc, accessTier } = useUser()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()

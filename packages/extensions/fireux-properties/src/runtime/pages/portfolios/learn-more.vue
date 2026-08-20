@@ -15,7 +15,7 @@
         <ul class="list-disc fx-list-stack text-sm">
           <li>Portfolios are the operational containers used to manage property work.</li>
           <li>A portfolio groups properties, clients, documents, finance, compliance, and tasks.</li>
-          <li>The portfolio console is where operators move from overview into the working surfaces.</li>
+          <li>The portfolio workspace is where operators move from overview into the working surfaces.</li>
         </ul>
       </UCard>
 
@@ -26,14 +26,14 @@
 
         <ol class="list-decimal fx-list-stack text-sm">
           <li>Select a live or demo portfolio from the portfolio CTA.</li>
-          <li>Open the portfolio console to work across properties, clients, incidents, and documents.</li>
+          <li>Open the portfolio workspace to work across properties, clients, incidents, and documents.</li>
           <li>Keep portfolio identity and operational state aligned through the same runtime record.</li>
         </ol>
       </UCard>
 
       <div class="flex flex-wrap gap-2">
         <UButton to="/portfolios" color="primary" icon="i-lucide-building">Open portfolios</UButton>
-        <UButton to="/console/portfolio" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Portfolio Console</UButton>
+        <UButton to="/workspace/portfolio" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Portfolio Workspace</UButton>
       </div>
     </UPageBody>
   </UPage>

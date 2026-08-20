@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -38,7 +38,7 @@ export function useMenuUpdate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { updateDocument } = useFirestoreUpdate({
     databaseId: options.databaseId,
   })
@@ -200,7 +200,7 @@ export function useMenuUpdate(
       })
       const token = await currentUser.value?.getIdToken()
       if (!token) throw new Error('Sign in before publishing this Menu.')
-      await $fetch('/api/console/kitchen/menus/publish', {
+      await $fetch('/api/workspace/kitchen/menus/publish', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: { kitchenId, menuId },

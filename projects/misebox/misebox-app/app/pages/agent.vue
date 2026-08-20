@@ -8,10 +8,10 @@
         </div>
         <div class="max-w-3xl space-y-4">
           <h1 class="fx-type-page-title text-4xl font-semibold sm:text-5xl">
-            Build AI through the Console spine.
+            Build AI through the Workspace spine.
           </h1>
           <p class="fx-type-description leading-8 text-toned">
-            Start with the jobs and tools on each canonical Console page. Use
+            Start with the jobs and tools on each canonical Workspace page. Use
             those proven capabilities to define operation agents, coordinate
             them through their parent entity, and expose one Misebox entry.
           </p>
@@ -121,7 +121,7 @@
                 <p class="fx-type-headline text-primary">First proving flow</p>
                 <h2 class="fx-type-card-heading mt-1">Interlaken Pizza · MenuAI</h2>
               </div>
-              <UButton to="/console/kitchen/menus" icon="i-lucide-arrow-up-right" trailing>
+              <UButton to="/workspace/kitchen/menus" icon="i-lucide-arrow-up-right" trailing>
                 Open Menus
               </UButton>
             </div>
@@ -142,11 +142,11 @@
 const agents = [
   { id: 'misebox', name: 'MiseboxAI', scope: 'Ecosystem', parent: 'FireUX AI', icon: 'i-lucide-network', job: 'Select the owning Misebox entity and hand the request to its coordinator.' },
   { id: 'kitchen', name: 'KitchenAI', scope: 'Entity', parent: 'MiseboxAI', icon: 'i-lucide-store', job: 'Learn one Kitchen, maintain its context, and coordinate questions across Kitchen operations.' },
-  { id: 'operation', name: 'Operation agents', scope: 'Operation', parent: 'KitchenAI', icon: 'i-lucide-blocks', job: 'Use operation context and bounded tools for Menus, Ingredients, Finance, Orders and other Console jobs.' },
+  { id: 'operation', name: 'Operation agents', scope: 'Operation', parent: 'KitchenAI', icon: 'i-lucide-blocks', job: 'Use operation context and bounded tools for Menus, Ingredients, Finance, Orders and other Workspace jobs.' },
 ] as const
 
 const phases = [
-  { title: 'Canonise Console jobs', state: 'In progress', color: 'warning' as const, copy: 'List the real jobs and resulting tools on every canonical Console page.' },
+  { title: 'Canonise Workspace jobs', state: 'In progress', color: 'warning' as const, copy: 'List the real jobs and resulting tools on every canonical Workspace page.' },
   { title: 'Classify tools', state: 'Next', color: 'neutral' as const, copy: 'Separate domain-specific tools, family-common tools and provider-neutral primitives.' },
   { title: 'Define shared contracts', state: 'Next', color: 'neutral' as const, copy: 'Add scope, context provider, tool, outcome and usage contracts at their highest stable owner.' },
   { title: 'Complete MenuAI', state: 'Proving', color: 'primary' as const, copy: 'Prove model reasoning, exact Menu evidence, context memory, usage metering and parent escalation.' },
@@ -184,6 +184,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'MiseboxAI Integration Road Map',
-  description: 'Development road map for integrating MiseboxAI through the existing Console, Kitchen and operation spine.',
+  description: 'Development road map for integrating MiseboxAI through the existing Workspace, Kitchen and operation spine.',
 })
 </script>

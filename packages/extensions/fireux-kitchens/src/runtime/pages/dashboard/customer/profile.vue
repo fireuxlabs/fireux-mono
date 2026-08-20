@@ -7,16 +7,16 @@
     </template>
 
     <template #body>
-      <div class="console-profile">
+      <div class="workspace-profile">
         <CustomerIdentity />
 
         <ClientOnly>
-          <div v-if="appProfile" class="console-profile__section">
+          <div v-if="appProfile" class="workspace-profile__section">
             <CustomerEditCore />
           </div>
         </ClientOnly>
 
-        <div class="console-profile__section">
+        <div class="workspace-profile__section">
           <CustomerOrders />
         </div>
       </div>

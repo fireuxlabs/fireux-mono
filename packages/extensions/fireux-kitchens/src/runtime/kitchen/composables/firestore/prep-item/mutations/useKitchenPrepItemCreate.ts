@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -16,7 +16,7 @@ import {
   type KitchenPrepItemInput,
   type KitchenPrepItemUnit,
 } from '../../../../models/prep-item.model.ts'
-import { useKitchenConsoleSelection } from '../../../console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 
 type KitchenPrepItemCreateDraft = {
@@ -49,11 +49,11 @@ export function useKitchenPrepItemCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleSelection()
+  const { selectedId } = useKitchenWorkspaceSelection()
   const { seedTranslations } = useTranslationSeed()
   const kitchenCollectionPath = computed(() =>
     trim(unref(options.kitchenCollectionPath)) || resolveKitchenScopeCollectionPath(appId)

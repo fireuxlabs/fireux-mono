@@ -8,11 +8,11 @@ export const content = {
     title: 'The Storefront For',
     accent: ['Brand', 'Commerce'],
     description:
-      'An integrated commerce platform connecting products, drops and stories directly to your Commerce Console. Build branded storefronts, publish collections, manage content and sell products.',
+      'An integrated commerce platform connecting products, drops and stories directly to your Commerce Workspace. Build branded storefronts, publish collections, manage content and sell products.',
     primaryAction: { label: 'Get started', to: '/get-started' },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console',
+      label: 'Go to workspace',
+      to: '/workspace',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],
@@ -31,13 +31,13 @@ export const surfaceItems = [
     items: ['Products', 'Collections', 'Stories', 'Brand presentation'],
   },
   {
-    id: 'commerce-console',
-    title: 'Commerce Console',
+    id: 'commerce-workspace',
+    title: 'Commerce Workspace',
     description:
       'Manage the products and content that appear throughout the storefront.',
     icon: 'i-lucide-layout-dashboard',
-    to: '/console',
-    action: 'Open Commerce Console',
+    to: '/workspace',
+    action: 'Open Commerce Workspace',
     items: ['Products', 'Content', 'Collections', 'Publishing'],
   },
 ] as const satisfies readonly LandingProductSurface[]

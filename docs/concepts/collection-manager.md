@@ -19,7 +19,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - composables.md
 - family-menu.md
-- family-console-entity.md
+- family-workspace-entity.md
 
 ## Working language
 
@@ -175,9 +175,9 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
 - Project has a bounded public collection of active identity and presentation;
-  selection, access, and operations remain private FireUX Console concerns.
+  selection, access, and operations remain private FireUX Workspace concerns.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
-- Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
+- Custom-derived surfaces today: `Blank`, `Workspace.Kitchen.Operations.Mise`, `Workspace.Portfolio.Operations.Clients`.
 
 ## Linked-read directions
 
@@ -222,8 +222,8 @@ Root Simple Collection Managers
 | `Menu`      | Route-owned `/api/menus` controller | Self             | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail joins. |
 | `Place`     | None in manager                     | Self             | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                        |
 | `Product`   | None in manager                     | Self             | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                    |
-| `Supplier`  | None for root browse                | Self/App support | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                         |
-| `Portfolio` | None for root browse                | Self/App support | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                        |
+| `Supplier`  | None for root browse                | Self/App support | Root browse fetches Suppliers. Operator-filtered workspace/access flows may join same-id App support records.                                         |
+| `Portfolio` | None for root browse                | Self/App support | Root browse fetches Portfolios. Operator-filtered workspace/access flows may join same-id App support records.                                        |
 | `Property`  | None for root browse                | Self/App support | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                     |
 
 Root Projected Collection Managers
@@ -250,7 +250,7 @@ Scoped/provided collection surfaces
 | `Dish`                | Kitchen-scoped rows                                       | Scoped      | No root index today.                                         |
 | `Recipe`              | Kitchen-scoped rows                                       | Scoped      | Public projection deferred; keep as Kitchen Recipes for now. |
 | `Station`             | Kitchen-scoped rows                                       | Scoped      | No root index today.                                         |
-| `Team`                | Kitchen/console-scoped rows                               | Scoped/side | May resolve bounded User presentation later.                 |
+| `Team`                | Kitchen/workspace-scoped rows                               | Scoped/side | May resolve bounded User presentation later.                 |
 | `Kitchen.Supplier`    | Kitchen-scoped supplier entries                           | Scoped/side | Local kitchen supplier surface.                              |
 | `Supplier.Item`       | Supplier-scoped item rows with Product reference          | Scoped/side | No root index today.                                         |
 | `Supplier.Ingredient` | Supplier-scoped ingredient rows with Ingredient reference | Scoped/side | No root index today.                                         |
@@ -262,8 +262,8 @@ Custom-derived surfaces
 | -------------------------------------- | ---------------------------------- | ------------- | ------------------------------ |
 | `Blank`                                | Explicit blank target collection   | Custom        | Intentional minimal mirror.    |
 | `Orders`                               | Kitchen/menu/user/dish shaped rows | Custom/side   | Needs future order spine pass. |
-| `Console.Kitchen.Operations.Mise`      | Kitchen-scoped mise rows           | Custom/scoped | Operation surface.             |
-| `Console.Portfolio.Operations.Clients` | Portfolio/client/property rows     | Custom/scoped | Operation surface.             |
+| `Workspace.Kitchen.Operations.Mise`      | Kitchen-scoped mise rows           | Custom/scoped | Operation surface.             |
+| `Workspace.Portfolio.Operations.Clients` | Portfolio/client/property rows     | Custom/scoped | Operation surface.             |
 
 ## Delta register
 
@@ -274,7 +274,7 @@ Custom-derived surfaces
 | App and Ecosystem managers receive named controllers                                           | `accepted`   | The page must choose ecosystem/platform authority explicitly                                                                          |
 | Kitchen/Menu/User established shared directory header/state presentation before older managers | `migration`  | Converge other root managers through the small core seams when touched                                                                |
 | Blog has separate public-editorial and authenticated-root managers                             | `accepted`   | Public projection and draft administration have different authority; both remain Blogs-extension-owned and share the interface mapper |
-| Orders and some Console operation lists are custom-derived                                     | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved                                                             |
+| Orders and some Workspace operation lists are custom-derived                                     | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved                                                             |
 | Client-side search is hidden before all bounded pages are loaded                               | `accepted`   | It must not claim absence from an incomplete catalogue; large search becomes server-owned                                             |
 | Snapshot propagation is currently a guarded manual script                                      | `to-confirm` | Move a snapshot to a trigger only after write volume, failure recovery, and source ownership justify continuous sync                  |
 | Some authority-sensitive roots use public APIs while simple roots read collections             | `accepted`   | Privacy, publication, and server-only joins determine transport; the manager still consumes one bounded source outcome                |

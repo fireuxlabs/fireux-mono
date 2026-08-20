@@ -8,13 +8,13 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 
 ## Vertical links
 - Parent: menu-ordering.md
-- Parent: console.md
+- Parent: workspace.md
 - Parent: firestore-entity.md
 
 ## Horizontal links
 - entities.md
 - family-menu.md
-- family-console-entity.md
+- family-workspace-entity.md
 - server-api.md
 - components.md
 
@@ -36,7 +36,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 - `Menu.ordering.order_types[]`: what kind of order the public menu can create.
 - `Kitchen.fulfilment`: reusable venue rules such as delivery zones, payment methods, and deposits.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.
-- `Console/Kitchen/Operations/Orders`: operator board and ticket actions.
+- `Workspace/Kitchen/Operations/Orders`: operator board and ticket actions.
 
 ## Creation flow
 1. Every order source submits through the server-owned menu order route; Staff POS is an authenticated channel, not a direct Firestore writer.
@@ -48,7 +48,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 7. Created KitchenOrder copies the selected order-type policy into `fulfilment_policy`.
 8. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
 9. Public status reads expose only small customer-safe state.
-10. Kitchen console sends authenticated transition commands; it does not patch order lifecycle fields directly.
+10. Kitchen workspace sends authenticated transition commands; it does not patch order lifecycle fields directly.
 
 ## Intake contract
 - `KitchenOrderIntakePolicies` is the exhaustive order-type matrix for allowed channels, default channel, and automatic versus operator acceptance.
@@ -65,7 +65,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 - `fulfilment_policy`: rules the customer ordered under, copied for audit history.
 - `fulfilment_match`: concrete resolved result, such as the matched delivery zone and fee.
 - `status`: the single lifecycle state for order processing and customer status.
-- `board_stage`: console rail derived from stored order state, not a separate truth source.
+- `board_stage`: workspace rail derived from stored order state, not a separate truth source.
 
 ## Current V1 order states
 - `pending_payment`: payment must finish before the order can continue.
@@ -103,7 +103,7 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Menu opts into order types and can add type-specific policy.
 - Order stores the exact policy and match used at creation.
 - Public UI renders the resolved policy; it does not infer rules from tenant app id or kitchen type.
-- Console operations may update processing state after creation, but should not rewrite historical policy snapshots unless the operator is explicitly correcting the order.
+- Workspace operations may update processing state after creation, but should not rewrite historical policy snapshots unless the operator is explicitly correcting the order.
 
 ## Delta register
 
@@ -125,11 +125,11 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Canonical creation:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Authenticated transition command:
-  `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
 - Transition enforcement:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`
 - Operator family:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Orders/`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Orders/`
 
 ## Alignment roadmap
 
@@ -159,5 +159,5 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Do not create a new mode just because one restaurant uses different wording.
 - Do not infer delivery, collection, or opening rules from Place hours.
 - Do not force KitchenOrder into root entity ceremony without a fresh entity decision.
-- Do not mix console operation folders into Firestore entity buckets.
+- Do not mix workspace operation folders into Firestore entity buckets.
 - Do not introduce a parallel root Order engine while KitchenOrder remains the operational canon.

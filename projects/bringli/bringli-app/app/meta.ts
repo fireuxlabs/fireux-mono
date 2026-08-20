@@ -18,7 +18,7 @@ export const appMeta = {
 
   brand: sourceMeta.landing.brand,
   heroPrimaryHtml: sourceMeta.landing.heroPrimaryLine,
-  consoleBridgeHtml: sourceMeta.landing.consoleBridgeLine,
+  workspaceBridgeHtml: sourceMeta.landing.workspaceBridgeLine,
   landingPrimaryCtaLabel: sourceMeta.landing.primaryCtaLabel,
   landingSecondaryCtaLabel: sourceMeta.landing.secondaryCtaLabel ?? '',
   landingSecondaryCtaTo: sourceMeta.landing.secondaryCtaTo ?? '',
@@ -54,8 +54,8 @@ const publicRoutes = appMeta.routes
   .filter((route) => route.kind === 'public')
   .map((route) => route.path)
 
-const consoleRoutes = appMeta.routes
-  .filter((route) => route.kind === 'console')
+const workspaceRoutes = appMeta.routes
+  .filter((route) => route.kind === 'workspace')
   .map((route) => route.path)
 
 export const metaContent = defineFireuxMeta({
@@ -75,7 +75,7 @@ export const metaContent = defineFireuxMeta({
     ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
-    console_bridge_html: appMeta.consoleBridgeHtml,
+    workspace_bridge_html: appMeta.workspaceBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
   },
@@ -110,7 +110,7 @@ export const metaContent = defineFireuxMeta({
             to: appMeta.landingSecondaryCtaTo,
           }
         : undefined,
-    console: appMeta.aboutPrimaryAction,
+    workspace: appMeta.aboutPrimaryAction,
     roadmap: {
       label: 'Road map',
       to: '/road-map',
@@ -160,6 +160,6 @@ export const metaContent = defineFireuxMeta({
   relations_ascii: appMeta.relationshipMap,
   routes: {
     public: publicRoutes,
-    console: consoleRoutes,
+    workspace: workspaceRoutes,
   },
 })

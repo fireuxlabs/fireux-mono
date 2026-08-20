@@ -55,7 +55,7 @@ remembered implementations are not authority.
   owns its reviewed asset, alternative text, and focal position but does not
   duplicate the shared sharp image frame.
 - Werkbox follows the shared ecosystem pricing literature: Free is a functional
-  Work Console, Pro is CHF 20/month self-managed, Managed is CHF 50/month with
+  Work Workspace, Pro is CHF 20/month self-managed, Managed is CHF 50/month with
   bounded FireUX assistance, and Your App is CHF 600 setup followed by Pro or
   Managed. Werkbox owns work-specific capabilities and limits; Core owns the
   common commercial meanings and amounts.

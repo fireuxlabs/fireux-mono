@@ -21,7 +21,7 @@ export type PricingTier = LandingPricingPlan & {
 export type PricingProfile = {
   appName: string
   contactEmail: string
-  consoleName: string
+  workspaceName: string
   free: readonly string[]
   pro: readonly string[]
   includesEcosystemTier?: boolean
@@ -29,7 +29,7 @@ export type PricingProfile = {
 
 export function usePricing(profile: PricingProfile) {
   const appName = computed(() => profile.appName)
-  const consoleName = computed(() => profile.consoleName)
+  const workspaceName = computed(() => profile.workspaceName)
   const contactEmail = computed(() => profile.contactEmail)
   const includesEcosystemTier = computed(
     () => profile.includesEcosystemTier === true
@@ -41,10 +41,10 @@ export function usePricing(profile: PricingProfile) {
         id: 'free',
         eyebrow: `${appName.value} pricing`,
         title: 'Free',
-        description: `Use a functional ${consoleName.value} before you pay.`,
+        description: `Use a functional ${workspaceName.value} before you pay.`,
         price: 'CHF 0',
         features: [
-          profile.free[0] || 'Functional Console',
+          profile.free[0] || 'Functional Workspace',
           profile.free[1] || 'Self-service setup',
           'No monthly charge',
         ],
@@ -55,18 +55,18 @@ export function usePricing(profile: PricingProfile) {
           'New product development',
         ],
         priceNote: 'No setup fee and no monthly charge.',
-        nextStep: 'Create an account and start with the Free Console.',
+        nextStep: 'Create an account and start with the Free Workspace.',
         to: '/pricing/free',
       },
       {
         id: 'pro',
         eyebrow: `${appName.value} pricing`,
         title: 'Pro',
-        description: `Use the fuller ${consoleName.value} and manage it yourself.`,
+        description: `Use the fuller ${workspaceName.value} and manage it yourself.`,
         price: 'CHF 20',
         billingCycle: '/month',
         features: [
-          profile.pro[0] || 'Fuller Console',
+          profile.pro[0] || 'Fuller Workspace',
           profile.pro[1] || 'Team access',
           'Self-managed',
         ],
@@ -78,7 +78,7 @@ export function usePricing(profile: PricingProfile) {
         ],
         priceNote: 'Billed monthly. No percentage or commission is added.',
         nextStep:
-          'Upgrade when the Free Console no longer has enough capacity.',
+          'Upgrade when the Free Workspace no longer has enough capacity.',
         to: '/pricing/pro',
       },
       {
@@ -164,7 +164,7 @@ export function usePricing(profile: PricingProfile) {
         included: [
           'Your ecosystem identity and main App',
           'A system ready to launch branded customer Apps',
-          'Owner access to the Project Console',
+          'Owner access to the Project Workspace',
           'Hosting, shared FireUX updates, and routine maintenance',
           'Half of each customer App setup and monthly price retained by the ecosystem owner',
         ],
@@ -188,8 +188,8 @@ export function usePricing(profile: PricingProfile) {
   )
   const description = computed(() =>
     includesEcosystemTier.value
-      ? 'Start with the Console, launch your own App, or create an ecosystem for customer Apps.'
-      : `Start with a functional ${consoleName.value}, upgrade when you need more, or launch your own ${appName.value} App.`
+      ? 'Start with the Workspace, launch your own App, or create an ecosystem for customer Apps.'
+      : `Start with a functional ${workspaceName.value}, upgrade when you need more, or launch your own ${appName.value} App.`
   )
 
   function getTier(id: string) {
@@ -198,7 +198,7 @@ export function usePricing(profile: PricingProfile) {
 
   return {
     appName,
-    consoleName,
+    workspaceName,
     contactEmail,
     description,
     getTier,

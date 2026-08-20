@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: inspect raw Apps through the authenticated dev API across all app roles.
-// Concurrent edit — 2026-07-20 17:01 CEST — Demo Data Spine pass: remove redundant non-console App fixtures.
+// Concurrent edit — 2026-07-20 17:01 CEST — Demo Data Spine pass: remove redundant non-workspace App fixtures.
 import { definePageMeta } from '#imports'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'

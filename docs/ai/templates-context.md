@@ -29,7 +29,7 @@ injected owner data.
 - Misebox owns the canonical `/templates/template-one` product page. FireUX
   keeps a catalogue referral and does not copy anatomy or fixtures.
 - The catalogue also exposes `Default` for Root presentation and `Theme` for
-  Console presentation. They are presentation levels, not template records.
+  Workspace presentation. They are presentation levels, not template records.
   Template One is the only current template. Do not publish a nominal Template
   Two with no product purpose. A real Template Two may begin as a separately
   named, structurally aligned proving sibling, then deliberately differentiate
@@ -38,9 +38,9 @@ injected owner data.
   tier or the existence of a canonical App. An App is one valid provider and
   proof of the effective assets and theme values, but is not itself a
   functional prerequisite.
-- Root owns neither theme nor template. Console owns the Kitchen's functional
+- Root owns neither theme nor template. Workspace owns the Kitchen's functional
   Menu palette but never template selection. An App extends the effective
-  Console theme with one App-owned template applied across all of its
+  Workspace theme with one App-owned template applied across all of its
   tenant/franchise Kitchens; franchises do not fork or select templates
   independently.
 - Place presentation is intentionally minimal: entity identity media plus one
@@ -51,13 +51,13 @@ injected owner data.
   palette and composition inputs begin above Place; do not treat Place
   `brand_palette` compatibility data as the Template One App palette.
 - Palette ownership is progressive and non-copying: Place owns one identity
-  colour, Kitchen owns no colour override, Console owns four functional
-  colours, and App stores only roles that extend or override Console. Current
+  colour, Kitchen owns no colour override, Workspace owns four functional
+  colours, and App stores only roles that extend or override Workspace. Current
   Kitchen `assets.backdrop_color` is migration input, not an owner. App
   source still reviews the effective eight-colour result. Domain-owned App
-  attachment seeds a missing Console layer from that source, preserves any
-  existing Console colours, and compacts the canonical App layer. Templates
-  resolve Console plus App; they never require duplicated values.
+  attachment seeds a missing Workspace layer from that source, preserves any
+  existing Workspace colours, and compacts the canonical App layer. Templates
+  resolve Workspace plus App; they never require duplicated values.
 - App typography begins with two family inputs only: display and body. Template
   One derives Display, Heading, Body and Label roles from those inputs;
   responsive scales, uploads and per-role overrides remain outside this seam.

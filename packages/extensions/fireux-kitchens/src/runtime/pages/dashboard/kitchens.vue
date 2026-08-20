@@ -12,5 +12,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-await navigateTo('/dashboard/console', { replace: true })
+await navigateTo('/dashboard/workspace', { replace: true })
 </script>

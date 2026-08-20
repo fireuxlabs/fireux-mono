@@ -3,8 +3,8 @@ import type { H3Event } from 'h3'
 import type { RuntimeApp } from '../../../../config/app/runtime'
 import type {
   FireuxAppRole,
-  FireuxConsoleConfig,
-  FireuxConsoleFamilyConfig,
+  FireuxWorkspaceConfig,
+  FireuxWorkspaceFamilyConfig,
 } from '../../../../config/app/types'
 
 export type FireUXRole = FireuxAppRole
@@ -65,10 +65,10 @@ function toStringArray(v: unknown): string[] {
     .filter(Boolean)
 }
 
-function toConsoleConfig(v: unknown): FireuxConsoleConfig {
+function toWorkspaceConfig(v: unknown): FireuxWorkspaceConfig {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
 
-  const entries: Array<[string, FireuxConsoleFamilyConfig]> = []
+  const entries: Array<[string, FireuxWorkspaceFamilyConfig]> = []
   for (const [family, value] of Object.entries(v as AnyRecord)) {
     const key = family.trim().toLowerCase()
     const config =
@@ -77,7 +77,7 @@ function toConsoleConfig(v: unknown): FireuxConsoleConfig {
         : {}
     if (!key) continue
 
-    const normalized: FireuxConsoleFamilyConfig = {}
+    const normalized: FireuxWorkspaceFamilyConfig = {}
     if (typeof config.canCreate === 'boolean') {
       normalized.canCreate = config.canCreate
     }
@@ -126,8 +126,8 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),
-    consoles: toStringArray(fireux.consoles),
-    consoleConfig: toConsoleConfig(fireux.consoleConfig),
+    workspaces: toStringArray(fireux.workspaces),
+    workspaceConfig: toWorkspaceConfig(fireux.workspaceConfig),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,

@@ -85,7 +85,7 @@ Examples:
 - Go QR dogfood supplies Go QR endpoints and stores a Go QR Doc.
 - Misebox quick Menu supplies Misebox Menu endpoints and stores a root Menu
   source.
-- Kitchen Console supplies the owning Kitchen App endpoints and stores a
+- Kitchen Workspace supplies the owning Kitchen App endpoints and stores a
   Kitchen-scoped upload.
 
 ## Environment policy

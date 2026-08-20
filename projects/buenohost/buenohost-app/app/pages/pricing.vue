@@ -27,6 +27,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · BuenoHost',
   description:
-    'BuenoHost pricing for the Host Console, managed service, and your own App.',
+    'BuenoHost pricing for the Host Workspace, managed service, and your own App.',
 })
 </script>

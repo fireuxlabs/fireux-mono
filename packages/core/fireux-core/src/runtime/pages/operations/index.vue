@@ -16,11 +16,11 @@
             Operations
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
-            Operations across {{ appName }} consoles.
+            Operations across {{ appName }} workspaces.
           </p>
           <nav
             v-if="operationGroups.length > 1"
-            aria-label="Console operations"
+            aria-label="Workspace operations"
             class="mt-2 flex flex-wrap gap-2"
           >
             <UButton
@@ -50,7 +50,7 @@
               :to="group.to"
               class="shrink-0 text-sm font-semibold text-primary hover:underline"
             >
-              Open console
+              Open workspace
             </NuxtLink>
           </div>
           <PublicOperationsGrid :operations="group.operations" />
@@ -61,7 +61,7 @@
           color="neutral"
           variant="soft"
           title="No operations published yet"
-          description="This app has not declared any Console Operations."
+          description="This app has not declared any Workspace Operations."
         />
       </div>
     </UContainer>
@@ -95,13 +95,13 @@ const operationGroups = computed(() => {
     { id: string; name: string; to: string; operations: FireuxMetaOperation[] }
   >()
   for (const operation of operations.value) {
-    const existing = groups.get(operation.console.id)
+    const existing = groups.get(operation.workspace.id)
     if (existing) {
       existing.operations.push(operation)
       continue
     }
-    groups.set(operation.console.id, {
-      ...operation.console,
+    groups.set(operation.workspace.id, {
+      ...operation.workspace,
       operations: [operation],
     })
   }
@@ -127,7 +127,7 @@ definePageMeta({
 
 const pageTitle = computed(() => `Operations - ${appName.value}`)
 const pageDescription = computed(
-  () => `Operations across ${appName.value} consoles.`
+  () => `Operations across ${appName.value} workspaces.`
 )
 
 useSeo({

@@ -15,7 +15,7 @@ import {
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenMenuStyle,
-  readKitchenConsolePalette,
+  readKitchenWorkspacePalette,
   readKitchenSproochliConfig,
   resolveKitchenOperationHours,
 } from '../../../kitchen/utils/kitchen-spine'
@@ -24,7 +24,7 @@ import type {
   KitchenFulfilmentConfig,
   KitchenImageShade,
 } from '../../../kitchen/models/kitchen.model.ts'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
@@ -52,7 +52,7 @@ export type MenuKitchenScope = {
   specialsEnabled?: boolean
   specialsMenuId?: string
   page_style?: Record<string, unknown>
-  kitchen_theme?: ConsoleTheme
+  kitchen_theme?: WorkspaceTheme
   placeLogoImageUrl: string
   placeWordmarkImageUrl: string
   fulfilment?: KitchenFulfilmentConfig
@@ -111,36 +111,36 @@ export function menuKitchenIdentity(
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
   page_style?: Record<string, unknown>
-  kitchen_theme?: ConsoleTheme
+  kitchen_theme?: WorkspaceTheme
 } {
   const rootIdentity = readKitchenIdentity(rootData)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(appData)
-  const consolePalette = readKitchenConsolePalette(appData)
+  const workspacePalette = readKitchenWorkspacePalette(appData)
   const placePalette = record(placeData.brand_palette)
   const placeStyle =
     place.mediaBackdropColor && !readRecordString(placePalette, 'primary_color')
       ? { ...placePalette, primary_color: place.mediaBackdropColor }
       : placePalette
-  const consoleStyle = consolePalette
+  const workspaceStyle = workspacePalette
     ? {
-        background_color_light: consolePalette.canvas,
-        background_color_dark: consolePalette.canvas,
-        font_color_light: consolePalette.text,
-        font_color_dark: consolePalette.text,
-        title_color_light: consolePalette.text,
-        title_color_dark: consolePalette.text,
-        primary_color: consolePalette.accent,
+        background_color_light: workspacePalette.canvas,
+        background_color_dark: workspacePalette.canvas,
+        font_color_light: workspacePalette.text,
+        font_color_dark: workspacePalette.text,
+        title_color_light: workspacePalette.text,
+        title_color_dark: workspacePalette.text,
+        primary_color: workspacePalette.accent,
         // Legacy PageStyle uses secondary for decorative Menu accents.
-        // Console accent_contrast is reserved for text placed on accent.
-        secondary_color: consolePalette.accent,
+        // Workspace accent_contrast is reserved for text placed on accent.
+        secondary_color: workspacePalette.accent,
       }
     : {}
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeStyle },
     { source: 'root-kitchen', style: rootData.brand_palette },
-    { source: 'console-theme', style: consoleStyle },
+    { source: 'workspace-theme', style: workspaceStyle },
     { source: 'app-kitchen', style: readKitchenMenuStyle(appData) }
   )
 
@@ -158,7 +158,7 @@ export function menuKitchenIdentity(
     currencyFormat: menuDisplay.currencyFormat,
     showCurrency: menuDisplay.showCurrency,
     ...(Object.keys(pageStyle).length ? { page_style: pageStyle } : {}),
-    ...(consolePalette ? { kitchen_theme: { palette: consolePalette } } : {}),
+    ...(workspacePalette ? { kitchen_theme: { palette: workspacePalette } } : {}),
   }
 }
 

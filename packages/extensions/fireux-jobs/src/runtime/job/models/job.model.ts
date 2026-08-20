@@ -31,7 +31,7 @@ export const JobEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   root: JobStorage.path,
   notes: [
     'The owning Agent/User is explicit in root owner scope; created.by remains audit-only.',

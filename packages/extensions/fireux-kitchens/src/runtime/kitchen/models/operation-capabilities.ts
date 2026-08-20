@@ -53,13 +53,6 @@ export const kitchenOperationToolCapabilities = {
     ),
   ],
   drinks: [
-    {
-      id: 'kitchen.drinks.update-image',
-      label: 'Update Drink Image',
-      description: 'Upload or replace a drink image.',
-      status: 'available',
-      requiredRecords: ['Drink'],
-    },
     requested(
       'kitchen.drinks.track-stock',
       'Beverage Inventory Tracker',

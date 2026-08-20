@@ -74,7 +74,7 @@ import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/
 const route = useRoute()
 const kitchens = landingTemplateBrands
 const templates = landingTemplates
-const tierRank = { root: 0, console: 1, app: 2 } as const
+const tierRank = { root: 0, workspace: 1, app: 2 } as const
 const selectedKitchen = computed<TemplateOneKitchenSpecimen>(() => {
   const id = String(route.query.kitchen || '')
   return isLandingTemplateBrandId(id) ? findLandingTemplateBrand(id)! : kitchens[0]
@@ -93,7 +93,7 @@ const { data: flagship } = await useAsyncData(
 const requiredAssets = ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail'] as const
 const readiness = computed(() => {
   const kitchen = selectedKitchen.value
-  const pageStyle = kitchen.consoleProps?.pageStyle
+  const pageStyle = kitchen.workspaceProps?.pageStyle
   const displayFont = kitchen.appProps?.typography.display_family
     || pageStyle?.title_font_family
     || (pageStyle?.title_font_source === 'system' ? 'system' : '')
@@ -103,7 +103,7 @@ const readiness = computed(() => {
   const items = [
     { label: 'Kitchen name', ready: Boolean(kitchen.name.trim()) },
     { label: 'Kitchen tagline', ready: Boolean(kitchen.rootProps.tagline.trim()) },
-    { label: 'Effective palette', ready: Boolean(kitchen.appProps?.palette || kitchen.consoleProps?.palette) },
+    { label: 'Effective palette', ready: Boolean(kitchen.appProps?.palette || kitchen.workspaceProps?.palette) },
     { label: 'Display font', ready: Boolean(displayFont) },
     { label: 'Body font', ready: Boolean(bodyFont) },
     ...requiredAssets.map(role => ({
@@ -129,7 +129,7 @@ const requirementLabel = (item: TemplateCatalogueItem) =>
     ? 'Template-ready Kitchen'
     : item.minimumTier === 'root'
       ? 'Root and above'
-      : 'Console and App'
+      : 'Workspace and App'
 
 definePageMeta({ layout: 'landing', name: 'MiseboxTemplatesIndexPage' })
 useSeo({

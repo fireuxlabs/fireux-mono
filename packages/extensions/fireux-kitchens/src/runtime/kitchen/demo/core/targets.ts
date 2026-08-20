@@ -159,7 +159,7 @@ export const pizzaTheActionKitchenDemoTarget = target(
   pizzaTheActionKitchenDemoIdentity,
   kitchen({
     identity: pizzaTheActionKitchenDemoIdentity,
-    management: { mode: 'console' },
+    management: { mode: 'workspace' },
     name: 'Pizza the Action',
     tagline: 'Big flavour. Zero drama.',
     logoImageUrl: kitchenDemoMediaUrl(
@@ -218,7 +218,7 @@ export const miseboxRestaurantKitchenDemoTarget = target(
   miseboxRestaurantKitchenDemoIdentity,
   kitchen({
     identity: miseboxRestaurantKitchenDemoIdentity,
-    management: { mode: 'console' },
+    management: { mode: 'workspace' },
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
     logoImageUrl: kitchenDemoMediaUrl(

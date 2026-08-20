@@ -13,7 +13,7 @@ Map how route pages should be built and where consensus is still forming.
 - Parent: nuxt4.md
 - Child: family-entity-directory.md
 - Child: family-entity-detail.md
-- Child: family-console-entity.md
+- Child: family-workspace-entity.md
 - Child: family-menu.md
 
 ## Horizontal links
@@ -51,15 +51,15 @@ Map how route pages should be built and where consensus is still forming.
 
 - Entity Directory: `/xs`.
 - Entity Detail: `/xs/[id-or-slug]`.
-- Factual console-operation index: `/operations`; entries point to working
-  `/console/*` operation routes and are distinct from authored `/solutions`.
-  One app-wide index groups entries by Console and may expose stable anchors.
+- Factual workspace-operation index: `/operations`; entries point to working
+  `/workspace/*` operation routes and are distinct from authored `/solutions`.
+  One app-wide index groups entries by Workspace and may expose stable anchors.
   Operations with app-wide unique public slugs open catalogue-backed
-  `/operations/<slug>` detail surfaces whose CTA preserves the working Console
+  `/operations/<slug>` detail surfaces whose CTA preserves the working Workspace
   route as evidence. Do not duplicate the index under domain routes such as
   `/kitchen/operations`.
-- Console index: `/console/x`.
-- Console child operation: `/console/x/<operation>`.
+- Workspace index: `/workspace/x`.
+- Workspace child operation: `/workspace/x/<operation>`.
 - Dashboard/admin/dev surfaces where packages expose them.
 
 ## Dashboard overview notes
@@ -109,12 +109,12 @@ Map how route pages should be built and where consensus is still forming.
 - Root Entity Directory pages should use `XCollectionManager`.
 - `XCollectionManager` should fetch its bounded entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
-- Console indexes render `ConsoleXIndex`.
+- Workspace indexes render `WorkspaceXIndex`.
 - Internal dev previews and component labs live under `/dev`.
 - `/demo` is reserved for a project's public Product Demo index and its guided
   child demonstrations. These pages are project-owned, remain thin, and use
   the named Product Demo adapter described in `demo-data.md`; they never read
-  Console fixtures directly or present Demo World as live public truth.
+  Workspace fixtures directly or present Demo World as live public truth.
 
 ## Detail page notes
 
@@ -123,7 +123,7 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Family delta rule
 
-- Console route shells follow `console.md`; domain differences live below the
+- Workspace route shells follow `workspace.md`; domain differences live below the
   route page.
 - Entity Directory presentation and authority differences live in
   `family-entity-directory.md`.

@@ -14,11 +14,11 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Family: Domain Root
  * Storage: root canonical model
  * Root path: /places/<placeId>
- * Console use: consoles may link to Place as shared location truth
+ * Workspace use: workspaces may link to Place as shared location truth
  *
  * Decision note:
  * - Place is shared root location identity.
- * - Console entities like Kitchen can layer on top of Place without replacing it.
+ * - Workspace entities like Kitchen can layer on top of Place without replacing it.
  * - If that changes later, update the models README first, then this file.
  */
 
@@ -36,7 +36,7 @@ export const PlaceEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   root: PlaceStorage.path,
   notes: [
     'Place owns shared location identity independently of Kitchen, Company, Property, and Job relationships.',

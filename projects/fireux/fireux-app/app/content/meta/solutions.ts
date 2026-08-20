@@ -20,19 +20,19 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
     {
       slug: 'fireux-project-overview',
       title: 'FireUX project overview',
-      description: 'See a FireUX project, its ecosystem, and its connected apps in one console.',
+      description: 'See a FireUX project, its ecosystem, and its connected apps in one workspace.',
       icon: 'i-lucide-panels-top-left',
       status: 'live',
       owner: fireuxOwner,
-      body: 'The Project Console brings the existing parts of a FireUX ecosystem project together. Select a project, review its identity, then see the ecosystem and apps connected to it.',
+      body: 'The Project Workspace brings the existing parts of a FireUX ecosystem project together. Select a project, review its identity, then see the ecosystem and apps connected to it.',
       steps: [
         'Select an existing FireUX project.',
         'Review its name, description, and image.',
         'See its connected ecosystem and apps.',
       ],
       cta: {
-        label: 'Open Project Console',
-        to: '/console/project',
+        label: 'Open Project Workspace',
+        to: '/workspace/project',
         icon: 'i-lucide-arrow-right',
       },
       keywords: [
@@ -70,7 +70,7 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
       status: 'live',
       owner: fireuxOwner,
       featured: true,
-      body: 'Replace scattered email threads and repeated status questions with a branded customer area. Choose what customers can submit, see, and update while your team manages the work from its console.',
+      body: 'Replace scattered email threads and repeated status questions with a branded customer area. Choose what customers can submit, see, and update while your team manages the work from its workspace.',
       steps: [
         'Choose what customers need to request or view.',
         'Set customer and team access separately.',
@@ -112,7 +112,7 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
       status: 'live',
       owner: fireuxOwner,
       featured: true,
-      body: 'Choose one workflow that repeatedly costs the team time or causes mistakes. FireUX turns it into a focused internal app with shared records, controlled access, and an operator console.',
+      body: 'Choose one workflow that repeatedly costs the team time or causes mistakes. FireUX turns it into a focused internal app with shared records, controlled access, and an operator workspace.',
       steps: [
         'Pick one repeated workflow with a clear owner.',
         'Define the records, decisions, and people involved.',

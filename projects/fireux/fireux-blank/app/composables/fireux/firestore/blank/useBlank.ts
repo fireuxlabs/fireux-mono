@@ -1,15 +1,15 @@
 // Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: explicit Blank collection outcome.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Blank access support directly.
-// Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: resolve Blank root/support pairs from App-support authority.
-// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: project access only from strict AppBlank support.
+// Concurrent edit — 2026-07-21 22:28 CEST — Workspace family alignment: resolve Blank root/support pairs from App-support authority.
+// Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: project access only from strict AppBlank support.
 import { computed, unref, type Ref } from 'vue'
 import { collection, query, where, type Query } from 'firebase/firestore'
 import {
-  normalizeConsoleSource,
-  type ConsoleSource,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+  normalizeWorkspaceSource,
+  type WorkspaceSource,
+} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readConsoleTargetAuthority } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { readWorkspaceTargetAuthority } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
@@ -35,7 +35,7 @@ type CreateBlankInput = {
 }
 type BlankIdInput = string[] | Ref<string[]>
 type UseBlankCollectionOptions = {
-  source?: ConsoleSource | Ref<ConsoleSource | null | undefined> | null
+  source?: WorkspaceSource | Ref<WorkspaceSource | null | undefined> | null
 }
 
 export function blankAppCollectionPath(appId: string) {
@@ -51,7 +51,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const db = useFirestore()
   const { firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const source = computed(() =>
-    normalizeConsoleSource(unref(options.source) ?? 'live')
+    normalizeWorkspaceSource(unref(options.source) ?? 'live')
   )
   const userId = computed(() => text(uid.value))
   const rootCollectionPath = computed(() =>
@@ -82,7 +82,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const targetIdSet = computed(() => new Set(targetIds.value))
   const authorisedAppBlanks = computed(() =>
     appBlanks.value.filter((blank) => {
-      const authority = readConsoleTargetAuthority(blank)
+      const authority = readWorkspaceTargetAuthority(blank)
 
       return Boolean(
         authority &&
@@ -107,7 +107,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
     return (rootBlanks.docs.value ?? []).flatMap((blank) => {
       const id = text(blank.id)
       const appSupport = appSupportById.get(id)
-      const authority = readConsoleTargetAuthority(appSupport)
+      const authority = readWorkspaceTargetAuthority(appSupport)
       if (
         !appSupport ||
         !authority ||
@@ -158,7 +158,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       if (!support) failures.push(`${id}: missing App support`)
       if (!root || !support) continue
 
-      const authority = readConsoleTargetAuthority(support)
+      const authority = readWorkspaceTargetAuthority(support)
       if (!authority) {
         failures.push(`${id}: malformed App support authority`)
         continue
@@ -184,7 +184,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
     }
 
     return failures.length
-      ? new Error(`[blank] invalid console target pair; ${failures.join('; ')}`)
+      ? new Error(`[blank] invalid workspace target pair; ${failures.join('; ')}`)
       : undefined
   })
   const error = computed<unknown | undefined>(() =>
@@ -239,7 +239,7 @@ export function useBlankCreate() {
       id: string
       createdRoot: true
       createdAppSupport: true
-    }>('/api/console/blank/onboarding', {
+    }>('/api/workspace/blank/onboarding', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: { name: text(input.name) || 'Blank target' },

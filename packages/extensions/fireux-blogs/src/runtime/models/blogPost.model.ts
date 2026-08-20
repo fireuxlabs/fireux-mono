@@ -63,7 +63,7 @@ export type BlogAuthor = {
  * Family: Domain Root
  * Storage: root-first canonical model
  * Root path: /blogs/<slug>
- * Console use: may be authored or managed through a console, but does not need a stored overlay by default
+ * Workspace use: may be authored or managed through a workspace, but does not need a stored overlay by default
  * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:

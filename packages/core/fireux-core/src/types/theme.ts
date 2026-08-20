@@ -16,11 +16,11 @@ export const APP_PALETTE_KEYS = [
   'accent_contrast',
 ] as const
 
-export type ConsolePalette = Record<(typeof CONSOLE_PALETTE_KEYS)[number], string>
+export type WorkspacePalette = Record<(typeof CONSOLE_PALETTE_KEYS)[number], string>
 export type AppPalette = Record<(typeof APP_PALETTE_KEYS)[number], string>
-/** Sparse App-owned delta over the Console palette. */
+/** Sparse App-owned delta over the Workspace palette. */
 export type AppPaletteLayer = Partial<AppPalette>
-export type ConsoleTheme = { palette: ConsolePalette }
+export type WorkspaceTheme = { palette: WorkspacePalette }
 /** Complete reviewed palette authored by App source. */
 export type AppTheme = {
   palette: AppPalette

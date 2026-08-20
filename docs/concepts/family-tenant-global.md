@@ -11,10 +11,10 @@ Apps without forking the package-owned domain system.
 
 ## Links
 
-- Parents: `app-config.md`, `console.md`
-- Horizontal: `family-console-entity.md`, `family-menu.md`,
+- Parents: `app-config.md`, `workspace.md`
+- Horizontal: `family-workspace-entity.md`, `family-menu.md`,
   `tool-provider.md`, `pages.md`
-- Runtime sources: `FireUXConfig.ts`, `useConsole.ts`, and each App's
+- Runtime sources: `FireUXConfig.ts`, `useWorkspace.ts`, and each App's
   `nuxt.config.ts`
 
 ## Shared spine
@@ -22,9 +22,9 @@ Apps without forking the package-owned domain system.
 Global and tenant Apps must:
 
 - Declare App role once through FireUX config.
-- Read App role through `useFireUXConfig` and Console behavior through
-  `useConsole`; domains do not recreate role detection.
-- Operate the same package-owned entity, Console, operation, and mutation
+- Read App role through `useFireUXConfig` and Workspace behavior through
+  `useWorkspace`; domains do not recreate role detection.
+- Operate the same package-owned entity, Workspace, operation, and mutation
   contracts.
 - Resolve a bounded target set before selecting or reading scoped data.
 - Derive storage/authority scope from the selected target and fixed runtime,
@@ -132,7 +132,7 @@ accepted while only one mature tenant proves the shape.
 
 ### Now
 
-- Keep role detection in FireUX config and Console mode in `useConsole`.
+- Keep role detection in FireUX config and Workspace mode in `useWorkspace`.
 - Keep global and tenant consumers on the same family core and mutations.
 - Fail closed on missing or conflicting target configuration.
 

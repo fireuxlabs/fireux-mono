@@ -8,7 +8,7 @@ export default defineFireuxConfig({
   name: 'Bringli',
   shortName: 'Bringli',
   role: 'global',
-  consoles: ['supplier'],
+  workspaces: ['supplier'],
   domains: ['suppliers'],
   modules: ['fireux-places', 'fireux-companies', 'fireux-suppliers'],
 })

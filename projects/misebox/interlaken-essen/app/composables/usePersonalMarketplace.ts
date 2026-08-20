@@ -6,7 +6,7 @@ import type {
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
 import { computed, navigateTo, ref, watch } from '#imports'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntryState'
+import { useWorkspaceEntryState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/media/useAvatarProxy'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -38,7 +38,7 @@ export function usePersonalMarketplace() {
   const { setStatus: setOnboardingStatus } =
     useInterlakenOnboardingStatus()
 
-  const { authPhase } = useConsoleEntryState()
+  const { authPhase } = useWorkspaceEntryState()
   const { currentUser, avatarSrc } = useUser()
   const { currentUser: authUser } = useAuth()
   const { getProxiedAvatarUrl } = useAvatarProxy()

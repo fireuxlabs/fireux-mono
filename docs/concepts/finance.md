@@ -7,7 +7,7 @@ Role: map, not canon
 ## Purpose
 
 Map the shared financial-fact boundary without turning domain operations or
-reports into one generic Finance console.
+reports into one generic Finance workspace.
 
 ## Authority and ownership
 
@@ -33,7 +33,7 @@ reports into one generic Finance console.
   with deterministic identity and source/actor timestamps.
 - `FinancialMoney` is a primitive. `KitchenSale` and `FinancialFact` are
   parent-owned records, not entities. Neither has an independent mutable
-  lifecycle, public route, collection stack, or direct Console surface. The
+  lifecycle, public route, collection stack, or direct Workspace surface. The
   Kitchen Finance sheet is a derived report over Sales, not a record editor.
 - `FinancialReportMetricSummaryView`, `FinancialReportTrendView`, and their
   Finance presentation components accept already-labelled display values.
@@ -78,10 +78,10 @@ reports into one generic Finance console.
 - Supplier catalogue `pack_cost_minor` is an offer term, not a purchase,
   receipt, invoice, inventory-consumption, or expense fact.
 - Kitchen owns the future Purchasing operation and its purchase orders,
-  deliveries, supplier invoices, and supplier payments. Its canonical Console
-  route is `/console/kitchen/purchasing`. Supplier remains the referenced
+  deliveries, supplier invoices, and supplier payments. Its canonical Workspace
+  route is `/workspace/kitchen/purchasing`. Supplier remains the referenced
   counterparty and may expose filtered supply options or links to Kitchen-owned
-  purchasing records; `/console/kitchen/suppliers/*` does not own purchasing
+  purchasing records; `/workspace/kitchen/suppliers/*` does not own purchasing
   transactions. The Purchasing route remains hidden until those authoritative
   producers exist.
 - Job compensation reuses `FinancialMoney` plus an explicit hour/shift/day
@@ -94,7 +94,7 @@ reports into one generic Finance console.
   Cross-extension Project/Portfolio composition belongs in an ecosystem or app
   that owns both participants.
 
-## Reporting and Console boundary
+## Reporting and Workspace boundary
 
 - The Restaurant labour-cost calculator is the first deterministic Finance ×
   Kitchen planning Tool. Kitchen owns the restaurant meaning and accepts only
@@ -109,8 +109,8 @@ reports into one generic Finance console.
 - Raw facts are not a browser collection API. Expose bounded server projections
   only after target access, period, currency, grouping, and query limits are
   explicit.
-- The first projection is the Kitchen-owned `/console/kitchen/finance` sheet.
-  Its authenticated `/api/console/kitchen/reports/gross-sales` endpoint queries
+- The first projection is the Kitchen-owned `/workspace/kitchen/finance` sheet.
+  Its authenticated `/api/workspace/kitchen/reports/gross-sales` endpoint queries
   only the selected Kitchen's immutable Sales for Today, the previous
   Monday-to-Sunday week, or an explicit inclusive owner-local date range. The
   trusted server resolves the Kitchen's effective timezone
@@ -130,14 +130,14 @@ reports into one generic Finance console.
   display name of the team member who closed the Sale. Raw actor ids, customer
   data, add-on detail, document paths, Orders, and FinancialFacts are not
   returned. Those rows reconcile to the same period totals.
-- The current Console page is an operator-first transaction ledger.
+- The current Workspace page is an operator-first transaction ledger.
   Its thin Dashboard route owns a secondary `UDashboardToolbar`: Today, This
   week, This month and Last 90 days update one authoritative range, while a
   compact `UPopover` trigger opens `UCalendar` for a custom range of at most 93
   days. When the selected source is Demo, a success marker identifies the
   simulation date and all presets anchor to that deterministic date; Live
   remains anchored to the actual Kitchen-local reporting date. The
-  `.console-surface` body loads the bounded gross-sales projection and lists
+  `.workspace-surface` body loads the bounded gross-sales projection and lists
   one row per completed Sale in a source-neutral activity ledger. One signed
   amount column uses `+` for incoming and reserves red `−` presentation for
   future outgoing entries; In, Out, and All controls filter direction without
@@ -147,7 +147,7 @@ reports into one generic Finance console.
   invent costs or present missing data as zero.
 - `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
   summary. It retains gross-sale semantics and completed-service labels while
-  both Console and Product Demo reuse the same product-neutral layout and money
+  both Workspace and Product Demo reuse the same product-neutral layout and money
   formatter.
 - Live period totals, calendar and day detail are derived only from the same
   bounded daily projection. Deanos Demo owns a deterministic Team fixture and
@@ -175,13 +175,13 @@ reports into one generic Finance console.
   native Vue/SVG and adds no React/Recharts or chart-library dependency.
 - P&L, cashflow, and accounting-cost views are absent until the required
   producing domains exist. If introduced later they would be derived reports,
-  not Console Operations or separately editable stored truth.
+  not Workspace Operations or separately editable stored truth.
 - A Demo Dish detail may show a read-only cost-of-sales planning estimate by
   expanding its current Spec through represented prep/recipe yields and the
   preferred Supplier offer terms. It must identify incomplete price coverage,
   exclude unrepresented labour, energy, tax, oil, and waste, and remain an
   estimate rather than a KitchenSale, expense, or FinancialFact. The pure
-  Kitchen estimator is shared by the real Console adapter and presentation-only
+  Kitchen estimator is shared by the real Workspace adapter and presentation-only
   Demo projections so those surfaces cannot drift into competing arithmetic.
 - A Product Demo may pair that estimate with sold quantities derived from the
   same completed Deanos Orders. Any displayed total sales must reconcile to
@@ -190,12 +190,12 @@ reports into one generic Finance console.
   source selection distinguishes Demo from Live; reusable Finance field labels
   remain source-agnostic.
 - A Product Demo may also expose the separate Kitchen Finance report from the
-  completed-Order-derived Demo projection. Console Demo and Product Demo share
+  completed-Order-derived Demo projection. Workspace Demo and Product Demo share
   the Kitchen-owned transaction/average/minor-unit projectors, and the landing
   may keep a distinct Reports affordance while Finance remains in the Kitchen
   Operation catalogue.
 - Kitchen Finance is a selected-Kitchen reporting Operation. There is no
-  generic cross-entity Finance Console Operation in this pass; Suppliers,
+  generic cross-entity Finance Workspace Operation in this pass; Suppliers,
   Projects, and Portfolios keep their own future producer operations.
 
 ## Current source
@@ -215,9 +215,9 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/sale.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/reports/gross-sales.get.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/overview/useKitchenConsoleFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/team.ts`
@@ -225,19 +225,19 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/dish-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishFinance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceSummary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceTrend.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Finance.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/calculate-restaurant-labour-cost.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/payments/stripe-webhook.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders/[orderId]/checkout-session.post.ts`
 - `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`

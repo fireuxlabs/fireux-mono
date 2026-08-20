@@ -13,7 +13,7 @@
           (
             (
               data.management.keys().hasOnly(['mode']) &&
-              data.management.mode == 'console'
+              data.management.mode == 'workspace'
             ) ||
             (
               data.management.keys().hasAll(['mode', 'app_id']) &&
@@ -25,7 +25,7 @@
       }
 
       function kitchenManagementAppId(data) {
-        return data.management.mode == 'console'
+        return data.management.mode == 'workspace'
           ? 'misebox-app'
           : data.management.app_id;
       }
@@ -38,7 +38,7 @@
 
       // Public Kitchen cards/details use bounded server projections. The raw
       // root is exact-readable only when its canonical App scope and same-id
-      // support record prove current Console authority.
+      // support record prove current Workspace authority.
       allow get: if isAuthenticated() &&
         isCanonicalAttachedKitchen(resource.data) &&
         hasSameIdAppKitchenSupport(kitchenManagementAppId(resource.data)) &&
@@ -100,14 +100,14 @@
           'key',
           'workspace',
           'launch_order',
-          'console_families',
+          'workspace_families',
           'database_id'
         ]) &&
         value.keys().hasOnly([
           'key',
           'workspace',
           'launch_order',
-          'console_families',
+          'workspace_families',
           'database_id'
         ]) &&
         validRequiredText(value, 'key', 1, 120) &&
@@ -115,9 +115,9 @@
         value.launch_order is int &&
         value.launch_order >= 0 &&
         value.launch_order <= 100000 &&
-        value.console_families is list &&
-        value.console_families.size() <= 20 &&
-        value.console_families.hasOnly([
+        value.workspace_families is list &&
+        value.workspace_families.size() <= 20 &&
+        value.workspace_families.hasOnly([
           'blank',
           'kitchen',
           'portfolio',

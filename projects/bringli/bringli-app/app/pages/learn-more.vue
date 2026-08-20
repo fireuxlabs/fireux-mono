@@ -25,7 +25,7 @@
           <ul class="list-disc fx-list-stack text-sm">
             <li>Supply relationships need clear records for buyers, producers, and orders.</li>
             <li>Order flow should remain structured from request to fulfillment.</li>
-            <li>Console-first operations reduce manual overhead and coordination drift.</li>
+            <li>Workspace-first operations reduce manual overhead and coordination drift.</li>
           </ul>
         </UCard>
 

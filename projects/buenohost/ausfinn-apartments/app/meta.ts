@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Distinctive apartments, houses and an alpine villa around Interlaken.',
     promise_html:
       'Find the right stay, ask about dates and speak directly with the AUSFinn team.',
-    console_bridge_html:
+    workspace_bridge_html:
       'BuenoHost property tools coordinate AUSFinn availability, guest information and operations.',
   },
   seo: {

@@ -42,7 +42,7 @@
             <h2 :id="titleId">Venue tools and operator access.</h2>
             <p>
               Guests can visit Misebox. Head chefs and team members can sign in
-              to the operator console.
+              to the operator workspace.
             </p>
           </div>
 
@@ -59,13 +59,13 @@
               Visit Misebox
             </UButton>
             <UButton
-              :to="tenantConsoleTo"
+              :to="tenantWorkspaceTo"
               size="sm"
               color="neutral"
               variant="soft"
               icon="i-ph-chef-hat"
             >
-              Operator console
+              Operator workspace
             </UButton>
           </div>
         </UCard>
@@ -79,7 +79,7 @@ import { ref, watch } from 'vue'
 import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
 const miseboxHomeUrl = 'https://misebox.app'
-const tenantConsoleTo = `/auth?redirect=${encodeURIComponent('/console/kitchen')}`
+const tenantWorkspaceTo = `/auth?redirect=${encodeURIComponent('/workspace/kitchen')}`
 const panelId = 'misebox-tenant-footer-panel'
 const titleId = 'misebox-tenant-footer-title'
 const triggerId = 'misebox-tenant-footer-trigger'

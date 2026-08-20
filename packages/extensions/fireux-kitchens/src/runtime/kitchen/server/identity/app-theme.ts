@@ -7,14 +7,14 @@ import {
   compactAppPalette,
   readAppPalette,
   readAppPaletteLayer,
-  readConsolePalette,
+  readWorkspacePalette,
   resolveAppPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
   AppPalette,
   AppTypography,
-  ConsolePalette,
+  WorkspacePalette,
 } from 'fireux-core/types/theme'
 import {
   readKitchenMutationActor,
@@ -66,11 +66,10 @@ function media(value: unknown) {
   }
 }
 
-function consolePalette(value: unknown): ConsolePalette | null {
-  const support = record(value)
-  const console = record(support.console)
-  const theme = record(console.theme)
-  return readConsolePalette(theme.palette)
+function workspacePalette(value: unknown): WorkspacePalette | null {
+  const kitchen = record(value)
+  const theme = record(kitchen.theme)
+  return readWorkspacePalette(theme.palette)
 }
 
 async function readContext(event: H3Event, kitchenId: string) {
@@ -107,7 +106,7 @@ async function readContext(event: H3Event, kitchenId: string) {
   }
   const appData = app.data() || {}
   const theme = record(appData.theme)
-  const inheritedPalette = consolePalette(supportData)
+  const inheritedPalette = workspacePalette(root.data())
   const layer = readAppPaletteLayer(theme.palette)
   return {
     appId,
@@ -131,7 +130,7 @@ export async function readKitchenAppTheme(event: H3Event, kitchenId: unknown) {
     kitchen_id: id,
     app_id: context.appId,
     can_write: context.canWrite,
-    console_palette: context.inheritedPalette,
+    workspace_palette: context.inheritedPalette,
     app_palette: context.layer,
     effective_palette: context.effectivePalette,
     typography: context.typography,
@@ -175,9 +174,9 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
       if (current.ownerRole !== 'admin') {
         fail(403, 'Dedicated App admin access is required.')
       }
-      const inheritedPalette = consolePalette(current.supportData)
+      const inheritedPalette = workspacePalette(current.rootData)
       if (!inheritedPalette) {
-        fail(409, 'Complete the Console palette before editing the App theme.')
+        fail(409, 'Complete the Workspace palette before editing the App theme.')
       }
       const app = await mutations.read<Record<string, unknown>>(
         FIRESTORE_MUTATION_TARGETS.runtimeApps,

@@ -6,9 +6,9 @@ import {
 const fireuxPricingProfile = {
   appName: 'FireUX',
   contactEmail: 'fire@fireux.app',
-  consoleName: 'Project Console',
+  workspaceName: 'Project Workspace',
   free: [
-    'Use the Project Console',
+    'Use the Project Workspace',
     'Review Apps and Ecosystems',
     'Review Project users and access',
     'Use public FireUX resources',

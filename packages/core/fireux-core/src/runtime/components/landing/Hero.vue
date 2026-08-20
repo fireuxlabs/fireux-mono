@@ -21,14 +21,14 @@
         {{ secondary.label }}
       </UButton>
       <UButton
-        v-if="hasConsoleEntry"
+        v-if="hasWorkspaceEntry"
         variant="soft"
         color="neutral"
         size="lg"
-        :to="consoleEntryPath"
+        :to="workspaceEntryPath"
         icon="i-lucide-terminal"
       >
-        Go to console
+        Go to workspace
       </UButton>
     </div>
 
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
+import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 
 type HeroBadge = {
   src: string
@@ -70,7 +70,7 @@ const props = defineProps<{
   bullets?: HeroBullet[]
 }>()
 
-const { hasConsoleEntry, consoleEntryPath } = useConsoleEntryCta()
+const { hasWorkspaceEntry, workspaceEntryPath } = useWorkspaceEntryCta()
 const badges = computed(() => props.badges || [])
 const bullets = computed(() => props.bullets || [])
 </script>

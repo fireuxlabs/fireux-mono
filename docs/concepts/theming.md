@@ -1,6 +1,6 @@
 # Theming and branded presentation
 
-Updated: 2026-08-18
+Updated: 2026-08-20
 Ref: 9412d8b2c
 Role: map, not canon
 
@@ -29,7 +29,7 @@ artwork, typography, photography or presentation-specific scene chrome.
 An App brand belongs to a genuine tenant App and uses the canonical
 `public/img/app/*` runtime asset contract. Friiites is a Misebox tenant App and
 therefore owns a real App brand. A Kitchen logo alone does not create an App
-brand; ordinary Kitchens retain their bounded Console theme and consume their
+brand; ordinary Kitchens retain their bounded Workspace theme and consume their
 linked Place identity colour without copying or overriding it.
 
 Media stays with the entity whose truth it depicts. Place owns location
@@ -52,8 +52,8 @@ moving into an App does not rename `logo.png`, `wordmark-light.png`,
 Identity preparation is progressive and validates both availability and dimensions:
 
 - Root: `logo.png`, `wordmark-light.png`, `wordmark-dark.png`.
-- Console: the Root family plus `cover.png` and `thumbnail.png`.
-- App template readiness uses the same five canonical masters as Console:
+- Workspace: the Root family plus `cover.png` and `thumbnail.png`.
+- App template readiness uses the same five canonical masters as Workspace:
   `logo.png`, both surface wordmarks, `cover.png` and `thumbnail.png`, but checks
   their canonical App-owned Firebase Storage paths rather than browser fixture
   URLs.
@@ -85,10 +85,10 @@ the initialization blocker.
 
 The same progressive rule applies to authored colour. App source carries the
 reviewed effective eight-role palette. Initialization stores it while no lower
-Console layer exists. Domain-owned attachment derives a missing four-role
-`AppX.console.theme.palette`, preserves an existing Console palette, then
+Workspace layer exists. Domain-owned attachment derives a missing four-role
+`AppX.workspace.theme.palette`, preserves an existing Workspace palette, then
 compacts `App.theme.palette` to App-only additions and material overrides.
-Runtime presentation resolves Console plus App into the effective eight roles.
+Runtime presentation resolves Workspace plus App into the effective eight roles.
 Kitchen root remains sparse and owns no identity-colour override.
 
 Place and Kitchen remain Storage-backed and dynamically inherited. Their
@@ -105,22 +105,22 @@ chrome remain outside scenes. `projects/templates/fireux-template` remains the
 guarded neutral Nuxt starter App; it is not the landing catalogue.
 
 Template One begins at `/templates/template-one` with a four-Kitchen toggle:
-the Live Seehotel Bönigen Root Kitchen, the Pizza the Action Console Demo, the
+the Live Seehotel Bönigen Root Kitchen, the Pizza the Action Workspace Demo, the
 Friiites App Kitchen and the Deano's Demo App emulation. The public `/kitchens`
 collection classifies real Kitchen records
-directly from `Kitchen.management.mode`: Root, Console and App. Demo status
+directly from `Kitchen.management.mode`: Root, Workspace and App. Demo status
 never changes that capability classification. The Root input is only the Place
 primary colour; Seehotel is as complete as Friiites at that level. It is the
 first agreed fallback, used behind poor or transparent identity media and
-overridden by richer resolved Console or App presentation.
+overridden by richer resolved Workspace or App presentation.
 
 The `/templates` catalogue owns the comparison flow: select one Kitchen, then
 open a presentation level with the same `?kitchen=<slug>` projection. `Default`
-is the included Root presentation, `Theme` is the Console presentation, and
+is the included Root presentation, `Theme` is the Workspace presentation, and
 Template One is the current App template composition. Default and Theme are grouped
 in the catalogue for comparison but are not marketed or modelled as App
 templates.
-The catalogue displays the selected Kitchen's resolved Root, Console and App
+The catalogue displays the selected Kitchen's resolved Root, Workspace and App
 presentation configuration, then lists only compatible presentations. Asset
 binary validation and Storage inspection remain outside catalogue routes and
 template anatomy.
@@ -136,14 +136,14 @@ not hidden inside the Template One change. Current Kitchen
 `assets.backdrop_color` and a concurrent onboarding
 compatibility path also persist a sparse two-colour `brand_palette` on Place
 and Kitchen. Those are migration source, not the target ownership model,
-and must not be mistaken for Console or App palette authority. The
+and must not be mistaken for Workspace or App palette authority. The
 existing gallery and public Place/business-card presentations may evolve, but
 they do not justify more Place theme fields yet. Core `BrandPalette` stays a
 coherent App-template value object, not a collection of colour atoms.
-Presentation resolves dynamically from Place through Console and App layers;
+Presentation resolves dynamically from Place through Workspace and App layers;
 inherited values are not copied upward during onboarding. Current source
 models the Place media backdrop and legacy Kitchen Menu PageStyle alongside
-the newer Console/App palette work. Kitchen-owned identity media remains a
+the newer Workspace/App palette work. Kitchen-owned identity media remains a
 separate source-backed delta; it does not own another colour.
 
 Misebox Basic presentation resolves rather than backfills records. Canonical
@@ -193,10 +193,10 @@ Place primary remains the hue authority. The source is desaturated at the
 Template layer so no colour embedded in the stone artwork leaks into an
 injection. No brand fixture can remove, tint or tune either channel.
 
-Template records and template application are App-only. Root and Console
+Template records and template application are App-only. Root and Workspace
 Kitchens on this page are inspectable progression specimens, not template
 customers or template consumers. They show the inherited atom ownership that
-an App template extends: Root → Console → App Template.
+an App template extends: Root → Workspace → App Template.
 
 App onboarding remains responsible for canonical asset readiness; the
 catalogue does not duplicate that validation. Demo fixtures may prove the same
@@ -209,15 +209,15 @@ Palette authorship is progressive and remains separated by owner:
   exposed as Primary colour in authoring UI.
 - Kitchen Root authors no colour. Current `assets.backdrop_color` values are
   migration input and must collapse into the linked Place authority.
-- Console owns four reviewed functional colours: `canvas`, `text`, `accent`
+- Workspace owns four reviewed functional colours: `canvas`, `text`, `accent`
   and `accent_contrast`. Derived surfaces, borders and states are renderer
   output rather than authored palette fields.
 - App source confirms the effective eight semantic colours: `canvas`,
   `surface`, `canvas_inverted`, `text`, `text_muted`, `ink`, `accent` and
   `accent_contrast`. Canonical App storage keeps only roles that extend or
-  override Console.
+  override Workspace.
 
-Resolution is dynamic: Place → Console → App. Kitchen identity media consumes
+Resolution is dynamic: Place → Workspace → App. Kitchen identity media consumes
 the Place colour without forming another palette layer. Inherited
 values may seed a missing lower layer during onboarding, after which duplicate
 values are removed from the richer owner. The resolved App palette applies
@@ -225,17 +225,17 @@ across its Kitchens and franchises; it never belongs to a single Kitchen merely
 because that Kitchen is the first consumer. Direct App creation must still
 traverse and review the same progressive inputs.
 
-Core defines the four-role Console value object, complete eight-role resolved
+Core defines the four-role Workspace value object, complete eight-role resolved
 value object, and sparse App layer. App initialization persists reviewed source
-intent, while each domain package owns Console derivation and App compaction.
-Kitchen attachment seeds a missing Console palette and never overwrites an
+intent, while each domain package owns Workspace derivation and App compaction.
+Kitchen attachment seeds a missing Workspace palette and never overwrites an
 existing one. Template fixtures use the same resolver and compactor; their
 values are still not canonical records. The `/templates` catalogue displays
 each stored layer and its provenance rather than repeating the resolved palette
 under every owner.
 
 Typography follows the same progressive boundary. Root authors no typography
-and uses the Misebox default. Console may express bounded title/body font
+and uses the Misebox default. Workspace may express bounded title/body font
 intent through its current `PageStyle`. App owns exactly two confirmed family
 inputs—`display_family` and `body_family`—from which Template One derives
 Display, Heading, Body and Label treatments. Templates own role treatment;
@@ -276,33 +276,34 @@ which header contract is genuinely reusable.
 The bounded Friiites cutover is implemented by
 `scripts/migrate-friiites-palette.mjs`. It uses the protected MCP/Skill mutation
 lane, preserves a complete preimage, removes only a Kitchen backdrop override
-that duplicates its Place, and refuses to overwrite a different App or Console
+that duplicates its Place, and refuses to overwrite a different App or Kitchen
 palette. That removal is migration evidence, not an accepted Kitchen colour
 seam.
 
-Root has no authored theme; its single Place identity colour provides the fallback
-behind transparent identity uploads. Console unlocks a functional theme but
-never a template. App extends that effective Console theme with one App-owned
+The Kitchen root owns its functional theme; its linked Place identity colour
+provides the fallback behind transparent identity uploads. The workspace
+unlocks editing that theme but never a template. App extends that effective
+Kitchen theme with one App-owned
 template and Brand System. The App assignment governs all of its tenant and
 franchise Kitchens; individual Kitchens do not select or fork the App template.
 
-The Kitchen Identity Console mirrors onboarding as four explicit capability
-layers: Place → Kitchen → Console → App. Place edits its Primary identity
+The Kitchen Identity Workspace mirrors onboarding as four explicit capability
+layers: Place → Kitchen → Workspace → App. Place edits its Primary identity
 colour; Kitchen stores sparse identity media additions but no colour override;
-Console stores its
-functional four-colour palette and optional menu font choices on the same-id
-AppKitchen support record. The App section appears only for
+Kitchen stores its functional four-colour palette and optional menu font
+choices on its canonical root. The same-id AppKitchen remains access-only. The
+App section appears only for
 `management.mode === 'app'` and edits the dedicated App's eight effective
 palette roles plus `display_family` and `body_family`; the writer compacts the
-palette back to an App-only delta over Console. It also reports the universal
+palette back to an App-only delta over Workspace. It also reports the universal
 five-master readiness established during App onboarding. Template anatomy,
 optional Brand Assets and per-role typography controls remain outside this
 editor.
 
-Entity edit routes and Console composition reuse the same owner-level panels
-and trusted mutations. Console is another doorway into Place and Kitchen
+Entity edit routes and Workspace composition reuse the same owner-level panels
+and trusted mutations. Workspace is another doorway into Place and Kitchen
 editing, not a second field contract: Place-owned media never appears as a
-Kitchen write, and Console/App settings never move onto the Kitchen root.
+Kitchen write, and Workspace/App settings never move onto the Kitchen root.
 
 ## App brand systems and physical applications
 
@@ -328,7 +329,7 @@ truths:
 
 This permits one approved Friiites serving carton to govern every franchise
 Kitchen while each Kitchen still selects and stocks a conforming Supplier Item.
-The App/brand Console should author and release the standard. Kitchen Console
+The App/brand Workspace should author and release the standard. Kitchen Workspace
 should show the effective assigned standard and operational conformance/stock,
 not become a second brand-authoring surface.
 
@@ -336,7 +337,7 @@ Current source does not yet define stored Brand System, Brand Asset,
 consumable-specification or Kitchen brand-release assignment contracts.
 `public/img/app/*` remains the runtime asset authority, Dish remains the food
 media owner, and Supplier Item remains procurement truth until those bounded
-records and their Console ownership are implemented. Do not hide this missing
+records and their Workspace ownership are implemented. Do not hide this missing
 seam by adding arbitrary URLs to Kitchen, Dish or Template records.
 
 ## Catalogue and storefronts
@@ -363,7 +364,7 @@ sources exist.
   `packages/core/fireux-core/src/runtime/models/utils/style.model.ts`
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
-  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Theme.vue`
+  and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Theme.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
 - Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/template-one*`
   and `TemplateOne*.vue`

@@ -87,13 +87,13 @@ export async function run({ repoRoot }) {
   )
   const miseSurface = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/CapabilityTools.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/CapabilityTools.vue'
   )
   const miseRecordSurfaces = await Promise.all(
     ['Edit.vue', 'Write.vue', 'Delete.vue'].map((file) =>
       source(
         repoRoot,
-        `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Mise/${file}`
+        `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Mise/${file}`
       )
     )
   )
@@ -110,7 +110,7 @@ export async function run({ repoRoot }) {
       (definition) => !definition.includes('agent: { callable: false }')
     ) ||
     !miseRegistry.includes('kitchenMiseHumanTools') ||
-    !miseSurface.includes('ConsoleKitchenOperationsMiseTools') ||
+    !miseSurface.includes('WorkspaceKitchenOperationsMiseTools') ||
     ![
       'kitchenMisePrepTaskUpdateTool',
       'kitchenMisePrepStatusChangeTool',
@@ -202,11 +202,41 @@ export async function run({ repoRoot }) {
 
   const humanAdapter = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenTeamTools.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamTools.ts'
   )
   if (!humanAdapter.includes('kitchenTeamHumanTools')) {
     violations.push(
       'useKitchenTeamTools must project the human surface from the canonical registry.'
+    )
+  }
+
+  const teamToolbar = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Tools.vue'
+  )
+  if (
+    !teamToolbar.includes("'kitchen.team.create-member'") ||
+    /kitchen\.team\.(?:update-member|delete-member|create-invitation)|DossierOnboarding|ToolModal/.test(
+      teamToolbar
+    )
+  ) {
+    violations.push(
+      'The Team operation toolbar must expose Create member only; record actions stay with the collection or detail and dossier onboarding stays with AI tools.'
+    )
+  }
+
+  const teamRead = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Read.vue'
+  )
+  const teamDetailPage =
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/[memberSlug].vue'
+  if (
+    !teamRead.includes('`/workspace/kitchen/team/${memberAnchor(member)}`') ||
+    !existsSync(join(repoRoot, teamDetailPage))
+  ) {
+    violations.push(
+      'Read member must link the Team collection to its canonical slug detail route.'
     )
   }
 
@@ -247,10 +277,10 @@ export async function run({ repoRoot }) {
 
   const teamPresentation = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/useKitchenTeamAI.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamAI.ts'
   )
   if (
-    !teamPresentation.includes('/api/console/kitchen/agent/suggestions') ||
+    !teamPresentation.includes('/api/workspace/kitchen/agent/suggestions') ||
     /Add a new Team member|Who is currently on my Team|Create an invitation for/.test(
       teamPresentation
     )

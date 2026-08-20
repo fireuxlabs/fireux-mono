@@ -1,5 +1,5 @@
 <template>
-  <ConsoleCta
+  <WorkspaceCta
     title="Portfolios"
     description="Manage your portfolio identity, properties, clients, units, documents, tasks, and team access."
     :count-label="countLabel"
@@ -20,9 +20,9 @@ const actions = [
     icon: 'i-lucide-plus',
   },
   {
-    label: 'Console',
-    cta: 'Open console',
-    to: '/console/portfolio',
+    label: 'Workspace',
+    cta: 'Open workspace',
+    to: '/workspace/portfolio',
     icon: 'i-lucide-layout-dashboard',
   },
   {

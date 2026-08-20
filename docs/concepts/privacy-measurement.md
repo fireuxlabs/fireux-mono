@@ -30,7 +30,7 @@ The current essential feature storage includes:
 - authentication and security state;
 - a remembered language choice;
 - a short-lived anonymous-order recovery capability.
-- an explicitly selected colour mode, Console selection, and chat recovery.
+- an explicitly selected colour mode, Workspace selection, and chat recovery.
 
 These feature values are not analytics identifiers and must never be consumed
 by measurement code.

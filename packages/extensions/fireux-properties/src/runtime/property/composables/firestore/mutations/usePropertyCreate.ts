@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority — Property: validate attach, isolate manuals, and default public publication to draft.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation and paths.
-// Concurrent edit — 2026-07-21 22:30 CEST — Console alignment — Property: route console attachment through one trusted atomic transaction.
+// Concurrent edit — 2026-07-21 22:30 CEST — Workspace alignment — Property: route workspace attachment through one trusted atomic transaction.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   FireuxEntityCreateMode,
@@ -84,7 +84,7 @@ export function usePropertyCreate() {
     }
   }
 
-  async function createPropertyConsole(
+  async function createPropertyWorkspace(
     input: PropertyCreateInput,
     options: PropertyCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
@@ -170,7 +170,7 @@ export function usePropertyCreate() {
 
   return {
     createProperty,
-    createPropertyConsole,
+    createPropertyWorkspace,
     createPropertyManual,
     createPropertyRoot: createPropertyRootResult,
   }

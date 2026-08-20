@@ -6,14 +6,14 @@ import {
 
 const handlers = [
   {
-    route: '/api/console/kitchen/agent',
+    route: '/api/workspace/kitchen/agent',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/agent.post',
+    handler: './runtime/server/api/workspace/kitchen/agent.post',
   },
   {
-    route: '/api/console/kitchen/menus/ai',
+    route: '/api/workspace/kitchen/menus/ai',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/menus/ai.post',
+    handler: './runtime/server/api/workspace/kitchen/menus/ai.post',
   },
 ] satisfies FireuxServerHandler[]
 

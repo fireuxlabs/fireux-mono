@@ -1,7 +1,7 @@
 <template>
   <UPageCard
     title="Start with a menu QR"
-    description="Use a light menu link today. When you are ready to manage menus, ordering, and more, create a Kitchen Console."
+    description="Use a light menu link today. When you are ready to manage menus, ordering, and more, create a Kitchen Workspace."
     variant="subtle"
   >
     <div class="space-y-4">
@@ -47,7 +47,7 @@
       </AppToolFoldaway>
 
       <AppToolFoldaway
-        title="Option 3: Create a Kitchen Console"
+        title="Option 3: Create a Kitchen Workspace"
         description="Manage all your menus, customer ordering, and more."
         provider="Misebox"
       >

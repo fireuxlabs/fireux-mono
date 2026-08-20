@@ -66,7 +66,7 @@
           :disabled="isCreating || (!create && !companyId)"
           @click="handleCreate"
         >
-          {{ isCreating ? 'Creating…' : 'Create Supplier Console' }}
+          {{ isCreating ? 'Creating…' : 'Create Supplier Workspace' }}
         </UButton>
         <UButton
           v-if="cancelTo"
@@ -90,7 +90,7 @@ import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useSupplierConsoleSelection } from '../../composables/console/core/useSupplierConsoleSelection'
+import { useSupplierWorkspaceSelection } from '../../composables/workspace/core/useSupplierWorkspaceSelection'
 import { useSupplierCreate } from '../../composables/firestore/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -106,16 +106,16 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { createSupplier, createSupplierConsole } = useSupplierCreate()
-const { setSupplierConsoleSelection } = useSupplierConsoleSelection()
+const { createSupplier, createSupplierWorkspace } = useSupplierCreate()
+const { setSupplierWorkspaceSelection } = useSupplierWorkspaceSelection()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
 const organizationName = ref('')
 const companyId = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
-const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
-const isConsoleMode = computed(() => resolvedMode.value === 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'workspace')
+const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 
 function onCompanyReady(payload: { id: string }) {
   companyId.value = String(payload.id || '').trim()
@@ -133,7 +133,7 @@ const handleCreate = async () => {
   }
 
   const create = props.create ?? (
-    isConsoleMode.value ? createSupplierConsole : createSupplier
+    isWorkspaceMode.value ? createSupplierWorkspace : createSupplier
   )
   isCreating.value = true
   errorMessage.value = null
@@ -141,8 +141,8 @@ const handleCreate = async () => {
   try {
     const result = props.create
       ? await create()
-      : isConsoleMode.value
-        ? await createSupplierConsole({
+      : isWorkspaceMode.value
+        ? await createSupplierWorkspace({
             organizationName: organizationName.value,
             companyId: companyId.value,
           })
@@ -150,14 +150,14 @@ const handleCreate = async () => {
             organizationName: organizationName.value,
             companyId: companyId.value,
           })
-    if (isConsoleMode.value) {
-      setSupplierConsoleSelection({ supplierId: result.id })
+    if (isWorkspaceMode.value) {
+      setSupplierWorkspaceSelection({ supplierId: result.id })
     }
     emit('created', result)
     const defaultReturnTo =
       resolvedMode.value === 'public'
         ? '/suppliers'
-        : '/console/supplier'
+        : '/workspace/supplier'
     await router.push(props.returnTo || defaultReturnTo)
   } catch (error) {
     const message =

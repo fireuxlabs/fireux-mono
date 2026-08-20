@@ -26,6 +26,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · FireUX',
   description:
-    'FireUX pricing for Consoles, standalone Apps, and product ecosystems.',
+    'FireUX pricing for Workspaces, standalone Apps, and product ecosystems.',
 })
 </script>

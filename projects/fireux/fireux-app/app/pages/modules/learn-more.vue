@@ -15,7 +15,7 @@
 
         <ul class="list-disc fx-list-stack text-sm">
           <li>Modules are source-controlled capability packages added to apps.</li>
-          <li>A module may add entities, Console Operations, tools, or public surfaces.</li>
+          <li>A module may add entities, Workspace Operations, tools, or public surfaces.</li>
           <li>A module is not an app, product, or Solution by itself.</li>
         </ul>
       </UCard>

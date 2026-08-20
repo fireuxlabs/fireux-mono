@@ -14,7 +14,7 @@ about them and where current coverage is incomplete.
 ## Related maps
 
 - Firestore stack: `docs/concepts/firestore-entity.md`
-- Console family: `docs/concepts/family-console-entity.md`
+- Workspace family: `docs/concepts/family-workspace-entity.md`
 - Entity Directory: `docs/concepts/family-entity-directory.md`
 - Entity detail: `docs/concepts/family-entity-detail.md`
 - Menu family: `docs/concepts/family-menu.md`
@@ -43,7 +43,7 @@ Before introducing Entity ceremony, answer:
 2. Does it remain meaningful if its parent is deleted?
 3. Does it need independent lifecycle or authority?
 4. Is it referenced by several parents as the same thing?
-5. Does it need its own detail route, Console surface, or collection stack?
+5. Does it need its own detail route, Workspace surface, or collection stack?
 6. Could a Record or Shape satisfy the current need?
 
 If parent deletion makes the concept meaningless, begin with a Record or Shape.
@@ -60,7 +60,7 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `identity`   | root, parent-scoped, none, to-confirm                                                                         | Where does canonical identity live?            |
 | `authority`  | owning App database, identity database, ecosystem identity database, FireUX control plane, parent, to-confirm | Who owns lifecycle truth?                      |
 | `appSupport` | none, access record, membership record, operational record, profile delta, to-confirm                         | What non-identity App record may accompany it? |
-| `console`    | boolean                                                                                                       | Is it a Console Entity?                        |
+| `workspace`    | boolean                                                                                                       | Is it a Workspace Entity?                        |
 | `parent`     | optional Entity name                                                                                          | Which Entity owns a parent-scoped declaration? |
 
 A root Entity document is its canonical readable Entity. Information that
@@ -72,25 +72,25 @@ Entity declaration does not carry a second read-classification axis.
 
 The current declared Entities are:
 
-| Entity           | Family                    | Identity       | Authority                   | App support       | Console |
+| Entity           | Family                    | Identity       | Authority                   | App support       | Workspace |
 | ---------------- | ------------------------- | -------------- | --------------------------- | ----------------- | ------- |
 | App              | core, system              | root           | owning App database         | none              | no      |
 | Ecosystem        | system                    | root           | Ecosystem identity database | none              | no      |
 | User             | core, identity            | root           | identity database           | membership record | no      |
-| Project          | system, console entity    | root           | FireUX control plane        | none              | yes     |
+| Project          | system, workspace entity    | root           | FireUX control plane        | none              | yes     |
 | Job              | content                   | root           | owning App database         | none              | no      |
 | Place            | place                     | root           | owning App database         | none              | no      |
 | MarketplaceStore | commerce                  | App-scoped     | parent                      | none              | no      |
-| Kitchen          | kitchen, console entity   | root           | owning App database         | access record     | yes     |
+| Kitchen          | kitchen, workspace entity   | root           | owning App database         | access record     | yes     |
 | KitchenMenu      | menu, kitchen             | Kitchen-scoped | parent                      | none              | no      |
 | Recipe           | kitchen                   | Kitchen-scoped | parent                      | none              | no      |
 | KitchenPrepItem  | kitchen                   | Kitchen-scoped | parent                      | none              | no      |
 | Dish             | kitchen, menu             | Kitchen-scoped | parent                      | none              | no      |
 | KitchenOrder     | kitchen, ordering         | Kitchen-scoped | parent                      | none              | no      |
 | Menu             | menu                      | root           | owning App database         | none              | no      |
-| Supplier         | supplier, console entity  | root           | owning App database         | access record     | yes     |
-| Portfolio        | portfolio, console entity | root           | owning App database         | access record     | yes     |
-| Property         | property, console entity  | root           | owning App database         | access record     | yes     |
+| Supplier         | supplier, workspace entity  | root           | owning App database         | access record     | yes     |
+| Portfolio        | portfolio, workspace entity | root           | owning App database         | access record     | yes     |
+| Property         | property, workspace entity  | root           | owning App database         | access record     | yes     |
 
 The current declared Records are:
 
@@ -159,7 +159,7 @@ grant, and onboarding lifecycle separately. A configured developer with a
 valid membership resolves to Dev, an Admin resolves to Admin, then explicit
 Premium and Free follow. Dev and Admin include Premium product capability, but
 only the stored Admin role grants App administration. Empty profile and
-Console-target indexes may be absent at rest; readers normalize them without
+Workspace-target indexes may be absent at rest; readers normalize them without
 turning the indexes into authority.
 
 User readers preserve the same split. Global runtimes may enumerate
@@ -267,7 +267,7 @@ ChefProfile and DriverProfile are confirmed User-backed Records. Their root
 document id is the User uid; public profile reads join the canonical User
 rather than copying person identity. Their App documents are non-identity
 profile deltas. KitchenTeamMember and KitchenTeamJoinRequest are Kitchen-owned
-operational Records. Neither record grants Console authority: AppKitchen
+operational Records. Neither record grants Workspace authority: AppKitchen
 operator and team ids remain the access seam. Run
 `scripts/audit-misebox-chef-driver-kitchen-team.mjs` to verify these profile,
 membership, Kitchen, and workflow joins without writing data.
@@ -287,7 +287,7 @@ Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
 Misebox owner database without writing data.
 
 Kitchen root identity, its required Place, same-id AppKitchen access, and User
-Console target pointers are verified by
+Workspace target pointers are verified by
 `scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
 operational identity; authored slugs resolve through the Kitchen
 server route seam. Confirmed inert AppKitchen access ids are planned and
@@ -307,8 +307,8 @@ script requires an explicit confirmation hash before changing data.
   not create ownership.
 - App support records must use declared support paths and contain only their
   allowed non-identity delta.
-- Console-capable roots store the generic `management` relationship, never a
-  domain-enumerated Core type: `root`, `console`, or `app` with `app_id` only
+- Workspace-capable roots store the generic `management` relationship, never a
+  domain-enumerated Core type: `root`, `workspace`, or `app` with `app_id` only
   in the final mode. App support remains access/operations, not root identity.
 - Cross-root relationships prefer canonical ids over copied Entity objects or
   inverse child arrays unless a named Directory or presentation view owns that

@@ -108,7 +108,7 @@ export const fireuxExtensionModules = [
   {
     id: 'fireux-kitchens',
     name: 'Kitchens',
-    description: 'Kitchen records, consoles, and daily operations.',
+    description: 'Kitchen records, workspaces, and daily operations.',
     icon: 'i-lucide-cooking-pot',
     group: 'hospitality',
   },
@@ -143,7 +143,7 @@ export const fireuxExtensionModules = [
   {
     id: 'fireux-suppliers',
     name: 'Suppliers',
-    description: 'Supplier records, catalogues, and console operations.',
+    description: 'Supplier records, catalogues, and workspace operations.',
     icon: 'i-lucide-truck',
     group: 'hospitality',
   },

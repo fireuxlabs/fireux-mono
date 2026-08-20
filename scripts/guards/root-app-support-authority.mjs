@@ -4,11 +4,11 @@
 // Concurrent edit — 2026-07-20 23:04 CEST — Both-Entity Authority: guard classification, fail-closed joins/queries, private support, and active publication.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: use explicit root identity and App access-support axes.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: guard explicit root/App-support contracts and reject legacy access-overlay symbols.
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: lock the authenticated exact-root projection and selected-target reuse.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: lock the authenticated exact-root projection and selected-target reuse.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: lock the sole authenticated target authority and complete AppKitchen writes.
 // Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: lock trusted absent-array normalization without weakening target reads.
-// Concurrent edit — 2026-07-21 22:38 CEST — Console authority alignment: guard exact Blank targets and atomic writable-family onboarding.
-// Concurrent edit — 2026-07-21 23:22 CEST — Console authority hardening: guard strict support reads and support-only Blank roots.
+// Concurrent edit — 2026-07-21 22:38 CEST — Workspace authority alignment: guard exact Blank targets and atomic writable-family onboarding.
+// Concurrent edit — 2026-07-21 23:22 CEST — Workspace authority hardening: guard strict support reads and support-only Blank roots.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -153,7 +153,7 @@ const callBlocks = (source, callee) => {
   return calls
 }
 
-const assertAtomicConsoleOnboarding = ({
+const assertAtomicWorkspaceOnboarding = ({
   name,
   clientSource,
   clientFunction,
@@ -175,13 +175,13 @@ const assertAtomicConsoleOnboarding = ({
     assert.match(
       clientOnboarding,
       new RegExp(`\\b${escapeRegex(completionFunction)}\\s*\\(`),
-      `${name} live Console creation must delegate to its trusted onboarding client.`
+      `${name} live Workspace creation must delegate to its trusted onboarding client.`
     )
   }
   assert.match(
     endpointCaller,
     endpointPattern,
-    `${name} live Console creation must call its trusted onboarding endpoint.`
+    `${name} live Workspace creation must call its trusted onboarding endpoint.`
   )
   assert.match(endpointCaller, /getIdToken\(\)|authHeaders\(\)/)
   assert.match(
@@ -190,13 +190,13 @@ const assertAtomicConsoleOnboarding = ({
   )
   assert.doesNotMatch(
     clientOnboarding,
-    /\buseConsoleCreate\s*\(/,
-    `${name} live Console creation must not use the generic multi-step client writer.`
+    /\buseWorkspaceCreate\s*\(/,
+    `${name} live Workspace creation must not use the generic multi-step client writer.`
   )
   assert.doesNotMatch(
     clientOnboarding,
     /\bcreate[A-Za-z0-9]*Root(?:Result)?\s*\(|\b(?:setDocument|setDoc|updateDoc|addDoc)\s*\(|createAppSupport\s*:/,
-    `${name} live Console creation must not perform a root or App-support write around the endpoint.`
+    `${name} live Workspace creation must not perform a root or App-support write around the endpoint.`
   )
 
   assert.match(handlerSource, /defineEventHandler/)
@@ -275,10 +275,10 @@ const assertAtomicConsoleOnboarding = ({
 }
 
 const files = {
-  consoleEntityModel:
-    'packages/core/fireux-core/src/runtime/models/utils/console-entity.model.ts',
-  consoleAccess:
-    'packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleAccess.ts',
+  workspaceEntityModel:
+    'packages/core/fireux-core/src/runtime/models/utils/workspace-entity.model.ts',
+  workspaceAccess:
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceAccess.ts',
   entityModel:
     'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts',
   placeModel:
@@ -358,11 +358,11 @@ const files = {
   propertyOnboarding:
     'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
   activePortfolio:
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/useActivePortfolio.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/useActivePortfolio.ts',
   portfolioPropertyCollection:
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Properties/fetch/usePortfolioPropertyCollection.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Properties/fetch/usePortfolioPropertyCollection.ts',
   retiredNestedProperty:
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Properties/fetch/usePropertyDocument.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Properties/fetch/usePropertyDocument.ts',
   kitchenModel:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
   kitchenSpine:
@@ -372,17 +372,17 @@ const files = {
   kitchenTargetModel:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-index.model.ts',
   kitchenTargetCollection:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleTargetCollection.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceTargetCollection.ts',
   kitchenInterface:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface.ts',
-  kitchenConsoleIndex:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/index/useKitchenConsoleIndex.ts',
-  kitchenConsole:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/core/useKitchenConsole.ts',
+  kitchenWorkspaceIndex:
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+  kitchenWorkspace:
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts',
   kitchenTargetApi:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/targets.ts',
   kitchenTargetHttp:
-    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/targets.get.ts',
   kitchenIdentityRead:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts',
   kitchenRouteIdentity:
@@ -390,7 +390,7 @@ const files = {
   kitchenDetailHttp:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[slug].get.ts',
   kitchenTargetResolver:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/console-targets.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/workspace-targets.ts',
   kitchenCreate:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenCreate.ts',
   kitchenUpdate:
@@ -406,7 +406,7 @@ const files = {
   kitchenAppTheme:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/app-theme.ts',
   kitchenIdentityProgression:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Index.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Index.vue',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
@@ -415,15 +415,15 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/onboarding-actor.ts',
   kitchenOnboardingPolicy:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/onboarding-policy.ts',
-  consoleEntityOnboardingAuthority:
-    'packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts',
+  workspaceEntityOnboardingAuthority:
+    'packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts',
   kitchenServerConfig:
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts',
   blankCollection:
     'projects/fireux/fireux-blank/app/composables/fireux/firestore/blank/useBlank.ts',
   blankModel: 'projects/fireux/fireux-blank/app/models/blank.model.ts',
   blankOnboardingHandler:
-    'projects/fireux/fireux-blank/server/api/console/blank/onboarding.post.ts',
+    'projects/fireux/fireux-blank/server/api/workspace/blank/onboarding.post.ts',
   blankOnboarding:
     'projects/fireux/fireux-blank/server/utils/blank/onboarding.ts',
   miseboxRules:
@@ -489,7 +489,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     const rootModel = constBlock(modelSource, modelName)
     assert.doesNotMatch(
       rootModel,
-      /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
+      /FireuxWorkspaceAccessModel|operator_ids|team_ids|join_requests/,
       `${name} root must not contain app access fields.`
     )
     assert.match(modelSource, /appSupport:\s*'apps\/\{appId\}\//)
@@ -509,7 +509,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     supplierRoot,
-    /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
+    /FireuxWorkspaceAccessModel|operator_ids|team_ids|join_requests/,
     'Supplier root must not contain App access fields.'
   )
   assert.match(
@@ -523,15 +523,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.supplierModel, /export const AppSupplierDefaults/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
   assert.match(
-    source.consoleEntityModel,
+    source.workspaceEntityModel,
     /export const FireuxAppAccessRecordModel/
   )
-  assert.match(source.consoleEntityModel, /export type FireuxAppAccessRecord/)
-  assert.doesNotMatch(source.consoleEntityModel, /FireuxAppOverlay/)
+  assert.match(source.workspaceEntityModel, /export type FireuxAppAccessRecord/)
+  assert.doesNotMatch(source.workspaceEntityModel, /FireuxAppOverlay/)
   assert.match(
-    source.consoleAccess,
-    /export function readConsoleTargetAuthority[\s\S]*operator_ids[\s\S]*team_ids[\s\S]*join_requests/,
-    'Shared Console access must retain strict validation for every complete App-support authority array.'
+    source.workspaceAccess,
+    /export function readWorkspaceTargetAuthority[\s\S]*operator_ids[\s\S]*team_ids[\s\S]*join_requests/,
+    'Shared Workspace access must retain strict validation for every complete App-support authority array.'
   )
   assert.match(
     source.propertyModel,
@@ -545,7 +545,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.propertyModel,
-    /family:\s*\['property',\s*'console-entity'\]/
+    /family:\s*\['property',\s*'workspace-entity'\]/
   )
   assert.match(source.propertyModel, /export const AppPropertyModel/)
   assert.match(
@@ -612,7 +612,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
     assert.match(
       collectionSource,
-      /readConsoleTargetAuthority[\s\S]*malformedAppSupport/,
+      /readWorkspaceTargetAuthority[\s\S]*malformedAppSupport/,
       `${name} target reads must fail closed on malformed App-support authority.`
     )
     assert.doesNotMatch(
@@ -686,7 +686,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.portfolioUpdate, /PortfolioStorage\.rootCollection/)
   assert.doesNotMatch(source.portfolioUpdate, /collectionPath/)
-  assert.match(source.propertyCreate, /createPropertyConsole/)
+  assert.match(source.propertyCreate, /createPropertyWorkspace/)
   assert.match(
     source.propertyOnboarding,
     /canonicalPropertyRoot/,
@@ -834,19 +834,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.blankCollection, /App support id mismatch/)
   assert.match(source.blankCollection, /root\/App scope mismatch/)
 
-  assertAtomicConsoleOnboarding({
+  assertAtomicWorkspaceOnboarding({
     name: 'Blank',
     clientSource: source.blankCollection,
     clientFunction: 'createBlank',
-    route: '/api/console/blank/onboarding',
+    route: '/api/workspace/blank/onboarding',
     handlerSource: source.blankOnboardingHandler,
     completionFunction: 'completeBlankOnboarding',
     onboardingSource: source.blankOnboarding,
   })
-  assertAtomicConsoleOnboarding({
+  assertAtomicWorkspaceOnboarding({
     name: 'Kitchen',
     clientSource: source.kitchenCreate,
-    clientFunction: 'createKitchenConsole',
+    clientFunction: 'createKitchenWorkspace',
     route: '/api/kitchens/onboarding/complete',
     handlerSource: source.kitchenOnboardingHandler,
     completionFunction: 'completeKitchenOnboarding',
@@ -856,10 +856,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
     rootTarget: 'kitchens',
   })
-  assertAtomicConsoleOnboarding({
+  assertAtomicWorkspaceOnboarding({
     name: 'Supplier',
     clientSource: source.supplierCreate,
-    clientFunction: 'createSupplierConsole',
+    clientFunction: 'createSupplierWorkspace',
     route: '/api/suppliers/onboarding/complete',
     handlerSource: source.supplierOnboardingHandler,
     completionFunction: 'completeSupplierOnboarding',
@@ -888,10 +888,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /company_id:\s*['"]['"]/,
     'Supplier onboarding must never create an empty Company relationship.'
   )
-  assertAtomicConsoleOnboarding({
+  assertAtomicWorkspaceOnboarding({
     name: 'Portfolio',
     clientSource: source.portfolioCreate,
-    clientFunction: 'createPortfolioConsole',
+    clientFunction: 'createPortfolioWorkspace',
     route: '/api/portfolios/onboarding/complete',
     handlerSource: source.portfolioOnboardingHandler,
     completionFunction: 'completePortfolioOnboarding',
@@ -900,10 +900,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerPath: './runtime/server/api/portfolios/onboarding/complete.post',
     rootTarget: 'portfolios',
   })
-  assertAtomicConsoleOnboarding({
+  assertAtomicWorkspaceOnboarding({
     name: 'Property',
     clientSource: source.propertyCreate,
-    clientFunction: 'createPropertyConsole',
+    clientFunction: 'createPropertyWorkspace',
     route: '/api/properties/onboarding/complete',
     handlerSource: source.propertyOnboardingHandler,
     completionFunction: 'completePropertyOnboarding',
@@ -925,7 +925,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(
     source.blankModel,
     /export const BlankModel[\s\S]*export const AppBlankModel[\s\S]*export type BlankSurface[\s\S]*Pick<AppBlank, 'operator_ids' \| 'team_ids' \| 'join_requests'>/,
-    'Blank Console surfaces must project access explicitly from AppBlank support.'
+    'Blank Workspace surfaces must project access explicitly from AppBlank support.'
   )
   const blankRootCreate = callBlocks(
     source.blankOnboarding,
@@ -947,7 +947,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.deepEqual(directTypeFields(source.kitchenModel, 'AppKitchen'), [
-    'console',
     'created',
     'id',
     'join_requests',
@@ -972,13 +971,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenInterface,
-    /function consoleTarget\([\s\S]*kitchenIdentity\.logoImageUrl \|\| target\.logo_image_url \|\| base\.imageUrl[\s\S]*imageKind:\s*'brand'/,
-    'Kitchen Console cards must prefer resolved logo identity before falling back to canonical card media.'
+    /function workspaceTarget\([\s\S]*kitchenIdentity\.logoImageUrl \|\| target\.logo_image_url \|\| base\.imageUrl[\s\S]*imageKind:\s*'brand'/,
+    'Kitchen Workspace cards must prefer resolved logo identity before falling back to canonical card media.'
   )
   assert.match(
     source.kitchenTargetApi,
     /const logoImageUrl = rootIdentity\.logoImageUrl \|\| place\.logoImage/,
-    'Kitchen Console targets must inherit the canonical Place logo when the Kitchen root has no override.'
+    'Kitchen Workspace targets must inherit the canonical Place logo when the Kitchen root has no override.'
   )
   assert.match(
     source.kitchenIdentityRead,
@@ -994,7 +993,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\.doc\(slug\)/,
     'Kitchen public detail must resolve its authored route slug without treating it as root identity.'
   )
-  assert.match(source.kitchenUpdate, /\/api\/console\/kitchen\/update/)
+  assert.match(source.kitchenUpdate, /\/api\/workspace\/kitchen\/update/)
   assert.match(source.kitchenUpdate, /getIdToken\(\)/)
   assert.doesNotMatch(
     source.kitchenUpdate,
@@ -1011,13 +1010,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenUpdateServer, /readKitchenByRouteSlug/)
   assert.match(
     source.kitchenIdentityProgression,
-    /title="Your Place"[\s\S]*title="Kitchen identity"[\s\S]*title="Console theme"[\s\S]*v-if="hasDedicatedApp"[\s\S]*title="App identity"/,
-    'Kitchen identity must mirror the Place, Kitchen, Console, and capability-gated App onboarding progression.'
+    /title="Your Place"[\s\S]*title="Kitchen identity"[\s\S]*title="Workspace theme"[\s\S]*v-if="hasDedicatedApp"[\s\S]*title="App identity"/,
+    'Kitchen identity must mirror the Place, Kitchen, Workspace, and capability-gated App onboarding progression.'
   )
   assert.match(
     source.kitchenTheme,
-    /'console\.theme\.palette'[\s\S]*mutations\.update\(current\.supports/,
-    'Console theme writes must target same-id AppKitchen support rather than Kitchen root.'
+    /'theme\.palette'[\s\S]*FIRESTORE_MUTATION_TARGETS\.kitchens/,
+    'Kitchen theme writes must target the canonical Kitchen root.'
   )
   assert.match(
     source.kitchenAppTheme,
@@ -1031,11 +1030,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingSupport/)
   assert.match(
     source.kitchenMutationAuthority,
-    /resolveKitchenConsoleTargetIds/
+    /resolveKitchenWorkspaceTargetIds/
   )
   assert.match(
     source.kitchenServerConfig,
-    /route:\s*'\/api\/console\/kitchen\/update'[\s\S]*method:\s*'patch'[\s\S]*runtime\/server\/api\/console\/kitchen\/update\.patch/
+    /route:\s*'\/api\/workspace\/kitchen\/update'[\s\S]*method:\s*'patch'[\s\S]*runtime\/server\/api\/workspace\/kitchen\/update\.patch/
   )
   assert.doesNotMatch(
     source.kitchenSpine,
@@ -1064,33 +1063,33 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.match(source.kitchenTargetModel, /KITCHEN_CONSOLE_TARGET_LIMIT = 50/)
-  assert.match(source.kitchenTargetModel, /type KitchenConsoleTargetsResponse/)
+  assert.match(source.kitchenTargetModel, /type KitchenWorkspaceTargetsResponse/)
   assert.doesNotMatch(
     source.kitchenTargetCollection,
     /firebase\/firestore|useKitchenCollection|useKitchenFetch/,
-    'Kitchen live Console targets must not regress to browser Firestore reads.'
+    'Kitchen live Workspace targets must not regress to browser Firestore reads.'
   )
   assert.match(
     source.kitchenTargetCollection,
-    /useConsoleTargetRequest<KitchenConsoleTargetItem>\(['"]kitchen['"]/
+    /useWorkspaceTargetRequest<KitchenWorkspaceTargetItem>\(['"]kitchen['"]/
   )
   assert.doesNotMatch(source.kitchenTargetCollection, /useAsyncData/)
-  assert.match(source.kitchenConsoleIndex, /targets:\s*targetCollection/)
+  assert.match(source.kitchenWorkspaceIndex, /targets:\s*targetCollection/)
   assert.doesNotMatch(
-    source.kitchenConsoleIndex,
-    /useConsoleTargets|resolveOutcome/,
-    'Kitchen Console index must not overlay the authenticated projection with a second browser membership outcome.'
+    source.kitchenWorkspaceIndex,
+    /useWorkspaceTargets|resolveOutcome/,
+    'Kitchen Workspace index must not overlay the authenticated projection with a second browser membership outcome.'
   )
   assert.doesNotMatch(
-    source.kitchenConsoleIndex,
+    source.kitchenWorkspaceIndex,
     /useKitchenCollection|KitchenCollectionFilter/,
-    'Kitchen Console index must consume the authenticated target projection.'
+    'Kitchen Workspace index must consume the authenticated target projection.'
   )
-  assert.match(source.kitchenConsole, /useKitchenConsoleTargetCollection/)
-  assert.match(source.kitchenConsole, /targets:\s*liveTargetCollection/)
-  assert.match(source.kitchenConsole, /source:\s*directFetchSource/)
+  assert.match(source.kitchenWorkspace, /useKitchenWorkspaceTargetCollection/)
+  assert.match(source.kitchenWorkspace, /targets:\s*liveTargetCollection/)
+  assert.match(source.kitchenWorkspace, /source:\s*directFetchSource/)
   assert.match(
-    source.kitchenConsole,
+    source.kitchenWorkspace,
     /kitchenSource\.value === 'test' \? 'test' : 'demo'/,
     'Selected live Kitchens must reuse the server projection instead of useKitchenFetch.'
   )
@@ -1100,7 +1099,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /getRuntimeFirestore\(\)/)
   assert.match(
     source.kitchenTargetApi,
-    /resolveKitchenConsoleTargetIds\(\s*uid,\s*currentMembership\s*\)/
+    /resolveKitchenWorkspaceTargetIds\(\s*uid,\s*currentMembership\s*\)/
   )
   assert.match(
     source.kitchenTargetResolver,
@@ -1132,7 +1131,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.kitchenTargetApi, /authority\.teamIds\.includes\(uid\)/)
   assert.match(source.kitchenTargetHttp, /Cache-Control': 'private, no-store'/)
-  assert.match(source.kitchenTargetHttp, /readKitchenConsoleTargets\(event\)/)
+  assert.match(source.kitchenTargetHttp, /readKitchenWorkspaceTargets\(event\)/)
   assert.doesNotMatch(
     source.kitchenTargetApi,
     /getQuery|readBody|\.\.\.root\b|\.\.\.support\b/,
@@ -1140,19 +1139,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenServerConfig,
-    /route:\s*'\/api\/console\/kitchen\/targets'[\s\S]*method:\s*'get'[\s\S]*runtime\/server\/api\/console\/kitchen\/targets\.get/
+    /route:\s*'\/api\/workspace\/kitchen\/targets'[\s\S]*method:\s*'get'[\s\S]*runtime\/server\/api\/workspace\/kitchen\/targets\.get/
   )
   assert.match(source.kitchenCreate, /\/api\/kitchens\/onboarding\/complete/)
   assert.match(source.kitchenCreate, /getIdToken\(\)/)
   assert.match(source.kitchenCreate, /Authorization:\s*`Bearer/)
   assert.doesNotMatch(
     source.kitchenCreate,
-    /\buseConsoleCreate\s*\(|createAppSupport|normalizeKitchenRootScope|createKitchenPayload|createKitchenRoot|setDocument/,
-    'Kitchen Console creation must use the atomic trusted onboarding transaction.'
+    /\buseWorkspaceCreate\s*\(|createAppSupport|normalizeKitchenRootScope|createKitchenPayload|createKitchenRoot|setDocument/,
+    'Kitchen Workspace creation must use the atomic trusted onboarding transaction.'
   )
   assert.match(
     source.kitchenCreate,
-    /function createKitchen\([\s\S]*return createKitchenConsole\(input, createOptions\)/,
+    /function createKitchen\([\s\S]*return createKitchenWorkspace\(input, createOptions\)/,
     'Every Live Kitchen create entrypoint must delegate to trusted onboarding.'
   )
   assert.match(
@@ -1167,8 +1166,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboarding,
-    /readAppPalette\([\s\S]*consolePaletteFromApp\([\s\S]*compactAppPalette\([\s\S]*console:\s*inheritedConsoleTheme/,
-    'Trusted Kitchen onboarding must seed missing Console colours and compact the owning App palette.'
+    /readAppPalette\([\s\S]*workspacePaletteFromApp\([\s\S]*compactAppPalette\([\s\S]*theme:\s*inheritedWorkspaceTheme/,
+    'Trusted Kitchen onboarding must seed missing Kitchen colours on the canonical root and compact the owning App palette.'
   )
   assert.doesNotMatch(
     source.kitchenOnboarding,
@@ -1182,13 +1181,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboardingPolicy,
-    /unsupported field:[\s\S]*readConsoleEntitySupportAuthority\(value, 'Kitchen'\)/,
+    /unsupported field:[\s\S]*readWorkspaceEntitySupportAuthority\(value, 'Kitchen'\)/,
     'AppKitchen support must reject domain payload and require the three access arrays.'
   )
   assert.match(
-    source.consoleEntityOnboardingAuthority,
+    source.workspaceEntityOnboardingAuthority,
     /operatorIds:[\s\S]*value\.operator_ids[\s\S]*teamIds:[\s\S]*value\.team_ids[\s\S]*joinRequests:[\s\S]*value\.join_requests/,
-    'Shared Console Entity support authority must validate all three access arrays.'
+    'Shared Workspace Entity support authority must validate all three access arrays.'
   )
   for (const [name, sources, retiredPath] of [
     [

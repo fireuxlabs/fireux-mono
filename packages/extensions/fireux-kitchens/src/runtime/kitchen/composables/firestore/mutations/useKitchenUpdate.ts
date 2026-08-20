@@ -14,7 +14,7 @@ export function useKitchenUpdate() {
     const user = await useRequireUser()
     const token = await user.getIdToken()
     const result = await $fetch<{ ok: true; kitchen_id: string }>(
-      '/api/console/kitchen/update',
+      '/api/workspace/kitchen/update',
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },

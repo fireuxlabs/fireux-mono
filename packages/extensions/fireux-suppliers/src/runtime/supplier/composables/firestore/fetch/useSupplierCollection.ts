@@ -6,9 +6,9 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-  readConsoleTargetAuthority,
-  targetHasConsoleAccess,
-} from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+  readWorkspaceTargetAuthority,
+  targetHasWorkspaceAccess,
+} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { AppSupplierStorage } from '../../../models/Supplier.model.ts'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 import {
@@ -186,7 +186,7 @@ export function useSupplierCollection(
       const appSupport = appSupportById.get(id)
       if (
         !appSupport ||
-        !readConsoleTargetAuthority(appSupport) ||
+        !readWorkspaceTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
         !supplierRootBelongsToApp(root, resolvedAppId.value, ecosystem)
       )
@@ -306,7 +306,7 @@ export function useSupplierCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(supplier, filterOperatorId.value))
+        if (!targetHasWorkspaceAccess(supplier, filterOperatorId.value))
           return acc
       }
 

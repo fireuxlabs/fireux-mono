@@ -1,5 +1,5 @@
 <template>
-  <ConsoleCta
+  <WorkspaceCta
     title="Suppliers"
     description="Manage your supplier identity, catalogue, items, ingredients, team access, and sourcing work."
     :count-label="countLabel"
@@ -20,9 +20,9 @@ const actions = [
     icon: 'i-lucide-plus',
   },
   {
-    label: 'Console',
-    cta: 'Open console',
-    to: '/console/supplier',
+    label: 'Workspace',
+    cta: 'Open workspace',
+    to: '/workspace/supplier',
     icon: 'i-lucide-layout-dashboard',
   },
 ] as const

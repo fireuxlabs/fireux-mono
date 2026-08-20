@@ -13,15 +13,15 @@ import {
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 
-function isConsolePath(path: string) {
-  return path === '/console' || path.startsWith('/console/')
+function isWorkspacePath(path: string) {
+  return path === '/workspace' || path.startsWith('/workspace/')
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
 
   const path = String(to.path || '')
-  if (isConsolePath(path)) return
+  if (isWorkspacePath(path)) return
 
   const meta = to.meta as Record<string, unknown>
   const requiresAuth = Boolean(meta.requiresAuth)

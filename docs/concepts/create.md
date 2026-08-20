@@ -7,14 +7,14 @@ Role: map, not canon
 ## Purpose
 
 Map the current FireUX create families so agents do not confuse normal entity
-creation with upload transactions, console onboarding, provider provisioning, or
+creation with upload transactions, workspace onboarding, provider provisioning, or
 ensure/upsert flows.
 
 ## Vertical links
 
 - Parent: spine.md
 - Child: firestore-entity.md
-- Child: console.md
+- Child: workspace.md
 - Child: server-api.md
 
 ## Horizontal links
@@ -34,7 +34,7 @@ where the irreversible work happens.
 
 - Client entity create
 - Draft-state create
-- Console target create
+- Workspace target create
 - Server transaction create
 - Provider/provision create
 - Ensure/upsert create
@@ -108,10 +108,10 @@ before the final create/publish action.
 - The flow really needs server transaction create because files/secrets are
   involved.
 
-### Console entity create
+### Workspace entity create
 
 Use the domain-owned `useXCreate` and trusted onboarding transaction when an
-entity may be created as a root or attached to a Console.
+entity may be created as a root or attached to a Workspace.
 
 #### Current examples
 
@@ -121,12 +121,12 @@ entity may be created as a root or attached to a Console.
 
 #### Typical shape
 
-- Root or Console create page mounts `XCreateSystem`.
+- Root or Workspace create page mounts `XCreateSystem`.
 - `XCreateSystem` calls `useXCreate`.
 - `useXCreate` delegates to its domain-owned trusted transaction.
 - The transaction creates or reuses the root and writes same-id App support
-  only when management is `console` or `app`.
-- `console` resolves conventionally to `<ecosystem>-app`; only `app` stores an
+  only when management is `workspace` or `app`.
+- `workspace` resolves conventionally to `<ecosystem>-app`; only `app` stores an
   `app_id`.
 
 #### Notes
@@ -146,7 +146,7 @@ on the server.
 #### Current examples
 
 - `POST /api/menus/create`
-- `POST /api/console/kitchen/menus/upload`
+- `POST /api/workspace/kitchen/menus/upload`
 - Go QR `POST /api/tools/doc/create`
 
 #### Typical shape
@@ -175,12 +175,12 @@ uploads them under `apps/<appId>/img/app/*`, and records their URLs on
 not release the App shell or report success.
 
 New App source declares its complete reviewed eight-colour semantic palette.
-Fresh initialization stores it while the App has no lower Console layer;
+Fresh initialization stores it while the App has no lower Workspace layer;
 initialization of an existing App backfills only an absent palette and never
 overwrites authored storage. When a domain-owned onboarding transaction creates
-or attaches Console support, it seeds missing Console roles from the complete
-source, preserves existing Console colours, and compacts `App.theme.palette`
-to the roles that extend or override Console. Runtime presentation resolves the
+or attaches Workspace support, it seeds missing Workspace roles from the complete
+source, preserves existing Workspace colours, and compacts `App.theme.palette`
+to the roles that extend or override Workspace. Runtime presentation resolves the
 effective eight colours from both layers. Root entity creation remains
 independently valid and does not receive App colours.
 
@@ -226,7 +226,7 @@ Use an ensure/upsert create when the user intent is “make sure this exists,”
 
 - Place create/ensure.
 - Test target create.
-- Console target root create with known IDs.
+- Workspace target root create with known IDs.
 - User/app membership create.
 
 #### Typical shape
@@ -261,7 +261,7 @@ the final mutation, and completion routing.
 
 #### Kitchen reference
 
-- Public and Console create routes compose the same Kitchen create system;
+- Public and Workspace create routes compose the same Kitchen create system;
   route mode changes chrome and destination, not entity truth.
 - Kitchen onboarding reuses canonical Place identity, then owns only Kitchen
   draft decisions and the trusted root/App-support/AppUser transaction.
@@ -287,7 +287,7 @@ markers, not a complete registry.
 
 - Core create-plan vocabulary:
   `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/createStrategy.ts`
-- Console-target examples:
+- Workspace-target examples:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenCreate.ts`,
   `packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierCreate.ts`,
   and
@@ -308,7 +308,7 @@ that distinction inside the create family.
 - Is this just a Firestore entity record? Use `useXCreate`.
 - Is this a rich authoring form with preview or draft persistence? Use a
   draft-state create seam, then submit into `useXCreate` or publish.
-- Does it create a root target plus Console management? Keep root validation and
+- Does it create a root target plus Workspace management? Keep root validation and
   the trusted transaction in the domain-owned `useXCreate`/server command. Core
   does not own a domain-enumerating create factory.
 - Does it upload a file or need server credentials? Use `server/api/**.post.ts`.
@@ -320,7 +320,7 @@ that distinction inside the create family.
 
 ## Naming notes
 
-- `useXCreate`: domain create composable for entity/console create.
+- `useXCreate`: domain create composable for entity/workspace create.
 - `useXDraftState`: local/staged authoring state before final persistence.
 - `useXCreateSubmit`: converts staged authoring state into final create/publish
   work.
@@ -336,7 +336,7 @@ that distinction inside the create family.
 | Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                             |
 | -------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                      |
-| Console-target create may write root identity plus App support                                     | `accepted`   | The domain transaction writes its root management relationship and same-id App support; Core supplies only generic management vocabulary and resolution |
+| Workspace-target create may write root identity plus App support                                     | `accepted`   | The domain transaction writes its root management relationship and same-id App support; Core supplies only generic management vocabulary and resolution |
 | Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                                                    |
 | `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                              |
 | Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                               |
@@ -364,5 +364,5 @@ that distinction inside the create family.
 
 - Promote `CreatePlan` into a registry or guard only if multiple consumers need
   to query it.
-- Add transaction tests around multi-write console onboarding and file-backed
+- Add transaction tests around multi-write workspace onboarding and file-backed
   create flows before extracting further shared machinery.

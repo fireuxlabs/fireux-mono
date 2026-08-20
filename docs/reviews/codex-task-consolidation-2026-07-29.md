@@ -22,7 +22,7 @@ Current source, executable guards, `AGENTS.md`, and the living
 | Menu design, menu funnel, ordering, allergy acknowledgement | `docs/concepts/family-menu.md`, `docs/concepts/menu-ordering.md`, and current `fireux-kitchens` source                                                        |
 | Sproochli, Interlaken Essen copy, translation memory        | `docs/concepts/translation.md`, `docs/ai/misebox-context.md`, the Sproochli copy guard, and current translation source                                        |
 | Jobs and local/global Misebox hiring                        | `docs/ai/misebox-context.md`, current `fireux-jobs` source, and its focused hiring and doorway tests                                                          |
-| Console organisation, Cards, CSS, public presentation       | `docs/concepts/console.md`, `docs/concepts/card-family.md`, `docs/concepts/components.md`, the public-family maps, and component/CSS guards                   |
+| Workspace organisation, Cards, CSS, public presentation       | `docs/concepts/workspace.md`, `docs/concepts/card-family.md`, `docs/concepts/components.md`, the public-family maps, and component/CSS guards                   |
 | Demo data and Demo media                                    | `docs/concepts/demo-data.md`, `docs/ai/misebox-context.md`, the guarded media manifest, and publishing/audit scripts                                          |
 | Finance and Deanos reporting                                | `docs/concepts/finance.md`, `docs/ai/misebox-context.md`, and current Kitchen Finance source                                                                  |
 | Blogs, profiles, project users, app monitoring              | The matching concept maps and current bounded server projections                                                                                              |
@@ -51,7 +51,7 @@ Current source, executable guards, `AGENTS.md`, and the living
   configured HTTPS source doorway.
 - Demo fixtures stay deterministic and package-owned. Repository manifests
   describe immutable Demo media; Firebase Storage remains binary authority.
-- Console indexes consume authoritative target-family state and do not create
+- Workspace indexes consume authoritative target-family state and do not create
   parallel target, membership, or lifecycle authority.
 
 ## Exclusions

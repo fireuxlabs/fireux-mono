@@ -12,7 +12,7 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
     outcome: 'Creates one active member in the selected Kitchen Team.',
     constraints: [
       'Does not create or link a User.',
-      'Does not grant Console access.',
+      'Does not grant Workspace access.',
     ],
   },
   inputSchema: {

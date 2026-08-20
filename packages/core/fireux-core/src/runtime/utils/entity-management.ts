@@ -13,7 +13,7 @@ export function readFireuxEntityManagement(
   const mode = text(source.mode)
 
   if (
-    (mode === 'root' || mode === 'console') &&
+    (mode === 'root' || mode === 'workspace') &&
     keys.length === 1 &&
     keys[0] === 'mode'
   ) {
@@ -46,7 +46,7 @@ export function resolveFireuxEntityManagementForApp(
     if (id !== resolveFireuxEcosystemAppId(ecosystem)) {
       throw new Error('[fireux] Global App must be the ecosystem App.')
     }
-    return { mode: 'console' }
+    return { mode: 'workspace' }
   }
   return { mode: 'app', app_id: id }
 }

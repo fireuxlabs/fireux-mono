@@ -40,35 +40,35 @@
       <UIcon name="i-lucide-arrow-right" />
     </div>
 
-    <article class="misebox-handoff__surface misebox-handoff__surface--console">
+    <article class="misebox-handoff__surface misebox-handoff__surface--workspace">
       <header class="misebox-handoff__surface-header">
         <span>
           <UIcon name="i-lucide-layout-dashboard" aria-hidden="true" />
-          Kitchen Console
+          Kitchen Workspace
         </span>
-        <small>{{ selectedChapterCopy.consoleLabel }}</small>
+        <small>{{ selectedChapterCopy.workspaceLabel }}</small>
       </header>
 
-      <div class="misebox-handoff__console" inert>
-        <div class="misebox-handoff__console-bar">
+      <div class="misebox-handoff__workspace" inert>
+        <div class="misebox-handoff__workspace-bar">
           <span /><span /><span />
-          <strong>{{ productDemo.console.kitchenName }}</strong>
+          <strong>{{ productDemo.workspace.kitchenName }}</strong>
         </div>
 
-        <MiseboxLandingConsolePreviewMenus
+        <MiseboxLandingWorkspacePreviewMenus
           v-if="selectedChapter === 'publish'"
-          :menus="productDemo.console.menus"
+          :menus="productDemo.workspace.menus"
           :error="false"
         />
-        <MiseboxLandingConsolePreviewMise
+        <MiseboxLandingWorkspacePreviewMise
           v-else-if="selectedChapter === 'prepare'"
-          :kitchen-name="productDemo.console.kitchenName"
+          :kitchen-name="productDemo.workspace.kitchenName"
           :tasks="previewMiseTasks"
         />
-        <MiseboxLandingConsolePreviewOrders
+        <MiseboxLandingWorkspacePreviewOrders
           v-else
-          :kitchen-name="productDemo.console.kitchenName"
-          :orders="productDemo.console.orders"
+          :kitchen-name="productDemo.workspace.kitchenName"
+          :orders="productDemo.workspace.orders"
           :error="false"
         />
       </div>
@@ -94,9 +94,9 @@ import type {
   MenuManifestSection,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import { useMiseboxProductDemo } from '../../../composables/product-demo/useMiseboxProductDemo'
-import MiseboxLandingConsolePreviewMenus from './ConsolePreview/Menus.vue'
-import MiseboxLandingConsolePreviewMise from './ConsolePreview/Mise.vue'
-import MiseboxLandingConsolePreviewOrders from './ConsolePreview/Orders.vue'
+import MiseboxLandingWorkspacePreviewMenus from './WorkspacePreview/Menus.vue'
+import MiseboxLandingWorkspacePreviewMise from './WorkspacePreview/Mise.vue'
+import MiseboxLandingWorkspacePreviewOrders from './WorkspacePreview/Orders.vue'
 import MiseboxLandingHandoffState from './HandoffState.vue'
 
 type HandoffChapter = 'publish' | 'prepare' | 'serve'
@@ -109,17 +109,17 @@ const chapterCopy = {
   publish: {
     icon: 'i-lucide-qr-code',
     signal: 'Menu published',
-    consoleLabel: 'Menus',
+    workspaceLabel: 'Menus',
   },
   prepare: {
     icon: 'i-lucide-list-checks',
     signal: 'Prep connected',
-    consoleLabel: 'Mise en place',
+    workspaceLabel: 'Mise en place',
   },
   serve: {
     icon: 'i-lucide-bell-ring',
     signal: 'Order received',
-    consoleLabel: 'Orders',
+    workspaceLabel: 'Orders',
   },
 } as const
 
@@ -135,7 +135,7 @@ const menuSections = computed<MenuManifestSection[]>(() =>
   }))
 )
 const previewMiseTasks = computed(
-  () => productDemo.value?.console.miseTasks.slice(0, 6) || []
+  () => productDemo.value?.workspace.miseTasks.slice(0, 6) || []
 )
 const { className: menuThemeClassName, styleVars: menuThemeStyleVars } =
   useMenuThemeSurface({

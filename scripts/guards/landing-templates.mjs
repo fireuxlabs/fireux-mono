@@ -36,7 +36,7 @@ export function run(ctx) {
 
   for (const [id, tier] of [
     ['seehotel-bonigen', 'root'],
-    ['pizza-the-action', 'console'],
+    ['pizza-the-action', 'workspace'],
     ['friiites', 'app'],
     ['deanos', 'app'],
   ]) {

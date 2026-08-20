@@ -6,7 +6,7 @@
   >
     <div class="fireux-surface-showcase__presentation" data-landing-reveal="up">
       <div class="fireux-surface-showcase__system">
-        <FireUXLandingConsolePreview
+        <FireUXLandingWorkspacePreview
           v-model:surface-id="selectedSurfaceId"
           :operations="operations"
         />
@@ -47,9 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingConsolePreviewItem } from 'fireux-core/types/landing-product'
+import type { LandingWorkspacePreviewItem } from 'fireux-core/types/landing-product'
 
-type PreviewOperation = LandingConsolePreviewItem & {
+type PreviewOperation = LandingWorkspacePreviewItem & {
   description: string
   to: string
 }

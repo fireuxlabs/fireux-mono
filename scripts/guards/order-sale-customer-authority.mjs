@@ -29,7 +29,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const transition = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts'
   )
   const serverTargets = read(
     repoRoot,

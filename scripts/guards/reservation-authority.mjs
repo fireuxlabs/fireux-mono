@@ -12,9 +12,9 @@ const files = {
   records: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/records.ts',
   command: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/command.ts',
   read: 'packages/extensions/fireux-reservations/src/runtime/property/server/operations/reservations/read.ts',
-  collection: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/usePropertyReservations.ts',
-  create: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationCreate.ts',
-  update: 'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationUpdate.ts',
+  collection: 'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/usePropertyReservations.ts',
+  create: 'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/useReservationCreate.ts',
+  update: 'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/useReservationUpdate.ts',
   template: 'packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules',
   rules: 'packages/ecosystem/fireux-buenohost/src/config/firebase/rules/reservation-authority.rules',
   artifact: 'scripts/firebase/buenohost/firestore.rules',
@@ -48,7 +48,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /useFirestore(?:Read|Create|Update)|firestoreFetchCollection|createDocument|updateDocument/,
       `${files[key]} must not access Reservation Firestore directly.`
     )
-    assert.match(source[key], /\/api\/console\/properties\//)
+    assert.match(source[key], /\/api\/workspace\/properties\//)
   }
 
   assert.match(source.template, /@fireux-rules-template buenohost/)

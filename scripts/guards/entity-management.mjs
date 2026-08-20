@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-08-11
-// usage_note: enforces the extensible root -> Console -> App management ladder for Console entities.
+// usage_note: enforces the extensible root -> Workspace -> App management ladder for Workspace entities.
 
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -37,12 +37,12 @@ const relativeFiles = {
   placeAuthority:
     'packages/extensions/fireux-places/src/runtime/place/server/identity/mutation-authority.ts',
   kitchenThemeEditor:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/useKitchenThemeEditor.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/useKitchenThemeEditor.ts',
   kitchenSproochliEditor:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Sproochli.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue',
   miseboxRules:
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/app-authority.rules',
-  migration: 'scripts/migrate-console-entity-management.mjs',
+  migration: 'scripts/migrate-workspace-entity-management.mjs',
 }
 
 const ecosystemConfigs = [
@@ -91,7 +91,7 @@ export async function run(ctx) {
   }
 
   if (
-    !/\| \{ mode: 'root' \}[\s\S]*\| \{ mode: 'console' \}[\s\S]*\| \{ mode: 'app'; app_id: string \}/.test(
+    !/\| \{ mode: 'root' \}[\s\S]*\| \{ mode: 'workspace' \}[\s\S]*\| \{ mode: 'app'; app_id: string \}/.test(
       source.contract
     )
   ) {
@@ -100,12 +100,12 @@ export async function run(ctx) {
     )
   }
   if (
-    !/id !== resolveFireuxEcosystemAppId\(ecosystem\)[\s\S]*return \{ mode: 'console' \}/.test(
+    !/id !== resolveFireuxEcosystemAppId\(ecosystem\)[\s\S]*return \{ mode: 'workspace' \}/.test(
       source.resolver
     )
   ) {
     violations.push(
-      `${relativeFiles.resolver} does not resolve the ecosystem App to console mode`
+      `${relativeFiles.resolver} does not resolve the ecosystem App to workspace mode`
     )
   }
   if (!/return `\$\{key\}-app`/.test(source.resolver)) {
@@ -124,7 +124,7 @@ export async function run(ctx) {
     )
   ) {
     violations.push(
-      `${relativeFiles.appModel} hard-codes extension Console families`
+      `${relativeFiles.appModel} hard-codes extension Workspace families`
     )
   }
 
@@ -153,29 +153,29 @@ export async function run(ctx) {
   }
 
   for (const relative of ecosystemConfigs) {
-    if (/consoleAppId/.test(read(repoRoot, relative))) {
-      violations.push(`${relative} redundantly configures a Console App id`)
+    if (/workspaceAppId/.test(read(repoRoot, relative))) {
+      violations.push(`${relative} redundantly configures a Workspace App id`)
     }
   }
   for (const key of ['runtimeConfig', 'ecosystemType']) {
-    if (/consoleAppId/.test(source[key])) {
+    if (/workspaceAppId/.test(source[key])) {
       violations.push(
-        `${relativeFiles[key]} exposes the retired Console App id configuration`
+        `${relativeFiles[key]} exposes the retired Workspace App id configuration`
       )
     }
   }
-  if (/console-app-id|consoleAppId/.test(source.migration)) {
+  if (/workspace-app-id|workspaceAppId/.test(source.migration)) {
     violations.push(
-      `${relativeFiles.migration} accepts a redundant Console App id`
+      `${relativeFiles.migration} accepts a redundant Workspace App id`
     )
   }
   if (
-    !/Ecosystem App support does not prove Console management/.test(
+    !/Ecosystem App support does not prove Workspace management/.test(
       source.migration
     )
   ) {
     violations.push(
-      `${relativeFiles.migration} infers Console management from support alone`
+      `${relativeFiles.migration} infers Workspace management from support alone`
     )
   }
 
@@ -209,7 +209,7 @@ export async function run(ctx) {
   }
   if (
     !/data\.keys\(\)\.hasAll\(\['management'\]\)/.test(source.miseboxRules) ||
-    !/data\.management\.mode == 'console'/.test(source.miseboxRules) ||
+    !/data\.management\.mode == 'workspace'/.test(source.miseboxRules) ||
     !/data\.management\.mode == 'app'/.test(source.miseboxRules) ||
     !/\? 'misebox-app'/.test(source.miseboxRules) ||
     /resource\.data\.app_scope/.test(source.miseboxRules)
@@ -221,11 +221,11 @@ export async function run(ctx) {
 
   const genericFactory = path.join(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/workspace/mutations/useWorkspaceCreate.ts'
   )
   if (existsSync(genericFactory)) {
     violations.push(
-      'Core still owns the retired domain-enumerating Console create factory'
+      'Core still owns the retired domain-enumerating Workspace create factory'
     )
   }
 

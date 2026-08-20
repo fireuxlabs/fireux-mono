@@ -25,6 +25,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Slap',
   description:
-    'Slap pricing for the Commerce Console, managed service, and your own App.',
+    'Slap pricing for the Commerce Workspace, managed service, and your own App.',
 })
 </script>

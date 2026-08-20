@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-type SurfaceId = 'mobile' | 'kiosk' | 'staff-pos' | 'console'
+type SurfaceId = 'mobile' | 'kiosk' | 'staff-pos' | 'workspace'
 
 type OrderingSurface = {
   id: SurfaceId
@@ -123,7 +123,7 @@ const surfaces = [
       'Guest-operated ordering',
       'Eat-here orders',
       'Takeaway orders',
-      'Orders sent to the Kitchen Console',
+      'Orders sent to the Kitchen Workspace',
     ],
     icon: 'i-lucide-tablet',
     action: 'Open self-service kiosk',
@@ -148,11 +148,11 @@ const surfaces = [
     preview: 'staff-pos',
   },
   {
-    id: 'console',
-    label: 'Console',
-    title: 'Kitchen Console',
+    id: 'workspace',
+    label: 'Workspace',
+    title: 'Kitchen Workspace',
     description:
-      'The Kitchen team works from one operational Console. Each Operation opens the records and tools needed to run that part of the Kitchen.',
+      'The Kitchen team works from one operational Workspace. Each Operation opens the records and tools needed to run that part of the Kitchen.',
     goodFor: [
       'Developing dishes and menus',
       'Recipes and ingredients',
@@ -162,9 +162,9 @@ const surfaces = [
       'Finance',
     ],
     icon: 'i-lucide-panels-top-left',
-    action: 'Open Kitchen Console',
-    to: '/console/kitchen',
-    preview: 'console',
+    action: 'Open Kitchen Workspace',
+    to: '/workspace/kitchen',
+    preview: 'workspace',
   },
 ] as const satisfies readonly OrderingSurface[]
 

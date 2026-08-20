@@ -25,7 +25,7 @@
         <div class="space-y-2 text-sm text-toned">
           <p>
             Use this stack when you need projected JSON without opening a
-            console. Entity authority stays behind the projection boundary.
+            workspace. Entity authority stays behind the projection boundary.
           </p>
           <p>
             Need onboarding context instead of payloads? Hop to

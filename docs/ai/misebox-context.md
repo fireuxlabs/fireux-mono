@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-19
+Updated: 2026-08-20
 Ref: e23268507
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -19,7 +19,7 @@ Before each task:
    `packages/ecosystem/fireux-misebox` and the relevant app under
    `projects/misebox/*`.
 4. Use the context router in `AGENTS.md`. For kitchen, menu, ordering,
-   console, Firestore, public surfaces, layouts, or app configuration, read the
+   workspace, Firestore, public surfaces, layouts, or app configuration, read the
    smallest relevant `docs/concepts/*.md` map before inspecting code.
 5. Find the nearest working sibling in the same FireUX family before proposing
    a Misebox-specific implementation.
@@ -32,10 +32,10 @@ Before each task:
   `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`.
   Misebox renders that catalogue directly; the FireUX parent may compose the
   same entries into its cross-ecosystem discovery surfaces.
-- Kitchen and Supplier packages own their reusable Console capability
+- Kitchen and Supplier packages own their reusable Workspace capability
   catalogues beneath their Entity `models` roles. Misebox
   composes those catalogues into one app-wide discovery index grouped by
-  Console. A legacy `*Operations` filename does not reclassify Identity or Team
+  Workspace. A legacy `*Operations` filename does not reclassify Identity or Team
   as Operations.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
@@ -52,22 +52,23 @@ Before each task:
   or current-App admin receives the same root collection with hidden rows
   included and labelled `Hidden`; App attachment and AppKitchen support never
   decide collection membership. The collection groups projected Kitchens by
-  canonical `management.mode`: Root, Console and App. Demo status never changes
+  canonical `management.mode`: Root, Workspace and App. Demo status never changes
   that classification. Each collection row
   joins its required Place only to resolve Place-owned presentation. Kitchen
   detail resolves the same root and Place by authored slug during SSR; browser
   code does not read raw root or AppKitchen documents.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
   creates the required Place first, then creates the same-id canonical Kitchen
-  root. Management is explicit: `root` has no Console, `console` resolves to
+  root. Management is explicit: `root` has no Workspace, `workspace` resolves to
   the Misebox ecosystem App (`misebox-app`), and `app` names a dedicated
-  App with `app_id`. The same-id AppKitchen record owns access and Console
-  configuration. Neither relationship nor support substitutes for the root.
+  App with `app_id`. The same-id AppKitchen record owns only access,
+  relationship, and audit state. Neither relationship nor support substitutes
+  for the root.
 - A Kitchen root uses the same document ID as its required Place and owns
   `slug`, boolean `visibility`, sparse `identity`, `assets`, exact
   `management`, and audit stamps.
   Pre-release two-colour `brand_palette` data is compatibility input rather
-  than Console or App theme authority. The root does not duplicate
+  than Workspace or App theme authority. The root does not duplicate
   a Place id or generic lifecycle status. `identity` uses `name` and `tagline`;
   `assets` uses `image`, `logo`, and `wordmark`. Place owns
   location name/address, photography, gallery, contact details, currency,
@@ -78,31 +79,31 @@ Before each task:
   media. Current Kitchen `assets.backdrop_color` data is migration input, not a
   second colour authority; bounded Kitchen reads receive the linked Place
   colour instead of copying or overriding it.
-- AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests`, plus
-  its `console` configuration for menus, orders, tables, fulfilment, and
-  integrations. A missing Console theme may be seeded from the owning App's
-  reviewed semantic palette during trusted attachment; existing Console
-  colours are preserved. The Kitchen Identity Console mirrors onboarding as
-  Place → Kitchen → Console → App: Place identity colour first, sparse Kitchen
-  identity media second, Console palette and optional font choices on AppKitchen,
+- AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests` plus
+  audit stamps. Kitchen owns its `theme`, `menus`, `orders`, `tables`,
+  `fulfilment`, and `integrations` configuration. A missing Kitchen theme may
+  be seeded from the owning App's reviewed semantic palette during trusted
+  attachment; existing Kitchen colours are preserved. The Kitchen Identity
+  surface mirrors onboarding as
+  Place → Kitchen → Workspace → App: Place identity colour first, sparse Kitchen
+  identity media second, Kitchen palette and optional font choices on Kitchen,
   then dedicated App controls only for `management.mode === 'app'`. App writes
-  retain only the palette delta over Console and exactly two typography family
+  retain only the palette delta over Kitchen and exactly two typography family
   inputs; the five App masters remain the universal readiness gate.
-  Operational settings do not live on the Kitchen root.
   Public Menu colour presentation resolves an optional KitchenMenu
-  `theme.palette` over the AppKitchen Console palette, deleting the Menu field
+  `theme.palette` over the Kitchen palette, deleting the Menu field
   to restore inheritance. The bounded DTO exposes the effective palette and
-  its `menu | kitchen | place-default` source. The Console palette remains
+  its `menu | kitchen | place-default` source. The Workspace palette remains
   `canvas`, `text`, `accent`, and `accent_contrast`. The protected
   `scripts/migrate-misebox-menu-themes.mjs` migration moves only proved legacy
   Menu colours into that existing authority; it does not invent missing accent
   colours or make a root Menu another Kitchen-theme owner.
-  Menu roles are explicit AppKitchen Console configuration: one
+  Menu roles are explicit Kitchen configuration: one
   `primary_menu_id` and an optional enabled `specials_menu_id`. Never infer the
   primary Menu from collection order. Specials remains an ordinary KitchenMenu;
   its published content is projected into the primary Menu using the primary
   renderer's presentation.
-  Authenticated Console target projection requires the exact root, Place,
+  Authenticated Workspace target projection requires the exact root, Place,
   matching AppKitchen support, and scoped App membership. `operator_ids`
   grants Kitchen mutation authority; `team_ids` grants target/read membership
   only. Current App admins remain the explicit administrative override.
@@ -111,10 +112,10 @@ Before each task:
   bucket, external host, or wrong entity path. Kitchen assets never use the
   linked Place image as a second logo source. See
   `docs/concepts/place-kitchen-media.md`.
-- `/places/<id>/edit`, `/kitchens/<locator>/edit`, and Kitchen Console Identity
+- `/places/<id>/edit`, `/kitchens/<locator>/edit`, and Kitchen Workspace Identity
   compose the same owner-level edit panels. The route framing may differ, but
   field ownership and mutation authority do not: Place media remains Place,
-  Kitchen identity/assets remain Kitchen, and Console/App settings remain on
+  Kitchen identity/assets remain Kitchen, and Workspace/App settings remain on
   their support or App owners.
 - Supplier location follows a different owner contract:
   `Supplier.company_id -> Company`, with Company as a same-id role over Place.
@@ -139,13 +140,13 @@ Before each task:
 - Creating a new Kitchen root atomically creates the authenticated creator as
   its first operational KitchenTeamMember, using the creator UID as the stable
   member and User link. Connecting an existing Kitchen does not create an
-  operational member. AppKitchen `team_ids` and `operator_ids` remain Console
+  operational member. AppKitchen `team_ids` and `operator_ids` remain Workspace
   access authority and never substitute for Kitchen-owned Team records.
 - A named Kitchen member may exist without a User. An operator can create a
   named member and can correct that member's displayed name through a narrow
   trusted Server command. Name edits preserve the member document id, slug,
   User link, access, and invitation state; arbitrary client-side member patching
-  is not a Console capability. An operator can create a
+  is not a Workspace capability. An operator can create a
   seven-day, one-use member invitation whose stored record contains only a
   hash of the URL secret. Acceptance is a dedicated authenticated Server
   command: it atomically links the accepting UID to the existing member,
@@ -154,7 +155,7 @@ Before each task:
 - `gross_sale` records the current authoritative total without claiming a VAT
   split, net revenue, or cash settlement. Reporting is derived; P&L remains
   absent until its required producing domains and accounting contract exist.
-- The first visible report is the Kitchen-owned `/console/kitchen/finance`
+- The first visible report is the Kitchen-owned `/workspace/kitchen/finance`
   sheet. Its authenticated, bounded server projection reads a
   7, 30, or 90 complete owner-local-day period of immutable Sales for the
   selected Kitchen. The server resolves a valid custom Kitchen timezone or the
@@ -168,7 +169,7 @@ Before each task:
   it never becomes Sale or FinancialFact history. Its
   `KitchenFinanceSummary` and `KitchenFinanceTrend` adapters supply Kitchen
   labels and values to dumb product-neutral Finance presentation used by
-  Console and Product Demo. Kitchen-owned calendar, selected-day item, and
+  Workspace and Product Demo. Kitchen-owned calendar, selected-day item, and
   roundup components retain daily sales semantics. Deanos derives
   current/prior 7, 30, and 90-day totals, grouped trend points, calendar days,
   best/quietest days, weekday averages, top items, daily averages, and
@@ -227,7 +228,7 @@ Before each task:
   they should not recreate shared domain truth locally.
 - Misebox product literature follows `docs/concepts/product-language.md`.
   Start with the owning package's fields, states, commands, and child pages;
-  derive operation copy from those children, derive Kitchen Console copy from
+  derive operation copy from those children, derive Kitchen Workspace copy from
   its operations, and derive the landing from its product sections. Use
   concrete hospitality nouns and actions in the present tense. Do not add a
   second vocabulary of slogans or vague benefits at the project edge.
@@ -252,7 +253,7 @@ Before each task:
   Canonical Ingredient and App media stay outside Demo, and Live media stays
   in its owning Live path. Remote audit and any create-only upload from an
   explicit external source directory use
-  `scripts/publish-misebox-demo-media.mjs`, never a Console or runtime
+  `scripts/publish-misebox-demo-media.mjs`, never a Workspace or runtime
   mutation.
 - Misebox `/cards` is a searchable project-owned PowerCards candidate gallery.
   Its main collection consumes package-owned `Cell`, `Pill`, and `Preview`
@@ -269,17 +270,17 @@ Before each task:
   `LandingProductProofSection` owns the repeated proof-and-copy split and
   `LandingProductCatalogue` owns the Tools, Solutions, and Operations grid;
   Misebox keeps their truthful data, copy, routes, and proof in its project
-  adapter. Misebox fills `console` with the Kitchen Console, `specifics` with
+  adapter. Misebox fills `workspace` with the Kitchen Workspace, `specifics` with
   Menu surfaces and Kitchen Finance, `apps` with its bounded published-App
   projection, and `tools` with an Ordering entry that lists published Menus
   and routes only to their currently enabled guest order paths. It has no
   separate
   Ecosystems section and omits that unavailable slot. Its buyer-facing
   definition is “The Control Centre For Kitchen
-  Operations”; the Kitchen Console is the concrete workspace that runs menus,
+  Operations”; the Kitchen Workspace is the concrete workspace that runs menus,
   preparation, service, supply, and finance. The Main App hero uses the shared
   typed hero text once and fills its named preview slot with one static
-  Misebox-owned product image: a Deanos ordering kiosk, the Kitchen Console
+  Misebox-owned product image: a Deanos ordering kiosk, the Kitchen Workspace
   Mise en place surface, and a customer delivery confirmation. The image is
   presentation only and performs no Demo, Live, Test, Firebase, Storage, or
   order mutation. Misebox owns its content while Core continues to own the
@@ -293,12 +294,12 @@ Before each task:
   Core `LandingOperationRail` provides the horizontally scrolling rail above
   Section One in both Main Apps. Misebox projects the current Kitchen
   Operations from the existing typed catalogue and links to their canonical
-  public routes. Identity and Team remain baked-in Console peers and never
+  public routes. Identity and Team remain baked-in Workspace peers and never
   enter that catalogue. The rail omits the generic Operations
-  doorway, Console group labels, and Supplier capabilities.
-  The first Kitchen Console proof explicitly uses Core's copy-emphasis variant
+  doorway, Workspace group labels, and Supplier capabilities.
+  The first Kitchen Workspace proof explicitly uses Core's copy-emphasis variant
   so its selected Operation explanation is wider and more prominent than the
-  read-only Console preview; later proof sections retain the balanced default.
+  read-only Workspace preview; later proof sections retain the balanced default.
   Misebox Kitchen and Supplier hero photography consumes Core
   `LandingProductHeroImage`; Misebox owns the reviewed assets, alternative
   text, and focal position but does not duplicate or decorate the shared sharp
@@ -309,11 +310,11 @@ Before each task:
   proof remain Misebox-owned. Core animates only the named region shell;
   Misebox sections own their internal `data-landing-reveal` participants so
   their product presentation is independently targetable. The existing Core hero
-  action system keeps the Get started and Go to console buttons, Operations
+  action system keeps the Get started and Go to workspace buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
   relevant product doorways. Misebox owns KitchenAI at `/` as its main working
-  doorway; there is no separate Console Agent route. KitchenAI uses authorized
+  doorway; there is no separate Workspace Agent route. KitchenAI uses authorized
   Kitchen identity, User context, Kitchen context, Menu
   context, and exact Menu counts. Bounded operation surfaces may delegate to
   an operation agent such as MenuAI. The Kitchen agent HTTP
@@ -337,22 +338,22 @@ Before each task:
   not automatic extra model calls: KitchenAI currently consults MenuAI's exact
   Menu manifest and confirmed Menu context for its Kitchen summary. An
   operation agent gains a separate inference only when independent reasoning
-  or tool execution justifies the added latency and provider cost. The Console
+  or tool execution justifies the added latency and provider cost. The Workspace
   agent catalogue is composed at
-  `fireux-misebox/runtime/ai/console-agents`: MiseboxAI is an explicit
+  `fireux-misebox/runtime/ai/workspace-agents`: MiseboxAI is an explicit
   ecosystem node beneath CoreAI and parents only KitchenAI, while
   `fireux-kitchens` owns its exact operation-agent members. Bringli alone hosts
-  SupplierAI and the Supplier Console; Misebox consumes bounded Supplier truth
+  SupplierAI and the Supplier Workspace; Misebox consumes bounded Supplier truth
   through the Kitchen-owned Suppliers operation and never acquires Supplier
   selection, mutation authority, onboarding, or agent coordination. Each
-  Console coordinator declares its selected entity kind, id parameter,
+  Workspace coordinator declares its selected entity kind, id parameter,
   required selection, mutation authority, and owner-labelled context
   providers. Agent catalogue entries start with no tools and use only
   source-defined top-level Operations; speculative child capabilities such as
   Stockholding do not enter the agent spine. KitchenAI and MenuAI may attach
   one short structured capability tip to their existing private Kitchen usage
   record for later operator review; the visible answer excludes that marker.
-  Console jobs and domain authority must prove each tool separately.
+  Workspace jobs and domain authority must prove each tool separately.
   TeamAI's proved tools are `kitchen.team.create-member`,
   `kitchen.team.read-members`, `kitchen.team.update-member`,
   `kitchen.team.delete-member`, and `kitchen.team.create-invitation`. It may
@@ -395,12 +396,12 @@ Before each task:
   create transaction owns slug allocation and adds a numeric suffix for a
   collision. The Firestore member id remains storage identity until a member
   detail page is a proved product surface.
-  The Console
+  The Workspace
   proof is mobile-first: the read-only
   component comes first and projects the canonical Kitchen Operations
   catalogue without live counts or customer data. Core
-  `LandingConsolePreviewFrame` owns the shared target rail, navigation,
-  selected heading, responsive shell, and full-Console doorway. Misebox's thin
+  `LandingWorkspacePreviewFrame` owns the shared target rail, navigation,
+  selected heading, responsive shell, and full-Workspace doorway. Misebox's thin
   root owns the single Product Demo load and local operation/page selection;
   named operation children receive typed read-only projections. Menus, Dishes,
   Ingredients, Recipes, Mise, Orders, Stations, Suppliers, and Tables own
@@ -410,11 +411,11 @@ Before each task:
   pages beneath one persistent image-backed Dish context. Ingredients presents
   the Deanos Kitchen usage-link set through the adapter's canonical root
   projection; its names and images remain shared Ingredient truth. The real
-  Console and landing child consume the same ordered food-group resolver, while
+  Workspace and landing child consume the same ordered food-group resolver, while
   the landing child keeps those groups compact and collapsible. Mise projects
   the Deanos `KitchenMiseTask` records through the Kitchen-owned summary
   projector, collection presentation, and task board shared by the real
-  Console and landing child. The landing disables task navigation and supplies
+  Workspace and landing child. The landing disables task navigation and supplies
   its own outer scroll boundary, but it does not own a compact Mise variant.
   That shared board is chef-process first: `workflow_stage` orders Wash &
   clean, Cut & portion, Make, Cook & chill, Set stations, and Final checks;
@@ -431,7 +432,7 @@ Before each task:
   protected legacy migration is complete. Do not restore `mise` documents or
   move Prep Items through browser code; use the read-only Prep Item audit to
   detect regression and retain the migration script as operational evidence.
-  The Product Demo names that operation projection `console.miseTasks`;
+  The Product Demo names that operation projection `workspace.miseTasks`;
   Dish-level `mise` remains the derived production-requirement graph. The
   operation-level preview does not substitute those requirements for tasks.
   Deanos Demo Menu publication remains separate from local operational
@@ -439,26 +440,26 @@ Before each task:
   order-led, and Xmas off. One Kitchen-owned production projection carries
   those Menu relationships through Dishes, Prep items, Recipes, Ingredients,
   and Mise; shared dependencies stay active when any enabled Menu needs them.
-  Console Demo and the landing Console preview share route-stable local Menu
+  Workspace Demo and the landing Workspace preview share route-stable local Menu
   service state and filter inactive Mise tasks. Availability badges, switches,
-  and inactive-card dimming belong only to the real Console; the landing Menu,
+  and inactive-card dimming belong only to the real Workspace; the landing Menu,
   Dish, Recipe, and Ingredient cards remain visually neutral. This state is
   Demo interaction only: it does not mutate fixtures, reuse publication
   status, or write Firestore.
   The landing Dishes entry is a food-dish showcase: it omits Drink records and
-  suppresses Food/Drink type labels. The full Console retains the complete
+  suppresses Food/Drink type labels. The full Workspace retains the complete
   Kitchen catalogue and its operational vocabulary.
-  The preview header keeps one `Open full Console` doorway visible across
+  The preview header keeps one `Open full Workspace` doorway visible across
   every operation. It selects Deanos as the read-only Demo Kitchen before
-  entering `/console/kitchen`; the public preview does not acquire Console
+  entering `/workspace/kitchen`; the public preview does not acquire Workspace
   target authority. The Kitchen index continues to present the bounded Live
   and Demo target choosers together, so this doorway never hides the user's
   real Kitchens.
   Orders projects the Deanos `KitchenOrder` records as
-  `console.orders`, derives Incoming/Queue/Pass from the canonical Order
+  `workspace.orders`, derives Incoming/Queue/Pass from the canonical Order
   lifecycle, and reuses the shared Order rail and ticket components without
   mutation controls.
-  Stations projects the same ordered `KitchenStation` records used by Console
+  Stations projects the same ordered `KitchenStation` records used by Workspace
   Demo. Suppliers resolves Kitchen-owned usage links through a Kitchen-owned
   pure adapter into Supplier-owned identity and coverage. It receives the
   Supplier-owned logo and the linked Company/Place image from the shared
@@ -469,7 +470,7 @@ Before each task:
   Reports navigation exposes the Kitchen Finance sheet without adding Finance
   to `kitchenOperations` or `KitchenDemoOperation`; it receives the Deanos
   completed-Order projection through the same Kitchen-owned reconciled
-  transaction/period projector as Console Demo.
+  transaction/period projector as Workspace Demo.
   The root
   retains local Dish page
   state while the Dishes coordinator owns its clickable breadcrumb and
@@ -479,25 +480,25 @@ Before each task:
   hover title. Detail tiles emit navigation and never expand a second canvas
   in place. No child
   loads Demo data, reads or writes a selected Kitchen, or acquires live
-  Console/Firebase authority. The Dish Finance child receives the additive
+  Workspace/Firebase authority. The Dish Finance child receives the additive
   presentation DTO from the Kitchen-owned Demo Dishes operation adapter, which
   composes the shared Dish estimate, completed-Order-derived quantities, and
-  derived total sales once for both Console Demo and Product Demo. Neither the
+  derived total sales once for both Workspace Demo and Product Demo. Neither the
   project adapter nor the child recalculates Supplier costs, Menu
   profitability, Dish relationships, or sales totals, creates a second sales
   fixture, or reads Live Orders or KitchenSales.
-  The Console or
+  The Workspace or
   preview source selection carries Demo/Live context; Finance field labels stay
   source-agnostic. Wider
-  screens place that component left of the buyer-facing Console text. The
+  screens place that component left of the buyer-facing Workspace text. The
   source family begins at
-  `app/components/Misebox/Landing/ConsolePreview/Index.vue`.
+  `app/components/Misebox/Landing/WorkspacePreview/Index.vue`.
   The composition is mobile-first: phone flow, touch targets, and compact
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
 - Misebox follows the shared ecosystem pricing literature. Free provides a
-  functional Kitchen Console, Pro is CHF 20/month self-managed, Managed is CHF
+  functional Kitchen Workspace, Pro is CHF 20/month self-managed, Managed is CHF
   50/month with bounded FireUX assistance, and Your App is CHF 600 setup
   followed by Pro or Managed. Core owns these common amounts and service
   meanings; Misebox owns its Kitchen-specific capabilities and limits. Managed
@@ -511,10 +512,10 @@ Before each task:
   canonical `/apps/:slug` details, and excludes the current global Misebox App
   from its own proof grid. It does not hard-code tenant Apps or read canonical
   App documents in the browser.
-- Misebox `/` is itself the browse-only public Kitchen Console; it is not a
-  landing doorway or redirect into `/console/kitchen`. The root page directly
-  composes the real Core Console layout and page shell, while `fireux-kitchens`
-  owns the inner `ConsoleKitchenAIWelcome` domain surface. Anonymous visitors
+- Misebox `/` is itself the browse-only public Kitchen Workspace; it is not a
+  landing doorway or redirect into `/workspace/kitchen`. The root page directly
+  composes the real Core Workspace layout and page shell, while `fireux-kitchens`
+  owns the inner `WorkspaceKitchenAIWelcome` domain surface. Anonymous visitors
   receive no selected-Kitchen reads or commands; the existing Kitchen selector
   mounts only for authenticated Users. Prompts and menu-file selection remain
   browser-local prototype interactions with no upload, provider execution, or
@@ -532,13 +533,13 @@ Before each task:
 - Bringli is the canonical Supplier product and supply-network host. Misebox
   loads `fireux-suppliers` in consumer mode only: it receives shared Supplier
   presentation and canonical read contracts, but no Supplier routes,
-  Supplier Console, onboarding, sitemap, or direct Supplier storage authority.
+  Supplier Workspace, onboarding, sitemap, or direct Supplier storage authority.
   Kitchen `Suppliers` remains the seamless Kitchen-side sourcing and procurement
   Operation; it owns Kitchen selections, preferences, delivery receipt and cost
   context while resolving Supplier identity, Catalogue and Items from Bringli.
   The retired `suppliers.misebox.app` doorway redirects permanently to Bringli
   during DNS and bookmark migration and must not regain a local landing.
-  New Suppliers enter through Bringli's trusted Supplier Console onboarding
+  New Suppliers enter through Bringli's trusted Supplier Workspace onboarding
   transaction; the normalized organization slug is both canonical document id
   and public route identity. Detached browser-created Supplier roots are not a
   supported acquisition path. Bringli Supplier owns identity, Items, Ingredients, and
@@ -587,7 +588,7 @@ Before each task:
   eventual canonical contact authority, never the browser cookie or live AI
   generation.
 - Kitchen Sproochli participation is configured only on the canonical root
-  Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
+  Kitchen through the trusted Kitchen Workspace endpoint. Shared Menu projections
   and the bounded public Kitchen detail show its Default/language trigger;
   a language selected on the Kitchen route follows the visitor into its
   published Menu doorways. AppKitchen remains access-only. Structured Menus
@@ -622,7 +623,7 @@ Before each task:
   Menu attachment and host-storage proof.
 - Ingredient is one shared culinary world rooted at `/ingredients/{id}` and
   currently owned by `fireux-kitchens`. `Ingredient.name` is simply the
-  popular canonical name used across Kitchen and Supplier Consoles, including
+  popular canonical name used across Kitchen and Supplier Workspaces, including
   names such as Cecina and Porcini; Ingredient stores no source-language or
   translated-name map. Synonym-only aliases, taxonomy, parent relationships,
   and lifecycle belong to the root. Active canonical names and aliases cannot
@@ -645,7 +646,7 @@ Before each task:
   contract is in the project's `app/content/marketplace-profile.ts` and
   `server/api/onboarding/profile.post.ts`.
 - Interlaken Essen's `/mis` route is a project-owned personal marketplace home,
-  not a Core Dashboard or Console. It reuses Core authentication, avatar, User,
+  not a Core Dashboard or Workspace. It reuses Core authentication, avatar, User,
   and AppUser state. Its buyer surface may store sparse private settings such
   as `delivery_address` on the existing app-private marketplace profile through
   the fixed-runtime authenticated `/api/marketplace/account` projection.

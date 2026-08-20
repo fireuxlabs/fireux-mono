@@ -70,7 +70,7 @@ function membershipDto(
     is_premium: isPremium,
     access_tier: access.tier ?? 'free',
     has_premium_access: access.hasPremiumAccess,
-    console_enabled: access.hasAdminAuthority || isConfiguredDeveloper,
+    workspace_enabled: access.hasAdminAuthority || isConfiguredDeveloper,
     onboarding_status: onboardingStatus,
     profiles,
   }

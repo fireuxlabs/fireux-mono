@@ -13,7 +13,7 @@ import {
   readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from '../index/onboarding/onboarding-policy.ts'
-import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
+import { resolveKitchenWorkspaceTargetIds } from './workspace-targets.ts'
 
 export async function readKitchenMutationActor(event: H3Event) {
   const fireux = useFireUXConfig(event)
@@ -55,14 +55,14 @@ export async function requireKitchenMutationAuthority(
     runtimeMembership.data?.role,
     'Current App membership is required to manage this Kitchen.'
   )
-  const targetIds = await resolveKitchenConsoleTargetIds(
+  const targetIds = await resolveKitchenWorkspaceTargetIds(
     actor.uid,
     runtimeMembership.data || {}
   )
   if (!targetIds.includes(kitchenId)) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'This Kitchen is not an available Console target.',
+      statusMessage: 'This Kitchen is not an available Workspace target.',
     })
   }
 

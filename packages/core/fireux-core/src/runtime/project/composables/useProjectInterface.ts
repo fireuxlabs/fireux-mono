@@ -67,7 +67,7 @@ function card(target?: ProjectSurface | null): ProjectInterfaceCard | null {
   const description = text(target.description)
   return {
     id,
-    // Project has no public detail route. Console selection owns navigation.
+    // Project has no public detail route. Workspace selection owns navigation.
     to: '',
     imageUrl: text(target.image_url),
     title: text(target.name) || id,

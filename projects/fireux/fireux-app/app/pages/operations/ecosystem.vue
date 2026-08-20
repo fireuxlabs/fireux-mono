@@ -25,7 +25,7 @@ const roadmap = [
 
 const action = {
   label: 'Open Ecosystem',
-  to: '/console/project/ecosystem',
+  to: '/workspace/project/ecosystem',
   icon: 'i-lucide-orbit',
 } as const
 

@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: project authorized roots without browser Firestore reads.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: project authorized roots without browser Firestore reads.
 // Concurrent edit — 2026-07-22 12:35 CEST — Canonical Kitchen theme write: project resolved style and server-authorized write capability.
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -9,8 +9,8 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
-  type KitchenConsoleTargetItem,
-  type KitchenConsoleTargetsResponse,
+  type KitchenWorkspaceTargetItem,
+  type KitchenWorkspaceTargetsResponse,
 } from '../../models/kitchen-index.model.ts'
 import type {
   KitchenOrdersConfig,
@@ -21,7 +21,7 @@ import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/utils/entity-management'
-import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
+import { resolveKitchenWorkspaceTargetIds } from './workspace-targets.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import {
   readKitchenFulfilmentConfig,
@@ -29,12 +29,12 @@ import {
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
   readKitchenVisibility,
-  readKitchenConsolePalette,
+  readKitchenWorkspacePalette,
 } from '../../utils/kitchen-spine.ts'
 
 type StoredRecord = Record<string, unknown>
 type CanonicalKitchenScope = {
-  management: KitchenConsoleTargetItem['management']
+  management: KitchenWorkspaceTargetItem['management']
   appId: string
 }
 
@@ -58,7 +58,7 @@ function readCanonicalKitchenScope(
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
-    'console',
+    'workspace',
   ].some((key) => Object.hasOwn(data, key))
   const management = readFireuxEntityManagement(data.management)
   const appId = management
@@ -93,7 +93,7 @@ function projectKitchenTarget(input: {
   support: StoredRecord
   place: StoredRecord
   scope: CanonicalKitchenScope
-}): KitchenConsoleTargetItem {
+}): KitchenWorkspaceTargetItem {
   const rootIdentity = readKitchenIdentity(input.root)
   const place = readPlacePresentation(input.place)
   const resolvedIdentity = menuKitchenIdentity(
@@ -107,14 +107,13 @@ function projectKitchenTarget(input: {
   }
 
   const visibility = readKitchenVisibility(input.root)
-  const menus = readKitchenMenusConfig(input.support)
+  const menus = readKitchenMenusConfig(input.root)
   const resolvedMenuStyle = record(resolvedIdentity.page_style)
   const gallery = place.gallery
   const tagline = rootIdentity.tagline || place.brandTagline
-  const supportConsole = record(input.support.console)
-  const consolePalette = readKitchenConsolePalette(input.support)
-  const orders = record(supportConsole.orders)
-  const tables = record(supportConsole.tables)
+  const workspacePalette = readKitchenWorkspacePalette(input.root)
+  const orders = record(input.root.orders)
+  const tables = record(input.root.tables)
   const shortName = place.shortName
   const brandTagline = place.brandTagline
   const formattedAddress = place.formattedAddress
@@ -167,15 +166,15 @@ function projectKitchenTarget(input: {
         ? { style: resolvedMenuStyle }
         : {}),
     },
-    ...(consolePalette ? { console_theme: { palette: consolePalette } } : {}),
+    ...(workspacePalette ? { workspace_theme: { palette: workspacePalette } } : {}),
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
       : {}),
     ...(Object.keys(tables).length
       ? { tables: tables as KitchenTablesConfig }
       : {}),
-    fulfilment: readKitchenFulfilmentConfig(input.support),
-    sproochli: readKitchenSproochliConfig(input.support),
+    fulfilment: readKitchenFulfilmentConfig(input.root),
+    sproochli: readKitchenSproochliConfig(input.root),
     display_name: displayName,
     name: displayName,
     ...(tagline ? { tagline } : {}),
@@ -201,9 +200,9 @@ function projectKitchenTarget(input: {
   }
 }
 
-export async function readKitchenConsoleTargets(
+export async function readKitchenWorkspaceTargets(
   event: H3Event
-): Promise<KitchenConsoleTargetsResponse> {
+): Promise<KitchenWorkspaceTargetsResponse> {
   const { uid } = await requireFirebaseBearerUser(
     event,
     'Sign in to view Kitchen targets.'
@@ -224,7 +223,7 @@ export async function readKitchenConsoleTargets(
     })
   }
 
-  const indexedTargetIds = await resolveKitchenConsoleTargetIds(
+  const indexedTargetIds = await resolveKitchenWorkspaceTargetIds(
     uid,
     currentMembership
   )

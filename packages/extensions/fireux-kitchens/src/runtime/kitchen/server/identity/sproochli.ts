@@ -18,7 +18,7 @@ import {
   readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from '../index/onboarding/onboarding-policy.ts'
-import { resolveKitchenConsoleTargetIds } from '../core/console-targets.ts'
+import { resolveKitchenWorkspaceTargetIds } from '../core/workspace-targets.ts'
 
 const allowedDefaultLanguages = [
   'mixed',
@@ -109,14 +109,14 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       runtimeMembership.get('role'),
       'Current App membership is required to manage this Kitchen.'
     )
-    const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
+    const runtimeTargetIds = await resolveKitchenWorkspaceTargetIds(
       uid,
       runtimeMembership.data() || {}
     )
     if (!runtimeTargetIds.includes(requested.kitchenId)) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'This Kitchen is not an available Console target.',
+        statusMessage: 'This Kitchen is not an available Workspace target.',
       })
     }
 

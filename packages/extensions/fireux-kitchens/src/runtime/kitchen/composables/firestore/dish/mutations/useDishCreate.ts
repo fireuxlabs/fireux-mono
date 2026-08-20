@@ -2,7 +2,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -15,7 +15,7 @@ import {
   type DishCreateInput,
 } from '../../../../models/dish.model.ts'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
-import { useKitchenConsoleSelection } from '../../../console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 
 type DishCreateDraft = {
   name: string
@@ -57,11 +57,11 @@ export function useDishCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleSelection()
+  const { selectedId } = useKitchenWorkspaceSelection()
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||

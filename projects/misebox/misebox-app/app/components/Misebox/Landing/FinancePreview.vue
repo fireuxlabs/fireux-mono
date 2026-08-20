@@ -1,15 +1,15 @@
 <template>
-  <MiseboxLandingConsolePreviewFinance
+  <MiseboxLandingWorkspacePreviewFinance
     :error="Boolean(error)"
-    :finance="productDemo?.console.finance || emptyFinance"
+    :finance="productDemo?.workspace.finance || emptyFinance"
   />
 </template>
 
 <script setup lang="ts">
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
-import MiseboxLandingConsolePreviewFinance from './ConsolePreview/Finance.vue'
+import MiseboxLandingWorkspacePreviewFinance from './WorkspacePreview/Finance.vue'
 
-const emptyFinance: MiseboxProductDemo['console']['finance'] = {
+const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
 }
 const { data: productDemo, error } = await useMiseboxProductDemo()

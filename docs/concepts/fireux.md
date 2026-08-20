@@ -20,7 +20,7 @@ Explain FireUX as the platform shape behind the repo.
 - Parent: fireux-mono.md
 - Child: runtime-package.md
 - Child: app-config.md
-- Child: console.md
+- Child: workspace.md
 - Child: firestore-entity.md
 
 ## Horizontal links
@@ -47,8 +47,8 @@ Explain FireUX as the platform shape behind the repo.
 
 ## Runtime app roles
 
-- `global`: app can expose multiple domains/consoles.
-- `tenant`: App-support and AppUser membership records resolve its Console
+- `global`: app can expose multiple domains/workspaces.
+- `tenant`: App-support and AppUser membership records resolve its Workspace
   targets; deploy-time configuration does not pin entity IDs.
 - `standalone`: FireUX-owned standalone app mode.
 

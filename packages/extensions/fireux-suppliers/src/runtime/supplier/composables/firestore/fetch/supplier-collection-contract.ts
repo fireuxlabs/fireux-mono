@@ -1,4 +1,4 @@
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
@@ -34,7 +34,7 @@ export type SupplierCollectionFilter = {
   teamId?: SupplierCollectionFilterValue
 }
 
-export type SupplierCollectionSource = ConsoleSource
+export type SupplierCollectionSource = WorkspaceSource
 
 export type UseSupplierCollectionOptions = {
   source?:

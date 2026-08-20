@@ -5,7 +5,7 @@ import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 /**
  * Family: Property-scoped hospitality operation.
  * Storage: canonical child of Property.
- * Owner console: Property.
+ * Owner workspace: Property.
  *
  * A Reservation is shared by the BuenoHost global app and branded tenant apps.
  * Channel records retain provenance; Google Calendar is an optional projection,

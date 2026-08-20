@@ -13,7 +13,7 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { PlaceStorage, type Place } from 'fireux-places/runtime/place/models/place.model'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { targetHasWorkspaceAccess } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
@@ -50,7 +50,7 @@ const normalizeSource = (value: unknown): KitchenFetchSource => {
 /**
  * Raw root/scoped Kitchen collection adapter.
  *
- * Console and exact-target development reads use this Firestore adapter.
+ * Workspace and exact-target development reads use this Firestore adapter.
  */
 export function useDevKitchenCollection(
   options: UseDevKitchenCollectionOptions = {}
@@ -256,7 +256,7 @@ export function useDevKitchenCollection(
         if (hasIdFilter.value && !idSet.value.has(id)) return null
         if (hasOperatorFilter.value) {
           if (!filterOperatorId.value) return null
-          if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
+          if (!targetHasWorkspaceAccess(kitchen, filterOperatorId.value)) return null
         }
         const testPlace = sourceRef.value === 'test'
           ? testPlacesById.value.get(normalize(kitchen.id)) ?? null

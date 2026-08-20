@@ -41,17 +41,17 @@
             </div>
 
             <p
-              v-if="consoleBridgeLine"
+              v-if="workspaceBridgeLine"
               class="landing-hero__paragraph landing-hero__paragraph--bridge"
-              v-html="consoleBridgeLine"
+              v-html="workspaceBridgeLine"
             />
 
             <div
-              v-if="consoleCtas.length"
+              v-if="workspaceCtas.length"
               class="landing-hero__actions landing-hero__actions--primary"
             >
               <UButton
-                v-for="entry in consoleCtas"
+                v-for="entry in workspaceCtas"
                 :key="entry.key"
                 size="lg"
                 variant="subtle"
@@ -173,7 +173,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useConsoleEntryCta } from '../../composables/fireux/console/useConsoleEntryCta'
+import { useWorkspaceEntryCta } from '../../composables/fireux/workspace/useWorkspaceEntryCta'
 import { useKeyEntityTags } from '../../composables/landing/useKeyEntityTags'
 import { useAssets } from '../../app/composables/brand/useAssets'
 
@@ -196,7 +196,7 @@ const props = defineProps<{
   primaryCtaLabel?: string
   secondaryCtaLabel?: string
   secondaryCtaTo?: string
-  consoleBridgeLine?: string
+  workspaceBridgeLine?: string
   heroBullets?: readonly string[]
   rightPanelItems?: readonly RightPanelItem[]
   rightPanelTags?: readonly string[]
@@ -254,7 +254,7 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { consoleActions: consoleCtas } = useConsoleEntryCta()
+const { workspaceActions: workspaceCtas } = useWorkspaceEntryCta()
 const auth = import.meta.client ? useAuth() : null
 const isMounted = ref(false)
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)

@@ -27,7 +27,7 @@
               <tr><td>Appearance</td><td>Core remembers light or dark after you select it.</td><td>Until you select System or clear site data. Selecting System removes it.</td></tr>
               <tr><td>Authentication</td><td>Firebase maintains sign-in and security state for the current App. A one-hour tab value can complete a requested sign-up redirect.</td><td>Current browser session. Sign-out or ending the browser session clears local sign-in state; the redirect value is removed after completion or expiry.</td></tr>
               <tr><td>Language</td><td>The current App remembers the language you select.</td><td>Up to one year. You can remove it with browser site-data controls.</td></tr>
-              <tr><td>Console</td><td>The current App remembers the authenticated Console source and target you select.</td><td>Browser session, or until the selection is cleared.</td></tr>
+              <tr><td>Workspace</td><td>The current App remembers the authenticated Workspace source and target you select.</td><td>Browser session, or until the selection is cleared.</td></tr>
               <tr><td>Cart and anonymous order</td><td>The ordering App retains cart lines, duplicate-submission protection, and the capability and receipt details needed to recover the order in this browser.</td><td>At most 24 hours; removed when cleared, completed where applicable, or found expired.</td></tr>
               <tr><td>Chat</td><td>The current App remembers the conversation you started.</td><td>At most 30 days; removed when found expired or through browser site-data controls.</td></tr>
             </tbody>

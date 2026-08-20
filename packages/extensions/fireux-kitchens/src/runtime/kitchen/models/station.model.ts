@@ -40,7 +40,7 @@ export const KitchenStationRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Kitchen',
   scoped: KitchenStationStorage.path,
   notes: [

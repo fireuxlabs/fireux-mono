@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Michel AG Metallbau berät, plant, fertigt, liefert und montiert Metallbauaufträge.',
     promise_html:
       'Stahlbau, Metallbau und Tore aus Goldswil.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Kontakt und Öffnungszeiten auf einen Blick.',
   },
   seo: {

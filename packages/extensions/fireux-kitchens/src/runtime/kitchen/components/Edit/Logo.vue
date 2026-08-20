@@ -1,7 +1,7 @@
 <template>
   <MoleculesDisclosurePanel
     title="Kitchen logo"
-    description="The logo used across this Kitchen's Console, menus, and cards."
+    description="The logo used across this Kitchen's Workspace, menus, and cards."
     icon="i-lucide-image"
   >
     <div class="mt-4 space-y-4">

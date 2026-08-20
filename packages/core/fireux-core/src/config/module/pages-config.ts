@@ -5,20 +5,20 @@ import { ensureRuntimeLayer } from './runtime-layer'
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   ensureRuntimeLayer(resolver, nuxt)
   nuxt.hook('pages:extend', (pages: any[]) => {
-    const disableConsoleTransitions = (items: any[]) => {
+    const disableWorkspaceTransitions = (items: any[]) => {
       for (const page of items) {
         if (
-          String(page?.path ?? '').startsWith('/console') ||
-          String(page?.file ?? '').includes('/pages/console/')
+          String(page?.path ?? '').startsWith('/workspace') ||
+          String(page?.file ?? '').includes('/pages/workspace/')
         ) {
           page.meta = { ...(page.meta || {}), pageTransition: false }
         }
         if (Array.isArray(page?.children)) {
-          disableConsoleTransitions(page.children)
+          disableWorkspaceTransitions(page.children)
         }
       }
     }
-    disableConsoleTransitions(pages)
+    disableWorkspaceTransitions(pages)
   })
 }
 

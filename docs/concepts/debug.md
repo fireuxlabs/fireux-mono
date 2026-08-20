@@ -15,7 +15,7 @@ Map how debug information should appear without becoming page noise.
 
 ## Horizontal links
 
-- console.md
+- workspace.md
 - demo-data.md
 - nuxt-ui.md
 
@@ -30,7 +30,7 @@ Map how debug information should appear without becoming page noise.
   build-time exclusion is not an authentication boundary. Dev pages render
   client-only so unauthenticated SSR cannot disclose diagnostic state.
 - Dev preview/sample data belongs to authenticated dev tooling. It must not
-  import console Demo Data, whose lazy read-only contract is separate.
+  import workspace Demo Data, whose lazy read-only contract is separate.
 - Every component-level debug payload separates source objects from derived
   values. The shared panel presents those concerns in that order and retains
   raw JSON as a secondary view.

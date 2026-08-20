@@ -52,10 +52,12 @@ Package runtime filesystem ownership starts at
 cross-entity shared code and Nuxt entrypoints. Entity-owned implementation
 lives under the finite scoped spine
 `src/runtime/<entity>/{components,composables,models,server,utils,demo,tools}`;
-`demo` and `tools` remain optional and empty symmetry is forbidden. Console is
-a shared surface, not an entity owner: shared Console
-primitives remain in the root spine, while an entity's Console adapters live
-under that entity. The declared App, Ecosystem, User, Project, Place, Job,
+`demo` and `tools` remain optional and empty symmetry is forbidden. Workspace
+is the authorized product surface and canonical `/workspace/**` route family,
+not an entity owner. Existing Workspace-named symbols and `/api/workspace/**`
+remain internal implementation and transport vocabulary during migration.
+Shared Workspace primitives remain in the root spine, while an entity's Workspace
+adapters live under that entity. The declared App, Ecosystem, User, Project, Place, Job,
 Marketplace Store, Product, Kitchen, Menu, Ingredient, Supplier, Portfolio,
 and Property families use that scoped runtime now. Their completed legacy
 paths are rejected by `scripts/guards/runtime-ownership.mjs`, and scoped Nuxt
@@ -217,10 +219,10 @@ requirement, report the exact missing seam before broad edits.
   copy the shared generated-selector CSS into projects.
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
-- Direct Console pages require authentication by default. A browse-only route
-  may opt into `consoleAccess: 'public-entry'` with `requiresAuth: false` only
+- Direct Workspace pages require authentication by default. A browse-only route
+  may opt into `workspaceAccess: 'public-entry'` with `requiresAuth: false` only
   when it also requires no selected entity. That public entry must not mount
-  protected entity reads or commands for anonymous visitors. The Console page
+  protected entity reads or commands for anonymous visitors. The Workspace page
   guard enforces the route metadata exception; the page owns the corresponding
   anonymous composition boundary.
 
@@ -252,7 +254,7 @@ requirement, report the exact missing seam before broad edits.
 - An entity family owns the complete boundary for one entity: canonical model
   and identity, authorized reads, lifecycle commands, validation and policy,
   derived facts, named Directory/presentation views, events, and the
-  page, Console, or Tool adapters that consume those capabilities. It is not
+  page, Workspace, or Tool adapters that consume those capabilities. It is not
   one umbrella composable and it is not CRUD symmetry for its own sake.
 - Use responsibility names consistently: `useXDetail` for one routable
   object, `useXFetch` for an authorized canonical or operational read,
@@ -282,7 +284,7 @@ requirement, report the exact missing seam before broad edits.
 - Core User, App, Ecosystem, and Project are the proving Core ownership family.
   Their canonical models and entity capabilities now live under the
   corresponding `runtime/<entity>/{models,components,composables,server}`
-  roles. Generic App-shell, Console, Auth, Firestore, navigation, colour-mode,
+  roles. Generic App-shell, Workspace, Auth, Firestore, navigation, colour-mode,
   and UI mechanics remain in the root shared/system spine. Profile composition
   remains directly entity-owned rather than hidden beneath `Cards`.
 
@@ -294,7 +296,7 @@ requirement, report the exact missing seam before broad edits.
 - Kitchen root IDs are stable operational identity and currently follow the
   linked Place ID. Its authored `slug` is the reviewed public route key and is
   resolved only by the Kitchen-owned bounded server resolver, which rejects
-  duplicates. Internal Kitchen, Menu, Order, and Console relationships keep
+  duplicates. Internal Kitchen, Menu, Order, and Workspace relationships keep
   using the stable root ID; they never substitute the route slug.
 - Presentation may fall back between display labels, but display fallback must
   never select storage or route identity.
@@ -357,7 +359,7 @@ requirement, report the exact missing seam before broad edits.
 - Source organization does not hide stored-data debt. The 2026-08-05 bounded
   migration removed duplicated User/AppUser App/profile/capability indexes
   across current databases. Membership documents determine App access,
-  profile documents determine profile state, and server-owned Console target
+  profile documents determine profile state, and server-owned Workspace target
   ids live at `users/{uid}/private/targets`. `App.derived.user_count` and App
   build/database metadata remain migration candidates. Use
   `docs/concepts/core-models.md` as the ownership and migration map.
@@ -377,18 +379,18 @@ requirement, report the exact missing seam before broad edits.
   read-only workspace, and must not acquire repository or task context. Start
   at `packages/extensions/fireux-ai/src/runtime` and
   `docs/concepts/ai-document-processing.md` when this boundary changes.
-- `fireux-ai` owns the provider-neutral Console/operation-agent definition
+- `fireux-ai` owns the provider-neutral Workspace/operation-agent definition
   contract: Core, User, and ecosystem nodes; parent identity; entity target and
-  selection policy; Console and operation scope; typed context providers with
+  selection policy; Workspace and operation scope; typed context providers with
   explicit owners; capabilities; tool ids; and shared-inference versus
   independent-on-demand execution. `CoreAI` and `UserAI` are the minimal root
   definitions. Ecosystem packages own their named ecosystem coordinator and
-  compose domain-owned Console agents; domain packages own operation agents.
+  compose domain-owned Workspace agents; domain packages own operation agents.
   FireUX AI also owns the reusable shared inference instruction. Executing
   agent runtimes compose it with any concise domain instruction owned by the
   domain agent catalogue, then supply live registered tools, authorized
   records, and permissions rather than encoding question-specific responses.
-  The guarded Console families are Project, Kitchen, Supplier, Portfolio,
+  The guarded Workspace families are Project, Kitchen, Supplier, Portfolio,
   Property, and the structural Blank harness. A catalogue entry is scope and
   metadata, not an automatic model call or permission to read context.
   An executing agent may return one bounded `FireuxAgentTip` to its declared
@@ -454,7 +456,7 @@ requirement, report the exact missing seam before broad edits.
   App selectors, or inferred media ownership.
 - Core `LandingProductIndex` owns the Main App product-landing region
   vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
-  `surfaces`, `console`, `specifics`, `ecosystems`, `apps`, `tools`,
+  `surfaces`, `workspace`, `specifics`, `ecosystems`, `apps`, `tools`,
   `solutions`, then `operations`. An App may pass `regionOrder` as an ordered
   subset of those named regions so unavailable product layers disappear
   without copying the shared renderer or inventing a project-local region. The
@@ -491,10 +493,10 @@ requirement, report the exact missing seam before broad edits.
   composition and its explicit copy-emphasis variant for sections where the
   explanation must carry more visual weight,
   `LandingProductCatalogue` owns the shared catalogue grid, and
-  `LandingConsolePreviewFrame` owns the responsive target rail, operation
-  navigation, selected heading, and persistent full-Console doorway shared by
+  `LandingWorkspacePreviewFrame` owns the responsive target rail, operation
+  navigation, selected heading, and persistent full-Workspace doorway shared by
   the FireUX Project and Misebox Kitchen proofs. Each project retains its
-  Console capability catalogue, target Card, Demo adapter, selection, and typed body
+  Workspace capability catalogue, target Card, Demo adapter, selection, and typed body
   children; unsupported or private operations remain truthful neutral states.
   These surfaces use flat semantic Nuxt UI treatments without decorative
   gradients or flares. Product Apps retain truthful data, copy, routes, and
@@ -503,7 +505,7 @@ requirement, report the exact missing seam before broad edits.
   platform Ecosystems landing section. An ecosystem Main App shows its Apps
   section only when more than one active child App remains after excluding the
   Main App itself; its heading is only `<App name>'s Apps`. Main App heroes use
-  `Get started` and `Go to console` as their primary action pair while each
+  `Get started` and `Go to workspace` as their primary action pair while each
   project retains its own destination routes. Core `useLandingMotion`
   coordinates the shared semantic hero parts and each App-owned preview through
   one responsive GSAP timeline; Apps retain the preview and do not import GSAP.
@@ -521,24 +523,24 @@ requirement, report the exact missing seam before broad edits.
   App-owned visual proof on the right. Subscription pricing follows the Hero
   and does not enter its pinned grid. Product surfaces follow pricing. A
   one-surface App presents that surface directly without a selector or visible
-  `Surfaces` label; a multi-surface App may provide a selector. Console
-  Operations remain navigation within a Console and do not become separate
+  `Surfaces` label; a multi-surface App may provide a selector. Workspace
+  Operations remain navigation within a Workspace and do not become separate
   product surfaces. App-owned deeper feature sections follow the surface
   presentation.
   Core `usePricing` owns the common commercial meanings and
-  CHF amounts: Free is a functional Console, Pro is CHF 20/month self-managed,
+  CHF amounts: Free is a functional Workspace, Pro is CHF 20/month self-managed,
   Managed is CHF 50/month with bounded FireUX assistance, and Your App is CHF
   600 setup followed by Pro or Managed. FireUX alone adds Your Ecosystem at CHF
   1,200 setup plus CHF 50/month maintenance and a 50% customer-App revenue
-  share. Each Main App owns one `useXPricing` wrapper with its Console
+  share. Each Main App owns one `useXPricing` wrapper with its Workspace
   capabilities, limits, name, and contact; pricing literature never enters
   `defineFireuxConfig` or public runtime config. Tenant Apps do not acquire the
   ecosystem-owner literature. Main Apps place Core
   `LandingOperationRail` above Section One and supply only their own working
-  Console capabilities. Every Console Entity has Index, Overview, Identity,
+  Workspace capabilities. Every Workspace Entity has Index, Overview, Identity,
   Team, and shared Notifications; permissions underpin them rather than
   becoming a navigation page. Entity operation catalogues contain only the
-  Operations listed in `docs/concepts/console.md`. Public product directories never masquerade as
+  Operations listed in `docs/concepts/workspace.md`. Public product directories never masquerade as
   Operations. That rail sticks
   beneath the header, then exits upward as the shared pricing strip approaches
   the same edge. Pricing exposes no visible heading and compacts without
@@ -571,7 +573,7 @@ requirement, report the exact missing seam before broad edits.
   static.
   FireUX mounts the reusable orbit in its Main App hero as a live public App
   and Ecosystem presentation. Misebox retains its mobile-first
-  guest-Menu-to-Kitchen-Console handoff
+  guest-Menu-to-Kitchen-Workspace handoff
   stage as a dormant project-owned presentation backed by its existing Product
   Demo projection; it is not mounted in the current copy-only hero.
 - A main App may explicitly select the typed Core `sci-fire` design pack
@@ -606,7 +608,7 @@ requirement, report the exact missing seam before broad edits.
   Start at `App/Shell.vue`, `manifest.webmanifest.get.ts`, and the project guard
   when this contract changes.
 
-## Console target and onboarding authority
+## Workspace target and onboarding authority
 
 - FireUX Core owns the single `/auth` route and its sign-in, registration, and
   authenticated redirect behavior for every App. Core User onboarding owns
@@ -639,7 +641,7 @@ requirement, report the exact missing seam before broad edits.
   `user-app-access` resolver derives `dev > admin > premium > free` only for a
   valid membership; Dev never manufactures Admin authority, while Dev and Admin
   inherit Premium product capability. Profile documents, not User/AppUser
-  arrays, are profile authority. AppUser never duplicates Console entity
+  arrays, are profile authority. AppUser never duplicates Workspace entity
   ownership or access; each entity family's App-support records are that
   authority.
 - User list and detail readers return canonical User identities. On a tenant
@@ -669,11 +671,11 @@ requirement, report the exact missing seam before broad edits.
   root and completes the same-id App support record with the caller's
   operator/team authority. Operators may mutate; team members have target/read
   membership only; current App admins are the explicit override.
-- Console-capable roots use the shared cumulative management contract:
-  `{ mode: 'root' }`, `{ mode: 'console' }`, or
-  `{ mode: 'app', app_id }`. `console` resolves through the ecosystem package's
+- Workspace-capable roots use the shared cumulative management contract:
+  `{ mode: 'root' }`, `{ mode: 'workspace' }`, or
+  `{ mode: 'app', app_id }`. `workspace` resolves through the ecosystem package's
   conventional `<ecosystem>-app`, while only `app` stores an App id. Core must not
-  enumerate extension Console families or own a generic domain-root factory;
+  enumerate extension Workspace families or own a generic domain-root factory;
   each domain owns validation and its trusted root/support transaction.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
@@ -683,16 +685,16 @@ requirement, report the exact missing seam before broad edits.
 
 - Package and project owners may provide deterministic read-only Demo World
   modules under their guarded Demo roots.
-- Consoles load their owner's fixtures lazily through `useConsoleDemoData`. A
+- Workspaces load their owner's fixtures lazily through `useWorkspaceDemoData`. A
   project Product Demo surface may instead compose its project and
   package-owned worlds through one named
   `app/composables/product-demo/use*ProductDemo.ts` adapter. Each independently
   loaded surface declares a unique `productDemoSurface` and the literal
   `productDemoDataSource = 'demo'`; duplicate surface adapters are forbidden.
-- Every Console family that accepts the shared Demo source must carry its own
+- Every Workspace family that accepts the shared Demo source must carry its own
   lazy owner-local adapter and preserve the Live-relative target, selection,
   and selected-parent operation shape.
-- Demo scenarios name their owning App and Console adapters filter by that App
+- Demo scenarios name their owning App and Workspace adapters filter by that App
   before projection. Fixtures use each family's current model declaration:
   root/App-support families provide exact same-id access support, required
   linked roots such as Place remain separate model-shaped records, and
@@ -719,15 +721,15 @@ requirement, report the exact missing seam before broad edits.
 ## Semantic catalogue boundaries
 
 - `/operations` is the factual index of operations exposed inside the app's
-  consoles. Every declared operation must point to a working `/console/*`
+  workspaces. Every declared operation must point to a working `/workspace/*`
   operation route; Overview, Identity, Team, Sundries, dashboards, public
   indexes, and tools are not Operations.
-- `/operations` is app-wide and groups entries by their owning Console. Prefer
+- `/operations` is app-wide and groups entries by their owning Workspace. Prefer
   stable anchors such as `/operations#kitchen`; do not duplicate the index at
   domain routes such as `/kitchen/operations`.
 - Each declared operation also receives a factual detail surface at
   `/operations/<slug>` when its owning record declares an app-wide unique
-  public slug. It derives its language and working Console CTA from that same
+  public slug. It derives its language and working Workspace CTA from that same
   record; it is not a second capability source or an SEO Solution.
 - `/solutions` is the authored customer and search-intent projection of proven
   capabilities. A Solution is not evidence that an operation exists.
@@ -748,8 +750,8 @@ requirement, report the exact missing seam before broad edits.
   real suffix. Do not repair resolution by adding `.ts` to individual imports.
 - App runtime configuration derives from the authored `FireuxAppConfig` and is
   normalized once by the event-aware `useFireUXConfig`; browser and trusted
-  server consumers do not reparse raw Console config, and Core does not cache a
-  partially compared App shape globally. Core `resolveConsoleCanCreate` owns
+  server consumers do not reparse raw Workspace config, and Core does not cache a
+  partially compared App shape globally. Core `resolveWorkspaceCanCreate` owns
   the shared explicit override and non-tenant fallback.
 - App initialization is protected by authenticated server UID authorization
   and existing-admin checks. Do not recreate a cosmetic client developer PIN
@@ -762,10 +764,10 @@ requirement, report the exact missing seam before broad edits.
 - App source declares the complete reviewed eight-role semantic palette. App
   initialization persists that source when no lower theme layer exists and
   backfills only an absent canonical palette. Domain-owned App attachment may
-  derive a missing four-role Console palette from the complete source, then
+  derive a missing four-role Workspace palette from the complete source, then
   compacts canonical `App.theme.palette` to only roles that extend or override
-  Console. Existing Console colours are preserved; renderers resolve the full
-  palette from Console plus App rather than storing duplicates. The same setup
+  Workspace. Existing Workspace colours are preserved; renderers resolve the full
+  palette from Workspace plus App rather than storing duplicates. The same setup
   action validates, uploads and records all five canonical App Storage masters.
   Root entities never receive App presentation.
 - App theme typography is limited to `display_family` and `body_family`.
@@ -782,7 +784,7 @@ requirement, report the exact missing seam before broad edits.
   and deterministic immutable FinancialFact primitives. It imports no
   producing domain.
 - FinancialFacts are App-scoped support records, not entities, reports,
-  general-ledger entries, or Console Operations. Raw facts remain server-only;
+  general-ledger entries, or Workspace Operations. Raw facts remain server-only;
   P&L and other reporting are bounded derived projections.
 - Domain packages retain their named operations and records. A trusted domain
   lifecycle may atomically emit a normalized fact; the dependency points from
@@ -822,7 +824,7 @@ requirement, report the exact missing seam before broad edits.
   An ecosystem without released browser policy retains an explicit local
   default-deny fragment; it never omits its Rules authority or uses an open
   placeholder.
-- Console target IDs are persisted relationship authority, not Nuxt
+- Workspace target IDs are persisted relationship authority, not Nuxt
   configuration. Each entity family's App-support records state both which
   roots an App owns and which members may operate them. AppUser contains only
   App membership and capability state; it never mirrors entity target IDs.
@@ -901,7 +903,7 @@ Found` page. An app may pass `--verify-text` for one public source-defined
   cancellation releases capacity. Publishing and applications remain
   unrestricted.
 - An accepted Engagement is evidence for a later Team or rota adapter. It never
-  grants Team membership, console access, App governance, or operator authority
+  grants Team membership, workspace access, App governance, or operator authority
   by itself.
 - Ecosystem composition used by Professional Experience remains outside Job
   creation and cannot change this shared contract.
@@ -1051,7 +1053,7 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   singular because this directory describes the one local Firebase project and
   its owning ecosystem; Apps remain plural.
 - The directory lists only Projects, Ecosystems, and Apps hosted by that
-  Firebase project. A global Console aggregates project directories through a
+  Firebase project. A global Workspace aggregates project directories through a
   trusted server boundary; one project never stores another project's copy.
 - Directory records contain non-secret routing, status, public presentation,
   and asset-reference fields only. Canonical memberships, Users, domain
@@ -1061,7 +1063,7 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   membership and operational authority live beneath it. The matching default
   `AppMeta` record is a bounded directory projection, not competing App
   identity. `AppMeta` contains only local ownership, database routing, role,
-  status, public presentation, assets, and Console-family discovery. It never
+  status, public presentation, assets, and Workspace-family discovery. It never
   contains memberships, User ids, counts, moderation state, repository paths,
   build state, or operational content.
 - The Firebase-project directory and FireUX platform aggregation consume these

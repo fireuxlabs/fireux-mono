@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: derive guest Menu presentation from the same typed Demo records used by Console.
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: derive guest Menu presentation from the same typed Demo records used by Workspace.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: feature Garden Room and resolve Kitchen-owned payments into presentation only.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: derive explicit Menu, Kiosk and Service presentation exports.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: feature Misebox Restaurant as the default presentation world.
@@ -15,7 +15,7 @@ import {
   featuredServiceDemoScenario,
 } from '../scenarios'
 import type { KitchenDemoScenario } from '../core/types'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const imageShade = (value: unknown) => {
@@ -34,7 +34,7 @@ const priceLabel = (price: number, currencyCode: string) =>
     format: 'dash',
     showCurrency: true,
   })
-const demoTheme = (scenario: KitchenDemoScenario): ConsoleTheme => {
+const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
   const style = scenario.kitchen.menus.style
   return {
     palette: {

@@ -30,7 +30,7 @@ export const KitchenPrepItemEntity = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Kitchen',
   scoped: KitchenPrepItemStorage.path,
   notes: [

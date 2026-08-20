@@ -11,6 +11,6 @@ export default defineFireuxConfig({
   modules: ['fireux-products'],
   seo: {
     staticPaths: ['/products', '/blog'],
-    noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],
+    noindexPaths: ['/workspace', '/workspace/**', '/admin', '/admin/**'],
   },
 })

@@ -29,7 +29,7 @@ const CORE_PACKAGE_PATH = 'packages/core/fireux-core/package.json'
 const CORE_APP_COLLECTION_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/AppCollection.vue'
 const CORE_CONSOLE_PREVIEW_FRAME_PATH =
-  'packages/core/fireux-core/src/runtime/components/landing/ConsolePreviewFrame.vue'
+  'packages/core/fireux-core/src/runtime/components/landing/WorkspacePreviewFrame.vue'
 const CORE_CARD_ORBIT_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.vue'
 const CORE_CARD_ORBIT_GEOMETRY_PATH =
@@ -143,53 +143,53 @@ const MISEBOX_ORDERING_TOOL_CONTRACT_PATH =
 const MISEBOX_FINANCE_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/FinancePreview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue'
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Index.vue'
 const KITCHEN_MISE_BOARD_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskBoard.vue'
 const KITCHEN_MISE_COLLECTION_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskCollection.vue'
 const KITCHEN_MISE_CONSOLE_READ_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Mise/Read.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Mise/Read.vue'
 const KITCHEN_MISE_PRESENTATION_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
 const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
   menus:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Menus.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Menus.vue',
   ingredients:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Ingredients.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Ingredients.vue',
   dishes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes.vue',
   dishCollection:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Collection.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Collection.vue',
   dishDetail:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Detail.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Detail.vue',
   dishDetailSections:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/DetailSections.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/DetailSections.vue',
   dishFinance:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Finance.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Finance.vue',
   dishSpec:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Spec.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Spec.vue',
   dishPrepItems:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/PrepItems.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/PrepItems.vue',
   dishRecipes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Recipes.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Recipes.vue',
   dishMise:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Mise.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Mise.vue',
   recipes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Recipes.vue',
-  mise: 'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Mise.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Recipes.vue',
+  mise: 'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Mise.vue',
   orders:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Orders.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Orders.vue',
   stations:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Stations.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Stations.vue',
   suppliers:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Suppliers.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Suppliers.vue',
   tables:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Tables.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Tables.vue',
   finance:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Finance.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Finance.vue',
   emptyCanvas:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/EmptyCanvas.vue',
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/EmptyCanvas.vue',
 }
 const MISEBOX_META_PATH = 'projects/misebox/misebox-app/app/meta.ts'
 const MISEBOX_META_SOURCE_PATH =
@@ -207,17 +207,17 @@ const FIREUX_PRICING_STRIP_PATH =
 const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
 const FIREUX_META_PATH = 'projects/fireux/fireux-app/app/meta.ts'
 const FIREUX_CONSOLE_PREVIEW_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Index.vue'
+  'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Index.vue'
 const FIREUX_SURFACE_SHOWCASE_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/SurfaceShowcase.vue'
 const FIREUX_PRODUCT_DEMO_PATH =
   'projects/fireux/fireux-app/app/composables/product-demo/useFireuxProductDemo.ts'
 const FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
-  apps: 'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Apps.vue',
+  apps: 'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Apps.vue',
   ecosystems:
-    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Ecosystems.vue',
+    'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Ecosystems.vue',
   privateState:
-    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/PrivateState.vue',
+    'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/PrivateState.vue',
 }
 const FIREUX_CARD_ORBIT_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/CardOrbit.vue'
@@ -767,7 +767,7 @@ export async function run(ctx) {
   const corePackage = read(repoRoot, CORE_PACKAGE_PATH)
   const ecosystemHome = read(repoRoot, CORE_ECOSYSTEM_HOME_PATH)
   const appCollection = read(repoRoot, CORE_APP_COLLECTION_PATH)
-  const consolePreviewFrame = read(repoRoot, CORE_CONSOLE_PREVIEW_FRAME_PATH)
+  const workspacePreviewFrame = read(repoRoot, CORE_CONSOLE_PREVIEW_FRAME_PATH)
   const cardOrbit = [
     read(repoRoot, CORE_CARD_ORBIT_PATH),
     read(repoRoot, CORE_CARD_ORBIT_GEOMETRY_PATH),
@@ -829,12 +829,12 @@ export async function run(ctx) {
     MISEBOX_ORDERING_TOOL_CONTRACT_PATH
   )
   const miseboxFinancePreview = read(repoRoot, MISEBOX_FINANCE_PREVIEW_PATH)
-  const miseboxConsolePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
+  const miseboxWorkspacePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
   const kitchenMiseBoard = read(repoRoot, KITCHEN_MISE_BOARD_PATH)
   const kitchenMiseCollection = read(repoRoot, KITCHEN_MISE_COLLECTION_PATH)
-  const kitchenMiseConsoleRead = read(repoRoot, KITCHEN_MISE_CONSOLE_READ_PATH)
+  const kitchenMiseWorkspaceRead = read(repoRoot, KITCHEN_MISE_CONSOLE_READ_PATH)
   const kitchenMisePresentation = read(repoRoot, KITCHEN_MISE_PRESENTATION_PATH)
-  const miseboxConsolePreviewComponents = Object.fromEntries(
+  const miseboxWorkspacePreviewComponents = Object.fromEntries(
     Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
       ([key, filePath]) => [key, read(repoRoot, filePath)]
     )
@@ -852,10 +852,10 @@ export async function run(ctx) {
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
   const fireuxPage = read(repoRoot, FIREUX_PAGE_PATH)
   const fireuxMeta = read(repoRoot, FIREUX_META_PATH)
-  const fireuxConsolePreview = read(repoRoot, FIREUX_CONSOLE_PREVIEW_PATH)
+  const fireuxWorkspacePreview = read(repoRoot, FIREUX_CONSOLE_PREVIEW_PATH)
   const fireuxSurfaceShowcase = read(repoRoot, FIREUX_SURFACE_SHOWCASE_PATH)
   const fireuxProductDemo = read(repoRoot, FIREUX_PRODUCT_DEMO_PATH)
-  const fireuxConsolePreviewComponents = Object.fromEntries(
+  const fireuxWorkspacePreviewComponents = Object.fromEntries(
     Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
       ([key, filePath]) => [key, read(repoRoot, filePath)]
     )
@@ -892,8 +892,8 @@ export async function run(ctx) {
   checkMobileFirst({
     repoRoot,
     filePath: CORE_CONSOLE_PREVIEW_FRAME_PATH,
-    source: consolePreviewFrame,
-    selectors: ['.landing-console-preview__layout'],
+    source: workspacePreviewFrame,
+    selectors: ['.landing-workspace-preview__layout'],
     breakpoints: [],
     violations,
   })
@@ -989,7 +989,7 @@ export async function run(ctx) {
 
   const landingRegions = [
     'surfaces',
-    'console',
+    'workspace',
     'specifics',
     'ecosystems',
     'apps',
@@ -1071,7 +1071,7 @@ export async function run(ctx) {
   const flatLandingSources = [
     [CORE_PATH, core],
     [CORE_APP_COLLECTION_PATH, appCollection],
-    [CORE_CONSOLE_PREVIEW_FRAME_PATH, consolePreviewFrame],
+    [CORE_CONSOLE_PREVIEW_FRAME_PATH, workspacePreviewFrame],
     [CORE_CARD_ORBIT_PATH, cardOrbit],
     [CORE_PRODUCT_PROOF_PATH, productProof],
     [CORE_PRODUCT_SURFACE_PATH, productSurface],
@@ -1083,19 +1083,19 @@ export async function run(ctx) {
     [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
     [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
     [MISEBOX_HANDOFF_PREVIEW_PATH, miseboxHandoffPreview],
-    [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
+    [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxWorkspacePreview],
     [MISEBOX_ORDERING_PREVIEW_PATH, miseboxOrderingPreview],
     [MISEBOX_ORDERING_SHOWCASE_PATH, miseboxOrderingShowcase],
     [MISEBOX_FINANCE_PREVIEW_PATH, miseboxFinancePreview],
     ...Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
-      ([key, filePath]) => [filePath, miseboxConsolePreviewComponents[key]]
+      ([key, filePath]) => [filePath, miseboxWorkspacePreviewComponents[key]]
     ),
     [FIREUX_ADAPTER_PATH, fireuxAdapter],
-    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxConsolePreview],
+    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxWorkspacePreview],
     [FIREUX_SURFACE_SHOWCASE_PATH, fireuxSurfaceShowcase],
     [FIREUX_PRODUCT_DEMO_PATH, fireuxProductDemo],
     ...Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
-      ([key, filePath]) => [filePath, fireuxConsolePreviewComponents[key]]
+      ([key, filePath]) => [filePath, fireuxWorkspacePreviewComponents[key]]
     ),
     [FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit],
     [FIREUX_ECOSYSTEMS_PATH, fireuxEcosystems],
@@ -1346,59 +1346,59 @@ export async function run(ctx) {
 
   for (const required of [
     "from 'fireux-kitchens/runtime/kitchen/models/operations'",
-    '<LandingConsolePreviewFrame',
-    'label="Interactive Kitchen Console preview"',
+    '<LandingWorkspacePreviewFrame',
+    'label="Interactive Kitchen Workspace preview"',
     ':items="operations"',
     'navigation-label="Kitchen Operations"',
-    'console-to="/console/kitchen"',
+    'workspace-to="/workspace/kitchen"',
     '@update:model-value="selectSurface"',
-    '@open-console="openFullKitchenConsole"',
+    '@open-workspace="openFullKitchenWorkspace"',
     '<UAvatar',
-    ':src="consoleKitchenPill.imageUrl || undefined"',
-    ':alt="consoleKitchenPill.title"',
-    "MiseboxProductDemo['console']['kitchenPill']",
-    'productDemo.value?.console.kitchenPill',
+    ':src="workspaceKitchenPill.imageUrl || undefined"',
+    ':alt="workspaceKitchenPill.title"',
+    "MiseboxProductDemo['workspace']['kitchenPill']",
+    'productDemo.value?.workspace.kitchenPill',
     'size="md"',
     "id: 'kitchen.finance'",
-    'useKitchenConsoleSelection',
+    'useKitchenWorkspaceSelection',
     "type: 'demo'",
-    "await navigateTo('/console/kitchen')",
+    "await navigateTo('/workspace/kitchen')",
     "const selectedDishId = ref('')",
     "const selectedDishPage = ref<DishChildPage>('detail')",
-    '<MiseboxLandingConsolePreviewMenus',
-    ':menus="productDemo?.console.menus || []"',
-    '<MiseboxLandingConsolePreviewDishes',
+    '<MiseboxLandingWorkspacePreviewMenus',
+    ':menus="productDemo?.workspace.menus || []"',
+    '<MiseboxLandingWorkspacePreviewDishes',
     ':dishes="previewDishes"',
     "dish.kind !== 'Drink'",
-    '<MiseboxLandingConsolePreviewIngredients',
-    ':ingredients="productDemo?.console.ingredients || []"',
-    '<MiseboxLandingConsolePreviewRecipes',
-    ':recipes="productDemo?.console.recipes || []"',
-    '<MiseboxLandingConsolePreviewMise',
-    ':kitchen-name="productDemo?.console.kitchenName || \'\'"',
-    ':tasks="consoleMiseTasks"',
+    '<MiseboxLandingWorkspacePreviewIngredients',
+    ':ingredients="productDemo?.workspace.ingredients || []"',
+    '<MiseboxLandingWorkspacePreviewRecipes',
+    ':recipes="productDemo?.workspace.recipes || []"',
+    '<MiseboxLandingWorkspacePreviewMise',
+    ':kitchen-name="productDemo?.workspace.kitchenName || \'\'"',
+    ':tasks="workspaceMiseTasks"',
     'useKitchenMenuServiceSelection',
     'hasInServiceMenu',
-    '<MiseboxLandingConsolePreviewOrders',
-    ':orders="productDemo?.console.orders || []"',
-    '<MiseboxLandingConsolePreviewStations',
-    ':stations="productDemo?.console.stations || []"',
-    '<MiseboxLandingConsolePreviewSuppliers',
-    ':suppliers="productDemo?.console.suppliers || []"',
-    '<MiseboxLandingConsolePreviewTables',
-    ':tables="productDemo?.console.tables || emptyTables"',
-    '<MiseboxLandingConsolePreviewFinance',
-    ':finance="productDemo?.console.finance || emptyFinance"',
-    '<MiseboxLandingConsolePreviewEmptyCanvas',
+    '<MiseboxLandingWorkspacePreviewOrders',
+    ':orders="productDemo?.workspace.orders || []"',
+    '<MiseboxLandingWorkspacePreviewStations',
+    ':stations="productDemo?.workspace.stations || []"',
+    '<MiseboxLandingWorkspacePreviewSuppliers',
+    ':suppliers="productDemo?.workspace.suppliers || []"',
+    '<MiseboxLandingWorkspacePreviewTables',
+    ':tables="productDemo?.workspace.tables || emptyTables"',
+    '<MiseboxLandingWorkspacePreviewFinance',
+    ':finance="productDemo?.workspace.finance || emptyFinance"',
+    '<MiseboxLandingWorkspacePreviewEmptyCanvas',
   ]) {
-    if (!miseboxConsolePreview.includes(required)) {
+    if (!miseboxWorkspacePreview.includes(required)) {
       violations.push(
-        `${MISEBOX_CONSOLE_PREVIEW_PATH}: missing local canonical Console navigation (${required})`
+        `${MISEBOX_CONSOLE_PREVIEW_PATH}: missing local canonical Workspace navigation (${required})`
       )
     }
   }
 
-  if (count(miseboxConsolePreview, /useMiseboxProductDemo\(/g) !== 1) {
+  if (count(miseboxWorkspacePreview, /useMiseboxProductDemo\(/g) !== 1) {
     violations.push(
       `${MISEBOX_CONSOLE_PREVIEW_PATH}: root must own exactly one Product Demo load`
     )
@@ -1407,12 +1407,12 @@ export async function run(ctx) {
   for (const forbidden of [
     'Build spec',
     'aria-label="Dish detail sections"',
-    'console-preview-menus',
-    'console-preview-dishes',
+    'workspace-preview-menus',
+    'workspace-preview-dishes',
     'selectedDishSection',
-    '<ConsoleKitchenOperationsDishesCardsCell',
+    '<WorkspaceKitchenOperationsDishesCardsCell',
   ]) {
-    if (miseboxConsolePreview.includes(forbidden)) {
+    if (miseboxWorkspacePreview.includes(forbidden)) {
       violations.push(
         `${MISEBOX_CONSOLE_PREVIEW_PATH}: thin root re-owned operation presentation (${forbidden})`
       )
@@ -1422,13 +1422,13 @@ export async function run(ctx) {
   const componentContracts = {
     menus: [
       'aria-label="Menus preview"',
-      'console-preview-menus',
+      'workspace-preview-menus',
       '{{ menu.name }}',
       ':src="menu.imageUrl"',
     ],
     ingredients: [
       'aria-label="Ingredients preview"',
-      "MiseboxProductDemo['console']['ingredients'][number]",
+      "MiseboxProductDemo['workspace']['ingredients'][number]",
       'INGREDIENT_FOOD_GROUP_OPTIONS',
       ':default-value="defaultOpenFoodGroups"',
       ':data-food-group="item.value"',
@@ -1438,19 +1438,19 @@ export async function run(ctx) {
     ],
     dishes: [
       'aria-label="Dish preview breadcrumb"',
-      '<MiseboxLandingConsolePreviewDishesDetail',
-      '<MiseboxLandingConsolePreviewDishesDetailSections',
+      '<MiseboxLandingWorkspacePreviewDishesDetail',
+      '<MiseboxLandingWorkspacePreviewDishesDetailSections',
       ':selected="page"',
-      '<MiseboxLandingConsolePreviewDishesCollection',
-      '<MiseboxLandingConsolePreviewDishesFinance',
-      '<MiseboxLandingConsolePreviewDishesSpec',
-      '<MiseboxLandingConsolePreviewDishesPrepItems',
-      '<MiseboxLandingConsolePreviewDishesRecipes',
-      '<MiseboxLandingConsolePreviewDishesMise',
+      '<MiseboxLandingWorkspacePreviewDishesCollection',
+      '<MiseboxLandingWorkspacePreviewDishesFinance',
+      '<MiseboxLandingWorkspacePreviewDishesSpec',
+      '<MiseboxLandingWorkspacePreviewDishesPrepItems',
+      '<MiseboxLandingWorkspacePreviewDishesRecipes',
+      '<MiseboxLandingWorkspacePreviewDishesMise',
     ],
     dishCollection: [
-      '<ConsoleKitchenOperationsDishesCardsCell',
-      'console-preview-dishes',
+      '<WorkspaceKitchenOperationsDishesCardsCell',
+      'workspace-preview-dishes',
       '@action="$emit(\'select\', dish.id)"',
     ],
     dishDetail: ['Build spec', 'min-h-[20rem]', '{{ dish.priceLabel }}'],
@@ -1486,7 +1486,7 @@ export async function run(ctx) {
     dishMise: ['aria-label="Dish Mise en place preview"', 'dish.mise'],
     recipes: [
       'aria-label="Recipes preview"',
-      "MiseboxProductDemo['console']['recipes'][number]",
+      "MiseboxProductDemo['workspace']['recipes'][number]",
     ],
     mise: [
       'aria-label="Mise en place preview"',
@@ -1494,34 +1494,34 @@ export async function run(ctx) {
       ':tasks="tasks"',
       ':kitchen-name="kitchenName"',
       'ProductDemoMiseTask',
-      "MiseboxProductDemo['console']['miseTasks'][number]",
+      "MiseboxProductDemo['workspace']['miseTasks'][number]",
     ],
     orders: [
       'aria-label="Orders preview"',
-      '<ConsoleKitchenOperationsOrdersRail',
-      '<ConsoleKitchenOperationsOrdersTicketPresentation',
+      '<WorkspaceKitchenOperationsOrdersRail',
+      '<WorkspaceKitchenOperationsOrdersTicketPresentation',
       'deriveKitchenOrderBoardStage',
       ':interactive="false"',
       'ProductDemoOrder',
-      "MiseboxProductDemo['console']['orders'][number]",
+      "MiseboxProductDemo['workspace']['orders'][number]",
     ],
     stations: [
       'aria-label="Stations preview"',
       ':data-station-id="station.id"',
-      "MiseboxProductDemo['console']['stations'][number]",
+      "MiseboxProductDemo['workspace']['stations'][number]",
     ],
     suppliers: [
       'aria-label="Suppliers preview"',
-      '<ConsoleKitchenOperationsSuppliersCardsCell',
+      '<WorkspaceKitchenOperationsSuppliersCardsCell',
       ':data-supplier-id="supplier.id"',
       'supplier.linkedIngredientCount',
-      "MiseboxProductDemo['console']['suppliers'][number]",
+      "MiseboxProductDemo['workspace']['suppliers'][number]",
     ],
     tables: [
       'aria-label="Tables preview"',
       ':data-table-number="tableNumber"',
       'tables.configuredCount',
-      "MiseboxProductDemo['console']['tables']",
+      "MiseboxProductDemo['workspace']['tables']",
     ],
     finance: [
       'aria-label="Kitchen Finance preview"',
@@ -1531,24 +1531,24 @@ export async function run(ctx) {
       ':sale-count="selectedSummary.saleCount"',
       ':average-sale-minor="selectedSummary.averageSaleMinor"',
       'KitchenFinanceReportPeriod',
-      "MiseboxProductDemo['console']['finance']",
+      "MiseboxProductDemo['workspace']['finance']",
     ],
     emptyCanvas: [':aria-label="`${title} page canvas`"', 'min-h-[20rem]'],
   }
   for (const [key, requiredMarkers] of Object.entries(componentContracts)) {
-    const source = miseboxConsolePreviewComponents[key]
+    const source = miseboxWorkspacePreviewComponents[key]
     const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
     for (const required of requiredMarkers) {
       if (!source.includes(required)) {
         violations.push(
-          `${filePath}: missing owned Console preview contract (${required})`
+          `${filePath}: missing owned Workspace preview contract (${required})`
         )
       }
     }
   }
 
   for (const key of ['menus', 'dishCollection', 'ingredients', 'recipes']) {
-    const source = miseboxConsolePreviewComponents[key]
+    const source = miseboxWorkspacePreviewComponents[key]
     const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
     for (const forbidden of [
       '<USwitch',
@@ -1572,7 +1572,7 @@ export async function run(ctx) {
     ['dishCollection', ':meta="dish.kind"'],
     ['dishDetail', 'dish.kind'],
   ]) {
-    if (miseboxConsolePreviewComponents[key].includes(forbidden)) {
+    if (miseboxWorkspacePreviewComponents[key].includes(forbidden)) {
       violations.push(
         `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: entry preview exposed Dish type vocabulary (${forbidden})`
       )
@@ -1580,7 +1580,7 @@ export async function run(ctx) {
   }
 
   if (
-    miseboxConsolePreviewComponents.dishDetailSections.includes(
+    miseboxWorkspacePreviewComponents.dishDetailSections.includes(
       '{{ section.label }}'
     )
   ) {
@@ -1590,32 +1590,32 @@ export async function run(ctx) {
   }
 
   if (
-    miseboxConsolePreviewComponents.dishDetail.includes(':src="dish.imageUrl"')
+    miseboxWorkspacePreviewComponents.dishDetail.includes(':src="dish.imageUrl"')
   ) {
     violations.push(
       `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.dishDetail}: Dish image belongs to the persistent page selector rather than the swappable overview`
     )
   }
 
-  for (const [key, source] of Object.entries(miseboxConsolePreviewComponents)) {
+  for (const [key, source] of Object.entries(miseboxWorkspacePreviewComponents)) {
     const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
     for (const forbidden of [
       'useMiseboxProductDemo(',
-      'useKitchenConsole',
-      'useConsoleSelection',
+      'useKitchenWorkspace',
+      'useWorkspaceSelection',
       'useFirestore',
       'firebase',
     ]) {
       if (source.includes(forbidden)) {
         violations.push(
-          `${filePath}: child acquired data or live Console authority (${forbidden})`
+          `${filePath}: child acquired data or live Workspace authority (${forbidden})`
         )
       }
     }
   }
 
   if (
-    miseboxConsolePreviewComponents.mise.includes('KITCHEN_MISE_STATUS_OPTIONS')
+    miseboxWorkspacePreviewComponents.mise.includes('KITCHEN_MISE_STATUS_OPTIONS')
   ) {
     violations.push(
       `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: must consume the Kitchen-owned Mise task board instead of rebuilding status presentation`
@@ -1623,9 +1623,9 @@ export async function run(ctx) {
   }
 
   for (const forbidden of ['<KitchenMiseTaskBoard', 'compact']) {
-    if (miseboxConsolePreviewComponents.mise.includes(forbidden)) {
+    if (miseboxWorkspacePreviewComponents.mise.includes(forbidden)) {
       violations.push(
-        `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: bypasses the shared Console Mise collection presentation (${forbidden})`
+        `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: bypasses the shared Workspace Mise collection presentation (${forbidden})`
       )
     }
   }
@@ -1635,9 +1635,9 @@ export async function run(ctx) {
     'updateStatus(',
     'useKitchenOrdersWorkspace',
   ]) {
-    if (miseboxConsolePreviewComponents.orders.includes(forbidden)) {
+    if (miseboxWorkspacePreviewComponents.orders.includes(forbidden)) {
       violations.push(
-        `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.orders}: read-only Console preview acquired Order mutation behavior (${forbidden})`
+        `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.orders}: read-only Workspace preview acquired Order mutation behavior (${forbidden})`
       )
     }
   }
@@ -1666,7 +1666,7 @@ export async function run(ctx) {
     ],
     [
       KITCHEN_MISE_CONSOLE_READ_PATH,
-      kitchenMiseConsoleRead,
+      kitchenMiseWorkspaceRead,
       [
         '<KitchenMiseTaskCollection',
         'projectKitchenMiseTasks',
@@ -1696,37 +1696,37 @@ export async function run(ctx) {
   }
 
   for (const forbidden of [
-    'useConsoleSelection',
-    'useKitchenConsoleOverview',
+    'useWorkspaceSelection',
+    'useKitchenWorkspaceOverview',
     'useFirestore',
     'firebase',
     '{{ selectedOperation.description }}',
     ':to="selectedOperation.to"',
   ]) {
-    if (miseboxConsolePreview.includes(forbidden)) {
+    if (miseboxWorkspacePreview.includes(forbidden)) {
       violations.push(
-        `${MISEBOX_CONSOLE_PREVIEW_PATH}: public Console preview acquired live authority (${forbidden})`
+        `${MISEBOX_CONSOLE_PREVIEW_PATH}: public Workspace preview acquired live authority (${forbidden})`
       )
     }
   }
 
   for (const required of [
     '<UCard',
-    'class="landing-console-preview__layout"',
+    'class="landing-workspace-preview__layout"',
     '<slot name="target"',
     'v-for="item in items"',
     'v-for="item in secondaryItems"',
     ':aria-current="item.id === modelValue ? \'page\' : undefined"',
     "emit('update:modelValue'",
-    "emit('openConsole'",
+    "emit('openWorkspace'",
     '<slot :selected-item="selectedItem"',
-    'LandingConsolePreviewItem',
-    "openConsoleAriaLabel: 'Open full Console'",
+    'LandingWorkspacePreviewItem',
+    "openWorkspaceAriaLabel: 'Open full Workspace'",
     'grid-template-columns: calc(var(--spacing) * 14) minmax(0, 1fr)',
   ]) {
-    if (!consolePreviewFrame.includes(required)) {
+    if (!workspacePreviewFrame.includes(required)) {
       violations.push(
-        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: missing shared Console frame contract (${required})`
+        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: missing shared Workspace frame contract (${required})`
       )
     }
   }
@@ -1744,31 +1744,31 @@ export async function run(ctx) {
     'gradient',
     'backdrop-blur',
   ]) {
-    if (consolePreviewFrame.includes(forbidden)) {
+    if (workspacePreviewFrame.includes(forbidden)) {
       violations.push(
-        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: acquired project truth or decorative Console chrome (${forbidden})`
+        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: acquired project truth or decorative Workspace chrome (${forbidden})`
       )
     }
   }
 
   for (const consumer of [
-    [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
-    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxConsolePreview],
+    [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxWorkspacePreview],
+    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxWorkspacePreview],
   ]) {
     const [filePath, source] = consumer
     if (
-      count(source, /<LandingConsolePreviewFrame\b/g) !== 1 ||
-      count(source, /<\/LandingConsolePreviewFrame>/g) !== 1
+      count(source, /<LandingWorkspacePreviewFrame\b/g) !== 1 ||
+      count(source, /<\/LandingWorkspacePreviewFrame>/g) !== 1
     ) {
       violations.push(
-        `${filePath}: must consume exactly one shared LandingConsolePreviewFrame`
+        `${filePath}: must consume exactly one shared LandingWorkspacePreviewFrame`
       )
     }
 
     for (const forbidden of [
       '<UCard',
       '<aside',
-      'landing-console-preview__',
+      'landing-workspace-preview__',
       'min-h-[32rem]',
       'grid-cols-[4.5rem',
       'sm:grid-cols-[12rem',
@@ -1776,33 +1776,33 @@ export async function run(ctx) {
     ]) {
       if (source.includes(forbidden)) {
         violations.push(
-          `${filePath}: reintroduced shared Console frame presentation (${forbidden})`
+          `${filePath}: reintroduced shared Workspace frame presentation (${forbidden})`
         )
       }
     }
   }
 
   for (const required of [
-    '<LandingConsolePreviewFrame',
-    'label="Interactive Project Console preview"',
+    '<LandingWorkspacePreviewFrame',
+    'label="Interactive Project Workspace preview"',
     ':items="operations"',
-    'navigation-label="Project Console"',
-    'console-to="/console/project"',
-    'open-console-aria-label="Open the full Project Console"',
+    'navigation-label="Project Workspace"',
+    'workspace-to="/workspace/project"',
+    'open-workspace-aria-label="Open the full Project Workspace"',
     '<UAvatar',
     'v-if="projectPill"',
-    '<FireUXLandingConsolePreviewApps',
-    '<FireUXLandingConsolePreviewEcosystems',
-    '<FireUXLandingConsolePreviewPrivateState',
+    '<FireUXLandingWorkspacePreviewApps',
+    '<FireUXLandingWorkspacePreviewEcosystems',
+    '<FireUXLandingWorkspacePreviewPrivateState',
     'useFireuxProductDemo',
-    'useProjectConsoleSelection',
+    'useProjectWorkspaceSelection',
     "type: 'demo'",
     'if (projectId)',
-    "await navigateTo('/console/project')",
+    "await navigateTo('/workspace/project')",
   ]) {
-    if (!fireuxConsolePreview.includes(required)) {
+    if (!fireuxWorkspacePreview.includes(required)) {
       violations.push(
-        `${FIREUX_CONSOLE_PREVIEW_PATH}: missing FireUX Project Console proof contract (${required})`
+        `${FIREUX_CONSOLE_PREVIEW_PATH}: missing FireUX Project Workspace proof contract (${required})`
       )
     }
   }
@@ -1821,21 +1821,21 @@ export async function run(ctx) {
     '/api/',
     'usePlatformDirectory',
   ]) {
-    if (fireuxConsolePreview.includes(forbidden)) {
+    if (fireuxWorkspacePreview.includes(forbidden)) {
       violations.push(
         `${FIREUX_CONSOLE_PREVIEW_PATH}: acquired shadow Demo identity or live authority (${forbidden})`
       )
     }
   }
 
-  if (count(fireuxConsolePreview, /useFireuxProductDemo\(\)/g) !== 1) {
+  if (count(fireuxWorkspacePreview, /useFireuxProductDemo\(\)/g) !== 1) {
     violations.push(
       `${FIREUX_CONSOLE_PREVIEW_PATH}: root must own exactly one Product Demo load`
     )
   }
 
   for (const required of [
-    "const productDemoSurface = 'project-console' as const",
+    "const productDemoSurface = 'project-workspace' as const",
     "const productDemoDataSource = 'demo' as const",
     "import(\n        'fireux-core/runtime/project/demo/scenarios'",
     "scenario => scenario.appId === 'fireux-app'",
@@ -1875,21 +1875,21 @@ export async function run(ctx) {
   }
 
   const fireuxPreviewComponentContracts = {
-    apps: ['<AppCardsCell', "FireuxProductDemo['console']['apps']"],
+    apps: ['<AppCardsCell', "FireuxProductDemo['workspace']['apps']"],
     ecosystems: [
       '<EcosystemCardsCell',
-      "FireuxProductDemo['console']['ecosystems']",
+      "FireuxProductDemo['workspace']['ecosystems']",
     ],
     privateState: ['<UAlert', ':title="title"', ':description="description"'],
   }
   for (const [key, markers] of Object.entries(
     fireuxPreviewComponentContracts
   )) {
-    const componentSource = fireuxConsolePreviewComponents[key]
+    const componentSource = fireuxWorkspacePreviewComponents[key]
     for (const marker of markers) {
       if (!componentSource.includes(marker)) {
         violations.push(
-          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: missing FireUX-owned Console body contract (${marker})`
+          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: missing FireUX-owned Workspace body contract (${marker})`
         )
       }
     }
@@ -1901,14 +1901,14 @@ export async function run(ctx) {
       'useRequestFetch(',
       '$fetch(',
       '/api/',
-      'useProjectConsoleSelection',
-      'useConsoleSelection',
+      'useProjectWorkspaceSelection',
+      'useWorkspaceSelection',
       'useFirestore',
       'firebase',
     ]) {
       if (componentSource.includes(forbidden)) {
         violations.push(
-          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: prop-only Console body acquired loading, selection, or live authority (${forbidden})`
+          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: prop-only Workspace body acquired loading, selection, or live authority (${forbidden})`
         )
       }
     }
@@ -1961,7 +1961,7 @@ export async function run(ctx) {
     ]) {
       if (!source.includes(required)) {
         violations.push(
-          `${contract.filePath}: landing subheader must project the complete Console Operation catalogue (${required})`
+          `${contract.filePath}: landing subheader must project the complete Workspace Operation catalogue (${required})`
         )
       }
     }
@@ -2024,7 +2024,7 @@ export async function run(ctx) {
   ]) {
     if (source.includes('<LandingOperationRail')) {
       violations.push(
-        `${filePath}: product routes must not masquerade as Console Operations before the App owns a Console Entity`
+        `${filePath}: product routes must not masquerade as Workspace Operations before the App owns a Workspace Entity`
       )
     }
   }
@@ -2181,7 +2181,7 @@ export async function run(ctx) {
         '<MiseboxLandingPricingStrip',
         '<LandingOperationRail',
         '<LandingProductProofSection',
-        '<MiseboxLandingConsolePreview',
+        '<MiseboxLandingWorkspacePreview',
         'copy-emphasis',
         '<MiseboxLandingOrderingShowcase',
         "'operations',",
@@ -2197,8 +2197,8 @@ export async function run(ctx) {
         'useEcosystemAppCollection',
         ':operations="operationRailItems"',
         'MiseboxLandingPricingStrip',
-        "operation.console.id === 'kitchen'",
-        "title: 'Work inside the Kitchen Console.'",
+        "operation.workspace.id === 'kitchen'",
+        "title: 'Work inside the Kitchen Workspace.'",
         "import { metaContent } from '../../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
@@ -2207,10 +2207,10 @@ export async function run(ctx) {
         'operationsCatalogue',
         "to: '/tools/ordering'",
         ':limit="3"',
-        "to: '/console/kitchen'",
+        "to: '/workspace/kitchen'",
         "to: '/operations'",
         'Get started',
-        'Go to console',
+        'Go to workspace',
       ],
       forbidden: ['#ecosystems'],
     },
@@ -2238,8 +2238,8 @@ export async function run(ctx) {
         '<FireUXLandingCardOrbit presentation="hero"',
         '<FireUXLandingSurfaceShowcase',
         '<LandingEcosystems',
-        ':copy="projectConsoleCopy"',
-        ':operations="consoleOperations"',
+        ':copy="projectWorkspaceCopy"',
+        ':operations="workspaceOperations"',
         '<LandingAppCollection',
         'title="Apps built with FireUX"',
         'eyebrow="App directory"',
@@ -2250,9 +2250,9 @@ export async function run(ctx) {
         'solutionsCatalogue',
         'operationsCatalogue',
         "label: 'Get started'",
-        "label: 'Go to console'",
+        "label: 'Go to workspace'",
         "to: '/get-started'",
-        "to: '/console/project'",
+        "to: '/workspace/project'",
       ],
       forbidden: ['#specifics', '#tools', 'toolsCatalogue', "to: '/tools"],
     },
@@ -2379,7 +2379,7 @@ export async function run(ctx) {
 
   for (const required of [
     'class="fireux-surface-showcase"',
-    '<FireUXLandingConsolePreview',
+    '<FireUXLandingWorkspacePreview',
     'v-model:surface-id="selectedSurfaceId"',
     ':operations="operations"',
     '{{ copy.title }}',
@@ -2547,9 +2547,9 @@ export async function run(ctx) {
   for (const required of [
     'useMiseboxProductDemo()',
     '<MenuOrderCatalogue',
-    '<MiseboxLandingConsolePreviewMenus',
-    '<MiseboxLandingConsolePreviewMise',
-    '<MiseboxLandingConsolePreviewOrders',
+    '<MiseboxLandingWorkspacePreviewMenus',
+    '<MiseboxLandingWorkspacePreviewMise',
+    '<MiseboxLandingWorkspacePreviewOrders',
     "id: 'publish'",
     "id: 'prepare'",
     "id: 'serve'",
@@ -2560,7 +2560,7 @@ export async function run(ctx) {
   ]) {
     if (!miseboxHandoffPreview.includes(required)) {
       violations.push(
-        `${MISEBOX_HANDOFF_PREVIEW_PATH}: missing connected Menu-to-Console hero contract (${required})`
+        `${MISEBOX_HANDOFF_PREVIEW_PATH}: missing connected Menu-to-Workspace hero contract (${required})`
       )
     }
   }

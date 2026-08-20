@@ -41,7 +41,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const flagshipCommand = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/dishes/[dishId]/flagship.patch.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/dishes/[dishId]/flagship.patch.ts'
   )
   const rules = [
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/identity-validation.rules',

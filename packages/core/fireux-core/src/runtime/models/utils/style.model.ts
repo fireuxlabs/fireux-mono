@@ -38,8 +38,8 @@ export type {
   AppTheme,
   AppThemeLayer,
   AppTypography,
-  ConsolePalette,
-  ConsoleTheme,
+  WorkspacePalette,
+  WorkspaceTheme,
 } from '../../../types/theme'
 
 export type PageStyle = BrandPalette & {

@@ -12,7 +12,7 @@ export type { App } from '../models/app.model.ts'
  *
  * App stored truth lives at apps/{appId}. This file selects the current root
  * App through FireUXConfig.appId.
- * Project/App console surfaces may manage App through a facade; they do not create a separate App identity.
+ * Project/App workspace surfaces may manage App through a facade; they do not create a separate App identity.
  * `fireux/app` owns App runtime orchestration, not App entity storage.
  * Direct Project Apps and Ecosystem Apps use the same root entity type.
  * For an authorized canonical App read, use useAppFetch(appId). Public and

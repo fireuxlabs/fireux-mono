@@ -2,7 +2,7 @@ import type { BrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type {
   AppPalette,
   AppPaletteLayer,
-  ConsolePalette,
+  WorkspacePalette,
 } from 'fireux-core/runtime/models/utils/style.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
@@ -13,7 +13,7 @@ import type {
   MenuManifestItem,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 
-export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, ConsolePalette }
+export type { AppPalette, AppPaletteLayer, AppTypography, BrandPalette, WorkspacePalette }
 
 export type TemplateOneKitchenTier = FireuxEntityManagement['mode']
 
@@ -97,8 +97,8 @@ export type TemplateOneKitchenProjection = {
     eyebrow: string
     title: string
     description: string
-    consoleTo: string
-    consoleLabel: string
+    workspaceTo: string
+    workspaceLabel: string
     origin: string
     links: readonly TemplateOneLink[]
   }
@@ -136,10 +136,10 @@ export type TemplateOneKitchenSpecimen = {
     source: string
     kitchenSource?: string
   }
-  consoleProps?: {
+  workspaceProps?: {
     source: string
     pageStyle: Partial<PageStyle>
-    palette: ConsolePalette
+    palette: WorkspacePalette
     values: readonly string[]
   }
   appProps?: {

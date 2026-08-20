@@ -70,7 +70,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     .filter((name) => name.endsWith('.ts'))
     .sort()
   assert.deepEqual(utilityModelFiles, [
-    'console-entity.model.ts',
     'directory.ts',
     'entity-create.model.ts',
     'entity.model.ts',
@@ -78,6 +77,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'scope.model.ts',
     'stamps.model.ts',
     'style.model.ts',
+    'workspace-entity.model.ts',
   ])
 
   assert.deepEqual(
@@ -107,15 +107,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Edit/Identity.vue'
   )
-  const kitchenConsoleIdentity = read(
+  const kitchenWorkspaceIdentity = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Identity/Sections/Index.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Index.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
   assert.match(kitchenModel, /backdrop_color/)
   assert.match(kitchenLogoEditor, /type="color"/)
   assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
-  assert.match(kitchenConsoleIdentity, /<KitchenEditIdentity/)
+  assert.match(kitchenWorkspaceIdentity, /<KitchenEditIdentity/)
   assert.match(kitchenIdentityEditor, /<KitchenEditFields/)
   assert.doesNotMatch(
     kitchenIdentityEditor,
@@ -205,10 +205,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const appMetaContract = appModel.slice(appMetaStart, appMetaEnd)
   assert.match(appMetaContract, /extends AppIdentity/)
   assert.match(appMetaContract, /website_url:\s*string/)
-  assert.match(appMetaContract, /console_families:\s*AppConsoleFamily\[\]/)
+  assert.match(appMetaContract, /workspace_families:\s*AppWorkspaceFamily\[\]/)
   assert.doesNotMatch(
     appMetaContract,
-    /derived|user_count|self_join_enabled|moderation_state|ban_reasons|fireux_repo|workspace|join_requests|admin_ids/
+    /derived|user_count|self_join_enabled|moderation_state|ban_reasons|fireux_repo|join_requests|admin_ids/
   )
   assert.match(
     appModel,
@@ -278,7 +278,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectModel, /FireuxAppAccessRecordModel/)
   assert.doesNotMatch(
     projectModel,
-    /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|console_endpoint_url|project_type|primary_project):/m
+    /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|workspace_endpoint_url|project_type|primary_project):/m
   )
   assert.match(
     userModel,
@@ -295,7 +295,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     canonicalUserModels,
-    /app_ids|project_ids|kitchen_ids|console_enabled|profiles\??:\s*string\[\]/
+    /app_ids|project_ids|kitchen_ids|workspace_enabled|profiles\??:\s*string\[\]/
   )
   assert.doesNotMatch(userModel, /UserAccount|UserNotification|rootCollection/)
 
@@ -748,7 +748,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'The public Project collection must not carry an authentication or role gate.'
   )
   assert.match(projectDirectory, /usePlatformProjectDirectory/)
-  assert.doesNotMatch(projectDirectory, /\/console\/project/)
+  assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
   const publicProjectDirectoryApi = read(
     repoRoot,
     'projects/fireux/fireux-app/server/api/public/projects.get.ts'
@@ -760,17 +760,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /operator_ids|team_ids|private\/targets|requireFirebaseBearerUser/
   )
 
-  for (const retiredConsolePage of ['create.vue']) {
+  for (const retiredWorkspacePage of ['create.vue']) {
     assert.equal(
       existsSync(
         path.join(
           repoRoot,
-          'projects/fireux/fireux-app/app/pages/console/project',
-          retiredConsolePage
+          'projects/fireux/fireux-app/app/pages/workspace/project',
+          retiredWorkspacePage
         )
       ),
       false,
-      `Project console surface must not return: ${retiredConsolePage}`
+      `Project workspace surface must not return: ${retiredWorkspacePage}`
     )
   }
 
@@ -784,7 +784,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ]) {
     const source = read(
       repoRoot,
-      `projects/fireux/fireux-app/app/pages/console/project/${page}.vue`
+      `projects/fireux/fireux-app/app/pages/workspace/project/${page}.vue`
     )
     assert.match(
       source,
@@ -1343,7 +1343,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       )
     ),
     false,
-    'The obsolete fireux-console endpoint package must not return.'
+    'The obsolete fireux-workspace endpoint package must not return.'
   )
 
   console.log('[guard] ✅ entity authority contract valid')

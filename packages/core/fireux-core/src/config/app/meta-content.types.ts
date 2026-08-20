@@ -36,12 +36,12 @@ export type FireuxMetaChecklistItem = {
   done?: boolean
 }
 
-export type FireuxMetaOperationConsole = {
-  /** Stable console key used for grouping and the /operations anchor. */
+export type FireuxMetaOperationWorkspace = {
+  /** Stable workspace key used for grouping and the /operations anchor. */
   id: string
-  /** Human-facing console name. */
+  /** Human-facing workspace name. */
   name: string
-  /** Working console root route. */
+  /** Working workspace root route. */
   to: string
 }
 
@@ -56,10 +56,10 @@ export type FireuxMetaOperation = {
   headline?: string
   /** Factual description of what the current surface provides. */
   description: string
-  /** Working console route that proves the operation. */
+  /** Working workspace route that proves the operation. */
   to: string
-  /** Console that owns the operation. */
-  console: FireuxMetaOperationConsole
+  /** Workspace that owns the operation. */
+  workspace: FireuxMetaOperationWorkspace
   icon?: string
   /** Search-intent phrases used to map operator demand into product literature. */
   keywords?: string[]
@@ -128,7 +128,7 @@ export type FireuxMetaCopy = {
   promise_html?: string
 
   /** Line above operational buttons (can include HTML). */
-  console_bridge_html?: string
+  workspace_bridge_html?: string
 
   /** About hero paragraph 1. */
   about_p1?: string
@@ -177,7 +177,7 @@ export type FireuxMetaRoutes = {
   /** @deprecated App meta is no longer the route registry. Use app registries, pages, and routing docs instead. Public or SEO-safe routes. */
   public?: string[]
   /** Operational routes. */
-  console?: string[]
+  workspace?: string[]
   /** Optional route groupings. */
   [key: string]: string[] | undefined
 }
@@ -194,7 +194,7 @@ export type FireuxMetaContent = {
   cta?: {
     primary?: FireuxMetaCta
     secondary?: FireuxMetaCta
-    console?: FireuxMetaCta
+    workspace?: FireuxMetaCta
     roadmap?: FireuxMetaCta
     [key: string]: FireuxMetaCta | undefined
   }
@@ -202,8 +202,8 @@ export type FireuxMetaContent = {
   lists?: FireuxMetaLists
 
   /**
-   * Factual index of entity-specific Console Operations.
-   * Index, Overview, Identity, Team, and Notifications are baked-in Console
+   * Factual index of entity-specific Workspace Operations.
+   * Index, Overview, Identity, Team, and Notifications are baked-in Workspace
    * capabilities and never enter this list. Operations are not SEO solution
    * pages or generic tools.
    */

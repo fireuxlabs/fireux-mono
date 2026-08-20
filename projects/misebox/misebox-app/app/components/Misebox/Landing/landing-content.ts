@@ -3,7 +3,7 @@ import type {
   LandingProductIndexContent,
 } from 'fireux-core/types/landing-product'
 
-export type ConsoleSurfaceCopy = {
+export type WorkspaceSurfaceCopy = {
   action: string
   description?: string
   eyebrow: string
@@ -36,9 +36,9 @@ export const featuredAppMedia = {
   },
 } as const
 
-export const consoleSurfaceCopy = {
+export const workspaceSurfaceCopy = {
   'kitchen.dishes': {
-    eyebrow: 'Kitchen Console · Dishes',
+    eyebrow: 'Kitchen Workspace · Dishes',
     title: 'Develop your dishes.',
     description:
       'Set each dish’s specification and selling price, connect its recipes and prep items, organise mise en place, and track sales and costs.',
@@ -50,10 +50,10 @@ export const consoleSurfaceCopy = {
       'Sales and costs',
     ],
     action: 'Open Dishes',
-    to: '/console/kitchen/dishes',
+    to: '/workspace/kitchen/dishes',
   },
   'kitchen.ingredients': {
-    eyebrow: 'Kitchen Console · Ingredients',
+    eyebrow: 'Kitchen Workspace · Ingredients',
     title: 'Connect your ingredients.',
     description:
       'Connect the ingredients a Kitchen uses to dishes, recipes, prep items, and available supplier offers.',
@@ -64,28 +64,28 @@ export const consoleSurfaceCopy = {
       'Supplier offers',
     ],
     action: 'Open Ingredients',
-    to: '/console/kitchen/ingredients',
+    to: '/workspace/kitchen/ingredients',
   },
   'kitchen.menus': {
-    eyebrow: 'Kitchen Console · Menus',
+    eyebrow: 'Kitchen Workspace · Menus',
     title: 'Create your menus.',
     description:
       'Arrange dishes into ordering sections, choose how each menu is used, and publish QR codes for guests.',
     items: ['Ordering sections', 'Dishes', 'Ordering formats', 'QR codes'],
     action: 'Open Menus',
-    to: '/console/kitchen/menus',
+    to: '/workspace/kitchen/menus',
   },
   'kitchen.mise': {
-    eyebrow: 'Kitchen Console · Mise',
+    eyebrow: 'Kitchen Workspace · Mise',
     title: 'Prepare for service.',
     description:
       'Create prep tasks from dishes and recipes, assign them to stations, set quantities, and track completion before service.',
     items: ['Prep tasks', 'Quantities', 'Stations', 'Completion'],
     action: 'Open Mise',
-    to: '/console/kitchen/mise',
+    to: '/workspace/kitchen/mise',
   },
   'kitchen.orders': {
-    eyebrow: 'Kitchen Console · Orders',
+    eyebrow: 'Kitchen Workspace · Orders',
     title: 'Process your orders.',
     description:
       'Receive orders from every ordering surface, organise the service queue, and track each order from acceptance to handoff.',
@@ -96,28 +96,28 @@ export const consoleSurfaceCopy = {
       'Handoff',
     ],
     action: 'Open Orders',
-    to: '/console/kitchen/orders',
+    to: '/workspace/kitchen/orders',
   },
   'kitchen.recipes': {
-    eyebrow: 'Kitchen Console · Recipes',
+    eyebrow: 'Kitchen Workspace · Recipes',
     title: 'Record your recipes.',
     description:
       'Record ingredients, quantities, methods and yields. Connect recipes to dishes.',
     items: ['Ingredients', 'Quantities', 'Method', 'Yield'],
     action: 'Open Recipes',
-    to: '/console/kitchen/recipes',
+    to: '/workspace/kitchen/recipes',
   },
   'kitchen.stations': {
-    eyebrow: 'Kitchen Console · Stations',
+    eyebrow: 'Kitchen Workspace · Stations',
     title: 'Coordinate your stations.',
     description:
       'Assign dishes, prep tasks, and service work to the station responsible for completing them.',
     items: ['Dishes', 'Prep tasks', 'Service work', 'Responsibilities'],
     action: 'Open Stations',
-    to: '/console/kitchen/stations',
+    to: '/workspace/kitchen/stations',
   },
   'kitchen.suppliers': {
-    eyebrow: 'Kitchen Console · Suppliers',
+    eyebrow: 'Kitchen Workspace · Suppliers',
     title: 'Source your ingredients.',
     description:
       'Review suppliers linked to the selected Kitchen, their catalogues, covered ingredients, and available pack offers.',
@@ -128,10 +128,10 @@ export const consoleSurfaceCopy = {
       'Pack offers',
     ],
     action: 'Open Suppliers',
-    to: '/console/kitchen/suppliers',
+    to: '/workspace/kitchen/suppliers',
   },
   'kitchen.tables': {
-    eyebrow: 'Kitchen Console · Tables',
+    eyebrow: 'Kitchen Workspace · Tables',
     title: 'Review your tables.',
     description:
       'Review the table numbers configured for the selected Kitchen. Demo leaves tabs and billing empty until a real Table producer exists.',
@@ -142,18 +142,18 @@ export const consoleSurfaceCopy = {
       'No invented billing',
     ],
     action: 'Open Tables',
-    to: '/console/kitchen/tables',
+    to: '/workspace/kitchen/tables',
   },
   'kitchen.finance': {
-    eyebrow: 'Kitchen Console · Finance',
+    eyebrow: 'Kitchen Workspace · Finance',
     title: 'Review Kitchen sales.',
     description:
       'Compare gross sales, completed sales, and average sale for the selected period.',
     supporting: 'Choose 7, 30, or 90 days. Each currency remains separate.',
     action: 'Open Kitchen Finance',
-    to: '/console/kitchen/finance',
+    to: '/workspace/kitchen/finance',
   },
-} as const satisfies Record<string, ConsoleSurfaceCopy>
+} as const satisfies Record<string, WorkspaceSurfaceCopy>
 
 export const toolsCatalogue = {
   sectionId: 'misebox-tools',
@@ -188,14 +188,14 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Kitchen', 'Operations'],
     description:
-      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Console. Publish menus, manage recipes and mise en place, process orders, and track food costs and sales.',
+      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Workspace. Publish menus, manage recipes and mise en place, process orders, and track food costs and sales.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',
     },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console/kitchen',
+      label: 'Go to workspace',
+      to: '/workspace/kitchen',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],

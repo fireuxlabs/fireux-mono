@@ -28,11 +28,11 @@
     </template>
 
     <template #body>
-      <div class="console-profile">
+      <div class="workspace-profile">
         <ChefIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
-          <div class="console-profile__section">
+          <div class="workspace-profile__section">
             <ChefEditCore />
           </div>
         </ClientOnly>

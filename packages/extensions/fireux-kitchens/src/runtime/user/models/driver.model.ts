@@ -69,7 +69,7 @@ export const DriverProfileRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'User',
   scoped: DriverStorage.root,
   notes: [
@@ -84,7 +84,7 @@ export const AppDriverProfileRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'User',
   scoped: AppDriverStorage.path,
   notes: [

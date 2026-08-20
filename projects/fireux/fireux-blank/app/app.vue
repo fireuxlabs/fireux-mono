@@ -4,5 +4,5 @@
 </template>
 
 <script setup lang="ts">
-// Blank app shell only. Console behavior is tested through local /console/blank.
+// Blank app shell only. Workspace behavior is tested through local /workspace/blank.
 </script>

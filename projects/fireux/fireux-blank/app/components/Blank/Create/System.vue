@@ -1,9 +1,9 @@
-<!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: own Blank creation UI and behavior. -->
+<!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: own Blank creation UI and behavior. -->
 <template>
   <UPageCard
     v-if="canCreate"
     title="Blank target"
-    description="This creates the smallest console target: root truth plus app console scope."
+    description="This creates the smallest workspace target: root truth plus app workspace scope."
     variant="subtle"
   >
     <form class="space-y-4" @submit.prevent="handleCreate">
@@ -35,7 +35,7 @@
         </UButton>
 
         <UButton
-          to="/console/blank"
+          to="/workspace/blank"
           variant="ghost"
           color="neutral"
         >
@@ -48,7 +48,7 @@
   <UPageCard
     v-else
     title="Blank creation is not enabled here"
-    description="This app uses existing Blank console targets."
+    description="This app uses existing Blank workspace targets."
     variant="subtle"
   />
 </template>
@@ -56,17 +56,17 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import { useBlankConsole } from '../../../composables/fireux/console/blank/core/useBlankConsole'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useBlankWorkspace } from '../../../composables/fireux/workspace/blank/core/useBlankWorkspace'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 
 const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
-const { canCreateTarget } = useConsole('blank')
+const { canCreateTarget } = useWorkspace('blank')
 const canCreate = computed(() => canCreateTarget())
 const { createBlank } = useBlankCreate()
-const { actions } = useBlankConsole()
+const { actions } = useBlankWorkspace()
 
 async function handleCreate() {
   if (!canCreate.value || creating.value) return
@@ -77,7 +77,7 @@ async function handleCreate() {
   try {
     const result = await createBlank({ name: name.value })
     actions.selectBlank(result.id)
-    await navigateTo('/console/blank')
+    await navigateTo('/workspace/blank')
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : String(cause)
   } finally {

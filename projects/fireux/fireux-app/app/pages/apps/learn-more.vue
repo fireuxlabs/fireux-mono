@@ -14,7 +14,7 @@
 
         <ul class="list-disc fx-list-stack text-sm">
           <li>An app is the operational product teams use day-to-day.</li>
-          <li>Apps run with shared FireUX identity, runtime, and console conventions.</li>
+          <li>Apps run with shared FireUX identity, runtime, and workspace conventions.</li>
           <li>Apps can run in an existing ecosystem, hosted by FireUX, or self-hosted.</li>
         </ul>
       </UCard>

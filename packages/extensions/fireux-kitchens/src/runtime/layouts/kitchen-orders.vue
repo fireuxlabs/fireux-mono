@@ -14,7 +14,7 @@
         <template #right>
           <div id="kitchen-orders-actions" />
           <UButton
-            to="/console/kitchen"
+            to="/workspace/kitchen"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -35,7 +35,7 @@
           :actions="[
             {
               label: 'Choose Kitchen',
-              to: '/console/kitchen',
+              to: '/workspace/kitchen',
               icon: 'i-lucide-arrow-right',
             },
           ]"
@@ -49,12 +49,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
 
 defineOptions({ name: 'KitchenOrdersLayout' })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const kitchenSelection = useConsoleSelection('kitchen')
+const kitchenSelection = useWorkspaceSelection('kitchen')
 const selectionBlocked = computed(() =>
   !normalizeString(kitchenSelection.selectedId.value)
 )

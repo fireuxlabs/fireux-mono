@@ -36,7 +36,7 @@ definePageMeta({
   name: 'PortfoliosIndexPage',
   title: 'Portfolios',
   description:
-    'Find and join portfolios, or create your own Portfolio Console.',
+    'Find and join portfolios, or create your own Portfolio Workspace.',
 })
 
 const pageTitle = 'Portfolios'

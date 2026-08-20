@@ -15,7 +15,7 @@ inherit the relevant App or ecosystem context.
 
 Keep the Main App family understandable in normal English while preserving the
 real identity and capability boundary of each product. Use this context for
-recurring cross-system landing, pricing, Console, Operation, Tool, Solution,
+recurring cross-system landing, pricing, Workspace, Operation, Tool, Solution,
 and ecosystem literature work.
 
 ## Scope
@@ -30,7 +30,7 @@ shared public-language or pricing seam applies to them.
 
 - Core owns shared landing anatomy, motion, pricing meanings, tier routes,
   `usePricing`, and reusable prop-driven presentation contracts. Each Main App
-  owns one `useXPricing` wrapper for its Console name, capabilities, limits,
+  owns one `useXPricing` wrapper for its Workspace name, capabilities, limits,
   contact, and explicit ecosystem-tier eligibility. Pricing literature is not
   App boot configuration and never enters `defineFireuxConfig` or public
   runtime config.
@@ -42,7 +42,7 @@ shared public-language or pricing seam applies to them.
   brand-commerce interaction delta and opts out through the Core seam.
 - Main App landings use Hero, pricing, product surfaces, then App-owned deeper
   features. A single surface has no selector; multiple genuine usage surfaces
-  may use one. Operations inside a Console are not separate surfaces.
+  may use one. Operations inside a Workspace are not separate surfaces.
 - Core owns the landing region vocabulary and default order. Each Main App may
   provide an ordered subset through the shared `regionOrder` seam so its real
   product layers remain truthful without copying the renderer or inventing
@@ -51,13 +51,13 @@ shared public-language or pricing seam applies to them.
   an Apps section only when their public collection contains more than one
   active child App after excluding the Main App; the heading is only
   `<App name>'s Apps`.
-- Each Main App owns its product nouns, Console name, capability limits,
+- Each Main App owns its product nouns, Workspace name, capability limits,
   imagery, actions, and working routes.
-- Identity is a required peer capability for every Console Entity, not an
-  Operation. Team is also a peer where the source-backed Console map declares
-  it. A complete capability catalogue may keep Console routes and landing
+- Identity is a required peer capability for every Workspace Entity, not an
+  Operation. Team is also a peer where the source-backed Workspace map declares
+  it. A complete capability catalogue may keep Workspace routes and landing
   discovery aligned, while operation-only literature uses only the Operations
-  listed in `docs/concepts/console.md`.
+  listed in `docs/concepts/workspace.md`.
 - Static ecosystem hero photography shows people doing the product's current
   work through Core's sharp image frame. FireUX's live App/Ecosystem orbit and
   Misebox Kitchen's product-surface composition are the explicit non-people
@@ -71,7 +71,7 @@ shared public-language or pricing seam applies to them.
   the allowed placement but never supplies the new App identity. Runtime App
   initialization and repair remain an internal shell operation and must not be
   presented as `/apps/create`.
-- An Operation is selected-target work named in the owning Console's Operation
+- An Operation is selected-target work named in the owning Workspace's Operation
   list. Identity, Team, a public directory, or a navigation link does not
   become an Operation merely because it changes data or appears in a landing
   rail.
@@ -109,12 +109,12 @@ summarises its children; it does not create a second product promise.
 
 ## Refresh process
 
-When a Main App adds or removes a Console, Operation, Tool, Solution, pricing
+When a Main App adds or removes a Workspace, Operation, Tool, Solution, pricing
 tier, branded-App path, or ecosystem role:
 
 1. inspect the owning source and nearest working sibling;
 2. update the smallest owned literature atom;
-3. review the parent Console, pricing, and landing summaries;
+3. review the parent Workspace, pricing, and landing summaries;
 4. update Core only when the meaning is genuinely shared;
 5. update this context only when the durable scope or ownership rule changes.
 

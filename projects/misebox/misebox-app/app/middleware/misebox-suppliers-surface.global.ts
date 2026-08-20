@@ -1,5 +1,5 @@
 // Retire the former Misebox Supplier product doorway. Bringli owns Supplier
-// onboarding, identity, catalogue and Console surfaces; Misebox retains only
+// onboarding, identity, catalogue and Workspace surfaces; Misebox retains only
 // Kitchen-side sourcing and procurement.
 import { defineNuxtRouteMiddleware, navigateTo, useRequestURL } from '#imports'
 import type { RouteLocationNormalized } from 'vue-router'

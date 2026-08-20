@@ -17,7 +17,7 @@ export const MarketplaceStoreEntity = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   scoped: MarketplaceStoreStorage.path,
   parent: 'App',
   notes: [
@@ -40,7 +40,7 @@ export const MarketplaceOfferRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   scoped: MarketplaceOfferStorage.path,
   parent: 'MarketplaceStore',
 })
@@ -59,7 +59,7 @@ export const MarketplaceOrderRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   scoped: MarketplaceOrderStorage.path,
   parent: 'MarketplaceStore',
 })

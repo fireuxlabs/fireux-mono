@@ -152,7 +152,7 @@ real external deadline.
 Before finishing a documentation change:
 
 - Verify claims against current source, nearest siblings, and relevant guards.
-- For a repo-wide ownership, filesystem, Entity, Console, or product-language
+- For a repo-wide ownership, filesystem, Entity, Workspace, or product-language
   change, audit every maintained living context and concept map for the old
   claim before moving source. Incoming graph links alone are not enough to
   prove that the old system has disappeared.

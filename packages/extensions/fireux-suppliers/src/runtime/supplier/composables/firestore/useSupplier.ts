@@ -40,7 +40,7 @@ export {
  *   - computed helpers
  *   - interface helpers
  *
- * Selected supplier console runtime lives under console/supplier, not here.
+ * Selected supplier workspace runtime lives under workspace/supplier, not here.
  */
 export function useSupplier(id: string | Ref<string>) {
   const fetched = useSupplierFetch(id)

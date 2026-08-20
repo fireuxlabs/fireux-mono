@@ -23,7 +23,7 @@ registration is protected by `scripts/guards/runtime-registration.mjs`.
 - Composable ownership: [composables.md](composables.md)
 - Server boundary: [server-api.md](server-api.md)
 - Entity layers: [lasagne.md](lasagne.md)
-- Console family: [family-console-entity.md](family-console-entity.md)
+- Workspace family: [family-workspace-entity.md](family-workspace-entity.md)
 
 ## Ownership invariant
 
@@ -114,8 +114,8 @@ or capability:
 
 ```text
 src/runtime/kitchen/
-├── components/Console/Operations/Menus/
-├── composables/console/operations/menus/
+├── components/Workspace/Operations/Menus/
+├── composables/workspace/operations/menus/
 ├── models/menu/
 └── server/operations/menus/
 ```
@@ -124,37 +124,37 @@ This is an entity-scoped Nuxt runtime, not a capability-owned miniature
 application. Do not create `client`, `server`, `components`, and `models`
 inside an arbitrary feature root outside the entity scope.
 
-## Console
+## Workspace
 
-Console is a shared surface and runtime, not an entity and not the owner of
+Workspace is a shared surface and runtime, not an entity and not the owner of
 Kitchen, Supplier, Project, or their records.
 
-Shared Console mechanics remain in the root spine:
+Shared Workspace mechanics remain in the root spine:
 
 ```text
-src/runtime/components/Console/
-src/runtime/composables/fireux/console/
+src/runtime/components/Workspace/
+src/runtime/composables/fireux/workspace/
 src/runtime/layouts/
-src/runtime/pages/console/
-src/runtime/server/api/console/
+src/runtime/pages/workspace/
+src/runtime/server/api/workspace/
 ```
 
-Entity-specific Console implementation lives with the entity:
+Entity-specific Workspace implementation lives with the entity:
 
 ```text
-src/runtime/kitchen/components/Console/
-src/runtime/kitchen/composables/console/
+src/runtime/kitchen/components/Workspace/
+src/runtime/kitchen/composables/workspace/
 src/runtime/kitchen/server/
 ```
 
 The module registration may preserve established component names such as
-`ConsoleKitchenOperationsTables`; a filesystem move does not require a public
+`WorkspaceKitchenOperationsTables`; a filesystem move does not require a public
 component or composable rename. Kitchen domain models and commands do not move
-under Console merely because Console consumes them.
+under Workspace merely because Workspace consumes them.
 
 ## Other cross-cutting concepts
 
-- Auth, Firestore, Console, SEO, UI shells, and other proven cross-entity
+- Auth, Firestore, Workspace, SEO, UI shells, and other proven cross-entity
   primitives remain in the root technical spine or their owning shared
   package.
 - An entity's use of a shared primitive remains under that entity when it adds
@@ -166,7 +166,7 @@ under Console merely because Console consumes them.
 - Typed Entity catalogues belong in `models`; Entity-owned Demo Worlds belong
   in `demo`. Root `runtime/content` and `runtime/demo` remain available only
   for real cross-entity composition.
-- A surface such as Console, Kiosk, Directory, Detail, or Admin may qualify a
+- A surface such as Workspace, Kiosk, Directory, Detail, or Admin may qualify a
   component or composable path; it does not become the owner of the entity.
 - A real entity keeps its own root even when another entity exposes it as an
   operation. Kitchen's Menus operation manages Menu records; it does not absorb

@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
-// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Console creation through the trusted transaction.
+// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Workspace creation through the trusted transaction.
 import type {
   FireuxEntityCreateMode,
   FireuxEntityCreateResult,
@@ -53,10 +53,10 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   async function createSupplier(
     options: SupplierCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
-    return createSupplierConsole(options)
+    return createSupplierWorkspace(options)
   }
 
-  async function createSupplierConsole(
+  async function createSupplierWorkspace(
     options: SupplierCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
     requireCanonicalWriteSource()
@@ -92,7 +92,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   return {
     createPlan: SupplierCreatePlan,
     createSupplier,
-    createSupplierConsole,
+    createSupplierWorkspace,
     createTestSupplier,
   }
 }

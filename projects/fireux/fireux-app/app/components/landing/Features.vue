@@ -70,10 +70,10 @@ const defaults: FeatureItem[] = [
     description: 'Add capabilities when the business proves it needs them, not before.',
   },
   {
-    key: 'console',
+    key: 'workspace',
     icon: 'i-lucide-terminal',
     title: 'One Control Centre',
-    description: 'Manage the work, people, and connected apps from a consistent console.',
+    description: 'Manage the work, people, and connected apps from a consistent workspace.',
   },
   {
     key: 'authpay',

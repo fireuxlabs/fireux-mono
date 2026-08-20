@@ -11,7 +11,7 @@ Map component folder and naming conventions.
 ## Vertical links
 
 - Parent: nuxt-ui.md
-- Child: family-console-entity.md
+- Child: family-workspace-entity.md
 - Child: family-entity-directory.md
 - Child: family-entity-detail.md
 - Child: card-family.md
@@ -42,7 +42,7 @@ Map component folder and naming conventions.
 - The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
   components remain entity-owned (`runtime/kitchen/components/Cards`,
   `runtime/supplier/components/Collection`, and an entity's
-  `components/Console/Operations`) while pages remain route-first.
+  `components/Workspace/Operations`) while pages remain route-first.
 - `atoms` own foundations or one semantic visual role, such as system tokens
   and the `.fx-type-*` vocabulary. They do not own a form, card, or page
   composition.
@@ -50,7 +50,7 @@ Map component folder and naming conventions.
   such as browser-level form behavior, inset panels, pills, and entity/preview
   card anatomy that the installed component library does not provide.
 - `organisms` own recurring multi-component or page-region composition, such
-  as collection layouts, public-action panels, profile/console composition,
+  as collection layouts, public-action panels, profile/workspace composition,
   and shared page rhythm that still has more than one real consumer.
 - If a real external surface needs shared CSS, `integrations` isolates that
   contract; it is not a domain organism. Do not keep speculative integration
@@ -64,8 +64,8 @@ Map component folder and naming conventions.
 - The intended cross-tree mappings are: entity and preview card molecules to
   the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Preview` family
   classified in `card-family.md`; collection organisms to `X/Collection/*` and
-  console indexes; console header/summary molecules plus the console surface
-  organism to an entity's `components/Console/*`; public-action organisms to
+  workspace indexes; workspace header/summary molecules plus the workspace surface
+  organism to an entity's `components/Workspace/*`; public-action organisms to
   claim/operator panels;
   legacy `Cards/Profile` compositions are migration debt rather than ordinary
   Cards; the public specialist-profile
@@ -82,7 +82,7 @@ Map component folder and naming conventions.
   composition; and page organisms to genuinely shared layout and route
   regions. Core `LandingProductIndex` owns the product-led landing region
   vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
-  `surfaces`, `console`, `specifics`, `ecosystems`, `apps`, `tools`,
+  `surfaces`, `workspace`, `specifics`, `ecosystems`, `apps`, `tools`,
   `solutions`, then `operations`. An App may provide an ordered subset through
   the shared `regionOrder` prop so absent product layers disappear without
   copying the renderer or adding an unowned region. The hero
@@ -131,7 +131,7 @@ Map component folder and naming conventions.
   subscriptions presentation; both Main Apps supply their source-backed Free,
   Premium, and Managed plans at the project edge. Core `LandingOperationRail`
   sits above Section One in both Main Apps. Despite its historical component
-  name, each App projects its complete source-backed Console capability
+  name, each App projects its complete source-backed Workspace capability
   catalogue to matching `/operations/<slug>` literature routes; Identity
   remains a peer capability rather than becoming an Operation. As Section One hands off, Core moves the
   immersive landing header and Operations rail upward and out rather than
@@ -149,11 +149,11 @@ Map component folder and naming conventions.
   unmount, and exposes no project-level GSAP seam. Reduced-motion users see
   the final layout without movement. Native Nuxt route transitions remain a
   separate Core integration and do not move into GSAP. Core
-  `LandingConsolePreviewFrame` owns the shared Nuxt UI Console shell: target
+  `LandingWorkspacePreviewFrame` owns the shared Nuxt UI Workspace shell: target
   rail, primary and optional secondary navigation, selected heading,
-  responsive composition, and persistent full-Console doorway. Misebox's
-  Console proof pairs that shell with a read-only canonical Kitchen Operations
-  launcher and project-owned Console copy. Its thin root owns local operation
+  responsive composition, and persistent full-Workspace doorway. Misebox's
+  Workspace proof pairs that shell with a read-only canonical Kitchen Operations
+  launcher and project-owned Workspace copy. Its thin root owns local operation
   and page state plus one Product Demo load. Named Menus, Dishes, Ingredients,
   Recipes, Mise, and empty-canvas children own their projected bodies; Dishes
   further separates Collection, Overview, and named
@@ -162,22 +162,22 @@ Map component folder and naming conventions.
   receives the selected Demo Kitchen's usage links already resolved through
   canonical root Ingredients; it does not copy name or image truth. Its compact
   collapsible groups use the same ordered food-group resolver as the real
-  Kitchen Console.
+  Kitchen Workspace.
   Mise uses the real `KitchenMiseTask` collection and a Kitchen-owned summary
   projector, prop-only collection presentation, and task board shared with the
-  Console. The landing disables task navigation and owns only its outer scroll
+  Workspace. The landing disables task navigation and owns only its outer scroll
   boundary; it does not maintain a compact Mise variant. Product Demo exposes
-  those records as `console.miseTasks`; production requirements remain confined
+  those records as `workspace.miseTasks`; production requirements remain confined
   to their derived Dish graph. The shared board groups collapsible cards by
   chef workflow stage rather than status; status remains a badge/action state,
   checklist progress stays inside the task card, and missing stages appear in
-  Unsorted. Menu availability controls belong to the real Console; the landing
-  Menu child stays presentation-only. The Console and landing roots consume
+  Unsorted. Menu availability controls belong to the real Workspace; the landing
+  Menu child stays presentation-only. The Workspace and landing roots consume
   the Kitchen-owned Demo service state and pass filtered Mise. Inactive-card
-  styling remains a real Console concern; landing Dish, Recipe, Ingredient,
-  and Menu cards stay visually neutral. The persistent `Open full Console`
+  styling remains a real Workspace concern; landing Dish, Recipe, Ingredient,
+  and Menu cards stay visually neutral. The persistent `Open full Workspace`
   header doorway selects the Deanos Demo target before entering
-  `/console/kitchen`; the root otherwise owns only local Dish page identity,
+  `/workspace/kitchen`; the root otherwise owns only local Dish page identity,
   filters Drink records from the entry-level Dishes showcase, and suppresses
   Food/Drink type labels there, while the
   Dishes
@@ -186,15 +186,15 @@ Map component folder and naming conventions.
   pages change; its circled information icon represents the selected Dish
   overview, and accessible names and hover titles preserve each icon's meaning.
   Detail tiles are navigation doorways rather than inline expanders.
-  Children consume typed read-only props and do not acquire Console selection,
+  Children consume typed read-only props and do not acquire Workspace selection,
   Demo loading, live reads, Firebase, or write authority. The project source
   begins at
-  `projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue`.
+  `projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Index.vue`.
   FireUX consumes the same shell for its Project Operations and projects Apps
   and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
   Ignition remains App intake with a separate private app-admin delivery
   workflow; it is not a Project Operation. User activity remains a truthful
-  private state. The Console doorway selects the real Demo Project only when
+  private state. The Workspace doorway selects the real Demo Project only when
   that projection succeeds. Mobile keeps each component before the text and desktop places it
   to the left. Project proof truth never moves into Core. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
@@ -246,7 +246,7 @@ Inside `runtime/<entity>/components`:
 - `Detail/Index.vue` when detail owns child slices
 - `Edit`
 - `Overview`
-- `Console/*`
+- `Workspace/*`
 
 ## Detail rule
 
@@ -261,36 +261,36 @@ Inside `runtime/<entity>/components`:
   their owner.
 - Do not prefix components in those folders with `Public` unless it names a
   real publication or privacy boundary.
-- A surface such as Console, Detail, Directory, or Kiosk may qualify the path
+- A surface such as Workspace, Detail, Directory, or Kiosk may qualify the path
   inside the entity's component role; it does not replace the entity owner.
 
-## Console component folders
+## Workspace component folders
 
 The entity-scoped destination is:
 
-- `runtime/<entity>/components/Console/Index`
-- `runtime/<entity>/components/Console/Overview`
-- `runtime/<entity>/components/Console/Identity`
-- `runtime/<entity>/components/Console/Team`
-- `runtime/<entity>/components/Console/Operations`
-- `runtime/<entity>/components/Console/Sundries`
+- `runtime/<entity>/components/Workspace/Index`
+- `runtime/<entity>/components/Workspace/Overview`
+- `runtime/<entity>/components/Workspace/Identity`
+- `runtime/<entity>/components/Workspace/Team`
+- `runtime/<entity>/components/Workspace/Operations`
+- `runtime/<entity>/components/Workspace/Sundries`
 
-Shared Console presentation remains under `runtime/components/Console`.
-Entity Console families now live beneath their owner. Do not recreate
-`runtime/components/Console/X`; shared Console presentation alone remains in
-the root Console folder.
+Shared Workspace presentation remains under `runtime/components/Workspace`.
+Entity Workspace families now live beneath their owner. Do not recreate
+`runtime/components/Workspace/X`; shared Workspace presentation alone remains in
+the root Workspace folder.
 
-## Console bucket rule
+## Workspace bucket rule
 
-- Every Console Entity uses `Index`, `Overview`, `Identity`, and `Team`.
+- Every Workspace Entity uses `Index`, `Overview`, `Identity`, and `Team`.
   Entity-specific `Operations` and temporary `Sundries` remain optional.
-  Notifications is supplied once by the shared Console shell.
+  Notifications is supplied once by the shared Workspace shell.
 - These buckets are directories. Prefer
-  `runtime/<entity>/components/Console/Overview/Index.vue` over a peer
+  `runtime/<entity>/components/Workspace/Overview/Index.vue` over a peer
   `Overview.vue` file.
-- `Team` is a shared console access concept, not an operation.
+- `Team` is a shared workspace access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
-- `Sundries` quarantines parked or underdeveloped console surfaces so they do not pretend to be confirmed operations.
+- `Sundries` quarantines parked or underdeveloped workspace surfaces so they do not pretend to be confirmed operations.
 - Operation folders should default to an entry component, `Read.vue`, `Write.vue`, and optional `Detail.vue`.
 - `Read` answers what exists. `Write` owns deliberate creation or editing when
   the operation genuinely supports those actions; safe atomic edits should

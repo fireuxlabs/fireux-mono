@@ -122,7 +122,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     companyTargets: companyModule.companyDemoTargets,
   })
 
-  const consoleScenario = scenarioModule.deanosKitchenDemoScenario
+  const workspaceScenario = scenarioModule.deanosKitchenDemoScenario
   const kitchenScenarios = [
     scenarioModule.deanosKitchenDemoScenario,
     scenarioModule.pizzaTheActionKitchenDemoScenario,
@@ -152,17 +152,17 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
       }
     })
 
-  const menu = consoleScenario.menus.find(item =>
-    item.kitchenMenu.id === consoleScenario.kitchenMenu.id
+  const menu = workspaceScenario.menus.find(item =>
+    item.kitchenMenu.id === workspaceScenario.kitchenMenu.id
   )
-  const manifest = presentationModule.kitchenDemoManifest(consoleScenario)
+  const manifest = presentationModule.kitchenDemoManifest(workspaceScenario)
   const orderItem = manifest.content.sections
     .flatMap(section => section.items)
     .find(item => item.id === 'deanos-classic-item')
-  const miseTask = consoleScenario.miseTasks.find(
+  const miseTask = workspaceScenario.miseTasks.find(
     task => task.id === 'shape-main-patties'
   )
-  const recipe = consoleScenario.recipes.find(
+  const recipe = workspaceScenario.recipes.find(
     item => item.id === 'deanos-burger-sauce'
   )
   const supplierScenario = supplierDemoWorld.find(
@@ -170,7 +170,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
   )
   const supplierOperation =
     suppliersModule.buildKitchenDemoSuppliersOperation({
-      links: consoleScenario.supplierIngredientLinks,
+      links: workspaceScenario.supplierIngredientLinks,
       supplierScenarios: supplierDemoWorld,
     })
   const supplier = supplierOperation.items.find(
@@ -179,7 +179,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
   const supplierItem = supplierScenario?.items.find(
     item => item.ingredient_id === 'beef-mince'
   )
-  const stationName = consoleScenario.stations.find(
+  const stationName = workspaceScenario.stations.find(
     station => station.id === miseTask?.station
   )?.name
 
@@ -207,12 +207,12 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     maximumFractionDigits: 2,
   })
   const kitchenName =
-    consoleScenario.kitchen.identity.display_name
-    || consoleScenario.place.name
-  const consoleKitchenCard = kitchens.find(
-    kitchen => kitchen.id === consoleScenario.kitchen.id
+    workspaceScenario.kitchen.identity.display_name
+    || workspaceScenario.place.name
+  const workspaceKitchenCard = kitchens.find(
+    kitchen => kitchen.id === workspaceScenario.kitchen.id
   )
-  if (!consoleKitchenCard) {
+  if (!workspaceKitchenCard) {
     throw new Error('PowerCards Demo Kitchen identity is unresolved.')
   }
 
@@ -229,14 +229,14 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         status: menu.rootMenu.status,
         kitchen: {
           name: kitchenName,
-          logo_image_url: consoleKitchenCard.imageUrl,
-          image_shade: consoleKitchenCard.imageShade,
+          logo_image_url: workspaceKitchenCard.imageUrl,
+          image_shade: workspaceKitchenCard.imageShade,
         },
         source: {
-          app_id: consoleScenario.appId,
-          kitchen_id: consoleScenario.kitchen.id,
+          app_id: workspaceScenario.appId,
+          kitchen_id: workspaceScenario.kitchen.id,
           menu_id: menu.kitchenMenu.id,
-          kitchen_slug: consoleScenario.kitchen.slug,
+          kitchen_slug: workspaceScenario.kitchen.slug,
           kitchen_name: kitchenName,
         },
       },

@@ -3,7 +3,7 @@
   <PublicSimplePage
     :title="title"
     :description="description"
-    eyebrow="Project console"
+    eyebrow="Project workspace"
     back-to="/operations#project"
     back-label="Operations"
   >

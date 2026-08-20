@@ -26,21 +26,21 @@
 
       <template #specifics>
         <LandingProductProofSection
-          section-id="misebox-console"
+          section-id="misebox-workspace"
           copy-emphasis
-          :eyebrow="selectedConsoleCopy.eyebrow"
-          :title="selectedConsoleCopy.title"
-          :description="selectedConsoleCopy.description"
-          :supporting="selectedConsoleCopy.supporting"
-          :items="selectedConsoleCopy.items"
+          :eyebrow="selectedWorkspaceCopy.eyebrow"
+          :title="selectedWorkspaceCopy.title"
+          :description="selectedWorkspaceCopy.description"
+          :supporting="selectedWorkspaceCopy.supporting"
+          :items="selectedWorkspaceCopy.items"
           :action="{
-            label: selectedConsoleCopy.action,
-            to: selectedConsoleCopy.to,
+            label: selectedWorkspaceCopy.action,
+            to: selectedWorkspaceCopy.to,
             icon: 'i-lucide-arrow-right',
           }"
         >
-          <MiseboxLandingConsolePreview
-            v-model:surface-id="selectedConsoleSurfaceId"
+          <MiseboxLandingWorkspacePreview
+            v-model:surface-id="selectedWorkspaceSurfaceId"
           />
         </LandingProductProofSection>
       </template>
@@ -83,17 +83,17 @@ import type {
 } from 'fireux-core/config/app/meta-content'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/ecosystem/composables/useEcosystemAppCollection'
 import { metaContent } from '../../../meta'
-import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'
+import MiseboxLandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import MiseboxLandingHeroImage from './HeroImage.vue'
 import MiseboxLandingOrderingShowcase from './OrderingShowcase.vue'
 import MiseboxLandingPricingStrip from './PricingStrip.vue'
 import {
-  consoleSurfaceCopy,
+  workspaceSurfaceCopy,
   content,
   featuredAppIds,
   featuredAppMedia,
   toolsCatalogue,
-  type ConsoleSurfaceCopy,
+  type WorkspaceSurfaceCopy,
 } from './landing-content'
 
 const appsController = useEcosystemAppCollection()
@@ -115,10 +115,10 @@ const baseRegionOrder = [
 const regionOrder = computed(() =>
   showApps.value ? ([...baseRegionOrder, 'apps'] as const) : baseRegionOrder
 )
-const selectedConsoleSurfaceId = ref('kitchen.dishes')
+const selectedWorkspaceSurfaceId = ref('kitchen.dishes')
 const landingOperations: readonly FireuxMetaOperation[] =
   metaContent.operations?.filter(
-    (operation) => operation.console.id === 'kitchen'
+    (operation) => operation.workspace.id === 'kitchen'
   ) ?? []
 const landingSolutions: readonly FireuxMetaSolution[] =
   metaContent.solutions ?? []
@@ -129,11 +129,11 @@ const operationRailItems = landingOperations.map((operation) => ({
   to: operation.slug ? `/operations/${operation.slug}` : operation.to,
 }))
 
-const selectedConsoleCopy = computed<ConsoleSurfaceCopy>(
+const selectedWorkspaceCopy = computed<WorkspaceSurfaceCopy>(
   () =>
-    consoleSurfaceCopy[
-      selectedConsoleSurfaceId.value as keyof typeof consoleSurfaceCopy
-    ] || consoleSurfaceCopy['kitchen.dishes']
+    workspaceSurfaceCopy[
+      selectedWorkspaceSurfaceId.value as keyof typeof workspaceSurfaceCopy
+    ] || workspaceSurfaceCopy['kitchen.dishes']
 )
 
 const solutionItems = landingSolutions
@@ -176,9 +176,9 @@ const solutionsCatalogue = {
 const operationsCatalogue = {
   sectionId: 'misebox-operations',
   eyebrow: 'Operations',
-  title: 'Work inside the Kitchen Console.',
+  title: 'Work inside the Kitchen Workspace.',
   description:
-    'Each Kitchen Operation points to a working Console surface owned by its domain package.',
+    'Each Kitchen Operation points to a working Workspace surface owned by its domain package.',
   action: {
     label: 'Explore all operations',
     to: '/operations',

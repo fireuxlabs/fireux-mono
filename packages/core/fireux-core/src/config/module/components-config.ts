@@ -23,13 +23,13 @@ export function configureComponents(resolver: Resolver) {
     global: false,
     pathPrefix: true,
     prefix: 'Project',
-    ignore: ['Console/**'],
+    ignore: ['Workspace/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/project/components/Console', {
+  registerComponentsDir(resolver, './runtime/project/components/Workspace', {
     global: false,
     pathPrefix: true,
-    prefix: 'ConsoleProject',
+    prefix: 'WorkspaceProject',
   })
 
   registerComponentsDir(resolver, './runtime/user/components', {

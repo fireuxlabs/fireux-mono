@@ -11,8 +11,8 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://tapberne.misebox.app',
   },
-  consoles: ['kitchen'],
-  consoleConfig: {
+  workspaces: ['kitchen'],
+  workspaceConfig: {
     kitchen: {
       canCreate: false,
     },

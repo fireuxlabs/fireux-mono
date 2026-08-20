@@ -29,7 +29,7 @@ export const miseboxEcosystemProfile = {
     {
       title: 'Kitchen operations',
       description:
-        'See the source-defined work areas that make up the Misebox Kitchen Console.',
+        'See the source-defined work areas that make up the Misebox Kitchen Workspace.',
       to: 'https://misebox.app/operations',
       icon: 'i-lucide-layout-dashboard',
     },

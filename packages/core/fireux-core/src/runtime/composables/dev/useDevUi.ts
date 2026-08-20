@@ -9,17 +9,17 @@ export function useDevUi() {
     [
       '/kitchens',
       '/kitchens/create',
-      '/console/kitchen',
-      '/console/kitchen/create',
+      '/workspace/kitchen',
+      '/workspace/kitchen/create',
       '/portfolios',
       '/portfolios/create',
-      '/console/portfolio',
-      '/console/portfolio/create',
+      '/workspace/portfolio',
+      '/workspace/portfolio/create',
       '/suppliers',
       '/suppliers/create',
-      '/console/supplier',
-      '/console/supplier/create',
-      '/console/project',
+      '/workspace/supplier',
+      '/workspace/supplier/create',
+      '/workspace/project',
     ].includes(route.path)
   )
 

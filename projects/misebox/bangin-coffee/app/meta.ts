@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Bangin Coffee is a Misebox tenant app for a mobile coffee and event bar.',
     promise_html:
       'Present the bar clearly today, then add the right Misebox entity layer when the coffee workflow is confirmed.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Tenant operations can be connected once the Bangin Coffee entity family is agreed.',
   },
   seo: {

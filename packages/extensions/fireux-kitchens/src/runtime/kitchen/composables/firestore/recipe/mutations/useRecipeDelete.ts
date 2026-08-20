@@ -1,9 +1,9 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { RecipeStorage } from '../../../../models/recipe.model.ts'
-import { useKitchenConsoleSelection } from '../../../console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 
 const trim = (value: unknown) => String(value || '').trim()
@@ -14,10 +14,10 @@ export function useRecipeDelete(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleSelection()
+  const { selectedId } = useKitchenWorkspaceSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||

@@ -62,7 +62,7 @@ const ALLOWED_REMOVED_FIELDS = {
     'userOf',
   ]),
   'canonical-membership': new Set([
-    'console_scopes',
+    'workspace_scopes',
     'id',
     'notifications',
   ]),
@@ -81,7 +81,7 @@ const APP_TARGETS = {
       key: 'werkbox',
       workspace: './projects/werkbox/werkbox-app',
       launch_order: 3,
-      console_families: [],
+      workspace_families: [],
       database_id: DATABASE_ID,
     },
   },
@@ -94,7 +94,7 @@ const APP_TARGETS = {
       key: 'richies',
       workspace: './projects/werkbox/richies-reinigung',
       launch_order: 4,
-      console_families: [],
+      workspace_families: [],
       database_id: DATABASE_ID,
     },
   },
@@ -507,21 +507,21 @@ function buildPlan(state) {
           )
         )
       }
-      if (membershipSnapshot.get('console_enabled') !== false) {
+      if (membershipSnapshot.get('workspace_enabled') !== false) {
         blockers.push(
           blocker(
             'LEGACY_CONSOLE_AUTHORITY_REVIEW_REQUIRED',
             path,
-            'Werkbox Apps have no console families; non-false legacy console authority requires review.'
+            'Werkbox Apps have no workspace families; non-false legacy workspace authority requires review.'
           )
         )
       }
-      if (nonEmptyLegacyValue(membershipSnapshot.get('console_scopes'))) {
+      if (nonEmptyLegacyValue(membershipSnapshot.get('workspace_scopes'))) {
         blockers.push(
           blocker(
             'LEGACY_CONSOLE_SCOPE_REVIEW_REQUIRED',
             path,
-            'Non-empty legacy console scopes cannot be silently discarded.'
+            'Non-empty legacy workspace scopes cannot be silently discarded.'
           )
         )
       }
@@ -549,7 +549,7 @@ function buildPlan(state) {
       const payload = {
         role,
         is_premium: membershipSnapshot.get('is_premium') === true,
-        console_enabled: false,
+        workspace_enabled: false,
         onboarding_status:
           membershipSnapshot.get('onboarding_status') === 'completed' ||
           membershipSnapshot.get('onboarding_status') === 'skipped'

@@ -15,7 +15,7 @@ source and executable guards remain authority.
 
 - Parent: `docs/concepts/family-menu.md`
 - Operations handoff: `docs/concepts/order-processing-kitchen-fulfilment.md`
-- Console family: `docs/concepts/family-console-entity.md`
+- Workspace family: `docs/concepts/family-workspace-entity.md`
 - Server boundaries: `docs/concepts/server-api.md`
 - Entity vocabulary: `docs/concepts/entities.md`
 - Storage vocabulary: `docs/concepts/firestore-entity.md`
@@ -197,7 +197,7 @@ The detailed state machine and operator transitions live in
 - Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
-- Console settings: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/menus/[menuId]/ordering/`
+- Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/[menuId]/ordering/`
 
 ## Delta register
 

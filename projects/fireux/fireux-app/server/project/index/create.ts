@@ -77,7 +77,7 @@ export async function createProject(event: H3Event, input: unknown) {
     if (userTargets.exists) mutations.update(targets, 'targets', patch)
     else mutations.create(targets, 'targets', patch)
     mutations.update(current.memberships, current.uid, {
-      console_enabled: true,
+      workspace_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })
     return { ok: true as const, project_id: id }

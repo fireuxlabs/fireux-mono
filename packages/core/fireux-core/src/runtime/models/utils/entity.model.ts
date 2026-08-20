@@ -34,7 +34,7 @@ export type FireuxEntityFamily =
   | 'core'
   | 'identity'
   | 'system'
-  | 'console-entity'
+  | 'workspace-entity'
   | 'content'
   | 'commerce'
   | 'profile'
@@ -49,7 +49,7 @@ export type FireuxEntityDefinition = {
   identity: FireuxEntityIdentity
   authority: FireuxEntityAuthority
   appSupport: FireuxEntityAppSupport
-  console?: boolean
+  workspace?: boolean
   root?: string
   scoped?: string
   appSupportPath?: string

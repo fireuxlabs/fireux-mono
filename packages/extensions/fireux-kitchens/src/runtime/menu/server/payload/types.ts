@@ -8,7 +8,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
 import type { MenuManifestContent } from '../../models/menu-detail.model.ts'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type {
   SproochliAttachmentConfig,
   SproochliLanguageCode,
@@ -33,7 +33,7 @@ export type MenuPayloadScope = {
   sourceKind?: string
   menuContext?: MenuRouteContext
   page_style?: Record<string, unknown>
-  kitchen_theme?: ConsoleTheme
+  kitchen_theme?: WorkspaceTheme
   choices?: unknown[]
   sections?: unknown[]
   specials?: MenuManifestContent

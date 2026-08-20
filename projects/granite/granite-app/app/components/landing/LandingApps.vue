@@ -6,7 +6,7 @@
           Built for branch operations.
         </h2>
         <p class="text-muted">
-          One console per branch. Manage many client portfolios with consistent structure and audit-ready records.
+          One workspace per branch. Manage many client portfolios with consistent structure and audit-ready records.
         </p>
       </div>
 
@@ -15,15 +15,15 @@
           <div class="space-y-1">
             <p class="text-sm font-semibold">Ready to run Granite?</p>
             <p class="text-sm text-muted">
-              Start with portfolios, then use the console as your control surface.
+              Start with portfolios, then use the workspace as your control surface.
             </p>
           </div>
 
           <div class="flex flex-wrap gap-3">
-            <UButton to="/console/portfolio" color="primary" icon="i-lucide-building">
+            <UButton to="/workspace/portfolio" color="primary" icon="i-lucide-building">
               Select portfolio
             </UButton>
-            <UButton to="/console/portfolio" variant="outline" icon="i-lucide-terminal">
+            <UButton to="/workspace/portfolio" variant="outline" icon="i-lucide-terminal">
               Enter via selector
             </UButton>
           </div>

@@ -21,7 +21,7 @@ export type FireuxRootScope = {
 
 export type FireuxEntityManagement =
   | { mode: 'root' }
-  | { mode: 'console' }
+  | { mode: 'workspace' }
   | { mode: 'app'; app_id: string }
 
 export const FireuxEntityManagementDefaults: FireuxEntityManagement = {

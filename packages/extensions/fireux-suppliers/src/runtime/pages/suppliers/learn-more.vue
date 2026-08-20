@@ -7,7 +7,7 @@
 
     <UPageBody class="pagebody">
       <p>
-        A Supplier Console is the working home for a supplier in Bringli. The
+        A Supplier Workspace is the working home for a supplier in Bringli. The
         Supplier owns its identity and the records that describe what it can
         supply. Apps and marketplaces can later publish selected Supplier
         records without copying that authority.
@@ -18,7 +18,7 @@
         <ul class="mt-2 list-disc space-y-1 pl-6">
           <li>Maintain one public Supplier identity.</li>
           <li>Work with Supplier items, catalogues and linked ingredients.</li>
-          <li>Control Supplier Console access for your team.</li>
+          <li>Control Supplier Workspace access for your team.</li>
           <li>
             Keep marketplace publication separate from Supplier ownership.
           </li>
@@ -26,7 +26,7 @@
       </div>
 
       <UButton to="/suppliers/create" icon="i-lucide-arrow-right">
-        Create your Supplier Console
+        Create your Supplier Workspace
       </UButton>
     </UPageBody>
   </UPage>

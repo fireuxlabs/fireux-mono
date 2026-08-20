@@ -3,7 +3,7 @@
     <div class="space-y-6">
       <div class="space-y-2">
         <h2 class="text-3xl font-semibold">
-          What the console covers.
+          What the workspace covers.
         </h2>
         <p class="text-muted">
           Granite is built for branch-level oversight across multiple client portfolios.

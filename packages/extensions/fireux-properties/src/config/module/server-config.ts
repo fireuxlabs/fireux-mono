@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 22:39 CEST — Property public projection: register the bounded public Property index route.
 // Concurrent edit — 2026-07-21 22:29 CEST — Portfolio atomic attachment: register trusted onboarding completion.
-// Concurrent edit — 2026-07-21 22:32 CEST — Console alignment — Property: register trusted onboarding completion.
+// Concurrent edit — 2026-07-21 22:32 CEST — Workspace alignment — Property: register trusted onboarding completion.
 import type { Resolver } from '@nuxt/kit'
 import {
   registerServerHandlers,

@@ -42,7 +42,7 @@ export async function run(ctx) {
         '',
         '[guard] Fix:',
         '- Read normalized App config through useFireUXConfig(event).',
-        '- Resolve Console creation policy through resolveConsoleCanCreate.',
+        '- Resolve Workspace creation policy through resolveWorkspaceCanCreate.',
       ].join('\n')
     )
   }
@@ -130,8 +130,8 @@ function checkFireuxCoreContracts(pkgPath) {
   const appStatus = source('src/runtime/app/server/index/status.ts')
   const appConfigType = source('src/config/app/types.ts')
   const appConfigBuilder = source('src/config/app/fireux.config.ts')
-  const console = source('src/runtime/composables/fireux/console/useConsole.ts')
-  const consolePolicy = source('src/runtime/utils/console-policy.ts')
+  const workspace = source('src/runtime/composables/fireux/workspace/useWorkspace.ts')
+  const workspacePolicy = source('src/runtime/utils/workspace-policy.ts')
   const appConfig = source('src/config/app/fireux.config.ts')
   const metaContent = source('src/config/app/meta-content.ts')
   const metaContentLoader = source('src/config/app/meta-content-loader.ts')
@@ -153,13 +153,13 @@ function checkFireuxCoreContracts(pkgPath) {
     violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')
   }
   if (
-    !runtimeView.includes('consoles: toStringArray(fireux.consoles)') ||
+    !runtimeView.includes('workspaces: toStringArray(fireux.workspaces)') ||
     !runtimeView.includes(
-      'consoleConfig: toConsoleConfig(fireux.consoleConfig)'
+      'workspaceConfig: toWorkspaceConfig(fireux.workspaceConfig)'
     )
   ) {
     violations.push(
-      'FireUXConfig must normalize Console families and config once for runtime consumers.'
+      'FireUXConfig must normalize Workspace families and config once for runtime consumers.'
     )
   }
   if (!runtimeView.includes('useRuntimeConfig(event)')) {
@@ -168,11 +168,11 @@ function checkFireuxCoreContracts(pkgPath) {
     )
   }
   if (
-    !console.includes('resolveConsoleCanCreate') ||
-    !consolePolicy.includes("role !== 'tenant'")
+    !workspace.includes('resolveWorkspaceCanCreate') ||
+    !workspacePolicy.includes("role !== 'tenant'")
   ) {
     violations.push(
-      'Console UI and trusted onboarding must share the Core creation policy.'
+      'Workspace UI and trusted onboarding must share the Core creation policy.'
     )
   }
   if (
@@ -324,7 +324,7 @@ function checkRuntimeConfigConsumers(repoRoot) {
 
       const contents = readFileSync(entryPath, 'utf8')
       if (
-        contents.includes('consoleConfig') &&
+        contents.includes('workspaceConfig') &&
         /\buseRuntimeConfig\s*\(/.test(contents)
       ) {
         violations.push(path.relative(repoRoot, entryPath))

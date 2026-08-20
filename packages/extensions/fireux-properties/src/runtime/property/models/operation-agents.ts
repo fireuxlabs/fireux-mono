@@ -33,7 +33,7 @@ export const propertyOperationAgents = propertyAgentCapabilitySlugs.map(
       id: `${operationId}.ai`,
       name: names[slug as keyof typeof names],
       parentId: 'PropertyAI',
-      consoleId: 'property',
+      workspaceId: 'property',
       operationId,
       operationSlug: slug,
       ...(identity ? { family: 'identity' } : {}),

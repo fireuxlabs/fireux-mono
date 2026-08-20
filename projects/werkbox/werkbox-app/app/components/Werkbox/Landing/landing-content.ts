@@ -9,13 +9,13 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Recruitment', 'Operations'],
     description:
-      'An integrated work platform connecting jobs, employers and professionals directly to your Work Console. Publish work, review applications, coordinate teams and manage customer jobs.',
+      'An integrated work platform connecting jobs, employers and professionals directly to your Work Workspace. Publish work, review applications, coordinate teams and manage customer jobs.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',
     },
     secondaryAction: {
-      label: 'Go to console',
+      label: 'Go to workspace',
       to: '/jobs/manage',
       icon: 'i-lucide-layout-dashboard',
     },

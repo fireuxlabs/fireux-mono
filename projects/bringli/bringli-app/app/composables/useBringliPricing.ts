@@ -6,18 +6,18 @@ import {
 const bringliPricingProfile = {
   appName: 'Bringli',
   contactEmail: 'fire@fireux.app',
-  consoleName: 'Supply Console',
+  workspaceName: 'Supply Workspace',
   free: [
     'Create a supplier profile',
     'Publish basic supplier information',
-    'Use the Supplier Console',
+    'Use the Supplier Workspace',
     'Review catalogue, ingredient, and item records',
   ],
   pro: [
     'Manage complete supplier catalogues',
     'Connect ingredients and supplied items',
     'Coordinate coverage and delivery work',
-    'Give the supply team Console access',
+    'Give the supply team Workspace access',
   ],
 } as const satisfies PricingProfile
 

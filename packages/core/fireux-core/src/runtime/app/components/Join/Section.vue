@@ -77,7 +77,7 @@ const description = computed(() => {
     return `Your request to join ${appLabel.value} is waiting for an app admin.`
   }
 
-  return `Ask an app admin to add you to ${appLabel.value}. This does not grant console access.`
+  return `Ask an app admin to add you to ${appLabel.value}. This does not grant workspace access.`
 })
 const authTo = computed(
   () => `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`

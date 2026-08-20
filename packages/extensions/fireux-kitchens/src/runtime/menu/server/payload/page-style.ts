@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core style model.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: merge style tokens from low to high precedence.
 // Concurrent edit — 2026-07-22 12:24 CEST — Canonical Kitchen theme write: validate the full portable style contract server-side.
-// Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette console: validate fonts against the shared rendered token set.
+// Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette workspace: validate fonts against the shared rendered token set.
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import {
   readRecord,
@@ -113,7 +113,7 @@ export function parseMenuPageStyleInput(
 }
 
 type MenuPageStyleLayer = {
-  source: 'place' | 'root-kitchen' | 'console-theme' | 'app-kitchen' | 'menu'
+  source: 'place' | 'root-kitchen' | 'workspace-theme' | 'app-kitchen' | 'menu'
   style: unknown
 }
 

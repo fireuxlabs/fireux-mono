@@ -73,7 +73,7 @@ const supplierName = computed(() =>
 const panelDescription = computed(() =>
   supplierName.value
     ? `Supplier operators manage catalogue items, ingredients, and supplier work for ${supplierName.value}.`
-    : 'Supplier operators manage catalogue items, ingredients, and supplier work from the supplier console.'
+    : 'Supplier operators manage catalogue items, ingredients, and supplier work from the supplier workspace.'
 )
 const groups = computed<PublicActionGroup[]>(() =>
   visiblePublicActionGroups([

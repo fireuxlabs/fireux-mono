@@ -4,7 +4,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useRoute } from 'vue-router'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../kitchen/composables/firestore/useKitchen'

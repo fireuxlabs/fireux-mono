@@ -31,11 +31,11 @@
     </template>
 
     <template #body>
-      <div class="console-profile">
+      <div class="workspace-profile">
         <ProfessionalIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
-          <div class="console-profile__section">
+          <div class="workspace-profile__section">
             <ProfessionalEditCore />
           </div>
         </ClientOnly>

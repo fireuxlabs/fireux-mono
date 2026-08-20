@@ -101,7 +101,7 @@ export function createFirestoreExactDocLoader<T>(input: {
             ? 'unavailable while offline'
             : 'failed'
           const method = isOfflineFirestoreError(failure) ? 'warn' : 'error'
-          console[method](
+          workspace[method](
             `[useFirestoreRead] exact-doc read ${label} (${collectionPath})`,
             failure
           )

@@ -31,7 +31,7 @@ const CLASSIFICATION_KEYS = [
   'identity',
   'authority',
   'appSupport',
-  'console',
+  'workspace',
   'parent',
 ]
 
@@ -140,8 +140,8 @@ const normalizeClassification = (properties) => {
   const classification = {}
 
   for (const key of CLASSIFICATION_KEYS) {
-    if (key === 'console') {
-      classification.console = properties.has(key)
+    if (key === 'workspace') {
+      classification.workspace = properties.has(key)
         ? staticValue(properties.get(key))
         : false
       continue
@@ -310,11 +310,11 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
     )
   }
 
-  if (classification.console) {
+  if (classification.workspace) {
     assert.equal(
       classification.kind,
       'entity',
-      `${label} console declarations must be entities.`
+      `${label} workspace declarations must be entities.`
     )
   }
 }

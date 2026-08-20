@@ -88,7 +88,7 @@
           <div v-show="openSections.storage" class="mt-4 space-y-4">
             <div class="space-y-3">
               <p class="text-xs text-muted">
-                Inspect one supplier across its root and App support record to catch schema drift or missing console state.
+                Inspect one supplier across its root and App support record to catch schema drift or missing workspace state.
               </p>
 
               <USelect
@@ -257,7 +257,7 @@ const supplierOptions = computed(() =>
       String((supplier as any)?.supplier_organization_name || '').trim() ||
       String((supplier as any)?.supplier_headline || '').trim() ||
       id
-    const appSupportStatus = appSupplierById.value.has(id) ? 'console' : 'root only'
+    const appSupportStatus = appSupplierById.value.has(id) ? 'workspace' : 'root only'
     return {
       label: `${labelBase} · ${appSupportStatus}`,
       value: id,

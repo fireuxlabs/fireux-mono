@@ -11,8 +11,8 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://ausfinn-apartments.web.app',
   },
-  consoles: ['property'],
-  consoleConfig: {
+  workspaces: ['property'],
+  workspaceConfig: {
     property: {
       canCreate: false,
     },

@@ -33,14 +33,14 @@ its first save. Template-specific anatomy remains separately named and owned.
 `/templates` has three responsibilities:
 
 1. Select one Kitchen. Four development specimens are temporarily available.
-2. Display that Kitchen's Root, Console, and App presentation configuration.
+2. Display that Kitchen's Root, Workspace, and App presentation configuration.
 3. List the presentations compatible with that Kitchen.
 
 Default and Theme remain progressive presentation levels:
 
 ```text
 Root    → Default
-Console → Default + Theme
+Workspace → Default + Theme
 ```
 
 Template One instead requires a template-ready Kitchen. Eligibility is based

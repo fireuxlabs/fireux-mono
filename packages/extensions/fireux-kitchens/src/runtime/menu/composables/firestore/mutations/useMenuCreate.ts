@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
@@ -11,7 +11,7 @@ import {
   MenuStorage,
   type Menu,
 } from '../../../models/kitchen-menu.model.ts'
-import { useKitchenConsoleSelection } from '../../../../kitchen/composables/console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { KitchenStorage } from '../../../../kitchen/models/kitchen.model.ts'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
@@ -105,10 +105,10 @@ export function useMenuCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
   const { appId } = useFireUXConfig()
-  const { selectedId } = useKitchenConsoleSelection()
+  const { selectedId } = useKitchenWorkspaceSelection()
   const db = useFirestore(options.databaseId)
 
   const kitchenCollectionPath = computed(() =>

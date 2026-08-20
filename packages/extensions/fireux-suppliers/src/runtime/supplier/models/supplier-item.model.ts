@@ -40,7 +40,7 @@ export const SupplierItemRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Supplier',
   scoped: SupplierItemStorage.path,
   notes: [

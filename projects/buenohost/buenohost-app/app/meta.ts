@@ -19,7 +19,7 @@ export const buenoHostLanguage = {
       'BuenoHost turns property and guest information into <strong>digital stay guides</strong> for hosts and guests.',
     promise_html:
       'Hosts keep Wi-Fi, check-in details, parking, house rules, checkout notes, emergency contacts, and local recommendations in one clean guest-facing experience.',
-    console_bridge_html:
+    workspace_bridge_html:
       'A standalone FireUX app for structured guest information on top of the shared fireux-properties engine. BuenoHost owns the property-facing stay companion experience, with optional services able to connect later.',
     about_p1:
       'BuenoHost is for hosts and property managers who want clearer guest arrivals, fewer repeated questions, and a more professional stay experience.',
@@ -48,16 +48,16 @@ export const buenoHostLanguage = {
   },
   cta: {
     primary: {
-      label: 'Open host console',
-      to: '/console/property',
+      label: 'Open host workspace',
+      to: '/workspace/property',
     },
     secondary: {
       label: 'View local preview',
       to: '/properties/preview-stay/info',
     },
-    console: {
-      label: 'Open host console',
-      to: '/console/property',
+    workspace: {
+      label: 'Open host workspace',
+      to: '/workspace/property',
     },
   },
   lists: {

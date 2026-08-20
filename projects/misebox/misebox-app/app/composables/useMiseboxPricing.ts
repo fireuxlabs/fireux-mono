@@ -6,7 +6,7 @@ import {
 const miseboxPricingProfile = {
   appName: 'Misebox',
   contactEmail: 'misebox@misebox.app',
-  consoleName: 'Kitchen Console',
+  workspaceName: 'Kitchen Workspace',
   free: [
     'Use one Kitchen workspace',
     'Publish one Menu',

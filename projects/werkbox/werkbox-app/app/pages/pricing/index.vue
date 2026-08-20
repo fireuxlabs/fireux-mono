@@ -25,6 +25,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Werkbox',
   description:
-    'Werkbox pricing for the Work Console, managed service, and your own App.',
+    'Werkbox pricing for the Work Workspace, managed service, and your own App.',
 })
 </script>

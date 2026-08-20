@@ -1,5 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 12:28 CEST — FireUX solutions hub: curate FireUX offers before exposing ecosystem catalogues. -->
-<!-- Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: surface the current Project Console as a restrained solution. -->
+<!-- Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: surface the current Project Workspace as a restrained solution. -->
 <template>
   <main class="min-h-screen bg-default text-default">
     <UContainer class="py-10 sm:py-14">

@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-07-18
-// usage_note: prevents project apps from re-owning package-owned console families.
+// usage_note: prevents project apps from re-owning package-owned workspace families.
 // FILE: scripts/guards/ownership.mjs
 
 import { existsSync, readdirSync } from 'node:fs'
@@ -9,14 +9,14 @@ import path from 'node:path'
 const PACKAGE_GROUPS = ['core', 'ecosystem', 'extensions']
 const SURFACES = [
   {
-    label: 'console components',
-    packageParts: ['src', 'runtime', 'components', 'Console'],
-    projectParts: ['app', 'components', 'Console'],
+    label: 'workspace components',
+    packageParts: ['src', 'runtime', 'components', 'Workspace'],
+    projectParts: ['app', 'components', 'Workspace'],
   },
   {
-    label: 'console composables',
-    packageParts: ['src', 'runtime', 'composables', 'fireux', 'console'],
-    projectParts: ['app', 'composables', 'fireux', 'console'],
+    label: 'workspace composables',
+    packageParts: ['src', 'runtime', 'composables', 'fireux', 'workspace'],
+    projectParts: ['app', 'composables', 'fireux', 'workspace'],
   },
 ]
 
@@ -84,7 +84,7 @@ export async function run(ctx) {
   if (violations.length) {
     throw new Error(
       [
-        '[guard] ❌ Project apps re-own package-owned console families:',
+        '[guard] ❌ Project apps re-own package-owned workspace families:',
         ...violations.flatMap((violation) => [
           `  - ${violation.projectPath} (${violation.label})`,
           ...violation.packageOwners.map((owner) => `      owner: ${owner}`),
@@ -92,11 +92,11 @@ export async function run(ctx) {
         '',
         '[guard] Fix:',
         '- Keep app pages and app-specific composition in the project.',
-        '- Move reusable console components/composables into the existing owning package family.',
+        '- Move reusable workspace components/composables into the existing owning package family.',
         '- Register the package runtime surface through its module config.',
       ].join('\n')
     )
   }
 
-  console.log('[guard] ✅ project apps do not re-own package console families')
+  console.log('[guard] ✅ project apps do not re-own package workspace families')
 }

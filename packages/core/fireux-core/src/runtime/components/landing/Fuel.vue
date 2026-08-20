@@ -46,7 +46,7 @@ const steps = [
   },
   {
     title: '2 · Operate',
-    copy: 'Open the right public and console routes for the current team.',
+    copy: 'Open the right public and workspace routes for the current team.',
   },
   {
     title: '3 · Expand',

@@ -88,8 +88,8 @@
           </div>
         </article>
 
-        <div v-else class="landing-ordering-preview__console">
-          <MiseboxLandingConsolePreview />
+        <div v-else class="landing-ordering-preview__workspace">
+          <MiseboxLandingWorkspacePreview />
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ import type {
 } from '../../../composables/product-demo/useMiseboxProductDemo'
 
 const { mode = 'mobile' } = defineProps<{
-  mode?: 'console' | 'kiosk' | 'mobile' | 'staff-pos'
+  mode?: 'workspace' | 'kiosk' | 'mobile' | 'staff-pos'
 }>()
 
 type PreviewMenuSection =
@@ -153,7 +153,7 @@ const previewAriaLabel = computed(() => {
   if (mode === 'mobile') return 'Preview of a mobile ordering menu'
   if (mode === 'kiosk') return 'Preview of a self-service ordering kiosk'
   if (mode === 'staff-pos') return 'Preview of Staff POS ordering'
-  return 'Preview of the Kitchen Console'
+  return 'Preview of the Kitchen Workspace'
 })
 const kioskPreviewSections = computed(() =>
   (kioskManifest.value?.content.sections || [])

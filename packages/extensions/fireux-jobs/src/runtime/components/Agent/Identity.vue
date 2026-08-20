@@ -1,6 +1,6 @@
 <template>
-  <section class="console-profile__section">
-    <div class="console-profile__pills">
+  <section class="workspace-profile__section">
+    <div class="workspace-profile__pills">
       <AgentCardsPill
         v-if="agentCard"
         v-bind="agentCard"

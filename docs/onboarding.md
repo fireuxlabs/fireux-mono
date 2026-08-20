@@ -6,14 +6,14 @@ This is the practical playbook for shared Core entity onboarding journeys.
 
 - Project is a FireUX control-plane entity. `/projects` publishes only active
   identity and presentation; its private operational entry point is the
-  admin-only `/console/project`.
+  admin-only `/workspace/project`.
 - Canonical `fireux/projects/{projectId}` owns Project identity and
   presentation. Each Firebase host keeps one bounded
   `(default)/project/{projectId}` ProjectMeta routing projection.
-- The Console is read-only. Canonical creation and changes are trusted
+- The Workspace is read-only. Canonical creation and changes are trusted
   provisioning operations and must synchronize the local ProjectMeta; the
   browser does not write either record.
-- The minimal Console operations are Identity, Apps, Ecosystem, and Team. Team
+- The minimal Workspace operations are Identity, Apps, Ecosystem, and Team. Team
   reads the existing FireUX `AppProject` access record; it is not a duplicate
   membership store. Do not add Project notifications until the notification
   model has a real Project-scoped emitter and User-owned delivery lifecycle.
@@ -94,7 +94,7 @@ This is the practical playbook for shared Core entity onboarding journeys.
 
 - If the button appears to do nothing, check:
   - whether Terms checkbox is checked
-  - browser/network errors in console for `/api/internal/user/account`
+  - browser/network errors in workspace for `/api/internal/user/account`
   - whether provisioning stays in `pending` without transition
 - There is an alias route for the dashboard-style location:
   - `/dashboard/user/create` -> redirects to `/users/create`

@@ -25,6 +25,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Bringli',
   description:
-    'Bringli pricing for the Supply Console, managed service, and your own App.',
+    'Bringli pricing for the Supply Workspace, managed service, and your own App.',
 })
 </script>

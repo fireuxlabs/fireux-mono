@@ -13,7 +13,7 @@ export const BASE_RESERVED_ROUTE_KEYS: string[] = [
   'apps',
   'users',
   'auth',
-  'console',
+  'workspace',
   'onboarding',
   'legal',
   'admin',

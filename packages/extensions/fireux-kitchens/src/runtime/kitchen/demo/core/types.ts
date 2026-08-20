@@ -47,7 +47,7 @@ export type KitchenDemoIdentity = {
  * Authoring bundle for one coherent Demo Menu.
  *
  * Dishes are included here only so the fixture can keep its references
- * together. Console operations consume the scenario's operation-level
+ * together. Workspace operations consume the scenario's operation-level
  * `menus`, `dishes`, and `menuSections` projections instead.
  */
 export type KitchenDemoMenu = {
@@ -101,7 +101,7 @@ export type KitchenDemoOperation =
 export type KitchenDemoPresentation = 'kiosk' | 'menu' | 'service'
 
 /**
- * Explicitly classifies how much of the Kitchen Console a scenario proves.
+ * Explicitly classifies how much of the Kitchen Workspace a scenario proves.
  *
  * This metadata stays separate from the real Kitchen and operation records so
  * Demo maturity never leaks into a canonical model or changes fixture output.

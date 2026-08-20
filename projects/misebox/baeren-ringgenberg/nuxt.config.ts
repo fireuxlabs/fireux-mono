@@ -11,10 +11,10 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://baeren-ringgenberg.web.app',
   },
-  consoles: ['kitchen'],
+  workspaces: ['kitchen'],
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
-  consoleConfig: {
+  workspaceConfig: {
     kitchen: {
       canCreate: false,
     },

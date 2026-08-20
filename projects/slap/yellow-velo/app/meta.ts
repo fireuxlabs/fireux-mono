@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Yellow Velo is a bicycle company for city riders, weekend climbers, and anyone who wants gear that looks good off the bike too.',
     promise_html:
       'Shop tuned bicycles, useful accessories, and simple merchandise with a crisp Slap storefront.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Yellow Velo keeps app-local brand pages small while products, stories, SEO, and runtime surfaces stay reusable.',
   },
   seo: {

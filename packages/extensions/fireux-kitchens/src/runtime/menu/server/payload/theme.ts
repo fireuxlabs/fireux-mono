@@ -1,5 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsolePalette, ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspacePalette, WorkspaceTheme } from 'fireux-core/types/theme'
 import { readMenuPageStyle } from './page-style.ts'
 
 export type MenuThemeSource = 'menu' | 'kitchen' | 'place-default'
@@ -9,7 +9,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? (value as Record<string, unknown>)
     : {}
 const text = (value: unknown) => String(value ?? '').trim()
-const readPalette = (value: unknown): ConsolePalette | null => {
+const readPalette = (value: unknown): WorkspacePalette | null => {
   const source = record(value)
   const keys = ['canvas', 'text', 'accent', 'accent_contrast'] as const
   if (Object.keys(source).length !== keys.length) return null
@@ -17,13 +17,13 @@ const readPalette = (value: unknown): ConsolePalette | null => {
     (key) => [key, text(source[key]).toLowerCase()] as const
   )
   if (entries.some(([, color]) => !/^#[0-9a-f]{6}$/.test(color))) return null
-  return Object.fromEntries(entries) as ConsolePalette
+  return Object.fromEntries(entries) as WorkspacePalette
 }
 
 const themePalette = (value: unknown) =>
   readPalette(record(record(value).theme).palette)
 
-const fallbackPalette = (styleValue: unknown): ConsolePalette => {
+const fallbackPalette = (styleValue: unknown): WorkspacePalette => {
   const style = readMenuPageStyle(styleValue) as Partial<PageStyle>
   return {
     canvas: text(style.background_color_light) || '#f8fafc',
@@ -37,7 +37,7 @@ export function resolveEffectiveMenuTheme(
   menuData: unknown,
   kitchenTheme: unknown,
   pageStyle: unknown
-): { theme: ConsoleTheme; themeSource: MenuThemeSource } {
+): { theme: WorkspaceTheme; themeSource: MenuThemeSource } {
   const menuPalette = themePalette(menuData)
   if (menuPalette)
     return { theme: { palette: menuPalette }, themeSource: 'menu' }

@@ -2,10 +2,10 @@
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
 import {
-  assertConsoleEntitySupportCapacity,
-  readConsoleEntitySupportAuthority,
-  requireConsoleEntityMemberRole,
-} from 'fireux-core/runtime/server/utils/console-entity/onboarding-authority'
+  assertWorkspaceEntitySupportCapacity,
+  readWorkspaceEntitySupportAuthority,
+  requireWorkspaceEntityMemberRole,
+} from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
   readFireuxEntityManagement,
@@ -33,7 +33,7 @@ export function requireOnboardingMemberRole(
   exists: boolean,
   value: unknown
 ): KitchenOnboardingMemberRole {
-  return requireConsoleEntityMemberRole({
+  return requireWorkspaceEntityMemberRole({
     exists,
     role: value,
     entityLabel: 'Kitchen',
@@ -48,7 +48,7 @@ export function readKitchenOnboardingManagement(
     Object.hasOwn(value, 'app_scope_state') ||
     Object.hasOwn(value, 'app_scope_app_id') ||
     Object.hasOwn(value, 'app_id') ||
-    Object.hasOwn(value, 'console')
+    Object.hasOwn(value, 'workspace')
   ) {
     fail(409, 'Kitchen contains retired management fields.')
   }
@@ -94,21 +94,21 @@ export function readKitchenOnboardingSupport(
     'join_requests',
     'created',
     'updated',
-    'console',
+    'workspace',
   ])
   const unsupported = Object.keys(value).find((key) => !allowedKeys.has(key))
   if (unsupported) {
     fail(409, `Kitchen App support contains unsupported field: ${unsupported}.`)
   }
 
-  return readConsoleEntitySupportAuthority(value, 'Kitchen')
+  return readWorkspaceEntitySupportAuthority(value, 'Kitchen')
 }
 
 export function assertKitchenOnboardingSupportCapacity(
   support: NonNullable<ReturnType<typeof readKitchenOnboardingSupport>>,
   uid: string
 ) {
-  assertConsoleEntitySupportCapacity(support, uid, 'Kitchen')
+  assertWorkspaceEntitySupportCapacity(support, uid, 'Kitchen')
 }
 
 export function kitchenOnboardingAccessDecision(input: {

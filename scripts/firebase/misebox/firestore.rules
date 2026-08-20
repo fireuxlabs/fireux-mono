@@ -843,7 +843,7 @@ service cloud.firestore {
     }
 
     // ===============================================================
-    // Exact Kitchen identity for trusted Console targets
+    // Exact Kitchen identity for trusted Workspace targets
     // ===============================================================
     match /kitchens/{kitchenId} {
       function isCanonicalAttachedKitchen(data) {
@@ -859,7 +859,7 @@ service cloud.firestore {
           (
             (
               data.management.keys().hasOnly(['mode']) &&
-              data.management.mode == 'console'
+              data.management.mode == 'workspace'
             ) ||
             (
               data.management.keys().hasAll(['mode', 'app_id']) &&
@@ -871,7 +871,7 @@ service cloud.firestore {
       }
 
       function kitchenManagementAppId(data) {
-        return data.management.mode == 'console'
+        return data.management.mode == 'workspace'
           ? 'misebox-app'
           : data.management.app_id;
       }
@@ -884,7 +884,7 @@ service cloud.firestore {
 
       // Public Kitchen cards/details use bounded server projections. The raw
       // root is exact-readable only when its canonical App scope and same-id
-      // support record prove current Console authority.
+      // support record prove current Workspace authority.
       allow get: if isAuthenticated() &&
         isCanonicalAttachedKitchen(resource.data) &&
         hasSameIdAppKitchenSupport(kitchenManagementAppId(resource.data)) &&
@@ -946,14 +946,14 @@ service cloud.firestore {
           'key',
           'workspace',
           'launch_order',
-          'console_families',
+          'workspace_families',
           'database_id'
         ]) &&
         value.keys().hasOnly([
           'key',
           'workspace',
           'launch_order',
-          'console_families',
+          'workspace_families',
           'database_id'
         ]) &&
         validRequiredText(value, 'key', 1, 120) &&
@@ -961,9 +961,9 @@ service cloud.firestore {
         value.launch_order is int &&
         value.launch_order >= 0 &&
         value.launch_order <= 100000 &&
-        value.console_families is list &&
-        value.console_families.size() <= 20 &&
-        value.console_families.hasOnly([
+        value.workspace_families is list &&
+        value.workspace_families.size() <= 20 &&
+        value.workspace_families.hasOnly([
           'blank',
           'kitchen',
           'portfolio',
@@ -1625,9 +1625,9 @@ service cloud.firestore {
         }
       }
 
-      // Console targets outside Kitchen use the same operator-owned shape.
+      // Workspace targets outside Kitchen use the same operator-owned shape.
       match /{targetCollection}/{targetId} {
-        function isConsoleTargetCollection() {
+        function isWorkspaceTargetCollection() {
           return targetCollection in [
             'suppliers'
           ];
@@ -1648,16 +1648,16 @@ service cloud.firestore {
             request.resource.data.join_requests == resource.data.join_requests;
         }
 
-        allow get: if isConsoleTargetCollection() &&
+        allow get: if isWorkspaceTargetCollection() &&
           (isAppAdmin(appId) ||
             isTargetMember(appId, targetCollection, targetId));
-        allow list: if isConsoleTargetCollection() &&
+        allow list: if isWorkspaceTargetCollection() &&
           (isAppAdmin(appId) || isResourceTargetMember(appId));
-        allow create: if isConsoleTargetCollection() &&
+        allow create: if isWorkspaceTargetCollection() &&
           isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedTargetAuthority();
-        allow update: if isConsoleTargetCollection() &&
+        allow update: if isWorkspaceTargetCollection() &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedTargetAuthority() &&
           (isAppAdmin(appId) ||
@@ -1669,26 +1669,26 @@ service cloud.firestore {
         // In rules_version 2 a recursive wildcard matches zero segments, so a
         // direct /{nested=**} here would also bypass the support validator.
         match /{childCollection}/{childId} {
-          allow get, list: if isConsoleTargetCollection() &&
+          allow get, list: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetMember(appId, targetCollection, targetId));
-          allow create, update: if isConsoleTargetCollection() &&
+          allow create, update: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, targetCollection, targetId)) &&
             request.resource.data.keys().size() <= 100;
-          allow delete: if isConsoleTargetCollection() &&
+          allow delete: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, targetCollection, targetId));
 
           match /{nested=**} {
-            allow get, list: if isConsoleTargetCollection() &&
+            allow get, list: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetMember(appId, targetCollection, targetId));
-            allow create, update: if isConsoleTargetCollection() &&
+            allow create, update: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, targetCollection, targetId)) &&
               request.resource.data.keys().size() <= 100;
-            allow delete: if isConsoleTargetCollection() &&
+            allow delete: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, targetCollection, targetId));
           }

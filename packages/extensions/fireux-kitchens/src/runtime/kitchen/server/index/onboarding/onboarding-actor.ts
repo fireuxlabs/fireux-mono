@@ -5,7 +5,7 @@ import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/sc
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readAppPalette } from 'fireux-core/runtime/utils/brand-palette'
-import { resolveConsoleEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/console-entity/onboarding-authority'
+import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
   onboardingText as text,
   requireOnboardingMemberRole as memberRole,
@@ -34,7 +34,7 @@ export type KitchenOnboardingActor = RuntimePolicy & {
 function runtimePolicy(event: H3Event): RuntimePolicy {
   const fireux = useFireUXConfig(event)
   return {
-    ...resolveConsoleEntityOnboardingPolicy(event, 'kitchen'),
+    ...resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen'),
     configuredAppPalette: readAppPalette(fireux.theme?.palette),
   }
 }

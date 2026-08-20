@@ -5,7 +5,7 @@ import type {
 } from './ingredient-taxonomy'
 
 /**
- * Stable cross-console projection. Kitchen and Supplier operational records
+ * Stable cross-workspace projection. Kitchen and Supplier operational records
  * carry only `ingredient_id`; display identity is hydrated through this shape.
  */
 export type PublicIngredient = {

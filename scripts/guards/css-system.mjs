@@ -73,19 +73,19 @@ const CORE_STYLE_CASCADE = [
   './scss/organisms/profile-cards',
   './scss/organisms/public-profile-surfaces',
   './scss/organisms/page-layouts',
-  './scss/organisms/console-surface',
-  './scss/molecules/console-card-header',
-  './scss/molecules/console-summary',
+  './scss/organisms/workspace-surface',
+  './scss/molecules/workspace-card-header',
+  './scss/molecules/workspace-summary',
   './scss/organisms/landing-hero',
   './scss/organisms/landing-index-sections',
-  './scss/organisms/console-profiles',
+  './scss/organisms/workspace-profiles',
   './scss/integrations/nuxt-page-transition',
 ]
 const RETIRED_CORE_STYLE_PATHS = [
   'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/forms.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-foundation.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-preview-variant.scss',
-  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/console-focus.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/workspace-focus.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/entity-cards.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/metrics.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/usage-cta.scss',
@@ -93,7 +93,7 @@ const RETIRED_CORE_STYLE_PATHS = [
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/plugins.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/profiles.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/sections.scss',
-  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/console-layouts.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/workspace-layouts.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/landing-index-flow.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/page-motion.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/panel-layouts.scss',
@@ -129,7 +129,7 @@ const OBSOLETE_VARIABLE_RE =
   /--(?:text-primary|text-secondary|ui-border-subtle|ui-surface|ui-text-(?:400|500|600)|ui-primary-500)(?![A-Za-z0-9_-])/g
 const NUXT_BASELINE_PATH =
   'packages/core/fireux-core/src/config/app/nuxt-baseline.ts'
-const DEAD_NUXT_UI_CONSOLE_PANEL_RE = /\bconsolePanel\b/g
+const DEAD_NUXT_UI_CONSOLE_PANEL_RE = /\bworkspacePanel\b/g
 const LOCAL_NUXT_PAGE_TRANSITION_PROP_RE =
   /<NuxtPage\b[^>]*\s+:?transition\s*=/g
 const COPIED_CORE_PAGE_TRANSITION_RE =
@@ -192,7 +192,7 @@ const DIRECT_SPACING_LITERAL_EXCLUDED_PREFIXES = [
 const APPROVED_DIRECT_SPACING_VALUES = new Map([
   // Exact reviewed microgeometry, artwork, or viewport geometry; not reusable rhythm.
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
     new Set([
       'padding-block:10px',
       'margin-top:4px',
@@ -355,7 +355,7 @@ const OWNED_TYPOGRAPHY_DELTA_PATHS = new Set([
   // Component-owned artwork, output geometry, or cohesive tenant display type.
   'packages/core/fireux-core/src/runtime/components/Design/PaletteStrip.vue',
   'packages/core/fireux-core/src/runtime/components/effects/LandingEffect.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/components/Json.vue',
   'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
   'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Hero.vue',
@@ -514,7 +514,7 @@ export async function run(ctx) {
     inlineDisclosureTriggers: [],
     inlineCardBodyStacks: [],
     legacyDisabledSurfaces: [],
-    compoundConsoleSurfaceSpacing: [],
+    compoundWorkspaceSurfaceSpacing: [],
     redundantEntityCardLayout: [],
     redundantCollectionManagerControls: [],
     directMenuDetailCssImports: [],
@@ -992,7 +992,7 @@ function scan(dir, repoRoot, violations) {
         pattern: DEAD_NUXT_UI_CONSOLE_PANEL_RE,
         target: violations.deadNuxtUiConfigKeys,
         relativePath,
-        label: () => 'consolePanel -> dashboardPanel',
+        label: () => 'workspacePanel -> dashboardPanel',
       })
     }
 
@@ -1176,11 +1176,11 @@ function scan(dir, repoRoot, violations) {
       collectStaticClassAttributeViolations({
         source,
         relativePath,
-        target: violations.compoundConsoleSurfaceSpacing,
+        target: violations.compoundWorkspaceSurfaceSpacing,
         predicate: (classNames) =>
-          classNames.includes('console-surface') &&
+          classNames.includes('workspace-surface') &&
           classNames.some((className) => /(?:^|:)space-y-/.test(className)),
-        label: 'console-surface combined with space-y-*',
+        label: 'workspace-surface combined with space-y-*',
       })
       collectStaticClassAttributeViolations({
         source,
@@ -1860,8 +1860,8 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
-    'Console surfaces with compounded vertical spacing:',
-    violations.compoundConsoleSurfaceSpacing
+    'Workspace surfaces with compounded vertical spacing:',
+    violations.compoundWorkspaceSurfaceSpacing
   )
   appendGroup(
     lines,
@@ -1908,7 +1908,7 @@ function formatViolations(violations) {
     '',
     '[guard] Fix:',
     '- Use current Nuxt UI semantic variables (`--ui-text*`, `--ui-border*`, `--ui-bg*`).',
-    '- Configure Nuxt UI dashboard panels through `dashboardPanel`; `consolePanel` is not a live app-config key.',
+    '- Configure Nuxt UI dashboard panels through `dashboardPanel`; `workspacePanel` is not a live app-config key.',
     '- Let Nuxt UI own `--ui-radius`; use `rounded-*` utilities in templates and calculate from that live variable in authored CSS.',
     '- Ordinary radii use only the xs-through-3xl Nuxt UI scale; reserve `50%` or `9999px` for real circles and pills.',
     '- Radius custom properties are explicit owned seams. Menu defaults must derive from `--ui-radius`.',
@@ -1924,7 +1924,7 @@ function formatViolations(violations) {
     '- Ordinary package and project UI must use Nuxt UI semantic text, border, surface, and status utilities; intentional brand or artwork colors need an owned named seam or narrow reviewed exception.',
     '- Replace stale foreground/background aliases with current Nuxt UI semantic utilities.',
     '- Use `.fx-page-stack` and `.fx-list-stack` for the guarded repeated rhythm recipes.',
-    '- Let `.console-surface` own its vertical rhythm instead of combining it with `space-y-*`.',
+    '- Let `.workspace-surface` own its vertical rhythm instead of combining it with `space-y-*`.',
     '- Compose the shared `.fx-card--cell` recipe instead of repeating the audited class string.',
     '- Let `.collection-manager__controls` own its shared flex, alignment, and gap recipe.',
     '- Use `.fx-inset-panel` for the audited nested bordered-panel recipe.',

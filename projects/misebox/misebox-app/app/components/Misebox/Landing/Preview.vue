@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-25 — Use the real read-only Orders board as the Main App hero proof. -->
 <template>
-  <ConsoleKitchenOperationsOrdersRail
+  <WorkspaceKitchenOperationsOrdersRail
     v-if="heroPassOrders.length"
     class="misebox-home__service-pass"
     accent="success"
@@ -8,14 +8,14 @@
     empty-label="No Orders are waiting at the pass."
     label="Pass"
     role="img"
-    aria-label="Read-only Kitchen Console snapshot showing three fictional Orders at the Pass"
+    aria-label="Read-only Kitchen Workspace snapshot showing three fictional Orders at the Pass"
   >
     <div
       class="misebox-home__pass-tickets"
       aria-hidden="true"
       inert
     >
-      <ConsoleKitchenOperationsOrdersTicketPresentation
+      <WorkspaceKitchenOperationsOrdersTicketPresentation
         v-for="order in heroPassOrders"
         :key="order.id"
         :order="order"
@@ -24,7 +24,7 @@
         prominent
       />
     </div>
-  </ConsoleKitchenOperationsOrdersRail>
+  </WorkspaceKitchenOperationsOrdersRail>
 
   <UAlert
     v-else-if="productDemoError"

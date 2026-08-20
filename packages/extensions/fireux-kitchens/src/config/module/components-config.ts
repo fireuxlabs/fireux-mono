@@ -45,10 +45,10 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'DevIngredient',
   })
 
-  registerComponentsDir(resolver, './runtime/kitchen/components/Console', {
+  registerComponentsDir(resolver, './runtime/kitchen/components/Workspace', {
     global: true,
     pathPrefix: true,
-    prefix: 'ConsoleKitchen',
+    prefix: 'WorkspaceKitchen',
     priority: 20,
   })
 
@@ -56,7 +56,7 @@ export function configureComponents(resolver: Resolver) {
     global: true,
     pathPrefix: true,
     prefix: 'Kitchen',
-    ignore: ['Console/**', 'dev/**'],
+    ignore: ['Workspace/**', 'dev/**'],
   })
 
   registerComponentsDir(resolver, './runtime/kitchen/components/dev', {

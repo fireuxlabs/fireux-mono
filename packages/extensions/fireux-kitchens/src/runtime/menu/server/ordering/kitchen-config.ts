@@ -3,6 +3,7 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -56,11 +57,11 @@ export async function updateKitchenMenuConfig(event: H3Event, input: unknown) {
       actor,
       kitchenId
     )
-    mutations.update(current.supports, kitchenId, {
-      'console.menus.primary_menu_id': primaryMenuId || FieldValue.delete(),
-      'console.menus.specials_enabled':
+    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+      'menus.primary_menu_id': primaryMenuId || FieldValue.delete(),
+      'menus.specials_enabled':
         source.specials_enabled === true ? true : FieldValue.delete(),
-      'console.menus.specials_menu_id': specialsMenuId || FieldValue.delete(),
+      'menus.specials_menu_id': specialsMenuId || FieldValue.delete(),
       updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
     })
   })

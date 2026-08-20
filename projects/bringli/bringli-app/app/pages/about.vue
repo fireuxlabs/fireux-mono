@@ -170,8 +170,8 @@
               v-for="route in appSpec.routes"
               :key="route.path"
               :to="route.path"
-              :icon="route.kind === 'console' ? 'i-lucide-terminal' : 'i-lucide-link'"
-              :color="route.kind === 'console' ? 'primary' : 'neutral'"
+              :icon="route.kind === 'workspace' ? 'i-lucide-terminal' : 'i-lucide-link'"
+              :color="route.kind === 'workspace' ? 'primary' : 'neutral'"
               variant="soft"
             >
               {{ route.label }} · {{ route.path }}
@@ -197,7 +197,7 @@ type AppSpec = {
     keyFields: readonly string[]
     linksTo: readonly string[]
   }>
-  routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'console' }>
+  routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'workspace' }>
 }
 
 definePageMeta({

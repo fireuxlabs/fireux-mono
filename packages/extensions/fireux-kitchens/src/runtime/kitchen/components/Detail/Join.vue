@@ -41,14 +41,14 @@
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { targetHasWorkspaceAccess } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import { useKitchenFetch } from '../../composables/firestore/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
-import { useKitchenTeamJoinRequestMutations } from '../../composables/console/team/mutations/useKitchenTeamJoinRequestMutations'
+import { useKitchenTeamJoinRequestMutations } from '../../composables/workspace/team/mutations/useKitchenTeamJoinRequestMutations'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
@@ -88,7 +88,7 @@ const { createKitchenTeamJoinRequest } = useKitchenTeamJoinRequestMutations({
 })
 const userId = computed(() => String(uid.value || '').trim())
 const hasKitchenAccess = computed(() =>
-  targetHasConsoleAccess(operatorKitchen.value, userId.value)
+  targetHasWorkspaceAccess(operatorKitchen.value, userId.value)
 )
 const hasPendingRequest = computed(() =>
   Boolean(

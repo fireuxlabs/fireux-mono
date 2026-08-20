@@ -136,7 +136,7 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     de: 'Helfen Sie Nachbarinnen und Nachbarn sowie lokalen Betrieben, einander zu finden, lokal einzukaufen und weniger Lebensmittel zu verschwenden.',
     gsw: 'Hilf Nachbare und lokale Betrib, enand z finde, lokal z choufe und weniger Futter z verschwände.',
   },
-  app_meta_console_bridge: {
+  app_meta_workspace_bridge: {
     en: 'Marketplace tools will be added only after the local community proves what it needs.',
     de: 'Neue Marktplatz-Funktionen kommen erst hinzu, wenn sich gezeigt hat, was die lokale Gemeinschaft wirklich braucht.',
     gsw: 'Marktplatz-Wärchzüg chöme ersch dezue, wenn d lokale Gmeinschaft zeigt, was si würkli brucht.',

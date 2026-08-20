@@ -11,7 +11,7 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://buenohost-app.web.app',
   },
-  consoles: ['property'],
+  workspaces: ['property'],
   domains: ['properties'],
   modules: ['fireux-properties', 'fireux-reservations'],
 })

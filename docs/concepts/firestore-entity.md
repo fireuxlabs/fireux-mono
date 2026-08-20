@@ -10,19 +10,19 @@ Map the stored access/composable shape for FireUX entities.
 
 The Firestore stack is one storage slice of the wider entity capability family.
 The entity family also owns route identity, bounded server projections,
-lifecycle policy, events, interface projection, and its page, Console, Tool,
+lifecycle policy, events, interface projection, and its page, Workspace, Tool,
 and operator adapters. It is not merely a CRUD wrapper around a collection.
 
 ## Vertical links
 
 - Parent: entities.md
 - Parent: composables.md
-- Child: family-console-entity.md
+- Child: family-workspace-entity.md
 - Child: family-menu.md
 
 ## Horizontal links
 
-- console.md
+- workspace.md
 - server-api.md
 - runtime-filesystem.md
 
@@ -84,7 +84,7 @@ Example Firestore stack names, not automatic entity proof:
 - MCP/Skill is the operator lane used by Tools, agents, scripts, and CLI. It
   consumes the same typed target and entity command contracts instead of
   accepting arbitrary databases, collection paths, or raw writes.
-- A page, Console, Tool, or operator adapter orchestrates entity capabilities;
+- A page, Workspace, Tool, or operator adapter orchestrates entity capabilities;
   it does not become another storage or mutation lane.
 - Current authority: `docs/ai/firestore-mutations-context.md` and
   `scripts/guards/firestore-mutations.mjs`.
@@ -95,7 +95,7 @@ Example Firestore stack names, not automatic entity proof:
   command. The input contains named identity and a `changes` object; identity
   is never positional and is never mixed into the changed fields.
 - Root example: `{ kitchenId, changes }`. Unbound child example:
-  `{ kitchenId, memberId, changes }`. A Console child already bound to its
+  `{ kitchenId, memberId, changes }`. A Workspace child already bound to its
   selected parent runtime uses `{ childId, changes }`.
 - The mutation lane still selects transport and authority. This grammar does
   not grant a client raw Firestore access or move server policy into a
@@ -183,10 +183,10 @@ Example Firestore stack names, not automatic entity proof:
 - The root owns identity, lifecycle, domain truth, and child-owned relationship
   ids. It does not contain App access arrays. Property root also excludes its
   guest manual and references Place and optional Portfolio by id.
-- Every Console-capable root declares one exact `management` relationship:
-  `{ mode: 'root' }`, `{ mode: 'console' }`, or
-  `{ mode: 'app', app_id }`. The ladder is cumulative: Console implies root;
-  App implies Console and root. `console` always resolves to the ecosystem App
+- Every Workspace-capable root declares one exact `management` relationship:
+  `{ mode: 'root' }`, `{ mode: 'workspace' }`, or
+  `{ mode: 'app', app_id }`. The ladder is cumulative: Workspace implies root;
+  App implies Workspace and root. `workspace` always resolves to the ecosystem App
   (`<ecosystem>-app`); neither configuration nor the root duplicates that id.
   Only a dedicated App relationship stores `app_id`.
 - The management relationship selects the App support/operations host. It does
@@ -235,9 +235,9 @@ Example Firestore stack names, not automatic entity proof:
   root/App deletes and generic App access mutation helpers are withheld until a
   trusted lifecycle can maintain root management and App-support access
   indexes together.
-- Console attachment remains domain-owned. Core defines and resolves management
+- Workspace attachment remains domain-owned. Core defines and resolves management
   modes but contains no registry or create factory for Kitchen, Supplier,
-  Property, Portfolio, or future Console families.
+  Property, Portfolio, or future Workspace families.
 - Property-to-Portfolio membership is `Property.portfolio_id`. The former
   nested full-Property reader under an App Portfolio is retired. The client
   query activates only after the selected Portfolio has been resolved through
@@ -265,7 +265,7 @@ Example Firestore stack names, not automatic entity proof:
 
 ## Do not
 
-- Put console operation folders inside Firestore stacks.
+- Put workspace operation folders inside Firestore stacks.
 - Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
 - Create fake compatibility branches without an explicit user request.
 - Infer loading from `collection.value === undefined`; VueFire collections begin

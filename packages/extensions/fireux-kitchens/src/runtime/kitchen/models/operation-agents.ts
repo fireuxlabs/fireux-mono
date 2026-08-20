@@ -30,7 +30,7 @@ const definitions = {
     contextProviders: [
       context('kitchen.identity', 'Kitchen', true),
       context('place.identity', 'Place', true),
-      context('app-kitchen.console', 'AppKitchen', true),
+      context('app-kitchen.workspace', 'AppKitchen', true),
     ],
     capabilities: identityAgentCapabilities,
   },
@@ -110,7 +110,7 @@ export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
       id: `kitchen.${slug}.ai`,
       name: definition.name,
       parentId: 'KitchenAI',
-      consoleId: 'kitchen',
+      workspaceId: 'kitchen',
       operationId: `kitchen.${slug}`,
       operationSlug: slug,
       ...('family' in definition ? { family: definition.family } : {}),

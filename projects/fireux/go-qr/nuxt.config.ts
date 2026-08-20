@@ -11,6 +11,6 @@ export default defineFireuxConfig({
   modules: ['fireux-go-qr'],
   seo: {
     staticPaths: ['/pricing', '/terms', '/privacy', '/help'],
-    noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],
+    noindexPaths: ['/workspace', '/workspace/**', '/admin', '/admin/**'],
   },
 })

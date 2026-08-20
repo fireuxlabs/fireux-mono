@@ -9,7 +9,7 @@
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/console/kitchen" color="neutral" variant="soft" icon="i-lucide-terminal">Kitchen console</UButton>
+          <UButton to="/workspace/kitchen" color="neutral" variant="soft" icon="i-lucide-terminal">Kitchen workspace</UButton>
         </div>
       </UContainer>
     </section>
@@ -34,7 +34,7 @@
           <div class="space-y-2 text-sm">
             <div class="fx-inset-panel">
               <p class="font-mono">GET /pricing/free</p>
-              <p class="text-dimmed">Functional Kitchen Console access.</p>
+              <p class="text-dimmed">Functional Kitchen Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
               <p class="font-mono">GET /pricing/your-app</p>

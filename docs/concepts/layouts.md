@@ -42,13 +42,13 @@ composition:
 
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
-- `packages/core/fireux-core/src/runtime/layouts/console.vue`
+- `packages/core/fireux-core/src/runtime/layouts/workspace.vue`
 - `projects/buenohost/buenohost-app/app/layouts/property-info.vue`
 
 Their content boundary is `<slot />`. The Menu layout is the clearest package
 example: it owns route-family close chrome while the page remains the content
-owner. Console follows the same route-rendering contract: `AppShell` renders
-the route once, while Console owns the selected-target guard and sidebar chrome.
+owner. Workspace follows the same route-rendering contract: `AppShell` renders
+the route once, while Workspace owns the selected-target guard and sidebar chrome.
 
 ### Route-rendering shell layouts
 
@@ -77,15 +77,15 @@ currently uses it.
 | Difference | State | Reason or alignment trigger |
 | --- | --- | --- |
 | Package Menu layouts render `<slot />` | `accepted` | The outer shell supplies page content; the package layout adds route-family chrome without rendering another route tree |
-| Core Console consumes `<slot />` | `confirmed` | `AppShell` owns the route renderer; a nested Console `NuxtPage` duplicated the transition boundary and could leave stale or blank panels during client navigation |
-| Several Core and tenant layouts render `<NuxtPage />` | `to-confirm` | It is current source outside Console, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
+| Core Workspace consumes `<slot />` | `confirmed` | `AppShell` owns the route renderer; a nested Workspace `NuxtPage` duplicated the transition boundary and could leave stale or blank panels during client navigation |
+| Several Core and tenant layouts render `<NuxtPage />` | `to-confirm` | It is current source outside Workspace, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
 | Menu layout derives close behavior from route scope | `accepted` | Exit chrome is shared by the entire Menu route family and remains separate from Menu data fetching |
 | App-local branded layouts exist | `accepted` | Brand/navigation chrome can be app-owned; unexplained copies of package chrome remain drift |
 | Mechanically replacing every `<slot />` or `<NuxtPage />` | `drift` | Renderer choice depends on which layer already owns page rendering |
 
 ## Change checklist
 
-- Name the family: core, dashboard, console, tenant, microsite, Menu, or
+- Name the family: core, dashboard, workspace, tenant, microsite, Menu, or
   app-local.
 - Inspect `AppShell`, the nearest layout sibling, and the route smoke behavior.
 - Confirm that route content renders exactly once.

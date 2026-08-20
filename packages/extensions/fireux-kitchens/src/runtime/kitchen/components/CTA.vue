@@ -1,5 +1,5 @@
 <template>
-  <ConsoleCta
+  <WorkspaceCta
     title="Kitchens"
     description="Manage your kitchen identity, menus, dishes, recipes, ingredients, mise, orders, team, stations, and suppliers."
     :count-label="countLabel"
@@ -20,9 +20,9 @@ const actions = [
     icon: 'i-lucide-plus',
   },
   {
-    label: 'Console',
-    cta: 'Open console',
-    to: '/console/kitchen',
+    label: 'Workspace',
+    cta: 'Open workspace',
+    to: '/workspace/kitchen',
     icon: 'i-lucide-layout-dashboard',
   },
   {

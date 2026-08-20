@@ -44,8 +44,8 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
 - Misebox: Firebase project `misebox-78f9c`; databases `misebox` and
   `misebox-simulation`. Its AppKitchen and AppSupplier create/update validators require bounded
   `operator_ids`, `team_ids`, and `join_requests` arrays so every accepted
-  support write remains readable by the fail-closed Console projection;
-  non-admin updates preserve all three authority arrays. Console target rules
+  support write remains readable by the fail-closed Workspace projection;
+  non-admin updates preserve all three authority arrays. Workspace target rules
   distinguish membership from mutation authority: `operator_ids` grants
   target/read access and writes, while `team_ids` grants target/read access
   only. A team member cannot mutate merely because they can select the target;

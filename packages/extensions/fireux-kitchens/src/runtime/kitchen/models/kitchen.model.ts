@@ -7,7 +7,7 @@ import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/sc
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './order.model.ts'
@@ -32,7 +32,8 @@ type WidenLiteral<T> =
  *
  * Decision note:
  * - Kitchen is one domain entity with a canonical root and an App-hosted access record.
- * - The root record stays thin and canonical; the app-scoped record carries governance and private operational state.
+ * - The root record owns Kitchen identity and Kitchen-wide configuration.
+ * - The app-scoped record carries only App relationship, access, and audit state.
  * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
  * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
  * - App authority stays user-based in the app-scoped record; Chef is an optional presentation/authorship layer, not the ownership model.
@@ -150,27 +151,14 @@ export type KitchenFulfilmentConfig = {
   payment_methods: KitchenFulfilmentPaymentPolicy[]
 }
 
-export type KitchenConsoleConfig = {
-  /** Confirmed Kitchen-wide knowledge used by KitchenAI and operators. */
-  context?: string
-  theme?: ConsoleTheme
-  menus?: KitchenMenusConfig
-  orders?: KitchenOrdersConfig
-  tables?: KitchenTablesConfig
-  fulfilment?: KitchenFulfilmentConfig
-  integrations?: {
-    sproochli?: SproochliAttachmentConfig
-  }
-}
-
 export const KitchenEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Kitchen',
-  family: ['kitchen', 'console-entity'],
+  family: ['kitchen', 'workspace-entity'],
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  console: true,
+  workspace: true,
   root: KitchenStorage.path,
   appSupportPath: AppKitchenStorage.path,
 })
@@ -212,6 +200,14 @@ export type Kitchen = Omit<
     identity: KitchenIdentity
     assets: KitchenAssets
     management: FireuxEntityManagement
+    theme?: WorkspaceTheme
+    menus?: KitchenMenusConfig
+    orders?: KitchenOrdersConfig
+    tables?: KitchenTablesConfig
+    fulfilment?: KitchenFulfilmentConfig
+    integrations?: {
+      sproochli?: SproochliAttachmentConfig
+    }
   }
 
 export type AppKitchen = {
@@ -221,7 +217,6 @@ export type AppKitchen = {
   join_requests: string[]
   created: FireuxStamped['created']
   updated: FireuxStamped['updated']
-  console: KitchenConsoleConfig
 }
 
 export const AppKitchenDefaults: AppKitchen = {
@@ -229,7 +224,6 @@ export const AppKitchenDefaults: AppKitchen = {
   operator_ids: [],
   team_ids: [],
   join_requests: [],
-  console: {},
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,

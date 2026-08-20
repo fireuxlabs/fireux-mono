@@ -5,11 +5,11 @@ import {
 } from 'fireux-core/runtime/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
-  assertConsoleEntitySupportCapacity,
-  readConsoleEntitySupportAuthority,
-  requireConsoleEntityMemberRole,
-  resolveConsoleEntityOnboardingPolicy,
-} from 'fireux-core/runtime/server/utils/console-entity/onboarding-authority'
+  assertWorkspaceEntitySupportCapacity,
+  readWorkspaceEntitySupportAuthority,
+  requireWorkspaceEntityMemberRole,
+  resolveWorkspaceEntityOnboardingPolicy,
+} from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { fail, type MemberRole } from './input'
 
 export type RuntimePolicy = {
@@ -26,11 +26,11 @@ export type Actor = RuntimePolicy & {
 }
 
 export function runtimePolicy(event: H3Event): RuntimePolicy {
-  return resolveConsoleEntityOnboardingPolicy(event, 'portfolio')
+  return resolveWorkspaceEntityOnboardingPolicy(event, 'portfolio')
 }
 
 export function requireMemberRole(exists: boolean, value: unknown): MemberRole {
-  return requireConsoleEntityMemberRole({
+  return requireWorkspaceEntityMemberRole({
     exists,
     role: value,
     entityLabel: 'Portfolio',
@@ -39,7 +39,7 @@ export function requireMemberRole(exists: boolean, value: unknown): MemberRole {
 
 export function readSupport(value: Record<string, unknown> | null) {
   if (!value) return null
-  return readConsoleEntitySupportAuthority(value, 'Portfolio')
+  return readWorkspaceEntitySupportAuthority(value, 'Portfolio')
 }
 
 export function readManagement(root: Record<string, unknown>) {
@@ -74,7 +74,7 @@ export function assertSupportCapacity(
   support: NonNullable<ReturnType<typeof readSupport>>,
   uid: string
 ) {
-  assertConsoleEntitySupportCapacity(support, uid, 'Portfolio')
+  assertWorkspaceEntitySupportCapacity(support, uid, 'Portfolio')
 }
 
 export function assertOnboardingAuthority(input: {

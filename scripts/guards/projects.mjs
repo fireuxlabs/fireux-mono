@@ -198,9 +198,9 @@ function checkProjectNuxtConfig(repoRoot, appPath) {
   if (/['"]@\/assets\/styles\/main\.css['"]/.test(source)) {
     reject('Core discovers app/assets/styles/main.css automatically.')
   }
-  if (/\bconsoles:\s*\[\s*\]/s.test(source)) {
+  if (/\bworkspaces:\s*\[\s*\]/s.test(source)) {
     reject(
-      'omit consoles when the App has no Consoles; [] is the Core default.'
+      'omit workspaces when the App has no Workspaces; [] is the Core default.'
     )
   }
   if (/\bstaticPaths:\s*\[[^\]]*['"]\/['"]/s.test(source)) {

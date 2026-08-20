@@ -212,7 +212,7 @@
 }
 
 .landing-product--hero-onboarding
-  .landing-product__console
+  .landing-product__workspace
   :deep(.landing-product-proof) {
   padding-top: calc(var(--spacing) * 6);
 }
@@ -237,7 +237,7 @@
   }
 
   .landing-product--hero-onboarding
-    .landing-product__console
+    .landing-product__workspace
     :deep(.landing-product-proof) {
     padding-top: calc(var(--spacing) * 8);
   }

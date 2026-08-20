@@ -20,7 +20,7 @@ own provider loop.
 
 - fireux.md
 - firestore-entity.md
-- console.md
+- workspace.md
 - create.md
 
 ## Family
@@ -136,7 +136,7 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Menu review/checkpoint lifecycle:
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/ai/review.ts`
 - Menu confirmation boundary:
-  `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts`
+  `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/menus/confirm.post.ts`
 - Menu host-local cache import:
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/sproochli/cache-import.ts`
 - Sproochli translation-memory persistence:

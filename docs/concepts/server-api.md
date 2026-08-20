@@ -42,11 +42,11 @@ Declared Entity behaviour now lives at `src/runtime/<entity>/server`;
 completed `src/runtime/server/<entity>` placements are rejected by the runtime
 ownership guard and are not a second accepted destination.
 
-Entity server structure follows the product surface. A Console Entity mirrors
-its visible Console peers from top to bottom: Overview, Identity, Team, and
+Entity server structure follows the product surface. A Workspace Entity mirrors
+its visible Workspace peers from top to bottom: Overview, Identity, Team, and
 Operations, with `core/` and `index/` retained only for target authority and the
 selection/create doorway. `ai/` is the canonical entity-owned AI capability
-slice; it does not manufacture a generic AI navigation peer. An Entity without a Console follows its
+slice; it does not manufacture a generic AI navigation peer. An Entity without a Workspace follows its
 Entity Index and the same named child capabilities exposed from that Index.
 Structural deltas are exceptional and must name a real product capability;
 transport or persistence mechanics do not justify a different entity tree.
@@ -59,7 +59,7 @@ Project points to Index, Overview, Identity, Team and its App and Ecosystem
 operations; Ignition remains separate intake/admin. A missing server slice
 remains valid when its product surface has no server-owned behaviour; empty
 folder symmetry is not required. The complete visible capability map is owned
-by `docs/concepts/console.md`.
+by `docs/concepts/workspace.md`.
 
 ## Endpoint spine
 
@@ -98,7 +98,7 @@ HTTP handler rather than hiding it in another generic layer.
 | ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Public list/detail        | Bounded projection for public pages                           | Pagination, joins, and publication filters differ by entity authority      |
 | Internal                  | Authenticated owner/member/admin work                         | Required role and fixed domain scope differ                                |
-| Console                   | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
+| Workspace                   | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
 | Onboarding                | Idempotent root/support creation or attachment                | Domain seed and validation differ; transaction shape remains fixed-runtime |
 | Upload                    | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ                                    |
 | Tool provider             | Return or execute a reusable provider contract                | Tool payload differs; provider never steals consumer data ownership        |
@@ -110,7 +110,7 @@ These are server endpoint families, not new Entity kinds.
 
 ## Authority rules
 
-- Browser state such as `canWrite`, selected Console target, or hidden UI is not
+- Browser state such as `canWrite`, selected Workspace target, or hidden UI is not
   server authority.
 - Firebase bearer identity proves the caller; stored App/Entity relationships
   prove the requested action.
@@ -174,8 +174,8 @@ Current reusable server evidence includes:
   media, settings, membership, and Team work to `runtime/app/server/`;
 - App-scope transfer planning:
   `packages/core/fireux-core/src/runtime/app/server/scope/transfer-plan.ts`;
-- Console Entity onboarding authority:
-  `packages/core/fireux-core/src/runtime/server/utils/console-entity/onboarding-authority.ts`;
+- Workspace Entity onboarding authority:
+  `packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts`;
 - Menu ownership/manifest/ordering workflows:
   `packages/extensions/fireux-kitchens/src/runtime/menu/server/`;
 - Kitchen order transition enforcement:
@@ -216,7 +216,7 @@ universal endpoint engine.
 | Provider and consumer endpoint ownership has historically been confused                | `migration`                | Enforce the Tool Provider ownership contract and keep consumer storage local                                                                                                                                  |
 | Package route registration has direct and hook-based implementations                   | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper                                                                                                                   |
 | Kitchen Team server tools are being proven by an active Team-tool experiment           | `to-confirm`               | Keep `kitchen/team/tools` under Team ownership without treating its current internal subsystem as settled canon                                                                                               |
-| Kitchen Sproochli attachment sits under Identity                                       | `accepted`                 | Its working surface is `Console/Kitchen/Identity/Sections/Sproochli.vue`; the command owns Kitchen identity attachment settings                                                                               |
+| Kitchen Sproochli attachment sits under Identity                                       | `accepted`                 | Its working surface is `Workspace/Kitchen/Identity/Sections/Sproochli.vue`; the command owns Kitchen identity attachment settings                                                                               |
 
 ## Alignment roadmap
 

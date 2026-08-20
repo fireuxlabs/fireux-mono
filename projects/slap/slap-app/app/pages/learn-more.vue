@@ -7,7 +7,7 @@
           Learn More
         </h1>
         <p class="fx-type-description text-toned">
-          Slap wraps drops, stories, gallery thinking, and console-backed operations in lifestyle-commerce language.
+          Slap wraps drops, stories, gallery thinking, and workspace-backed operations in lifestyle-commerce language.
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/about" color="primary" icon="i-lucide-info">About</UButton>

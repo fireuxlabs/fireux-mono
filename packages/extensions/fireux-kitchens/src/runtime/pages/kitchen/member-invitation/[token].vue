@@ -106,7 +106,7 @@ const authTo = computed(
 )
 const memberTo = computed(
   () =>
-    `/console/kitchen/team#${acceptedSlug.value || normalizeSlug(invitation.value?.memberName)}`
+    `/workspace/kitchen/team#${acceptedSlug.value || normalizeSlug(invitation.value?.memberName)}`
 )
 
 async function acceptInvitation() {

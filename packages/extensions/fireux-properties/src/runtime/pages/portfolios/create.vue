@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Create Portfolio"
-      description="Create the public portfolio record. Console setup happens separately."
+      description="Create the public portfolio record. Workspace setup happens separately."
     />
 
     <UPageBody class="pagebody">

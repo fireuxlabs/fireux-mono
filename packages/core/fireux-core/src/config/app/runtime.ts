@@ -4,15 +4,15 @@ import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from './meta-content'
 import type {
   FireuxAppConfig,
-  FireuxConsoleConfig,
+  FireuxWorkspaceConfig,
   FireuxNavOverrides,
 } from './types'
 
 type RuntimeNormalizedFields =
   | 'databaseId'
   | 'modules'
-  | 'consoles'
-  | 'consoleConfig'
+  | 'workspaces'
+  | 'workspaceConfig'
   | 'domains'
   | 'profiles'
   | 'selfJoinEnabled'
@@ -28,8 +28,8 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
   modules: readonly string[]
-  consoles: readonly string[]
-  consoleConfig: FireuxConsoleConfig
+  workspaces: readonly string[]
+  workspaceConfig: FireuxWorkspaceConfig
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean

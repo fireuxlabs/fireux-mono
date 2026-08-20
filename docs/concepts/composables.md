@@ -12,7 +12,7 @@ Map where reusable runtime logic belongs.
 
 - Parent: nuxt4.md
 - Child: firestore-entity.md
-- Child: console.md
+- Child: workspace.md
 - Child: server-api.md
 - Child: create.md
 - Child: lasagne.md
@@ -36,7 +36,7 @@ entity to implement capabilities it does not have.
 
 - `runtime/composables` is the cross-entity shared composable spine.
 - `runtime/<entity>/composables/firestore` owns that entity's stored adapters.
-- `runtime/<entity>/composables/console` owns that entity's Console workspace
+- `runtime/<entity>/composables/workspace` owns that entity's Workspace workspace
   adapters.
 - `runtime/<entity>/composables` owns its normal runtime capabilities used by
   detail, directory, tenant, App, or other named surfaces.
@@ -46,7 +46,7 @@ entity to implement capabilities it does not have.
 
 Declared Entity adapters now use these scoped roles. Completed
 `composables/fireux/firestore/<entity>`,
-`composables/fireux/console/<entity>`, and `composables/fireux/<entity>`
+`composables/fireux/workspace/<entity>`, and `composables/fireux/<entity>`
 placements are guarded against returning. Root profile/record adapters remain
 package-shared only while their underlying concept is `to-confirm`; confirmed
 records and operations use their parent Entity's composable scope.
@@ -55,7 +55,7 @@ records and operations use their parent Entity's composable scope.
 
 - Avoid adding a `public` bucket beneath an entity's composables by default.
   Root visitor-facing routes are usually the normal entity doorway; use
-  explicit `console` or `firestore` buckets only when the seam really is scoped
+  explicit `workspace` or `firestore` buckets only when the seam really is scoped
   to that system. Menu now uses `runtime/menu/composables`, with Kitchen-owned
   Menu operations under `runtime/kitchen/composables`; do not recreate a
   generic `public` composable bucket.
@@ -101,8 +101,8 @@ records and operations use their parent Entity's composable scope.
 - `useYX`: name Y's real adaptation of X. It consumes the narrowest supported X
   capability, keeps X ignorant of Y, and must add a Y-owned decision,
   projection, policy, or lifecycle relationship rather than act as an alias.
-- `useXConsole`: selected console runtime for a domain.
-- `useXConsoleIndex`: index page adapter over shared `useConsoleIndex`.
+- `useXWorkspace`: selected workspace runtime for a domain.
+- `useXWorkspaceIndex`: index page adapter over shared `useWorkspaceIndex`.
 
 ## Reactive ownership
 
@@ -131,7 +131,7 @@ records and operations use their parent Entity's composable scope.
 
 | Difference                                                                          | State       | Reason or alignment trigger                                                                                                           |
 | ----------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Core, app, Firestore, console, and domain composables use different buckets         | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                      |
+| Core, app, Firestore, workspace, and domain composables use different buckets         | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                      |
 | Domain `useXOnboarding` adapters contain different drafts and stages                | `accepted`  | Shared onboarding owns mechanics only; domain decisions must remain named and local                                                   |
 | Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                            |
 | Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                           |

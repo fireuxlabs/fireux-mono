@@ -15,10 +15,10 @@
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: require the verified Core-composed candidate artifact before release work.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: adversarially test optional bounded public biography writes.
 // Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: prove immutable Sale and server-only financial-fact boundaries.
-// Concurrent edit — 2026-07-21 20:42 CEST — Kitchen target reads: adversarially prove exact-root Console access without raw listing.
+// Concurrent edit — 2026-07-21 20:42 CEST — Kitchen target reads: adversarially prove exact-root Workspace access without raw listing.
 // Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: reject missing, malformed, and oversized write shapes.
-// Concurrent edit — 2026-07-21 23:02 CEST — Console authority alignment: prove team membership cannot exercise operator mutations.
-// Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: trace deny failures and prove complete Supplier support cannot bypass validation.
+// Concurrent edit — 2026-07-21 23:02 CEST — Workspace authority alignment: prove team membership cannot exercise operator mutations.
+// Concurrent edit — 2026-07-21 23:16 CEST — Workspace authority hardening: trace deny failures and prove complete Supplier support cannot bypass validation.
 // Concurrent edit — 2026-07-22 15:55 CEST — Developer identity migration: pin Misebox bootstrap authority to Daniel's retained Firebase identity.
 // Concurrent edit — 2026-07-26 — Ingredient authority: release the API-projected root while red-teaming Kitchen references.
 
@@ -1305,7 +1305,7 @@ async function buildSecurityTests() {
       key: 'misebox',
       workspace: 'projects/misebox/misebox-app',
       launch_order: 1,
-      console_families: ['kitchen', 'supplier'],
+      workspace_families: ['kitchen', 'supplier'],
       database_id: 'misebox',
     },
     self_join_enabled: true,
@@ -1339,7 +1339,7 @@ async function buildSecurityTests() {
   }
   const parentRootKitchenProbeData = {
     management: {
-      mode: 'console',
+      mode: 'workspace',
     },
   }
   const appKitchenProbePath =
@@ -1736,7 +1736,7 @@ async function buildSecurityTests() {
       appAdminMocks(adminId, path)
     ),
     readResource(
-      'canonical admin can read partial AppUser Console targets',
+      'canonical admin can read partial AppUser Workspace targets',
       'ALLOW',
       sparseMembershipProbePath,
       adminId,

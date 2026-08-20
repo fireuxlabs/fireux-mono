@@ -2,14 +2,14 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="misebox-kitchen-home">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen AI" />
+        <LayoutsWorkspaceNavbar title="Kitchen AI" />
       </template>
 
       <template #body>
-        <section class="console-surface">
-          <ConsoleKitchenTools />
-          <ConsoleKitchenAIWelcome />
-          <ConsoleKitchen v-if="clientReady && isAuthenticated" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenTools />
+          <WorkspaceKitchenAIWelcome />
+          <WorkspaceKitchen v-if="clientReady && isAuthenticated" />
         </section>
       </template>
     </UDashboardPanel>
@@ -18,30 +18,30 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
 const { isAuthenticated } = useAuth()
-const consoleRoot = useConsole()
-consoleRoot.setActiveContext('kitchen')
+const workspaceRoot = useWorkspace()
+workspaceRoot.setActiveContext('kitchen')
 const clientReady = ref(false)
 onMounted(() => {
   clientReady.value = true
 })
 
 definePageMeta({
-  layout: 'console',
-  consoleSurface: 'browse',
-  consoleAccess: 'public-entry',
+  layout: 'workspace',
+  workspaceSurface: 'browse',
+  workspaceAccess: 'public-entry',
   nav: {
     key: 'home',
     label: 'Kitchen AI',
     icon: 'i-lucide-sparkles',
     desktop: true,
     mobile: true,
-    layouts: ['console'],
+    layouts: ['workspace'],
   },
   requiresAuth: false,
   requiresSelection: false,

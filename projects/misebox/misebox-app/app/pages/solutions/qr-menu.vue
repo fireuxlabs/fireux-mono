@@ -56,7 +56,7 @@ const solution = {
   upgrades: [
     'Replace the uploaded source without changing the printed QR route.',
     'Process the menu into dishes and sections when you are ready.',
-    'Move the menu into a kitchen console later.',
+    'Move the menu into a kitchen workspace later.',
     'Add translations through Sproochli after the menu is structured.',
   ],
   dev: {

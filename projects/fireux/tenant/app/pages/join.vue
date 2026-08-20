@@ -18,7 +18,7 @@
         runtime controls or use the onboarding modal to create admin membership.
       </p>
       <p>
-        Already a member? Navigate back to the console once the runtime user
+        Already a member? Navigate back to the workspace once the runtime user
         resolves.
       </p>
     </div>

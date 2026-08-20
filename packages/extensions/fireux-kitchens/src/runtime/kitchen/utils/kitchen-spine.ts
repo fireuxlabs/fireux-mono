@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsolePalette } from 'fireux-core/types/theme'
-import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
+import type { WorkspacePalette } from 'fireux-core/types/theme'
+import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
@@ -89,7 +89,7 @@ const readKitchenPaymentPolicy = (
   value: unknown
 ): KitchenFulfilmentPaymentPolicy | null => {
   // 2026-07-19 16:35 CEST — Normalize current flat Kitchen data while the
-  // console rewrites it into the Kitchen-owned applicability policy.
+  // workspace rewrites it into the Kitchen-owned applicability policy.
   const flatMethod = readKitchenPaymentMethod(value)
   const row = record(value)
   const method = flatMethod || readKitchenPaymentMethod(row.method)
@@ -132,11 +132,6 @@ export const composeKitchenScopedSurface = (
 
   const composed: Record<string, unknown> = {
     ...publicRecord,
-    console: {
-      ...record(publicRecord.console),
-      mode: 'live',
-      ...record(scopedRecord.console),
-    },
     ...(Array.isArray(scopedRecord.operator_ids)
       ? { operator_ids: scopedRecord.operator_ids }
       : {}),
@@ -200,7 +195,7 @@ export const readKitchenVisibility = (value: KitchenSpineRecord) => {
 
 export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const menus = record(record(source.console).menus)
+  const menus = record(source.menus)
   const style = optionalRecord(menus.style)
 
   return {
@@ -221,18 +216,17 @@ export const readKitchenSproochliConfig = (
   value: KitchenSpineRecord
 ): SproochliAttachmentConfig =>
   readSproochliAttachmentConfig(
-    record(record(record(value).console).integrations).sproochli
+    record(record(value).integrations).sproochli
   )
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
 
-export const readKitchenConsolePalette = (
+export const readKitchenWorkspacePalette = (
   value: KitchenSpineRecord
-): ConsolePalette | null => {
-  const console = record(record(value).console)
-  const theme = record(console.theme)
-  return readConsolePalette(theme.palette)
+): WorkspacePalette | null => {
+  const theme = record(record(value).theme)
+  return readWorkspacePalette(theme.palette)
 }
 
 /** Read-only projection helper. Canonical currency is owned by linked Place. */
@@ -244,7 +238,7 @@ export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
 
 export const readKitchenTableCount = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const tables = record(record(source.console).tables)
+  const tables = record(source.tables)
   const count = Number(tables.count)
 
   return Number.isSafeInteger(count) && count > 0
@@ -256,7 +250,7 @@ export const readKitchenFulfilmentConfig = (
   value: KitchenSpineRecord
 ): KitchenFulfilmentConfig => {
   const source = record(value)
-  const fulfilment = record(record(source.console).fulfilment)
+  const fulfilment = record(source.fulfilment)
   const paymentPolicies = Array.isArray(fulfilment.payment_methods)
     ? fulfilment.payment_methods
       .map(readKitchenPaymentPolicy)
@@ -274,14 +268,14 @@ export const readKitchenFulfilmentConfig = (
 
 export const readKitchenOperationHours = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const orders = record(record(source.console).orders)
+  const orders = record(source.orders)
 
   return readWeekdayTimeWindowsConfig(orders.operation_hours)
 }
 
 export const hasKitchenOperationHours = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const orders = record(record(source.console).orders)
+  const orders = record(source.orders)
 
   return hasKeys(record(orders.operation_hours))
 }

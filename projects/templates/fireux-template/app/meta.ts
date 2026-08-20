@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'FireUX Template is a minimal app starter with the baseline FireUX runtime.',
     promise_html:
       'Use it to validate shared pages, products, blogs, auth, and app shape.',
-    console_bridge_html:
+    workspace_bridge_html:
       'The template keeps app-local code small and shared behavior in FireUX.',
   },
   seo: {

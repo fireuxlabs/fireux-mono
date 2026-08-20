@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleNotifications } from '../../../composables/fireux/console/useConsoleNotifications'
+import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
 
 defineProps<{
   title: string
@@ -43,7 +43,7 @@ defineProps<{
 const {
   open: openNotifications,
   unreadCount,
-} = useConsoleNotifications()
+} = useWorkspaceNotifications()
 const unreadLabel = computed(() =>
   unreadCount.value > 99 ? '99+' : unreadCount.value
 )

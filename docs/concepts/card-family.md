@@ -53,13 +53,13 @@ Core owns the shared visual foundation for those variants:
 
 ## Separate families
 
-- `Collection/Manager`, `Index`, `Console/*/Read`, route detail components, and
+- `Collection/Manager`, `Index`, `Workspace/*/Read`, route detail components, and
   equivalent controllers own loading, selection, empty/error outcomes, and
   composition.
 - `useXInterface` and named presentation projectors translate records into
   Card/Profile view models. A Card may use a pure presentation helper but does
   not acquire the underlying record.
-- `X/Profile`, `X/Detail`, public detail compositions, and Console detail
+- `X/Profile`, `X/Detail`, public detail compositions, and Workspace detail
   headers may render many sections and actions. They are not ordinary Cards
   merely because their outer element is `UCard`.
 - Order Tickets, Supplier Catalogue presentation, QR Business Cards, receipts,
@@ -114,7 +114,7 @@ compositions, and 3 Place dropdown support components.
   the active User summary lives at `User/IdentitySummary.vue`, while the
   bounded route profile remains `User/Profile.vue`.
 - `completed`: Kitchen Order Ticket moved to
-  `Console/Kitchen/Operations/Orders/Ticket/*`.
+  `Workspace/Kitchen/Operations/Orders/Ticket/*`.
 - `completed`: Supplier Catalogue moved to
   `Supplier/Catalogue/Presentation.vue`.
 - `completed`: Professional's QR presentation moved to

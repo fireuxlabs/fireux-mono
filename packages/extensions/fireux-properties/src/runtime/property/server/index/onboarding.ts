@@ -1,5 +1,5 @@
-// Concurrent edit — 2026-07-21 22:35 CEST — Console alignment — Property: atomically bind canonical root and App access.
-// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: reject coerced Property support and membership ids.
+// Concurrent edit — 2026-07-21 22:35 CEST — Workspace alignment — Property: atomically bind canonical root and App access.
+// Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: reject coerced Property support and membership ids.
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import {
@@ -12,10 +12,10 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
-  readConsoleEntitySupportAuthority,
-  requireConsoleEntityMemberRole,
-  resolveConsoleEntityOnboardingPolicy,
-} from 'fireux-core/runtime/server/utils/console-entity/onboarding-authority'
+  readWorkspaceEntitySupportAuthority,
+  requireWorkspaceEntityMemberRole,
+  resolveWorkspaceEntityOnboardingPolicy,
+} from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -78,11 +78,11 @@ function request(value: unknown) {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  return resolveConsoleEntityOnboardingPolicy(event, 'property')
+  return resolveWorkspaceEntityOnboardingPolicy(event, 'property')
 }
 
 function requireMemberRole(exists: boolean, value: unknown): MemberRole {
-  return requireConsoleEntityMemberRole({
+  return requireWorkspaceEntityMemberRole({
     exists,
     role: value,
     entityLabel: 'Property',
@@ -90,7 +90,7 @@ function requireMemberRole(exists: boolean, value: unknown): MemberRole {
 }
 
 function readSupport(value: Record<string, unknown> | null) {
-  return readConsoleEntitySupportAuthority(value, 'Property')
+  return readWorkspaceEntitySupportAuthority(value, 'Property')
 }
 
 async function actor(event: H3Event): Promise<Actor> {
@@ -283,7 +283,7 @@ export async function completePropertyOnboarding(
     }
 
     mutations.update(memberships, current.uid, {
-      console_enabled: true,
+      workspace_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })
 

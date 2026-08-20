@@ -31,7 +31,7 @@ export function useUserPermissions(user: UserRefs) {
   // It now means effective Premium-or-higher capability, not the raw grant.
   const isPremium = hasPremiumAccess
   const accessTier = computed<UserAccessTier | null>(() => access.value.tier)
-  const canOwnMultipleConsoles = hasPremiumAccess
+  const canOwnMultipleWorkspaces = hasPremiumAccess
 
   return {
     isAdmin,
@@ -40,6 +40,6 @@ export function useUserPermissions(user: UserRefs) {
     hasPremiumAccess,
     isDeveloper,
     accessTier,
-    canOwnMultipleConsoles,
+    canOwnMultipleWorkspaces,
   }
 }

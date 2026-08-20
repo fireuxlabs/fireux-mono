@@ -7,7 +7,7 @@ import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/utils/entity-management'
-import { readConsoleTargetAuthority, targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { readWorkspaceTargetAuthority, targetHasWorkspaceAccess } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { PropertyStorage, type Property } from '../../../models/property.model.ts'
 import {
   canonicalPropertyRoot,
@@ -78,7 +78,7 @@ export function usePropertyCollection(
     if (
       resolvedShape.value === 'root-with-app-support' &&
       (!appSupport ||
-        !readConsoleTargetAuthority(appSupport) ||
+        !readWorkspaceTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
         !management ||
         management.mode === 'root' ||
@@ -183,7 +183,7 @@ export function usePropertyCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(property, filterOperatorId.value))
+        if (!targetHasWorkspaceAccess(property, filterOperatorId.value))
           return acc
       }
 
@@ -238,7 +238,7 @@ export function usePropertyCollection(
       return []
 
     return appSupportSource.value
-      .filter((appSupport) => !readConsoleTargetAuthority(appSupport))
+      .filter((appSupport) => !readWorkspaceTargetAuthority(appSupport))
       .map((appSupport) => resolvePropertyId(appSupport))
       .filter(Boolean)
   })

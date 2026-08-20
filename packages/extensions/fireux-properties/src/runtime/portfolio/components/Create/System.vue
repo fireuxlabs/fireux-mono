@@ -19,7 +19,7 @@
         Developer Note
       </p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-        <li v-if="isConsoleMode">
+        <li v-if="isWorkspaceMode">
           Creates
           <code>portfolios/&lt;id&gt;</code>
           and
@@ -29,7 +29,7 @@
           Creates
           <code>portfolios/&lt;id&gt;</code>.
         </li>
-        <li v-if="isConsoleMode">
+        <li v-if="isWorkspaceMode">
           Adds the current user to the portfolio
           <code>team_ids</code>.
         </li>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Portfolio console creation as App support.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Portfolio workspace creation as App support.
 import { computed } from 'vue'
 import type {
   FireuxEntityCreateMode,
@@ -71,21 +71,21 @@ defineEmits<{
 }>()
 
 const { notesVisible } = useDevUi()
-const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
-const isConsoleMode = computed(() => resolvedMode.value === 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'workspace')
+const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() => 'Create Portfolio')
 const headerTitle = computed(() =>
-  isConsoleMode.value ? 'Portfolio console details' : 'Public portfolio details'
+  isWorkspaceMode.value ? 'Portfolio workspace details' : 'Public portfolio details'
 )
 const headerDescription = computed(() =>
-  isConsoleMode.value
-    ? 'We’ll create the portfolio console for this app and create the public portfolio only if it is missing.'
-    : 'We’ll create the public portfolio record. Console setup happens later.'
+  isWorkspaceMode.value
+    ? 'We’ll create the portfolio workspace for this app and create the public portfolio only if it is missing.'
+    : 'We’ll create the public portfolio record. Workspace setup happens later.'
 )
 const successTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()
   if (explicit.startsWith('/')) return explicit
-  return isConsoleMode.value ? '/console/portfolio' : '/portfolios'
+  return isWorkspaceMode.value ? '/workspace/portfolio' : '/portfolios'
 })
 </script>

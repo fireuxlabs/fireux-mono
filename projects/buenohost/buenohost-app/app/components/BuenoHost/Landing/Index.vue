@@ -37,13 +37,13 @@
         <LandingSolutions variant="preview" />
       </div>
 
-      <section class="mt-16 space-y-6" aria-labelledby="host-console-title">
+      <section class="mt-16 space-y-6" aria-labelledby="host-workspace-title">
         <div class="max-w-3xl space-y-2">
           <h2
-            id="host-console-title"
+            id="host-workspace-title"
             class="text-2xl font-semibold text-highlighted"
           >
-            Work from the Host Console.
+            Work from the Host Workspace.
           </h2>
           <p class="text-muted">
             Manage the property information used by guest guides and
@@ -52,7 +52,7 @@
         </div>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <UCard
-            v-for="feature in consoleFeatures"
+            v-for="feature in workspaceFeatures"
             :key="feature.title"
             variant="subtle"
           >
@@ -109,7 +109,7 @@ import { useBuenoHostHome } from '../../../composables/useBuenoHostHome'
 import { useBuenoHostPricing } from '../../../composables/useBuenoHostPricing'
 import { content, railItems, surfaceItems } from './landing-content'
 
-const { consoleFeatures, isExternalUrl, resolvedIntegrationCards } =
+const { workspaceFeatures, isExternalUrl, resolvedIntegrationCards } =
   useBuenoHostHome()
 const { landingTiers } = useBuenoHostPricing()
 </script>

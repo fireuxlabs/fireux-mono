@@ -64,7 +64,7 @@ export type CurrentAppMembershipDto = {
   is_premium: boolean
   access_tier: AppUserAccessTier
   has_premium_access: boolean
-  console_enabled: boolean
+  workspace_enabled: boolean
   onboarding_status: 'pending' | 'completed' | 'skipped'
   profiles: string[]
 }

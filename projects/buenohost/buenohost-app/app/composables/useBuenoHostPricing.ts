@@ -6,18 +6,18 @@ import {
 const buenoHostPricingProfile = {
   appName: 'BuenoHost',
   contactEmail: 'fire@fireux.app',
-  consoleName: 'Host Console',
+  workspaceName: 'Host Workspace',
   free: [
     'Use one Property workspace',
     'Publish one guest stay guide',
     'Create a guest URL and QR code',
-    'Manage the guide from the Host Console',
+    'Manage the guide from the Host Workspace',
   ],
   pro: [
     'Manage multiple properties and rooms',
     'Publish property and room guides',
     'Manage reservations and the stay calendar',
-    'Give the hosting team Console access',
+    'Give the hosting team Workspace access',
   ],
 } as const satisfies PricingProfile
 

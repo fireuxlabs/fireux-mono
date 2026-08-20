@@ -130,7 +130,7 @@ export function run({ repoRoot }) {
   assert.match(
     targetsSource,
     /fireuxProjects:[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'named', databaseId:\s*'fireux' \}[\s\S]*collectionPath:\s*'projects'/,
-    'The canonical Project Console Entity target must remain Server-owned at fireux/projects.'
+    'The canonical Project Workspace Entity target must remain Server-owned at fireux/projects.'
   )
   assert.doesNotMatch(
     targetsSource,
@@ -159,7 +159,7 @@ export function run({ repoRoot }) {
     const source = readFileSync(
       path.join(
         repoRoot,
-        'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus',
+        'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/menus',
         file
       ),
       'utf8'
@@ -233,7 +233,7 @@ export function run({ repoRoot }) {
   const kitchenMenuConfirm = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/menus/confirm.post.ts'
     ),
     'utf8'
   )
@@ -272,7 +272,7 @@ export function run({ repoRoot }) {
   const kitchenOrderTransition = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts'
     ),
     'utf8'
   )
@@ -419,7 +419,7 @@ export function run({ repoRoot }) {
   assert.doesNotMatch(
     projectMutationsSource,
     /FIRESTORE_MUTATION_TARGETS\.(?:projectMeta|ecosystemMeta|appMeta)/,
-    'Project Console mutations must not write default metadata projections.'
+    'Project Workspace mutations must not write default metadata projections.'
   )
   assert.equal(
     existsSync(
@@ -429,7 +429,7 @@ export function run({ repoRoot }) {
       )
     ),
     false,
-    'The read-only Project Console must not expose canonical mutations that omit ProjectMeta synchronization.'
+    'The read-only Project Workspace must not expose canonical mutations that omit ProjectMeta synchronization.'
   )
   const placeMutationFiles = [
     ['index/ensure.ts', /mutations\.create\(places,\s*id,/],

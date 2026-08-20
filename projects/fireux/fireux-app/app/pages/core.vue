@@ -8,7 +8,7 @@
     <UPageBody class="pagebody">
       <UCard class="space-y-3">
         <p class="text-sm text-toned">
-          FireUX Core owns the App shell, accounts, shared Console contracts,
+          FireUX Core owns the App shell, accounts, shared Workspace contracts,
           public directory components, and runtime conventions.
         </p>
 

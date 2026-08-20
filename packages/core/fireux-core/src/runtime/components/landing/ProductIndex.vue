@@ -151,7 +151,7 @@ import { useLandingMotion } from '../../composables/fireux/motion/useLandingMoti
 
 type LandingProductRegion =
   | 'surfaces'
-  | 'console'
+  | 'workspace'
   | 'specifics'
   | 'ecosystems'
   | 'apps'
@@ -176,7 +176,7 @@ withDefaults(
     presentation: 'standard',
     regionOrder: () => [
       'surfaces',
-      'console',
+      'workspace',
       'specifics',
       'ecosystems',
       'apps',

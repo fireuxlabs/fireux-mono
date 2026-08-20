@@ -2,7 +2,7 @@
 // last_used: 2026-07-20
 // usage_note: enforces current repo-wide spine rules, including route-param normalization.
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: guard deferred dev collection lifecycle.
-// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: align allowed console buckets with the documented spine.
+// Concurrent edit — 2026-07-20 16:22 CEST — Workspace Spine pass: align allowed workspace buckets with the documented spine.
 // FILE: scripts/guards/canon.mjs
 // FireUX Canon Guard
 //
@@ -67,16 +67,16 @@ const FORBIDDEN_CONSOLE_ARCHITECTURE_SEGMENTS = new Set([
 
 const FORBIDDEN_CONSOLE_COMPOSABLE_PATTERNS = [
   {
-    label: 'useChildEntityConsoleResolver',
-    re: /\buseChildEntityConsoleResolver\b/g,
+    label: 'useChildEntityWorkspaceResolver',
+    re: /\buseChildEntityWorkspaceResolver\b/g,
   },
   {
-    label: 'useConsoleChildResolver',
-    re: /\buseConsoleChildResolver\b/g,
+    label: 'useWorkspaceChildResolver',
+    re: /\buseWorkspaceChildResolver\b/g,
   },
   {
-    label: 'useRuntime*Console',
-    re: /\buseRuntime[A-Z][A-Za-z0-9_]*Console\b/g,
+    label: 'useRuntime*Workspace',
+    re: /\buseRuntime[A-Z][A-Za-z0-9_]*Workspace\b/g,
   },
   {
     label: '*Facade*',
@@ -585,12 +585,12 @@ function checkFirestoreEntityStackShape(repoRoot) {
       if (allowedExceptionChildren.has(child)) continue
 
       const childRel = `${relRoot}/${child}`
-      const knownConsoleSlices =
+      const knownWorkspaceSlices =
         KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY.get(entity) ?? new Set()
 
-      if (knownConsoleSlices.has(child)) {
+      if (knownWorkspaceSlices.has(child)) {
         violations.push(
-          `- Console operation folder belongs under composables/fireux/console/${entity}: ${childRel}`
+          `- Workspace operation folder belongs under composables/fireux/workspace/${entity}: ${childRel}`
         )
         continue
       }
@@ -658,14 +658,14 @@ function checkProductsFirestoreStackShape(repoRoot) {
   return violations
 }
 
-function checkForbiddenEntityConsoleAppBuckets(repoRoot) {
+function checkForbiddenEntityWorkspaceAppBuckets(repoRoot) {
   const violations = []
-  const appConsoleRoots = [
+  const appWorkspaceRoots = [
     path.join(repoRoot, 'packages'),
     path.join(repoRoot, 'projects'),
   ].filter((p) => existsSync(p))
 
-  for (const root of appConsoleRoots) {
+  for (const root of appWorkspaceRoots) {
     for (const dir of walkDirs(root)) {
       const rel = toRepoRelative(repoRoot, dir)
       const parts = rel.split(path.sep)
@@ -677,11 +677,11 @@ function checkForbiddenEntityConsoleAppBuckets(repoRoot) {
       if (appIndex < 0) continue
 
       const bucket = parts[appIndex + 3]
-      if (!bucket || !bucket.endsWith('-console')) continue
-      if (bucket === 'console') continue
+      if (!bucket || !bucket.endsWith('-workspace')) continue
+      if (bucket === 'workspace') continue
 
       violations.push(
-        `- Domain console composables belong under composables/fireux/console/<entity>, not app/${bucket}: ${rel}`
+        `- Domain workspace composables belong under composables/fireux/workspace/<entity>, not app/${bucket}: ${rel}`
       )
     }
   }
@@ -689,9 +689,9 @@ function checkForbiddenEntityConsoleAppBuckets(repoRoot) {
   return violations
 }
 
-function findConsoleOperationStackRoots(repoRoot) {
+function findWorkspaceOperationStackRoots(repoRoot) {
   const roots = []
-  const coreConsoleRoot = path.join(
+  const coreWorkspaceRoot = path.join(
     repoRoot,
     'packages',
     'core',
@@ -700,26 +700,26 @@ function findConsoleOperationStackRoots(repoRoot) {
     'runtime',
     'composables',
     'fireux',
-    'console'
+    'workspace'
   )
 
-  if (isDirectory(coreConsoleRoot)) roots.push(coreConsoleRoot)
+  if (isDirectory(coreWorkspaceRoot)) roots.push(coreWorkspaceRoot)
 
   const extensionsRoot = path.join(repoRoot, 'packages', 'extensions')
   if (!isDirectory(extensionsRoot)) return roots
 
   for (const extensionName of listChildDirectories(extensionsRoot)) {
-    const consoleRoot = path.join(
+    const workspaceRoot = path.join(
       extensionsRoot,
       extensionName,
       'src',
       'runtime',
       'composables',
       'fireux',
-      'console'
+      'workspace'
     )
 
-    if (isDirectory(consoleRoot)) roots.push(consoleRoot)
+    if (isDirectory(workspaceRoot)) roots.push(workspaceRoot)
   }
 
   const projectsRoot = path.join(repoRoot, 'projects')
@@ -728,33 +728,33 @@ function findConsoleOperationStackRoots(repoRoot) {
   for (const ecosystemName of listChildDirectories(projectsRoot)) {
     const ecosystemRoot = path.join(projectsRoot, ecosystemName)
     for (const projectName of listChildDirectories(ecosystemRoot)) {
-      const consoleRoot = path.join(
+      const workspaceRoot = path.join(
         ecosystemRoot,
         projectName,
         'app',
         'composables',
         'fireux',
-        'console'
+        'workspace'
       )
 
-      if (isDirectory(consoleRoot)) roots.push(consoleRoot)
+      if (isDirectory(workspaceRoot)) roots.push(workspaceRoot)
     }
   }
 
   return roots
 }
 
-function checkConsoleOperationStackShape(repoRoot) {
+function checkWorkspaceOperationStackShape(repoRoot) {
   const violations = []
 
-  for (const consoleRoot of findConsoleOperationStackRoots(repoRoot)) {
-    for (const entity of listChildDirectories(consoleRoot)) {
-      const entityRoot = path.join(consoleRoot, entity)
+  for (const workspaceRoot of findWorkspaceOperationStackRoots(repoRoot)) {
+    for (const entity of listChildDirectories(workspaceRoot)) {
+      const entityRoot = path.join(workspaceRoot, entity)
       for (const child of listChildDirectories(entityRoot)) {
         if (CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN.has(child)) continue
 
         violations.push(
-          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, team/, operations/, and sundries/: ${toRepoRelative(
+          `- Workspace entity root may only contain spine buckets core/, index/, overview/, identity/, team/, operations/, and sundries/: ${toRepoRelative(
             repoRoot,
             path.join(entityRoot, child)
           )}`
@@ -762,37 +762,37 @@ function checkConsoleOperationStackShape(repoRoot) {
       }
     }
 
-    for (const dir of walkDirs(consoleRoot)) {
+    for (const dir of walkDirs(workspaceRoot)) {
       const rel = toRepoRelative(repoRoot, dir)
       const segment = path.basename(dir)
       const normalized = segment.toLowerCase()
 
       if (normalized.startsWith('runtime-')) {
         violations.push(
-          `- Forbidden runtime bucket under console operation stack: ${rel}`
+          `- Forbidden runtime bucket under workspace operation stack: ${rel}`
         )
         continue
       }
 
       if (FORBIDDEN_CONSOLE_ARCHITECTURE_SEGMENTS.has(normalized)) {
         violations.push(
-          `- Forbidden architecture bucket under console operation stack: ${rel}`
+          `- Forbidden architecture bucket under workspace operation stack: ${rel}`
         )
       }
     }
 
-    for (const file of walkFiles(consoleRoot)) {
+    for (const file of walkFiles(workspaceRoot)) {
       const rel = toRepoRelative(repoRoot, file)
       const fileBase = path.basename(file, path.extname(file))
 
       if (
-        fileBase === 'useChildEntityConsoleResolver' ||
-        fileBase === 'useConsoleChildResolver' ||
-        /^useRuntime[A-Z][A-Za-z0-9_]*Console$/.test(fileBase) ||
+        fileBase === 'useChildEntityWorkspaceResolver' ||
+        fileBase === 'useWorkspaceChildResolver' ||
+        /^useRuntime[A-Z][A-Za-z0-9_]*Workspace$/.test(fileBase) ||
         fileBase.includes('Facade')
       ) {
         violations.push(
-          `- Forbidden generic console composable file under console operation stack: ${rel}`
+          `- Forbidden generic workspace composable file under workspace operation stack: ${rel}`
         )
       }
 
@@ -807,7 +807,7 @@ function checkConsoleOperationStackShape(repoRoot) {
         for (const hit of findAllMatches(raw, pattern.re)) {
           const { line } = lineInfo(raw, hit.index)
           violations.push(
-            `- Forbidden generic console composable "${hit.match}" under console operation stack: ${rel}:${line}`
+            `- Forbidden generic workspace composable "${hit.match}" under workspace operation stack: ${rel}:${line}`
           )
         }
       }
@@ -827,8 +827,8 @@ export async function run(ctx) {
   violations.push(...checkForbiddenFirestoreStackFolders(repoRoot))
   violations.push(...checkFirestoreEntityStackShape(repoRoot))
   violations.push(...checkProductsFirestoreStackShape(repoRoot))
-  violations.push(...checkForbiddenEntityConsoleAppBuckets(repoRoot))
-  violations.push(...checkConsoleOperationStackShape(repoRoot))
+  violations.push(...checkForbiddenEntityWorkspaceAppBuckets(repoRoot))
+  violations.push(...checkWorkspaceOperationStackShape(repoRoot))
   violations.push(...checkCollectionManagerContract(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
@@ -919,10 +919,10 @@ export async function run(ctx) {
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
       '- Keep usual Firestore entity stacks boring: root useX.ts plus fetch/, mutations/, seo/, utils/',
-      '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity,team,operations,sundries}/',
-      '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
-      '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
-      '- Keep XCollectionManager for root Entity browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',
+      '- Put workspace entity seams under: composables/fireux/workspace/<entity>/{core,index,overview,identity,team,operations,sundries}/',
+      '- Put workspace operation buckets under: composables/fireux/workspace/<entity>/operations/',
+      '- Keep workspace operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
+      '- Keep XCollectionManager for root Entity browse only; scoped/admin/workspace/custom lists need named scoped surfaces or cards, not collection props',
       '- Collection manager debug must load on DevDebugPanel open and unload on close so closed panels do no work',
       '- Use useRouteParam() or readRouteParam() instead of repeating String(route.params.*).trim()',
     ]

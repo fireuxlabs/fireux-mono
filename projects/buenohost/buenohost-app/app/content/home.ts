@@ -66,7 +66,7 @@ export const extraInfoBullets = [
   'Balcony and outdoor notes',
 ]
 
-export const consoleFeatures = [
+export const workspaceFeatures = [
   {
     title: 'Out of the box',
     description: 'Start with ready-made sections for welcome, check-in, emergency and local recommendations.',

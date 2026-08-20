@@ -62,7 +62,7 @@ const APP_META_FIELDS = [
   'media',
   'database_id',
   'website_url',
-  'console_families',
+  'workspace_families',
   'updated',
 ]
 const ECOSYSTEM_META_FIELDS = [
@@ -964,7 +964,7 @@ async function planApps(session, operations, issues, blockers) {
       media: nextData.media || {},
       database_id: databaseId,
       website_url: websiteUrl,
-      console_families: [...new Set(entry.consoles || [])].sort(),
+      workspace_families: [...new Set(entry.workspaces || [])].sort(),
       updated: stableValue(nextData.updated || {}),
     }
     if (!meta.exists) {

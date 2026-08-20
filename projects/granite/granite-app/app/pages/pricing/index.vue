@@ -25,6 +25,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Granite',
   description:
-    'Granite pricing for the Portfolio Console, managed service, and your own App.',
+    'Granite pricing for the Portfolio Workspace, managed service, and your own App.',
 })
 </script>

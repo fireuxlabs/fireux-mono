@@ -20,7 +20,7 @@ export const goQrLanguage = {
       'Go QR turns a public document, link, menu, guide, or contact action into a <strong>scannable QR page or QR code</strong>.',
     promise_html:
       'Upload the doc, share the link, print the QR code, and let people open the right information on their phone.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Go QR owns doc hosting and QR links. Sproochli can later plug in as a translation and localisation layer.',
     about_p1:
       'Go QR is for public information people need to scan and read.',
@@ -51,7 +51,7 @@ export const goQrLanguage = {
       label: 'Document QR',
       to: '/',
     },
-    console: {
+    workspace: {
       label: 'Go QR',
       to: '/',
     },

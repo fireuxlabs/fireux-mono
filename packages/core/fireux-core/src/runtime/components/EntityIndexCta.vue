@@ -47,8 +47,8 @@
 
 <script setup lang="ts">
 type EntityIndexCtaFamily =
-  | 'console'
-  | 'console-managed'
+  | 'workspace'
+  | 'workspace-managed'
   | 'admin-managed'
   | 'profile-managed'
   | 'domain-managed'

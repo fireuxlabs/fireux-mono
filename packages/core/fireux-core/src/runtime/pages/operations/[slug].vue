@@ -5,8 +5,8 @@
     v-if="operation"
     :title="operation.headline || operation.title"
     :description="operation.description"
-    :eyebrow="operation.console.name"
-    :back-to="`/operations#${operation.console.id}`"
+    :eyebrow="operation.workspace.name"
+    :back-to="`/operations#${operation.workspace.id}`"
     back-label="Operations"
   >
     <OperationGuidingLiterature :operation="operation" />

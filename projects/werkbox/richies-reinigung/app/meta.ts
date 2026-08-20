@@ -14,7 +14,7 @@ export const metaContent = defineFireuxMeta({
       'Richies Reinigung provides professional cleaning services for homes and businesses in Interlaken, Lauterbrunnen, and Wengen.',
     promise_html:
       'Simple contact, clear service, and reliable cleaning for recurring and one-off jobs.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Richies is a branded cleaning tenant inside the general Werkbox practical-work hub.',
   },
   seo: {

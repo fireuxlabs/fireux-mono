@@ -71,7 +71,7 @@ import type {
 } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { usePortfolioConsoleSelection } from '../../composables/console/core/usePortfolioConsoleSelection'
+import { usePortfolioWorkspaceSelection } from '../../composables/workspace/core/usePortfolioWorkspaceSelection'
 import { usePortfolioCreate } from '../../composables/firestore/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{
@@ -79,7 +79,7 @@ const props = withDefaults(defineProps<{
   returnTo?: string
   cancelTo?: string
 }>(), {
-  mode: 'console',
+  mode: 'workspace',
   returnTo: '',
   cancelTo: '',
 })
@@ -90,8 +90,8 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { setPortfolioConsoleSelection } = usePortfolioConsoleSelection()
-const { createPortfolio, createPortfolioConsole } = usePortfolioCreate()
+const { setPortfolioWorkspaceSelection } = usePortfolioWorkspaceSelection()
+const { createPortfolio, createPortfolioWorkspace } = usePortfolioCreate()
 
 const name = ref('')
 const ownerLabel = ref('')
@@ -106,7 +106,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return props.mode === 'root' ? '/portfolios' : '/console/portfolio'
+  return props.mode === 'root' ? '/portfolios' : '/workspace/portfolio'
 })
 
 const submit = async () => {
@@ -116,7 +116,7 @@ const submit = async () => {
   submitting.value = true
 
   try {
-    const create = props.mode === 'console' ? createPortfolioConsole : createPortfolio
+    const create = props.mode === 'workspace' ? createPortfolioWorkspace : createPortfolio
     const result = await create({
       name: name.value,
       owner_label: ownerLabel.value,
@@ -125,8 +125,8 @@ const submit = async () => {
       notes: notes.value,
     })
 
-    if (props.mode === 'console') {
-      setPortfolioConsoleSelection({ portfolioId: result.id })
+    if (props.mode === 'workspace') {
+      setPortfolioWorkspaceSelection({ portfolioId: result.id })
     }
     emit('created', result)
 

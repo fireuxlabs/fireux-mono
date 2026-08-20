@@ -10,7 +10,7 @@ export type KitchenAssetRole = 'image' | 'logo' | 'wordmark'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
-/** Canonical Kitchen asset writer shared by entity and Console edit doorways. */
+/** Canonical Kitchen asset writer shared by entity and Workspace edit doorways. */
 export function useKitchenAssetUpdate() {
   const { uploadImage } = useImageStorage()
   const { updateKitchen } = useKitchenUpdate()

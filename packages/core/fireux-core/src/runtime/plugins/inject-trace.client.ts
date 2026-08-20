@@ -166,7 +166,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
         (trace ? String(trace).split('\n')[0] : '') ||
         '(no userland frame)'
 
-      // Forward to server (no client console noise)
+      // Forward to server (no client workspace noise)
       const payload = {
         source: 'client-warnHandler',
         kind,
@@ -192,7 +192,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     __INJECT_TRACE_CONSOLE_PATCHED__?: boolean
   }
   if (!g.__INJECT_TRACE_CONSOLE_PATCHED__) {
-    const originalConsoleWarn = console.warn.bind(console)
+    const originalWorkspaceWarn = console.warn.bind(workspace)
     console.warn = (...args: unknown[]) => {
       try {
         const text = args.map((a) => safeToText(a)).join(' ')
@@ -204,7 +204,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
           const filtered = filteredStackLines(rawTrace, err.stack)
           const hint = filtered[0]?.trim() || '(no userland frame)'
           const payload = {
-            source: 'client-console-fallback',
+            source: 'client-workspace-fallback',
             kind,
             message: text,
             hint,
@@ -218,7 +218,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
       } catch {
         // ignore
       } finally {
-        originalConsoleWarn(...(args as any[]))
+        originalWorkspaceWarn(...(args as any[]))
       }
     }
     g.__INJECT_TRACE_CONSOLE_PATCHED__ = true

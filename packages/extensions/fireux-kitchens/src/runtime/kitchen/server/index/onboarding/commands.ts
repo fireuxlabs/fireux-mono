@@ -17,12 +17,12 @@ import {
   appPaletteLayersEqual,
   compactBrandPalette,
   compactAppPalette,
-  consolePaletteFromApp,
+  workspacePaletteFromApp,
   parseBrandPalette,
   readAppPalette,
   readAppPaletteLayer,
   readBrandPalette,
-  readConsolePalette,
+  readWorkspacePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import type {
@@ -250,19 +250,18 @@ export async function completeKitchenOnboarding(
     const appPalette =
       current.configuredAppPalette || readAppPalette(storedAppPaletteValue)
     const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
-    const storedConsole = record(supportData?.console)
-    const storedTheme = record(storedConsole.theme)
-    const existingConsolePalette = readConsolePalette(storedTheme.palette)
-    const maySeedConsole = createdAppSupport || role === 'admin'
-    const consolePalette =
-      existingConsolePalette ||
-      (appPalette && maySeedConsole ? consolePaletteFromApp(appPalette) : null)
-    const inheritedConsoleTheme = appPalette
-      ? { palette: consolePaletteFromApp(appPalette) }
+    const storedTheme = record(rootData?.theme)
+    const existingWorkspacePalette = readWorkspacePalette(storedTheme.palette)
+    const maySeedWorkspace = createdAppSupport || role === 'admin'
+    const workspacePalette =
+      existingWorkspacePalette ||
+      (appPalette && maySeedWorkspace ? workspacePaletteFromApp(appPalette) : null)
+    const inheritedWorkspaceTheme = appPalette
+      ? { palette: workspacePaletteFromApp(appPalette) }
       : null
     const compactAppLayer =
-      appPalette && consolePalette
-        ? compactAppPalette(appPalette, consolePalette)
+      appPalette && workspacePalette
+        ? compactAppPalette(appPalette, workspacePalette)
         : null
 
     if (!createdRoot && Object.keys(requestedPalette.value).length) {
@@ -292,6 +291,7 @@ export async function completeKitchenOnboarding(
         ...(Object.keys(paletteOverride).length
           ? { brand_palette: paletteOverride }
           : {}),
+        ...(inheritedWorkspaceTheme ? { theme: inheritedWorkspaceTheme } : {}),
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -307,7 +307,6 @@ export async function completeKitchenOnboarding(
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
-        console: inheritedConsoleTheme ? { theme: inheritedConsoleTheme } : {},
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -315,10 +314,18 @@ export async function completeKitchenOnboarding(
       mutations.update(supports, locator.kitchenId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
-        ...(inheritedConsoleTheme && !readConsolePalette(storedTheme.palette)
-          ? { 'console.theme': inheritedConsoleTheme }
-          : {}),
         updated: serverAuditStamp({ by: current.uid }),
+      })
+    }
+
+    if (
+      !createdRoot &&
+      inheritedWorkspaceTheme &&
+      !readWorkspacePalette(storedTheme.palette)
+    ) {
+      mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+        theme: inheritedWorkspaceTheme,
+        updated: serverAuditStamp({ by: current.uid, appId: current.appId }),
       })
     }
 
@@ -350,7 +357,7 @@ export async function completeKitchenOnboarding(
     }
 
     mutations.update(memberships, current.uid, {
-      console_enabled: true,
+      workspace_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })
 

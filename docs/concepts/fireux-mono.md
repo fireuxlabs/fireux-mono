@@ -41,10 +41,10 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   workspace package.
 - `scripts/guards/*`: executable shape rules.
 - `tools/*`: local tools.
-- `packages/*/*/src/runtime/<entity>/demo`: entity-owned reusable Console Demo
+- `packages/*/*/src/runtime/<entity>/demo`: entity-owned reusable Workspace Demo
   Data. Root `runtime/demo` is reserved for genuine cross-entity composition
   or package-owned record families without a declared Entity.
-- `projects/*/*/app/demo`: app-owned console Demo Data.
+- `projects/*/*/app/demo`: app-owned workspace Demo Data.
 - `temp/*`: ignored temporary work only, never authored source.
 - `figma-export`: optional ignored local directory or symlink, never tracked.
 - `mirror`: active local comparison workspace generated from explicit file
@@ -65,7 +65,7 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   and hand-maintained aggregate configs under package lanes or `projects/` are
   retired.
 - Root `demo/` is rejected; Demo stays with its package or app owner and loads
-  only when an owning console selects it.
+  only when an owning workspace selects it.
 - Test, simulation, dev, and public prototype content are separate from Demo.
 - `scripts/_lib/app-registry.mjs` is the authored source for App records and
   contract assignments; `scripts/_lib/app-smoke-contracts.mjs` owns pure HTTP
@@ -104,7 +104,7 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   from the scaffold slug. Automated creation must provide the corresponding
   yes/no flag; it may not silently skip or mutate remote Auth configuration.
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port,
-  workspace, identity, role, consoles, and focused smoke routes.
+  workspace, identity, role, workspaces, and focused smoke routes.
 - Resolve data ownership before generating product code: global and tenant
   Apps inherit the ecosystem database; every production standalone App gets a
   dedicated named database. Provision `(default)/apps/{appId}` AppMeta and the

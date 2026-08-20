@@ -11,8 +11,8 @@ export const sourceMeta = {
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse producers',
     secondaryCtaTo: '/suppliers',
-    consoleBridgeLine:
-      'The operating system for local supply and <strong>delivery execution</strong> from one connected console.',
+    workspaceBridgeLine:
+      'The operating system for local supply and <strong>delivery execution</strong> from one connected workspace.',
     heroBullets: [
       'Fresh local producers and suppliers in one directory',
       'Home and business dropoff flows built for reliability',
@@ -63,7 +63,7 @@ export const sourceMeta = {
         'How Bringli modules fit together for local supply operations',
         'The core records and how they connect',
         'Small realistic sample objects for context',
-        'Direct links to public and console surfaces',
+        'Direct links to public and workspace surfaces',
       ],
     },
     sections: {
@@ -116,8 +116,8 @@ export const sourceMeta = {
         description: 'More producers and buyers strengthen the local marketplace system.',
       },
       {
-        title: 'Console',
-        description: 'One console anchors operational control as Bringli scales market-by-market.',
+        title: 'Workspace',
+        description: 'One workspace anchors operational control as Bringli scales market-by-market.',
       },
     ],
     appSpec: {
@@ -183,7 +183,7 @@ export const sourceMeta = {
         { label: 'Get Started', path: '/get-started', kind: 'public' },
         { label: 'About', path: '/about', kind: 'public' },
         { label: 'Suppliers', path: '/suppliers', kind: 'public' },
-        { label: 'Console Entry', path: '/console', kind: 'console' },
+        { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
       ],
     },
     relationshipMap: `

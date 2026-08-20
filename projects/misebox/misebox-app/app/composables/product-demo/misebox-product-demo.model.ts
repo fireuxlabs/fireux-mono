@@ -34,7 +34,7 @@ export type MiseboxProductDemoKioskModel = {
 export type MiseboxProductDemoModel = {
   surface: 'showroom'
   dataSource: 'demo'
-  console: {
+  workspace: {
     kitchenId: string
     kitchenName: string
     kitchenPill: {

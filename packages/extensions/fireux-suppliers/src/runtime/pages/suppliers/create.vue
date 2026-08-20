@@ -2,14 +2,14 @@
   <UPage>
     <UPageHeader
       class="pageheader"
-      title="Create your Supplier Console"
-      description="Create one Supplier identity, its Misebox access, and your first Console target together."
+      title="Create your Supplier Workspace"
+      description="Create one Supplier identity, its Misebox access, and your first Workspace target together."
     />
 
     <UPageBody class="pagebody">
       <SupplierCreateSystem
-        mode="console"
-        return-to="/console/supplier"
+        mode="workspace"
+        return-to="/workspace/supplier"
         cancel-to="/suppliers"
       />
     </UPageBody>
@@ -23,8 +23,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 definePageMeta({
   layout: 'default',
   requiresAuth: true,
-  title: 'Create Supplier Console',
-  description: 'Create a Supplier identity and Console access together.',
+  title: 'Create Supplier Workspace',
+  description: 'Create a Supplier identity and Workspace access together.',
   nav: {
     key: 'suppliers-create',
     label: 'Create supplier',
@@ -38,5 +38,5 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | Create Supplier Console` })
+useHead({ title: `${appName} | Create Supplier Workspace` })
 </script>

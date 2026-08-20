@@ -1,6 +1,6 @@
 export const fireuxOffer = {
   heroDescription:
-    'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Console.',
+    'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Workspace.',
   heroBullets: [
     'Send an App request through Ignition',
     'Review Project Apps and Ecosystems',
@@ -54,8 +54,8 @@ export const sourceMeta = {
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse apps',
     secondaryCtaTo: '/apps',
-    consoleBridgeLine:
-      'The Project Console brings Ignition, Apps, the selected Ecosystem, and new users together for each FireUX Project.',
+    workspaceBridgeLine:
+      'The Project Workspace brings Ignition, Apps, the selected Ecosystem, and new users together for each FireUX Project.',
     heroBullets: fireuxOffer.heroBullets,
     rightPanelItems: [
       {
@@ -86,8 +86,8 @@ export const sourceMeta = {
       supportingCopy:
         'FireUX also publishes the Apps, Ecosystems, Modules, Solutions, and Operations that make up the wider platform.',
       primaryAction: {
-        label: 'Open Project Console',
-        to: '/console/project',
+        label: 'Open Project Workspace',
+        to: '/workspace/project',
       },
       secondaryAction: {
         label: 'Browse modules',
@@ -99,7 +99,7 @@ export const sourceMeta = {
       subtitle: '',
       ticks: [
         'How Projects connect Apps and Ecosystems',
-        'What the Project Console operates',
+        'What the Project Workspace operates',
         'How Modules add reusable capability',
         'Where public platform records are published',
       ],
@@ -142,14 +142,14 @@ export const sourceMeta = {
         description: 'A User has an identity and App-specific membership.',
       },
       {
-        title: 'Console',
+        title: 'Workspace',
         description:
-          'A Console is the authenticated workspace for a selected Project, App, or Ecosystem.',
+          'A Workspace is the authenticated workspace for a selected Project, App, or Ecosystem.',
       },
       {
         title: 'Operation',
         description:
-          'An Operation names work performed inside a Console and links to its working route.',
+          'An Operation names work performed inside a Workspace and links to its working route.',
       },
       {
         title: 'Solution',
@@ -166,16 +166,16 @@ export const sourceMeta = {
       name: 'FireUX',
       tagline: 'The parent App for FireUX Projects and Ecosystems',
       description:
-        'FireUX runs the Project Console and public catalogues used to request Apps through Ignition, review Project and Ecosystem relationships, and monitor new App users.',
+        'FireUX runs the Project Workspace and public catalogues used to request Apps through Ignition, review Project and Ecosystem relationships, and monitor new App users.',
       modules: [
         {
           name: 'FireUX Core',
           summary:
-            'Shared App shell, accounts, public directory components, and Console contracts.',
+            'Shared App shell, accounts, public directory components, and Workspace contracts.',
           entities: ['App', 'Ecosystem', 'User'],
         },
         {
-          name: 'Project Console',
+          name: 'Project Workspace',
           summary:
             'The Project workspace for Ignition, Apps, Ecosystem, and Users.',
           entities: ['Project', 'Ignition request', 'App', 'Ecosystem', 'User'],
@@ -252,22 +252,22 @@ export const sourceMeta = {
         { label: 'Apps', path: '/apps', kind: 'public' },
         { label: 'Modules', path: '/modules', kind: 'public' },
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
-        { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Project Console', path: '/console/project', kind: 'console' },
+        { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
+        { label: 'Project Workspace', path: '/workspace/project', kind: 'workspace' },
         {
           label: 'Project Ignition',
-          path: '/console/project/ignitions',
-          kind: 'console',
+          path: '/workspace/project/ignitions',
+          kind: 'workspace',
         },
         {
           label: 'Project Ecosystem',
-          path: '/console/project/ecosystem',
-          kind: 'console',
+          path: '/workspace/project/ecosystem',
+          kind: 'workspace',
         },
         {
           label: 'Project Apps',
-          path: '/console/project/apps',
-          kind: 'console',
+          path: '/workspace/project/apps',
+          kind: 'workspace',
         },
       ],
     },
@@ -304,7 +304,7 @@ Module package manifest
       'Your branding',
       'Web app and installable PWA',
       'User accounts',
-      'Operator console',
+      'Operator workspace',
       'Hosting and deployment',
       'Existing FireUX capabilities agreed before launch',
     ],
@@ -326,6 +326,6 @@ Module package manifest
   roadmap: {
     title: 'FireUX Road Map',
     summary:
-      'Build out the Project Console one proven Operation at a time, then publish the matching Solutions and public records.',
+      'Build out the Project Workspace one proven Operation at a time, then publish the matching Solutions and public records.',
   },
 } as const

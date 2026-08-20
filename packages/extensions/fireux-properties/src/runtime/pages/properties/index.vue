@@ -37,7 +37,7 @@ definePageMeta({
   layout: 'default',
   name: 'PropertiesIndexPage',
   title: 'Properties',
-  description: 'Find and join properties, or create your own Property Console.',
+  description: 'Find and join properties, or create your own Property Workspace.',
 })
 
 const pageTitle = 'Properties'

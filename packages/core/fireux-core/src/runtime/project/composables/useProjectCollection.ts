@@ -3,7 +3,7 @@ import type { AsyncData } from 'nuxt/app'
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import type { FirestoreCollectionOutcome } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreCollectionState } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
-import type { ConsoleSource } from '../../composables/fireux/console/useConsole'
+import type { WorkspaceSource } from '../../composables/fireux/workspace/useWorkspace'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useProjectInterface, type ProjectSurface } from './useProjectInterface'
 
@@ -18,7 +18,7 @@ export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
   ids?: ProjectCollectionFilterValue[] | null
 }
-export type ProjectCollectionSource = ConsoleSource
+export type ProjectCollectionSource = WorkspaceSource
 type UseProjectCollectionOptions = {
   source?: ProjectCollectionSource | Ref<ProjectCollectionSource | null> | null
   filter?:

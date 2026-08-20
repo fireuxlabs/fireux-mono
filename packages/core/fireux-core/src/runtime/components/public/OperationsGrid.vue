@@ -1,5 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: render factual route-backed capabilities. -->
-<!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: open factual root pages before console evidence. -->
+<!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: open factual root pages before workspace evidence. -->
 <template>
   <div class="grid gap-4 md:grid-cols-2">
     <MoleculesActionSurface

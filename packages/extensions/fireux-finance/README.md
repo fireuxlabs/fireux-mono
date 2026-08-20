@@ -12,7 +12,7 @@ Product-neutral Finance primitives for FireUX products:
 
 Producing domains continue to own their operations, records, authorization,
 transactions, report queries, labels, and adapters. This package does not own a
-generic Finance console and its presentation does not load data or infer
+generic Finance workspace and its presentation does not load data or infer
 financial meaning.
 
 Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and

@@ -9,7 +9,7 @@
     <KitchenCollectionManager />
 
     <template #secondary>
-      <!-- Console CTA family remains the secondary operator doorway. -->
+      <!-- Workspace CTA family remains the secondary operator doorway. -->
       <KitchenCTA />
     </template>
   </DirectorySurface>

@@ -6,6 +6,7 @@ export type KitchenOperationSuggestion = {
   description: string
   evidence: string
   toolId: `kitchen.${string}.${string}`
+  affectedCount?: number
   actionLabel?: string
   actionPath?: string
 }
@@ -21,23 +22,31 @@ export function buildMissingDrinkImageSuggestions(
   limit = 5
 ): KitchenOperationSuggestion[] {
   const boundedLimit = Math.max(0, Math.min(5, Math.floor(limit)))
+  const missing = drinks.filter(
+    (drink) => drink.item_kind === 'drink' && !clean(drink.image)
+  )
 
-  return drinks
-    .filter((drink) => drink.item_kind === 'drink' && !clean(drink.image))
-    .slice(0, boundedLimit)
-    .map((drink) => {
-      const name = clean(drink.name) || 'Untitled drink'
+  if (!missing.length || !boundedLimit) return []
 
-      return {
-        id: `drink-missing-image:${drink.id}`,
-        title: `Add an image to ${name}`,
-        description: 'This drink has no image, so its collection card cannot show it.',
-        evidence: 'Drink.image is empty',
-        toolId: 'kitchen.drinks.update-image',
-        actionLabel: 'Open drink',
-        actionPath: drink.id
-          ? `/console/kitchen/drinks/${encodeURIComponent(drink.id)}`
-          : undefined,
-      }
-    })
+  const previewNames = missing
+    .slice(0, Math.min(3, boundedLimit))
+    .map((drink) => clean(drink.name) || 'an untitled drink')
+  const remainingCount = missing.length - previewNames.length
+  const affectedLabel = [
+    previewNames.join(', '),
+    remainingCount > 0 ? `and ${remainingCount} more` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  return [
+    {
+      id: 'drinks-missing-images',
+      title: `${missing.length === 1 ? 'Add an image' : 'Add images'} to ${affectedLabel}`,
+      description: `${missing.length} ${missing.length === 1 ? 'drink has' : 'drinks have'} no image. Use Update drink for each one.`,
+      evidence: `${missing.length} Drink.image ${missing.length === 1 ? 'field is' : 'fields are'} empty`,
+      toolId: 'kitchen.drinks.update-drink',
+      affectedCount: missing.length,
+    },
+  ]
 }

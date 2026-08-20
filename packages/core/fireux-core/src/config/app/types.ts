@@ -6,13 +6,13 @@ import type { AppTheme } from '../../types/theme'
 
 export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
 
-export type FireuxConsoleFamilyConfig = {
+export type FireuxWorkspaceFamilyConfig = {
   canCreate?: boolean
-  /** Whether this App exposes the shared Demo target catalogue for this Console. */
+  /** Whether this App exposes the shared Demo target catalogue for this Workspace. */
   allowDemo?: boolean
 }
 
-export type FireuxConsoleConfig = Record<string, FireuxConsoleFamilyConfig>
+export type FireuxWorkspaceConfig = Record<string, FireuxWorkspaceFamilyConfig>
 
 export type FireuxNavOverride = {
   label?: string
@@ -49,9 +49,9 @@ export type FireuxAppConfig = {
   role: FireuxAppRole
   /** Extra package capability or custom options for default modules. Blog is the baseline App module; Products is explicit. */
   modules?: NonNullable<NuxtConfig['modules']>
-  consoles?: string[]
-  /** Optional per-console app behavior, e.g. whether this app may create or pin console targets. */
-  consoleConfig?: FireuxConsoleConfig
+  workspaces?: string[]
+  /** Optional per-workspace app behavior, e.g. whether this app may create or pin workspace targets. */
+  workspaceConfig?: FireuxWorkspaceConfig
   /** Optional public/admin root domains this app consumes. */
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */

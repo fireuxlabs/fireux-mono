@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 15:29 CEST — Customer order notification pass: render live owner notifications with read controls.
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useConsoleNotifications } from '../../../composables/fireux/console/useConsoleNotifications'
+import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
 import { useUserNotifications } from '../../../user/composables/firestore/fetch/useUserNotifications'
 import { useUserNotificationRead } from '../../../user/composables/firestore/mutations/useUserNotificationRead'
 import {
@@ -19,7 +19,7 @@ const {
   error,
 } = useUserNotifications()
 const { markRead } = useUserNotificationRead()
-const { setUnreadCount } = useConsoleNotifications()
+const { setUnreadCount } = useWorkspaceNotifications()
 const markingId = ref('')
 const mutationError = ref('')
 const myOrdersAvailable = computed(

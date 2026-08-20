@@ -10,11 +10,11 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Supply', 'Operations'],
     description:
-      'An integrated supply platform connecting local producers, customers and delivery work directly to your Supply Console. Publish supplier profiles, organise product information, coordinate coverage and manage delivery handoffs.',
+      'An integrated supply platform connecting local producers, customers and delivery work directly to your Supply Workspace. Publish supplier profiles, organise product information, coordinate coverage and manage delivery handoffs.',
     primaryAction: { label: 'Get started', to: '/get-started' },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console/supplier',
+      label: 'Go to workspace',
+      to: '/workspace/supplier',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],
@@ -45,13 +45,13 @@ export const surfaceItems = [
     ],
   },
   {
-    id: 'supply-console',
-    title: 'Supply Console',
+    id: 'supply-workspace',
+    title: 'Supply Workspace',
     description:
       'Organise catalogues, ingredients and supplied items from one operational workspace.',
     icon: 'i-lucide-layout-dashboard',
-    to: '/console/supplier',
-    action: 'Open Supply Console',
+    to: '/workspace/supplier',
+    action: 'Open Supply Workspace',
     items: ['Catalogue', 'Ingredients', 'Items', 'Supplier identity'],
   },
 ] as const satisfies readonly LandingProductSurface[]

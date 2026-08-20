@@ -135,7 +135,7 @@ export function useKitchenDevSystem() {
     (hydratedKitchens.value ?? []).map((kitchen) => {
       const id = String(kitchen.id || '').trim()
       const labelBase = kitchen.name || kitchen.short_name || id
-      const appSupportStatus = kitchenAppById.value.has(id) ? 'console' : 'root only'
+      const appSupportStatus = kitchenAppById.value.has(id) ? 'workspace' : 'root only'
       return {
         label: `${labelBase} · ${appSupportStatus}`,
         value: id,

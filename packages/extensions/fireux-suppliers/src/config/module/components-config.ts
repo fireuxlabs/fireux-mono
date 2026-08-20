@@ -11,13 +11,13 @@ export function configureComponents(resolver: Resolver) {
     global: true,
     pathPrefix: true,
     prefix: 'Supplier',
-    ignore: ['Console/**', 'dev/**'],
+    ignore: ['Workspace/**', 'dev/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/supplier/components/Console', {
+  registerComponentsDir(resolver, './runtime/supplier/components/Workspace', {
     global: true,
     pathPrefix: true,
-    prefix: 'ConsoleSupplier',
+    prefix: 'WorkspaceSupplier',
   })
 
   registerComponentsDir(resolver, './runtime/supplier/components/dev', {

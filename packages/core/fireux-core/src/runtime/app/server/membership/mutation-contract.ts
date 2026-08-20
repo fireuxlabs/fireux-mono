@@ -71,10 +71,10 @@ export function membershipRepairPatch(
   if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
     patch.onboarding_status = 'pending'
   for (const field of [
-    'console_enabled',
+    'workspace_enabled',
     'profiles',
     'notifications',
-    'console_targets',
+    'workspace_targets',
   ])
     if (field in data) patch[field] = FieldValue.delete()
   if (Object.keys(patch).length) patch.updated = stamp(actorUid)

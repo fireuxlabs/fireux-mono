@@ -34,7 +34,7 @@
             <h2 class="fx-type-card-heading">Primary surfaces</h2>
           </template>
           <div class="flex flex-wrap gap-2">
-            <UButton to="/console/portfolio" color="primary" variant="soft" icon="i-lucide-terminal">Portfolio console</UButton>
+            <UButton to="/workspace/portfolio" color="primary" variant="soft" icon="i-lucide-terminal">Portfolio workspace</UButton>
             <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-app-window">Your App</UButton>
             <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
           </div>
@@ -52,6 +52,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More · Granite',
-  description: 'Guide to Granite portfolio concepts, pricing paths, and console routes.',
+  description: 'Guide to Granite portfolio concepts, pricing paths, and workspace routes.',
 })
 </script>

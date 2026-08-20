@@ -1,11 +1,11 @@
-// Console operation catalogue: only selected-Kitchen work, never baked-in Console capabilities.
+// Workspace operation catalogue: only selected-Kitchen work, never baked-in Workspace capabilities.
 // Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: assign root public operation slugs.
 import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
-const kitchenConsole = {
+const kitchenWorkspace = {
   id: 'kitchen',
-  name: 'Kitchen console',
-  to: '/console/kitchen',
+  name: 'Kitchen workspace',
+  to: '/workspace/kitchen',
 } as const
 
 export const kitchenOperations = [
@@ -16,8 +16,8 @@ export const kitchenOperations = [
     headline: 'Restaurant Dish Management',
     description:
       'Create and manage dishes used across kitchen menus and recipes.',
-    to: '/console/kitchen/dishes',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/dishes',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-utensils',
     keywords: [
       'restaurant dish management software',
@@ -33,8 +33,8 @@ export const kitchenOperations = [
     title: 'Drinks',
     headline: 'Beverage Management',
     description: 'Create and manage drinks used across kitchen menus.',
-    to: '/console/kitchen/drinks',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/drinks',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-glass-water',
     keywords: [
       'bar inventory management software',
@@ -50,8 +50,8 @@ export const kitchenOperations = [
     title: 'Ingredients',
     headline: 'Restaurant Inventory Management',
     description: 'Create and manage the ingredients used by this kitchen.',
-    to: '/console/kitchen/ingredients',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/ingredients',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-carrot',
     keywords: [
       'restaurant inventory management software',
@@ -67,8 +67,8 @@ export const kitchenOperations = [
     title: 'Menus',
     headline: 'Restaurant Menu Management',
     description: 'Create, structure, publish, and manage kitchen menus.',
-    to: '/console/kitchen/menus',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/menus',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-book-open',
     keywords: [
       'restaurant menu management software',
@@ -84,8 +84,8 @@ export const kitchenOperations = [
     title: 'Mise',
     headline: 'Kitchen Prep Management',
     description: 'Plan and track kitchen preparation work.',
-    to: '/console/kitchen/mise',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/mise',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-list-checks',
     keywords: [
       'restaurant prep list app',
@@ -101,8 +101,8 @@ export const kitchenOperations = [
     title: 'Orders',
     headline: 'Restaurant Order Management',
     description: 'Run the live kitchen order board and service queue.',
-    to: '/console/kitchen/orders',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/orders',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-receipt-text',
     keywords: [
       'kitchen display system',
@@ -118,8 +118,8 @@ export const kitchenOperations = [
     title: 'Recipes',
     headline: 'Restaurant Recipe Management',
     description: 'Create and manage kitchen recipes.',
-    to: '/console/kitchen/recipes',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/recipes',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-notebook-tabs',
     keywords: [
       'restaurant recipe management software',
@@ -135,8 +135,8 @@ export const kitchenOperations = [
     title: 'Stations',
     headline: 'Kitchen Station Management',
     description: 'Create and manage kitchen stations.',
-    to: '/console/kitchen/stations',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/stations',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-layout-grid',
     keywords: [
       'kitchen station management',
@@ -152,8 +152,8 @@ export const kitchenOperations = [
     title: 'Suppliers',
     headline: 'Restaurant Supplier Management',
     description: 'Connect kitchen suppliers, catalogues, and supply options.',
-    to: '/console/kitchen/suppliers',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/suppliers',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-truck',
     keywords: [
       'restaurant supplier management software',
@@ -169,8 +169,8 @@ export const kitchenOperations = [
     title: 'Tables',
     headline: 'Restaurant Table Management',
     description: 'Manage the kitchen table setup used by ordering.',
-    to: '/console/kitchen/tables',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/tables',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-grid-2x2',
     keywords: [
       'restaurant table management software',
@@ -187,8 +187,8 @@ export const kitchenOperations = [
     headline: 'Restaurant Financial Reporting',
     description:
       'Review gross sales, completed sales, and average sale for a selected period.',
-    to: '/console/kitchen/finance',
-    console: kitchenConsole,
+    to: '/workspace/kitchen/finance',
+    workspace: kitchenWorkspace,
     icon: 'i-lucide-chart-line',
     keywords: [
       'restaurant financial reporting software',

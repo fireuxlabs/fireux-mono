@@ -4,9 +4,9 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
+import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsolePalette } from 'fireux-core/types/theme'
+import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { parseMenuPageStyleInput } from '../../../menu/server/payload/page-style.ts'
 import {
@@ -36,9 +36,9 @@ function request(value: unknown) {
   const style = hasStyle ? parseMenuPageStyleInput(source.style) : null
   if (style && 'error' in style) badRequest(style.error)
   const hasPalette = Object.hasOwn(source, 'palette')
-  const palette = hasPalette ? readConsolePalette(source.palette) : null
+  const palette = hasPalette ? readWorkspacePalette(source.palette) : null
   if (hasPalette && !palette) {
-    badRequest('Console palette must provide exactly four valid colours.')
+    badRequest('Workspace palette must provide exactly four valid colours.')
   }
   if (!hasStyle && !hasPalette) badRequest('Kitchen theme has no changes.')
   return {
@@ -48,7 +48,7 @@ function request(value: unknown) {
   }
 }
 
-function compactConsoleStyle(style: Partial<PageStyle>): Partial<PageStyle> {
+function compactWorkspaceStyle(style: Partial<PageStyle>): Partial<PageStyle> {
   const next = { ...style }
   delete next.background_color_light
   delete next.background_color_dark
@@ -81,46 +81,29 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
       )
 
       const compact = requested.style
-        ? compactConsoleStyle(requested.style)
+        ? compactWorkspaceStyle(requested.style)
         : null
-      const supportPatch: Record<string, unknown> = {
+      const rootPatch: Record<string, unknown> = {
         ...(requested.palette
-          ? { 'console.theme.palette': requested.palette as ConsolePalette }
+          ? { 'theme.palette': requested.palette as WorkspacePalette }
           : {}),
         ...(compact
           ? {
-              'console.menus.style': Object.keys(compact).length
+              'menus.style': Object.keys(compact).length
                 ? compact
                 : FieldValue.delete(),
             }
           : {}),
         updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
       }
-      mutations.update(current.supports, requested.kitchenId, supportPatch)
-
-      const rootPatch: Record<string, unknown> = {}
       if (Object.hasOwn(current.rootData, 'menu_style')) {
         rootPatch.menu_style = FieldValue.delete()
       }
-      if (Object.hasOwn(current.rootData, 'menus')) {
-        const rootMenus = record(current.rootData.menus)
-        if (Object.hasOwn(rootMenus, 'style')) {
-          rootPatch['menus.style'] = FieldValue.delete()
-        }
-      }
-      if (Object.keys(rootPatch).length) {
-        mutations.update<DocumentData>(
-          FIRESTORE_MUTATION_TARGETS.kitchens,
-          requested.kitchenId,
-          {
-            ...rootPatch,
-            updated: serverAuditStamp({
-              by: actor.uid,
-              appId: current.ownerAppId,
-            }),
-          }
-        )
-      }
+      mutations.update<DocumentData>(
+        FIRESTORE_MUTATION_TARGETS.kitchens,
+        requested.kitchenId,
+        rootPatch
+      )
       return {
         appId: current.ownerAppId,
         style: compact,

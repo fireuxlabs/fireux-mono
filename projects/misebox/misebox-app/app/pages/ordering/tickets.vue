@@ -12,7 +12,7 @@
         </UButton>
 
         <UButton
-          to="/console/kitchen/orders"
+          to="/workspace/kitchen/orders"
           color="neutral"
           variant="ghost"
           icon="i-lucide-chef-hat"
@@ -113,7 +113,7 @@
           </header>
 
           <div class="flex flex-1 justify-center">
-            <ConsoleKitchenOperationsOrdersTicketPresentation :order="ticket.order" />
+            <WorkspaceKitchenOperationsOrdersTicketPresentation :order="ticket.order" />
           </div>
 
           <p class="m-0 flex items-center gap-2 text-xs font-semibold text-primary">
@@ -213,7 +213,7 @@ const surfaceResolutions = [
 ] as const
 
 const { data: productDemo } = await useMiseboxProductDemo()
-const deanosTakeawayTicket = productDemo.value?.console.orders.find(
+const deanosTakeawayTicket = productDemo.value?.workspace.orders.find(
   (order: KitchenOrder) =>
     order.order_type === 'takeaway' && order.status === 'ready'
 )

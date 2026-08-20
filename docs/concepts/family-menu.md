@@ -14,7 +14,7 @@ Kitchen-scoped structured content, public route projections, or ordering.
 - Parents: `family-entity-directory.md`, `family-entity-detail.md`,
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
-- Horizontal: `entities.md`, `firestore-entity.md`, `console.md`,
+- Horizontal: `entities.md`, `firestore-entity.md`, `workspace.md`,
   `family-tenant-global.md`, `ai-document-processing.md`,
   `runtime-filesystem.md`
 - Route guard: `scripts/guards/menu-route-contract.mjs`
@@ -40,13 +40,13 @@ Kitchen, but no root identity. MenuItem is a MenuSection-owned placement Record
 and must reference a Dish from that same Kitchen. Dish owns food copy and media;
 MenuItem owns price, variants, add-ons, availability, and order.
 
-The Kitchen Console presents that one Dish entity through two named sibling
-catalogues: `/console/kitchen/dishes` contains food and
-`/console/kitchen/drinks` contains drinks. `/console/kitchen/menus` composes
+The Kitchen Workspace presents that one Dish entity through two named sibling
+catalogues: `/workspace/kitchen/dishes` contains food and
+`/workspace/kitchen/drinks` contains drinks. `/workspace/kitchen/menus` composes
 both. This is a navigation and operating split over `Dish.item_kind`, not a
 second Drink entity or a duplicated collection.
 
-AppKitchen `console.menus` also names the Kitchen's primary Menu and optional
+AppKitchen `workspace.menus` also names the Kitchen's primary Menu and optional
 Specials Menu by explicit id. Collection order is never Menu role identity.
 When enabled, the bounded public projection embeds the published Specials
 content only into the configured primary Menu; Specials remains an ordinary,
@@ -157,7 +157,7 @@ Public Menu presentation is resolved, not copied:
 
 1. Place supplies shared business defaults such as currency and hours plus its
    one `identity_color` when known. Kitchen does not override that colour.
-2. AppKitchen `console.theme.palette` owns the Kitchen's four-role Menu default:
+2. AppKitchen `workspace.theme.palette` owns the Kitchen's four-role Menu default:
    `canvas`, `text`, `accent`, and `accent_contrast`.
 3. KitchenMenu may own one optional complete four-role `theme.palette` when a
    Menu genuinely differs. Absence inherits the Kitchen palette; resetting the
@@ -187,7 +187,7 @@ map.
 - `runtime/menu/components/Index` owns Menu Directory composition.
 - `runtime/menu/components/Browse` owns context-free Menu reading.
 - `runtime/menu/components/Order` owns the canonical ordering shell.
-- `runtime/kitchen/components/Console/Operations/Menus` owns upload,
+- `runtime/kitchen/components/Workspace/Operations/Menus` owns upload,
   processing, editing, publishing, sections, items, QR management, and
   ordering config.
 - `runtime/menu/components/Json` is temporary diagnostic rendering for
@@ -214,7 +214,7 @@ Root technical paths are completed legacy placements and must not return.
 | Difference                                                                                  | State        | Required direction                                                                                                                                            |
 | ------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Older flat `doc_*` and `kitchen_*` root Menu fields                                         | `migration`  | Read during migration, emit the clean `kind`/`file`/`source` public contract, and stop writing flat compatibility fields                                      |
-| AppKitchen `console.menus.style` still contains legacy colour `PageStyle` for some Kitchens | `migration`  | Move proved colours to the four-role Console palette with protected pre-images; retain the reader only for records whose accent authority is still unresolved |
+| AppKitchen `workspace.menus.style` still contains legacy colour `PageStyle` for some Kitchens | `migration`  | Move proved colours to the four-role Workspace palette with protected pre-images; retain the reader only for records whose accent authority is still unresolved |
 | Exact quick Menu → KitchenMenu migration behavior                                           | `to-confirm` | Preserve the root public/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions                                     |
 | Global and Kitchen-directory routes expose one KitchenMenu                                  | `accepted`   | The Kitchen-directory doorway is canonical; the global route remains an additive discovery alias                                                              |
 | Alternate unshipped ordering funnels still have direct consumers                            | `migration`  | Move consumers atomically to `MenuOrder`, then delete the alternate implementation                                                                            |
@@ -236,8 +236,8 @@ Start with:
 - Ownership resolution: `runtime/menu/server/ownership/public-target.ts`.
 - Menu Directory: `runtime/menu/composables/useMenuCollection.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
-- Console operation:
-  `runtime/kitchen/composables/console/operations/Menus`.
+- Workspace operation:
+  `runtime/kitchen/composables/workspace/operations/Menus`.
 - Ordering details: `menu-ordering.md` and the Menu Order source it references.
 
 ## Alignment roadmap

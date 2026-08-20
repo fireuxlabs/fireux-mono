@@ -6,24 +6,24 @@ import {
 
 const serverHandlers = [
   {
-    route: '/api/console/properties/:propertyId/reservations',
+    route: '/api/workspace/properties/:propertyId/reservations',
     method: 'get',
-    handler: './runtime/server/api/console/properties/[propertyId]/reservations/index.get',
+    handler: './runtime/server/api/workspace/properties/[propertyId]/reservations/index.get',
   },
   {
-    route: '/api/console/properties/:propertyId/reservations',
+    route: '/api/workspace/properties/:propertyId/reservations',
     method: 'post',
-    handler: './runtime/server/api/console/properties/[propertyId]/reservations/index.post',
+    handler: './runtime/server/api/workspace/properties/[propertyId]/reservations/index.post',
   },
   {
-    route: '/api/console/properties/:propertyId/reservations/:reservationId',
+    route: '/api/workspace/properties/:propertyId/reservations/:reservationId',
     method: 'get',
-    handler: './runtime/server/api/console/properties/[propertyId]/reservations/[reservationId].get',
+    handler: './runtime/server/api/workspace/properties/[propertyId]/reservations/[reservationId].get',
   },
   {
-    route: '/api/console/properties/:propertyId/reservations/:reservationId',
+    route: '/api/workspace/properties/:propertyId/reservations/:reservationId',
     method: 'patch',
-    handler: './runtime/server/api/console/properties/[propertyId]/reservations/[reservationId].patch',
+    handler: './runtime/server/api/workspace/properties/[propertyId]/reservations/[reservationId].patch',
   },
 ] satisfies FireuxServerHandler[]
 

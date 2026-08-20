@@ -8,8 +8,8 @@ export default defineFireuxConfig({
   shortName: 'Blank',
   databaseId: 'fireux',
   role: 'standalone',
-  consoles: ['blank'],
+  workspaces: ['blank'],
   seo: {
-    noindexPaths: ['/console', '/console/**'],
+    noindexPaths: ['/workspace', '/workspace/**'],
   },
 })

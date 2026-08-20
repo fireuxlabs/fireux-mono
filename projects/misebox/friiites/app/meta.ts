@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Friiites is a simple fries place built around a repeatable kitchen method.',
     promise_html:
       'Potatoes are hand-cut, brined, and triple-fried in beef tallow.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Misebox connects each location\'s recipes, preparation, menus, service, and orders.',
   },
   seo: {

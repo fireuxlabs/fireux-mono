@@ -27,7 +27,7 @@ export interface AppUser extends FireuxStamped {
   onboarding_status: AppUserOnboardingStatus
 }
 
-/** Console targets assigned to one User. */
+/** Workspace targets assigned to one User. */
 export interface UserTargets {
   project_ids: string[]
   kitchen_ids: string[]

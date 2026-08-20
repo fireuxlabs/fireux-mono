@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty console-operation set.
+// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty workspace-operation set.
 import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const appMeta = {
@@ -10,7 +10,7 @@ export const appMeta = {
   },
   heroPrimaryHtml:
     'Slap is a <strong>culture-commerce app ecosystem</strong> for brands with edge. Launch the shop, tell the story, sell the drop.',
-  consoleBridgeHtml:
+  workspaceBridgeHtml:
     'Built for drops, stories, galleries, and storefronts that need a pulse.',
   landingPrimaryCtaLabel: 'Get started',
   landingSecondaryCtaLabel: 'Browse drops',
@@ -18,7 +18,7 @@ export const appMeta = {
   heroBullets: [
     'Hosted sites for brands where the website is part of the vibe',
     'Drops, products, stories, and gallery-led public pages',
-    'Firebase, SEO, deployment, and console workflows underneath',
+    'Firebase, SEO, deployment, and workspace workflows underneath',
     'Yellow Velo is the first tenant identity in the Slap ecosystem',
   ],
   heroPanelItems: [
@@ -112,7 +112,7 @@ export const metaContent = defineFireuxMeta({
     highlight_terms: ['Slap', 'Commerce with culture', 'Drops', 'Stories'],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.about.supportingCopy,
-    console_bridge_html: appMeta.consoleBridgeHtml,
+    workspace_bridge_html: appMeta.workspaceBridgeHtml,
     about_p1: appMeta.about.description,
     about_p2: appMeta.about.supportingCopy,
   },
@@ -138,9 +138,9 @@ export const metaContent = defineFireuxMeta({
       label: appMeta.landingSecondaryCtaLabel,
       to: appMeta.landingSecondaryCtaTo,
     },
-    console: {
-      label: 'Open console',
-      to: '/console',
+    workspace: {
+      label: 'Open workspace',
+      to: '/workspace',
     },
   },
   lists: {
@@ -184,6 +184,6 @@ export const metaContent = defineFireuxMeta({
   ],
   routes: {
     public: ['/', '/about', '/get-started', '/products', '/blog'],
-    console: ['/console'],
+    workspace: ['/workspace'],
   },
 })

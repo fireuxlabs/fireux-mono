@@ -34,7 +34,7 @@ export type KitchenReadScope = {
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 
 type CanonicalKitchenManagementTarget = {
-  mode: 'console' | 'app'
+  mode: 'workspace' | 'app'
   appId: string
 }
 
@@ -69,7 +69,7 @@ function canonicalKitchenManagementTarget(
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
-    'console',
+    'workspace',
   ].some((key) => Object.hasOwn(data, key))
   const management = readFireuxEntityManagement(data.management)
 
@@ -226,7 +226,7 @@ export function projectKitchenDetail(
   const tagline = item.brand_tagline || ''
   const imageUrl = item.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
-  const sproochli = readKitchenSproochliConfig(parts.supportData)
+  const sproochli = readKitchenSproochliConfig(parts.rootData)
 
   const presentation: KitchenDetailPresentation = {
     ...item,

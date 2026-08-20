@@ -13,7 +13,7 @@ exposing private records.
 Search visibility is a projection of released public facts. It does not own
 product claims, entity authority, publication decisions, or tenant identity.
 
-Every Console Entity has an explicit search policy. Protected Console routes
+Every Workspace Entity has an explicit search policy. Protected Workspace routes
 inherit Core's response-header `noindex, nofollow` rule and never require a
 nominal Entity SEO composable. An Entity adds `useXSeo` only when it owns a
 real public route and bounded publication policy; that composable lives in the
@@ -59,7 +59,7 @@ Every visible route belongs to one explicit class:
 | Public canonical                       | `index, follow` when the bounded outcome is publishable | Include the canonical route                  | Landing, public indexes, published detail                 |
 | Public utility                         | Deliberate per-route decision                           | Include only when it serves public discovery | Learn-more, pricing, tools                                |
 | Public duplicate or contextual doorway | Canonicalize or redirect to the accepted route          | Exclude the duplicate                        | Legacy profile id, contextual Menu doorway                |
-| Authenticated or personalized          | `noindex, nofollow` at the response-header layer        | Exclude                                      | Console, Dashboard, account, member, tenant personal home |
+| Authenticated or personalized          | `noindex, nofollow` at the response-header layer        | Exclude                                      | Workspace, Dashboard, account, member, tenant personal home |
 | Admin, developer, or authoring         | `noindex, nofollow`; disallow where useful              | Exclude                                      | Admin, dev, create, edit                                  |
 | Redirect-only                          | Preserve the reviewed permanent or temporary status     | Exclude the source                           | Retired aliases, bounded tenant redirect                  |
 
@@ -217,7 +217,7 @@ SSR HTML, stable canonical identity, explicit relationships, concise factual
 language, and source-backed evidence.
 
 Build explanations bottom-up through `product-language.md`: atom, part,
-entity, operation, Console, App or ecosystem, then landing. Public Operations,
+entity, operation, Workspace, App or ecosystem, then landing. Public Operations,
 Solutions, Modules, Blog posts, business entities, and clearly labelled Demo
 proofs may reinforce one another, but none may become an alternate capability
 source.

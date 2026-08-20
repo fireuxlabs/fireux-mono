@@ -9,7 +9,7 @@ export const sourceMeta = {
     heroPrimaryLine:
       'Granite is the <strong>operating system</strong> for landlords, agencies, and portfolio managers. Oversee properties, compliance exposure, documents, incidents, and financial signals from one structured system.',
     primaryCtaLabel: 'Get started',
-    consoleBridgeLine:
+    workspaceBridgeLine:
       'Branch-grade portfolio oversight with audit-ready records and clear accountability.',
     heroBullets: [
       'Compliance oversight across every managed property',
@@ -37,7 +37,7 @@ export const sourceMeta = {
     seo: {
       title: 'Granite — Rock solid property portfolio control',
       description:
-        'A branch console for structured oversight across client portfolios, properties, compliance, documents, and finance signals.',
+        'A branch workspace for structured oversight across client portfolios, properties, compliance, documents, and finance signals.',
     },
   },
   about: {
@@ -45,12 +45,12 @@ export const sourceMeta = {
       label: 'Granite',
       tagline: 'Operating System for Portfolio Control',
       description:
-        'We run portfolio operations from one branch console, with clear structure for properties, compliance, documents, incidents, and financial signals.',
+        'We run portfolio operations from one branch workspace, with clear structure for properties, compliance, documents, incidents, and financial signals.',
       supportingCopy:
         'We run portfolio oversight in one branch operating flow, so teams can manage properties, compliance, incidents, documents, and financial signals with clear accountability.',
       primaryAction: {
         label: 'Open portfolio hub',
-        to: '/console/portfolio',
+        to: '/workspace/portfolio',
       },
       secondaryAction: {
         label: 'Review rollout',
@@ -64,7 +64,7 @@ export const sourceMeta = {
         'How Granite modules fit together in operations',
         'The core entities and their relationships',
         'Small realistic sample objects for context',
-        'Direct links to public and console surfaces',
+        'Direct links to public and workspace surfaces',
       ],
     },
     sections: {
@@ -123,16 +123,16 @@ export const sourceMeta = {
           'Issues such as repairs, complaints, or safety events are recorded and monitored.',
       },
       {
-        title: 'Console',
+        title: 'Workspace',
         description:
-          'A portfolio console gives managers one place to oversee the entire portfolio.',
+          'A portfolio workspace gives managers one place to oversee the entire portfolio.',
       },
     ],
     appSpec: {
       name: 'Granite',
       tagline: 'Operating System for Portfolio Control',
       description:
-        'We run portfolio operations from one branch console, with clear structure for properties, compliance, documents, incidents, and financial signals.',
+        'We run portfolio operations from one branch workspace, with clear structure for properties, compliance, documents, incidents, and financial signals.',
       modules: [
         {
           name: 'fireux-properties',
@@ -239,15 +239,15 @@ export const sourceMeta = {
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
         { label: 'Portfolios', path: '/portfolios', kind: 'public' },
-        { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Portfolio Hub', path: '/console/portfolio', kind: 'console' },
-        { label: 'Properties', path: '/console/portfolio/properties', kind: 'console' },
-        { label: 'Clients', path: '/console/portfolio/clients', kind: 'console' },
-        { label: 'Compliance', path: '/console/portfolio/compliance', kind: 'console' },
-        { label: 'Incidents', path: '/console/portfolio/incidents', kind: 'console' },
-        { label: 'Documents', path: '/console/portfolio/documents', kind: 'console' },
-        { label: 'Tasks', path: '/console/portfolio/tasks', kind: 'console' },
-        { label: 'Finance', path: '/console/portfolio/finance', kind: 'console' },
+        { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
+        { label: 'Portfolio Hub', path: '/workspace/portfolio', kind: 'workspace' },
+        { label: 'Properties', path: '/workspace/portfolio/properties', kind: 'workspace' },
+        { label: 'Clients', path: '/workspace/portfolio/clients', kind: 'workspace' },
+        { label: 'Compliance', path: '/workspace/portfolio/compliance', kind: 'workspace' },
+        { label: 'Incidents', path: '/workspace/portfolio/incidents', kind: 'workspace' },
+        { label: 'Documents', path: '/workspace/portfolio/documents', kind: 'workspace' },
+        { label: 'Tasks', path: '/workspace/portfolio/tasks', kind: 'workspace' },
+        { label: 'Finance', path: '/workspace/portfolio/finance', kind: 'workspace' },
       ],
     },
     relationshipMap: `
@@ -269,18 +269,18 @@ Place
     seo: {
       title: 'About Granite',
       description:
-        'We run portfolio operations from one branch console with structured control across properties, compliance, documents, and tasks.',
+        'We run portfolio operations from one branch workspace with structured control across properties, compliance, documents, and tasks.',
     },
   },
   getStarted: {
     hero: {
       eyebrow: 'Get live fast',
-      title: 'Run portfolio oversight from one branch console',
+      title: 'Run portfolio oversight from one branch workspace',
       description:
         'Granite structures properties, compliance, documents, incidents, and financial signals so agencies and landlords can operate with clarity.',
       primaryAction: {
         label: 'Open portfolios',
-        to: '/console/portfolio',
+        to: '/workspace/portfolio',
       },
       secondaryAction: {
         label: 'Review rollout',

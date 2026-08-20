@@ -142,6 +142,6 @@ export const metaContent = defineFireuxMeta({
   routes: {
     public: publicRoutes,
     dashboard: dashboardRoutes,
-    console: [],
+    workspace: [],
   },
 })

@@ -92,7 +92,7 @@ const alpineProperty: Property = {
   slug: 'alpine-residence',
   portfolio_id: 'alpine-portfolio',
   place_id: alpineResidencePlace.id,
-  management: { mode: 'console' },
+  management: { mode: 'workspace' },
   identity: {
     name: 'Alpine Residence',
     image_url: '',
@@ -118,7 +118,7 @@ const alpineStay: Property = {
   slug: 'alpine-stay',
   portfolio_id: '',
   place_id: alpineStayPlace.id,
-  management: { mode: 'console' },
+  management: { mode: 'workspace' },
   identity: {
     name: 'Alpine Stay',
     image_url: '',
@@ -140,14 +140,14 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
       portfolio: {
         ...PortfolioModel,
         id: 'alpine-portfolio',
-        management: { mode: 'console' },
+        management: { mode: 'workspace' },
         name: 'Alpine Residential Portfolio',
         tagline: 'A focused residential asset portfolio',
         slug: 'alpine-portfolio',
         owner_label: 'Demo Asset Management',
         strategy_label: 'Long-term residential',
         region_label: 'Bernese Oberland',
-        notes: 'Deterministic read-only Portfolio Console data.',
+        notes: 'Deterministic read-only Portfolio Workspace data.',
         created: createdForApp(graniteAppId),
         updated,
       },
@@ -202,7 +202,7 @@ const validateSupport = (
 ) => {
   const keys = Object.keys(support).sort()
   if (
-    root.management.mode !== 'console' ||
+    root.management.mode !== 'workspace' ||
     root.created.app_id !== scenario.appId ||
     support.id !== root.id ||
     support.created.app_id !== scenario.appId ||

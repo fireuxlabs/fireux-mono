@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-// Menu detail hero spine: shared by menu detail and console menu-display preview.
+// Menu detail hero spine: shared by menu detail and workspace menu-display preview.
 withDefaults(
   defineProps<{
     kitchenName?: string

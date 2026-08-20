@@ -4,7 +4,7 @@ import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
 import {
   FireuxAppAccessRecordModel,
   type FireuxAppAccessRecord,
-} from '../../models/utils/console-entity.model.ts'
+} from '../../models/utils/workspace-entity.model.ts'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 
@@ -63,11 +63,11 @@ export const AppProjectStorage = {
 export const ProjectEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Project',
-  family: ['system', 'console-entity'],
+  family: ['system', 'workspace-entity'],
   identity: 'root',
   authority: 'fireux-control-plane',
   appSupport: 'access-record',
-  console: true,
+  workspace: true,
   root: ProjectStorage.path,
   appSupportPath: AppProjectStorage.path,
 })

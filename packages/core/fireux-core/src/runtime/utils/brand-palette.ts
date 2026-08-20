@@ -8,7 +8,7 @@ import {
   CONSOLE_PALETTE_KEYS,
   type AppPalette,
   type AppPaletteLayer,
-  type ConsolePalette,
+  type WorkspacePalette,
 } from '../../types/theme'
 
 export const DEFAULT_BRAND_PALETTE = {
@@ -114,7 +114,7 @@ function semanticPalette<K extends string>(
   return palette
 }
 
-export const readConsolePalette = (value: unknown): ConsolePalette | null =>
+export const readWorkspacePalette = (value: unknown): WorkspacePalette | null =>
   semanticPalette(value, CONSOLE_PALETTE_KEYS)
 
 export const readAppPalette = (value: unknown): AppPalette | null =>
@@ -137,21 +137,21 @@ export function readAppPaletteLayer(value: unknown): AppPaletteLayer | null {
   return palette
 }
 
-export const consolePaletteFromApp = (palette: AppPalette): ConsolePalette => ({
+export const workspacePaletteFromApp = (palette: AppPalette): WorkspacePalette => ({
   canvas: palette.canvas,
   text: palette.text,
   accent: palette.accent,
   accent_contrast: palette.accent_contrast,
 })
 
-/** Keep only App roles that extend or materially override Console. */
+/** Keep only App roles that extend or materially override Workspace. */
 export function compactAppPalette(
   palette: AppPalette,
-  consolePalette: ConsolePalette
+  workspacePalette: WorkspacePalette
 ): AppPaletteLayer {
   return Object.fromEntries(
     APP_PALETTE_KEYS.flatMap(key =>
-      palette[key] !== consolePalette[key as keyof ConsolePalette]
+      palette[key] !== workspacePalette[key as keyof WorkspacePalette]
         ? [[key, palette[key]]]
         : []
     )
@@ -160,9 +160,9 @@ export function compactAppPalette(
 
 /** Resolve the complete presentation palette from its stored layers. */
 export const resolveAppPalette = (
-  consolePalette: ConsolePalette,
+  workspacePalette: WorkspacePalette,
   appPalette: AppPaletteLayer
-): AppPalette | null => readAppPalette({ ...consolePalette, ...appPalette })
+): AppPalette | null => readAppPalette({ ...workspacePalette, ...appPalette })
 
 export const appPaletteLayersEqual = (
   left: AppPaletteLayer,

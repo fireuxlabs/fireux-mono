@@ -32,7 +32,7 @@
             <code>suppliers/&lt;id&gt;</code>.
           </li>
           <li>
-            Console mode uses the authenticated Supplier onboarding transaction
+            Workspace mode uses the authenticated Supplier onboarding transaction
             to create or attach the root and its same-id App support record.
           </li>
           <li>
@@ -63,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Supplier console creation as App support.
-// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: describe the trusted Console transaction.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Supplier workspace creation as App support.
+// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: describe the trusted Workspace transaction.
 import { computed } from 'vue'
 import type {
   FireuxEntityCreateMode,
@@ -87,23 +87,23 @@ defineEmits<{
 
 const { notesVisible } = useDevUi()
 
-const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'workspace')
 const create = computed(() => props.create)
 const returnTo = computed(() => String(props.returnTo || '').trim())
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
-const isConsoleMode = computed(() => resolvedMode.value === 'console')
+const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() => 'Create Supplier')
 const headerTitle = computed(() =>
-  isConsoleMode.value ? 'Create your supplier console' : 'Create your public supplier'
+  isWorkspaceMode.value ? 'Create your supplier workspace' : 'Create your public supplier'
 )
 const headerDescription = computed(() =>
-  isConsoleMode.value
-    ? 'We’ll create the supplier console for this app and create the public supplier only if it is missing.'
-    : 'We’ll create only the public Supplier root. Console onboarding owns App support and access.'
+  isWorkspaceMode.value
+    ? 'We’ll create the supplier workspace for this app and create the public supplier only if it is missing.'
+    : 'We’ll create only the public Supplier root. Workspace onboarding owns App support and access.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value
-  return resolvedMode.value === 'public' ? '/suppliers' : '/console/supplier'
+  return resolvedMode.value === 'public' ? '/suppliers' : '/workspace/supplier'
 })
 </script>

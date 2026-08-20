@@ -18,7 +18,7 @@ export type { ChefCard, Chef }
  * FireUX stack family: Identity/profile capability.
  * Entity: Chef.
  *
- * Chef is a kitchen-domain profile capability, not a console workspace.
+ * Chef is a kitchen-domain profile capability, not a workspace workspace.
  * Kitchen links are relationship data; Kitchen authority belongs to Kitchen
  * operator/membership seams.
  *

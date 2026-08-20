@@ -36,13 +36,13 @@
     />
 
     <div class="showcase-service__board">
-      <ConsoleKitchenOperationsOrdersRail
+      <WorkspaceKitchenOperationsOrdersRail
         accent="warning"
         :count="incomingOrders.length"
         empty-label="Nothing is waiting for acceptance."
         label="Incoming"
       >
-        <ConsoleKitchenOperationsOrdersTicketPresentation
+        <WorkspaceKitchenOperationsOrdersTicketPresentation
           v-for="order in incomingOrders"
           :key="order.id"
           :order="order"
@@ -50,15 +50,15 @@
           status-action-aria-label="Accept order into the Kitchen queue"
           @touch-status="acceptOrder"
         />
-      </ConsoleKitchenOperationsOrdersRail>
+      </WorkspaceKitchenOperationsOrdersRail>
 
-      <ConsoleKitchenOperationsOrdersRail
+      <WorkspaceKitchenOperationsOrdersRail
         accent="primary"
         :count="queueOrders.length"
         empty-label="The preparation queue is clear."
         label="Queue"
       >
-        <ConsoleKitchenOperationsOrdersTicketPresentation
+        <WorkspaceKitchenOperationsOrdersTicketPresentation
           v-for="order in queueOrders"
           :key="order.id"
           :order="order"
@@ -66,15 +66,15 @@
           status-action-aria-label="Mark order ready for handoff"
           @touch-status="markReady"
         />
-      </ConsoleKitchenOperationsOrdersRail>
+      </WorkspaceKitchenOperationsOrdersRail>
 
-      <ConsoleKitchenOperationsOrdersRail
+      <WorkspaceKitchenOperationsOrdersRail
         accent="success"
         :count="passOrders.length"
         empty-label="No orders are waiting at the pass."
         label="Pass"
       >
-        <ConsoleKitchenOperationsOrdersTicketPresentation
+        <WorkspaceKitchenOperationsOrdersTicketPresentation
           v-for="order in passOrders"
           :key="order.id"
           :order="order"
@@ -83,7 +83,7 @@
           status-action-aria-label="Complete the order handoff"
           @touch-status="completeOrder"
         />
-      </ConsoleKitchenOperationsOrdersRail>
+      </WorkspaceKitchenOperationsOrdersRail>
     </div>
   </section>
 </template>

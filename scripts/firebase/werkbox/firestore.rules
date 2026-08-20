@@ -339,18 +339,18 @@ service cloud.firestore {
     function isValidFireuxRepo(value) {
       return value is map &&
         value.keys().hasAll([
-          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+          'key', 'workspace', 'launch_order', 'workspace_families', 'database_id'
         ]) &&
         value.keys().hasOnly([
-          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+          'key', 'workspace', 'launch_order', 'workspace_families', 'database_id'
         ]) &&
         validRequiredText(value, 'key', 1, 120) &&
         validRequiredText(value, 'workspace', 1, 500) &&
         value.launch_order is int &&
         value.launch_order >= 0 && value.launch_order <= 100000 &&
-        value.console_families is list &&
-        value.console_families.size() <= 20 &&
-        value.console_families.hasOnly([
+        value.workspace_families is list &&
+        value.workspace_families.size() <= 20 &&
+        value.workspace_families.hasOnly([
           'blank', 'kitchen', 'portfolio', 'project', 'property', 'supplier'
         ]) &&
         validRequiredText(value, 'database_id', 1, 120);

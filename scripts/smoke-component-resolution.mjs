@@ -29,10 +29,10 @@ const OUTPUT_FAILURE_MARKERS = [
 
 const HTML_FAILURE_MARKERS = [
   '<organisms-',
-  '<console-kitchen',
-  '<console-supplier',
-  '<console-portfolio',
-  '<console-properties',
+  '<workspace-kitchen',
+  '<workspace-supplier',
+  '<workspace-portfolio',
+  '<workspace-properties',
 ]
 
 function usage() {

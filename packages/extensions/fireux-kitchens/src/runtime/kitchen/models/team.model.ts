@@ -73,12 +73,12 @@ export const KitchenTeamMemberRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Kitchen',
   scoped: KitchenTeamMemberStorage.path,
   notes: [
     'Kitchen owns operational team state.',
-    'A member may reference a User or ChefProfile but never grants Console authority.',
+    'A member may reference a User or ChefProfile but never grants Workspace authority.',
   ],
 })
 
@@ -89,7 +89,7 @@ export const KitchenTeamJoinRequestRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Kitchen',
   scoped: KitchenTeamJoinRequestStorage.path,
   notes: [

@@ -36,9 +36,9 @@ export const resolveCollectionBaseRoute = (
   if (!collectionSegment) return ''
 
   const path = normalizeBaseRoute(currentPath)
-  const consoleMatch = path.match(/^\/console\/([^/]+)/)
-  if (consoleMatch?.[1]) {
-    return `/console/${consoleMatch[1]}/${collectionSegment}`
+  const workspaceMatch = path.match(/^\/workspace\/([^/]+)/)
+  if (workspaceMatch?.[1]) {
+    return `/workspace/${workspaceMatch[1]}/${collectionSegment}`
   }
 
   return `/${collectionSegment}`

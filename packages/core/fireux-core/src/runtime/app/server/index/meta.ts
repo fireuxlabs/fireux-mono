@@ -106,7 +106,7 @@ export async function readAppMeta(event: H3Event) {
       hero_headline: asString(meta.copy?.headline),
       hero_html: asString(meta.copy?.positioning_html),
       summary,
-      console_bridge_html: asString(meta.copy?.console_bridge_html),
+      workspace_bridge_html: asString(meta.copy?.workspace_bridge_html),
       highlight_terms: asStringArray(meta.copy?.highlight_terms),
     },
     seo: {

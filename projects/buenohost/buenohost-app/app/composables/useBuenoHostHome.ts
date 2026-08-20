@@ -2,7 +2,7 @@ import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import {
-  consoleFeatures,
+  workspaceFeatures,
   extraInfoBullets,
   guestAppPreview,
   integrationCards,
@@ -136,7 +136,7 @@ export function useBuenoHostHome() {
   })
 
   return {
-    consoleFeatures,
+    workspaceFeatures,
     extraInfoBullets,
     guestAppPreview,
     isExternalUrl,

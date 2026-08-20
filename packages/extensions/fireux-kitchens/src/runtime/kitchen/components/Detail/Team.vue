@@ -53,7 +53,7 @@
           />
         </div>
         <p v-else class="text-sm text-dimmed">
-          No console operators listed.
+          No workspace operators listed.
         </p>
       </div>
 

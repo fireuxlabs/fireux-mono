@@ -55,7 +55,7 @@ export const kitchenTeamMemberCreateExecutor = {
       createdObject: {
         name: created.name,
         kind: 'Team member',
-        to: `/console/kitchen/team#${created.slug}`,
+        to: `/workspace/kitchen/team/${created.slug}`,
       },
     }
   },

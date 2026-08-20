@@ -166,7 +166,7 @@
 
             <p class="text-xs leading-5 text-muted">
               Address, contact details, cover imagery and gallery remain owned
-              by the linked Place. Menus remain managed in the Kitchen Console.
+              by the linked Place. Menus remain managed in the Kitchen Workspace.
             </p>
           </form>
         </div>
@@ -177,7 +177,7 @@
           class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-between"
         >
           <UButton
-            to="/console/kitchen/identity"
+            to="/workspace/kitchen/identity"
             label="Open full identity"
             icon="i-lucide-panel-right-open"
             color="neutral"

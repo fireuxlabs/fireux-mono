@@ -1,4 +1,4 @@
-import { readConsoleTargetAuthority } from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+import { readWorkspaceTargetAuthority } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import {
   resolveSupplierId,
   supplierRootBelongsToApp,
@@ -27,7 +27,7 @@ export function findMalformedAppSupportError(
   appSupportRecords: AppSupplierRecord[]
 ) {
   const ids = appSupportRecords
-    .filter((appSupport) => !readConsoleTargetAuthority(appSupport))
+    .filter((appSupport) => !readWorkspaceTargetAuthority(appSupport))
     .map(resolveSupplierId)
     .filter(Boolean)
 

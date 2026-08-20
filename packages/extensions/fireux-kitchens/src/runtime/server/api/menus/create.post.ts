@@ -51,7 +51,7 @@ const reservedSlugs = [
   'admin',
   'api',
   'assets',
-  'console',
+  'workspace',
   'help',
   'menus',
   'pricing',

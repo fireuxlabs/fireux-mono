@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: render the current app-private Customer record. -->
 <template>
-  <section class="console-profile__section">
-    <div class="console-profile__pills">
+  <section class="workspace-profile__section">
+    <div class="workspace-profile__pills">
       <CustomerCardsPill
         v-if="customerCard"
         v-bind="customerCard"

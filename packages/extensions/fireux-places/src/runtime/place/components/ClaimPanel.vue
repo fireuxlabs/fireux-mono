@@ -122,7 +122,7 @@ const actions = computed<PublicActionButton[]>(() => [
           : 'neutral' as const,
       }]
     : []),
-  ...claimState.consoleActions.value.map((action) => ({
+  ...claimState.workspaceActions.value.map((action) => ({
     label: action.label,
     to: action.to,
     icon: action.icon || 'i-lucide-plus',

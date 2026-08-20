@@ -77,10 +77,10 @@
       <div v-else-if="membership">
         <div class="flex flex-wrap gap-2">
           <UButton
-            v-if="canOpenConsole"
-            :to="consolePath"
-            :label="`Open ${consoleLabel}`"
-            :icon="consoleIcon"
+            v-if="canOpenWorkspace"
+            :to="workspacePath"
+            :label="`Open ${workspaceLabel}`"
+            :icon="workspaceIcon"
           />
           <UButton
             v-if="canManageApp"
@@ -175,10 +175,10 @@ const props = defineProps<{
   membership: CurrentAppMembershipDto | null
   membershipOutcome: DashboardOverviewOutcome
   profileEntries: DashboardOverviewProfileEntry[]
-  canOpenConsole: boolean
-  consolePath: string
-  consoleLabel: string
-  consoleIcon: string
+  canOpenWorkspace: boolean
+  workspacePath: string
+  workspaceLabel: string
+  workspaceIcon: string
   canManageApp: boolean
   canSelfJoin: boolean
 }>()

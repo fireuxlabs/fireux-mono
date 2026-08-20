@@ -11,11 +11,11 @@ const contracts = [
     'updateBlogPost',
   ],
   [
-    'packages/extensions/fireux-compliance/src/runtime/portfolio/composables/console/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
+    'packages/extensions/fireux-compliance/src/runtime/portfolio/composables/workspace/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
     'updateComplianceRecord',
   ],
   [
-    'packages/extensions/fireux-documents/src/runtime/portfolio/composables/console/operations/Documents/mutations/useDocumentUpdate.ts',
+    'packages/extensions/fireux-documents/src/runtime/portfolio/composables/workspace/operations/Documents/mutations/useDocumentUpdate.ts',
     'updateDocumentRecord',
   ],
   [
@@ -23,15 +23,15 @@ const contracts = [
     'updateJob',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Mise/mutations/useKitchenMiseUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Mise/mutations/useKitchenMiseUpdate.ts',
     'updateKitchenMise',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Stations/mutations/useKitchenStationUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Stations/mutations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/team/mutations/useKitchenTeamMemberUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/mutations/useKitchenTeamMemberUpdate.ts',
     'updateKitchenTeamMember',
   ],
   [
@@ -47,11 +47,11 @@ const contracts = [
     'updateProduct',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Clients/mutations/useClientUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Clients/mutations/useClientUpdate.ts',
     'updateClient',
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/console/operations/Units/mutations/useUnitUpdate.ts',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Units/mutations/useUnitUpdate.ts',
     'updateUnit',
   ],
   [
@@ -63,11 +63,11 @@ const contracts = [
     'updatePropertyRoot',
   ],
   [
-    'packages/extensions/fireux-reservations/src/runtime/property/composables/console/operations/Reservations/useReservationUpdate.ts',
+    'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/useReservationUpdate.ts',
     'updateReservation',
   ],
   [
-    'packages/extensions/fireux-tasks/src/runtime/portfolio/composables/console/operations/Tasks/mutations/useTaskUpdate.ts',
+    'packages/extensions/fireux-tasks/src/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate.ts',
     'updateTask',
   ],
   [

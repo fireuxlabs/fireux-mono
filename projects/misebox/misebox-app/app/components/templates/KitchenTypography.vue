@@ -11,10 +11,10 @@
         <FontValue label="Misebox default" value="system-ui, sans-serif" />
       </article>
 
-      <article v-if="kitchen.consoleProps">
-        <strong>Console</strong>
-        <FontValue label="Display" :value="consoleDisplay" />
-        <FontValue label="Body" :value="consoleBody" />
+      <article v-if="kitchen.workspaceProps">
+        <strong>Workspace</strong>
+        <FontValue label="Display" :value="workspaceDisplay" />
+        <FontValue label="Body" :value="workspaceBody" />
       </article>
 
       <article v-if="kitchen.appProps">
@@ -32,8 +32,8 @@ import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template
 import FontValue from './FontValue.vue'
 
 const props = defineProps<{ kitchen: TemplateOneKitchenSpecimen }>()
-const consoleDisplay = computed(() => props.kitchen.consoleProps?.pageStyle.title_font_family || '')
-const consoleBody = computed(() => props.kitchen.consoleProps?.pageStyle.font_family || '')
+const workspaceDisplay = computed(() => props.kitchen.workspaceProps?.pageStyle.title_font_family || '')
+const workspaceBody = computed(() => props.kitchen.workspaceProps?.pageStyle.font_family || '')
 </script>
 
 <style scoped>

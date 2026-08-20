@@ -13,8 +13,8 @@ export type DocumentLinkTargetType =
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Portfolio-scoped
- * Storage: console-owned operational record
- * Owner console: Portfolio
+ * Storage: workspace-owned operational record
+ * Owner workspace: Portfolio
  * Scope: links a portfolio-owned document to another portfolio-owned target
  *
  * Decision note:

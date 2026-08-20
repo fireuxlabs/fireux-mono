@@ -6,7 +6,7 @@
           Get started in minutes.
         </h2>
         <p class="text-muted">
-          Create or select a portfolio, then run the console. Granite keeps the branch view
+          Create or select a portfolio, then run the workspace. Granite keeps the branch view
           clear and auditable - no hidden state, no magic defaults.
         </p>
       </div>
@@ -40,7 +40,7 @@
           <div class="space-y-3">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-terminal" />
-              <p class="font-medium">3) Run the console</p>
+              <p class="font-medium">3) Run the workspace</p>
             </div>
             <p class="text-sm text-muted">
               Keep incidents, tasks, and finance signals under control.
@@ -50,10 +50,10 @@
       </div>
 
       <div class="flex flex-wrap gap-3">
-        <UButton to="/console/portfolio" color="primary" icon="i-lucide-building">
+        <UButton to="/workspace/portfolio" color="primary" icon="i-lucide-building">
           Select portfolio
         </UButton>
-        <UButton to="/console/portfolio" variant="outline" icon="i-lucide-terminal">
+        <UButton to="/workspace/portfolio" variant="outline" icon="i-lucide-terminal">
           Enter via selector
         </UButton>
       </div>

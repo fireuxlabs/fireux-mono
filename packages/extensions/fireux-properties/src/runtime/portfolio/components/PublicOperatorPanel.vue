@@ -72,7 +72,7 @@ const portfolioName = computed(() =>
 const panelDescription = computed(() =>
   portfolioName.value
     ? `Portfolio operators manage documents, tasks, compliance, and private portfolio work for ${portfolioName.value}.`
-    : 'Portfolio operators manage documents, tasks, compliance, and private portfolio work from the portfolio console.'
+    : 'Portfolio operators manage documents, tasks, compliance, and private portfolio work from the portfolio workspace.'
 )
 const groups = computed<PublicActionGroup[]>(() =>
   visiblePublicActionGroups([

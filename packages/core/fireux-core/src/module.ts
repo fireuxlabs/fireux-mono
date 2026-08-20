@@ -156,10 +156,10 @@ export default defineNuxtModule({
       ),
     })
     addServerHandler({
-      route: '/api/console/:family/targets',
+      route: '/api/workspace/:family/targets',
       method: 'get',
       handler: resolver.resolve(
-        './runtime/server/api/console/[family]/targets.get'
+        './runtime/server/api/workspace/[family]/targets.get'
       ),
     })
 

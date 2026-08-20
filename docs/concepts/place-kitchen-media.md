@@ -17,9 +17,9 @@ Kitchen fields.
 Kitchen cards resolve the Kitchen card override, then Place cover, then Place
 image. They never copy Place media into Kitchen.
 
-Console Kitchen targets are identity controls rather than public cards. They
+Workspace Kitchen targets are identity controls rather than public cards. They
 use only the Kitchen-owned logo, with a neutral Kitchen fallback when no logo
-exists; Place photography is never substituted as Console identity. Demo
+exists; Place photography is never substituted as Workspace identity. Demo
 fixtures enforce the same ownership split.
 
 The bounded Kitchen directory projection declares the selected asset as
@@ -102,7 +102,7 @@ consumer types.
 ## Verification
 
 Start with the canonical Place/Kitchen models, `place-spine.ts`,
-`kitchen-spine.ts`, trusted media mutation boundaries, public/Console
+`kitchen-spine.ts`, trusted media mutation boundaries, public/Workspace
 projectors, and `scripts/guards/entity-authority.mjs`. Verify the focused
 package typechecks/builds and visually inspect logo, both wordmarks, card
 override, inherited Place fallback, and photographic Place media.

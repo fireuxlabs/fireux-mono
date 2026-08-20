@@ -36,9 +36,9 @@ import { run as runCanon } from './guards/canon.mjs'
 import { run as runSlugCanon } from './guards/slug-canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCssSystem } from './guards/css-system.mjs'
-import { run as runConsolePages } from './guards/console-pages.mjs'
-import { run as runConsoleIndexes } from './guards/console-indexes.mjs'
-import { run as runConsoleEntityServer } from './guards/console-entity-server.mjs'
+import { run as runWorkspacePages } from './guards/workspace-pages.mjs'
+import { run as runWorkspaceIndexes } from './guards/workspace-indexes.mjs'
+import { run as runWorkspaceEntityServer } from './guards/workspace-entity-server.mjs'
 import { run as runServerOwnership } from './guards/server-ownership.mjs'
 import { run as runLikeMenuFamily } from './guards/like-menu-family.mjs'
 import { run as runCore } from './guards/core.mjs'
@@ -98,9 +98,9 @@ const guards = [
   { key: 'slug-canon', run: runSlugCanon },
   { key: 'components', run: runComponents },
   { key: 'css-system', run: runCssSystem },
-  { key: 'console-pages', run: runConsolePages },
-  { key: 'console-indexes', run: runConsoleIndexes },
-  { key: 'console-entity-server', run: runConsoleEntityServer },
+  { key: 'workspace-pages', run: runWorkspacePages },
+  { key: 'workspace-indexes', run: runWorkspaceIndexes },
+  { key: 'workspace-entity-server', run: runWorkspaceEntityServer },
   { key: 'server-ownership', run: runServerOwnership },
   { key: 'like-menu-family', run: runLikeMenuFamily },
   { key: 'core', run: runCore },

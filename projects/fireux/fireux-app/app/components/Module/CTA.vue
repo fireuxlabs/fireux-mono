@@ -2,7 +2,7 @@
   <EntityIndexCta
     title="Modules"
     description="Browse reusable FireUX features you can add to apps and ecosystems."
-    family="console"
+    family="workspace"
     :actions="actions"
   />
 </template>
@@ -11,8 +11,8 @@
 const actions = [
   {
     label: 'Project',
-    cta: 'Open Project Console',
-    to: '/console/project',
+    cta: 'Open Project Workspace',
+    to: '/workspace/project',
     icon: 'i-lucide-layout-dashboard',
   },
   {

@@ -26,6 +26,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Misebox',
   description:
-    'Misebox pricing for the Kitchen Console, managed service, and your own App.',
+    'Misebox pricing for the Kitchen Workspace, managed service, and your own App.',
 })
 </script>

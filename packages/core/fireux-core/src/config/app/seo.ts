@@ -60,8 +60,8 @@ type ConfigureFireuxSeoOptions = {
  * Usage in an extension module setup():
  *   nuxt.hook('fireux:seo:extend', (ctx) => {
  *     ctx.addHub('/jobs')
- *     ctx.addDisallow('/console/jobs')
- *     ctx.addNoindex('/console/jobs/**')
+ *     ctx.addDisallow('/workspace/jobs')
+ *     ctx.addNoindex('/workspace/jobs/**')
  *   })
  */
 export type FireuxSeoExtendContext = {
@@ -101,10 +101,10 @@ export type FireuxSeoSitemapsExtendContext = {
   addDocument: (path: string) => void
 }
 
-const DEFAULT_DISALLOW = ['/console', '/admin']
+const DEFAULT_DISALLOW = ['/workspace', '/admin']
 const DEFAULT_NOINDEX = [
-  '/console',
-  '/console/**',
+  '/workspace',
+  '/workspace/**',
   '/admin',
   '/admin/**',
   '/dashboard',

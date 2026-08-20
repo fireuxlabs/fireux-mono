@@ -6,13 +6,13 @@ Role: map, not canon
 
 ## Purpose
 
-Map how FireUX project apps declare identity, modules, domains, consoles, and app mode.
+Map how FireUX project apps declare identity, modules, domains, workspaces, and app mode.
 
 ## Vertical links
 
 - Parent: fireux.md
 - Child: family-tenant-global.md
-- Child: console.md
+- Child: workspace.md
 
 ## Horizontal links
 
@@ -69,7 +69,7 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
   repeat deployment identity in `defineFireuxConfig`.
-- The authored `FireuxAppConfig` owns identity, role, capability, Console, and
+- The authored `FireuxAppConfig` owns identity, role, capability, Workspace, and
   navigation declarations. Authentication stays Core-owned; entry routes carry
   mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
   thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
@@ -77,7 +77,7 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
   consumer names once. Browser and trusted-server consumers use the same
-  event-aware reader; Console consumers do not parse `runtimeConfig` again.
+  event-aware reader; Workspace consumers do not parse `runtimeConfig` again.
 - Keep `nuxt.config.ts` as a declarative composition root. Content, pricing,
   onboarding, stored relationships, and executable behavior belong in their
   domain composable, stored authority, or owning package—not a top-level helper
@@ -86,8 +86,8 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
   dependencies; filesystem and Markdown loading belong to Core's config-only
   metadata loader.
-- Core `resolveConsoleCanCreate` owns the shared explicit-override then
-  non-tenant fallback. Console UI and trusted entity onboarding use that same
+- Core `resolveWorkspaceCanCreate` owns the shared explicit-override then
+  non-tenant fallback. Workspace UI and trusted entity onboarding use that same
   policy instead of repeating it inside each domain.
 - `useFireUXConfig` reads and freezes the current runtime config. It has no
   process-global cache or unused Nuxt injection provider, so HMR and multi-App
@@ -107,8 +107,8 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `shortName`
 - `role`
 - `modules`
-- `consoles`
-- `consoleConfig`
+- `workspaces`
+- `workspaceConfig`
 - `domains`
 - `profiles`
 - `selfJoinEnabled`: bootstrap and UX intent for self-joining. A new canonical
@@ -127,15 +127,15 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 
 ## Mode differences
 
-- Global apps can expose multiple domains and consoles.
-- Apps declare Console capabilities. Each entity family's persisted same-id
+- Global apps can expose multiple domains and workspaces.
+- Apps declare Workspace capabilities. Each entity family's persisted same-id
   App-support records own target relationships and operator/team access;
   AppUser owns only App membership, capability, and lifecycle.
 - Standalone is a FireUX-owned mode.
 
 ## Working rule
 
-Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useConsole`.
+Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useWorkspace`.
 
 App-wide design packs are selected at build/config time through
 `defineFireuxConfig`; components do not branch on them at runtime. The plural
@@ -184,7 +184,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | Direct Project Apps may omit `ecosystemId`                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                  |
 | Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer   |
 | Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it          |
-| A tenant App pins Console target IDs in Nuxt config                 | `drift`    | Persist bounded targets and operator/team access in that entity family's same-id App-support records               |
+| A tenant App pins Workspace target IDs in Nuxt config                 | `drift`    | Persist bounded targets and operator/team access in that entity family's same-id App-support records               |
 | Apps present inherited public navigation differently                | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority            |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                  |
 | A main App explicitly selects the Core Sci-Fire design pack         | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS |

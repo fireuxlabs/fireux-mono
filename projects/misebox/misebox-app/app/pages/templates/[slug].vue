@@ -41,7 +41,7 @@ const kitchenId = String(route.query.kitchen || '')
 const kitchen: TemplateOneKitchenSpecimen = isLandingTemplateBrandId(kitchenId)
   ? findLandingTemplateBrand(kitchenId)!
   : findLandingTemplateBrand('seehotel-bonigen')!
-const rank = { root: 0, console: 1, app: 2 } as const
+const rank = { root: 0, workspace: 1, app: 2 } as const
 if (rank[kitchen.tier] < rank[presentation.minimumTier])
   throw createError({ statusCode: 404, statusMessage: 'Presentation unavailable for this Kitchen' })
 

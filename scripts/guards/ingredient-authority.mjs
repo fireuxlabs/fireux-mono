@@ -117,28 +117,28 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     `${kitchenBase}demo/operations/Ingredients/index.ts`
   )
   const kitchenDemoTypes = read(repoRoot, `${kitchenBase}demo/core/types.ts`)
-  const kitchenConsoleIngredients = read(
+  const kitchenWorkspaceIngredients = read(
     repoRoot,
-    `${kitchenBase}composables/console/operations/Ingredients/useKitchenConsoleIngredients.ts`
+    `${kitchenBase}composables/workspace/operations/Ingredients/useKitchenWorkspaceIngredients.ts`
   )
-  const kitchenConsoleIngredientRead = read(
+  const kitchenWorkspaceIngredientRead = read(
     repoRoot,
-    `${kitchenBase}components/Console/Operations/Ingredients/Read.vue`
+    `${kitchenBase}components/Workspace/Operations/Ingredients/Read.vue`
   )
   const kitchenIngredientRoots = read(
     repoRoot,
-    `${kitchenBase}composables/console/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
+    `${kitchenBase}composables/workspace/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
   )
-  const supplierConsoleIngredients = read(
+  const supplierWorkspaceIngredients = read(
     repoRoot,
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/console/operations/Ingredients/useSupplierConsoleIngredients.ts'
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/operations/Ingredients/useSupplierWorkspaceIngredients.ts'
   )
   const productDemoBase =
     'projects/misebox/misebox-app/app/composables/product-demo/'
   const productDemo = [
     'useMiseboxProductDemo.ts',
     'loadMiseboxProductDemo.ts',
-    'projectMiseboxProductDemoConsoleFoundations.ts',
+    'projectMiseboxProductDemoWorkspaceFoundations.ts',
   ]
     .map((fileName) => read(repoRoot, `${productDemoBase}${fileName}`))
     .join('\n')
@@ -161,12 +161,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(foodGroupModel, /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/)
   assert.match(foodGroupModel, /\bexport const resolveIngredientFoodGroup\b/)
   assert.match(
-    kitchenConsoleIngredientRead,
+    kitchenWorkspaceIngredientRead,
     /\bINGREDIENT_FOOD_GROUP_OPTIONS\b/
   )
-  assert.match(kitchenConsoleIngredientRead, /\bresolveIngredientFoodGroup\b/)
+  assert.match(kitchenWorkspaceIngredientRead, /\bresolveIngredientFoodGroup\b/)
   assert.doesNotMatch(
-    kitchenConsoleIngredientRead,
+    kitchenWorkspaceIngredientRead,
     /\bconst (?:INGREDIENT_FOOD_GROUP_OPTIONS|resolveFoodGroup)\b/,
     'Kitchen Ingredient presentation must consume the shared food-group resolver.'
   )
@@ -244,22 +244,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\bingredient_id:\s*definition\.ingredientId/
   )
   assert.match(
-    `${kitchenIngredientRoots}\n${kitchenConsoleIngredients}`,
+    `${kitchenIngredientRoots}\n${kitchenWorkspaceIngredients}`,
     /\/api\/ingredients\?ids=\$\{encodeURIComponent\(/
   )
   assert.match(
-    kitchenConsoleIngredients,
+    kitchenWorkspaceIngredients,
     /firestoreField:\s*['"]\/ingredients\/\{ingredientId\}\.image_url['"]/
   )
   assert.match(
-    kitchenConsoleIngredients,
+    kitchenWorkspaceIngredients,
     /canonicalStorageObject:\s*['"]ingredients\/\{ingredientId\}\/image_url['"]/
   )
-  assert.match(kitchenConsoleIngredients, /kitchenRecordOwnsImage:\s*false/)
-  assert.match(supplierConsoleIngredients, /\buseSupplierIngredientRoots\b/)
+  assert.match(kitchenWorkspaceIngredients, /kitchenRecordOwnsImage:\s*false/)
+  assert.match(supplierWorkspaceIngredients, /\buseSupplierIngredientRoots\b/)
   assert.match(productDemo, /\bloadIngredientRoots\b/)
-  assert.match(productDemo, /\bingredientRoots:\s*consoleIngredientRoots\b/)
-  assert.match(productDemo, /\bconst consoleIngredientRootById = new Map\b/)
+  assert.match(productDemo, /\bingredientRoots:\s*workspaceIngredientRoots\b/)
+  assert.match(productDemo, /\bconst workspaceIngredientRootById = new Map\b/)
   assert.match(
     productDemo,
     /imageUrl = String\(ingredient\.image_url \|\| ''\)\.trim\(\)/
@@ -271,7 +271,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(productDemo, /foodGroup:\s*resolveIngredientFoodGroup\(\{/)
   assert.match(productDemo, /category:\s*ingredient\.category/)
   assert.match(productDemo, /kind:\s*ingredient\.kind/)
-  assert.match(productDemo, /\bingredients:\s*consoleIngredients\b/)
+  assert.match(productDemo, /\bingredients:\s*workspaceIngredients\b/)
   assert.equal(
     promotionManifest.format,
     'fireux-misebox-kitchen-ingredient-promotion/1'

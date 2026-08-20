@@ -39,7 +39,7 @@ export type FireuxOperationAgentDefinition = {
   id: string
   name: string
   parentId: string
-  consoleId: string
+  workspaceId: string
   operationId: string
   operationSlug: string
   family?: string
@@ -50,11 +50,11 @@ export type FireuxOperationAgentDefinition = {
   execution: FireuxOperationAgentExecution
 }
 
-export type FireuxConsoleAgentDefinition = {
+export type FireuxWorkspaceAgentDefinition = {
   id: string
   name: string
   parentId: string
-  consoleId: string
+  workspaceId: string
   entityTarget: FireuxAgentEntityTarget
   contextProviders: readonly FireuxAgentContextProvider[]
   operationAgents: readonly FireuxOperationAgentDefinition[]
@@ -86,14 +86,14 @@ export function defineFireuxOperationAgent<
   return definition
 }
 
-export function defineFireuxConsoleAgent<
-  const T extends FireuxConsoleAgentDefinition,
+export function defineFireuxWorkspaceAgent<
+  const T extends FireuxWorkspaceAgentDefinition,
 >(definition: T): T {
   return definition
 }
 
 export function findFireuxOperationAgent(
-  agent: FireuxConsoleAgentDefinition,
+  agent: FireuxWorkspaceAgentDefinition,
   operationSlug: string
 ) {
   return agent.operationAgents.find(

@@ -28,9 +28,9 @@
 
       <template #surfaces>
         <FireUXLandingSurfaceShowcase
-          v-model:surface-id="selectedConsoleSurfaceId"
-          :operations="consoleOperations"
-          :copy="projectConsoleCopy"
+          v-model:surface-id="selectedWorkspaceSurfaceId"
+          :operations="workspaceOperations"
+          :copy="projectWorkspaceCopy"
         />
       </template>
 
@@ -76,13 +76,13 @@ import { usePlatformAppDirectory } from '../../../composables/usePlatformDirecto
 import FireUXLandingPricingStrip from './PricingStrip.vue'
 
 const appsController = usePlatformAppDirectory()
-const selectedConsoleSurfaceId = ref('project.apps')
+const selectedWorkspaceSurfaceId = ref('project.apps')
 const landingOperations: readonly FireuxMetaOperation[] =
   metaContent.operations ?? []
 const landingSolutions: readonly FireuxMetaSolution[] =
   metaContent.solutions ?? []
 
-const consoleOperations = landingOperations.map((operation) => ({
+const workspaceOperations = landingOperations.map((operation) => ({
   id: operation.id,
   title: operation.title,
   description: operation.description,
@@ -97,13 +97,13 @@ const catalogueOperations = landingOperations.map((operation) => ({
   to: operation.slug ? `/operations/${operation.slug}` : operation.to,
 }))
 
-const projectConsoleCopy = {
-  title: 'Project Console',
+const projectWorkspaceCopy = {
+  title: 'Project Workspace',
   description:
-    'Develop and monitor your Project, its Apps, Ecosystem and users from one Console.',
+    'Develop and monitor your Project, its Apps, Ecosystem and users from one Workspace.',
   items: ['Apps', 'Ecosystem', 'Users', 'Project identity'],
-  action: 'Open Project Console',
-  to: '/console/project',
+  action: 'Open Project Workspace',
+  to: '/workspace/project',
 } as const
 
 const solutions = landingSolutions
@@ -136,9 +136,9 @@ const solutionsCatalogue = {
 const operationsCatalogue = {
   sectionId: 'fireux-operations',
   eyebrow: 'Operations',
-  title: 'Work inside the Project Console.',
+  title: 'Work inside the Project Workspace.',
   description:
-    'Each Operation below points to a working Project Console surface.',
+    'Each Operation below points to a working Project Workspace surface.',
   action: {
     label: 'Explore all operations',
     to: '/operations',
@@ -158,8 +158,8 @@ const content = {
       icon: 'i-lucide-rocket',
     },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console/project',
+      label: 'Go to workspace',
+      to: '/workspace/project',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],

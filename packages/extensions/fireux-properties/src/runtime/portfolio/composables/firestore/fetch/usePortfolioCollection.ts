@@ -4,9 +4,9 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-  readConsoleTargetAuthority,
-  targetHasConsoleAccess,
-} from 'fireux-core/runtime/composables/fireux/console/useConsoleAccess'
+  readWorkspaceTargetAuthority,
+  targetHasWorkspaceAccess,
+} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import {
   PortfolioStorage,
   type AppPortfolio,
@@ -67,7 +67,7 @@ export function usePortfolioCollection(
   ) => {
     if (
       !appSupport ||
-      !readConsoleTargetAuthority(appSupport) ||
+      !readWorkspaceTargetAuthority(appSupport) ||
       !resolvedAppId.value ||
       !portfolioRootBelongsToApp(root, resolvedAppId.value, ecosystem)
     ) {
@@ -166,7 +166,7 @@ export function usePortfolioCollection(
         if (hasFilter.value && !filterIdSet.value.has(id)) return acc
         if (hasOperatorFilter.value) {
           if (!filterOperatorId.value) return acc
-          if (!targetHasConsoleAccess(portfolio, filterOperatorId.value))
+          if (!targetHasWorkspaceAccess(portfolio, filterOperatorId.value))
             return acc
         }
 
@@ -246,7 +246,7 @@ export function usePortfolioCollection(
       return undefined
 
     const ids = appSupportSource.value
-      .filter((appSupport) => !readConsoleTargetAuthority(appSupport))
+      .filter((appSupport) => !readWorkspaceTargetAuthority(appSupport))
       .map((appSupport) => resolvePortfolioId(appSupport))
       .filter(Boolean)
     if (!ids.length) return undefined

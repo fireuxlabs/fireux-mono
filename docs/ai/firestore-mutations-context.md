@@ -28,7 +28,7 @@ not another supported write target.
 Typed mutation targets own database placement, collection path, allowed verbs,
 and access lane. `(default)` contains only the bounded metadata projections
 `project`, `ecosystem`, and `apps` and is never client-writable. Canonical
-Project is a Console Entity at `fireux/projects`; its `(default)/project`
+Project is a Workspace Entity at `fireux/projects`; its `(default)/project`
 record is only the bootstrap/control-plane projection. The normal second
 database is the owning `ProjectName`; it owns that Project's canonical entities
 and operations. Apps, consumers, and scripts do not select additional databases. Sproochli retains a

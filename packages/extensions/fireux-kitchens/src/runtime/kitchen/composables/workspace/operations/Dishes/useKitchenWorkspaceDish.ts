@@ -1,0 +1,122 @@
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { computed } from 'vue'
+import { useKitchenDishesWorkspace } from './useKitchenDishesWorkspace'
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+type ProductionAmount = {
+  quantity: number
+  unit: string
+}
+
+const formatProductionAmount = (
+  amount: ProductionAmount | null | undefined
+) => {
+  const quantity = Number(amount?.quantity)
+  const unit = normalizeString(amount?.unit)
+  if (!Number.isFinite(quantity) || !unit) return ''
+
+  const quantityLabel = new Intl.NumberFormat('en-CH', {
+    maximumFractionDigits: 2,
+  }).format(quantity)
+  const unitLabel = unit === 'portion' && quantity !== 1
+    ? 'portions'
+    : unit
+
+  return `${quantityLabel} ${unitLabel}`
+}
+
+export function useKitchenWorkspaceDish() {
+  const {
+    selectedKitchen,
+    kitchenId,
+    rootCollection,
+    databaseId,
+    collectionPath,
+    readOnly,
+    canWrite,
+    dishes,
+    pending,
+    demoDishOperation,
+    getMenuUsageForDish,
+    catalogue,
+  } = useKitchenDishesWorkspace()
+
+  const dishId = useRouteParam('dishId')
+
+  const dish = computed(
+    () =>
+      dishes.value.find((item) => normalizeString(item?.id) === dishId.value) ??
+      null
+  )
+  const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
+  const demoDishItem = computed(() =>
+    demoDishOperation.value?.items.find(
+      item => normalizeString(item.dish.id) === dishId.value
+    ) ?? null
+  )
+  const dishSpec = computed(() => demoDishItem.value?.spec ?? null)
+  const getIngredientName = (ingredientId: string) =>
+    demoDishOperation.value?.ingredientNameById[
+      normalizeString(ingredientId)
+    ] ||
+    normalizeString(ingredientId)
+  const getStationName = (stationId: string) =>
+    demoDishOperation.value?.stationNameById[
+      normalizeString(stationId)
+    ] || normalizeString(stationId)
+  const componentViews = computed(() => demoDishItem.value?.componentViews ?? [])
+  const prepItems = computed(() => demoDishItem.value?.prepItems ?? [])
+  const recipes = computed(() => demoDishItem.value?.recipes ?? [])
+  const miseRequirements = computed(
+    () => demoDishItem.value?.miseRequirements ?? []
+  )
+  const finance = computed(() => demoDishItem.value?.finance ?? null)
+  const financeError = computed(() => null)
+
+  const debug = computed(() => ({
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
+    collectionPath: collectionPath.value,
+    dishId: dishId.value,
+    hasDish: Boolean(dish.value),
+    menuUsageCount: menuUsage.value.length,
+    hasSpec: Boolean(dishSpec.value),
+    componentCount: componentViews.value.length,
+    prepItemCount: prepItems.value.length,
+    recipeCount: recipes.value.length,
+    miseRequirementCount: miseRequirements.value.length,
+    hasFinanceEstimate: Boolean(finance.value),
+    pending: pending.value,
+    readOnly: readOnly.value,
+    canWrite: canWrite.value,
+  }))
+
+  return {
+    selectedKitchen,
+    kitchenId,
+    rootCollection,
+    databaseId,
+    collectionPath,
+    readOnly,
+    canWrite,
+    dishes,
+    pending,
+    dishId,
+    dish,
+    dishSpec,
+    componentViews,
+    prepItems,
+    recipes,
+    formatProductionAmount,
+    getIngredientName,
+    getStationName,
+    miseRequirements,
+    menuUsage,
+    finance,
+    financePending: pending,
+    financeError,
+    debug,
+    catalogue,
+  }
+}

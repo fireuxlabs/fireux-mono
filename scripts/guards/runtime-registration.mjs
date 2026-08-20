@@ -139,32 +139,32 @@ export async function run(ctx) {
   )
   if (existsSync(kitchenComponentsPath)) {
     const source = readFileSync(kitchenComponentsPath, 'utf8')
-    const consoleRegistration = source.indexOf(
-      "registerComponentsDir(resolver, './runtime/kitchen/components/Console'"
+    const workspaceRegistration = source.indexOf(
+      "registerComponentsDir(resolver, './runtime/kitchen/components/Workspace'"
     )
     const kitchenRegistration = source.indexOf(
       "registerComponentsDir(resolver, './runtime/kitchen/components',"
     )
-    const consoleBlock = source.slice(
-      consoleRegistration,
-      kitchenRegistration > consoleRegistration
+    const workspaceBlock = source.slice(
+      workspaceRegistration,
+      kitchenRegistration > workspaceRegistration
         ? kitchenRegistration
-        : consoleRegistration
+        : workspaceRegistration
     )
 
     if (
-      consoleRegistration < 0 ||
+      workspaceRegistration < 0 ||
       kitchenRegistration < 0 ||
-      consoleRegistration > kitchenRegistration ||
-      !/prefix:\s*['"]ConsoleKitchen['"]/.test(consoleBlock) ||
-      !/priority:\s*[1-9]\d*/.test(consoleBlock)
+      workspaceRegistration > kitchenRegistration ||
+      !/prefix:\s*['"]WorkspaceKitchen['"]/.test(workspaceBlock) ||
+      !/priority:\s*[1-9]\d*/.test(workspaceBlock)
     ) {
       throw new Error(
         [
-          '[guard] ❌ Kitchen Console component registration is unstable.',
-          '  - Register the Console subtree before the broader Kitchen directory.',
-          '  - Give the Console subtree explicit positive priority and the ConsoleKitchen prefix.',
-          '  - Keep Console/** excluded from the broader Kitchen registration.',
+          '[guard] ❌ Kitchen Workspace component registration is unstable.',
+          '  - Register the Workspace subtree before the broader Kitchen directory.',
+          '  - Give the Workspace subtree explicit positive priority and the WorkspaceKitchen prefix.',
+          '  - Keep Workspace/** excluded from the broader Kitchen registration.',
         ].join('\n')
       )
     }

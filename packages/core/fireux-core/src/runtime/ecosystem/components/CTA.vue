@@ -1,6 +1,6 @@
 <template>
   <UPageCTA
-    data-entity-cta-family="console"
+    data-entity-cta-family="workspace"
     title="Ecosystems"
     description="Explore FireUX ecosystems and the apps they bring together."
     orientation="horizontal"
@@ -21,15 +21,15 @@
         </section>
 
         <section class="space-y-2">
-          <p class="text-sm font-semibold">Console</p>
+          <p class="text-sm font-semibold">Workspace</p>
           <UButton
             block
             color="primary"
             variant="soft"
             icon="i-lucide-terminal"
-            to="/console/project"
+            to="/workspace/project"
           >
-            Open console
+            Open workspace
           </UButton>
         </section>
 

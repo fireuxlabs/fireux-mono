@@ -12,13 +12,13 @@ import {
   type ProjectInterfaceCard,
 } from 'fireux-core/runtime/project/composables/useProjectInterface'
 
-const productDemoSurface = 'project-console' as const
+const productDemoSurface = 'project-workspace' as const
 const productDemoDataSource = 'demo' as const
 
 export type FireuxProductDemo = {
-  surface: 'project-console'
+  surface: 'project-workspace'
   dataSource: 'demo'
-  console: {
+  workspace: {
     projectId: string
     projectPill: ProjectInterfaceCard
     apps: AppCard.Card[]
@@ -35,7 +35,7 @@ export function useFireuxProductDemo() {
   const { cell: ecosystemCell } = useEcosystemInterface()
 
   return useAsyncData<FireuxProductDemo>(
-    'fireux-product-demo-project-console-v1',
+    'fireux-product-demo-project-workspace-v1',
     async () => {
       const { projectDemoScenarios } = await import(
         'fireux-core/runtime/project/demo/scenarios'
@@ -83,7 +83,7 @@ export function useFireuxProductDemo() {
       return {
         surface: productDemoSurface,
         dataSource: productDemoDataSource,
-        console: {
+        workspace: {
           projectId: project.id,
           projectPill: projectedProjectPill,
           apps,

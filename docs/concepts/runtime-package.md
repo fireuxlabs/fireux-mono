@@ -75,7 +75,7 @@ Shared rules:
 | --------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Core      | Module entry, config hooks, reusable runtime                                 | `accepted`: owns product-neutral foundations and therefore has the strictest package and dependency boundary |
 | Ecosystem | Module entry plus ecosystem config, Firebase binding, shared identity/assets | `accepted`: owns cross-App composition for one ecosystem, not reusable domain implementation                 |
-| Extension | Module entry plus domain runtime surfaces                                    | `accepted`: owns reusable entities, public surfaces, Console operations, APIs, and assets for one domain     |
+| Extension | Module entry plus domain runtime surfaces                                    | `accepted`: owns reusable entities, public surfaces, Workspace operations, APIs, and assets for one domain     |
 
 Package lanes differ in ownership, not in whether module registration is
 explicit and reviewable.
@@ -98,7 +98,7 @@ parity.
 | Difference                                                                             | State        | Recommendation                                                                                              |
 | -------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------- |
 | Similar packages expose different config files only because old scaffolds created them | `drift`      | Remove empty/no-op hooks; compare registration behavior, not filenames alone                                |
-| A project App implements package-owned Console/domain behavior                         | `drift`      | Move reusable code to the owning package and leave app composition local                                    |
+| A project App implements package-owned Workspace/domain behavior                         | `drift`      | Move reusable code to the owning package and leave app composition local                                    |
 | A package imports another extension to compose product behavior                        | `drift`      | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive         |
 | A package needs custom build output                                                    | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults                               |
 | Runtime surface exists but is not registered                                           | `drift`      | Add the smallest real module hook and a focused smoke route/import check                                    |

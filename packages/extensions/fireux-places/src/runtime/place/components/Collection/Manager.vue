@@ -236,7 +236,7 @@ const entityFamilyFilters = computed(() => {
   return [...counts.entries()]
     .map(([id, count]) => ({
       id,
-      label: formatConsoleFamilyLabel(id),
+      label: formatWorkspaceFamilyLabel(id),
       count,
     }))
     .sort((a, b) => a.label.localeCompare(b.label))
@@ -287,7 +287,7 @@ function matchesEntityFamilyFilter(place: BasePlace) {
   return families.includes(activeEntityFamily.value)
 }
 
-function formatConsoleFamilyLabel(value: string) {
+function formatWorkspaceFamilyLabel(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 

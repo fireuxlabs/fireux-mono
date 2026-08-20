@@ -12,7 +12,7 @@ export const sourceMeta = {
     primaryCtaTo: '/demo',
     secondaryCtaLabel: 'See what works today',
     secondaryCtaTo: '/operations',
-    consoleBridgeLine:
+    workspaceBridgeLine:
       'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
     heroBullets: [
       'No signup required',
@@ -63,7 +63,7 @@ export const sourceMeta = {
         'How the core Misebox modules fit together',
         'The key entities and how they connect',
         'Small realistic sample objects for context',
-        'Quick links to public and console routes',
+        'Quick links to public and workspace routes',
       ],
     },
     sections: {
@@ -266,8 +266,8 @@ export const sourceMeta = {
         { label: 'Kitchens', path: '/kitchens', kind: 'public' },
         { label: 'Jobs', path: '/jobs', kind: 'public' },
         { label: 'Professionals', path: '/professionals', kind: 'public' },
-        { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Kitchen Console', path: '/console/kitchen', kind: 'console' },
+        { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
+        { label: 'Kitchen Workspace', path: '/workspace/kitchen', kind: 'workspace' },
       ],
     },
     relationshipMap: `

@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'Hotel Bären Ringgenberg is a Misebox tenant app over the existing Bären kitchen.',
     promise_html:
       'Show the menu clearly and keep venue data connected to the Misebox ecosystem.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Kitchen and menu records are managed through Misebox.',
   },
   seo: {

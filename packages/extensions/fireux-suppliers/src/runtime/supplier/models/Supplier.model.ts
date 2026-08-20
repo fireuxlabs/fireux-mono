@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Supplier root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -46,7 +46,7 @@ type WidenLiteral<T> =
  *   app-hosted access-support record, not a user profile.
  * - The path should read as supplier identity rather than user identity.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
- * - Supplier console governance belongs to the app-hosted supplier record.
+ * - Supplier workspace governance belongs to the app-hosted supplier record.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
@@ -71,11 +71,11 @@ export const AppSupplierStorage = {
 export const SupplierEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Supplier',
-  family: ['supplier', 'console-entity'],
+  family: ['supplier', 'workspace-entity'],
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  console: true,
+  workspace: true,
   root: SupplierStorage.path,
   appSupportPath: AppSupplierStorage.path,
 })

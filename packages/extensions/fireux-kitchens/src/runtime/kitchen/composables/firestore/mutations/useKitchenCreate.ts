@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
-// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Console creation through trusted onboarding.
+// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Workspace creation through trusted onboarding.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: own Kitchen preview and completion transport in the create seam.
 import type {
   FireuxEntityCreateMode,
@@ -92,10 +92,10 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     input: KitchenCreateDraft = {},
     createOptions: KitchenCreateModeOptions = {}
   ): Promise<KitchenCreateResult> {
-    return createKitchenConsole(input, createOptions)
+    return createKitchenWorkspace(input, createOptions)
   }
 
-  async function createKitchenConsole(
+  async function createKitchenWorkspace(
     input: KitchenCreateDraft = {},
     createOptions: KitchenCreateModeOptions = {}
   ): Promise<KitchenCreateResult> {
@@ -105,7 +105,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
       input.identity?.display_name || input.display_name
     )
     if (!existingRootId && !placeId) {
-      throw new Error('A linked Place is required to create a Kitchen console.')
+      throw new Error('A linked Place is required to create a Kitchen workspace.')
     }
 
     const preview = await previewKitchenOnboarding({
@@ -130,7 +130,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     completeKitchenOnboarding,
     createPlan: KitchenCreatePlan,
     createKitchen,
-    createKitchenConsole,
+    createKitchenWorkspace,
     previewKitchenOnboarding,
   }
 }

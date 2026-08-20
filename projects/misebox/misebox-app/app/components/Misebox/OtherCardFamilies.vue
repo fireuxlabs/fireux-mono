@@ -134,16 +134,16 @@
   id="cards-mise"
   icon="i-lucide-list-checks"
   title="Mise"
-  source="fireux-kitchens · Console/Kitchen/Operations/Mise/Cards"
+  source="fireux-kitchens · Workspace/Kitchen/Operations/Mise/Cards"
   :query="query"
   :variant="variant"
   :variants="['cell', 'pill']"
 >
   <MiseboxCardSpecimen label="Cell">
-    <ConsoleKitchenOperationsMiseCardsCell v-bind="miseCell" />
+    <WorkspaceKitchenOperationsMiseCardsCell v-bind="miseCell" />
   </MiseboxCardSpecimen>
   <MiseboxCardSpecimen label="Pill">
-    <ConsoleKitchenOperationsMiseCardsPill v-bind="misePill" />
+    <WorkspaceKitchenOperationsMiseCardsPill v-bind="misePill" />
   </MiseboxCardSpecimen>
 </MiseboxCardFamilySection>
 
@@ -151,13 +151,13 @@
   id="cards-operation-ingredients"
   icon="i-lucide-carrot"
   title="Kitchen ingredient"
-  source="fireux-kitchens · Console/Kitchen/Operations/Ingredients/Cards"
+  source="fireux-kitchens · Workspace/Kitchen/Operations/Ingredients/Cards"
   :query="query"
   :variant="variant"
   :variants="['cell']"
 >
   <MiseboxCardSpecimen label="Cell" candidate>
-    <ConsoleKitchenOperationsIngredientsCardsCell
+    <WorkspaceKitchenOperationsIngredientsCardsCell
       id="beef-mince"
       to="/"
       title="Ground beef"
@@ -170,13 +170,13 @@
   id="cards-kitchen-supplier"
   icon="i-lucide-warehouse"
   title="Kitchen supplier"
-  source="fireux-kitchens · Console/Kitchen/Operations/Suppliers/Cards"
+  source="fireux-kitchens · Workspace/Kitchen/Operations/Suppliers/Cards"
   :query="query"
   :variant="variant"
   :variants="['cell']"
 >
   <MiseboxCardSpecimen label="Cell" candidate>
-    <ConsoleKitchenOperationsSuppliersCardsCell
+    <WorkspaceKitchenOperationsSuppliersCardsCell
       v-bind="kitchenSupplierCell"
     />
   </MiseboxCardSpecimen>

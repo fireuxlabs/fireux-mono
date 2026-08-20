@@ -1,9 +1,9 @@
 import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
-const portfolioConsole = {
+const portfolioWorkspace = {
   id: 'portfolio',
-  name: 'Portfolio console',
-  to: '/console/portfolio',
+  name: 'Portfolio workspace',
+  to: '/workspace/portfolio',
 } as const
 
 export const portfolioOperations = [
@@ -42,7 +42,7 @@ export const portfolioOperations = [
   slug,
   title,
   description,
-  to: `/console/portfolio/${slug}`,
-  console: portfolioConsole,
+  to: `/workspace/portfolio/${slug}`,
+  workspace: portfolioWorkspace,
   icon,
 })) satisfies FireuxMetaOperation[]

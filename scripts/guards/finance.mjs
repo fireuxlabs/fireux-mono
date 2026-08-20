@@ -24,10 +24,10 @@ const FILES = {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue',
   kitchenRoundup:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue',
-  kitchenConsole:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/Finance.vue',
-  kitchenConsolePage:
-    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue',
+  kitchenWorkspace:
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue',
+  kitchenWorkspacePage:
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance.vue',
   restaurantLabourCalculator:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts',
   restaurantLabourToolAdapter:
@@ -52,9 +52,9 @@ const KITCHEN_FINANCE_SEAMS = {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/useKitchenFinanceCalendar.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/finance-calendar-date.ts',
   ],
-  console: [
-    FILES.kitchenConsole,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Overview/useKitchenFinanceOverview.ts',
+  workspace: [
+    FILES.kitchenWorkspace,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/useKitchenFinanceOverview.ts',
   ],
   dayDetail: [
     FILES.kitchenDayDetail,
@@ -116,14 +116,14 @@ export async function run(ctx) {
     violations
   )
   const kitchenRoundup = read(repoRoot, FILES.kitchenRoundup, violations)
-  const kitchenConsole = readSeams(
+  const kitchenWorkspace = readSeams(
     repoRoot,
-    KITCHEN_FINANCE_SEAMS.console,
+    KITCHEN_FINANCE_SEAMS.workspace,
     violations
   )
-  const kitchenConsolePage = read(
+  const kitchenWorkspacePage = read(
     repoRoot,
-    FILES.kitchenConsolePage,
+    FILES.kitchenWorkspacePage,
     violations
   )
   const restaurantLabourCalculator = read(
@@ -141,7 +141,7 @@ export async function run(ctx) {
     FILES.restaurantLabourToolComponent,
     violations
   )
-  const kitchenConsoleComposition = `${kitchenConsolePage}\n${kitchenConsole}`
+  const kitchenWorkspaceComposition = `${kitchenWorkspacePage}\n${kitchenWorkspace}`
   const kitchenReportModel = read(
     repoRoot,
     FILES.kitchenReportModel,
@@ -291,16 +291,16 @@ export async function run(ctx) {
     "label: 'Source'",
     "label: 'Service'",
   ]) {
-    if (!kitchenConsoleComposition.includes(marker)) {
+    if (!kitchenWorkspaceComposition.includes(marker)) {
       violations.push(
-        `${FILES.kitchenConsole}: missing Kitchen Finance report composition (${marker})`
+        `${FILES.kitchenWorkspace}: missing Kitchen Finance report composition (${marker})`
       )
     }
   }
 
-  if (kitchenConsole.includes('FinancialFact')) {
+  if (kitchenWorkspace.includes('FinancialFact')) {
     violations.push(
-      `${FILES.kitchenConsole}: Kitchen Console must not read raw FinancialFacts`
+      `${FILES.kitchenWorkspace}: Kitchen Workspace must not read raw FinancialFacts`
     )
   }
   for (const unsupported of [
@@ -312,9 +312,9 @@ export async function run(ctx) {
     'Unpaid supplier invoices',
     'Operating profit',
   ]) {
-    if (kitchenConsole.includes(unsupported)) {
+    if (kitchenWorkspace.includes(unsupported)) {
       violations.push(
-        `${FILES.kitchenConsole}: unsupported Finance family has no dated domain producer (${unsupported})`
+        `${FILES.kitchenWorkspace}: unsupported Finance family has no dated domain producer (${unsupported})`
       )
     }
   }

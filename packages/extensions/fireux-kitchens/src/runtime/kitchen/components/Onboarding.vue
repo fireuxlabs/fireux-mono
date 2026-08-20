@@ -156,7 +156,7 @@ import { useRoute, useRouter } from '#imports'
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useKitchenConsoleSelection } from '../composables/console/core/useKitchenConsoleSelection'
+import { useKitchenWorkspaceSelection } from '../composables/workspace/core/useKitchenWorkspaceSelection'
 import { useKitchenOnboarding } from '../composables/useKitchenOnboarding'
 import type { KitchenOnboardingCompleteResult } from '../models/kitchen-onboarding.model.ts'
 
@@ -169,7 +169,7 @@ const props = withDefaults(
     cancelTo?: string
   }>(),
   {
-    mode: 'console',
+    mode: 'workspace',
     existingRootId: '',
     placeId: '',
     returnTo: '',
@@ -183,7 +183,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { setKitchenConsoleSelection } = useKitchenConsoleSelection()
+const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 const {
   activeStepId,
   back,
@@ -243,14 +243,14 @@ const canChangePlace = computed(() => !existingRootId.value)
 const resolvedCancelTo = computed(() => {
   const explicit = String(props.cancelTo || '').trim()
   if (explicit.startsWith('/')) return explicit
-  return props.mode === 'console' ? '/console/kitchen' : '/kitchens'
+  return props.mode === 'workspace' ? '/workspace/kitchen' : '/kitchens'
 })
 const resolvedReturnTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return '/console/kitchen/identity'
+  return '/workspace/kitchen/identity'
 })
 const existingKitchenTo = computed(() => {
   if (!preview.value?.existing) return ''
@@ -295,7 +295,7 @@ async function onBack() {
 async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
-  setKitchenConsoleSelection({ kitchenId: completion.value.kitchen_id })
+  setKitchenWorkspaceSelection({ kitchenId: completion.value.kitchen_id })
   emit('created', completion.value)
   if (route.path !== resolvedReturnTo.value) {
     await router.push(resolvedReturnTo.value)

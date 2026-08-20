@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     class="cta"
-    data-entity-cta-family="console-managed"
+    data-entity-cta-family="workspace-managed"
     title="Ingredients"
     description="Browse ingredients that kitchens can use in recipes, menus, and stock."
     variant="naked"

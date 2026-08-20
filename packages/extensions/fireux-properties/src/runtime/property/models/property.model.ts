@@ -2,9 +2,9 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Property root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -21,7 +21,7 @@ type WidenLiteral<T> =
 /**
  * Family: Property
  * Storage: canonical root property plus an app-scoped support record
- * Owner app scope: Property console / product shell
+ * Owner app scope: Property workspace / product shell
  * Scope: BuenoHost-style property information records
  *
  * Decision note:
@@ -44,11 +44,11 @@ export const PropertyStorage = {
 export const PropertyEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Property',
-  family: ['property', 'console-entity'],
+  family: ['property', 'workspace-entity'],
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'access-record',
-  console: true,
+  workspace: true,
   root: PropertyStorage.root,
   appSupportPath: PropertyStorage.appSupport,
 })

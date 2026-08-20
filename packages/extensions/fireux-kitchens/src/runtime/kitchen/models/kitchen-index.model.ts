@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: define the sparse bounded published Kitchen index projection.
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: define the bounded authenticated target projection.
-// Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: project server-authorized write capability with resolved Menu style.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: define the bounded authenticated target projection.
+// Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette workspace: project server-authorized write capability with resolved Menu style.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
   KitchenFulfilmentConfig,
@@ -11,11 +11,11 @@ import type {
 } from './kitchen.model.ts'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 
 export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
 
-export type KitchenConsoleTargetItem = {
+export type KitchenWorkspaceTargetItem = {
   id: string
   can_write: boolean
   management: Exclude<FireuxEntityManagement, { mode: 'root' }>
@@ -34,7 +34,7 @@ export type KitchenConsoleTargetItem = {
     gallery: string[]
   }
   menus: KitchenMenusConfig
-  console_theme?: ConsoleTheme
+  workspace_theme?: WorkspaceTheme
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig
@@ -59,9 +59,9 @@ export type KitchenConsoleTargetItem = {
   route_scope: 'live'
 }
 
-export type KitchenConsoleTargetsResponse = {
+export type KitchenWorkspaceTargetsResponse = {
   ok: true
   appId: string
   family: 'kitchen'
-  items: KitchenConsoleTargetItem[]
+  items: KitchenWorkspaceTargetItem[]
 }

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: reuse the Core brand-colour defaults.
-// Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette console: reuse one portable Menu font-token authority.
+// Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette workspace: reuse one portable Menu font-token authority.
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import { DEFAULT_BRAND_PALETTE } from 'fireux-core/runtime/utils/brand-palette'
 import {

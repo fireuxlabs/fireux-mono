@@ -43,12 +43,12 @@ const resolvedFeatures = computed(() =>
     {
       icon: 'i-lucide-cog',
       title: 'Runtime setup',
-      copy: 'Shared app config, auth wiring, and console visibility.',
+      copy: 'Shared app config, auth wiring, and workspace visibility.',
     },
     {
       icon: 'i-lucide-shield-check',
       title: 'Operator clarity',
-      copy: 'Keep users oriented with light public pages and stronger consoles.',
+      copy: 'Keep users oriented with light public pages and stronger workspaces.',
     },
     {
       icon: 'i-lucide-layers',

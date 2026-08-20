@@ -52,7 +52,7 @@ silently publishing an incomplete platform directory.
 
 `AppMeta` is part of the App family but is not another Entity. It keeps only
 the local Project/Ecosystem/database pointers, App role and status, public
-identity and media, website route, Console-family discovery, and projection
+identity and media, website route, Workspace-family discovery, and projection
 update stamp. It excludes membership, User ids and counts, moderation,
 repository/build metadata, join policy, and operational content.
 The trusted runtime initialization, media, and App-settings writers maintain
@@ -79,7 +79,7 @@ provisioning operations, and no client mutation or umbrella `useEcosystem()`
 entrypoint owns them.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
-in the FireUX control-plane named database, `AppProject` owns FireUX Console
+in the FireUX control-plane named database, `AppProject` owns FireUX Workspace
 access, and the local meta adds only its named `database_id`. Project document
 ID is route identity, so neither Project shape stores a duplicate slug.
 
@@ -91,9 +91,9 @@ The entity-facing Project stack currently lives under
 active Project identity and presentation DTOs. It never exposes access,
 database credentials, team, or operational state. There is no public Project
 detail route and no browser Firestore read or mutation entrypoint; private
-selection and operations remain under `/console/project`.
+selection and operations remain under `/workspace/project`.
 
-The read-only Project Console may expose capabilities backed by existing
+The read-only Project Workspace may expose capabilities backed by existing
 authority. Its Team sheet reads the selected Project's `AppProject`
 operator/team ids through an admin-only server endpoint and resolves their
 canonical User presentation. It does not create a second Project membership
@@ -101,9 +101,9 @@ model. Project notifications remain undefined until a real Project-scoped
 emitter and User-owned delivery contract exist.
 
 The FireUX control-plane named database keeps canonical `projects/{projectId}`
-roots for every Project added to the Console. Its
+roots for every Project added to the Workspace. Its
 `apps/{appId}/projects/{projectId}` AppProject records are access-only support
-and determine which roots that App Console exposes.
+and determine which roots that App Workspace exposes.
 
 `UserAccount` and User notifications are private, User-scoped support records.
 They are not additional User identities. Profile bases, directory DTOs,
@@ -117,7 +117,7 @@ stamps, and entity declarations are shared model utilities, not core records.
 | `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                          | App or project identity                                 |
 | `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                         | App membership or generic profile fragments             |
 | `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                             | Module packages or App module configuration             |
-| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Console Entity access, profiles, entity declarations, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
+| `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, entity declarations, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
 | `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                    | Persisted entity authority                              |
 | `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                        | Canonical stored shape                                  |
 | `config/app`                      | Authored App composition and literature contracts                                                                                                               | Firestore records                                       |
@@ -158,7 +158,7 @@ and authored App configuration; neither becomes an alternate App identity.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
 - `AppUser` owns App membership, role, premium entitlement, and onboarding.
-  Console target access belongs to each Console Entity's App-support record.
+  Workspace target access belongs to each Workspace Entity's App-support record.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.

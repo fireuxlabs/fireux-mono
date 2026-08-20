@@ -295,9 +295,9 @@
         }
       }
 
-      // Console targets outside Kitchen use the same operator-owned shape.
+      // Workspace targets outside Kitchen use the same operator-owned shape.
       match /{targetCollection}/{targetId} {
-        function isConsoleTargetCollection() {
+        function isWorkspaceTargetCollection() {
           return targetCollection in [
             'suppliers'
           ];
@@ -318,16 +318,16 @@
             request.resource.data.join_requests == resource.data.join_requests;
         }
 
-        allow get: if isConsoleTargetCollection() &&
+        allow get: if isWorkspaceTargetCollection() &&
           (isAppAdmin(appId) ||
             isTargetMember(appId, targetCollection, targetId));
-        allow list: if isConsoleTargetCollection() &&
+        allow list: if isWorkspaceTargetCollection() &&
           (isAppAdmin(appId) || isResourceTargetMember(appId));
-        allow create: if isConsoleTargetCollection() &&
+        allow create: if isWorkspaceTargetCollection() &&
           isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedTargetAuthority();
-        allow update: if isConsoleTargetCollection() &&
+        allow update: if isWorkspaceTargetCollection() &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedTargetAuthority() &&
           (isAppAdmin(appId) ||
@@ -339,26 +339,26 @@
         // In rules_version 2 a recursive wildcard matches zero segments, so a
         // direct /{nested=**} here would also bypass the support validator.
         match /{childCollection}/{childId} {
-          allow get, list: if isConsoleTargetCollection() &&
+          allow get, list: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetMember(appId, targetCollection, targetId));
-          allow create, update: if isConsoleTargetCollection() &&
+          allow create, update: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, targetCollection, targetId)) &&
             request.resource.data.keys().size() <= 100;
-          allow delete: if isConsoleTargetCollection() &&
+          allow delete: if isWorkspaceTargetCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, targetCollection, targetId));
 
           match /{nested=**} {
-            allow get, list: if isConsoleTargetCollection() &&
+            allow get, list: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetMember(appId, targetCollection, targetId));
-            allow create, update: if isConsoleTargetCollection() &&
+            allow create, update: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, targetCollection, targetId)) &&
               request.resource.data.keys().size() <= 100;
-            allow delete: if isConsoleTargetCollection() &&
+            allow delete: if isWorkspaceTargetCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, targetCollection, targetId));
           }

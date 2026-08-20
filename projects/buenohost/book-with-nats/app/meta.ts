@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'A personal BuenoHost booking and contact surface for Nats’ apartment.',
     promise_html:
       'Make it easy to understand the stay, ask about dates and speak directly with Nats.',
-    console_bridge_html:
+    workspace_bridge_html:
       'BuenoHost property tools can manage this apartment and future stays through the shared property family.',
   },
   seo: {

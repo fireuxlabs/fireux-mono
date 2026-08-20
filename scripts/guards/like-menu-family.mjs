@@ -10,50 +10,50 @@ const MEMBERS = [
   {
     name: 'Kitchen Menus',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/List.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/List.vue',
     tools:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Tools.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Menus/Menu.vue',
-    recordsTag: '<ConsoleKitchenOperationsMenusList',
-    toolsTag: '<ConsoleKitchenOperationsMenusTools',
-    inspectTag: '<ConsoleKitchenOperationsMenusWorkspaceHeader',
-    updateTag: '<ConsoleKitchenOperationsMenusEditDetails',
-    deleteTag: '<ConsoleKitchenOperationsMenusDelete',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Menu.vue',
+    recordsTag: '<WorkspaceKitchenOperationsMenusList',
+    toolsTag: '<WorkspaceKitchenOperationsMenusTools',
+    inspectTag: '<WorkspaceKitchenOperationsMenusWorkspaceHeader',
+    updateTag: '<WorkspaceKitchenOperationsMenusEditDetails',
+    deleteTag: '<WorkspaceKitchenOperationsMenusDelete',
     recordsLabel: 'aria-label="Menus"',
     toolsLabel: 'aria-labelledby="create-menu-title"',
   },
   {
     name: 'Kitchen Dishes',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Read.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Read.vue',
     tools:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Tools.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Dish.vue',
-    recordsTag: '<ConsoleKitchenOperationsDishesRead',
-    toolsTag: '<ConsoleKitchenOperationsDishesTools',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Dish.vue',
+    recordsTag: '<WorkspaceKitchenOperationsDishesRead',
+    toolsTag: '<WorkspaceKitchenOperationsDishesTools',
     inspectTag: 'aria-label="Menu placements"',
-    updateTag: '<ConsoleKitchenOperationsDishesEdit',
-    deleteTag: '<ConsoleKitchenOperationsDishesDelete',
+    updateTag: '<WorkspaceKitchenOperationsDishesEdit',
+    deleteTag: '<WorkspaceKitchenOperationsDishesDelete',
     recordsLabel: ':aria-label="catalogue.title"',
     toolsLabel: ':aria-labelledby="`create-${catalogue.singular}-title`"',
     quickLook:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/QuickLook.vue',
-    quickLookTag: '<ConsoleKitchenOperationsDishesQuickLook',
-    detailAction: 'Open dish',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/QuickLook.vue',
+    quickLookTag: '<WorkspaceKitchenOperationsDishesQuickLook',
+    detailAction: 'Open {{ catalogue.singular }}',
     finance:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Console/Operations/Dishes/Finance.vue',
-    financeTag: '<ConsoleKitchenOperationsDishesFinance',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Finance.vue',
+    financeTag: '<WorkspaceKitchenOperationsDishesFinance',
     collectionState: {
       fetch:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts',
       controller:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/console/operations/Dishes/useKitchenConsoleDishes.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts',
       errorTitle: ':title="`${catalogue.title} unavailable`"',
     },
   },
@@ -123,9 +123,9 @@ function validateMember(repoRoot, member, violations) {
     }
 
     for (const forbidden of [
-      '<ConsoleOperationWritePanel',
-      '<ConsoleKitchenOperationsMenusCreation',
-      '<ConsoleKitchenOperationsMenusQR',
+      '<WorkspaceOperationWritePanel',
+      '<WorkspaceKitchenOperationsMenusCreation',
+      '<WorkspaceKitchenOperationsMenusQR',
     ]) {
       if (indexSource.includes(forbidden)) {
         violations.push(

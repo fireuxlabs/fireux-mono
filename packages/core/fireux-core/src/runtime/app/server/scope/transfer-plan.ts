@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe root/App support transfers without overlay language.
 import { AppStorage } from '../../models/app.model.ts'
-export type AppScopeTransferDestinationState = 'console' | 'app'
+export type AppScopeTransferDestinationState = 'workspace' | 'app'
 
 export type AppScopeTransferPlanInput = {
   family: string
@@ -67,7 +67,7 @@ export function buildAppScopeTransferPlan(
   }
 
   if (
-    input.destinationState !== 'console' &&
+    input.destinationState !== 'workspace' &&
     input.destinationState !== 'app'
   ) {
     throw new Error(
@@ -84,8 +84,8 @@ export function buildAppScopeTransferPlan(
     destinationState: input.destinationState,
     rootPatch: {
       management:
-        input.destinationState === 'console'
-          ? { mode: 'console' }
+        input.destinationState === 'workspace'
+          ? { mode: 'workspace' }
           : { mode: 'app', app_id: destinationAppId },
     },
     phases: [

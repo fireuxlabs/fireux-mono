@@ -11,11 +11,11 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
-  assertConsoleEntitySupportCapacity,
-  readConsoleEntitySupportAuthority,
-  requireConsoleEntityMemberRole,
-  resolveConsoleEntityOnboardingPolicy,
-} from 'fireux-core/runtime/server/utils/console-entity/onboarding-authority'
+  assertWorkspaceEntitySupportCapacity,
+  readWorkspaceEntitySupportAuthority,
+  requireWorkspaceEntityMemberRole,
+  resolveWorkspaceEntityOnboardingPolicy,
+} from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -62,11 +62,11 @@ function request(value: unknown) {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  return resolveConsoleEntityOnboardingPolicy(event, 'supplier')
+  return resolveWorkspaceEntityOnboardingPolicy(event, 'supplier')
 }
 
 function memberRole(exists: boolean, value: unknown): MemberRole {
-  return requireConsoleEntityMemberRole({
+  return requireWorkspaceEntityMemberRole({
     exists,
     role: value,
     entityLabel: 'Supplier',
@@ -87,14 +87,14 @@ function readRootManagement(value: Record<string, unknown>) {
 }
 
 function readSupport(value: Record<string, unknown>) {
-  return readConsoleEntitySupportAuthority(value, 'Supplier')!
+  return readWorkspaceEntitySupportAuthority(value, 'Supplier')!
 }
 
 function assertSupportCapacity(
   support: ReturnType<typeof readSupport>,
   uid: string
 ) {
-  assertConsoleEntitySupportCapacity(support, uid, 'Supplier')
+  assertWorkspaceEntitySupportCapacity(support, uid, 'Supplier')
 }
 
 function resolveAction(input: {
@@ -326,7 +326,7 @@ export async function completeSupplierOnboarding(
     }
 
     mutations.update(memberships, uid, {
-      console_enabled: true,
+      workspace_enabled: true,
       updated: serverAuditStamp({ by: uid }),
     })
 

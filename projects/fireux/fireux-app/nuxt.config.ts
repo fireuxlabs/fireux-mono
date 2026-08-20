@@ -9,7 +9,7 @@ export default defineFireuxConfig({
   shortName: 'FireUX',
   role: 'global',
   designPack: { preset: 'sci-fire' },
-  consoles: ['project'],
+  workspaces: ['project'],
   seo: {
     siteUrl: 'https://fireux.app',
     staticPaths: ['/apps', '/ecosystems', '/ecosystems/werkbox'],

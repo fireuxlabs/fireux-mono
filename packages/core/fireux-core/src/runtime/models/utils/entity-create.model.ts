@@ -1,4 +1,4 @@
-export type FireuxEntityCreateMode = 'root' | 'console'
+export type FireuxEntityCreateMode = 'root' | 'workspace'
 
 export type FireuxEntityCreateResult = {
   id: string

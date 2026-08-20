@@ -13,13 +13,13 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'Portfolio',
     priority: 1,
-    ignore: ['Console/**', 'dev/**'],
+    ignore: ['Workspace/**', 'dev/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/portfolio/components/Console', {
+  registerComponentsDir(resolver, './runtime/portfolio/components/Workspace', {
     global: true,
     pathPrefix: true,
-    prefix: 'ConsolePortfolio',
+    prefix: 'WorkspacePortfolio',
     priority: 1,
   })
 
@@ -35,13 +35,13 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'Property',
     priority: 1,
-    ignore: ['Console/**'],
+    ignore: ['Workspace/**'],
   })
 
-  registerComponentsDir(resolver, './runtime/property/components/Console', {
+  registerComponentsDir(resolver, './runtime/property/components/Workspace', {
     global: true,
     pathPrefix: true,
-    prefix: 'ConsoleProperty',
+    prefix: 'WorkspaceProperty',
     priority: 1,
   })
 }

@@ -64,7 +64,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.equal(existsSync(file(repoRoot, retiredDirectoryReadPath)), false)
   assert.match(manager, /\buseKitchenCollection\s*\(/)
   assert.match(manager, /Root kitchens/)
-  assert.match(manager, /Console kitchens/)
+  assert.match(manager, /Workspace kitchens/)
   assert.match(manager, /App kitchens/)
   assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
   assert.match(collection, /\/api\/kitchens\?limit=/)
@@ -162,6 +162,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detailModel, /place:\s*Place/)
   assert.match(detailModel, /presentation:\s*KitchenDetailPresentation/)
   assert.doesNotMatch(detailModel, /PublicKitchenDetail/)
-  assert.match(operatorPanel, /\buseKitchenConsoleTargetCollection\s*\(/)
+  assert.match(operatorPanel, /\buseKitchenWorkspaceTargetCollection\s*\(/)
   assert.doesNotMatch(operatorPanel, /useKitchenFetch|firebase\/firestore/)
 }

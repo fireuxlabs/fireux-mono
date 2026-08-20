@@ -4,7 +4,7 @@ import { useUser } from '../../user/composables/useUser'
 import { useUserInterface } from '../../user/composables/useUserInterface'
 import { usePublicUserIdentity } from '../../user/composables/usePublicUserIdentity'
 import { useToastify } from '../ui/useToastify'
-import { useConsoleEntryCta } from '../fireux/console/useConsoleEntryCta'
+import { useWorkspaceEntryCta } from '../fireux/workspace/useWorkspaceEntryCta'
 
 type StringSource = string | null | undefined | Ref<string | null | undefined>
 
@@ -54,11 +54,11 @@ export function usePublicClaimPanel(options: ClaimPanelOptions) {
     )
   )
 
-  const { consoleActions: consoleEntryActions } = useConsoleEntryCta()
-  const consoleActions = computed(() => {
+  const { workspaceActions: workspaceEntryActions } = useWorkspaceEntryCta()
+  const workspaceActions = computed(() => {
     if (!canEdit.value) return []
 
-    return consoleEntryActions.value.map((entry) => ({
+    return workspaceEntryActions.value.map((entry) => ({
       label: entry.label,
       to: entry.path,
       icon: entry.icon,
@@ -94,7 +94,7 @@ export function usePublicClaimPanel(options: ClaimPanelOptions) {
     isAdminEdit,
     editTo,
     isClaiming,
-    consoleActions,
+    workspaceActions,
     onClaim,
   }
 }

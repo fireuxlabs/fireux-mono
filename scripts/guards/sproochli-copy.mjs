@@ -345,7 +345,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const menuConfirmEndpoint = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/menus/confirm.post.ts'
   )
   const sproochliHostRules = read(
     repoRoot,

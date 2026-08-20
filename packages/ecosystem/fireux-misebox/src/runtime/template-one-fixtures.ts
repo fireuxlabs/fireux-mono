@@ -8,7 +8,7 @@ import {
 import { MISEBOX_BASIC_PRIMARY_COLOR } from './kitchen-basic-presentation'
 import {
   compactAppPalette,
-  consolePaletteFromApp,
+  workspacePaletteFromApp,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { AppPalette } from 'fireux-core/types/theme'
 import { resolveAppPalette } from 'fireux-core/runtime/utils/brand-palette'
@@ -27,7 +27,7 @@ const rootProps = (
   ...(kitchenSource ? { kitchenSource } : {}),
 })
 
-const consoleValues = [
+const workspaceValues = [
   'Light and dark canvas',
   'Light and dark text',
   'Title colour',
@@ -82,8 +82,8 @@ const deanosAppPalette = {
   accent_contrast: '#0b0b0a',
 } as const satisfies AppPalette
 
-const friiitesConsolePalette = consolePaletteFromApp(friiitesAppPalette)
-const deanosConsolePalette = consolePaletteFromApp(deanosAppPalette)
+const friiitesWorkspacePalette = workspacePaletteFromApp(friiitesAppPalette)
+const deanosWorkspacePalette = workspacePaletteFromApp(deanosAppPalette)
 
 export const landingTemplateBrands = [
   {
@@ -100,7 +100,7 @@ export const landingTemplateBrands = [
   {
     id: 'pizza-the-action',
     name: 'Pizza the Action',
-    tier: 'console',
+    tier: 'workspace',
     demo: true,
     assetSources: {
       logo: 'demo:kitchens/pizza-the-action/logo.png',
@@ -112,13 +112,13 @@ export const landingTemplateBrands = [
       '',
       'Pizza, pasta and neighbourhood hospitality.'
     ),
-    consoleProps: {
+    workspaceProps: {
       source: 'Pizza the Action Demo Kitchen.menus.style',
       pageStyle: pizzaTheActionMenuPageStyle,
       palette: {
         canvas: '#fff7d6', text: '#345442', accent: '#1f6b45', accent_contrast: '#fff8dc',
       },
-      values: consoleValues,
+      values: workspaceValues,
     },
   },
   {
@@ -140,11 +140,11 @@ export const landingTemplateBrands = [
       'kitchens/5dGJgdjDv7Zi0tjva61O · assets.backdrop_color',
       'Hand-cut. Brined. Triple-fried in beef tallow.'
     ),
-    consoleProps: {
-      source: 'apps/friiites/kitchens/5dGJgdjDv7Zi0tjva61O · console.theme.palette',
+    workspaceProps: {
+      source: 'kitchens/5dGJgdjDv7Zi0tjva61O · theme.palette',
       pageStyle: defaultMenuPageStyle,
-      palette: friiitesConsolePalette,
-      values: consoleValues,
+      palette: friiitesWorkspacePalette,
+      values: workspaceValues,
     },
     appProps: {
       source: 'apps/friiites · theme.palette',
@@ -152,7 +152,7 @@ export const landingTemplateBrands = [
       kitchenId: '5dGJgdjDv7Zi0tjva61O',
       template: 'template-one',
       note: 'Real App consumer; template selection persistence remains to be modelled.',
-      palette: compactAppPalette(friiitesAppPalette, friiitesConsolePalette),
+      palette: compactAppPalette(friiitesAppPalette, friiitesWorkspacePalette),
       typography: {
         display_family: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
         body_family: "'Arial Narrow', Arial, sans-serif",
@@ -208,11 +208,11 @@ export const landingTemplateBrands = [
       '',
       'Smashed. Seared. Stacked. Served hot.'
     ),
-    consoleProps: {
-      source: "Deano's Demo Console palette derived from its App",
+    workspaceProps: {
+      source: "Deano's Demo Workspace palette derived from its App",
       pageStyle: defaultMenuPageStyle,
-      palette: deanosConsolePalette,
-      values: consoleValues,
+      palette: deanosWorkspacePalette,
+      values: workspaceValues,
     },
     appProps: {
       source: "Deano's incremental App preview fixture",
@@ -220,7 +220,7 @@ export const landingTemplateBrands = [
       kitchenId: 'deanos',
       template: 'template-one',
       note: 'Demo App emulation; App presentation data can be extended incrementally.',
-      palette: compactAppPalette(deanosAppPalette, deanosConsolePalette),
+      palette: compactAppPalette(deanosAppPalette, deanosWorkspacePalette),
       typography: {
         display_family: 'Montserrat, Arial, sans-serif',
         body_family: 'Inter, Arial, sans-serif',
@@ -277,11 +277,11 @@ export const landingTemplates = [
     slug: 'theme',
     name: 'Theme',
     kind: 'theme',
-    minimumTier: 'console',
-    status: 'Console',
-    summary: 'Functional Console presentation extending the Default level.',
-    anatomy: ['Default presentation', 'Console palette', 'PageStyle'],
-    features: ['Four functional colours', 'Typography intent', 'Console surfaces'],
+    minimumTier: 'workspace',
+    status: 'Workspace',
+    summary: 'Functional Workspace presentation extending the Default level.',
+    anatomy: ['Default presentation', 'Workspace palette', 'PageStyle'],
+    features: ['Four functional colours', 'Typography intent', 'Workspace surfaces'],
     purchaseOptions: [],
     brands: landingTemplateBrands,
   },
@@ -291,9 +291,9 @@ export const landingTemplates = [
     kind: 'template',
     minimumTier: 'app',
     status: 'In development',
-    summary: 'Place primary colour, Console theme, then App template.',
+    summary: 'Place primary colour, Workspace theme, then App template.',
     anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
-    features: ['Place primary colour', 'Console presentation', 'App template'],
+    features: ['Place primary colour', 'Workspace presentation', 'App template'],
     purchaseOptions: [
       {
         seller: 'FireUX',
@@ -329,9 +329,9 @@ export const createTemplateOneFixtureProjection = (input: {
   wordmarkSrc?: string
 }): TemplateOneKitchenProjection => {
   const { kitchen, media } = input
-  if (!kitchen.consoleProps || !kitchen.appProps)
+  if (!kitchen.workspaceProps || !kitchen.appProps)
     throw new Error(`${kitchen.name} is not configured for Template One`)
-  const palette = resolveAppPalette(kitchen.consoleProps.palette, kitchen.appProps.palette)
+  const palette = resolveAppPalette(kitchen.workspaceProps.palette, kitchen.appProps.palette)
   if (!palette)
     throw new Error(`${kitchen.name} has no effective Template One palette`)
   const isFriiites = kitchen.id === 'friiites'
@@ -381,9 +381,9 @@ export const createTemplateOneFixtureProjection = (input: {
     footer: {
       eyebrow: 'Kitchen operations',
       title: `Manage ${kitchen.name} in Misebox.`,
-      description: 'Menus, dishes, recipes, preparation and orders stay connected in the Kitchen Console.',
-      consoleTo: isFriiites ? '/console/kitchen' : '/get-started',
-      consoleLabel: 'Enter Console',
+      description: 'Menus, dishes, recipes, preparation and orders stay connected in the Kitchen Workspace.',
+      workspaceTo: isFriiites ? '/workspace/kitchen' : '/get-started',
+      workspaceLabel: 'Enter Workspace',
       origin: `${kitchen.name} · Developed in Switzerland`,
       links: [
         { label: 'Menu', to: '#menu' },

@@ -1,5 +1,5 @@
 <template>
-  <SupplierCTA create-surface="console" />
+  <SupplierCTA create-surface="workspace" />
 </template>
 
 <script setup lang="ts">

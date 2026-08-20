@@ -1,5 +1,5 @@
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
 import type {
   SproochliDefaultLanguage,
@@ -71,7 +71,7 @@ export type MenuKitchenPresentation = {
   placeLogoImageUrl?: string
   placeWordmarkImageUrl?: string
   pageStyle?: Partial<PageStyle>
-  theme: ConsoleTheme
+  theme: WorkspaceTheme
   themeSource: 'menu' | 'kitchen' | 'place-default'
 }
 

@@ -1,9 +1,9 @@
 import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
-const propertyConsole = {
+const propertyWorkspace = {
   id: 'property',
-  name: 'Property console',
-  to: '/console/property',
+  name: 'Property workspace',
+  to: '/workspace/property',
 } as const
 
 export const propertyOperations = [
@@ -24,7 +24,7 @@ export const propertyOperations = [
   slug,
   title,
   description,
-  to: `/console/property/${slug}`,
-  console: propertyConsole,
+  to: `/workspace/property/${slug}`,
+  workspace: propertyWorkspace,
   icon,
 })) satisfies FireuxMetaOperation[]

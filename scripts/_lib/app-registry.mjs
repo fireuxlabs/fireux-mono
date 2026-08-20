@@ -41,20 +41,20 @@ const SHARED_ROUTES = [
   '/dashboard/user-profile',
 ]
 
-// Registry consoles are smoke-test route segments.
-// Console family keys and route segments are singular:
+// Registry workspaces are smoke-test route segments.
+// Workspace family keys and route segments are singular:
 // `project`, `property`, `kitchen`, `portfolio`, and `supplier`.
 function unique(values) {
   return [...new Set(values)]
 }
 
-function consoleRoutes(families = []) {
+function workspaceRoutes(families = []) {
   if (!families.length) return []
 
-  const routes = ['/console']
+  const routes = ['/workspace']
 
   for (const family of families) {
-    routes.push(`/console/${family}`)
+    routes.push(`/workspace/${family}`)
   }
 
   return routes
@@ -70,7 +70,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/fireux/fireux-app',
     port: 3000,
-    consoles: ['project'],
+    workspaces: ['project'],
     smokeRoutes: [
       ...SHARED_ROUTES,
       '/get-started',
@@ -82,18 +82,18 @@ export const APP_REGISTRY = {
       '/ecosystems/misebox',
       '/ecosystems/werkbox',
       '/operations/identity',
-      ...consoleRoutes(['project']),
-      '/console/project/identity',
-      '/console/project/overview',
-      '/console/project/apps',
-      '/console/project/ecosystem',
-      '/console/project/ignitions',
+      ...workspaceRoutes(['project']),
+      '/workspace/project/identity',
+      '/workspace/project/overview',
+      '/workspace/project/apps',
+      '/workspace/project/ecosystem',
+      '/workspace/project/ignitions',
     ],
     httpContracts: [
       seoPageContract('/', {
         title: 'FireUX — Projects, Apps, and Ecosystems',
         description:
-          'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Console.',
+          'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Workspace.',
         canonical: 'http://localhost:3000/',
         robots: 'index, follow',
         image: 'http://localhost:3000/img/app/cover.png',
@@ -101,7 +101,7 @@ export const APP_REGISTRY = {
       }),
       seoPageContract('/operations', {
         title: 'Operations - FireUX',
-        description: 'Operations across FireUX consoles.',
+        description: 'Operations across FireUX workspaces.',
         canonical: 'http://localhost:3000/operations',
         robots: 'index, follow',
         image: 'http://localhost:3000/img/app/cover.png',
@@ -251,19 +251,19 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/misebox/misebox-app',
     port: 3001,
-    consoles: ['kitchen'],
+    workspaces: ['kitchen'],
     toolProviders: ['go-qr'],
     componentSmokeRoutes: [
-      '/console/kitchen',
-      '/console/kitchen/identity',
-      '/console/kitchen/mise',
-      '/console/kitchen/ingredients',
-      '/console/kitchen/suppliers',
-      '/console/kitchen/menus',
-      '/console/kitchen/dishes',
-      '/console/kitchen/recipes',
+      '/workspace/kitchen',
+      '/workspace/kitchen/identity',
+      '/workspace/kitchen/mise',
+      '/workspace/kitchen/ingredients',
+      '/workspace/kitchen/suppliers',
+      '/workspace/kitchen/menus',
+      '/workspace/kitchen/dishes',
+      '/workspace/kitchen/recipes',
     ],
-    smokeRoutes: [...SHARED_ROUTES, ...consoleRoutes(['kitchen']), '/jobs'],
+    smokeRoutes: [...SHARED_ROUTES, ...workspaceRoutes(['kitchen']), '/jobs'],
     httpContracts: [
       seoPageContract('/', {
         title: 'Misebox — Menu and kitchen management',
@@ -477,7 +477,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/werkbox/werkbox-app',
     port: 3002,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [...SHARED_ROUTES, '/jobs'],
     httpContracts: [jobIndexApiContract('/api/jobs?limit=1')],
     launchOrder: 3,
@@ -491,7 +491,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/werkbox/richies-reinigung',
     port: 3004,
-    consoles: [],
+    workspaces: [],
     launchOrder: 4,
   },
   tenant: {
@@ -503,7 +503,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/fireux/tenant',
     port: 3005,
-    consoles: [],
+    workspaces: [],
     launchOrder: 5,
   },
   bringli: {
@@ -515,7 +515,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/bringli/bringli-app',
     port: 3006,
-    consoles: ['supplier'],
+    workspaces: ['supplier'],
     launchOrder: 6,
   },
   'find-my-seo': {
@@ -527,7 +527,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/find-my-seo-app',
     port: 3010,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [
       '/',
       '/chat',
@@ -551,7 +551,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/sproochli',
     port: 3011,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [
       '/',
       '/chat',
@@ -570,14 +570,14 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/buenohost/buenohost-app',
     port: 3012,
-    consoles: ['property'],
+    workspaces: ['property'],
     smokeRoutes: [
       '/',
       '/chat',
       '/properties/preview-stay',
       '/properties/preview-stay/info',
       '/properties/preview-stay/info/check-in',
-      '/console/property',
+      '/workspace/property',
     ],
     launchOrder: 9,
   },
@@ -590,7 +590,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/buenohost/book-with-nats',
     port: 3028,
-    consoles: ['property'],
+    workspaces: ['property'],
     smokeRoutes: ['/', '/stay', '/book', '/contact'],
     launchOrder: 19,
   },
@@ -603,7 +603,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/buenohost/ausfinn-apartments',
     port: 3029,
-    consoles: ['property'],
+    workspaces: ['property'],
     smokeRoutes: ['/', '/stays', '/book', '/contact'],
     launchOrder: 20,
   },
@@ -616,7 +616,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/go-qr',
     port: 3013,
-    consoles: [],
+    workspaces: [],
     toolProviders: ['go-qr'],
     smokeRoutes: ['/', '/choufe', '/verchoufe'],
     launchOrder: 10,
@@ -631,8 +631,8 @@ export const APP_REGISTRY = {
     provisioning: 'harness',
     workspace: './projects/fireux/fireux-blank',
     port: 3015,
-    consoles: ['blank'],
-    smokeRoutes: ['/', '/console', '/console/blank'],
+    workspaces: ['blank'],
+    smokeRoutes: ['/', '/workspace', '/workspace/blank'],
     launchOrder: 15,
   },
   'yellow-velo': {
@@ -644,7 +644,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/slap/yellow-velo',
     port: 3014,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [
       '/',
       '/products',
@@ -662,7 +662,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/holzworm',
     port: 3030,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: ['/'],
     launchOrder: 13,
   },
@@ -675,7 +675,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/lifeguard-community',
     port: 3031,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [
       '/',
       '/forum',
@@ -695,7 +695,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/granite/granite-app',
     port: 3007,
-    consoles: ['portfolio'],
+    workspaces: ['portfolio'],
     launchOrder: 13,
   },
   slap: {
@@ -707,14 +707,14 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/slap/slap-app',
     port: 3009,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: [
       '/',
       '/about',
       '/get-started',
       '/products',
       '/blog',
-      '/console',
+      '/workspace',
     ],
     launchOrder: 11,
   },
@@ -727,7 +727,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
-    consoles: ['kitchen'],
+    workspaces: ['kitchen'],
     httpContracts: [
       tenantMenuIndexRedirectContract('/menus', '/main'),
       tenantMenuBrowseContract('/main'),
@@ -772,7 +772,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/baeren-ringgenberg',
     port: 3017,
-    consoles: ['kitchen'],
+    workspaces: ['kitchen'],
     smokeRoutes: [
       '/',
       '/hotel',
@@ -843,7 +843,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/bangin-coffee',
     port: 3016,
-    consoles: [],
+    workspaces: [],
     toolProviders: ['go-qr'],
     smokeRoutes: ['/', '/contact'],
     launchOrder: 16,
@@ -857,7 +857,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/friiites',
     port: 3033,
-    consoles: ['kitchen'],
+    workspaces: ['kitchen'],
     toolProviders: ['go-qr'],
     smokeRoutes: ['/', '/kitchens', '/menus'],
     launchOrder: 19,
@@ -871,7 +871,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/interlaken-essen',
     port: 3026,
-    consoles: [],
+    workspaces: [],
     smokeRoutes: ['/', '/mis', '/users'],
     httpContracts: [
       seoPageContract('/', {
@@ -931,7 +931,7 @@ export function getAppRegistryEntry(key) {
 
   const smokeRoutes = app.smokeRoutes?.length
     ? unique(app.smokeRoutes)
-    : unique([...SHARED_ROUTES, ...consoleRoutes(app.consoles)])
+    : unique([...SHARED_ROUTES, ...workspaceRoutes(app.workspaces)])
 
   return {
     ...app,

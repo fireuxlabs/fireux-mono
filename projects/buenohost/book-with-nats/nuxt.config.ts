@@ -11,8 +11,8 @@ export default defineFireuxConfig({
   seo: {
     siteUrl: 'https://book-with-nats-buenohost.web.app',
   },
-  consoles: ['property'],
-  consoleConfig: {
+  workspaces: ['property'],
+  workspaceConfig: {
     property: {
       canCreate: false,
     },

@@ -66,7 +66,7 @@ export const ChefProfileRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'User',
   scoped: ChefStorage.root,
   notes: [
@@ -82,7 +82,7 @@ export const AppChefProfileRecord = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'User',
   scoped: AppChefStorage.path,
   notes: ['AppChefProfile is a non-identity App delta for one ChefProfile uid.'],

@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: register the bounded public Kitchen/Place projection.
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: register the bounded gross-sales report endpoint.
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: register authenticated preview and atomic completion endpoints.
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: register the authenticated bounded target projection.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: register the authenticated bounded target projection.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: register the canonical Dish image upload endpoint.
 // Concurrent edit — 2026-07-22 12:24 CEST — Canonical Kitchen theme write: register the trusted root style mutation.
 import type { Resolver } from '@nuxt/kit'
@@ -126,95 +126,95 @@ const baseServerHandlers = [
     handler: './runtime/server/api/customer/orders.get',
   },
   {
-    route: '/api/console/kitchen/orders/transition',
+    route: '/api/workspace/kitchen/orders/transition',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/orders/transition.post',
+    handler: './runtime/server/api/workspace/kitchen/orders/transition.post',
   },
   {
-    route: '/api/console/kitchen/orders/end-service',
+    route: '/api/workspace/kitchen/orders/end-service',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/orders/end-service.post',
+    handler: './runtime/server/api/workspace/kitchen/orders/end-service.post',
   },
   {
-    route: '/api/console/kitchen/targets',
+    route: '/api/workspace/kitchen/targets',
     method: 'get',
-    handler: './runtime/server/api/console/kitchen/targets.get',
+    handler: './runtime/server/api/workspace/kitchen/targets.get',
   },
   {
-    route: '/api/console/kitchen/theme',
+    route: '/api/workspace/kitchen/theme',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/theme.post',
+    handler: './runtime/server/api/workspace/kitchen/theme.post',
   },
   {
-    route: '/api/console/kitchen/update',
+    route: '/api/workspace/kitchen/update',
     method: 'patch',
-    handler: './runtime/server/api/console/kitchen/update.patch',
+    handler: './runtime/server/api/workspace/kitchen/update.patch',
   },
   {
-    route: '/api/console/kitchen/team/members',
+    route: '/api/workspace/kitchen/team/members',
     method: 'get',
-    handler: './runtime/server/api/console/kitchen/team/members.get',
+    handler: './runtime/server/api/workspace/kitchen/team/members.get',
   },
   {
-    route: '/api/console/kitchen/team/members',
+    route: '/api/workspace/kitchen/team/members',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/team/members.post',
+    handler: './runtime/server/api/workspace/kitchen/team/members.post',
   },
   {
-    route: '/api/console/kitchen/team/members/:memberId',
+    route: '/api/workspace/kitchen/team/members/:memberId',
     method: 'patch',
     handler:
-      './runtime/server/api/console/kitchen/team/members/[memberId].patch',
+      './runtime/server/api/workspace/kitchen/team/members/[memberId].patch',
   },
   {
-    route: '/api/console/kitchen/team/members/:memberId',
+    route: '/api/workspace/kitchen/team/members/:memberId',
     method: 'delete',
     handler:
-      './runtime/server/api/console/kitchen/team/members/[memberId].delete',
+      './runtime/server/api/workspace/kitchen/team/members/[memberId].delete',
   },
   {
-    route: '/api/console/kitchen/reports/gross-sales',
+    route: '/api/workspace/kitchen/reports/gross-sales',
     method: 'get',
     handler:
-      './runtime/server/api/console/kitchen/reports/gross-sales.get',
+      './runtime/server/api/workspace/kitchen/reports/gross-sales.get',
   },
   {
-    route: '/api/console/kitchen/dishes/:dishId/image',
+    route: '/api/workspace/kitchen/dishes/:dishId/image',
     method: 'post',
     handler:
-      './runtime/server/api/console/kitchen/dishes/[dishId]/image.post',
+      './runtime/server/api/workspace/kitchen/dishes/[dishId]/image.post',
   },
   {
-    route: '/api/console/kitchen/dishes/:dishId/flagship',
+    route: '/api/workspace/kitchen/dishes/:dishId/flagship',
     method: 'patch',
     handler:
-      './runtime/server/api/console/kitchen/dishes/[dishId]/flagship.patch',
+      './runtime/server/api/workspace/kitchen/dishes/[dishId]/flagship.patch',
   },
   {
-    route: '/api/console/kitchen/menus/upload',
+    route: '/api/workspace/kitchen/menus/upload',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/menus/upload.post',
+    handler: './runtime/server/api/workspace/kitchen/menus/upload.post',
   },
   {
-    route: '/api/console/kitchen/menus/publish',
+    route: '/api/workspace/kitchen/menus/publish',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/menus/publish.post',
+    handler: './runtime/server/api/workspace/kitchen/menus/publish.post',
   },
   {
-    route: '/api/console/kitchen/menus/upload',
+    route: '/api/workspace/kitchen/menus/upload',
     method: 'options',
-    handler: './runtime/server/api/console/kitchen/menus/upload.options',
+    handler: './runtime/server/api/workspace/kitchen/menus/upload.options',
   },
   {
-    route: '/api/console/kitchen/menus/upload/availability',
+    route: '/api/workspace/kitchen/menus/upload/availability',
     method: 'get',
-    handler: './runtime/server/api/console/kitchen/menus/upload/availability.get',
+    handler: './runtime/server/api/workspace/kitchen/menus/upload/availability.get',
   },
   {
-    route: '/api/console/kitchen/menus/upload/availability',
+    route: '/api/workspace/kitchen/menus/upload/availability',
     method: 'options',
     handler:
-      './runtime/server/api/console/kitchen/menus/upload/availability.options',
+      './runtime/server/api/workspace/kitchen/menus/upload/availability.options',
   },
   {
     route: '/api/menus/:menuId/delivery-address',
@@ -258,15 +258,15 @@ const baseServerHandlers = [
 
 const aiServerHandlers = [
   {
-    route: '/api/console/kitchen/menus/process-estimate',
+    route: '/api/workspace/kitchen/menus/process-estimate',
     method: 'post',
     handler:
-      './runtime/server/api/console/kitchen/menus/process-estimate.post',
+      './runtime/server/api/workspace/kitchen/menus/process-estimate.post',
   },
   {
-    route: '/api/console/kitchen/menus/process',
+    route: '/api/workspace/kitchen/menus/process',
     method: 'post',
-    handler: './runtime/server/api/console/kitchen/menus/process.post',
+    handler: './runtime/server/api/workspace/kitchen/menus/process.post',
   },
 ] satisfies FireuxServerHandler[]
 

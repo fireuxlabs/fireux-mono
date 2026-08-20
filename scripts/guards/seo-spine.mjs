@@ -39,7 +39,7 @@ export async function run({ repoRoot }) {
   )
 
   for (const route of [
-    '/console/**',
+    '/workspace/**',
     '/dashboard/**',
     '/account/**',
     '/member/**',

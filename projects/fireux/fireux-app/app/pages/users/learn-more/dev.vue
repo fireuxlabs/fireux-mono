@@ -15,7 +15,7 @@
         <ul class="list-disc fx-list-stack text-sm">
           <li>Core identity collection: <code>users</code>.</li>
           <li>Public route contract: <code>/users/[handle]</code>.</li>
-          <li>Console/admin routes remain id-based; public discovery stays handle-based.</li>
+          <li>Workspace/admin routes remain id-based; public discovery stays handle-based.</li>
         </ul>
       </UCard>
 

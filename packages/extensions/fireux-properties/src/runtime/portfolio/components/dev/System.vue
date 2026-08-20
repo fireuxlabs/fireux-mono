@@ -119,10 +119,10 @@ import { computed, ref, watch } from 'vue'
 import PortfolioCollectionManager from '../Collection/Manager.vue'
 import {
   ROOT_PORTFOLIO_COLLECTION_PATH,
-  resolvePortfolioConsoleCollectionPath,
+  resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
-} from '../../composables/console/operations/Shared/shared'
-import { useActivePortfolio } from '../../composables/console/operations/useActivePortfolio'
+} from '../../composables/workspace/operations/Shared/shared'
+import { useActivePortfolio } from '../../composables/workspace/operations/useActivePortfolio'
 import { usePortfolioCollection } from '../../composables/firestore/fetch/usePortfolioCollection'
 import type { PortfolioSurface } from '../../composables/firestore/utils/view/usePortfolioInterface'
 import { ClientStorage } from '../../models/client.model.ts'
@@ -155,7 +155,7 @@ const portfolioModelRuntime = PortfolioModelRuntime
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
 const appSupportPortfolioCollectionPath = computed(() =>
-  resolvedAppId.value ? resolvePortfolioConsoleCollectionPath(resolvedAppId.value) : ''
+  resolvedAppId.value ? resolvePortfolioWorkspaceCollectionPath(resolvedAppId.value) : ''
 )
 const runtimePortfolio = computed(() => ({
   id: runtime.id.value || null,
@@ -193,7 +193,7 @@ const portfolioOptions = computed<{ label: string, value: string }[]>(() =>
   portfolios.value.map((portfolio) => {
     const id = String(portfolio.id || '').trim()
     const labelBase = portfolio.name || id
-    const appSupportStatus = portfolioAppById.value.has(id) ? 'console' : 'root only'
+    const appSupportStatus = portfolioAppById.value.has(id) ? 'workspace' : 'root only'
     return {
       label: `${labelBase} · ${appSupportStatus}`,
       value: id,

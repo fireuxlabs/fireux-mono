@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-21 12:20 CEST — FireUX SEO solutions: add seven distinct customer-intent pages.
 // Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: declare FireUX route-backed capabilities.
 // Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
-// Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
+// Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Workspace homes.
 // Concurrent edit — 2026-08-03 — Keep Ignition as App intake and a private delivery workflow, not a Project Operation.
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain FireUX solution intent through intake.
 // Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: align public metadata with the concrete Ignition offer.
@@ -28,7 +28,7 @@ export const appMeta = {
 
   brand: sourceMeta.landing.brand,
   heroPrimaryHtml: sourceMeta.landing.heroPrimaryLine,
-  consoleBridgeHtml: sourceMeta.landing.consoleBridgeLine,
+  workspaceBridgeHtml: sourceMeta.landing.workspaceBridgeLine,
   landingPrimaryCtaLabel: sourceMeta.landing.primaryCtaLabel,
   landingSecondaryCtaLabel: sourceMeta.landing.secondaryCtaLabel ?? '',
   landingSecondaryCtaTo: sourceMeta.landing.secondaryCtaTo ?? '',
@@ -64,8 +64,8 @@ const publicRoutes = appMeta.routes
   .filter((route) => route.kind === 'public')
   .map((route) => route.path)
 
-const consoleRoutes = appMeta.routes
-  .filter((route) => route.kind === 'console')
+const workspaceRoutes = appMeta.routes
+  .filter((route) => route.kind === 'workspace')
   .map((route) => route.path)
 
 export const metaContent = defineFireuxMeta({
@@ -81,11 +81,11 @@ export const metaContent = defineFireuxMeta({
       'FireUX Projects',
       'FireUX Apps',
       'FireUX Ecosystems',
-      'Project Console',
+      'Project Workspace',
     ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
-    console_bridge_html: appMeta.consoleBridgeHtml,
+    workspace_bridge_html: appMeta.workspaceBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
   },
@@ -96,7 +96,7 @@ export const metaContent = defineFireuxMeta({
       'FireUX Project',
       'FireUX App',
       'FireUX Ecosystem',
-      'Project Console',
+      'Project Workspace',
       'app ignition',
       'modular web apps',
     ],
@@ -116,7 +116,7 @@ export const metaContent = defineFireuxMeta({
             to: appMeta.landingSecondaryCtaTo,
           }
         : undefined,
-    console: appMeta.aboutPrimaryAction,
+    workspace: appMeta.aboutPrimaryAction,
     roadmap: {
       label: 'Road map',
       to: '/road-map',
@@ -132,11 +132,11 @@ export const metaContent = defineFireuxMeta({
       slug: 'apps',
       title: 'Apps',
       description: 'Review the Apps connected to the selected Project.',
-      to: '/console/project/apps',
-      console: {
+      to: '/workspace/project/apps',
+      workspace: {
         id: 'project',
-        name: 'Project console',
-        to: '/console/project',
+        name: 'Project workspace',
+        to: '/workspace/project',
       },
       icon: 'i-lucide-app-window',
     },
@@ -146,11 +146,11 @@ export const metaContent = defineFireuxMeta({
       title: 'Ecosystem',
       description:
         'Review the selected Project Ecosystem and the Apps inside it.',
-      to: '/console/project/ecosystem',
-      console: {
+      to: '/workspace/project/ecosystem',
+      workspace: {
         id: 'project',
-        name: 'Project console',
-        to: '/console/project',
+        name: 'Project workspace',
+        to: '/workspace/project',
       },
       icon: 'i-lucide-orbit',
     },
@@ -163,6 +163,6 @@ export const metaContent = defineFireuxMeta({
   relations_ascii: appMeta.relationshipMap,
   routes: {
     public: publicRoutes,
-    console: consoleRoutes,
+    workspace: workspaceRoutes,
   },
 })

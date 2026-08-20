@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import { toValue } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { ConsoleTheme } from 'fireux-core/types/theme'
+import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import {
   resolveMenuPageStyle,
   resolveMenuFont,
@@ -17,7 +17,7 @@ import {
 
 type MenuThemeSurfaceOptions = {
   pageStyle?: MaybeRefOrGetter<Partial<PageStyle> | null | undefined>
-  theme?: MaybeRefOrGetter<ConsoleTheme | null | undefined>
+  theme?: MaybeRefOrGetter<WorkspaceTheme | null | undefined>
   colorMode?: MaybeRefOrGetter<'system' | 'light' | 'dark' | null | undefined>
   pageCanvas?: MaybeRefOrGetter<boolean | null | undefined>
 }

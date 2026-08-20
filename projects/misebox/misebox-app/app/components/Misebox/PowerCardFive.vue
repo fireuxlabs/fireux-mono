@@ -1,6 +1,6 @@
 <template>
   <div class="misebox-power-card-five">
-    <ConsoleKitchenOperationsMiseCardsPreview v-bind="mise" />
+    <WorkspaceKitchenOperationsMiseCardsPreview v-bind="mise" />
   </div>
 </template>
 

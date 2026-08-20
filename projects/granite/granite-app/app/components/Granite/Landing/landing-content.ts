@@ -10,11 +10,11 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Property Portfolio', 'Operations'],
     description:
-      'An integrated property platform connecting portfolios, compliance, documents and incidents directly to your Portfolio Console. Manage properties and clients, track obligations, coordinate tasks and review financial signals.',
+      'An integrated property platform connecting portfolios, compliance, documents and incidents directly to your Portfolio Workspace. Manage properties and clients, track obligations, coordinate tasks and review financial signals.',
     primaryAction: { label: 'Get started', to: '/get-started' },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console/portfolio',
+      label: 'Go to workspace',
+      to: '/workspace/portfolio',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],
@@ -30,13 +30,13 @@ export const railItems = portfolioOperations.map((operation) => ({
 
 export const surfaceItems = [
   {
-    id: 'portfolio-console',
-    title: 'Portfolio Console',
+    id: 'portfolio-workspace',
+    title: 'Portfolio Workspace',
     description:
-      'Manage property portfolios, clients, compliance, incidents, documents, tasks and financial signals in one Console.',
+      'Manage property portfolios, clients, compliance, incidents, documents, tasks and financial signals in one Workspace.',
     icon: 'i-lucide-layout-dashboard',
-    to: '/console/portfolio',
-    action: 'Open Portfolio Console',
+    to: '/workspace/portfolio',
+    action: 'Open Portfolio Workspace',
     items: [
       'Properties and clients',
       'Compliance and incidents',

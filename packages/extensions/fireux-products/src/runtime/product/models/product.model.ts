@@ -20,7 +20,7 @@ type WidenLiteral<T> =
  * Family: Domain Root
  * Storage: root-first canonical model
  * Root path: /products/<productId>
- * Console use: may be managed or linked inside consoles without requiring a stored overlay by default
+ * Workspace use: may be managed or linked inside workspaces without requiring a stored overlay by default
  * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:
@@ -46,7 +46,7 @@ export const ProductEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'owning-app-database',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   root: ProductStorage.path,
   notes: [
     'Product owns commercial identity and its ProductPrice children.',

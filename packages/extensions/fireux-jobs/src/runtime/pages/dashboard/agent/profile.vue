@@ -37,11 +37,11 @@
     </template>
 
     <template #body>
-      <div class="console-profile">
+      <div class="workspace-profile">
         <AgentIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
-          <div class="console-profile__section">
+          <div class="workspace-profile__section">
             <AgentEditCore />
           </div>
         </ClientOnly>

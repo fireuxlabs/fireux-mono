@@ -12,7 +12,7 @@ import { configureServer } from './config/module/server-config'
 
 export type FireuxSuppliersModuleOptions = {
   /**
-   * `owner` exposes the Supplier product, public routes, Console and trusted
+   * `owner` exposes the Supplier product, public routes, Workspace and trusted
    * onboarding. `consumer` exposes only the shared Supplier presentation and
    * projection helpers needed by Kitchen and marketplace consumers.
    */

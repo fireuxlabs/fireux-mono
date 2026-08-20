@@ -13,7 +13,7 @@ export const metaContent = defineFireuxMeta({
       'La Tap Berne is a Misebox tenant app for venue and menu surfaces.',
     promise_html:
       'Show the menu clearly and keep venue data connected to the Misebox ecosystem.',
-    console_bridge_html:
+    workspace_bridge_html:
       'Kitchen and menu records are managed through Misebox.',
   },
   seo: {

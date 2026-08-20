@@ -4,7 +4,7 @@ import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 export const sproochliProductSentence =
   'Translation-ready public pages for instructions, menus, signs, notices, and local information.'
 
-type SproochliRouteKind = 'public' | 'console'
+type SproochliRouteKind = 'public' | 'workspace'
 
 type SproochliRoute = {
   label: string
@@ -38,10 +38,10 @@ export const metaContent = defineFireuxMeta({
       'Sproochli creates <strong>translation-ready public pages</strong> for instructions, menus, signs, notices, and local information.',
     promise_html:
       'Owners write the original page, approve certified translations, and can later use cached generated translations for specific pages.',
-    console_bridge_html:
+    workspace_bridge_html:
       'A standalone FireUX app for simple public pages. Read-only menus are a stepping stone before Misebox, while general info pages cover other visitor instructions.',
     about_p1:
-      'Sproochli publishes simple QR-friendly public pages without needing a full console or ordering system.',
+      'Sproochli publishes simple QR-friendly public pages without needing a full workspace or ordering system.',
     about_p2:
       'The MVP starts with static read-only menus and general local information pages.',
   },
@@ -69,7 +69,7 @@ export const metaContent = defineFireuxMeta({
       label: 'View info page',
       to: '/info/bern-bike-rental/rental-instructions',
     },
-    console: {
+    workspace: {
       label: 'Sproochli',
       to: '/',
     },
@@ -229,6 +229,6 @@ Place
 `,
   routes: {
     public: sproochliRoutes.filter((route) => route.kind === 'public').map((route) => route.path),
-    console: sproochliRoutes.filter((route) => route.kind === 'console').map((route) => route.path),
+    workspace: sproochliRoutes.filter((route) => route.kind === 'workspace').map((route) => route.path),
   },
 })

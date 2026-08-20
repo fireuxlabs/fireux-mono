@@ -10,11 +10,11 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Guest', 'Operations'],
     description:
-      'An integrated guest information platform connecting QR stay guides directly to your Host Console. Publish check-in details, house rules and local recommendations. Manage properties, rooms, reservations and guest information.',
+      'An integrated guest information platform connecting QR stay guides directly to your Host Workspace. Publish check-in details, house rules and local recommendations. Manage properties, rooms, reservations and guest information.',
     primaryAction: { label: 'Get started', to: '/get-started' },
     secondaryAction: {
-      label: 'Go to console',
-      to: '/console/property',
+      label: 'Go to workspace',
+      to: '/workspace/property',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],
@@ -45,13 +45,13 @@ export const surfaceItems = [
     ],
   },
   {
-    id: 'host-console',
-    title: 'Host Console',
+    id: 'host-workspace',
+    title: 'Host Workspace',
     description:
       'Manage the property, room, reservation and guest information used throughout the stay.',
     icon: 'i-lucide-layout-dashboard',
-    to: '/console/property',
-    action: 'Open Host Console',
+    to: '/workspace/property',
+    action: 'Open Host Workspace',
     items: ['Properties', 'Rooms', 'Reservations', 'Calendar'],
   },
 ] as const satisfies readonly LandingProductSurface[]

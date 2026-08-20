@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
@@ -16,7 +16,7 @@ import type { PortfolioSurface } from '../utils/view/usePortfolioInterface'
 
 export type PortfolioCollectionFilterValue = TargetCollectionFilterValue
 export type PortfolioCollectionFilter = TargetCollectionFilter
-export type PortfolioCollectionSource = ConsoleSource
+export type PortfolioCollectionSource = WorkspaceSource
 export type PortfolioCollectionDoc = Partial<Portfolio> & {
   id?: string
 }

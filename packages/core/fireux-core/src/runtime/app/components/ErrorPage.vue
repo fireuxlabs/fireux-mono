@@ -236,7 +236,7 @@ const supportCopy = computed(() => {
   }
 
   if (statusCode.value === 401 || statusCode.value === 403) {
-    return 'Authentication and console permissions are enforced separately, so this page is showing the access boundary instead of failing silently.'
+    return 'Authentication and workspace permissions are enforced separately, so this page is showing the access boundary instead of failing silently.'
   }
 
   return 'This is the shared FireUX fallback surface. It keeps the app readable, gives the next action, and preserves the raw error when you need it.'
@@ -247,14 +247,14 @@ const recoverySteps = computed(() => {
     return [
       'Sign in with the account that owns or operates this app surface.',
       'Retry the route after authentication has completed.',
-      'If access still fails, confirm the account has the required console scope.',
+      'If access still fails, confirm the account has the required workspace scope.',
     ]
   }
 
   if (statusCode.value === 403) {
     return [
       'Return to a surface your account can access.',
-      'Check whether this account has the right console scope or membership.',
+      'Check whether this account has the right workspace scope or membership.',
       'Open the technical details below if you need the raw message for debugging.',
     ]
   }

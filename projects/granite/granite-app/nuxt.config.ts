@@ -8,7 +8,7 @@ export default defineFireuxConfig({
   name: 'Granite',
   shortName: 'Granite',
   role: 'global',
-  consoles: ['portfolio'],
+  workspaces: ['portfolio'],
   domains: ['properties', 'portfolios'],
   modules: [
     'fireux-properties',

@@ -108,7 +108,7 @@ export type LandingProductSurface = {
   supporting?: string
 }
 
-export type LandingConsolePreviewItem = {
+export type LandingWorkspacePreviewItem = {
   id: string
   title: string
   icon: string

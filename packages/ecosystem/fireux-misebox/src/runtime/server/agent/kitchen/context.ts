@@ -96,7 +96,7 @@ export async function readKitchenAgentContext(
     tagline: readRecordString(identity, 'tagline'),
     userContext,
     kitchenContext: readRecordString(
-      record(access.appKitchen.console),
+      record(access.appKitchen.workspace),
       'context'
     ),
     menuContext: readKitchenMenusConfig(access.appKitchen).context,

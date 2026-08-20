@@ -1,5 +1,5 @@
-// Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: share provider delivery with an authenticated console test.
-// Concurrent edit — 2026-07-20 15:19 CEST — Pre-order WhatsApp console-link pass: require the global confirmation route in every provider template.
+// Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: share provider delivery with an authenticated workspace test.
+// Concurrent edit — 2026-07-20 15:19 CEST — Pre-order WhatsApp workspace-link pass: require the global confirmation route in every provider template.
 import { Timestamp, type DocumentData } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -19,7 +19,7 @@ type ClaimedPreOrderWhatsApp = {
 
 type WhatsAppProviderConfig = {
   accessToken: string
-  consoleUrl: string
+  workspaceUrl: string
   graphVersion: string
   languageCode: string
   phoneNumberId: string
@@ -27,7 +27,7 @@ type WhatsAppProviderConfig = {
 }
 
 const deliveryLeaseMs = 60_000
-const preOrderConsolePath = '/console/kitchen/orders/pre-orders'
+const preOrderWorkspacePath = '/workspace/kitchen/orders/pre-orders'
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -191,7 +191,7 @@ async function sendTemplateMessage(
           components: [
             {
               type: 'body',
-              parameters: [...parameters, config.consoleUrl].map((value) => ({
+              parameters: [...parameters, config.workspaceUrl].map((value) => ({
                 type: 'text',
                 text: value,
               })),
@@ -226,7 +226,7 @@ async function sendTemplateMessage(
 function providerConfig(): WhatsAppProviderConfig {
   const config = {
     accessToken: text(process.env.FIREUX_WHATSAPP_CLOUD_ACCESS_TOKEN),
-    consoleUrl: normalizePreOrderConsoleUrl(
+    workspaceUrl: normalizePreOrderWorkspaceUrl(
       process.env.FIREUX_WHATSAPP_PRE_ORDER_CONSOLE_URL
     ),
     graphVersion: text(process.env.FIREUX_WHATSAPP_CLOUD_GRAPH_VERSION),
@@ -236,7 +236,7 @@ function providerConfig(): WhatsAppProviderConfig {
   }
   if (
     !config.accessToken ||
-    !config.consoleUrl ||
+    !config.workspaceUrl ||
     !/^v\d+\.\d+$/.test(config.graphVersion) ||
     !/^[A-Za-z0-9_]+$/.test(config.languageCode) ||
     !/^\d+$/.test(config.phoneNumberId) ||
@@ -248,7 +248,7 @@ function providerConfig(): WhatsAppProviderConfig {
   return config
 }
 
-function normalizePreOrderConsoleUrl(value: unknown) {
+function normalizePreOrderWorkspaceUrl(value: unknown) {
   const source = text(value)
   if (!source) return ''
 
@@ -262,11 +262,11 @@ function normalizePreOrderConsoleUrl(value: unknown) {
       url.password ||
       url.search ||
       url.hash ||
-      pathname !== preOrderConsolePath
+      pathname !== preOrderWorkspacePath
     )
       return ''
 
-    url.pathname = preOrderConsolePath
+    url.pathname = preOrderWorkspacePath
     return url.toString()
   } catch {
     return ''

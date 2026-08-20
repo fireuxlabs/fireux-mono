@@ -37,7 +37,7 @@ export const KitchenOrderEntity = defineFireuxEntity({
   identity: 'parent-scoped',
   authority: 'parent',
   appSupport: 'none',
-  console: false,
+  workspace: false,
   parent: 'Kitchen',
   scoped: KitchenOrderStorage.path,
 })

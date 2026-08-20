@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: keep root creation free of app access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Portfolio root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
-// Concurrent edit — 2026-07-21 22:29 CEST — Portfolio atomic attachment: route live Console creation through trusted onboarding.
-// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: make existing-root attachment ID-only.
+// Concurrent edit — 2026-07-21 22:29 CEST — Portfolio atomic attachment: route live Workspace creation through trusted onboarding.
+// Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: make existing-root attachment ID-only.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   FireuxEntityCreateMode,
@@ -188,7 +188,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     }
   }
 
-  async function createPortfolioConsole(
+  async function createPortfolioWorkspace(
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
   ): Promise<FireuxEntityCreateResult> {
@@ -233,7 +233,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   return {
     createPlan: PortfolioCreatePlan,
     createPortfolio,
-    createPortfolioConsole,
+    createPortfolioWorkspace,
     createPortfolioRoot,
     createTestPortfolio,
   }

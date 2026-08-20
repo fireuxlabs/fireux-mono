@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: upload Dish images through the Kitchen-owned server boundary.
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/console/useConsoleWriteGuard'
+import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { ref } from 'vue'
 
 type DishImageUploadResponse = {
@@ -15,8 +15,8 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useDishImageUpload() {
   const { currentUser } = useAuth()
-  const { selectedId } = useConsoleSelection('kitchen')
-  const { requireWritableData } = useConsoleWriteGuard('kitchen')
+  const { selectedId } = useWorkspaceSelection('kitchen')
+  const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const pending = ref(false)
 
   async function uploadDishImage(input: {
@@ -49,7 +49,7 @@ export function useDishImageUpload() {
     pending.value = true
     try {
       return await $fetch<DishImageUploadResponse>(
-        `/api/console/kitchen/dishes/${encodeURIComponent(dishId)}/image`,
+        `/api/workspace/kitchen/dishes/${encodeURIComponent(dishId)}/image`,
         {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },

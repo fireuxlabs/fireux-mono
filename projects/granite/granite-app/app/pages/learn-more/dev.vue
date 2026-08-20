@@ -34,7 +34,7 @@
           <div class="space-y-2 text-sm">
             <div class="fx-inset-panel">
               <p class="font-mono">GET /pricing/free</p>
-              <p class="text-dimmed">Functional Console access.</p>
+              <p class="text-dimmed">Functional Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
               <p class="font-mono">GET /pricing/your-app</p>

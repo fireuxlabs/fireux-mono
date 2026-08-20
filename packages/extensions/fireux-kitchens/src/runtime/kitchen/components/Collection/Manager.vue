@@ -275,7 +275,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const groupDefinitions = [
   { mode: 'root', label: 'Root', title: 'Root kitchens' },
-  { mode: 'console', label: 'Console', title: 'Console kitchens' },
+  { mode: 'workspace', label: 'Workspace', title: 'Workspace kitchens' },
   { mode: 'app', label: 'App', title: 'App kitchens' },
 ] as const
 

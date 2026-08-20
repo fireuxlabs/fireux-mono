@@ -61,9 +61,9 @@ const allFeatures = [
       'FIReUX enables rapid development with reusable components and automation.',
   },
   {
-    key: 'console',
+    key: 'workspace',
     icon: 'i-lucide-terminal',
-    title: 'Console Driven',
+    title: 'Workspace Driven',
     description:
       'Structured, data-driven layouts optimized for control and clarity.',
   },

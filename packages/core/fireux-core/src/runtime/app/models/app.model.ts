@@ -31,7 +31,7 @@ export interface AppDerived {
   user_count: number
 }
 
-export type AppConsoleFamily = string
+export type AppWorkspaceFamily = string
 
 export interface AppIdentity {
   id: string
@@ -59,7 +59,7 @@ export interface AppMeta
     Pick<FireuxStamped, 'updated'> {
   database_id: string
   website_url: string
-  console_families: AppConsoleFamily[]
+  workspace_families: AppWorkspaceFamily[]
 }
 
 export const AppStorage = {
@@ -131,7 +131,7 @@ export const AppMetaDefaults: AppMeta = {
   ...AppPresentationDefaults,
   database_id: '',
   website_url: '',
-  console_families: [],
+  workspace_families: [],
   updated: {
     at: {} as FirebaseTimestamp,
     by: undefined,

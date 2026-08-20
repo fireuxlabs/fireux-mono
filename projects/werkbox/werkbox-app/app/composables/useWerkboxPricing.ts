@@ -6,12 +6,12 @@ import {
 const werkboxPricingProfile = {
   appName: 'Werkbox',
   contactEmail: 'fire@fireux.app',
-  consoleName: 'Work Console',
+  workspaceName: 'Work Workspace',
   free: [
     'Browse public work',
     'Create a professional or business profile',
     'Apply to published work directly',
-    'Use the functional Work Console',
+    'Use the functional Work Workspace',
   ],
   pro: [
     'Publish work',

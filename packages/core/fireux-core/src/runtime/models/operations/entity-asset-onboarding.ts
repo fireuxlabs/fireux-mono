@@ -1,4 +1,4 @@
-export type EntityAssetStage = 'root' | 'console' | 'app'
+export type EntityAssetStage = 'root' | 'workspace' | 'app'
 
 export type EntityAssetRole =
   | 'logo'
@@ -85,7 +85,7 @@ export const EntityAssetRequirements = {
 
 export const EntityAssetStageRoles = {
   root: ['logo', 'wordmarkLight', 'wordmarkDark'],
-  console: ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail'],
+  workspace: ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail'],
   app: ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail'],
 } as const satisfies Record<EntityAssetStage, readonly EntityAssetRole[]>
 

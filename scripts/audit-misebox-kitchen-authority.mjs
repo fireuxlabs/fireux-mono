@@ -2,7 +2,7 @@
 // @fireux-script
 // manual_entrypoint: true
 // last_used: 2026-08-09
-// usage_note: read-only audit of canonical Kitchen roots, linked Places, same-id AppKitchen access, and User Console targets in Misebox.
+// usage_note: read-only audit of canonical Kitchen roots, linked Places, same-id AppKitchen access, and User Workspace targets in Misebox.
 
 import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
@@ -41,7 +41,7 @@ const readManagement = value => {
   const management = record(value)
   if (!management) return null
   if (
-    (management.mode === 'root' || management.mode === 'console') &&
+    (management.mode === 'root' || management.mode === 'workspace') &&
     exactKeys(management, ['mode'])
   ) return management
   if (
@@ -52,7 +52,7 @@ const readManagement = value => {
   return null
 }
 const managementAppId = management =>
-  management?.mode === 'console'
+  management?.mode === 'workspace'
     ? ecosystemAppId
     : management?.mode === 'app'
       ? text(management.app_id)
@@ -98,7 +98,7 @@ for (const appDoc of appSnapshot.docs) {
     )
     if (
       !exactKeys(data, [
-        'console',
+        'workspace',
         'operator_ids',
         'team_ids',
         'join_requests',
@@ -143,12 +143,12 @@ for (const [kitchenId, kitchen] of kitchens) {
     Object.hasOwn(kitchen, 'app_scope') ||
     Object.hasOwn(kitchen, 'app_scope_state') ||
     Object.hasOwn(kitchen, 'app_scope_app_id') ||
-    Object.hasOwn(kitchen, 'console')
+    Object.hasOwn(kitchen, 'workspace')
   ) {
     issue('invalid_kitchen_management', {
       ...context,
       management,
-      retired_keys: ['app_scope', 'app_scope_state', 'app_scope_app_id', 'console']
+      retired_keys: ['app_scope', 'app_scope_state', 'app_scope_app_id', 'workspace']
         .filter(key => Object.hasOwn(kitchen, key)),
     })
   }
@@ -237,7 +237,7 @@ const targetKitchens = [...targetedKitchenIds]
 for (const [kitchenId, kitchen] of kitchens) {
   const management = readManagement(kitchen.management)
   if (management?.mode !== 'root' && !targetedKitchenIds.has(kitchenId)) {
-    issue('managed_kitchen_without_console_target', {
+    issue('managed_kitchen_without_workspace_target', {
       kitchen_id: kitchenId,
       management,
     })
