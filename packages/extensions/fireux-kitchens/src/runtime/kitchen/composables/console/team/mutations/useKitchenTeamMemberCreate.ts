@@ -4,6 +4,10 @@ import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/con
 type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
+  role?: string
+  station?: string
+  certifications?: string[]
+  notes?: string
 }
 
 type CreateKitchenTeamMemberResult = {
@@ -34,7 +38,14 @@ export function useKitchenTeamMemberCreate() {
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
-        body: { kitchenId, name },
+        body: {
+          kitchenId,
+          name,
+          role: normalizeString(input.role),
+          station: normalizeString(input.station),
+          certifications: input.certifications || [],
+          notes: normalizeString(input.notes),
+        },
       }
     )
     if (result.ok !== true || !result.memberId) {

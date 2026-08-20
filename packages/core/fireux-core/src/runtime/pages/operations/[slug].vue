@@ -3,12 +3,14 @@
 <template>
   <PublicSimplePage
     v-if="operation"
-    :title="operation.title"
+    :title="operation.headline || operation.title"
     :description="operation.description"
     :eyebrow="operation.console.name"
     :back-to="`/operations#${operation.console.id}`"
     back-label="Operations"
   >
+    <OperationGuidingLiterature :operation="operation" />
+
     <template #actions>
       <UButton
         :to="operation.to"
@@ -65,7 +67,8 @@ definePageMeta({
 
 useSeo({
   title: computed(
-    () => `${operation.value?.title || 'Operation'} - ${appName.value}`
+    () =>
+      `${operation.value?.headline || operation.value?.title || 'Operation'} - ${appName.value}`
   ),
   description: () => operation.value?.description || '',
   path: computed(() =>

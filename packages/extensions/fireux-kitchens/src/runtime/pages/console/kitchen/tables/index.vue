@@ -4,7 +4,6 @@
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Tables">
           <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Tables" />
             <UButton
               v-if="canWrite"
               to="/console/kitchen/tables/edit"
@@ -21,11 +20,15 @@
 
       <template #body>
         <section class="space-y-6">
+          <ConsoleKitchenOperationsCapabilityTools operation="tables" />
+          <ConsoleKitchenOperationsCapabilityAI operation="tables" />
+          <ConsoleKitchenOperationsCapabilityView operation="tables" />
           <p class="m-0 text-sm text-muted">
             View table tabs, staged service rounds, and table billing.
           </p>
 
           <ConsoleKitchenOperationsTables />
+          <ConsoleKitchenOperationsGuidingLiterature operation="tables" />
         </section>
       </template>
     </UDashboardPanel>

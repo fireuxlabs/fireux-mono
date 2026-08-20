@@ -141,7 +141,7 @@ async function inspectLiveCandidate(candidate, snapshot, bucket) {
     return blocker(candidate, 'Dish document is missing.')
   }
   const data = snapshot.data() || {}
-  if (text(data.id) !== candidate.dishId) {
+  if (text(data.id) && text(data.id) !== candidate.dishId) {
     return blocker(candidate, 'Dish document id field no longer matches.')
   }
   if (text(data.kitchen_id) !== candidate.expectedKitchenId) {

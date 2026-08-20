@@ -2,7 +2,7 @@
   <UCard>
     <template #header>
       <div class="console-card-header">
-        <div class="console-card-header__title">Prep status board</div>
+        <div class="console-card-header__title">{{ tool.label }}</div>
         <p class="console-card-header__description">
           Move prep tasks through To do, In progress, Done, or Blocked.
         </p>
@@ -18,10 +18,7 @@
         <span
           class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-elevated text-muted"
         >
-          <UIcon
-            :name="statusOption(task).icon"
-            class="size-4"
-          />
+          <UIcon :name="statusOption(task).icon" class="size-4" />
         </span>
 
         <span class="min-w-0 flex-1 space-y-1">
@@ -86,19 +83,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenMiseWorkspace } from '../../../../composables/console/operations/Mise/useKitchenMiseWorkspace'
+import { kitchenMisePrepStatusChangeTool } from '../../../../tools/mise'
 import {
   KITCHEN_MISE_STATUS_OPTIONS,
   normalizeKitchenMiseStatus,
   type KitchenMiseTask,
 } from '../../../../models/mise.model.ts'
 
-const { miseTasks, canUpdateMiseStatus, setStatus } =
-  useKitchenMiseWorkspace()
+const { miseTasks, canUpdateMiseStatus, setStatus } = useKitchenMiseWorkspace()
+const tool = kitchenMisePrepStatusChangeTool.surfaces.human
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const statusRank = (task: KitchenMiseTask) =>
   KITCHEN_MISE_STATUS_OPTIONS.findIndex(
-    option => option.value === normalizeKitchenMiseStatus(task.status)
+    (option) => option.value === normalizeKitchenMiseStatus(task.status)
   )
 
 const tasksSorted = computed(() =>
@@ -111,8 +109,7 @@ const tasksSorted = computed(() =>
   })
 )
 
-const taskTitle = (task: KitchenMiseTask) =>
-  normalizeString(task.title)
+const taskTitle = (task: KitchenMiseTask) => normalizeString(task.title)
 
 const taskDisplayTitle = (task: KitchenMiseTask) =>
   taskTitle(task) || 'Missing mise title'
@@ -124,7 +121,7 @@ const taskDescription = (task: KitchenMiseTask) =>
 
 const statusOption = (task: KitchenMiseTask) =>
   KITCHEN_MISE_STATUS_OPTIONS.find(
-    option => option.value === normalizeKitchenMiseStatus(task.status)
+    (option) => option.value === normalizeKitchenMiseStatus(task.status)
   ) ?? KITCHEN_MISE_STATUS_OPTIONS[0]
 
 const changeStatus = (task: KitchenMiseTask, event: Event) => {

@@ -1,5 +1,5 @@
 <template>
-  <ConsoleKitchenAI v-bind="teamAI" />
+  <ConsoleKitchenAIWelcome v-bind="teamAI" />
 </template>
 
 <script setup lang="ts">

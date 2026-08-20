@@ -13,6 +13,10 @@ import { buildKitchenTeamMemberRecord } from './member-record.ts'
 export type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
+  role?: string
+  station?: string
+  certifications?: string[]
+  notes?: string
 }
 
 export type CreateKitchenTeamMemberResult = {
@@ -26,6 +30,21 @@ const normalizeName = (value: unknown) =>
   String(value ?? '')
     .trim()
     .replace(/\s+/g, ' ')
+
+const normalizeOptional = (value: unknown, maxLength: number) =>
+  String(value ?? '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .slice(0, maxLength)
+
+const normalizeCertifications = (value: unknown) =>
+  Array.from(
+    new Set(
+      (Array.isArray(value) ? value : [])
+        .map((item) => normalizeOptional(item, 120))
+        .filter(Boolean)
+    )
+  ).slice(0, 20)
 
 function parseInput(input: CreateKitchenTeamMemberInput) {
   const kitchenId = requireFirestoreDocumentId(input?.kitchenId, 'Kitchen id')
@@ -42,7 +61,14 @@ function parseInput(input: CreateKitchenTeamMemberInput) {
       statusMessage: 'Team member name must be 120 characters or fewer.',
     })
   }
-  return { kitchenId, name }
+  return {
+    kitchenId,
+    name,
+    role: normalizeOptional(input?.role, 120),
+    station: normalizeOptional(input?.station, 120),
+    certifications: normalizeCertifications(input?.certifications),
+    notes: normalizeOptional(input?.notes, 1_000),
+  }
 }
 
 function allocateTeamMemberSlug(
@@ -100,6 +126,10 @@ export async function createKitchenTeamMember(
       memberId,
       name: requested.name,
       slug,
+      role: requested.role,
+      station: requested.station,
+      certifications: requested.certifications,
+      notes: requested.notes,
     })
 
     mutations.create(teamMembers, memberId, member)

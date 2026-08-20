@@ -1,6 +1,10 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div class="flex min-h-full min-w-0 flex-1 flex-col gap-4">
+    <ConsoleKitchenOperationsCapabilityTools operation="orders" />
+    <ConsoleKitchenOperationsCapabilityAI operation="orders" />
+    <ConsoleKitchenOperationsCapabilityView operation="orders" />
     <ConsoleKitchenOperationsOrders />
+    <ConsoleKitchenOperationsGuidingLiterature operation="orders" />
   </div>
 </template>
 

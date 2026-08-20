@@ -9,6 +9,10 @@ export function buildKitchenTeamMemberRecord(input: {
   name: string
   slug: string
   userId?: string
+  role?: string
+  station?: string
+  certifications?: string[]
+  notes?: string
 }) {
   return {
     ...KitchenTeamMemberDefaults,
@@ -18,6 +22,10 @@ export function buildKitchenTeamMemberRecord(input: {
     name: input.name,
     slug: input.slug,
     display_name: input.name,
+    role: input.role || '',
+    station: input.station || '',
+    certifications: input.certifications || [],
+    notes: input.notes || '',
     created: serverAuditStamp({ by: input.createdBy, appId: input.appId }),
     updated: serverAuditStamp({ by: input.createdBy }),
   }

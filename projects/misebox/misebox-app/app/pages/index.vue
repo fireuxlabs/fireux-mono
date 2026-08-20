@@ -8,7 +8,7 @@
       <template #body>
         <section class="console-surface">
           <ConsoleKitchenTools />
-          <ConsoleKitchenAI />
+          <ConsoleKitchenAIWelcome />
           <ConsoleKitchen v-if="clientReady && isAuthenticated" />
         </section>
       </template>

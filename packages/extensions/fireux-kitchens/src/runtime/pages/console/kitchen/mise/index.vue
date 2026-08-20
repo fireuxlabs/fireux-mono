@@ -3,16 +3,16 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-mise">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Mise">
-          <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Mise" />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Mise" />
       </template>
 
       <template #body>
         <section class="space-y-4">
+          <ConsoleKitchenOperationsCapabilityTools operation="mise" />
+          <ConsoleKitchenOperationsCapabilityAI operation="mise" />
+          <ConsoleKitchenOperationsCapabilityView operation="mise" />
           <ConsoleKitchenOperationsMise />
+          <ConsoleKitchenOperationsGuidingLiterature operation="mise" />
         </section>
       </template>
     </UDashboardPanel>

@@ -17,6 +17,33 @@ export async function answerKitchenAgent(
 ) {
   const ai = useFireuxAi(event)
   const context = await readKitchenAgentContext(access, request)
+  const isDrinks = request.operation === 'drinks'
+  const operationAgents = isDrinks
+    ? {
+        DrinksAI: {
+          operation: 'Drinks',
+          authority: 'advisory',
+          drinks: context.drinks.map((drink) => ({
+            id: drink.id,
+            name: drink.name,
+            description: drink.description,
+            image: drink.image,
+          })),
+          available_tools: ['kitchen.drinks.update-image'],
+          instruction:
+            'Inspect the supplied canonical Drink records. An empty image is direct evidence that the drink needs an image. Name affected drinks, recommend the available update-image tool, and do not claim to have changed or generated an image.',
+        },
+      }
+    : {
+        MenuAI: {
+          operation: 'Menus',
+          authority: 'advisory',
+          menu_manifest: context.menuManifest,
+          context: context.menuContext || undefined,
+          instruction:
+            'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Do not propose or claim a mutation.',
+        },
+      }
   const response = await ai.generateText({
     appId: request.appId,
     task: 'summarise_text',
@@ -30,23 +57,14 @@ export async function answerKitchenAgent(
         tagline: context.tagline,
         context: context.kitchenContext || undefined,
       },
-      operation_agents: {
-        MenuAI: {
-          operation: 'Menus',
-          authority: 'advisory',
-          menu_manifest: context.menuManifest,
-          context: context.menuContext || undefined,
-          instruction:
-            'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Do not propose or claim a mutation.',
-        },
-      },
+      operation_agents: operationAgents,
     },
     context: {
       agent: 'KitchenAI',
       user_context: context.userContext || undefined,
       kitchen_context: context.kitchenContext || undefined,
       menu_context: context.menuContext || undefined,
-      instruction: `Act as KitchenAI for the selected Kitchen. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scopes. For this summary, consult MenuAI and incorporate its supported operational observations into the final Kitchen summary. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
+      instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${isDrinks ? 'DrinksAI' : 'MenuAI'}. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scope. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
     },
   })
   const result = extractFireuxAgentTip(response.text, {
@@ -86,7 +104,7 @@ export async function answerKitchenAgent(
       kitchenContext: Boolean(context.kitchenContext),
       menuContext: Boolean(context.menuContext),
       menuCount: context.menuManifest.length,
-      delegates: ['MenuAI'] as const,
+      delegates: [isDrinks ? 'DrinksAI' : 'MenuAI'],
       tipRecorded: Boolean(result.tip),
       usage: { amount: usage.amount_label, currency: usage.currency },
     },

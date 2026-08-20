@@ -3,11 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-menus">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Menus">
-          <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Menus" />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Menus" />
 
         <UDashboardToolbar>
           <template #right>
@@ -35,7 +31,11 @@
 
       <template #body>
         <section class="space-y-4">
+          <ConsoleKitchenOperationsCapabilityTools operation="menus" />
+          <ConsoleKitchenOperationsCapabilityAI operation="menus" />
+          <ConsoleKitchenOperationsCapabilityView operation="menus" />
           <ConsoleKitchenOperationsMenus />
+          <ConsoleKitchenOperationsGuidingLiterature operation="menus" />
         </section>
       </template>
     </UDashboardPanel>
@@ -45,7 +45,9 @@
 <script setup lang="ts">
 import { useKitchenConsole } from '../../../../kitchen/composables/console/core/useKitchenConsole'
 
-const { runtime: { canWrite } } = useKitchenConsole()
+const {
+  runtime: { canWrite },
+} = useKitchenConsole()
 
 definePageMeta({
   layout: 'console',

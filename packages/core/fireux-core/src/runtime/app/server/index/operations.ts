@@ -21,6 +21,12 @@ function asSlug(value: unknown): string | undefined {
   return slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : undefined
 }
 
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.map(asString).filter((item): item is string => Boolean(item))
+    : []
+}
+
 function normalizeConsole(
   value: unknown
 ): FireuxMetaOperationConsole | undefined {
@@ -54,15 +60,19 @@ function normalizeOperation(value: unknown): FireuxMetaOperation | undefined {
   }
 
   const icon = asString(value.icon)
+  const headline = asString(value.headline)
   const slug = asSlug(value.slug)
+  const keywords = asStringArray(value.keywords)
   return {
     id,
     title,
     description,
     to,
     console,
+    ...(headline ? { headline } : {}),
     ...(icon ? { icon } : {}),
     ...(slug ? { slug } : {}),
+    ...(keywords.length ? { keywords } : {}),
   }
 }
 

@@ -2,7 +2,7 @@
   <UCard>
     <template #header>
       <div class="console-card-header">
-        <div class="console-card-header__title">Edit mise task</div>
+        <div class="console-card-header__title">{{ tool.label }}</div>
         <p class="console-card-header__description">
           Record management for this kitchen prep task.
         </p>
@@ -125,6 +125,7 @@ import {
 } from '../../../../models/mise.model.ts'
 import { useKitchenMiseTaskWorkspace } from '../../../../composables/console/operations/Mise/useKitchenMiseTaskWorkspace'
 import { useKitchenMiseUpdate } from '../../../../composables/console/operations/Mise/mutations/useKitchenMiseUpdate'
+import { kitchenMisePrepTaskUpdateTool } from '../../../../tools/mise'
 
 const props = defineProps<{
   task: KitchenMiseTask
@@ -133,6 +134,7 @@ const props = defineProps<{
 const { kitchenId, rootCollection, miseId, canEditMise } =
   useKitchenMiseTaskWorkspace()
 const { updateKitchenMise } = useKitchenMiseUpdate()
+const tool = kitchenMisePrepTaskUpdateTool.surfaces.human
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const title = ref('')

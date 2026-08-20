@@ -13,10 +13,9 @@
     <template v-if="task">
       <ConsoleKitchenOperationsMiseCardsProfile :task="task" />
 
-      <ConsoleKitchenOperationsMiseEdit
-        v-if="canEditMise"
-        :task="task"
-      />
+      <ConsoleKitchenOperationsMiseEdit v-if="canEditMise" :task="task" />
+
+      <ConsoleKitchenOperationsMiseDelete v-if="canEditMise" :task="task" />
     </template>
 
     <UAlert

@@ -95,14 +95,6 @@ const REVIEWED_SOURCE_EXCLUSIONS = new Map([
     ),
   ],
   [
-    'cola-zero-light-fanta-sprite',
-    sourceExclusion(
-      '218',
-      'https://interlakenpizza.ch/image/catalog/Coca%20cola,%20coca%20cola%20zero%201.png',
-      'reviewed_wrong_website_image'
-    ),
-  ],
-  [
     'long-zenger-burger',
     sourceExclusion(
       '295',

@@ -43,6 +43,20 @@
       </template>
     </UModal>
 
+    <UModal
+      v-model:open="onboardMemberOpen"
+      title="Onboard member"
+      description="Prepare a Team member from a dossier."
+      :ui="{ content: 'sm:max-w-2xl' }"
+    >
+      <template #body>
+        <ConsoleKitchenTeamDossierOnboarding
+          v-if="canWrite"
+          @created="handleOnboardedMember"
+        />
+      </template>
+    </UModal>
+
     <ConsoleKitchenTeamToolModal
       v-if="activeTool"
       :open="Boolean(activeTool)"
@@ -57,8 +71,10 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import { computed, ref } from 'vue'
 import { useKitchenConsoleTeam } from '../../../composables/console/team/useKitchenConsoleTeam'
 import { useKitchenTeamTools } from '../../../composables/console/team/useKitchenTeamTools'
+import { kitchenTeamDossierWorkflow } from '../../../models/team-dossier.model'
 
 const addMemberOpen = ref(false)
+const onboardMemberOpen = ref(false)
 const activeTool = ref<'update' | 'delete' | 'invite' | null>(null)
 const { kitchenId, canWrite } = useKitchenConsoleTeam()
 const toast = useToast()
@@ -75,6 +91,15 @@ const toolGroups = computed<NavigationMenuItem[]>(() => [
         disabled: !canWrite.value,
         onSelect: () => {
           addMemberOpen.value = true
+        },
+      },
+      {
+        label: kitchenTeamDossierWorkflow.label,
+        description: 'Prepare a member draft from a dossier.',
+        icon: 'i-lucide-file-user',
+        disabled: !canWrite.value,
+        onSelect: () => {
+          onboardMemberOpen.value = true
         },
       },
       {
@@ -112,6 +137,15 @@ const handleMemberCreated = (result: { name: string }) => {
   toast.add({
     title: `${result.name} added`,
     description: 'The new member is now part of this Kitchen team.',
+    color: 'success',
+    icon: 'i-lucide-user-check',
+  })
+}
+const handleOnboardedMember = (result: { name: string }) => {
+  onboardMemberOpen.value = false
+  toast.add({
+    title: `${result.name} added`,
+    description: 'The reviewed dossier draft is now a Team member.',
     color: 'success',
     icon: 'i-lucide-user-check',
   })

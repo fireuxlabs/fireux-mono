@@ -254,6 +254,11 @@ function validateConsoleEntityComponentHierarchy(repoRoot, violations) {
         `${root}/Index/Index.vue (do not hide a Console Entity doorway behind an opaque repeated Index bucket)`
       )
     }
+    if (existsSync(path.join(repoRoot, root, 'AI', 'Index.vue'))) {
+      violations.push(
+        `${root}/AI/Index.vue (AI capabilities must use their visible product name and must not masquerade as the Console Entity Index)`
+      )
+    }
   }
 
   for (const root of CONSOLE_TEAM_COMPONENT_ROOTS) {
@@ -416,6 +421,43 @@ function validateConsoleOperationContracts(repoRoot, violations) {
           `${contract.routeRoot}/${operation} (missing ${family} Console Operation route)`
         )
       }
+      if (family === 'kitchen') {
+        const routePath = routeCandidates.find((candidate) =>
+          existsSync(candidate)
+        )
+        const routeSource = routePath ? readFileSync(routePath, 'utf8') : ''
+        if (
+          !routeSource.includes(
+            `<ConsoleKitchenOperationsGuidingLiterature operation="${operation}" />`
+          )
+        ) {
+          violations.push(
+            `${contract.routeRoot}/${operation} (Kitchen Console Operation must render its catalogue-backed guiding literature)`
+          )
+        }
+        const toolsMarker = `<ConsoleKitchenOperationsCapabilityTools operation="${operation}"`
+        const aiMarker = '<ConsoleKitchenOperationsCapabilityAI'
+        const viewMarker = `<ConsoleKitchenOperationsCapabilityView operation="${operation}"`
+        const toolsIndex = routeSource.indexOf(toolsMarker)
+        const aiIndex = routeSource.indexOf(aiMarker)
+        const aiCloseIndex = routeSource.indexOf('>', aiIndex)
+        const aiOperationIndex = routeSource.indexOf(
+          `operation="${operation}"`,
+          aiIndex
+        )
+        const viewIndex = routeSource.indexOf(viewMarker)
+        if (
+          toolsIndex < 0 ||
+          aiIndex <= toolsIndex ||
+          aiOperationIndex < aiIndex ||
+          aiOperationIndex > aiCloseIndex ||
+          viewIndex <= aiIndex
+        ) {
+          violations.push(
+            `${contract.routeRoot}/${operation} (Kitchen Console Operation must compose Tools, AI, then View)`
+          )
+        }
+      }
       if (
         contract.catalogue &&
         !catalogue.includes(`'${family}.${operation}'`) &&
@@ -425,6 +467,56 @@ function validateConsoleOperationContracts(repoRoot, violations) {
         violations.push(
           `${contract.catalogue} (missing ${family}.${operation} Operation catalogue entry)`
         )
+      }
+    }
+
+    if (family === 'kitchen') {
+      const searchHeadlines = catalogue.match(/\bheadline:\s*['"][^'"]+['"]/g) || []
+      if (searchHeadlines.length !== contract.operations.length) {
+        violations.push(
+          `${contract.catalogue} (every Kitchen Operation requires one search-language customer-job headline)`
+        )
+      }
+      const keywordGroups = catalogue.match(/\bkeywords:\s*\[[\s\S]*?\]/g) || []
+      if (
+        keywordGroups.length !== contract.operations.length ||
+        keywordGroups.some(
+          (group) => (group.match(/['"][^'"]+['"]/g) || []).length !== 5
+        )
+      ) {
+        violations.push(
+          `${contract.catalogue} (every Kitchen Operation requires exactly five search-intent phrases for its public literature page)`
+        )
+      }
+
+      const publicOperationPage = readFileSync(
+        path.join(
+          repoRoot,
+          'packages/core/fireux-core/src/runtime/pages/operations/[slug].vue'
+        ),
+        'utf8'
+      )
+      if (
+        !publicOperationPage.includes('OperationGuidingLiterature') ||
+        !publicOperationPage.includes('operation.headline || operation.title')
+      ) {
+        violations.push(
+          'Core public Operation pages must render the search-language headline and shared guiding literature component.'
+        )
+      }
+      const capabilityCatalogue = readFileSync(
+        path.join(
+          repoRoot,
+          'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-capabilities.ts'
+        ),
+        'utf8'
+      )
+      for (const operation of contract.operations) {
+        if (!capabilityCatalogue.includes(`  ${operation}: [`)) {
+          violations.push(
+            `Kitchen ${operation} Operation is missing its tool capability catalogue.`
+          )
+        }
       }
     }
 

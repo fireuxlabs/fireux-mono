@@ -52,6 +52,8 @@ export type FireuxMetaOperation = {
   slug?: string
   /** Direct product language, not an SEO title. */
   title: string
+  /** Search-language name for the customer job represented by this Operation. */
+  headline?: string
   /** Factual description of what the current surface provides. */
   description: string
   /** Working console route that proves the operation. */
@@ -59,6 +61,8 @@ export type FireuxMetaOperation = {
   /** Console that owns the operation. */
   console: FireuxMetaOperationConsole
   icon?: string
+  /** Search-intent phrases used to map operator demand into product literature. */
+  keywords?: string[]
 }
 
 export type FireuxMetaSolution = {

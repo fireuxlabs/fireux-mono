@@ -6,6 +6,12 @@
 const ARABIC_PARENTHETICAL = /\([^)]*[\u0600-\u06ff][^)]*\)/gu
 const ARABIC_TEXT = /[\u0600-\u06ff]+/gu
 
+const REVIEWED_DISH_COLLISION_WINNERS = new Map([
+  // The canonical CHF 5 menu rows are the website's 50cl variants.
+  ['fanta', '227'],
+  ['sprite', '228'],
+])
+
 const TOKEN_ALIASES = new Map([
   ['chardonay', 'chardonnay'],
   ['covered', 'zugedeckt'],
@@ -79,6 +85,12 @@ export function buildInterlakenAudit({ dishes, menuItems, source }) {
   }))
 
   classifyWebsiteProducts(websiteProducts)
+  for (const websiteProductId of REVIEWED_DISH_COLLISION_WINNERS.values()) {
+    const reviewedWinner = websiteProducts.find(
+      (product) => product.websiteProductId === websiteProductId
+    )
+    if (reviewedWinner) reviewedWinner.productType = 'normal_product'
+  }
 
   const auditedProducts = websiteProducts.map((product) => {
     const match = matchWebsiteProduct(product, currentDishes)
@@ -563,6 +575,30 @@ function downgradeDishCollisions(products) {
   for (const [dishId, collisions] of acceptedByDishId) {
     if (collisions.length < 2) continue
     const productIds = collisions.map((product) => product.websiteProductId)
+    const reviewedWinnerId = REVIEWED_DISH_COLLISION_WINNERS.get(dishId)
+    const reviewedWinner = reviewedWinnerId
+      ? collisions.find(
+          (product) => product.websiteProductId === reviewedWinnerId
+        )
+      : null
+    if (reviewedWinner) {
+      for (const product of collisions) {
+        if (product === reviewedWinner) continue
+        product.productType = 'variation'
+        product.match = {
+          ...product.match,
+          status: 'manual_review',
+          manualReason: `Reviewed source ${reviewedWinnerId} is the canonical website variant for Dish ${dishId}.`,
+        }
+        product.alreadyExistsInFirestore = null
+        product.requiresManualReview = true
+        product.manualReviewReasons = [
+          ...product.manualReviewReasons,
+          product.match.manualReason,
+        ]
+      }
+      continue
+    }
     for (const product of collisions) {
       product.productType =
         product.productType === 'combo' ? product.productType : 'variation'

@@ -3,11 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-ingredients">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Ingredients">
-          <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Ingredients" />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Ingredients" />
 
         <UDashboardToolbar>
           <template #right>
@@ -25,7 +21,11 @@
 
       <template #body>
         <section class="space-y-4">
+          <ConsoleKitchenOperationsCapabilityTools operation="ingredients" />
+          <ConsoleKitchenOperationsCapabilityAI operation="ingredients" />
+          <ConsoleKitchenOperationsCapabilityView operation="ingredients" />
           <ConsoleKitchenOperationsIngredients />
+          <ConsoleKitchenOperationsGuidingLiterature operation="ingredients" />
         </section>
       </template>
     </UDashboardPanel>

@@ -3,11 +3,7 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-finance">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Finance">
-          <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Finance" />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Finance" />
 
         <UDashboardToolbar>
           <template #left>
@@ -57,11 +53,17 @@
       </template>
 
       <template #body>
-        <ConsoleKitchenOperationsFinanceNav />
-        <ConsoleKitchenOperationsFinanceOverview
-          :from-date="calendarRange.start.toString()"
-          :to-date="calendarRange.end.toString()"
-        />
+        <section class="space-y-4">
+          <ConsoleKitchenOperationsCapabilityTools operation="finance" />
+          <ConsoleKitchenOperationsCapabilityAI operation="finance" />
+          <ConsoleKitchenOperationsCapabilityView operation="finance" />
+          <ConsoleKitchenOperationsFinanceNav />
+          <ConsoleKitchenOperationsFinanceOverview
+            :from-date="calendarRange.start.toString()"
+            :to-date="calendarRange.end.toString()"
+          />
+          <ConsoleKitchenOperationsGuidingLiterature operation="finance" />
+        </section>
       </template>
     </UDashboardPanel>
   </div>
@@ -97,13 +99,10 @@ const { selection } = useKitchenConsole()
 const isDemo = computed(() => selection.kitchenSource.value === 'demo')
 const demoData = useKitchenConsoleDemoData(isDemo)
 const demoScenario = computed(() =>
-  findKitchenConsoleDemoScenario(
-    demoData.data.value,
-    selection.kitchenId.value
-  )
+  findKitchenConsoleDemoScenario(demoData.data.value, selection.kitchenId.value)
 )
-const simulationDate = computed(() =>
-  demoScenario.value?.finance?.asOfDate ?? ''
+const simulationDate = computed(
+  () => demoScenario.value?.finance?.asOfDate ?? ''
 )
 const realToday = new Date()
 const resolvedToday = computed(() =>
@@ -140,7 +139,10 @@ function selectPreset(preset: Exclude<Preset, 'custom'>) {
   }
   if (preset === 'week') {
     const daysSinceMonday = (endDate.getDay() + 6) % 7
-    calendarRange.value = { start: end.subtract({ days: daysSinceMonday }), end }
+    calendarRange.value = {
+      start: end.subtract({ days: daysSinceMonday }),
+      end,
+    }
     return
   }
   if (preset === 'month') {

@@ -3,16 +3,16 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-kitchen-dishes">
       <template #header>
-        <LayoutsConsoleNavbar title="Kitchen Dishes">
-          <template #right>
-            <ConsoleAICapabilityPlaceholder capability="Dishes" />
-          </template>
-        </LayoutsConsoleNavbar>
+        <LayoutsConsoleNavbar title="Kitchen Dishes" />
       </template>
 
       <template #body>
         <section class="space-y-4">
+          <ConsoleKitchenOperationsCapabilityTools operation="dishes" />
+          <ConsoleKitchenOperationsCapabilityAI operation="dishes" />
+          <ConsoleKitchenOperationsCapabilityView operation="dishes" />
           <ConsoleKitchenOperationsDishes />
+          <ConsoleKitchenOperationsGuidingLiterature operation="dishes" />
         </section>
       </template>
     </UDashboardPanel>

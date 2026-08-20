@@ -378,6 +378,11 @@ Before each task:
   never presents the recipient's claim route as the operator's primary action.
   The Team surface is a stateless command runner, not a conversation. It shows
   one instruction, one structured approval, and one result before reset.
+  Manual dossier onboarding is a named workflow rather than an atomic TeamAI
+  tool: an authorized operator uploads one PDF or image, FireUX AI prepares a
+  bounded Team-member draft, the transient source is deleted, and the operator
+  reviews the draft before the existing Kitchen-owned Create Member command is
+  called. Neither the source dossier nor the unconfirmed AI draft is persisted.
   Unmatched Team input terminates in TeamAI with available command examples and
   never falls through to KitchenAI or MenuAI summary generation.
   KitchenAI performs that operation-agent and tool selection on the main
