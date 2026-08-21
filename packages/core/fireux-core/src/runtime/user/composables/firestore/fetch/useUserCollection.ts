@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: add bounded canonical User hydration by profile uid.
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
-import { UserStorage, type User } from '../../../models/user.model.ts'
+import type { User } from '../../../models/user.model.ts'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -47,15 +47,15 @@ export function useUserCollection() {
 
   const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const binding = useCollection<User>(
-    fsq(collection(db, UserStorage.collection)) as Query<User>,
+    fsq(collection(db, 'users')) as Query<User>,
     {
-      ssrKey: UserStorage.collection,
+      ssrKey: 'users',
       transform: (docSnap: QueryDocumentSnapshot<User>) => {
         return { ...(docSnap.data() as User), id: docSnap.id } as User
       },
     } as any
   )
-  guardCollectionPromise(binding as any, UserStorage.collection)
+  guardCollectionPromise(binding as any, 'users')
 
   const users = computed(() => binding.data.value ?? [])
   const count = computed(() => users.value.length)
@@ -81,7 +81,7 @@ export function useUserHydration(
   const databaseId = readRuntimeIdentityFirestoreDatabaseId()
   const { firestoreLoadDocsByIds } = useFirestoreRead({ databaseId })
   const binding = firestoreLoadDocsByIds<User>({
-    collectionPath: UserStorage.collection,
+    collectionPath: 'users',
     ids,
   })
   const users = computed(() => binding.docs.value ?? [])

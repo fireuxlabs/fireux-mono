@@ -3,7 +3,6 @@ import { computed } from 'vue'
 import { useAppCollection } from '../../../../../app/composables/firestore/fetch/useAppCollection'
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { App } from '../../../../../app/models/app.model.ts'
-import { AppStorage } from '../../../../../app/models/app.model.ts'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
 import {
   findProjectWorkspaceDemoScenario,
@@ -15,7 +14,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useProjectWorkspaceApps() {
   const { selection, runtime } = useProjectWorkspace()
   const appCollectionPath = computed(() =>
-    runtime.dataType.value === 'live' ? AppStorage.collection : ''
+    runtime.dataType.value === 'live' ? 'apps' : ''
   )
   const {
     apps: appCollection,

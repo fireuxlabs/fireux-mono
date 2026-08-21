@@ -119,7 +119,7 @@ import { useUser } from '../../composables/useUser'
 import { useUserInterface } from '../../composables/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
-import { UserDefaults, type User } from '../../models/user.model.ts'
+import type { User } from '../../models/user.model.ts'
 import type { UserDetail } from '../../models/user-directory.model.ts'
 import type { CollectionResponse } from '../../../models/utils/directory.ts'
 
@@ -213,7 +213,6 @@ const directoryUsers = computed<UserDetail[]>(() => {
 })
 const collection = computed<User[]>(() =>
   directoryUsers.value.map((user) => ({
-    ...UserDefaults,
     id: user.id,
     display_name: user.displayName,
     bio: user.bio,

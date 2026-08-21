@@ -1,6 +1,5 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
@@ -25,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const db = getRuntimeFirestore()
   const [membership, profile] = await Promise.all([
-    db.doc(`apps/${appId}/${AppUserStorage.collection}/${uid}`).get(),
+    db.doc(`apps/${appId}/${'users'}/${uid}`).get(),
     db.doc(marketplaceProfileAppStatePath(uid)).get(),
   ])
 

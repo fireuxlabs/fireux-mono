@@ -1,10 +1,7 @@
 import { createError } from 'h3'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
-import {
-  EcosystemStorage,
-  type Ecosystem,
-} from '../../models/ecosystem.model.ts'
+import type { Ecosystem } from '../../models/ecosystem.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -19,7 +16,7 @@ function canonicalEcosystem(id: string, value: unknown): Ecosystem | null {
 export async function readEcosystem(idValue: unknown): Promise<Ecosystem> {
   const id = requireFirestoreDocumentId(idValue, 'Ecosystem id')
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(EcosystemStorage.collection)
+    .collection('ecosystems')
     .doc(id)
     .get()
   const ecosystem = snapshot.exists
@@ -36,7 +33,7 @@ export async function readEcosystem(idValue: unknown): Promise<Ecosystem> {
 
 export async function readEcosystems(): Promise<Ecosystem[]> {
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(EcosystemStorage.collection)
+    .collection('ecosystems')
     .limit(100)
     .get()
   return snapshot.docs

@@ -86,7 +86,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useProjectWorkspaceSelection } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspaceSelection'
 import { useProjectCollection } from 'fireux-core/runtime/project/composables/useProjectCollection'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
-import { ProjectDefaults } from 'fireux-core/runtime/project/models/project.model'
 
 definePageMeta({
   layout: 'dev',
@@ -104,10 +103,13 @@ definePageMeta({
   },
 })
 
-const projectModelRuntime = ProjectDefaults as unknown as Record<
-  string,
-  unknown
->
+const projectModelRuntime: Project = {
+  id: '',
+  status: 'draft',
+  name: '',
+  description: '',
+  image_url: '',
+}
 const { appId } = useFireUXConfig()
 const { selectedId } = useProjectWorkspaceSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())

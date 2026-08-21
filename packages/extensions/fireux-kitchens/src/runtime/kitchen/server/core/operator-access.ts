@@ -1,8 +1,6 @@
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: require App membership plus Kitchen report authority.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -62,9 +60,9 @@ export async function requireKitchenWriter(
 ) {
   const user = await requireFirebaseBearerUser(event, signInMessage)
   const db = getRuntimeFirestore()
-  const appRef = db.collection(AppStorage.collection).doc(input.appId)
+  const appRef = db.collection('apps').doc(input.appId)
   const membershipRef = appRef
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .doc(user.uid)
   const rootKitchenRef = db
     .collection('kitchens')

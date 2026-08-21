@@ -57,7 +57,7 @@ import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
-import { AppDefaults } from '../../app/models/app.model.ts'
+import type { App } from '../../app/models/app.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -74,7 +74,23 @@ definePageMeta({
   description: 'Developer view for Apps (collection-first).',
 })
 
-const appModelRuntime = AppDefaults
+const appModelRuntime: App = {
+  id: '',
+  project_id: '',
+  role: 'standalone',
+  status: 'draft',
+  name: '',
+  short_name: '',
+  description: '',
+  media: {
+    thumbnail_url: '',
+    logo_url: '',
+    wordmark_light_url: '',
+    wordmark_dark_url: '',
+    cover_url: '',
+  },
+  self_join_enabled: false,
+}
 const publicAppsController = useEcosystemAppCollection()
 
 const { apps } = useDevAppCollection()

@@ -1,18 +1,9 @@
-import {
-  collection,
-  limit as fslimit,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
+import { collection, limit as fslimit, query as fsq, where, type Query, } from 'firebase/firestore'
 import { computed, isRef, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
 import {
-  readRuntimeIdentityFirestoreDatabaseId,
-  useFirestore,
-} from '../../../../composables/fireux/firestore/vuefire'
-import { UserStorage } from '../../../models/user.model.ts'
+  readRuntimeIdentityFirestoreDatabaseId, useFirestore, } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
 import { useUserFetch } from './useUserFetch'
@@ -40,12 +31,12 @@ export function useUserByHandleFetch(
   const matchUser = (value: string) => {
     if (!userMatchCache.has(value)) {
       const q = fsq(
-        collection(db, UserStorage.collection),
+        collection(db, 'users'),
         where('handle', '==', value),
         fslimit(1)
       ) as Query<HandleUserMatch>
       const ref = nuxtApp.runWithContext(() =>
-        firestoreQuery<HandleUserMatch>(q, `${UserStorage.collection}-by-handle-${value}`)
+        firestoreQuery<HandleUserMatch>(q, `${'users'}-by-handle-${value}`)
       ) as Ref<HandleUserMatch[] | undefined>
       userMatchCache.set(value, ref)
     }

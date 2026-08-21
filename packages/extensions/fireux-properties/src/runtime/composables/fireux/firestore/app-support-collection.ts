@@ -7,7 +7,6 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, type ComputedRef } from 'vue'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 
 type AppSupportAccessQueryOptions = {
   db: Firestore
@@ -22,7 +21,7 @@ export function useAppSupportAccessQueries<TRecord extends DocumentData>(
 ) {
   const collectionPath = computed(() =>
     options.appId.value
-      ? `${AppStorage.collection}/${options.appId.value}/${options.collectionName}`
+      ? `${'apps'}/${options.appId.value}/${options.collectionName}`
       : ''
   )
 
@@ -39,7 +38,7 @@ export function useAppSupportAccessQueries<TRecord extends DocumentData>(
       return firestoreQuery(
         collection(
           options.db,
-          AppStorage.collection,
+          'apps',
           options.appId.value,
           options.collectionName
         ),

@@ -1,10 +1,7 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
-  extractFireuxAgentTip,
-  fireuxAgentTipInstruction,
-} from 'fireux-ai/runtime/agents/agent-tip'
-import { UserStorage } from 'fireux-core/runtime/user/models/user.model'
+  extractFireuxAgentTip, fireuxAgentTipInstruction, } from 'fireux-ai/runtime/agents/agent-tip'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
@@ -112,7 +109,7 @@ function readPrompt(value: unknown) {
 
 async function readUserContext(uid: string) {
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .doc(uid)
     .collection(UserContextStorage.collection)
     .doc(UserContextStorage.document)

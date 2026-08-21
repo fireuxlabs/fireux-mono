@@ -1,24 +1,11 @@
+import { createError, defineEventHandler, setResponseHeaders, type H3Event, } from 'h3'
 import {
-  createError,
-  defineEventHandler,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
-import {
-  asBoundedTrimmedString,
-  asTrimmedString,
-  buildDirectoryPath,
-  resolveDirectoryDescription,
-  toIsoUpdatedAt,
-} from '../../utils/projection/normalize'
+  asBoundedTrimmedString, asTrimmedString, buildDirectoryPath, resolveDirectoryDescription, toIsoUpdatedAt, } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
 import type { UserDetail } from '../../../user/models/user-directory.model.ts'
 import {
-  resolveUserDirectoryScope,
-  userBelongsToDirectoryScope,
-} from '../../../user/server/directory/scope'
+  resolveUserDirectoryScope, userBelongsToDirectoryScope, } from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
-import { UserStorage } from '../../../user/models/user.model.ts'
 import { resolveUserAvatarSource } from '../../../user/utils/user-avatar.ts'
 
 const CACHE_CONTROL =
@@ -68,7 +55,7 @@ async function readCanonicalUserByHandle(
   handle: string
 ): Promise<UserDetail | null> {
   const snap = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .where('handle', '==', handle)
     .limit(1)
     .get()

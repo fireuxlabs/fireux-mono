@@ -1,148 +1,31 @@
-import type { FirebaseTimestamp } from '../../../types/firebase'
-import { defineFireuxEntity } from '../../models/utils/entity.model.ts'
-import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
-import type { AppThemeLayer } from '../../../types/theme'
-
-export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
-export type AppRole = 'global' | 'tenant' | 'standalone'
-
-export interface AppMedia {
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
-  cover_url: string
-}
-
-/** Directory transport metadata; not part of canonical App storage. */
-export interface AppSocialLinks {
-  website: string
-  twitter: string
-  github: string
-  linkedin: string
-  instagram: string
-  facebook: string
-  youtube: string
-  email: string
-}
-
-/** Derived directory transport metadata; never stored on canonical App. */
-export interface AppDerived {
-  user_count: number
-}
-
-export type AppWorkspaceFamily = string
-
-export interface App extends FireuxStamped {
+export type App = {
   id: string
   project_id: string
   ecosystem_id?: string
-  role: AppRole
-  status: AppStatus
+  role: 'global' | 'tenant' | 'standalone'
+  status: 'draft' | 'active' | 'paused' | 'archived'
   name: string
   short_name: string
+  tagline: string
   description: string
-  media: AppMedia
-  theme?: AppThemeLayer
+  short_bio: string
+  long_bio: string
+  social_links: {
+    website: string
+    twitter: string
+    github: string
+    linkedin: string
+    instagram: string
+    facebook: string
+    youtube: string
+    email: string
+  }
+  media: {
+    thumbnail_url: string
+    logo_url: string
+    wordmark_light_url: string
+    wordmark_dark_url: string
+    cover_url: string
+  }
   self_join_enabled: boolean
 }
-
-export interface AppMeta extends Pick<FireuxStamped, 'updated'> {
-  id: string
-  project_id: string
-  ecosystem_id?: string
-  role: AppRole
-  status: AppStatus
-  name: string
-  short_name: string
-  description: string
-  media: AppMedia
-  database_id: string
-  website_url: string
-  workspace_families: AppWorkspaceFamily[]
-}
-
-export const AppStorage = {
-  shape: 'root',
-  database: 'named',
-  path: 'apps/{appId}',
-  collection: 'apps',
-  idParam: 'appId',
-} as const
-
-export const AppMetaStorage = {
-  shape: 'projection',
-  database: '(default)',
-  path: 'apps/{appId}',
-  collection: 'apps',
-  idParam: 'appId',
-  authority: 'canonical-app-and-source-config',
-} as const
-
-export const AppEntity = defineFireuxEntity({
-  kind: 'entity',
-  name: 'App',
-  family: ['core', 'system'],
-  identity: 'root',
-  authority: 'owning-app-database',
-  appSupport: 'none',
-  root: AppStorage.path,
-})
-
-export const AppDefaults: App = {
-  id: '',
-  project_id: '',
-  ecosystem_id: '',
-  role: '' as AppRole,
-  status: 'draft',
-  name: '',
-  short_name: '',
-  description: '',
-  media: {
-    thumbnail_url: '',
-    logo_url: '',
-    wordmark_light_url: '',
-    wordmark_dark_url: '',
-    cover_url: '',
-  },
-  theme: undefined,
-  self_join_enabled: false,
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-    app_id: undefined,
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-}
-
-export const AppMetaDefaults: AppMeta = {
-  id: '',
-  project_id: '',
-  ecosystem_id: '',
-  role: '' as AppRole,
-  status: 'draft',
-  name: '',
-  short_name: '',
-  description: '',
-  media: {
-    thumbnail_url: '',
-    logo_url: '',
-    wordmark_light_url: '',
-    wordmark_dark_url: '',
-    cover_url: '',
-  },
-  database_id: '',
-  website_url: '',
-  workspace_families: [],
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
-}
-
-export type AppCreateInput = Omit<App, 'created' | 'updated'>
-export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>
-export type AppMetaInput = Omit<AppMeta, 'updated'>

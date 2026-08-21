@@ -1,10 +1,9 @@
 import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import {
-  AppStorage,
   type App,
 } from '../models/app.model.ts'
-import type { AppSocialLinks } from '../models/app.model.ts'
+import type { AppSocialLinks } from '../models/app-directory.model.ts'
 import { resolveAppMediaForView } from './firestore/utils/appMedia'
 import { useResolvedColorMode } from '../../composables/theme/useColorMode'
 
@@ -142,7 +141,7 @@ export function useAppInterface(
       id,
       to:
         safeString(app.detail_url) ||
-        (id ? `/${AppStorage.collection}/${encodeURIComponent(id)}` : ''),
+        (id ? `/${'apps'}/${encodeURIComponent(id)}` : ''),
 
       imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),

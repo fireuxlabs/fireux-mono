@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { AppUserRole } from '../../user/models/user.model.ts'
+import type { AppUserRole } from '../../app/models/app-user.model.ts'
 
 export const ProjectUserJoinStorage = {
   database: 'platform-directory',

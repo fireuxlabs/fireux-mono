@@ -1,4 +1,4 @@
-import type { ProjectCreateInput } from 'fireux-core/runtime/project/models/project.model'
+import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -29,7 +29,7 @@ export async function createProject(event: H3Event, input: unknown) {
       `Project create contains unsupported field: ${unsupported}.`
     )
   const id = requireFirestoreDocumentId(body.id, 'Project id')
-  const payload: ProjectCreateInput = {
+  const payload: Project = {
     id,
     name: boundedProjectText(body.name, 'Project name', 120),
     description: optionalProjectText(

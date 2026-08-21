@@ -922,7 +922,7 @@ export async function run(ctx) {
       markers: [
         'appId: string',
         "appId: 'fireux-app'",
-        'scenario.project.created.app_id !== appId',
+        "scenario.project.id || '').trim()",
         'app.project_id !== projectId',
         '!ecosystemIds.has(childEcosystemId)',
         "'operator_ids' in app",

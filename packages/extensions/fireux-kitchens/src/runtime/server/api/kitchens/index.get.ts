@@ -9,6 +9,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { Kitchen } from '../../../kitchen/models/kitchen.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readKitchens } from '../../../kitchen/server/index/read.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -35,7 +36,7 @@ async function requireHiddenKitchenAccess(
 }
 
 export default defineEventHandler(
-  async (event): Promise<Kitchen[]> => {
+  async (event): Promise<Array<Kitchen & { place: Place }>> => {
     const query = getQuery(event)
     const includeHidden = text(query.includeHidden) === 'true'
     if (query.includeHidden && !includeHidden) {

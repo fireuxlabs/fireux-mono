@@ -2,7 +2,6 @@ import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAssets } from '../../composables/brand/useAssets'
-import { AppStorage } from '../../models/app.model.ts'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { normalizeSlug } from '../../../utils/slug/normalizeSlug'
 import { normalizePublicImgAsset } from '../../../../utils/brandAssets'
@@ -93,7 +92,7 @@ export async function readAppInfo(event: H3Event) {
   const brandAssets = useAssets()
   const runtime = useRuntimeConfig(event)
   const appDoc = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(cfg.appId)
     .get()
     .catch(() => null)

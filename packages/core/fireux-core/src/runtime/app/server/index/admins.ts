@@ -2,9 +2,7 @@
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { AppStorage } from '../../models/app.model.ts'
 import { resolveUserAvatarSource } from '../../../user/utils/user-avatar.ts'
-import { AppUserStorage, UserStorage } from '../../../user/models/user.model.ts'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
@@ -68,9 +66,9 @@ export async function readAppAdmins(event: H3Event) {
 
   try {
     const memberships = await appDb
-      .collection(AppStorage.collection)
+      .collection('apps')
       .doc(cfg.appId)
-      .collection(AppUserStorage.collection)
+      .collection('users')
       .where('role', '==', 'admin')
       .limit(limit)
       .get()
@@ -82,7 +80,7 @@ export async function readAppAdmins(event: H3Event) {
       if (!uid) continue
 
       const userSnap = await identityDb
-        .collection(UserStorage.collection)
+        .collection('users')
         .doc(uid)
         .get()
       admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))

@@ -1,10 +1,4 @@
-import {
-  createError,
-  defineEventHandler,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
-import { UserStorage } from '../../../user/models/user.model.ts'
+import { createError, defineEventHandler, setResponseHeaders, type H3Event, } from 'h3'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
 import type { DetailResponse } from '../../../models/utils/directory'
@@ -24,7 +18,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .doc(userId)
     .get()
   const item = readUserIdentitySummary(snapshot)

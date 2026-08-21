@@ -8,7 +8,7 @@ import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
 } from '../../models/app-membership'
-import type { AppUserRole } from '../../../user/models/user.model.ts'
+import type { AppUserRole } from '../../models/app-user.model.ts'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppAuthorityTargets,

@@ -15,7 +15,6 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
@@ -42,7 +41,7 @@ export function blankAppCollectionPath(appId: string) {
   const resolvedAppId = text(appId)
   if (!resolvedAppId) return ''
 
-  return `${AppStorage.collection}/${resolvedAppId}/${BlankStorage.appCollection}`
+  return `${'apps'}/${resolvedAppId}/${BlankStorage.appCollection}`
 }
 
 export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
@@ -63,7 +62,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const supportQuery = (field: 'operator_ids' | 'team_ids') => computed<Query<AppBlank> | null>(() =>
     source.value === 'live' && appId && userId.value
       ? query(
-          collection(db, AppStorage.collection, appId, BlankStorage.appCollection),
+          collection(db, 'apps', appId, BlankStorage.appCollection),
           where(field, 'array-contains', userId.value)
         ) as Query<AppBlank>
       : null

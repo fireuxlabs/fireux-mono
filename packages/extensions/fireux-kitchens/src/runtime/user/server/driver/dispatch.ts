@@ -3,11 +3,6 @@
 
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import {
-  AppUserStorage,
-  UserStorage,
-} from 'fireux-core/runtime/user/models/user.model'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
@@ -113,9 +108,9 @@ function activeKitchenLinks(driver: DocumentData, appId: string) {
 async function requireDriver(context: DriverDispatchContext) {
   const db = getRuntimeFirestore(context.databaseId)
   const identityDb = getRuntimeIdentityFirestore()
-  const appRef = db.collection(AppStorage.collection).doc(context.appId)
+  const appRef = db.collection('apps').doc(context.appId)
   const membershipRef = appRef
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .doc(context.actorUid)
   const [appSnapshot, membershipSnapshot] = await db.getAll(
     appRef,
@@ -220,7 +215,7 @@ export async function watchDriverDispatch(
 ): Promise<DriverDispatchWatchResult> {
   const { driver } = await requireDriver(context)
   const userSnapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .doc(context.actorUid)
     .get()
   if (!userSnapshot.exists) {

@@ -3,16 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { useRuntimeConfig } from '#imports'
 import { Timestamp } from 'firebase-admin/firestore'
 import {
-  createError,
-  defineEventHandler,
-  getHeader,
-  readRawBody,
-  setResponseHeaders,
-  setResponseStatus,
-  type H3Event,
-} from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
+  createError, defineEventHandler, getHeader, readRawBody, setResponseHeaders, setResponseStatus, type H3Event, } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   serverAppConversationsTarget,
@@ -65,9 +56,9 @@ async function publishOwnerNotifications(input: {
 }) {
   const db = await getFirestoreDb()
   const memberships = await db
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(input.appId)
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .where('role', '==', 'admin')
     .limit(16)
     .get()

@@ -1,8 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { AppStorage } from '../../../app/models/app.model.ts'
-import { AppUserStorage } from '../../models/user.model.ts'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 
 export type UserDirectoryScope =
@@ -54,9 +52,9 @@ export async function readUserDirectoryScopeIds(
   if (scope.kind !== 'tenant') return []
 
   const snapshot = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(scope.appId)
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .orderBy(FieldPath.documentId())
     .limit(limit)
     .get()
@@ -75,9 +73,9 @@ export async function userBelongsToDirectoryScope(
   if (!userId) return false
 
   const membership = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(scope.appId)
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .doc(userId)
     .get()
 

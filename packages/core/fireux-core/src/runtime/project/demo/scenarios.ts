@@ -1,14 +1,7 @@
-import { AppDefaults, type App } from '../../app/models/app.model.ts'
-import {
-  EcosystemDefaults,
-  type Ecosystem,
-} from '../../ecosystem/models/ecosystem.model.ts'
+import type { App } from '../../app/models/app.model.ts'
+import type { Ecosystem } from '../../ecosystem/models/ecosystem.model.ts'
 import type { Project } from '../models/project.model.ts'
-import {
-  fireuxDemoProject,
-  projectDemoCreated,
-  projectDemoUpdated,
-} from './targets'
+import { fireuxDemoProject } from './targets'
 
 export type ProjectDemoScenario = {
   appId: string
@@ -23,26 +16,33 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
     project: fireuxDemoProject,
     apps: [
       {
-        ...AppDefaults,
         id: 'fireux-demo-app',
         project_id: fireuxDemoProject.id,
         ecosystem_id: 'fireux-demo-ecosystem',
         name: 'FireUX Demo App',
         short_name: 'Demo App',
         role: 'global',
-        created: projectDemoCreated,
-        updated: projectDemoUpdated,
+        status: 'active',
+        description: 'A deterministic read-only App relationship.',
+        media: {
+          thumbnail_url: '',
+          logo_url: '',
+          wordmark_light_url: '',
+          wordmark_dark_url: '',
+          cover_url: '',
+        },
+        self_join_enabled: false,
       },
     ],
     ecosystems: [
       {
-        ...EcosystemDefaults,
         id: 'fireux-demo-ecosystem',
         project_id: fireuxDemoProject.id,
         name: 'FireUX Demo Ecosystem',
         description: 'A deterministic read-only ecosystem relationship.',
-        created: projectDemoCreated,
-        updated: projectDemoUpdated,
+        status: 'active',
+        image_url: '',
+        website_url: '',
       },
     ],
   },
@@ -59,8 +59,7 @@ for (const scenario of projectDemoScenarios) {
   if (
     !appId ||
     !projectId ||
-    ecosystemIds.has('') ||
-    scenario.project.created.app_id !== appId
+    ecosystemIds.has('')
   ) {
     throw new Error(
       'Every Project Demo scenario requires stable root identities.'

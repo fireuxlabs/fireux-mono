@@ -5,7 +5,6 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { AppStorage } from '../../../app/models/app.model.ts'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
@@ -26,7 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
     'App id'
   )
 
-  const collection = getRuntimeFirestore().collection(AppStorage.collection)
+  const collection = getRuntimeFirestore().collection('apps')
   const doc = await collection.doc(appId).get()
 
   const raw = doc?.exists

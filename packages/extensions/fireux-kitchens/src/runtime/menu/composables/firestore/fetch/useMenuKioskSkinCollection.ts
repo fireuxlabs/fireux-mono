@@ -1,7 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   MenuKioskSkinStorage,
   menuKioskSkinFromDoc,
@@ -32,7 +31,7 @@ export function useMenuKioskSkinCollection(
   )
   const collectionPath = computed(() =>
     resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${MenuKioskSkinStorage.appCollection}`
+      ? `${'apps'}/${resolvedAppId.value}/${MenuKioskSkinStorage.appCollection}`
       : ''
   )
   const source = firestoreFetchCollection<MenuKioskSkinDoc>(collectionPath)

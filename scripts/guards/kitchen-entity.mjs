@@ -70,12 +70,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(indexApi, /requireFirebaseBearerUser/)
   assert.match(indexApi, /apps\/\$\{appId\}\/users\/\$\{uid\}/)
   assert.match(indexApi, /!isDeveloper && !isAdmin/)
-  assert.match(indexApi, /Promise<Kitchen\[]>/)
+  assert.match(indexApi, /Promise<Array<Kitchen & \{ place: Place \}>>/)
   assert.match(indexApi, /readKitchens/)
   assert.doesNotMatch(indexApi, /db\.collection|FieldPath|projectKitchen/)
   assert.match(indexReader, /db\.collection\('kitchens'\)/)
   assert.match(indexReader, /readKitchenRelatedRecords/)
-  assert.match(indexReader, /Promise<Kitchen\[]>/)
+  assert.match(indexReader, /Promise<Array<Kitchen & \{ place: Place \}>>/)
   assert.match(indexReader, /resolveKitchen/)
   assert.match(
     indexReader,

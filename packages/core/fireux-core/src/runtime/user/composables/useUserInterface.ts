@@ -3,12 +3,11 @@
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: map optional biography into shared User cards.
 import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
+import type { User } from '../models/user.model.ts'
 import {
+  resolveUserAvatarSource,
   USER_ECOSYSTEM_AVATAR_SRC,
-  UserStorage,
-  type User,
-} from '../models/user.model.ts'
-import { resolveUserAvatarSource } from '../utils/user-avatar'
+} from '../utils/user-avatar'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
 
@@ -96,7 +95,7 @@ export function useUserInterface(
     return {
       id,
       to: handle
-        ? `/${UserStorage.collection}/${encodeURIComponent(handle)}`
+        ? `/${'users'}/${encodeURIComponent(handle)}`
         : '',
 
       imageUrl: resolveAvatarUrl(user),

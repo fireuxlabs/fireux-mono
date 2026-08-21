@@ -1,12 +1,12 @@
 import { computed, unref, type MaybeRef } from 'vue'
-import { AppStorage, type App } from '../../../models/app.model.ts'
+import type { App } from '../../../models/app.model.ts'
 import { useFirestoreCollectionState } from '../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 
 type AppCollectionDoc = Partial<App> & { id?: string }
 
 export function useAppCollection(
-  collectionPath: MaybeRef<string | null | undefined> = AppStorage.collection
+  collectionPath: MaybeRef<string | null | undefined> = 'apps'
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const path = computed(() => String(unref(collectionPath) ?? '').trim())

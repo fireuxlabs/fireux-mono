@@ -2,7 +2,6 @@ import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAssets } from '../../composables/brand/useAssets'
-import { AppStorage } from '../../models/app.model.ts'
 import type { FireuxMetaContent } from '../../../../config/app/meta-content'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { normalizePublicImgAsset } from '../../../../utils/brandAssets'
@@ -64,7 +63,7 @@ export async function readAppMeta(event: H3Event) {
   const runtimeConfig = useRuntimeConfig(event)
   const meta = runtimeConfig.fireux?.meta
   const appDoc = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(cfg.appId)
     .get()
     .catch(() => null)

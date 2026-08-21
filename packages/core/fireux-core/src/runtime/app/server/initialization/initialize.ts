@@ -1,7 +1,6 @@
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
-import { UserStorage } from '../../../user/models/user.model.ts'
 import type { AppInitializationResult } from '../../models/app-initialization'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -17,7 +16,6 @@ import {
   stamp,
 } from '../membership/mutation-contract'
 import { ensureRuntimeAppMeta } from '../projection/ensure'
-import { readAppPaletteLayer } from '../../../utils/brand-palette'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -39,7 +37,20 @@ function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
     status: 'active',
     name: config.appName,
     short_name: config.appShortName,
+    tagline: '',
     description: '',
+    short_bio: '',
+    long_bio: '',
+    social_links: {
+      website: '',
+      twitter: '',
+      github: '',
+      linkedin: '',
+      instagram: '',
+      facebook: '',
+      youtube: '',
+      email: '',
+    },
     media: {
       thumbnail_url: '',
       logo_url: '',
@@ -47,7 +58,6 @@ function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
       wordmark_dark_url: '',
       cover_url: '',
     },
-    ...(config.theme ? { theme: config.theme } : {}),
     self_join_enabled: config.selfJoinEnabled,
     created: { at: now, by: uid },
     updated: { at: now, by: uid },
@@ -81,7 +91,7 @@ export async function initializeRuntimeApp(
     const identityUser = await getRuntimeIdentityFirestore(
       input.identityDatabaseId
     )
-      .collection(UserStorage.collection)
+      .collection('users')
       .doc(uid)
       .get()
     if (!identityUser.exists) conflict('The User record does not exist.')
@@ -118,9 +128,6 @@ export async function initializeRuntimeApp(
         assertExistingAppMatchesRuntime(app.data ?? {}, config)
       }
 
-      const storedTheme = app.data?.theme as Record<string, unknown> | undefined
-      const storedPalette = readAppPaletteLayer(storedTheme?.palette)
-
       if (!isAdminMembership(membership.data)) {
         const adminCount = await countTransactionAdmins(mutations, config.appId)
         if (adminCount > 0) {
@@ -130,11 +137,6 @@ export async function initializeRuntimeApp(
 
       if (!app.exists) {
         mutations.create(apps, config.appId, appPayload(config, uid))
-      } else if (config.theme && !storedPalette) {
-        mutations.update(apps, config.appId, {
-          theme: config.theme,
-          updated: stamp(uid),
-        })
       }
 
       if (!membership.exists) {

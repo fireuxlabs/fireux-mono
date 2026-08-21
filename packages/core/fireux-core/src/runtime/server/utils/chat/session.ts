@@ -1,14 +1,7 @@
-import {
-  createHash,
-  randomBytes,
-  randomUUID,
-  timingSafeEqual,
-} from 'node:crypto'
+import { createHash, randomBytes, randomUUID, timingSafeEqual, } from 'node:crypto'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
-import { AppStorage } from '../../../app/models/app.model.ts'
-import { AppUserStorage } from '../../../user/models/user.model.ts'
 import {
   ConversationAccessStorage,
   ConversationMessageStorage,
@@ -101,9 +94,9 @@ async function actorFor(event: H3Event, appId: string) {
   }
 
   const membership = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(appId)
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .doc(user.uid)
     .get()
   const isAdmin = membership.exists && membership.data()?.role === 'admin'
@@ -117,7 +110,7 @@ async function actorFor(event: H3Event, appId: string) {
 
 function sessionRefs(appId: string, conversationId: string) {
   const conversationRef = getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(appId)
     .collection(ConversationStorage.collection)
     .doc(conversationId)

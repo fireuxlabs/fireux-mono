@@ -1,10 +1,10 @@
-import type { AppRole } from './app.model.ts'
+import type { App } from './app.model.ts'
 
 export type AppOnboardingPlacement = 'tenant' | 'standalone' | 'ecosystem'
 
 export type AppOnboardingPlacementOption = {
   id: AppOnboardingPlacement
-  app_role: AppRole
+  app_role: App['role']
   target_ecosystem_id?: string
 }
 

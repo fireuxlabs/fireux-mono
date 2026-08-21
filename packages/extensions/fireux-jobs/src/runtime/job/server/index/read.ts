@@ -2,7 +2,6 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
 import {
   JOB_DIRECTORY_MAX_PAGE_SIZE,
@@ -140,7 +139,7 @@ export async function readJobDirectoryPage(
       sourceAppIds.length
         ? db.getAll(
             ...sourceAppIds.map((id) =>
-              db.collection(AppStorage.collection).doc(id)
+              db.collection('apps').doc(id)
             )
           )
         : Promise.resolve([]),

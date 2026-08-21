@@ -1,7 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -144,7 +143,7 @@ export default defineEventHandler(async (event) => {
   const input = parseRequest(await readBody(event))
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${appId}/${AppUserStorage.collection}/${uid}`
+    `apps/${appId}/${'users'}/${uid}`
   )
   const profileRef = db.doc(marketplaceProfilePath(uid))
   const appStateRef = db.doc(marketplaceProfileAppStatePath(uid))

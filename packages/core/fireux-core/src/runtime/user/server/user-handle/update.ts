@@ -3,7 +3,7 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/user.model.ts'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../utils/user-avatar.ts'
 import { UserAccountStorage } from '../../models/user-account.model.ts'
 import {
   type UserHandleInput,

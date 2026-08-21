@@ -1,6 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { AppMembershipMutationResult } from '../../models/app-membership'
-import { UserStorage } from '../../../user/models/user.model.ts'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppJoinRequestsTarget,
@@ -184,7 +183,7 @@ export async function mutateRuntimeAppMembership(
     const snapshot = await getRuntimeIdentityFirestore(
       context.identityDatabaseId
     )
-      .collection(UserStorage.collection)
+      .collection('users')
       .doc(requiredUserId)
       .get()
     if (!snapshot.exists)

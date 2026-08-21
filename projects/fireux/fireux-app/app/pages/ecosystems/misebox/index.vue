@@ -174,7 +174,7 @@ import type {
   EcosystemDirectoryEntry,
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
-import type { AppRole } from 'fireux-core/runtime/app/models/app.model'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -233,7 +233,7 @@ if (import.meta.server) {
   }
 }
 
-const appRoleLabel = (role: AppRole | '') => {
+const appRoleLabel = (role: App['role'] | '') => {
   if (role === 'global') return 'Ecosystem App'
   if (role === 'tenant') return 'Tenant App'
   if (role === 'standalone') return 'Standalone App'

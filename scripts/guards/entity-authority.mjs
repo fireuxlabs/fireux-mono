@@ -128,170 +128,82 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     pathToFileURL(path.join(repoRoot, PROFILE_INDEX_UTIL)).href
   )
 
-  for (const [name, source, markers] of [
-    [
-      'User',
-      userModel,
-      [
-        'export type AppUserRole',
-        'export interface User extends FireuxStamped',
-        'export interface AppUser',
-        'export const UserStorage',
-        'export const UserEntity',
-        'export const UserDefaults',
-        'export type UserCreateInput',
-      ],
-    ],
-    [
-      'App',
-      appModel,
-      [
-        'export type AppStatus',
-        'export interface App extends FireuxStamped',
-        'export interface AppMeta',
-        'export const AppStorage',
-        'export const AppEntity',
-        'export const AppDefaults',
-        'export type AppCreateInput',
-      ],
-    ],
-    [
-      'Ecosystem',
-      ecosystemModel,
-      [
-        'export type EcosystemStatus',
-        'export interface Ecosystem extends FireuxStamped',
-        'export interface EcosystemMeta',
-        'export const EcosystemStorage',
-        'export const EcosystemEntity',
-        'export const EcosystemDefaults',
-        'export type EcosystemCreateInput',
-      ],
-    ],
-    [
-      'Project',
-      projectModel,
-      [
-        'export type ProjectStatus',
-        'export interface Project extends FireuxStamped',
-        'export interface ProjectMeta',
-        'export const ProjectStorage',
-        'export const ProjectEntity',
-        'export const ProjectDefaults',
-        'export type ProjectCreateInput',
-      ],
-    ],
+  for (const [name, source] of [
+    ['App', appModel],
+    ['Ecosystem', ecosystemModel],
+    ['Project', projectModel],
+    ['User', userModel],
   ]) {
-    const positions = markers.map((marker) => source.indexOf(marker))
-    assert.ok(
-      positions.every((position) => position >= 0) &&
-        positions.every((position, index) =>
-          index === 0 ? true : position > positions[index - 1]
-        ),
-      `${name} model must follow vocabulary, entity, support, storage, declaration, defaults, and command order.`
+    assert.match(
+      source,
+      new RegExp(`export type ${name}\\s*=\\s*\\{`),
+      `${name} must expose one direct singular document type.`
     )
     assert.doesNotMatch(
       source,
-      /export const \w+Model\b|export type \w+Model\b/,
-      `${name} runtime seeds use Defaults; Model is not a value or type alias.`
+      /defineFireuxEntity|\b\w+Storage\b|\b\w+Defaults\b|\b\w+(?:Create|Update)Input\b|FireuxStamped|FirebaseTimestamp|WidenLiteral/,
+      `${name} canonical model must contain data fields, not infrastructure.`
     )
   }
 
-  const appMetaStart = appModel.indexOf('export interface AppMeta')
-  const appMetaEnd = appModel.indexOf('export const AppStorage', appMetaStart)
-  assert.ok(appMetaStart >= 0 && appMetaEnd > appMetaStart)
-  const appMetaContract = appModel.slice(appMetaStart, appMetaEnd)
-  assert.match(appMetaContract, /project_id:\s*string/)
-  assert.match(appMetaContract, /website_url:\s*string/)
-  assert.match(appMetaContract, /workspace_families:\s*AppWorkspaceFamily\[\]/)
-  assert.doesNotMatch(
-    appMetaContract,
-    /derived|user_count|self_join_enabled|moderation_state|ban_reasons|fireux_repo|join_requests|admin_ids/
-  )
-  assert.match(
-    appModel,
-    /AppMetaStorage[\s\S]*database:\s*['"]\(default\)['"][\s\S]*path:\s*['"]apps\/\{appId\}['"]/
-  )
-
-  assert.match(appModel, /project_id:\s*''/)
-  assert.match(appModel, /ecosystem_id:\s*''/)
+  assert.match(appModel, /project_id:\s*string/)
   assert.match(appModel, /ecosystem_id\?:\s*string/)
-  assert.match(
-    appModel,
-    /export interface App extends FireuxStamped/
-  )
-  assert.doesNotMatch(
-    appModel,
-    /AppCanonicalStorage|AppFieldGroups|WidenLiteral|models\/utils\/app/
-  )
+  for (const field of [
+    'tagline',
+    'description',
+    'short_bio',
+    'long_bio',
+    'social_links',
+    'media',
+  ]) {
+    assert.match(
+      appModel,
+      new RegExp(`\\b${field}:`),
+      `App must contain its ${field} public identity field.`
+    )
+  }
+  assert.doesNotMatch(appModel, /theme|AppMeta|AppSocialLinks|AppDerived/)
   assert.doesNotMatch(appModel, /^  (team|ecosystem):/m)
 
-  assert.match(ecosystemModel, /project_id:\s*''/)
-  assert.match(
-    ecosystemModel,
-    /export interface Ecosystem extends FireuxStamped/
-  )
-  assert.match(
-    ecosystemModel,
-    /EcosystemMetaStorage[\s\S]*database:\s*['"]\(default\)['"][\s\S]*path:\s*['"]ecosystem\/\{ecosystemId\}['"]/
-  )
-  const ecosystemMetaStart = ecosystemModel.indexOf(
-    'export interface EcosystemMeta'
-  )
-  const ecosystemMetaEnd = ecosystemModel.indexOf(
-    'export const EcosystemStorage',
-    ecosystemMetaStart
-  )
-  assert.ok(ecosystemMetaStart >= 0 && ecosystemMetaEnd > ecosystemMetaStart)
-  const ecosystemMetaContract = ecosystemModel.slice(
-    ecosystemMetaStart,
-    ecosystemMetaEnd
-  )
-  assert.match(ecosystemMetaContract, /database_id:\s*string/)
-  assert.doesNotMatch(
-    ecosystemMetaContract,
-    /apps|app_count|users|memberships|fireux_repo|workspace|moderation|ban_reasons/
-  )
-  assert.doesNotMatch(ecosystemModel, /EcosystemCanonicalStorage|WidenLiteral/)
+  assert.match(ecosystemModel, /project_id:\s*string/)
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
 
-  assert.match(
-    projectModel,
-    /ProjectStorage[\s\S]*shape:\s*'root'[\s\S]*path:\s*'projects\/\{projectId\}'/
-  )
-  assert.match(
-    projectModel,
-    /ProjectTeamStorage[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'projects\/\{projectId\}\/team\/\{userId\}'/
-  )
-  assert.match(
-    projectModel,
-    /ProjectMetaStorage[\s\S]*database:\s*['"]\(default\)['"][\s\S]*path:\s*['"]project\/\{projectId\}['"]/
-  )
-  assert.match(
-    projectModel,
-    /export interface Project extends FireuxStamped/
-  )
-  assert.doesNotMatch(projectModel, /WidenLiteral|^  slug:/m)
-  assert.match(projectModel, /ProjectTeamMemberDefaults/)
-  assert.doesNotMatch(projectModel, /AppProject|FireuxAppAccessRecordModel/)
+  assert.doesNotMatch(projectModel, /^  slug:/m)
   assert.doesNotMatch(
     projectModel,
     /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|workspace_endpoint_url|project_type|primary_project):/m
   )
-  assert.match(
-    userModel,
-    /export interface User extends FireuxStamped/
-  )
-  assert.match(userModel, /export interface AppUser extends FireuxStamped/)
-  const canonicalUserModels = userModel.slice(
-    0,
-    userModel.indexOf('export interface AppUser')
-  )
+
   assert.doesNotMatch(
-    canonicalUserModels,
-    /app_ids|project_ids|kitchen_ids|workspace_enabled|profiles\??:\s*string\[\]/
+    userModel,
+    /app_ids|project_ids|kitchen_ids|workspace_enabled|profiles\??:\s*string\[\]|UserAccount|UserNotification|rootCollection/
   )
-  assert.doesNotMatch(userModel, /UserAccount|UserNotification|rootCollection/)
+
+  const appUserModel = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
+  )
+  assert.match(appUserModel, /export type AppUser\s*=\s*\{/)
+  assert.match(appUserModel, /id:\s*string/)
+  assert.match(appUserModel, /role:\s*AppUserRole/)
+  assert.doesNotMatch(
+    appUserModel,
+    /defineFireuxEntity|Storage|Defaults|FireuxStamped|FirebaseTimestamp/
+  )
+
+  const projectTeamMemberModel = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/models/project-team-member.model.ts'
+  )
+  assert.match(
+    projectTeamMemberModel,
+    /export type ProjectTeamMember\s*=\s*\{/
+  )
+  assert.match(projectTeamMemberModel, /user_id:\s*string/)
+  assert.doesNotMatch(
+    projectTeamMemberModel,
+    /defineFireuxEntity|Storage|Defaults|FireuxStamped|FirebaseTimestamp/
+  )
 
   assert.doesNotMatch(
     read(repoRoot, PROFILE_PROVISIONING_MODEL),
@@ -491,7 +403,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  assert.match(userModel, /avatar:\s*USER_ECOSYSTEM_AVATAR_SRC/)
+  assert.match(userModel, /avatar:\s*string/)
+  assert.doesNotMatch(userModel, /USER_ECOSYSTEM_AVATAR_SRC/)
   const professionalExperienceEditor = read(
     repoRoot,
     'packages/extensions/fireux-jobs/src/runtime/components/Professional/Fields/ExperienceSection.vue'
@@ -775,7 +688,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(projectDirectoryApi, /readProjectDirectoryPage/)
   assert.doesNotMatch(projectDirectoryApi, /ProjectStorage|\.collection\(/)
-  assert.match(projectDirectoryReader, /ProjectStorage\.collection/)
+  assert.match(projectDirectoryReader, /collection\(['"]projects['"]\)/)
   assert.match(projectDirectoryReader, /status !== 'active'/)
   assert.match(projectDirectoryModel, /export type ProjectDirectoryEntry/)
   assert.match(projectDirectoryModel, /export type ProjectDirectoryPage/)
@@ -861,7 +774,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
   assert.match(projectControlApi, /requireFirebaseBearerUser/)
-  assert.match(projectControlApi, /AppUserStorage\.collection/)
+  assert.match(projectControlApi, /appRef\.collection\(['"]users['"]\)/)
   assert.match(projectControlApi, /membershipSnapshot/)
   assert.match(projectControlApi, /membership\.role/)
   assert.match(projectControlApi, /===\s*['"]admin['"]/)
@@ -869,22 +782,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(projectControlApi, /admin_ids/)
   assert.match(projectControlApi, /users\/\$\{uid\}\/private\/targets/)
   assert.match(projectControlApi, /project_ids/)
-  assert.match(projectControlApi, /ProjectStorage\.collection/)
+  assert.match(projectControlApi, /collection\(['"]projects['"]\)/)
   assert.doesNotMatch(
     projectControlApi,
     /test-projects|getQuery\(event\)\.source/
   )
   assert.doesNotMatch(projectControlApi, /operator_ids|team_ids/)
   assert.match(projectTeamApi, /requireFirebaseBearerUser/)
-  assert.match(projectTeamApi, /AppUserStorage\.collection/)
+  assert.match(projectTeamApi, /appRef\.collection\(['"]users['"]\)/)
   assert.match(projectTeamApi, /membership\.data\(\)\?\.role/)
-  assert.match(projectTeamApi, /ProjectTeamStorage\.collection/)
+  assert.match(projectTeamApi, /projectRef\.collection\(['"]team['"]\)/)
   assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.user_id/)
   assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.status/)
   assert.match(projectTeamApi, /teamRole !== 'owner'/)
   assert.match(projectTeamApi, /teamRole !== 'operator'/)
   assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
-  assert.match(projectTeamApi, /UserStorage\.collection/)
+  assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
 
   for (const method of ['get', 'post']) {
     const registrySource = read(

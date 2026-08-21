@@ -3,7 +3,7 @@
 
 import type { Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
-import type { AppSocialLinks } from '../../../models/app.model.ts'
+import type { AppSocialLinks } from '../../../models/app-directory.model.ts'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
@@ -95,15 +95,15 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   async function updateTagline(tagline: string) {
-    await updateDescription(tagline)
+    await updateApp({ tagline: text(tagline, 160) })
   }
 
   async function updateShortBio(shortBio: string) {
-    await updateDescription(shortBio)
+    await updateApp({ short_bio: text(shortBio, 280) })
   }
 
   async function updateLongBio(longBio: string) {
-    await updateDescription(longBio)
+    await updateApp({ long_bio: text(longBio, 4000) })
   }
 
   async function updateAppName(name: string) {
@@ -115,13 +115,21 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   async function updateInstagram(url: string | null) {
-    sanitizeInstagram(url)
-    throw new Error('Social links are not part of canonical App storage.')
+    const current = appRef.value?.social_links
+    await updateSocialLinks({
+      website: current?.website ?? '',
+      twitter: current?.twitter ?? '',
+      github: current?.github ?? '',
+      linkedin: current?.linkedin ?? '',
+      instagram: sanitizeInstagram(url),
+      facebook: current?.facebook ?? '',
+      youtube: current?.youtube ?? '',
+      email: current?.email ?? '',
+    })
   }
 
   async function updateSocialLinks(links: AppSocialLinks) {
-    void links
-    throw new Error('Social links are not part of canonical App storage.')
+    await updateApp({ social_links: links })
   }
 
   async function updateAvatarUrl(url: string | null) {

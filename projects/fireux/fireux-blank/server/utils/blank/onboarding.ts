@@ -4,7 +4,6 @@ import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
 import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -82,7 +81,7 @@ export async function completeBlankOnboarding(
 
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${appId}/${AppUserStorage.collection}/${uid}`
+    `apps/${appId}/${'users'}/${uid}`
   )
   const rootRef = db.collection(BlankStorage.rootCollection).doc()
   const supportRef = db.doc(

@@ -1,10 +1,4 @@
-import {
-  defineEventHandler,
-  getRouterParam,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
-import { UserStorage } from '../../../../../user/models/user.model.ts'
+import { defineEventHandler, getRouterParam, setResponseHeaders, type H3Event, } from 'h3'
 import { UserNotificationStorage } from '../../../../../user/models/user-notification.model.ts'
 import { requireFirebaseBearerUser } from '../../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../../utils/getRuntimeFirestore'
@@ -18,7 +12,7 @@ export default defineEventHandler(async (event: H3Event) => {
   )
 
   await getRuntimeFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .doc(uid)
     .collection(UserNotificationStorage.collection)
     .doc(notificationId)

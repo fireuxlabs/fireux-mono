@@ -2,7 +2,6 @@
 
 import { FieldPath } from 'firebase-admin/firestore'
 import { defineEventHandler, setHeader } from 'h3'
-import { AppStorage } from '../../../app/models/app.model.ts'
 import { requireDevDeveloper } from '../../utils/auth/developer'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
@@ -14,7 +13,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Vary', 'Authorization')
 
   const snapshot = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .orderBy(FieldPath.documentId())
     .limit(MAX_DEV_APPS + 1)
     .get()

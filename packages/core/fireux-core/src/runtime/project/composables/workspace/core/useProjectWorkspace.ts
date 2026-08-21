@@ -2,16 +2,13 @@
 import { computed } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import {
-  useWorkspace,
-  type WorkspaceSource,
-} from '../../../../composables/fireux/workspace/useWorkspace'
+  useWorkspace, type WorkspaceSource, } from '../../../../composables/fireux/workspace/useWorkspace'
 import { workspaceData } from '../../../../composables/fireux/workspace/useWorkspaceData'
 import { useWorkspaceEntityRuntime } from '../../../../composables/fireux/workspace/useWorkspaceEntityRuntime'
 import { useWorkspaceFamilyRuntime } from '../../../../composables/fireux/workspace/useWorkspaceFamilyRuntime'
 import { useWorkspaceTargets } from '../../../../composables/fireux/workspace/useWorkspaceTargets'
 import { useProjectCollection } from '../../useProjectCollection'
 import type { ProjectSurface } from '../../useProjectInterface'
-import { ProjectStorage } from '../../../models/project.model.ts'
 import { useProjectWorkspaceDemoTargets } from './useProjectWorkspaceDemoTargets'
 
 type ProjectWorkspaceEntity = ProjectSurface
@@ -77,7 +74,7 @@ function createProjectWorkspace() {
   )
   const entity = useWorkspaceEntityRuntime<ProjectSurface>({
     family: 'project',
-    storageFamily: ProjectStorage.collection,
+    storageFamily: 'projects',
     targetData,
     targetOutcome: targetsOutcome,
     getId: (project) => normalizeString(project?.id),

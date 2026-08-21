@@ -4,10 +4,7 @@
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: construct Firebase write and Storage clients only when a User edit runs.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography through the canonical public User updater.
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../../composables/fireux/firestore/vuefire'
-import {
-  UserStorage,
-  type User,
-} from '../../../../models/user.model.ts'
+import type { User } from '../../../../models/user.model.ts'
 import { useImageStorage } from '../../../../../composables/fireux/firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../../composables/fireux/firestore/operations/useFirestoreUpdate'
 import { ensureAvatarUrl } from '../../../../../composables/fireux/firestore/utils/useEnsureCommon'
@@ -48,7 +45,7 @@ export function useCoreUserUpdate(user: UserRefs) {
 
   const updateCore = (data: Record<string, unknown>) =>
     useFirestoreUpdate({ databaseId: identityDatabaseId }).updateDocument<User>(
-      UserStorage.collection,
+      'users',
       requireCoreId(),
       data as Partial<User>
     )
@@ -93,7 +90,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       const resolved = formatted
         ? formatted
         : await ensureAvatarUrl(
-            `${UserStorage.collection}/${requireCoreId()}/avatar/current`,
+            `${'users'}/${requireCoreId()}/avatar/current`,
             [USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
             true,
             {
@@ -107,7 +104,7 @@ export function useCoreUserUpdate(user: UserRefs) {
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
       const extension = avatarFileExtension(source)
-      const path = `${UserStorage.collection}/${id}/avatar/${Date.now()}.${extension}`
+      const path = `${'users'}/${id}/avatar/${Date.now()}.${extension}`
       const { uploadImage } = useImageStorage()
       const url = await uploadImage(path, source)
       const formatted = formatAndValidate(

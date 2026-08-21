@@ -29,12 +29,6 @@ const families = [
     'properties/{propertyId}/team/{userId}',
   ],
   [
-    'Project',
-    'packages/core/fireux-core/src/runtime/project/models/project.model.ts',
-    'projects/{projectId}',
-    'projects/{projectId}/team/{userId}',
-  ],
-  [
     'MarketplaceStore',
     'packages/extensions/fireux-marketplace/src/runtime/marketplace-store/models/marketplace.model.ts',
     'marketplace-stores/{storeId}',
@@ -94,7 +88,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts'
   )
   assert.match(kitchenModel, /export type Kitchen\s*=\s*\{/)
-  assert.match(kitchenModel, /place:\s*Place/)
+  assert.doesNotMatch(
+    kitchenModel,
+    /place:\s*Place/,
+    'Canonical Kitchen storage must not embed its independently stored Place.'
+  )
   assert.doesNotMatch(
     kitchenModel,
     /management|appSupport|management_mode|management_app_id|operator_ids|team_ids/,

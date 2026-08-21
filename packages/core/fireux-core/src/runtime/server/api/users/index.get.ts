@@ -1,25 +1,11 @@
+import { defineEventHandler, getQuery, setResponseHeaders, type H3Event, } from 'h3'
 import {
-  defineEventHandler,
-  getQuery,
-  setResponseHeaders,
-  type H3Event,
-} from 'h3'
-import {
-  asBoundedTrimmedString,
-  asTrimmedString,
-  buildDirectoryPath,
-  resolveDirectoryDescription,
-  toIsoUpdatedAt,
-} from '../../utils/projection/normalize'
+  asBoundedTrimmedString, asTrimmedString, buildDirectoryPath, resolveDirectoryDescription, toIsoUpdatedAt, } from '../../utils/projection/normalize'
 import type { CollectionResponse } from '../../../models/utils/directory'
 import type { UserDetail } from '../../../user/models/user-directory.model.ts'
 import {
-  readUserDirectoryScopeIds,
-  resolveUserDirectoryScope,
-  type UserDirectoryScope,
-} from '../../../user/server/directory/scope'
+  readUserDirectoryScopeIds, resolveUserDirectoryScope, type UserDirectoryScope, } from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
-import { UserStorage } from '../../../user/models/user.model.ts'
 import { resolveUserAvatarSource } from '../../../user/utils/user-avatar.ts'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
@@ -75,7 +61,7 @@ function mapUserDetail(
 
 async function readGlobalCanonicalUsers(limit: number): Promise<UserDetail[]> {
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .orderBy('handle')
     .limit(limit)
     .get()
@@ -100,7 +86,7 @@ async function readTenantCanonicalUsers(
   const identityDb = getRuntimeIdentityFirestore()
   const snapshots = await identityDb.getAll(
     ...userIds.map(userId =>
-      identityDb.collection(UserStorage.collection).doc(userId)
+      identityDb.collection('users').doc(userId)
     )
   )
   const users = snapshots.flatMap((snapshot) => {

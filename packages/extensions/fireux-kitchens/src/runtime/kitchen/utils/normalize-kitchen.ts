@@ -15,7 +15,7 @@ export function normalizeKitchen(
   idValue: unknown,
   value: unknown,
   place: Place | null
-): Kitchen | null {
+): (Kitchen & { place: Place }) | null {
   const id = String(idValue ?? '').trim()
   const source = record(value)
   const slug = String(source.slug ?? '')

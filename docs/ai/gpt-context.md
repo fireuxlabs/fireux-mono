@@ -343,6 +343,15 @@ requirement, report the exact missing seam before broad edits.
 
 ## Entity canon
 
+- A canonical entity model answers only what one persisted singular document
+  is: plural Firestore collection, singular exported type, and explicit stored
+  fields. Keep storage/path declarations, Entity classification, defaults,
+  command inputs, projections, directory fields, runtime configuration, and
+  derived values out of that model. Independently stored membership, Team,
+  and support documents retain their own singular models. Server enrichment
+  composes canonical types at the read boundary; it does not alter either
+  stored model or require a new product noun. App, Ecosystem, Project, User,
+  Place, and Kitchen are the guarded proving family for this rule.
 - Canonical entity models and their entity-owned support records belong under
   `runtime/<entity>/models`. App, Ecosystem, User, and Project follow the same
   filesystem ownership rule as extension entities. `User` is the person and
@@ -771,19 +780,15 @@ requirement, report the exact missing seam before broad edits.
   `(default)` AppMeta projection. App media sync and App-admin presentation
   edits use the same projection seam. The second database write is retryable,
   not falsely described as part of the named-database transaction.
-- App source declares the complete reviewed eight-role semantic palette. App
-  initialization persists that source when no lower theme layer exists and
-  backfills only an absent canonical palette. Domain-owned App attachment may
-  derive a missing four-role Workspace palette from the complete source, then
-  compacts canonical `App.theme.palette` to only roles that extend or override
-  Workspace. Existing Workspace colours are preserved; renderers resolve the full
-  palette from Workspace plus App rather than storing duplicates. The same setup
-  action validates, uploads and records all five canonical App Storage masters.
-  Root entities never receive App presentation.
-- App theme typography is limited to `display_family` and `body_family`.
-  Domain identity editors may expose those fields only for an entity whose
-  canonical management is a dedicated App, and must write the owning App rather
-  than the currently running ecosystem App. Template treatments remain readers.
+- App presentation is source configuration, not canonical `App` document data.
+  Initialization never persists or backfills a theme on `apps/{appId}`.
+  Renderers resolve the configured palette and typography without turning Nuxt
+  presentation into Firestore entity truth. The same setup action validates,
+  uploads, and records the five canonical App Storage masters. Root entities
+  never receive App presentation.
+- App typography configuration is limited to `display_family` and
+  `body_family`. Domain identity editors do not write App presentation into an
+  entity document. Template treatments remain readers.
 - App initialization requires a fully valid environment, live Firebase
   Storage reachability, and App-owned media check. Dev mode is not authority to
   bypass required configuration, infrastructure, or asset validation.

@@ -358,6 +358,32 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   declaredNames.add('Kitchen')
 
+  for (const [name, modelPath] of [
+    ['App', 'packages/core/fireux-core/src/runtime/app/models/app.model.ts'],
+    [
+      'Ecosystem',
+      'packages/core/fireux-core/src/runtime/ecosystem/models/ecosystem.model.ts',
+    ],
+    [
+      'Project',
+      'packages/core/fireux-core/src/runtime/project/models/project.model.ts',
+    ],
+    ['User', 'packages/core/fireux-core/src/runtime/user/models/user.model.ts'],
+  ]) {
+    const model = readFileSync(path.join(repoRoot, modelPath), 'utf8')
+    assert.match(
+      model,
+      new RegExp(`export type ${name}\\s*=\\s*\\{`),
+      `${name} must remain a plain singular document model.`
+    )
+    assert.doesNotMatch(
+      model,
+      /defineFireuxEntity|\b\w+Storage\b|\b\w+Defaults\b/,
+      `${name} model must not contain Entity classification or storage machinery.`
+    )
+    declaredNames.add(name)
+  }
+
   for (const row of entityMatrix) {
     assert.ok(
       row.id && row.owner && row.state,

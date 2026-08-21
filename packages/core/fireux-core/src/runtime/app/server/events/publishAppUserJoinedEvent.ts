@@ -1,10 +1,7 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import {
-  AppEventNames,
-  appUserJoinedEventId,
-  type AppEvent,
-} from '../../models/event'
-import type { AppUser } from '../../../user/models/user.model.ts'
+  AppEventNames, appUserJoinedEventId, type AppEvent, } from '../../models/event'
+import type { AppUser } from '../../models/app-user.model.ts'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 import {
   FIRESTORE_MUTATION_TARGETS,

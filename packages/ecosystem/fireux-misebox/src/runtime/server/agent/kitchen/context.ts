@@ -1,4 +1,3 @@
-import { UserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
@@ -19,7 +18,7 @@ const record = (value: unknown): Record<string, unknown> =>
 
 async function readUserContext(uid: string) {
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.collection)
+    .collection('users')
     .doc(uid)
     .collection(UserContextStorage.collection)
     .doc(UserContextStorage.document)

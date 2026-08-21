@@ -1,18 +1,18 @@
-import type { AppStatus } from '../../models/app.model.ts'
-import type { AppRole, AppSocialLinks } from '../../models/app.model.ts'
+import type { App } from '../../models/app.model.ts'
+import type { AppSocialLinks } from '../../models/app-directory.model.ts'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 import type { AppDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from '../../../server/utils/projection/normalize.ts'
 import type { AppDetail } from '../../models/app-directory.model.ts'
 
-const APP_STATUSES = new Set<AppStatus>([
+const APP_STATUSES = new Set<App['status']>([
   'draft',
   'active',
   'paused',
   'archived',
 ])
 
-const APP_ROLES = new Set<AppRole>(['global', 'tenant', 'standalone'])
+const APP_ROLES = new Set<App['role']>(['global', 'tenant', 'standalone'])
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -25,13 +25,13 @@ function asNonNegativeInt(value: unknown): number {
   return Number.isFinite(number) ? Math.max(0, Math.trunc(number)) : 0
 }
 
-function asAppStatus(value: unknown): AppStatus | '' {
-  const status = asTrimmedString(value) as AppStatus
+function asAppStatus(value: unknown): App['status'] | '' {
+  const status = asTrimmedString(value) as App['status']
   return APP_STATUSES.has(status) ? status : ''
 }
 
-function asAppRole(value: unknown): AppRole | '' {
-  const role = asTrimmedString(value) as AppRole
+function asAppRole(value: unknown): App['role'] | '' {
+  const role = asTrimmedString(value) as App['role']
   return APP_ROLES.has(role) ? role : ''
 }
 

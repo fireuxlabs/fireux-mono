@@ -1,8 +1,6 @@
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { AppStorage } from '../../models/app.model.ts'
 import { resolveAppUserAccess } from '../../utils/app-user-access.ts'
-import { AppUserStorage } from '../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
@@ -88,8 +86,8 @@ export async function readCurrentAppContext(event: H3Event) {
   } = useFireUXConfig(event)
   const runtimeDb = getRuntimeFirestore()
   const identityDb = getRuntimeIdentityFirestore()
-  const appRef = runtimeDb.collection(AppStorage.collection).doc(appId)
-  const membershipRef = appRef.collection(AppUserStorage.collection).doc(uid)
+  const appRef = runtimeDb.collection('apps').doc(appId)
+  const membershipRef = appRef.collection('users').doc(uid)
   const profileIds = configuredProfiles.filter((profile) =>
     [
       'agent',

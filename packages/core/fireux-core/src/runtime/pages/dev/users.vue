@@ -104,7 +104,6 @@ import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
 import type { UserDetail } from '../../user/models/user-directory.model.ts'
 import type { User } from '../../user/models/user.model.ts'
-import { UserDefaults } from '../../user/models/user.model.ts'
 
 definePageMeta({
   layout: 'dev',
@@ -144,7 +143,13 @@ const users = computed<User[]>(() => {
 const usersError = directoryUsers.error
 
 const { role } = useFireUXConfig()
-const userModelRuntime = UserDefaults
+const userModelRuntime: User = {
+  id: '',
+  handle: '',
+  display_name: '',
+  bio: '',
+  avatar: '',
+}
 const { currentUser: authUser } = useAuth()
 const {
   currentUser,
@@ -182,7 +187,7 @@ const {
   filteredCollection: filteredUsers,
 } = useDevDriftFilter({
   collection: userCollection,
-  runtimeModel: UserDefaults,
+  runtimeModel: userModelRuntime,
 })
 
 const filteredUsersDriftPayload = computed(() =>

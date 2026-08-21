@@ -1,12 +1,7 @@
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
-import {
-  ProjectStorage,
-  type ProjectStatus,
-} from 'fireux-core/runtime/project/models/project.model'
+import { type ProjectStatus } from 'fireux-core/runtime/project/models/project.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
@@ -30,10 +25,10 @@ export async function readProjectIndex(event: H3Event) {
   }
 
   const db = await getFirestoreDb()
-  const appRef = db.collection(AppStorage.collection).doc(appId)
+  const appRef = db.collection('apps').doc(appId)
   const [appSnapshot, membershipSnapshot] = await Promise.all([
     appRef.get(),
-    appRef.collection(AppUserStorage.collection).doc(uid).get(),
+    appRef.collection('users').doc(uid).get(),
   ])
   const membership = (membershipSnapshot.data() || {}) as Record<
     string,
@@ -57,7 +52,7 @@ export async function readProjectIndex(event: H3Event) {
   const documents = ids.length
     ? (
         await db.getAll(
-          ...ids.map((id) => db.collection(ProjectStorage.collection).doc(id))
+          ...ids.map((id) => db.collection('projects').doc(id))
         )
       ).filter((document) => document.exists)
     : []

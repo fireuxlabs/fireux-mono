@@ -8,6 +8,7 @@ import type {
   KitchenDetailResponse,
 } from '../../models/kitchen-detail.model.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
@@ -99,7 +100,7 @@ export function resolveKitchen(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
   scope: KitchenReadScope
-): Kitchen | null {
+): (Kitchen & { place: Place }) | null {
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
   if (!parts) return null
   return normalizeKitchen(

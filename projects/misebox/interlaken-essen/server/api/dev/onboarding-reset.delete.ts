@@ -1,6 +1,5 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, setHeader } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireDevDeveloper } from 'fireux-core/runtime/server/utils/auth/developer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -26,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${appId}/${AppUserStorage.collection}/${uid}`
+    `apps/${appId}/${'users'}/${uid}`
   )
   const profileRef = db.doc(marketplaceProfileAppStatePath(uid))
 

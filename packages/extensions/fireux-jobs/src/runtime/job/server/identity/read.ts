@@ -4,7 +4,6 @@
 // Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: fail closed when runtime role or tenant identity is invalid.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   isFirestoreDocumentId,
@@ -230,7 +229,7 @@ export async function readJobDetail(
         db.collection(CompanyStorage.collection).doc(job.company_id),
         db.collection('places').doc(job.company_id),
         db.collection('places').doc(job.place_id),
-        db.collection(AppStorage.collection).doc(job.source_app_id)
+        db.collection('apps').doc(job.source_app_id)
       )
       .catch(() => {
         throw createError({

@@ -1,4 +1,4 @@
-import type { AppUserRole } from '../../../user/models/user.model.ts'
+import type { AppUserRole } from '../../models/app-user.model.ts'
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {

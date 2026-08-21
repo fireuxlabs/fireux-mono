@@ -1,9 +1,4 @@
-import type {
-  AppDerived,
-  AppMedia,
-  AppRole,
-  AppStatus,
-} from '../../app/models/app.model.ts'
+import type { App } from '../../app/models/app.model.ts'
 import type { EcosystemStatus } from '../../ecosystem/models/ecosystem.model.ts'
 
 /**
@@ -14,17 +9,17 @@ export type AppDirectoryEntry = {
   id: string
   ecosystem_id: string
   slug: string
-  status: AppStatus
+  status: App['status']
   app_name: string
   app_short_name: string
-  role: AppRole | ''
+  role: App['role'] | ''
   tagline: string
   description: string
   short_bio: string
   detail_url: string
-  derived: Pick<AppDerived, 'user_count'>
+  derived: { user_count: number }
   media: Pick<
-    AppMedia,
+    App['media'],
     | 'logo_url'
     | 'thumbnail_url'
     | 'wordmark_light_url'

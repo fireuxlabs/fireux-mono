@@ -87,16 +87,10 @@ export async function run({ repoRoot }) {
 
   const model = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/user/models/user.model.ts'
+    'packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
   )
-  const modelStart = model.indexOf('export const AppUserDefaults: AppUser = {')
-  const modelEnd = model.indexOf(
-    '\n}\n\nexport type UserCreateInput',
-    modelStart
-  )
-  assert.notEqual(modelStart, -1, 'AppUserDefaults must remain canonical.')
-  assert.notEqual(modelEnd, -1, 'AppUserDefaults must remain bounded.')
-  const userAppModel = model.slice(modelStart, modelEnd)
+  assert.match(model, /export type AppUser\s*=\s*\{/)
+  const userAppModel = model
   assert.doesNotMatch(
     userAppModel,
     /\b(?:access_?tier|tier):/,

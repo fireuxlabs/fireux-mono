@@ -2,16 +2,14 @@
 
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { AppStorage } from '../../models/app.model.ts'
 import { isAppMediaComplete } from '../../composables/firestore/utils/appMedia'
-import { readAppPaletteLayer } from '../../../utils/brand-palette'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 
 export async function readAppStatus(event: H3Event) {
   const config = useFireUXConfig(event)
   const { appId } = config
   const snapshot = await getRuntimeFirestore()
-    .collection(AppStorage.collection)
+    .collection('apps')
     .doc(appId)
     .get()
 
@@ -20,8 +18,6 @@ export async function readAppStatus(event: H3Event) {
     appId,
     initialized: snapshot.exists,
     mediaReady: snapshot.exists && isAppMediaComplete(snapshot.data()?.media),
-    paletteReady:
-      !config.theme ||
-      Boolean(readAppPaletteLayer(snapshot.data()?.theme?.palette)),
+    paletteReady: true,
   }
 }

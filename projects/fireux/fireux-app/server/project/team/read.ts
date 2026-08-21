@@ -1,13 +1,4 @@
 import { useRuntimeConfig } from '#imports'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import {
-  AppUserStorage,
-  UserStorage,
-} from 'fireux-core/runtime/user/models/user.model'
-import {
-  ProjectStorage,
-  ProjectTeamStorage,
-} from 'fireux-core/runtime/project/models/project.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { createError, type H3Event } from 'h3'
@@ -23,12 +14,12 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
     'FireUX App id'
   )
   const db = await getFirestoreDb()
-  const appRef = db.collection(AppStorage.collection).doc(appId)
-  const projectRef = db.collection(ProjectStorage.collection).doc(projectId)
-  const teamRef = projectRef.collection(ProjectTeamStorage.collection)
+  const appRef = db.collection('apps').doc(appId)
+  const projectRef = db.collection('projects').doc(projectId)
+  const teamRef = projectRef.collection('team')
   const [app, membership, project, currentTeamMember] = await Promise.all([
     appRef.get(),
-    appRef.collection(AppUserStorage.collection).doc(uid).get(),
+    appRef.collection('users').doc(uid).get(),
     projectRef.get(),
     teamRef.doc(uid).get(),
   ])
@@ -70,7 +61,7 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
   const users = memberRecords.length
     ? await db.getAll(
         ...memberRecords.map((member) =>
-          db.collection(UserStorage.collection).doc(member.userId)
+          db.collection('users').doc(member.userId)
         )
       )
     : []

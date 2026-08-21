@@ -1,8 +1,6 @@
 // Protect the App-owned Ignition intake workflow with canonical App membership authority.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getFirestoreDb } from './firebase-admin'
 
@@ -20,10 +18,10 @@ export async function requireFireuxAppAdmin(event: H3Event) {
   }
 
   const db = await getFirestoreDb()
-  const appRef = db.collection(AppStorage.collection).doc(appId)
+  const appRef = db.collection('apps').doc(appId)
   const [appSnapshot, membershipSnapshot] = await Promise.all([
     appRef.get(),
-    appRef.collection(AppUserStorage.collection).doc(uid).get(),
+    appRef.collection('users').doc(uid).get(),
   ])
   const membership = (membershipSnapshot.data() || {}) as Record<
     string,

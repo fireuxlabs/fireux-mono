@@ -2,7 +2,7 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from '../../../../composables/fireux/firestore/vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
-import { AppStorage, type App } from '../../../models/app.model.ts'
+import type { App } from '../../../models/app.model.ts'
 
 export type AppFetchOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
@@ -59,7 +59,7 @@ export function useAppFetch(
       ? options.collectionPath.value
       : options.collectionPath
     const normalized = String(raw || '').trim()
-    return normalized || AppStorage.collection
+    return normalized || 'apps'
   })
 
   const docRef = computed(() =>

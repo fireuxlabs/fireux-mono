@@ -1,6 +1,5 @@
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../composables/config/FireUXConfig'
-import type { AppWorkspaceFamily } from '../../models/app.model.ts'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
@@ -34,7 +33,7 @@ function media(value: unknown) {
   }
 }
 
-function workspaceFamilies(config: Readonly<FireUXConfig>): AppWorkspaceFamily[] {
+function workspaceFamilies(config: Readonly<FireUXConfig>): string[] {
   return [...new Set(config.workspaces.map(text).filter(Boolean))].sort()
 }
 

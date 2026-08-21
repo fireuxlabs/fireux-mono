@@ -3,7 +3,6 @@
 
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
-import { AppStorage } from '../../../models/app.model.ts'
 import { AppJoinRequestStorage } from '../../../models/app-membership'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
@@ -30,7 +29,7 @@ export function useAppJoinRequest() {
     appId && userId.value
       ? doc(
           db,
-          AppStorage.collection,
+          'apps',
           appId,
           AppJoinRequestStorage.collection,
           userId.value

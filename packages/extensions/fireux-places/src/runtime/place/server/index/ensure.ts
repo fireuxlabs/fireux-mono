@@ -2,7 +2,6 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Place provenance/privacy hardening: accept only an id and verify missing Place truth with the server-side provider.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -55,7 +54,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
   )
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
+    `apps/${runtimeAppId}/${'users'}/${uid}`
   )
   const placeRef = db.collection('places').doc(id)
 

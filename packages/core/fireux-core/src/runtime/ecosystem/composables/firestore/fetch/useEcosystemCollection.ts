@@ -1,13 +1,10 @@
 import { useAsyncData } from '#imports'
 import { computed, unref, type MaybeRef } from 'vue'
-import {
-  EcosystemStorage,
-  type Ecosystem,
-} from '../../../models/ecosystem.model.ts'
+import type { Ecosystem } from '../../../models/ecosystem.model.ts'
 import { useFirestoreCollectionState } from '../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 
 type EcosystemCollectionDoc = Ecosystem
-const DEFAULT_COLLECTION_PATH = EcosystemStorage.collection
+const DEFAULT_COLLECTION_PATH = 'ecosystems'
 
 export function useEcosystemCollection(
   collectionPath: MaybeRef<string | null | undefined> = DEFAULT_COLLECTION_PATH

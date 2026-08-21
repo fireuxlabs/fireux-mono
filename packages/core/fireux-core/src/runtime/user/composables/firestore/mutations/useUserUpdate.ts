@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: keep private client updates within account preferences.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer the private Firestore writer until an owner action runs in the browser.
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
-import { UserStorage } from '../../../models/user.model.ts'
 import {
   type UserAccountUpdateInput,
   UserAccountStorage,
@@ -47,7 +46,7 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
       databaseId: identityDatabaseId,
     })
     await identityUpdate.updateDocument(
-      `${UserStorage.collection}/${uid}/${UserAccountStorage.collection}`,
+      `${'users'}/${uid}/${UserAccountStorage.collection}`,
       UserAccountStorage.document,
       data
     )

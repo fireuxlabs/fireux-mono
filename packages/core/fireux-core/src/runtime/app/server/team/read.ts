@@ -2,9 +2,7 @@
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { AppStorage } from '../../models/app.model.ts'
 import { AppJoinRequestStorage } from '../../models/app-membership'
-import { AppUserStorage, UserStorage } from '../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
@@ -29,10 +27,10 @@ export async function readAppTeam(event: H3Event) {
   const { appId } = useFireUXConfig()
   const appDb = getRuntimeFirestore()
   const identityDb = getRuntimeIdentityFirestore()
-  const appRef = appDb.collection(AppStorage.collection).doc(appId)
+  const appRef = appDb.collection('apps').doc(appId)
 
   const actorMembership = await appRef
-    .collection(AppUserStorage.collection)
+    .collection('users')
     .doc(uid)
     .get()
   if (!actorMembership.exists || actorMembership.data()?.role !== 'admin') {
@@ -44,7 +42,7 @@ export async function readAppTeam(event: H3Event) {
 
   const [memberSnapshot, requestSnapshot] = await Promise.all([
     appRef
-      .collection(AppUserStorage.collection)
+      .collection('users')
       .orderBy(FieldPath.documentId())
       .limit(MAX_MEMBERS)
       .get(),
@@ -79,7 +77,7 @@ export async function readAppTeam(event: H3Event) {
   const userSnapshots = userIds.length
     ? await identityDb.getAll(
         ...userIds.map((userId) =>
-          identityDb.collection(UserStorage.collection).doc(userId)
+          identityDb.collection('users').doc(userId)
         )
       )
     : []

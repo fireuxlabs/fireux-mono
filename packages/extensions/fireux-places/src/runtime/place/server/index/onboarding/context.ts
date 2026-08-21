@@ -1,6 +1,5 @@
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -28,7 +27,7 @@ export async function context(
   const id = requireFirestoreDocumentId(idValue, 'Place id')
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
+    `apps/${runtimeAppId}/${'users'}/${uid}`
   )
   const placeRef = db.collection('places').doc(id)
   const membership = await membershipRef.get()

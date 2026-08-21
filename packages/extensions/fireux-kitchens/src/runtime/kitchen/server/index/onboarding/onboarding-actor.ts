@@ -1,6 +1,5 @@
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -46,7 +45,7 @@ export async function readKitchenOnboardingActor(
   const policy = runtimePolicy(event)
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
+    `apps/${policy.appId}/${'users'}/${uid}`
   )
   const membership = await membershipRef.get()
   const role = memberRole(membership.exists, membership.get('role'))

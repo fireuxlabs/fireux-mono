@@ -1,5 +1,3 @@
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
-
 export type KitchenFulfilmentMode =
   | 'delivery'
   | 'collection'
@@ -12,7 +10,6 @@ export type Kitchen = {
   status: 'active' | 'inactive' | 'archived'
   visibility: boolean
 
-  place: Place
   fulfilment: {
     modes: KitchenFulfilmentMode[]
     estimated_minutes?: {

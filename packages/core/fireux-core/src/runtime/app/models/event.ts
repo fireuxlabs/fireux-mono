@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { AppUserRole } from '../../user/models/user.model.ts'
+import type { AppUserRole } from './app-user.model.ts'
 
 export const AppEventStorage = {
   shape: 'scoped',

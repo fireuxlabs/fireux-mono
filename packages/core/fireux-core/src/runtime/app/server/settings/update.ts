@@ -13,7 +13,10 @@ import { runGuardedServerTransaction } from '../../../server/utils/firestore-mut
 const TEXT_FIELDS = {
   name: 60,
   short_name: 40,
+  tagline: 160,
   description: 500,
+  short_bio: 280,
+  long_bio: 4000,
 } as const
 const MEDIA_FIELDS = new Set([
   'media.thumbnail_url',
@@ -40,6 +43,27 @@ function cleanUrl(value: unknown): string {
   return url.toString()
 }
 
+const SOCIAL_LINK_KEYS = [
+  'website',
+  'twitter',
+  'github',
+  'linkedin',
+  'instagram',
+  'facebook',
+  'youtube',
+] as const
+
+function cleanSocialLinks(value: unknown): DocumentData {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    fail(400, 'App social_links must be an object.')
+  }
+  const input = value as Record<string, unknown>
+  const links: DocumentData = {}
+  for (const key of SOCIAL_LINK_KEYS) links[key] = cleanUrl(input[key])
+  links.email = String(input.email ?? '').trim().slice(0, 320)
+  return links
+}
+
 function normalizePatch(body: unknown): DocumentData {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     fail(400, 'App settings payload must be an object.')
@@ -60,6 +84,10 @@ function normalizePatch(body: unknown): DocumentData {
     }
     if (MEDIA_FIELDS.has(field)) {
       patch[field] = cleanUrl(value)
+      continue
+    }
+    if (field === 'social_links') {
+      patch[field] = cleanSocialLinks(value)
       continue
     }
     fail(400, `App setting is not editable: ${field}`)

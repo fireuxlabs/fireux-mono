@@ -1,4 +1,3 @@
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   MenuKioskSkinStorage,
@@ -90,7 +89,7 @@ export async function readMenuKioskSkin(
 
   const snap = await getRuntimeFirestore()
     .collection(
-      `${AppStorage.collection}/${resolvedAppId}/${MenuKioskSkinStorage.appCollection}`
+      `${'apps'}/${resolvedAppId}/${MenuKioskSkinStorage.appCollection}`
     )
     .doc(resolvedSkinId)
     .get()

@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts
 
-import type { AppUserRole } from '../../user/models/user.model.ts'
+import type { AppUserRole } from '../models/app-user.model.ts'
 
 export type AppUserAccessTier = 'free' | 'premium' | 'admin' | 'dev'
 
