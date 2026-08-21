@@ -213,7 +213,7 @@ export async function run({ repoRoot }) {
   )
   const fireuxDirectoryApi = read(
     repoRoot,
-    'projects/fireux/fireux-app/server/api/public/directory.get.ts'
+    'projects/fireux/fireux-app/server/api/directory.get.ts'
   )
   const fireuxDirectorySitemap = read(
     repoRoot,
@@ -244,7 +244,7 @@ export async function run({ repoRoot }) {
     'getFirestoreProjectDb(target.projectId)',
     "db.collection('ecosystem').doc(target.ecosystemId)",
     "fetchCollection(db, 'apps')",
-    'projectPublicApp',
+    'projectAppDetail',
     'projectEcosystemDirectoryEntry',
   ]) {
     if (!fireuxDirectoryReader.includes(marker)) {

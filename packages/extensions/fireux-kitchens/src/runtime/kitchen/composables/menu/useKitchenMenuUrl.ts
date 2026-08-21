@@ -27,7 +27,7 @@ export function useKitchenMenuUrl(options: {
   const isCurrentApp = computed(() => appId.value === fireux.appId)
   const appRecord = computed<Record<string, unknown>>(() =>
     app.value && typeof app.value === 'object'
-      ? app.value as Record<string, unknown>
+      ? (app.value as Record<string, unknown>)
       : {}
   )
   const appRole = computed(() =>
@@ -39,13 +39,11 @@ export function useKitchenMenuUrl(options: {
       ? tenantMenuRouteScope()
       : directoryMenuRouteScope(kitchenSlug.value)
   )
-  const menuIndexPath = computed(() =>
-    menuRouteIndexPath(routeScope.value)
-  )
+  const menuIndexPath = computed(() => menuRouteIndexPath(routeScope.value))
   const socialLinks = computed<Record<string, unknown>>(() => {
     const links = appRecord.value.social_links
     return links && typeof links === 'object' && !Array.isArray(links)
-      ? links as Record<string, unknown>
+      ? (links as Record<string, unknown>)
       : {}
   })
   const appOrigin = computed(() => {
@@ -64,19 +62,13 @@ export function useKitchenMenuUrl(options: {
     }
     return new URL(menuIndexPath.value, appOrigin.value).toString()
   })
-  const menuPath = (
-    menuId: unknown,
-    context: MenuRouteContext = 'generic'
-  ) =>
+  const menuPath = (menuId: unknown, context: MenuRouteContext = 'generic') =>
     menuRoutePath({
       scope: routeScope.value,
       menuId,
       context,
     })
-  const menuUrl = (
-    menuId: unknown,
-    context: MenuRouteContext = 'generic'
-  ) => {
+  const menuUrl = (menuId: unknown, context: MenuRouteContext = 'generic') => {
     const path = menuPath(menuId, context)
     if (!path) return ''
     if (!appOrigin.value) return isCurrentApp.value ? path : ''

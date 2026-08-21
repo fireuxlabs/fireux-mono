@@ -9,7 +9,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped
  * Storage: scoped operational record
- * Path: apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}
+ * Path: kitchens/{kitchenId}/mise-tasks/{taskId}
  * Owner app scope: Kitchen
  *
  * Decision note:
@@ -19,7 +19,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenMiseTaskStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}',
+  path: 'kitchens/{kitchenId}/mise-tasks/{taskId}',
   collection: 'mise-tasks',
   parent: 'kitchen',
   idParam: 'taskId',
@@ -137,16 +137,14 @@ export const KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS = [
 
 const kitchenMiseStatuses = new Set<string>(KITCHEN_MISE_STATUSES)
 const kitchenMisePriorities = new Set<string>(KITCHEN_MISE_PRIORITIES)
-const kitchenMiseWorkflowStages = new Set<string>(
-  KITCHEN_MISE_WORKFLOW_STAGES
-)
+const kitchenMiseWorkflowStages = new Set<string>(KITCHEN_MISE_WORKFLOW_STAGES)
 
 export const normalizeKitchenMiseStatus = (
   value: unknown
 ): KitchenMiseStatus => {
   const status = String(value ?? '').trim()
   return kitchenMiseStatuses.has(status)
-    ? status as KitchenMiseStatus
+    ? (status as KitchenMiseStatus)
     : 'todo'
 }
 
@@ -155,7 +153,7 @@ export const normalizeKitchenMisePriority = (
 ): KitchenMisePriority => {
   const priority = String(value ?? '').trim()
   return kitchenMisePriorities.has(priority)
-    ? priority as KitchenMisePriority
+    ? (priority as KitchenMisePriority)
     : 'normal'
 }
 
@@ -164,15 +162,16 @@ export const normalizeKitchenMiseWorkflowStage = (
 ): KitchenMiseWorkflowStage | '' => {
   const stage = String(value ?? '').trim()
   return kitchenMiseWorkflowStages.has(stage)
-    ? stage as KitchenMiseWorkflowStage
+    ? (stage as KitchenMiseWorkflowStage)
     : ''
 }
 
 export const kitchenMisePriorityLabel = (value: unknown) => {
   const priority = normalizeKitchenMisePriority(value)
-  return KITCHEN_MISE_PRIORITY_OPTIONS.find(
-    option => option.value === priority
-  )?.label || 'Normal'
+  return (
+    KITCHEN_MISE_PRIORITY_OPTIONS.find((option) => option.value === priority)
+      ?.label || 'Normal'
+  )
 }
 
 export type KitchenMiseChecklistItem = {
@@ -240,14 +239,17 @@ export const KitchenMiseTaskDefaults = {
   },
 } as const satisfies KitchenMiseTask
 
-export type KitchenMiseTaskCreateInput = Omit<KitchenMiseTask, 'created' | 'updated'>
+export type KitchenMiseTaskCreateInput = Omit<
+  KitchenMiseTask,
+  'created' | 'updated'
+>
 export type KitchenMiseTaskUpdateInput = Partial<
   Omit<KitchenMiseTask, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
 
 const kitchenMiseRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const kitchenMiseString = (value: unknown) => String(value ?? '').trim()
@@ -256,7 +258,7 @@ const kitchenMiseStringArray = (value: unknown) =>
   Array.from(
     new Set(
       (Array.isArray(value) ? value : [])
-        .map(item => kitchenMiseString(item))
+        .map((item) => kitchenMiseString(item))
         .filter(Boolean)
     )
   )
@@ -273,14 +275,14 @@ const normalizeKitchenMiseChecklist = (
         done: source.done === true,
       }
     })
-    .filter(item => item.id && item.label)
+    .filter((item) => item.id && item.label)
 
 const kitchenMiseTimestamp = (
   value: unknown,
   fallback: FirebaseTimestamp
 ): FirebaseTimestamp =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as FirebaseTimestamp
+    ? (value as FirebaseTimestamp)
     : fallback
 
 const kitchenMiseEstimatedMinutes = (value: unknown) => {
@@ -290,12 +292,14 @@ const kitchenMiseEstimatedMinutes = (value: unknown) => {
 
 export function normalizeKitchenMiseTask(value: unknown): KitchenMiseTask {
   const source = kitchenMiseRecord(value)
-  const created = source.created && typeof source.created === 'object'
-    ? source.created as KitchenMiseTask['created']
-    : KitchenMiseTaskDefaults.created
-  const updated = source.updated && typeof source.updated === 'object'
-    ? source.updated as KitchenMiseTask['updated']
-    : KitchenMiseTaskDefaults.updated
+  const created =
+    source.created && typeof source.created === 'object'
+      ? (source.created as KitchenMiseTask['created'])
+      : KitchenMiseTaskDefaults.created
+  const updated =
+    source.updated && typeof source.updated === 'object'
+      ? (source.updated as KitchenMiseTask['updated'])
+      : KitchenMiseTaskDefaults.updated
 
   return {
     ...KitchenMiseTaskDefaults,
@@ -315,10 +319,7 @@ export function normalizeKitchenMiseTask(value: unknown): KitchenMiseTask {
     recipe_id: kitchenMiseString(source.recipe_id),
     assignee_ids: kitchenMiseStringArray(source.assignee_ids),
     checklist: normalizeKitchenMiseChecklist(source.checklist),
-    due_at: kitchenMiseTimestamp(
-      source.due_at,
-      KitchenMiseTaskDefaults.due_at
-    ),
+    due_at: kitchenMiseTimestamp(source.due_at, KitchenMiseTaskDefaults.due_at),
     completed_at: kitchenMiseTimestamp(
       source.completed_at,
       KitchenMiseTaskDefaults.completed_at

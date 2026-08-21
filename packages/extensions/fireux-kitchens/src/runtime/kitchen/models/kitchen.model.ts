@@ -13,39 +13,37 @@ import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sprooch
 import type { KitchenOrderType } from './order.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model.ts'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? WidenLiteral<U>[]
+        : T extends Record<string, unknown>
+          ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+          : T
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Domain
- * Storage: root canonical record plus app-scoped record
+ * Storage: root canonical record with root-owned Team and operations
  * Root path: /kitchens/<kitchenId>
- * App path: /apps/<appId>/kitchens/<kitchenId>
- * Child scope: /apps/<appId>/kitchens/<kitchenId>/<childCollection>/<childId>
+ * Child scope: /kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Kitchen is one domain entity with a canonical root and an App-hosted access record.
- * - The root record owns Kitchen identity and Kitchen-wide configuration.
- * - The app-scoped record carries only App relationship, access, and audit state.
- * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
- * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
- * - App authority stays user-based in the app-scoped record; Chef is an optional presentation/authorship layer, not the ownership model.
- * - Kitchen-owned operational children should live beneath the app-hosted record.
- * - If that rule changes later, update the models README first, then this file.
+ * - The root owns Kitchen identity, management, configuration, Team, and operations.
+ * - Management may associate the Kitchen with an App but never relocates it.
+ * - Chef is an optional User-owned profile, not Kitchen authority.
  */
 export const KitchenStorage = {
   shape: 'root',
   path: 'kitchens/{kitchenId}',
   collection: 'kitchens',
   idParam: 'kitchenId',
-  operationsRoot: 'apps/{appId}/kitchens/{kitchenId}',
+  operationsRoot: 'kitchens/{kitchenId}',
   operations: [
     'overview',
     'identity',
@@ -63,31 +61,24 @@ export const KitchenStorage = {
   ],
 } as const
 
-export const AppKitchenStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}',
-  collection: 'kitchens',
-  parent: 'app',
-  idParam: 'kitchenId',
-} as const
+export type KitchenOperationKey = (typeof KitchenStorage.operations)[number]
 
-export type KitchenOperationKey = typeof KitchenStorage.operations[number]
-
-export type KitchenMediaBackdropColor = `#${string}`
 /** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type KitchenImageShade = 'light' | 'dark' | 'none'
 
 export type KitchenIdentity = {
   /** Sparse override; empty means inherit the linked Place name. */
-  name: string
+  display_name: string
   tagline: string
 }
+
+export type KitchenMediaBackdropColor = string
 
 export type KitchenAssets = {
   image: string
   logo: string
   wordmark: string
-  backdrop_color: KitchenMediaBackdropColor | ''
+  backdrop_color: KitchenMediaBackdropColor
 }
 
 export type KitchenMenusConfig = {
@@ -156,11 +147,10 @@ export const KitchenEntity = defineFireuxEntity({
   name: 'Kitchen',
   family: ['kitchen', 'workspace-entity'],
   identity: 'root',
-  authority: 'owning-app-database',
-  appSupport: 'access-record',
+  authority: 'domain-database',
+  appSupport: 'none',
   workspace: true,
   root: KitchenStorage.path,
-  appSupportPath: AppKitchenStorage.path,
 })
 
 export const KitchenDefaults = {
@@ -170,7 +160,7 @@ export const KitchenDefaults = {
   management: FireuxEntityManagementDefaults,
 
   identity: {
-    name: '',
+    display_name: '',
     tagline: '',
   } as KitchenIdentity,
 
@@ -195,67 +185,43 @@ export const KitchenDefaults = {
 export type Kitchen = Omit<
   WidenLiteral<typeof KitchenDefaults>,
   'identity' | 'assets'
-> &
-  {
-    identity: KitchenIdentity
-    assets: KitchenAssets
-    management: FireuxEntityManagement
-    theme?: WorkspaceTheme
-    menus?: KitchenMenusConfig
-    orders?: KitchenOrdersConfig
-    tables?: KitchenTablesConfig
-    fulfilment?: KitchenFulfilmentConfig
-    integrations?: {
-      sproochli?: SproochliAttachmentConfig
-    }
+> & {
+  identity: KitchenIdentity
+  assets: KitchenAssets
+  management: FireuxEntityManagement
+  theme?: WorkspaceTheme
+  menus?: KitchenMenusConfig
+  orders?: KitchenOrdersConfig
+  tables?: KitchenTablesConfig
+  fulfilment?: KitchenFulfilmentConfig
+  integrations?: {
+    sproochli?: SproochliAttachmentConfig
   }
-
-export type AppKitchen = {
-  id: string
-  operator_ids: string[]
-  team_ids: string[]
-  join_requests: string[]
-  created: FireuxStamped['created']
-  updated: FireuxStamped['updated']
-}
-
-export const AppKitchenDefaults: AppKitchen = {
-  id: '',
-  operator_ids: [],
-  team_ids: [],
-  join_requests: [],
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-    app_id: undefined,
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined,
-  },
 }
 
 export type KitchenCreateInput = Partial<
-  Pick<
-    Kitchen,
-    | 'id'
-    | 'slug'
-    | 'identity'
-    | 'assets'
-    | 'management'
-  >
+  Pick<Kitchen, 'id' | 'slug' | 'identity' | 'assets' | 'management'>
 >
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
-    'slug' | 'identity' | 'assets' | 'visibility' | 'management'
+    | 'slug'
+    | 'identity'
+    | 'assets'
+    | 'visibility'
+    | 'management'
+    | 'theme'
+    | 'menus'
+    | 'orders'
+    | 'tables'
+    | 'fulfilment'
   >
 > & {
-  'identity.name'?: string
+  'identity.display_name'?: string
   'identity.tagline'?: string
   'assets.image'?: string
   'assets.logo'?: string
   'assets.wordmark'?: string
-  'assets.backdrop_color'?: string
+  'assets.backdrop_color'?: KitchenMediaBackdropColor
 }

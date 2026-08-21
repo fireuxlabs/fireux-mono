@@ -1,13 +1,13 @@
 # Server API family
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
 
 Map the shared shape of FireUX server endpoints without copying every current
-route into documentation. Server APIs exist where public projection,
+route into documentation. Server APIs exist where bounded projection,
 authentication, trusted transactions, uploads, secrets, providers, or
 cross-project transport cannot safely belong in browser code.
 
@@ -96,10 +96,10 @@ HTTP handler rather than hiding it in another generic layer.
 
 | Family                    | Typical job                                                   | Accepted delta                                                             |
 | ------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Public list/detail        | Bounded projection for public pages                           | Pagination, joins, and publication filters differ by entity authority      |
+| Directory list/detail     | Bounded projection for directory pages                        | Pagination, joins, and publication filters differ by entity authority      |
 | Internal                  | Authenticated owner/member/admin work                         | Required role and fixed domain scope differ                                |
 | Workspace                   | Selected-target commands and projections                      | Target family and operation differ; selection alone never grants authority |
-| Onboarding                | Idempotent root/support creation or attachment                | Domain seed and validation differ; transaction shape remains fixed-runtime |
+| Onboarding                | Idempotent root/Team creation or attachment                   | Domain seed and validation differ; transaction shape remains fixed-runtime |
 | Upload                    | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ                                    |
 | Tool provider             | Return or execute a reusable provider contract                | Tool payload differs; provider never steals consumer data ownership        |
 | Webhook/callback          | Verify provider signature and advance trusted state           | Signature and event vocabulary are provider-specific                       |
@@ -117,18 +117,19 @@ These are server endpoint families, not new Entity kinds.
 - Fixed-runtime endpoints do not accept client App ids, database ids,
   collection paths, owner ids, support ids, lifecycle stamps, or visibility
   authority.
-- Public routes return bounded projections, not raw Firestore roots.
-- Root plus App-support onboarding writes all required relationships in one
-  trusted transaction or not at all.
+- Directory routes return bounded responses and related canonical records;
+  they never manufacture replacement Entity types.
+- Workspace onboarding writes the root, its Team authority, and required
+  relationships in one trusted transaction or not at all.
 - Named lifecycle commands are preferred over generic document patches.
 - Destructive operations require explicit authority and dependency checks.
 - Cross-project publishers use verifiable service identity, fixed audience,
   exact source scope, and allowlisted entity identity. Firebase user tokens or
   shared webhook secrets are not publisher authority.
 
-## Public projection contract
+## Directory projection contract
 
-Public list and detail endpoints for one Entity must share:
+Directory list and detail endpoints for one Entity must share:
 
 - the same publication decision;
 - the same field allowlist;
@@ -137,8 +138,8 @@ Public list and detail endpoints for one Entity must share:
 - bounded pagination and joins;
 - no browser N+1 loading of private/canonical records.
 
-The Public Index and Public Detail maps own page-family expectations. This map
-owns only the server transport boundary.
+The Entity Directory and Entity Detail maps own page-family expectations. This
+map owns only the server transport boundary.
 
 ## Trusted create and command contract
 
@@ -172,8 +173,6 @@ Current reusable server evidence includes:
 - Core App HTTP handlers remain in Nuxt's `runtime/server/api/**/app/` route
   tree and delegate environment checks, Index projections, initialization,
   media, settings, membership, and Team work to `runtime/app/server/`;
-- App-scope transfer planning:
-  `packages/core/fireux-core/src/runtime/app/server/scope/transfer-plan.ts`;
 - Workspace Entity onboarding authority:
   `packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts`;
 - Menu ownership/manifest/ordering workflows:
@@ -224,12 +223,12 @@ universal endpoint engine.
 
 1. Keep handlers visibly structured as input, process, and output.
 2. Keep App/database/actor authority fixed by runtime and verified server data.
-3. Preserve bounded projection parity between public list and detail routes.
+3. Preserve bounded response parity between directory list and detail routes.
 4. Remove empty server registration hooks when touched.
 
 ### Next
 
-1. Add focused contract tests for root/App-support onboarding families.
+1. Add focused contract tests for root/Team onboarding families.
 2. Consolidate repeated bearer/runtime parsing only where authority semantics are
    identical.
 3. Stabilize quick Menu and KitchenMenu upload/process contracts before

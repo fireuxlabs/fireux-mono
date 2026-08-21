@@ -23,25 +23,26 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuRouteContext } from '../models/menu-context.model.ts'
-import {
-  guestDiscoverableMenuSurfaceProfiles,
-} from '../utils/menu-context'
+import { guestDiscoverableMenuSurfaceProfiles } from '../utils/menu-context'
 import {
   menuRoutePath,
   type MenuRouteScope,
 } from '../../kitchen/utils/kitchen-menu-route'
 
-const props = withDefaults(defineProps<{
-  contexts?: MenuRouteContext[]
-  menuId: string
-  menuName?: string
-  routeScope: MenuRouteScope
-  display?: 'buttons' | 'icons'
-}>(), {
-  contexts: () => [],
-  menuName: '',
-  display: 'buttons',
-})
+const props = withDefaults(
+  defineProps<{
+    contexts?: MenuRouteContext[]
+    menuId: string
+    menuName?: string
+    routeScope: MenuRouteScope
+    display?: 'buttons' | 'icons'
+  }>(),
+  {
+    contexts: () => [],
+    menuName: '',
+    display: 'buttons',
+  }
+)
 
 const display = computed(() => props.display)
 const route = useRoute()
@@ -68,10 +69,12 @@ const doorways = computed(() => {
       context: 'generic' as const,
       label: 'View menu',
       icon: 'i-lucide-book-open',
-      to: preserveSproochliLanguage(menuRoutePath({
-        scope: props.routeScope,
-        menuId: props.menuId,
-      })),
+      to: preserveSproochliLanguage(
+        menuRoutePath({
+          scope: props.routeScope,
+          menuId: props.menuId,
+        })
+      ),
     },
     ...guestDiscoverableMenuSurfaceProfiles
       .filter(({ context }) => availableContexts.has(context))
@@ -79,11 +82,13 @@ const doorways = computed(() => {
         context,
         icon,
         label,
-        to: preserveSproochliLanguage(menuRoutePath({
-          scope: props.routeScope,
-          menuId: props.menuId,
-          context,
-        })),
+        to: preserveSproochliLanguage(
+          menuRoutePath({
+            scope: props.routeScope,
+            menuId: props.menuId,
+            context,
+          })
+        ),
       })),
   ].filter(({ to }) => Boolean(to))
 })

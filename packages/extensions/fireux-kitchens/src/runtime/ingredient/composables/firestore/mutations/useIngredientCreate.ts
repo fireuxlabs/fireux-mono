@@ -1,16 +1,16 @@
 import { refreshNuxtData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { type IngredientCreateInput } from '../../../models/ingredient.model.ts'
+import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 import type {
-  PublicIngredient,
-  PublicIngredientDetailResponse,
-} from '../../../models/ingredient-public.model.ts'
+  Ingredient,
+  IngredientCreateInput,
+} from '../../../models/ingredient.model.ts'
 
 type IngredientCreateDraft = Partial<IngredientCreateInput>
 
 export type IngredientCreateResult = {
   id: string
-  ingredient: PublicIngredient
+  ingredient: Ingredient
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -27,7 +27,7 @@ export function useIngredientCreate() {
     const user = currentUser.value
     if (!user) throw new Error('Sign in to curate Ingredients')
     const token = await user.getIdToken()
-    const response = await $fetch<PublicIngredientDetailResponse>(
+    const response = await $fetch<IngredientDetailResponse>(
       '/api/internal/ingredients',
       {
         method: 'POST',
@@ -40,10 +40,13 @@ export function useIngredientCreate() {
     )
 
     await refreshNuxtData([
-      'public-ingredient-library-v2',
+      'ingredient-directory-v2',
       'curator-ingredient-library-v2',
     ])
-    return { id: response.item.id, ingredient: response.item }
+    return {
+      id: response.ingredient.id,
+      ingredient: response.ingredient,
+    }
   }
 
   return { createIngredient }

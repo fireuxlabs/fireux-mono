@@ -7,19 +7,8 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
-import {
-  AppKitchenStorage,
-  KitchenStorage,
-} from '../../models/kitchen.model.ts'
-import {
-  readKitchenOnboardingManagement,
-  readKitchenOnboardingSupport,
-} from '../index/onboarding/onboarding-policy.ts'
-
-const ids = (value: unknown) =>
-  Array.isArray(value)
-    ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
-    : []
+import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { KitchenTeamMemberStorage } from '../../models/team.model.ts'
 
 const linkedDocumentId = (value: unknown, label: string) => {
   const id = typeof value === 'string' ? value.trim() : ''
@@ -37,19 +26,8 @@ export async function requireKitchenOperator(
   input: { appId: string; kitchenId: string },
   message = 'Kitchen operator access is required.'
 ) {
-  const user = await requireFirebaseBearerUser(event, message)
-  const snap = await getRuntimeFirestore()
-    .doc(`apps/${input.appId}/kitchens/${input.kitchenId}`)
-    .get()
-  const data = snap.data() || {}
-  if (!snap.exists || !ids(data.operator_ids).includes(user.uid)) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Kitchen operator access is required.',
-    })
-  }
-
-  return user.uid
+  const access = await requireKitchenWriter(event, input, message)
+  return access.uid
 }
 
 export async function requireKitchenReportReader(
@@ -90,14 +68,14 @@ export async function requireKitchenWriter(
   const membershipRef = appRef
     .collection(AppUserStorage.collection)
     .doc(user.uid)
-  const kitchenRef = appRef
-    .collection(AppKitchenStorage.collection)
-    .doc(input.kitchenId)
   const rootKitchenRef = db
     .collection(KitchenStorage.collection)
     .doc(input.kitchenId)
-  const [membershipSnapshot, kitchenSnapshot, rootKitchenSnapshot] =
-    await db.getAll(membershipRef, kitchenRef, rootKitchenRef)
+  const teamMemberRef = rootKitchenRef
+    .collection(KitchenTeamMemberStorage.collection)
+    .doc(user.uid)
+  const [membershipSnapshot, rootKitchenSnapshot, teamMemberSnapshot] =
+    await db.getAll(membershipRef, rootKitchenRef, teamMemberRef)
   const role = String(membershipSnapshot.get('role') ?? '').trim()
   if (!membershipSnapshot.exists || (role !== 'admin' && role !== 'user')) {
     throw createError({
@@ -105,35 +83,22 @@ export async function requireKitchenWriter(
       statusMessage: 'Active App membership is required.',
     })
   }
-  if (!kitchenSnapshot.exists || !rootKitchenSnapshot.exists) {
+  if (!rootKitchenSnapshot.exists) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'The Kitchen does not exist in this App.',
+      statusMessage: 'The Kitchen does not exist.',
     })
   }
-  const management = readKitchenOnboardingManagement(
-    rootKitchenSnapshot.data() ?? {}
-  )
+  const teamRole = String(teamMemberSnapshot.get('role') ?? '').trim()
   if (
-    management.mode === 'root' ||
-    (management.mode === 'app' && management.app_id !== input.appId)
+    !teamMemberSnapshot.exists ||
+    teamMemberSnapshot.get('user_id') !== user.uid ||
+    teamMemberSnapshot.get('status') !== 'active' ||
+    (teamRole !== 'owner' && teamRole !== 'operator')
   ) {
     throw createError({
-      statusCode: 409,
-      statusMessage: 'The Kitchen is not attached to this App.',
-    })
-  }
-  const support = readKitchenOnboardingSupport(kitchenSnapshot.data() ?? {})
-  if (!support) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Kitchen App support is incomplete.',
-    })
-  }
-  if (role !== 'admin' && !support.operatorIds.includes(user.uid)) {
-    throw createError({
       statusCode: 403,
-      statusMessage: 'App admin or Kitchen operator access is required.',
+      statusMessage: 'Kitchen owner or operator access is required.',
     })
   }
 
@@ -141,6 +106,6 @@ export async function requireKitchenWriter(
     db,
     uid: user.uid,
     rootKitchen: rootKitchenSnapshot.data() ?? {},
-    appKitchen: kitchenSnapshot.data() ?? {},
+    teamMember: teamMemberSnapshot.data() ?? {},
   }
 }

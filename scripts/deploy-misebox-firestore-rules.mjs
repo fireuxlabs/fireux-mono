@@ -24,7 +24,7 @@
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
-import { readFile } from 'node:fs/promises'
+import { readFile, stat } from 'node:fs/promises'
 import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,
@@ -42,27 +42,7 @@ const MISEBOX_ENV_PATH = new URL(
   import.meta.url
 )
 const API = 'https://firebaserules.googleapis.com/v1'
-const BLOCKED_PRODUCTION_ROOTS = [
-  'blogs',
-  'companies',
-  'ecosystems',
-  'jobs',
-  'menus',
-  'places',
-  'portfolios',
-  'products',
-  'properties',
-  'suppliers',
-]
-const PROFILE_INTEGRITY_PLACE_IDS = Object.freeze(
-  [
-    'ChIJ5a7zI4yZb0gREnXFLyK2efw',
-    'ChIJEbkWR0ijj0cRiHfShuHPLcc',
-    'ChIJW24UWZEFR0YRLz8DJUFmfes',
-    'ChIJXdh4fWQzGQ0RMxS3c5Nua04',
-    'ChIJd5U3YbF0iUcR-oLtm9B0M5Y',
-  ].sort()
-)
+const BLOCKED_PRODUCTION_ROOTS = []
 const args = parseArgs(process.argv.slice(2))
 
 if (args.help) {
@@ -74,7 +54,8 @@ Usage:
   node scripts/deploy-misebox-firestore-rules.mjs --test-security
   node scripts/deploy-misebox-firestore-rules.mjs --test-simulation
   node scripts/deploy-misebox-firestore-rules.mjs --deploy-simulation
-  node scripts/deploy-misebox-firestore-rules.mjs --promote-production
+  node scripts/deploy-misebox-firestore-rules.mjs --promote-production \
+    --entity-evidence /private/tmp/<fresh-entity-canon-evidence>.json
   node scripts/deploy-misebox-firestore-rules.mjs --rollback <database-id> <ruleset-name>
 
 --check compiles without changing a release. Simulation creates one immutable
@@ -278,239 +259,108 @@ if (args.promoteProduction) {
 }
 
 async function assertProductionMigrationPrerequisites() {
-  const currentProfileState = await assertCurrentProductionProfileShapes()
-  const [
-    privateMarker,
-    boundaryMarker,
-    profileShapeMarker,
-    profileIntegrityMarker,
-    handleMarker,
-  ] = await Promise.all([
-    firestoreMaybeGet('security-migrations/user-private-v1'),
-    firestoreMaybeGet('security-migrations/user-profile-boundary-v4'),
-    firestoreMaybeGet('security-migrations/user-profile-canonical-shape-v1'),
-    firestoreMaybeGet('security-migrations/user-profile-integrity-v1'),
-    firestoreMaybeGet('user-handle-state/canonical'),
+  const [currentProfileState, users, entityCanon] = await Promise.all([
+    assertCurrentProductionProfileShapes(),
+    firestoreList('users'),
+    readEntityCanonEvidence(args['entity-evidence']),
   ])
-  const decoded = {
-    private: decodeFirestoreFields(privateMarker?.fields || {}),
-    boundary: decodeFirestoreFields(boundaryMarker?.fields || {}),
-    profileShape: decodeFirestoreFields(profileShapeMarker?.fields || {}),
-    profileIntegrity: decodeFirestoreFields(
-      profileIntegrityMarker?.fields || {}
-    ),
-    handles: decodeFirestoreFields(handleMarker?.fields || {}),
-    currentProfileState,
-  }
-  const profileIntegrityPlaces = await Promise.all(
-    PROFILE_INTEGRITY_PLACE_IDS.map((placeId) =>
-      firestoreMaybeGet(`places/${placeId}`)
-    )
-  )
-  const failures = []
-  if (
-    decoded.private.schema_version !== 1 ||
-    decoded.private.complete !== true ||
-    decoded.private.identities_without_account_email !== 0 ||
-    decoded.private.private_user_count !== decoded.private.user_count
-  ) {
-    failures.push('UserPrivate migration is missing or incomplete')
-  }
-  if (
-    decoded.boundary.schema_version !== 4 ||
-    decoded.boundary.complete !== true ||
-    decoded.boundary.no_legacy_compatibility !== true ||
-    !/^[a-f0-9]{64}$/.test(
-      String(decoded.boundary.source_backup_sha256 || '')
-    ) ||
-    decoded.boundary.app_id !== 'misebox-app' ||
-    decoded.boundary.user_count !== decoded.private.user_count ||
-    decoded.boundary.app_user_count !== 26 ||
-    decoded.boundary.root_profile_count !== 16 ||
-    decoded.boundary.documents_updated !== 66 ||
-    decoded.boundary.obsolete_fields_removed !== 83 ||
-    decoded.boundary.embedded_notifications_deleted !== 22 ||
-    decoded.boundary.canonical_notifications_migrated !== 23 ||
-    !Array.isArray(decoded.boundary.notification_paths) ||
-    decoded.boundary.notification_paths.length !== 23 ||
-    decoded.boundary.historical_source_backup_sha256 !==
-      '2ffee41f8e29581450ae44783e1944353e79d0d93069863100ba722e8731d0ee' ||
-    decoded.boundary.historical_notifications_examined !== 23 ||
-    decoded.boundary.historical_notifications_recovered !== 1 ||
-    decoded.boundary.historical_bios_examined !== 2 ||
-    decoded.boundary.historical_bios_applied !== 0 ||
-    decoded.boundary.historical_bios_current_canonical_retained !== 2 ||
-    !Array.isArray(decoded.boundary.historical_bio_decisions) ||
-    decoded.boundary.historical_bio_decisions.length !== 2 ||
-    decoded.boundary.historical_bio_reconciliation_sha256 !==
-      'b00152772762d63969fee6074e39e9f1bee446ec7785be62c0a5a9e494db2d14' ||
-    decoded.boundary.notification_payload_sha256 !==
-      'b6f14795eb501f171344767e39e98291d424f9466d931b4d18adf646f3f00611' ||
-    decoded.boundary.embedded_user_snapshots_deleted !== 33 ||
-    decoded.boundary.chef_gallery_entries_migrated !== 6 ||
-    decoded.boundary.chef_kitchen_ids_migrated !== 0 ||
-    decoded.boundary.dangling_chef_kitchen_snapshots_deleted !== 1
-  ) {
-    failures.push(
-      'no-legacy User/Profile boundary hardening is missing or stale'
-    )
-  }
-  const expectedProfileShapeKeys = [
-    'agent_documents_updated',
-    'app_id',
-    'chef_documents_updated',
-    'complete',
-    'completed_at',
-    'database_id',
-    'documents_updated',
-    'experience_items_normalized',
-    'fields_backfilled',
-    'no_legacy_compatibility',
-    'predecessor_marker_path',
-    'predecessor_source_backup_sha256',
-    'professional_documents_updated',
-    'project_id',
-    'schema_version',
-    'source_backup_sha256',
-  ]
-  if (
-    JSON.stringify(Object.keys(decoded.profileShape).sort()) !==
-      JSON.stringify(expectedProfileShapeKeys) ||
-    decoded.profileShape.schema_version !== 1 ||
-    decoded.profileShape.complete !== true ||
-    decoded.profileShape.no_legacy_compatibility !== true ||
-    decoded.profileShape.project_id !== PROJECT_ID ||
-    decoded.profileShape.database_id !== PRODUCTION_DATABASE_ID ||
-    decoded.profileShape.app_id !== 'misebox-app' ||
-    !Number.isFinite(Date.parse(decoded.profileShape.completed_at || '')) ||
-    !/^[a-f0-9]{64}$/.test(
-      String(decoded.profileShape.source_backup_sha256 || '')
-    ) ||
-    decoded.profileShape.predecessor_marker_path !==
-      'security-migrations/user-profile-boundary-v4' ||
-    decoded.profileShape.predecessor_source_backup_sha256 !==
-      decoded.boundary.source_backup_sha256 ||
-    decoded.profileShape.documents_updated !== 13 ||
-    decoded.profileShape.fields_backfilled !== 48 ||
-    decoded.profileShape.agent_documents_updated !== 2 ||
-    decoded.profileShape.chef_documents_updated !== 3 ||
-    decoded.profileShape.professional_documents_updated !== 8 ||
-    decoded.profileShape.experience_items_normalized !== 27
-  ) {
-    failures.push('canonical root-profile shape migration is missing or stale')
-  }
-  const expectedProfileIntegrityKeys = [
-    'app_id',
-    'complete',
-    'completed_at',
-    'database_id',
-    'documents_updated',
-    'no_legacy_compatibility',
-    'place_ids',
-    'place_payload_sha256',
-    'places_created',
-    'predecessor_marker_path',
-    'predecessor_source_backup_sha256',
-    'project_id',
-    'schema_version',
-    'source_backup_sha256',
-    'urls_normalized',
-  ]
-  const hasCompleteProfileIntegrityPlaces = profileIntegrityPlaces.every(
-    (document, index) => {
-      const placeId = PROFILE_INTEGRITY_PLACE_IDS[index]
-      const data = decodeFirestoreFields(document?.fields || {})
-      return (
-        documentPath(document) === `places/${placeId}` &&
-        !Object.hasOwn(data, 'id') &&
-        typeof data.name === 'string' &&
-        data.name.trim() !== '' &&
-        typeof data.formatted_address === 'string' &&
-        data.formatted_address.trim() !== '' &&
-        Number.isFinite(data.lat) &&
-        Number.isFinite(data.lng) &&
-        (data.lat !== 0 || data.lng !== 0) &&
-        data.source === 'fireux' &&
-        data.place_type === 'physical' &&
-        typeof data.slug === 'string' &&
-        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(data.slug) &&
-        typeof data.default_currency_code === 'string' &&
-        /^[A-Z]{3}$/.test(data.default_currency_code) &&
-        isEmptyOrHttps(data.image_url) &&
-        isEmptyOrHttps(data.cover_image) &&
-        isEmptyOrHttps(data.website) &&
-        isEmptyOrHttps(data.google_maps_url) &&
-        Array.isArray(data.gallery_images) &&
-        data.gallery_images.every(isNonEmptyHttps) &&
-        isCanonicalMigrationStamp(data.created) &&
-        isCanonicalMigrationStamp(data.updated)
+  const privateAccounts = (
+    await Promise.all(
+      users.map((document) =>
+        firestoreMaybeGet(`users/${documentId(document)}/private/account`)
       )
-    }
-  )
-  const profileIntegrityPlacePayloadSha256 = hasCompleteProfileIntegrityPlaces
-    ? profileIntegrityPlacePayloadDigest(profileIntegrityPlaces)
-    : ''
-  const profileIntegrityPlacesUntouched = profileIntegrityPlaces.every(
-    (document) =>
-      decodeFirestoreFields(document?.fields || {}).updated?.by ===
-      'system:profile-integrity-v1'
-  )
-  if (
-    JSON.stringify(Object.keys(decoded.profileIntegrity).sort()) !==
-      JSON.stringify(expectedProfileIntegrityKeys) ||
-    decoded.profileIntegrity.schema_version !== 1 ||
-    decoded.profileIntegrity.complete !== true ||
-    decoded.profileIntegrity.no_legacy_compatibility !== true ||
-    decoded.profileIntegrity.project_id !== PROJECT_ID ||
-    decoded.profileIntegrity.database_id !== PRODUCTION_DATABASE_ID ||
-    decoded.profileIntegrity.app_id !== 'misebox-app' ||
-    !Number.isFinite(Date.parse(decoded.profileIntegrity.completed_at || '')) ||
-    !/^[a-f0-9]{64}$/.test(
-      String(decoded.profileIntegrity.source_backup_sha256 || '')
-    ) ||
-    decoded.profileIntegrity.predecessor_marker_path !==
-      'security-migrations/user-profile-canonical-shape-v1' ||
-    decoded.profileIntegrity.predecessor_source_backup_sha256 !==
-      decoded.profileShape.source_backup_sha256 ||
-    decoded.profileIntegrity.documents_updated !== 1 ||
-    decoded.profileIntegrity.urls_normalized !== 1 ||
-    decoded.profileIntegrity.places_created !==
-      PROFILE_INTEGRITY_PLACE_IDS.length ||
-    JSON.stringify(decoded.profileIntegrity.place_ids) !==
-      JSON.stringify(PROFILE_INTEGRITY_PLACE_IDS) ||
-    !/^[a-f0-9]{64}$/.test(
-      String(decoded.profileIntegrity.place_payload_sha256 || '')
-    ) ||
-    !hasCompleteProfileIntegrityPlaces ||
-    (profileIntegrityPlacesUntouched &&
-      decoded.profileIntegrity.place_payload_sha256 !==
-        profileIntegrityPlacePayloadSha256)
-  ) {
-    failures.push(
-      'canonical profile-integrity migration, Place payloads, or digest is missing or stale'
     )
+  ).filter(Boolean)
+  const handleOwners = new Map()
+  const invalidUsers = users.flatMap((document) => {
+    const userId = documentId(document)
+    const user = decodeFirestoreFields(document.fields || {})
+    const handle = String(user.handle || '').trim()
+    if (!/^[a-z0-9][a-z0-9-]{2,29}$/.test(handle)) return [userId]
+    const owner = handleOwners.get(handle)
+    if (owner && owner !== userId) return [userId, owner]
+    handleOwners.set(handle, userId)
+    return []
+  })
+  const failures = []
+  if (!users.length || privateAccounts.length !== users.length) {
+    failures.push('every canonical User must own a private account record')
   }
-  if (
-    decoded.handles.schema_version !== 1 ||
-    decoded.handles.backfill_complete !== true ||
-    decoded.handles.user_count !== decoded.private.user_count
-  ) {
-    failures.push('canonical User handle backfill is missing or stale')
+  if (invalidUsers.length) {
+    failures.push(
+      `canonical User handles are invalid or duplicated for: ${[...new Set(invalidUsers)].join(', ')}`
+    )
   }
   if (failures.length) {
     throw new Error(
       `Production migration prerequisites failed:\n- ${failures.join('\n- ')}`
     )
   }
-  return decoded
+  const userEvidence = users
+    .map((document) => [documentPath(document), document.updateTime || ''])
+    .sort(([left], [right]) => left.localeCompare(right))
+  return {
+    entityCanon,
+    currentProfileState,
+    userCount: users.length,
+    privateAccountCount: privateAccounts.length,
+    canonicalHandleCount: handleOwners.size,
+    userEvidenceSha256: sha256(JSON.stringify(userEvidence)),
+  }
+}
+
+async function readEntityCanonEvidence(evidencePath) {
+  const path = String(evidencePath || '').trim()
+  if (!path.startsWith('/private/tmp/') || !path.endsWith('.json')) {
+    throw new Error(
+      'Production promotion requires --entity-evidence /private/tmp/<fresh-evidence>.json.'
+    )
+  }
+  const [source, metadata] = await Promise.all([
+    readFile(path, 'utf8'),
+    stat(path),
+  ])
+  if ((metadata.mode & 0o077) !== 0) {
+    throw new Error('Entity Canon evidence must use mode 0600.')
+  }
+  const evidence = JSON.parse(source)
+  const capturedAt = Date.parse(evidence.capturedAt || '')
+  const ageMs = Date.now() - capturedAt
+  if (
+    evidence.format !== 'fireux-firestore-entity-canon-evidence/1' ||
+    evidence.ecosystem !== 'misebox' ||
+    evidence.projectId !== PROJECT_ID ||
+    evidence.databaseId !== PRODUCTION_DATABASE_ID ||
+    evidence.phase !== 'copy' ||
+    !/^[a-f0-9]{64}$/.test(String(evidence.planSha256 || '')) ||
+    evidence.creates !== 0 ||
+    evidence.updates !== 0 ||
+    evidence.retireUpdates !== 0 ||
+    !Number.isInteger(evidence.retireDeletes) ||
+    evidence.retireDeletes < 1 ||
+    !Number.isInteger(evidence.verified) ||
+    evidence.verified < 1 ||
+    !/^[a-f0-9]{64}$/.test(String(evidence.verifiedSha256 || '')) ||
+    !Array.isArray(evidence.blockers) ||
+    evidence.blockers.length !== 0 ||
+    !String(evidence.exportUri || '').startsWith(
+      'gs://misebox-78f9c-firestore-migrations/entity-canon-'
+    ) ||
+    !Number.isFinite(capturedAt) ||
+    ageMs < -300_000 ||
+    ageMs > 21_600_000
+  ) {
+    throw new Error('Entity Canon evidence is missing, stale, or invalid.')
+  }
+  return { ...evidence, evidenceSha256: sha256(source) }
 }
 
 async function assertCurrentProductionProfileShapes() {
-  const [users, agents, chefs, professionals] = await Promise.all([
-    firestoreList('users'),
-    firestoreList('agents'),
-    firestoreList('chefs'),
-    firestoreList('professionals'),
+  const users = await firestoreList('users')
+  const [agents, chefs, professionals] = await Promise.all([
+    readUserProfiles(users, 'agent'),
+    readUserProfiles(users, 'chef'),
+    readUserProfiles(users, 'professional'),
   ])
   const path = (value) =>
     `/databases/${PRODUCTION_DATABASE_ID}/documents/${value}`
@@ -526,14 +376,20 @@ async function assertCurrentProductionProfileShapes() {
     ['professional', professionals],
   ].flatMap(([profileId, documents]) =>
     documents.map((document) => {
-      const userId = documentId(document)
+      const userId = profileOwnerId(document)
       const documentValue = documentPath(document)
       return {
         name: `${profileId}:${userId}`,
         testCase: {
           expectation: 'ALLOW',
           request: {
-            auth: null,
+            auth: {
+              uid: userId,
+              token: {
+                sub: userId,
+                firebase: { sign_in_provider: 'password' },
+              },
+            },
             path: path(documentValue),
             method: 'get',
           },
@@ -629,7 +485,13 @@ function parseArgs(values) {
     else if (value === '--test-simulation') parsed.testSimulation = true
     else if (value === '--deploy-simulation') parsed.deploySimulation = true
     else if (value === '--promote-production') parsed.promoteProduction = true
-    else if (value === '--service-account') {
+    else if (value === '--entity-evidence') {
+      parsed['entity-evidence'] = values[index + 1]
+      index += 1
+      if (!parsed['entity-evidence']) {
+        throw new Error('--entity-evidence requires a path.')
+      }
+    } else if (value === '--service-account') {
       parsed['service-account'] = values[index + 1]
       index += 1
       if (!parsed['service-account']) {
@@ -671,24 +533,23 @@ function readEnvValue(content, keys) {
 }
 
 async function buildSecurityTests() {
+  const users = await firestoreList('users')
   const [
-    users,
     appUsers,
     customers,
     appDrivers,
-    publicDrivers,
+    driverProfiles,
     agents,
     chefs,
     professionals,
   ] = await Promise.all([
-    firestoreList('users'),
     firestoreList('apps/misebox-app/users'),
-    firestoreList('apps/misebox-app/customers'),
-    firestoreList('apps/misebox-app/drivers'),
-    firestoreList('drivers'),
-    firestoreList('agents'),
-    firestoreList('chefs'),
-    firestoreList('professionals'),
+    readUserProfiles(users, 'customer'),
+    readUserProfileAppStates(users, 'driver', 'misebox-app'),
+    readUserProfiles(users, 'driver'),
+    readUserProfiles(users, 'agent'),
+    readUserProfiles(users, 'chef'),
+    readUserProfiles(users, 'professional'),
   ])
   const publicUserId = documentId(users[0])
   const ecosystemAvatarUserId = documentId(
@@ -715,12 +576,12 @@ async function buildSecurityTests() {
   const regularId = documentId(
     appUsers.find((document) => documentId(document) !== adminId)
   )
-  const customerId = documentId(customers[0])
-  const driverId = documentId(appDrivers[0])
-  const driverProfileId = documentId(publicDrivers[0])
-  const agentProfileId = documentId(agents[0])
-  const chefProfileId = documentId(chefs[0])
-  const professionalProfileId = documentId(professionals[0])
+  const customerId = profileOwnerId(customers[0])
+  const driverId = profileOwnerId(appDrivers[0])
+  const driverProfileId = profileOwnerId(driverProfiles[0])
+  const agentProfileId = profileOwnerId(agents[0])
+  const chefProfileId = profileOwnerId(chefs[0])
+  const professionalProfileId = profileOwnerId(professionals[0])
   const appDocument = await firestoreGet('apps/misebox-app')
   for (const [label, value] of Object.entries({
     publicUserId,
@@ -769,7 +630,7 @@ async function buildSecurityTests() {
       ...appUsers,
       ...customers,
       ...appDrivers,
-      ...publicDrivers,
+      ...driverProfiles,
       ...agents,
       ...chefs,
       ...professionals,
@@ -983,12 +844,16 @@ async function buildSecurityTests() {
     },
   })
   const appDriverDocument = appDrivers.find(
-    (document) => documentId(document) === driverId
+    (document) => profileOwnerId(document) === driverId
   )
   const publicUserDocument = users.find(
     (document) => documentId(document) === publicUserId
   )
-  const appDriverData = firestoreRulesResource(appDriverDocument).data
+  const appDriverData = {
+    ...firestoreRulesResource(appDriverDocument).data,
+    profile_kind: 'driver',
+    app_id: 'misebox-app',
+  }
   const publicUserData = firestoreRulesResource(publicUserDocument).data
   const publicUserDataWithoutBio = Object.fromEntries(
     Object.entries(publicUserData).filter(([field]) => field !== 'bio')
@@ -1009,6 +874,7 @@ async function buildSecurityTests() {
         ]
   const appData = firestoreRulesResource(appDocument).data
   const canonicalChefData = {
+    kind: 'chef',
     title: '',
     summary: '',
     chef_bio: '',
@@ -1021,6 +887,7 @@ async function buildSecurityTests() {
     updated: { at: writeTime, by: chefProfileId },
   }
   const canonicalAgentData = {
+    kind: 'agent',
     title: '',
     summary: '',
     agent_bio: '',
@@ -1050,6 +917,7 @@ async function buildSecurityTests() {
     place_collection: 'kitchens',
   }
   const canonicalProfessionalData = {
+    kind: 'professional',
     title: '',
     subtitle: '',
     tagline: '',
@@ -1342,8 +1210,7 @@ async function buildSecurityTests() {
       mode: 'workspace',
     },
   }
-  const appKitchenProbePath =
-    'apps/misebox-app/kitchens/security-rules-authority-probe'
+  const appKitchenProbePath = 'kitchens/security-rules-authority-probe'
   const appKitchenProbeData = {
     operator_ids: [adminId],
     team_ids: [adminId],
@@ -1355,13 +1222,12 @@ async function buildSecurityTests() {
     join_requests: [],
   }
   const kitchenChildProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/team-members/member-probe'
+    'kitchens/security-rules-probe/team-members/member-probe'
   const kitchenChildProbeData = {
     display_name: 'Rules Team Member',
     active: true,
   }
-  const kitchenStationProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/stations/grill'
+  const kitchenStationProbePath = 'kitchens/security-rules-probe/stations/grill'
   const kitchenStationProbeData = {
     kitchen_id: 'security-rules-probe',
     name: 'Grill',
@@ -1372,11 +1238,11 @@ async function buildSecurityTests() {
     updated: { at: writeTime, by: regularId },
   }
   const kitchenMiseProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/mise-tasks/prep-onions'
+    'kitchens/security-rules-probe/mise-tasks/prep-onions'
   const legacyKitchenMiseProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/mise/legacy-prep'
+    'kitchens/security-rules-probe/mise/legacy-prep'
   const kitchenPrepItemProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/prep-items/prep-onions'
+    'kitchens/security-rules-probe/prep-items/prep-onions'
   const kitchenPrepItemProbeData = {
     kitchen_id: 'security-rules-probe',
     name: 'Prepared onions',
@@ -1386,12 +1252,14 @@ async function buildSecurityTests() {
     names: { en: 'Prepared onions' },
     descriptions: { en: 'Peeled and diced onions.' },
     station: 'prep',
-    inputs: [{
-      ingredient_id: 'onion',
-      quantity: 1000,
-      unit: 'g',
-      preparation: 'peeled',
-    }],
+    inputs: [
+      {
+        ingredient_id: 'onion',
+        quantity: 1000,
+        unit: 'g',
+        preparation: 'peeled',
+      },
+    ],
     recipe_id: '',
     yield: { quantity: 850, unit: 'g' },
     method: ['Peel the onions.', 'Dice evenly.'],
@@ -1432,9 +1300,11 @@ async function buildSecurityTests() {
     status: 'active',
     image_url: '',
   }
-  const kitchenIngredientProbePath =
-    `apps/misebox-app/kitchens/security-rules-probe/ingredients/${activeIngredientId}`
-  const kitchenIngredientData = (userId, ingredientId = activeIngredientId) => ({
+  const kitchenIngredientProbePath = `kitchens/security-rules-probe/ingredients/${activeIngredientId}`
+  const kitchenIngredientData = (
+    userId,
+    ingredientId = activeIngredientId
+  ) => ({
     ingredient_id: ingredientId,
     created: {
       at: writeTime,
@@ -1446,8 +1316,7 @@ async function buildSecurityTests() {
       by: userId,
     },
   })
-  const appSupplierProbePath =
-    'apps/misebox-app/suppliers/security-rules-supplier-probe'
+  const appSupplierProbePath = 'suppliers/security-rules-supplier-probe'
   const teamSupplierSupportData = {
     operator_ids: [],
     team_ids: [regularId],
@@ -1458,14 +1327,12 @@ async function buildSecurityTests() {
     team_ids: [adminId],
     join_requests: [],
   }
-  const supplierChildProbePath =
-    `${appSupplierProbePath}/catalogue/item-probe`
+  const supplierChildProbePath = `${appSupplierProbePath}/catalogue/item-probe`
   const supplierChildProbeData = {
     name: 'Rules Catalogue Item',
     active: true,
   }
-  const saleProbePath =
-    'apps/misebox-app/kitchens/security-rules-probe/sales/sale-probe'
+  const saleProbePath = 'kitchens/security-rules-probe/sales/sale-probe'
   const saleProbeData = {
     id: 'sale-probe',
     schema_version: 1,
@@ -1629,23 +1496,26 @@ async function buildSecurityTests() {
       `apps/misebox-app/join-requests/${missingOwnerId}`,
       missingOwnerId
     ),
-    ...['customers', 'drivers', 'agents', 'chefs', 'professionals'].map(
-      (collectionName) =>
-        read(
-          `owner can get missing App ${collectionName} row before create`,
-          'ALLOW',
-          `apps/misebox-app/${collectionName}/${missingOwnerId}`,
-          missingOwnerId,
-          appMemberMocks(missingOwnerId, path)
-        )
-    ),
-    ...['drivers', 'agents', 'chefs', 'professionals'].map((collectionName) =>
+    ...['driver', 'agent', 'chef', 'professional'].map((profileKind) =>
       read(
-        `owner can get missing root ${collectionName} profile before create`,
+        `owner can get missing ${profileKind} Profile before trusted create`,
         'ALLOW',
-        `${collectionName}/${missingOwnerId}`,
+        `users/${missingOwnerId}/profiles/${profileKind}`,
         missingOwnerId
       )
+    ),
+    read(
+      'Customer Profile creation remains trusted-server owned',
+      'DENY',
+      `users/${missingOwnerId}/profiles/customer`,
+      missingOwnerId
+    ),
+    read(
+      'Driver App state creation remains trusted-server owned',
+      'DENY',
+      `users/${missingOwnerId}/profiles/driver/app-state/misebox-app`,
+      missingOwnerId,
+      appMemberMocks(missingOwnerId, path)
     ),
     ...users.map((document) => {
       const userId = documentId(document)
@@ -1773,52 +1643,54 @@ async function buildSecurityTests() {
       { limit: 101 }
     ),
     ...customers.map((document) => {
-      const userId = documentId(document)
-      return read(
-        `Customer can read strict own private profile ${userId}`,
+      const userId = profileOwnerId(document)
+      return readResource(
+        `Customer can read their own Customer Profile ${userId}`,
         'ALLOW',
-        `apps/misebox-app/customers/${userId}`,
+        `users/${userId}/profiles/customer`,
         userId,
-        appMemberMocks(userId, path)
+        {
+          ...firestoreRulesResource(document).data,
+          kind: 'customer',
+        }
       )
     }),
     read(
-      'removed Customer cannot keep reading App-private profile',
+      'another user cannot read a Customer Profile',
       'DENY',
-      `apps/misebox-app/customers/${customerId}`,
-      customerId
-    ),
-    read(
-      'another user cannot read Customer private profile',
-      'DENY',
-      `apps/misebox-app/customers/${customerId}`,
+      `users/${customerId}/profiles/customer`,
       strangerId
     ),
     ...appDrivers.map((document) => {
-      const userId = documentId(document)
-      return read(
-        `Driver can read strict own operational profile ${userId}`,
+      const userId = profileOwnerId(document)
+      return readResource(
+        `Driver can read their own App state ${userId}`,
         'ALLOW',
-        `apps/misebox-app/drivers/${userId}`,
+        `users/${userId}/profiles/driver/app-state/misebox-app`,
         userId,
+        {
+          ...firestoreRulesResource(document).data,
+          profile_kind: 'driver',
+          app_id: 'misebox-app',
+        },
         appMemberMocks(userId, path)
       )
     }),
     read(
-      'removed Driver cannot keep reading operational grants',
+      'removed Driver cannot keep reading Driver App state',
       'DENY',
-      `apps/misebox-app/drivers/${driverId}`,
+      `users/${driverId}/profiles/driver/app-state/misebox-app`,
       driverId
     ),
     read(
-      'another user cannot read Driver private operational profile',
+      'another user cannot read Driver App state',
       'DENY',
-      `apps/misebox-app/drivers/${driverId}`,
+      `users/${driverId}/profiles/driver/app-state/misebox-app`,
       strangerId
     ),
     deniedUpdate(
       'Driver cannot self-grant Kitchen authority',
-      `apps/misebox-app/drivers/${driverId}`,
+      `users/${driverId}/profiles/driver/app-state/misebox-app`,
       driverId,
       appDriverData,
       {
@@ -1829,37 +1701,50 @@ async function buildSecurityTests() {
       },
       appMemberMocks(driverId, path)
     ),
-    ...publicDrivers.map((document) => {
-      const userId = documentId(document)
-      return read(
-        `anonymous can read strict public Driver ${userId}`,
+    ...driverProfiles.map((document) => {
+      const userId = profileOwnerId(document)
+      return readResource(
+        `anonymous can read an exact Driver Profile ${userId}`,
         'ALLOW',
-        `drivers/${userId}`,
+        `users/${userId}/profiles/driver`,
         undefined,
+        {
+          ...firestoreRulesResource(document).data,
+          kind: 'driver',
+        },
         canonicalUserMocks(userId, path, documentsByPath)
       )
     }),
-    list('raw Driver listing uses projection API', 'DENY', 'drivers'),
+    list('retired root Driver listing remains denied', 'DENY', 'drivers'),
     ...[
       ['agents', agents],
       ['chefs', chefs],
       ['professionals', professionals],
     ].flatMap(([collectionName, documents]) => [
       ...documents.map((document) => {
-        const userId = documentId(document)
-        return read(
-          `anonymous raw ${collectionName}/${userId} detail uses the public projection API`,
+        const userId = profileOwnerId(document)
+        return readResource(
+          `anonymous cannot read exact ${collectionName}/${userId} Profile`,
           'DENY',
-          `${collectionName}/${userId}`
+          `users/${userId}/profiles/${collectionName.slice(0, -1)}`,
+          undefined,
+          {
+            ...firestoreRulesResource(document).data,
+            kind: collectionName.slice(0, -1),
+          }
         )
       }),
       ...documents.map((document) => {
-        const userId = documentId(document)
-        return read(
-          `owner can read canonical raw ${collectionName}/${userId}`,
+        const userId = profileOwnerId(document)
+        return readResource(
+          `owner can read their ${collectionName}/${userId} Profile`,
           'ALLOW',
-          `${collectionName}/${userId}`,
-          userId
+          `users/${userId}/profiles/${collectionName.slice(0, -1)}`,
+          userId,
+          {
+            ...firestoreRulesResource(document).data,
+            kind: collectionName.slice(0, -1),
+          }
         )
       }),
       list(
@@ -1870,7 +1755,7 @@ async function buildSecurityTests() {
     ]),
     allowedUpdate(
       'Agent owner can store canonical HTTPS image and website fields',
-      `agents/${agentProfileId}`,
+      `users/${agentProfileId}/profiles/agent`,
       agentProfileId,
       canonicalAgentData,
       {
@@ -1891,7 +1776,7 @@ async function buildSecurityTests() {
     ].map(([label, invalidPatch]) =>
       deniedUpdate(
         `Agent owner cannot store ${label}`,
-        `agents/${agentProfileId}`,
+        `users/${agentProfileId}/profiles/agent`,
         agentProfileId,
         canonicalAgentData,
         {
@@ -1904,7 +1789,7 @@ async function buildSecurityTests() {
     ),
     allowedUpdate(
       'Chef owner can store a strictly shaped canonical gallery',
-      `chefs/${chefProfileId}`,
+      `users/${chefProfileId}/profiles/chef`,
       chefProfileId,
       canonicalChefData,
       {
@@ -1918,7 +1803,7 @@ async function buildSecurityTests() {
     ),
     deniedUpdate(
       'Chef owner cannot store a non-HTTPS root image',
-      `chefs/${chefProfileId}`,
+      `users/${chefProfileId}/profiles/chef`,
       chefProfileId,
       canonicalChefData,
       {
@@ -1930,7 +1815,7 @@ async function buildSecurityTests() {
     ),
     deniedUpdate(
       'Chef owner cannot delete a canonical profile field',
-      `chefs/${chefProfileId}`,
+      `users/${chefProfileId}/profiles/chef`,
       chefProfileId,
       canonicalChefData,
       {
@@ -1942,7 +1827,7 @@ async function buildSecurityTests() {
     ...invalidChefGalleries.map(([label, chefGallery]) =>
       deniedUpdate(
         `Chef owner cannot store gallery with ${label}`,
-        `chefs/${chefProfileId}`,
+        `users/${chefProfileId}/profiles/chef`,
         chefProfileId,
         canonicalChefData,
         {
@@ -1969,7 +1854,7 @@ async function buildSecurityTests() {
     ].map(([field, patch]) =>
       allowedUpdate(
         `Professional owner can update canonical ${field} independently`,
-        `professionals/${professionalProfileId}`,
+        `users/${professionalProfileId}/profiles/professional`,
         professionalProfileId,
         canonicalProfessionalData,
         {
@@ -1983,7 +1868,7 @@ async function buildSecurityTests() {
     ),
     deniedUpdate(
       'Professional owner cannot change multiple structured item families in one mutation',
-      `professionals/${professionalProfileId}`,
+      `users/${professionalProfileId}/profiles/professional`,
       professionalProfileId,
       canonicalProfessionalData,
       {
@@ -1996,7 +1881,7 @@ async function buildSecurityTests() {
     ),
     deniedUpdate(
       'Professional owner cannot exceed 24 structured items by changing one family',
-      `professionals/${professionalProfileId}`,
+      `users/${professionalProfileId}/profiles/professional`,
       professionalProfileId,
       aggregateLimitProfessionalData,
       {
@@ -2009,7 +1894,7 @@ async function buildSecurityTests() {
     ...invalidProfessionalPatches.map(([label, invalidPatch]) =>
       deniedUpdate(
         `Professional owner cannot store ${label}`,
-        `professionals/${professionalProfileId}`,
+        `users/${professionalProfileId}/profiles/professional`,
         professionalProfileId,
         canonicalProfessionalData,
         {
@@ -2184,24 +2069,18 @@ async function buildSecurityTests() {
       )
     ),
     readResource(
-      'Kitchen authority under another App cannot grant root identity access',
+      'Kitchen Team without managing App membership cannot read the Kitchen',
       'DENY',
       rootKitchenProbePath,
       regularId,
       rootKitchenProbeData,
-      [
-        ...missingKitchenSupportMocks(
-          path,
-          'security-rules-tenant',
-          'security-rules-probe'
-        ),
-        ...scopedKitchenAuthorityMocks(regularId, path, {
-          appId: 'security-rules-other-app',
-          kitchenId: 'security-rules-probe',
-          operatorIds: [regularId],
-          teamIds: [],
-        }),
-      ]
+      workspaceAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        collectionName: 'kitchens',
+        workspaceId: 'security-rules-probe',
+        membershipExists: false,
+        teamRole: 'operator',
+      })
     ),
     list(
       'authorized Kitchen operator cannot list raw root Kitchens',
@@ -2352,8 +2231,8 @@ async function buildSecurityTests() {
         appAdminMocks(adminId, path)
       )
     ),
-    allowedCreate(
-      'App admin can create a complete AppKitchen authority record',
+    deniedCreate(
+      'App admin cannot create a Kitchen root in the browser',
       appKitchenProbePath,
       adminId,
       appKitchenProbeData,
@@ -2386,19 +2265,22 @@ async function buildSecurityTests() {
       adminId,
       {
         ...appKitchenProbeData,
-        join_requests: Array.from({ length: 101 }, (_, index) => `user-${index}`),
+        join_requests: Array.from(
+          { length: 101 },
+          (_, index) => `user-${index}`
+        ),
       },
       writeTime,
       appAdminMocks(adminId, path)
     ),
-    allowedUpdate(
-      'App admin can update a complete AppKitchen authority record',
+    deniedUpdate(
+      'App admin cannot update a Kitchen root in the browser',
       appKitchenProbePath,
       adminId,
       appKitchenProbeData,
       { ...appKitchenProbeData, join_requests: ['requester'] },
-      updateTime,
-      appAdminMocks(adminId, path)
+      appAdminMocks(adminId, path),
+      updateTime
     ),
     deniedUpdate(
       'App admin cannot remove AppKitchen join_requests on update',
@@ -2425,14 +2307,10 @@ async function buildSecurityTests() {
       regularId,
       appKitchenProbeData,
       { ...appKitchenProbeData, join_requests: [regularId] },
-      kitchenOperatorMocks(
-        regularId,
-        path,
-        'security-rules-authority-probe'
-      )
+      kitchenOperatorMocks(regularId, path, 'security-rules-authority-probe')
     ),
     readResource(
-      'Kitchen team member can read exact AppKitchen support',
+      'Kitchen Team member can read the exact Kitchen root',
       'ALLOW',
       appKitchenProbePath,
       regularId,
@@ -2444,7 +2322,7 @@ async function buildSecurityTests() {
       })
     ),
     deniedUpdate(
-      'Kitchen team member cannot mutate AppKitchen support',
+      'Kitchen Team member cannot mutate the Kitchen root',
       appKitchenProbePath,
       regularId,
       teamKitchenSupportData,
@@ -2470,7 +2348,7 @@ async function buildSecurityTests() {
     list(
       'Kitchen team member can list selected Ingredient references',
       'ALLOW',
-      'apps/misebox-app/kitchens/security-rules-probe/ingredients',
+      'kitchens/security-rules-probe/ingredients',
       regularId,
       targetAuthorityMocks(regularId, path, {
         collectionName: 'kitchens',
@@ -2529,7 +2407,7 @@ async function buildSecurityTests() {
     ),
     deniedCreate(
       'Kitchen operator cannot select an inactive canonical Ingredient',
-      `apps/misebox-app/kitchens/security-rules-probe/ingredients/${inactiveIngredientId}`,
+      `kitchens/security-rules-probe/ingredients/${inactiveIngredientId}`,
       regularId,
       kitchenIngredientData(regularId, inactiveIngredientId),
       writeTime,
@@ -2570,8 +2448,9 @@ async function buildSecurityTests() {
       kitchenIngredientProbePath,
       regularId,
       Object.fromEntries(
-        Object.entries(kitchenIngredientData(regularId))
-          .filter(([field]) => field !== 'updated')
+        Object.entries(kitchenIngredientData(regularId)).filter(
+          ([field]) => field !== 'updated'
+        )
       ),
       writeTime,
       [
@@ -2789,26 +2668,37 @@ async function buildSecurityTests() {
     ),
     ...[
       ['schema pollution', { ...kitchenStationProbeData, forged: true }],
-      ['oversized description', { ...kitchenStationProbeData, description: 'x'.repeat(2001) }],
+      [
+        'oversized description',
+        { ...kitchenStationProbeData, description: 'x'.repeat(2001) },
+      ],
       ['invalid sort type', { ...kitchenStationProbeData, sort_order: '1' }],
-      ['forged Kitchen scope', { ...kitchenStationProbeData, kitchen_id: 'another-kitchen' }],
-      ['forged create time', {
-        ...kitchenStationProbeData,
-        created: { ...kitchenStationProbeData.created, at: updateTime },
-      }],
-    ].map(([label, data]) => deniedCreate(
-      `Kitchen operator cannot create a Station with ${label}`,
-      `${kitchenStationProbePath}-${String(label).replaceAll(' ', '-')}`,
-      regularId,
-      data,
-      writeTime,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-        teamIds: [],
-      })
-    )),
+      [
+        'forged Kitchen scope',
+        { ...kitchenStationProbeData, kitchen_id: 'another-kitchen' },
+      ],
+      [
+        'forged create time',
+        {
+          ...kitchenStationProbeData,
+          created: { ...kitchenStationProbeData.created, at: updateTime },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedCreate(
+        `Kitchen operator cannot create a Station with ${label}`,
+        `${kitchenStationProbePath}-${String(label).replaceAll(' ', '-')}`,
+        regularId,
+        data,
+        writeTime,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+          teamIds: [],
+        })
+      )
+    ),
     deniedCreate(
       'Kitchen team member cannot create a Station',
       `${kitchenStationProbePath}-team`,
@@ -2854,34 +2744,45 @@ async function buildSecurityTests() {
       })
     ),
     ...[
-      ['created stamp', {
-        ...kitchenStationProbeData,
-        created: { ...kitchenStationProbeData.created, by: strangerId },
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['schema pollution', {
-        ...kitchenStationProbeData,
-        forged: true,
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['oversized name', {
-        ...kitchenStationProbeData,
-        name: 'x'.repeat(121),
-        updated: { at: updateTime, by: regularId },
-      }],
-    ].map(([label, data]) => deniedUpdate(
-      `Kitchen operator cannot update Station ${label}`,
-      kitchenStationProbePath,
-      regularId,
-      kitchenStationProbeData,
-      data,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-        teamIds: [],
-      })
-    )),
+      [
+        'created stamp',
+        {
+          ...kitchenStationProbeData,
+          created: { ...kitchenStationProbeData.created, by: strangerId },
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'schema pollution',
+        {
+          ...kitchenStationProbeData,
+          forged: true,
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'oversized name',
+        {
+          ...kitchenStationProbeData,
+          name: 'x'.repeat(121),
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedUpdate(
+        `Kitchen operator cannot update Station ${label}`,
+        kitchenStationProbePath,
+        regularId,
+        kitchenStationProbeData,
+        data,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+          teamIds: [],
+        })
+      )
+    ),
     allowedDelete(
       'Kitchen operator can delete a Station from their Kitchen',
       kitchenStationProbePath,
@@ -2931,58 +2832,103 @@ async function buildSecurityTests() {
     ),
     ...[
       ['schema pollution', { ...kitchenPrepItemProbeData, forged: true }],
-      ['missing slug', Object.fromEntries(
-        Object.entries(kitchenPrepItemProbeData).filter(([field]) => field !== 'slug')
-      )],
-      ['forged Kitchen scope', {
-        ...kitchenPrepItemProbeData,
-        kitchen_id: 'another-kitchen',
-      }],
-      ['malformed input', {
-        ...kitchenPrepItemProbeData,
-        inputs: [{ ingredient_id: 'onion', quantity: -1, unit: 'g', preparation: '' }],
-      }],
-      ['invalid input unit', {
-        ...kitchenPrepItemProbeData,
-        inputs: [{ ingredient_id: 'onion', quantity: 1, unit: 'kg', preparation: '' }],
-      }],
-      ['too many inputs', {
-        ...kitchenPrepItemProbeData,
-        inputs: Array.from({ length: 13 }, (_, index) => ({
-          ingredient_id: `ingredient-${index}`,
-          quantity: 1,
-          unit: 'g',
-          preparation: '',
-        })),
-      }],
-      ['malformed yield', {
-        ...kitchenPrepItemProbeData,
-        yield: { quantity: '850', unit: 'g' },
-      }],
-      ['oversized method', {
-        ...kitchenPrepItemProbeData,
-        method: Array.from({ length: 21 }, () => 'Prepare safely.'),
-      }],
-      ['empty method step', {
-        ...kitchenPrepItemProbeData,
-        method: [''],
-      }],
-      ['forged create time', {
-        ...kitchenPrepItemProbeData,
-        created: { ...kitchenPrepItemProbeData.created, at: updateTime },
-      }],
-    ].map(([label, data]) => deniedCreate(
-      `Kitchen operator cannot create a Prep Item with ${label}`,
-      kitchenPrepItemProbePath,
-      regularId,
-      data,
-      writeTime,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-      })
-    )),
+      [
+        'missing slug',
+        Object.fromEntries(
+          Object.entries(kitchenPrepItemProbeData).filter(
+            ([field]) => field !== 'slug'
+          )
+        ),
+      ],
+      [
+        'forged Kitchen scope',
+        {
+          ...kitchenPrepItemProbeData,
+          kitchen_id: 'another-kitchen',
+        },
+      ],
+      [
+        'malformed input',
+        {
+          ...kitchenPrepItemProbeData,
+          inputs: [
+            {
+              ingredient_id: 'onion',
+              quantity: -1,
+              unit: 'g',
+              preparation: '',
+            },
+          ],
+        },
+      ],
+      [
+        'invalid input unit',
+        {
+          ...kitchenPrepItemProbeData,
+          inputs: [
+            {
+              ingredient_id: 'onion',
+              quantity: 1,
+              unit: 'kg',
+              preparation: '',
+            },
+          ],
+        },
+      ],
+      [
+        'too many inputs',
+        {
+          ...kitchenPrepItemProbeData,
+          inputs: Array.from({ length: 13 }, (_, index) => ({
+            ingredient_id: `ingredient-${index}`,
+            quantity: 1,
+            unit: 'g',
+            preparation: '',
+          })),
+        },
+      ],
+      [
+        'malformed yield',
+        {
+          ...kitchenPrepItemProbeData,
+          yield: { quantity: '850', unit: 'g' },
+        },
+      ],
+      [
+        'oversized method',
+        {
+          ...kitchenPrepItemProbeData,
+          method: Array.from({ length: 21 }, () => 'Prepare safely.'),
+        },
+      ],
+      [
+        'empty method step',
+        {
+          ...kitchenPrepItemProbeData,
+          method: [''],
+        },
+      ],
+      [
+        'forged create time',
+        {
+          ...kitchenPrepItemProbeData,
+          created: { ...kitchenPrepItemProbeData.created, at: updateTime },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedCreate(
+        `Kitchen operator cannot create a Prep Item with ${label}`,
+        kitchenPrepItemProbePath,
+        regularId,
+        data,
+        writeTime,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+        })
+      )
+    ),
     deniedCreate(
       'Kitchen team member cannot create a Prep Item',
       kitchenPrepItemProbePath,
@@ -3026,28 +2972,36 @@ async function buildSecurityTests() {
       })
     ),
     ...[
-      ['created stamp', {
-        ...kitchenPrepItemProbeData,
-        created: { ...kitchenPrepItemProbeData.created, by: strangerId },
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['schema pollution', {
-        ...kitchenPrepItemProbeData,
-        forged: true,
-        updated: { at: updateTime, by: regularId },
-      }],
-    ].map(([label, data]) => deniedUpdate(
-      `Kitchen operator cannot update Prep Item ${label}`,
-      kitchenPrepItemProbePath,
-      regularId,
-      kitchenPrepItemProbeData,
-      data,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-      })
-    )),
+      [
+        'created stamp',
+        {
+          ...kitchenPrepItemProbeData,
+          created: { ...kitchenPrepItemProbeData.created, by: strangerId },
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'schema pollution',
+        {
+          ...kitchenPrepItemProbeData,
+          forged: true,
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedUpdate(
+        `Kitchen operator cannot update Prep Item ${label}`,
+        kitchenPrepItemProbePath,
+        regularId,
+        kitchenPrepItemProbeData,
+        data,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+        })
+      )
+    ),
     allowedDelete(
       'Kitchen operator can delete a Prep Item from their Kitchen',
       kitchenPrepItemProbePath,
@@ -3102,44 +3056,65 @@ async function buildSecurityTests() {
     ),
     ...[
       ['schema pollution', { ...kitchenMiseProbeData, forged: true }],
-      ['missing workflow stage', Object.fromEntries(
-        Object.entries(kitchenMiseProbeData)
-          .filter(([field]) => field !== 'workflow_stage')
-      )],
-      ['forged Kitchen scope', {
-        ...kitchenMiseProbeData,
-        kitchen_id: 'another-kitchen',
-      }],
+      [
+        'missing workflow stage',
+        Object.fromEntries(
+          Object.entries(kitchenMiseProbeData).filter(
+            ([field]) => field !== 'workflow_stage'
+          )
+        ),
+      ],
+      [
+        'forged Kitchen scope',
+        {
+          ...kitchenMiseProbeData,
+          kitchen_id: 'another-kitchen',
+        },
+      ],
       ['invalid status', { ...kitchenMiseProbeData, status: 'complete' }],
       ['invalid priority', { ...kitchenMiseProbeData, priority: 'critical' }],
-      ['invalid estimate type', {
-        ...kitchenMiseProbeData,
-        estimated_minutes: '20',
-      }],
-      ['oversized notes', {
-        ...kitchenMiseProbeData,
-        notes: 'x'.repeat(10001),
-      }],
-      ['malformed checklist', {
-        ...kitchenMiseProbeData,
-        checklist: [{ id: 'peel', label: 'Peel onions', done: 'yes' }],
-      }],
-      ['forged create time', {
-        ...kitchenMiseProbeData,
-        created: { ...kitchenMiseProbeData.created, at: updateTime },
-      }],
-    ].map(([label, data]) => deniedCreate(
-      `Kitchen operator cannot create a Mise task with ${label}`,
-      `${kitchenMiseProbePath}-${String(label).replaceAll(' ', '-')}`,
-      regularId,
-      data,
-      writeTime,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-      })
-    )),
+      [
+        'invalid estimate type',
+        {
+          ...kitchenMiseProbeData,
+          estimated_minutes: '20',
+        },
+      ],
+      [
+        'oversized notes',
+        {
+          ...kitchenMiseProbeData,
+          notes: 'x'.repeat(10001),
+        },
+      ],
+      [
+        'malformed checklist',
+        {
+          ...kitchenMiseProbeData,
+          checklist: [{ id: 'peel', label: 'Peel onions', done: 'yes' }],
+        },
+      ],
+      [
+        'forged create time',
+        {
+          ...kitchenMiseProbeData,
+          created: { ...kitchenMiseProbeData.created, at: updateTime },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedCreate(
+        `Kitchen operator cannot create a Mise task with ${label}`,
+        `${kitchenMiseProbePath}-${String(label).replaceAll(' ', '-')}`,
+        regularId,
+        data,
+        writeTime,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+        })
+      )
+    ),
     deniedCreate(
       'Kitchen team member cannot create a Mise task',
       `${kitchenMiseProbePath}-team`,
@@ -3183,38 +3158,52 @@ async function buildSecurityTests() {
       })
     ),
     ...[
-      ['created stamp', {
-        ...kitchenMiseProbeData,
-        created: { ...kitchenMiseProbeData.created, by: strangerId },
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['Kitchen scope', {
-        ...kitchenMiseProbeData,
-        kitchen_id: 'another-kitchen',
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['schema pollution', {
-        ...kitchenMiseProbeData,
-        forged: true,
-        updated: { at: updateTime, by: regularId },
-      }],
-      ['invalid checklist', {
-        ...kitchenMiseProbeData,
-        checklist: [{ id: '', label: 'Missing id', done: false }],
-        updated: { at: updateTime, by: regularId },
-      }],
-    ].map(([label, data]) => deniedUpdate(
-      `Kitchen operator cannot update Mise task ${label}`,
-      kitchenMiseProbePath,
-      regularId,
-      kitchenMiseProbeData,
-      data,
-      scopedKitchenAuthorityMocks(regularId, path, {
-        appId: 'misebox-app',
-        kitchenId: 'security-rules-probe',
-        operatorIds: [regularId],
-      })
-    )),
+      [
+        'created stamp',
+        {
+          ...kitchenMiseProbeData,
+          created: { ...kitchenMiseProbeData.created, by: strangerId },
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'Kitchen scope',
+        {
+          ...kitchenMiseProbeData,
+          kitchen_id: 'another-kitchen',
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'schema pollution',
+        {
+          ...kitchenMiseProbeData,
+          forged: true,
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+      [
+        'invalid checklist',
+        {
+          ...kitchenMiseProbeData,
+          checklist: [{ id: '', label: 'Missing id', done: false }],
+          updated: { at: updateTime, by: regularId },
+        },
+      ],
+    ].map(([label, data]) =>
+      deniedUpdate(
+        `Kitchen operator cannot update Mise task ${label}`,
+        kitchenMiseProbePath,
+        regularId,
+        kitchenMiseProbeData,
+        data,
+        scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'misebox-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+        })
+      )
+    ),
     allowedDelete(
       'Kitchen operator can delete a Mise task from their Kitchen',
       kitchenMiseProbePath,
@@ -3312,44 +3301,45 @@ async function buildSecurityTests() {
       writeTime,
       appAdminMocks(adminId, path)
     ),
-    // Rules REST cannot encode Firestore where/array-contains constraints. This
-    // proves the per-resource operator predicate; real query admissibility
-    // belongs in a Firebase Emulator client-query integration test.
     list(
-      'Kitchen operator can list only matching target rows',
-      'ALLOW',
-      'apps/misebox-app/kitchens',
+      'Kitchen operator cannot list raw Kitchen roots',
+      'DENY',
+      'kitchens',
       regularId,
-      appMemberMocks(regularId, path),
-      { operator_ids: [regularId], team_ids: [] }
+      kitchenOperatorMocks(regularId, path),
+      rootKitchenProbeData
     ),
     list(
-      'Kitchen team member can list matching target rows',
-      'ALLOW',
-      'apps/misebox-app/kitchens',
+      'Kitchen Team member cannot list raw Kitchen roots',
+      'DENY',
+      'kitchens',
       regularId,
-      appMemberMocks(regularId, path),
-      { operator_ids: [], team_ids: [regularId] }
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      }),
+      rootKitchenProbeData
     ),
     list(
       'Kitchen member cannot list nonmatching target rows',
       'DENY',
-      'apps/misebox-app/kitchens',
+      'kitchens',
       regularId,
       appMemberMocks(regularId, path),
-      { operator_ids: ['another-user'], team_ids: [] }
+      rootKitchenProbeData
     ),
     read(
       'granted Driver cannot read full Kitchen order documents',
       'DENY',
-      'apps/misebox-app/kitchens/security-rules-probe/orders/private-order',
+      'kitchens/security-rules-probe/orders/private-order',
       driverId,
       appMemberMocks(driverId, path)
     ),
     read(
       'Kitchen team member cannot read full Kitchen order documents',
       'DENY',
-      'apps/misebox-app/kitchens/security-rules-probe/orders/private-order',
+      'kitchens/security-rules-probe/orders/private-order',
       regularId,
       targetAuthorityMocks(regularId, path, {
         collectionName: 'kitchens',
@@ -3379,15 +3369,11 @@ async function buildSecurityTests() {
     list(
       'Kitchen operator can list immutable Sales',
       'ALLOW',
-      'apps/misebox-app/kitchens/security-rules-probe/sales',
+      'kitchens/security-rules-probe/sales',
       regularId,
       kitchenOperatorMocks(regularId, path)
     ),
-    read(
-      'anonymous cannot read an immutable Sale',
-      'DENY',
-      saleProbePath
-    ),
+    read('anonymous cannot read an immutable Sale', 'DENY', saleProbePath),
     deniedCreate(
       'Kitchen operator cannot create an immutable Sale in the browser',
       saleProbePath,
@@ -3420,7 +3406,7 @@ async function buildSecurityTests() {
       kitchenOperatorMocks(regularId, path)
     ),
     readResource(
-      'Supplier team member can read exact AppSupplier support',
+      'Supplier Team member can read the exact Supplier root',
       'ALLOW',
       appSupplierProbePath,
       regularId,
@@ -3431,8 +3417,8 @@ async function buildSecurityTests() {
         teamIds: [regularId],
       })
     ),
-    allowedCreate(
-      'App admin can create a complete AppSupplier authority record',
+    deniedCreate(
+      'App admin cannot create a Supplier root in the browser',
       `${appSupplierProbePath}-create`,
       adminId,
       appSupplierProbeData,
@@ -3465,22 +3451,25 @@ async function buildSecurityTests() {
       adminId,
       {
         ...appSupplierProbeData,
-        join_requests: Array.from({ length: 101 }, (_, index) => `user-${index}`),
+        join_requests: Array.from(
+          { length: 101 },
+          (_, index) => `user-${index}`
+        ),
       },
       writeTime,
       appAdminMocks(adminId, path)
     ),
-    allowedUpdate(
-      'App admin can update a complete AppSupplier authority record',
+    deniedUpdate(
+      'App admin cannot update a Supplier root in the browser',
       appSupplierProbePath,
       adminId,
       appSupplierProbeData,
       { ...appSupplierProbeData, join_requests: ['requester'] },
-      updateTime,
-      appAdminMocks(adminId, path)
+      appAdminMocks(adminId, path),
+      updateTime
     ),
     deniedUpdate(
-      'Supplier operator cannot change AppSupplier join_requests',
+      'Supplier operator cannot mutate the Supplier root',
       appSupplierProbePath,
       regularId,
       {
@@ -3500,7 +3489,7 @@ async function buildSecurityTests() {
       })
     ),
     deniedUpdate(
-      'Supplier team member cannot mutate AppSupplier support',
+      'Supplier Team member cannot mutate the Supplier root',
       appSupplierProbePath,
       regularId,
       teamSupplierSupportData,
@@ -3988,6 +3977,23 @@ async function buildSecurityTests() {
 
 async function executeSecurityTests(testTarget, includeSource) {
   const { tests: securityTests, fixtureEvidence } = await buildSecurityTests()
+  for (const test of securityTests) {
+    const mocks = test.testCase.functionMocks || []
+    if (
+      !Array.isArray(mocks) ||
+      mocks.some(
+        (mock) =>
+          !mock ||
+          typeof mock !== 'object' ||
+          typeof mock.function !== 'string' ||
+          !Array.isArray(mock.args)
+      )
+    ) {
+      throw new Error(
+        `Invalid Rules function mocks in ${test.name}: ${JSON.stringify(mocks)}`
+      )
+    }
+  }
   const batchSize = 25
   const batches = Array.from(
     { length: Math.ceil(securityTests.length / batchSize) },
@@ -3996,15 +4002,17 @@ async function executeSecurityTests(testTarget, includeSource) {
   )
   const batchResults = []
   for (const batch of batches) {
-    batchResults.push(await api(`${testTarget}:test`, {
-      method: 'POST',
-      body: {
-        ...(includeSource ? { source } : {}),
-        testSuite: {
-          testCases: batch.map(({ testCase }) => testCase),
+    batchResults.push(
+      await api(`${testTarget}:test`, {
+        method: 'POST',
+        body: {
+          ...(includeSource ? { source } : {}),
+          testSuite: {
+            testCases: batch.map(({ testCase }) => testCase),
+          },
         },
-      },
-    }))
+      })
+    )
   }
   const issues = batchResults.flatMap((result) => result.issues || [])
   const rawResults = batchResults.flatMap((result) => result.testResults || [])
@@ -4037,6 +4045,10 @@ async function executeSecurityTests(testTarget, includeSource) {
 
 function appAdminMocks(adminId, path) {
   const membershipPath = path(`apps/misebox-app/users/${adminId}`)
+  const workspaceRoots = [
+    'kitchens/security-rules-probe',
+    'suppliers/security-rules-supplier-probe',
+  ]
   return [
     {
       function: 'exists',
@@ -4048,6 +4060,28 @@ function appAdminMocks(adminId, path) {
       args: [{ exactValue: membershipPath }],
       result: { value: { data: { role: 'admin' } } },
     },
+    ...workspaceRoots.flatMap((workspacePath) => {
+      const rootPath = path(workspacePath)
+      const [collectionName, workspaceId] = workspacePath.split('/')
+      const teamPath = path(`${collectionName}/${workspaceId}/team/${adminId}`)
+      return [
+        {
+          function: 'exists',
+          args: [{ exactValue: rootPath }],
+          result: { value: true },
+        },
+        {
+          function: 'get',
+          args: [{ exactValue: rootPath }],
+          result: { value: { data: { management: { mode: 'workspace' } } } },
+        },
+        {
+          function: 'get',
+          args: [{ exactValue: teamPath }],
+          result: { value: { data: {} } },
+        },
+      ]
+    }),
   ]
 }
 
@@ -4067,55 +4101,96 @@ function appMemberMocks(userId, path) {
   ]
 }
 
-function scopedKitchenAuthorityMocks(userId, path, options) {
-  const appId = String(options.appId || '').trim()
-  const kitchenId = String(options.kitchenId || '').trim()
-  const role = options.role === 'admin' ? 'admin' : 'user'
-  const supportExists = options.supportExists !== false
+function workspaceAuthorityMocks(userId, path, options) {
+  const appId = String(options.appId || 'misebox-app').trim()
+  const collectionName = String(options.collectionName || '').trim()
+  const workspaceId = String(
+    options.workspaceId || options.targetId || ''
+  ).trim()
+  const rootExists = options.rootExists !== false
+  const membershipExists = options.membershipExists !== false
+  const teamRole = String(options.teamRole || '').trim()
+  const membershipRole = options.appRole === 'admin' ? 'admin' : 'user'
   const membershipPath = path(`apps/${appId}/users/${userId}`)
-  const kitchenPath = path(`apps/${appId}/kitchens/${kitchenId}`)
-  const supportData = {
-    ...(Array.isArray(options.operatorIds)
-      ? { operator_ids: options.operatorIds }
-      : {}),
-    ...(Array.isArray(options.teamIds) ? { team_ids: options.teamIds } : {}),
-  }
+  const rootPath = path(`${collectionName}/${workspaceId}`)
+  const teamPath = path(`${collectionName}/${workspaceId}/team/${userId}`)
+  const management =
+    appId === 'misebox-app'
+      ? { mode: 'workspace' }
+      : { mode: 'app', app_id: appId }
   return [
     {
       function: 'exists',
+      args: [{ exactValue: rootPath }],
+      result: { value: rootExists },
+    },
+    {
+      function: 'get',
+      args: [{ exactValue: rootPath }],
+      result: { value: { data: rootExists ? { management } : {} } },
+    },
+    {
+      function: 'exists',
       args: [{ exactValue: membershipPath }],
-      result: { value: true },
+      result: { value: membershipExists },
     },
     {
       function: 'get',
       args: [{ exactValue: membershipPath }],
-      result: { value: { data: { role } } },
+      result: {
+        value: { data: membershipExists ? { role: membershipRole } : {} },
+      },
     },
     {
       function: 'exists',
-      args: [{ exactValue: kitchenPath }],
-      result: { value: supportExists },
+      args: [{ exactValue: teamPath }],
+      result: { value: Boolean(teamRole) },
     },
-    ...(supportExists
-      ? [
-          {
-            function: 'get',
-            args: [{ exactValue: kitchenPath }],
-            result: { value: { data: supportData } },
-          },
-        ]
-      : []),
+    {
+      function: 'get',
+      args: [{ exactValue: teamPath }],
+      result: {
+        value: {
+          data: teamRole
+            ? {
+                user_id: userId,
+                role: teamRole,
+                permissions: [],
+                status: 'active',
+              }
+            : {},
+        },
+      },
+    },
   ]
 }
 
+function scopedKitchenAuthorityMocks(userId, path, options) {
+  const operatorIds = Array.isArray(options.operatorIds)
+    ? options.operatorIds
+    : []
+  const teamIds = Array.isArray(options.teamIds) ? options.teamIds : []
+  return workspaceAuthorityMocks(userId, path, {
+    appId: options.appId,
+    appRole: options.role,
+    collectionName: 'kitchens',
+    workspaceId: options.kitchenId,
+    rootExists: options.supportExists,
+    teamRole: operatorIds.includes(userId)
+      ? 'operator'
+      : teamIds.includes(userId)
+        ? 'member'
+        : '',
+  })
+}
+
 function missingKitchenSupportMocks(path, appId, kitchenId) {
-  return [
-    {
-      function: 'exists',
-      args: [{ exactValue: path(`apps/${appId}/kitchens/${kitchenId}`) }],
-      result: { value: false },
-    },
-  ]
+  return workspaceAuthorityMocks('missing-workspace-user', path, {
+    appId,
+    collectionName: 'kitchens',
+    workspaceId: kitchenId,
+    rootExists: false,
+  })
 }
 
 function ingredientRootMocks(path, ingredientId, options = {}) {
@@ -4145,47 +4220,33 @@ function ingredientRootMocks(path, ingredientId, options = {}) {
   ]
 }
 
-function kitchenOperatorMocks(userId, path, kitchenId = 'security-rules-probe') {
-  const kitchenPath = path(`apps/misebox-app/kitchens/${kitchenId}`)
-  return [
-    ...appMemberMocks(userId, path),
-    {
-      function: 'get',
-      args: [{ exactValue: kitchenPath }],
-      result: {
-        value: {
-          data: {
-            operator_ids: [userId],
-            team_ids: [],
-          },
-        },
-      },
-    },
-  ]
+function kitchenOperatorMocks(
+  userId,
+  path,
+  kitchenId = 'security-rules-probe'
+) {
+  return workspaceAuthorityMocks(userId, path, {
+    collectionName: 'kitchens',
+    workspaceId: kitchenId,
+    teamRole: 'operator',
+  })
 }
 
 function targetAuthorityMocks(userId, path, options) {
-  const appId = String(options.appId || 'misebox-app').trim()
-  const collectionName = String(options.collectionName || '').trim()
-  const targetId = String(options.targetId || '').trim()
-  const targetPath = path(`apps/${appId}/${collectionName}/${targetId}`)
-  return [
-    ...appMemberMocks(userId, path),
-    {
-      function: 'get',
-      args: [{ exactValue: targetPath }],
-      result: {
-        value: {
-          data: {
-            operator_ids: Array.isArray(options.operatorIds)
-              ? options.operatorIds
-              : [],
-            team_ids: Array.isArray(options.teamIds) ? options.teamIds : [],
-          },
-        },
-      },
-    },
-  ]
+  const operatorIds = Array.isArray(options.operatorIds)
+    ? options.operatorIds
+    : []
+  const teamIds = Array.isArray(options.teamIds) ? options.teamIds : []
+  return workspaceAuthorityMocks(userId, path, {
+    appId: options.appId,
+    collectionName: options.collectionName,
+    workspaceId: options.targetId,
+    teamRole: operatorIds.includes(userId)
+      ? 'operator'
+      : teamIds.includes(userId)
+        ? 'member'
+        : '',
+  })
 }
 
 function canonicalUserMocks(userId, path, documentsByPath) {
@@ -4204,12 +4265,39 @@ function canonicalUserMocks(userId, path, documentsByPath) {
       args: [{ exactValue: rulesPath }],
       result: { value: firestoreRulesResource(document) },
     },
-    {
-      function: 'exists',
-      args: [{ exactValue: path(`drivers/${userId}`) }],
-      result: { value: documentsByPath.has(`drivers/${userId}`) },
-    },
   ]
+}
+
+async function readUserProfiles(users, kind) {
+  return (
+    await Promise.all(
+      users.map((document) =>
+        firestoreMaybeGet(`users/${documentId(document)}/profiles/${kind}`)
+      )
+    )
+  ).filter(Boolean)
+}
+
+async function readUserProfileAppStates(users, kind, appId) {
+  return (
+    await Promise.all(
+      users.map((document) =>
+        firestoreMaybeGet(
+          `users/${documentId(document)}/profiles/${kind}/app-state/${appId}`
+        )
+      )
+    )
+  ).filter(Boolean)
+}
+
+function profileOwnerId(document) {
+  const segments = documentPath(document).split('/')
+  if (segments[0] !== 'users' || !segments[1]) {
+    throw new Error(
+      `Profile fixture is not User-owned: ${documentPath(document)}`
+    )
+  }
+  return segments[1]
 }
 
 async function firestoreList(collectionPath) {
@@ -4304,41 +4392,6 @@ function decodeFirestoreFields(fields) {
           : decoded
       return [key, fixtureValue]
     })
-  )
-}
-
-function profileIntegrityPlacePayloadDigest(documents) {
-  const payload = documents
-    .map((document) => ({
-      path: documentPath(document),
-      data: canonicalize(decodeFirestorePayloadFields(document?.fields || {})),
-    }))
-    .sort((left, right) => left.path.localeCompare(right.path))
-  return sha256(JSON.stringify(payload))
-}
-
-function isNonEmptyHttps(value) {
-  if (typeof value !== 'string' || !value || value.length > 2_048) return false
-  try {
-    return new URL(value).protocol === 'https:'
-  } catch {
-    return false
-  }
-}
-
-function isEmptyOrHttps(value) {
-  return value === '' || isNonEmptyHttps(value)
-}
-
-function isCanonicalMigrationStamp(value) {
-  return (
-    value &&
-    typeof value === 'object' &&
-    !Array.isArray(value) &&
-    Number.isFinite(Date.parse(value.at || '')) &&
-    typeof value.by === 'string' &&
-    value.by.length > 0 &&
-    value.by.length <= 1_500
   )
 }
 

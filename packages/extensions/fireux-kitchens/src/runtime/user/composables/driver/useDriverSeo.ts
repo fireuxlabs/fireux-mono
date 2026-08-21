@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { PublicDriverProfile } from '../../models/driver.model.ts'
+import type { DriverProfile } from '../../models/driver.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>
@@ -12,7 +12,7 @@ type DriverSeoOptions = {
 }
 
 export function buildDriverJsonLd(
-  driver: Partial<PublicDriverProfile> | null | undefined,
+  driver: Partial<DriverProfile> | null | undefined,
   displayName?: string
 ) {
   const name = clean(displayName || driver?.title)
@@ -28,7 +28,7 @@ export function buildDriverJsonLd(
 }
 
 export function useDriverSeo(
-  driver: MaybeRefOrGetter<Partial<PublicDriverProfile> | null | undefined>,
+  driver: MaybeRefOrGetter<Partial<DriverProfile> | null | undefined>,
   options: DriverSeoOptions
 ) {
   const entry = computed(() => toValue(driver))

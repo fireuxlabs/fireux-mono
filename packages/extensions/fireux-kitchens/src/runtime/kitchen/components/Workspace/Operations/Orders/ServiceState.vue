@@ -34,13 +34,7 @@ import { useKitchenOrdersWorkspace } from '../../../../composables/workspace/ope
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersServiceState' })
 
 const {
-  service: {
-    canOpenNow,
-    isOpen,
-    message,
-    openNow,
-    statusLabel,
-  },
+  service: { canOpenNow, isOpen, message, openNow, statusLabel },
 } = useKitchenOrdersWorkspace()
 </script>
 

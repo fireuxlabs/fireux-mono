@@ -11,11 +11,11 @@ import {
   getRuntimeIdentityFirestore,
 } from '../../../server/utils/getRuntimeFirestore'
 import type {
-  AppAdminJoinRequestDto,
-  AppAdminMemberDto,
+  AppAdminJoinRequest,
+  AppAdminMember,
   AppAdminPeopleResponse,
-} from '../../../server/utils/public-projection/public-dto.types'
-import { mapPublicUserIdentity } from '../../../user/server/projection/public-user-identity'
+} from '../../models/app-context.model.ts'
+import { readUserIdentitySummary } from '../../../user/server/identity/summary'
 
 const MAX_MEMBERS = 100
 const MAX_JOIN_REQUESTS = 100
@@ -86,19 +86,16 @@ export async function readAppTeam(event: H3Event) {
   const usersById = new Map(
     userSnapshots.map((snapshot) => [
       snapshot.id,
-      mapPublicUserIdentity(snapshot),
+      readUserIdentitySummary(snapshot),
     ])
   )
 
-  const members: AppAdminMemberDto[] = Array.from(
-    memberRoles,
-    ([id, role]) => ({
-      id,
-      role,
-      user: usersById.get(id) ?? null,
-    })
-  )
-  const joinRequests: AppAdminJoinRequestDto[] = requestIds.map((id) => ({
+  const members: AppAdminMember[] = Array.from(memberRoles, ([id, role]) => ({
+    id,
+    role,
+    user: usersById.get(id) ?? null,
+  }))
+  const joinRequests: AppAdminJoinRequest[] = requestIds.map((id) => ({
     id,
     user: usersById.get(id) ?? null,
   }))

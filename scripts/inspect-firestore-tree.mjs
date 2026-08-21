@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-11
+// last_used: 2026-08-20
 // usage_note: reusable Firestore tree inspection; update when run.
 
 import { initializeApp } from 'firebase-admin/app'
@@ -20,6 +20,7 @@ const ecosystem = String(args.ecosystem || '').trim()
 const explicitDatabaseId = String(args.database || '').trim()
 const limit = Math.max(1, Number(args.limit || 20))
 const depth = Math.max(1, Number(args.depth || 2))
+const countsOnly = Boolean(args['counts-only'])
 
 if (args.help) {
   printUsage()
@@ -141,7 +142,71 @@ async function readCollectionTree(collectionRef, remainingDepth) {
   }
 }
 
+async function readCollectionInventory(
+  collectionRef,
+  collectionPattern,
+  remainingDepth,
+  inventory
+) {
+  const countSnap = await collectionRef.count().get()
+  const documentCount = Number(countSnap.data().count || 0)
+  const current = inventory.get(collectionPattern) || {
+    collection_instances: 0,
+    document_count: 0,
+  }
+
+  current.collection_instances += 1
+  current.document_count += documentCount
+  inventory.set(collectionPattern, current)
+
+  if (remainingDepth <= 1 || documentCount === 0) return
+
+  const documentRefs = await collectionRef.listDocuments()
+
+  for (const documentRef of documentRefs) {
+    const subcollections = await documentRef.listCollections()
+
+    for (const subcollection of subcollections) {
+      await readCollectionInventory(
+        subcollection,
+        `${collectionPattern}/{document}/${subcollection.id}`,
+        remainingDepth - 1,
+        inventory
+      )
+    }
+  }
+}
+
 const rootCollections = await db.listCollections()
+
+if (countsOnly) {
+  const inventory = new Map()
+
+  for (const collectionRef of rootCollections.sort((a, b) =>
+    a.id.localeCompare(b.id)
+  )) {
+    await readCollectionInventory(collectionRef, collectionRef.id, depth, inventory)
+  }
+
+  console.log(
+    JSON.stringify(
+      {
+        projectId,
+        databaseId: explicitDatabaseId || '(default)',
+        depth,
+        collections: Object.fromEntries(
+          [...inventory.entries()].sort(([left], [right]) =>
+            left.localeCompare(right)
+          )
+        ),
+      },
+      null,
+      2
+    )
+  )
+  process.exit(0)
+}
+
 const tree = {}
 
 for (const collectionRef of rootCollections.sort((a, b) => a.id.localeCompare(b.id))) {
@@ -166,7 +231,7 @@ function printUsage() {
   console.log(
     [
       'Usage:',
-      '  node scripts/inspect-firestore-tree.mjs [--ecosystem <id>] [--project <projectId>] [--database <databaseId>] [--service-account <path>] [--limit 20] [--depth 2]',
+      '  node scripts/inspect-firestore-tree.mjs [--ecosystem <id>] [--project <projectId>] [--database <databaseId>] [--service-account <path>] [--limit 20] [--depth 2] [--counts-only]',
       '',
       'Credential sources, in precedence order:',
       ...firebaseAdminCredentialHelp().map((line) => `  - ${line}`),

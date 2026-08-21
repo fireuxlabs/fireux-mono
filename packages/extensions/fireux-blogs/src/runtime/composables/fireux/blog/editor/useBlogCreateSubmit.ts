@@ -11,10 +11,13 @@ export function useBlogCreateSubmit() {
   const { normalizeBlogSlug } = useBlogUtils()
 
   const submit = async (
-    uploadImages?: (slug: string) => Promise<{
-      featuredImage: string
-      socialImage: string
-    } | undefined>
+    uploadImages?: (slug: string) => Promise<
+      | {
+          featuredImage: string
+          socialImage: string
+        }
+      | undefined
+    >
   ) => {
     const payload = getBlogPostPayload()
     assertBlogEditorialApproval(payload)
@@ -33,7 +36,9 @@ export function useBlogCreateSubmit() {
           throw new Error()
         }
       } catch {
-        throw new Error(`${label} must be uploaded to shared durable media before publishing.`)
+        throw new Error(
+          `${label} must be uploaded to shared durable media before publishing.`
+        )
       }
     }
 

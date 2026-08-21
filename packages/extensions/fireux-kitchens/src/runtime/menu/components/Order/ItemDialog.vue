@@ -2,7 +2,9 @@
   <div class="menu-order-item-dialog__host">
     <UModal
       v-model:open="openModel"
-      :description="item.description || 'Choose this item’s options and quantity.'"
+      :description="
+        item.description || 'Choose this item’s options and quantity.'
+      "
       :portal="false"
       :title="item.name"
       :ui="modalUi"
@@ -14,60 +16,60 @@
           data-menu-order-configurator="true"
           :data-menu-item-id="item.id"
         >
-        <fieldset
-          v-if="variantOptions.length > 1"
-          class="menu-order-item-dialog__group"
-          data-menu-option-group="variant"
-        >
-          <legend>Choose one</legend>
-          <label
-            v-for="variant in variantOptions"
-            :key="variant.id"
-            class="menu-order-item-dialog__choice"
+          <fieldset
+            v-if="variantOptions.length > 1"
+            class="menu-order-item-dialog__group"
+            data-menu-option-group="variant"
           >
-            <input
-              v-model="selectedVariantId"
-              type="radio"
-              :name="`${accessibilityId}-variant`"
-              :value="variant.id"
+            <legend>Choose one</legend>
+            <label
+              v-for="variant in variantOptions"
+              :key="variant.id"
+              class="menu-order-item-dialog__choice"
             >
-            <span>{{ variant.label }}</span>
-            <strong>{{ formatPrice(variant.price) }}</strong>
-          </label>
-          <p v-if="!selectedVariant" class="menu-order-item-dialog__hint">
-            Select one option to continue.
-          </p>
-        </fieldset>
+              <input
+                v-model="selectedVariantId"
+                type="radio"
+                :name="`${accessibilityId}-variant`"
+                :value="variant.id"
+              />
+              <span>{{ variant.label }}</span>
+              <strong>{{ formatPrice(variant.price) }}</strong>
+            </label>
+            <p v-if="!selectedVariant" class="menu-order-item-dialog__hint">
+              Select one option to continue.
+            </p>
+          </fieldset>
 
-        <div
-          v-else-if="selectedVariant"
-          class="menu-order-item-dialog__single-option"
-          data-menu-option-group="variant"
-        >
-          <span>{{ selectedVariant.label }}</span>
-          <strong>{{ formatPrice(selectedVariant.price) }}</strong>
-        </div>
-
-        <fieldset
-          v-if="addOnOptions.length"
-          class="menu-order-item-dialog__group"
-          data-menu-option-group="add-on"
-        >
-          <legend>Optional extras</legend>
-          <label
-            v-for="addOn in addOnOptions"
-            :key="addOn.id"
-            class="menu-order-item-dialog__choice"
+          <div
+            v-else-if="selectedVariant"
+            class="menu-order-item-dialog__single-option"
+            data-menu-option-group="variant"
           >
-            <input
-              type="checkbox"
-              :checked="selectedAddOnIds.includes(addOn.id)"
-              @change="toggleAddOn(addOn.id, $event)"
+            <span>{{ selectedVariant.label }}</span>
+            <strong>{{ formatPrice(selectedVariant.price) }}</strong>
+          </div>
+
+          <fieldset
+            v-if="addOnOptions.length"
+            class="menu-order-item-dialog__group"
+            data-menu-option-group="add-on"
+          >
+            <legend>Optional extras</legend>
+            <label
+              v-for="addOn in addOnOptions"
+              :key="addOn.id"
+              class="menu-order-item-dialog__choice"
             >
-            <span>{{ addOn.label }}</span>
-            <strong>{{ addOnPrice(addOn.price) }}</strong>
-          </label>
-        </fieldset>
+              <input
+                type="checkbox"
+                :checked="selectedAddOnIds.includes(addOn.id)"
+                @change="toggleAddOn(addOn.id, $event)"
+              />
+              <span>{{ addOn.label }}</span>
+              <strong>{{ addOnPrice(addOn.price) }}</strong>
+            </label>
+          </fieldset>
 
           <MenuOrderQuantity v-model="quantity" />
         </div>
@@ -135,46 +137,54 @@ const openModel = computed({
 const resolvedVariantOptions = computed(() =>
   resolveMenuOrderPriceOptions(props.item.priceOptions)
 )
-const resolvedAddOnOptions = computed(() => resolveMenuOrderAddOns(props.item.addOns))
+const resolvedAddOnOptions = computed(() =>
+  resolveMenuOrderAddOns(props.item.addOns)
+)
 const variantOptions = computed(() => resolvedVariantOptions.value || [])
 const defaultVariant = computed(() =>
   defaultMenuOrderPriceOption(variantOptions.value)
 )
 const addOnOptions = computed(() => resolvedAddOnOptions.value || [])
-const orderDataValid = computed(() =>
-  resolvedVariantOptions.value !== null && resolvedAddOnOptions.value !== null
+const orderDataValid = computed(
+  () =>
+    resolvedVariantOptions.value !== null && resolvedAddOnOptions.value !== null
 )
 const itemIdentityValid = computed(() =>
-  Boolean(String(props.item.id || '').trim() && String(props.item.name || '').trim())
+  Boolean(
+    String(props.item.id || '').trim() && String(props.item.name || '').trim()
+  )
 )
-const selectedVariant = computed(() =>
-  variantOptions.value.find(({ id }) => id === selectedVariantId.value) || null
+const selectedVariant = computed(
+  () =>
+    variantOptions.value.find(({ id }) => id === selectedVariantId.value) ||
+    null
 )
 const selectedAddOns = computed(() =>
   addOnOptions.value.filter(({ id }) => selectedAddOnIds.value.includes(id))
 )
 const basePrice = computed(() => {
   if (!orderDataValid.value) return 0
-  if (variantOptions.value.length) return Number(selectedVariant.value?.price || 0)
+  if (variantOptions.value.length)
+    return Number(selectedVariant.value?.price || 0)
 
   return menuOrderPositivePrice(props.item.price) ? Number(props.item.price) : 0
 })
-const unitPrice = computed(() =>
-  basePrice.value + selectedAddOns.value.reduce(
-    (total, { price }) => total + Number(price),
-    0
-  )
+const unitPrice = computed(
+  () =>
+    basePrice.value +
+    selectedAddOns.value.reduce((total, { price }) => total + Number(price), 0)
 )
 const lineTotal = computed(() => unitPrice.value * quantity.value)
-const canAdd = computed(() =>
-  orderDataValid.value &&
-  itemIdentityValid.value &&
-  menuOrderPositivePrice(basePrice.value) &&
-  menuOrderPositivePrice(unitPrice.value) &&
-  menuOrderPositivePrice(lineTotal.value) &&
-  Number.isInteger(quantity.value) &&
-  quantity.value >= 1 &&
-  quantity.value <= 99
+const canAdd = computed(
+  () =>
+    orderDataValid.value &&
+    itemIdentityValid.value &&
+    menuOrderPositivePrice(basePrice.value) &&
+    menuOrderPositivePrice(unitPrice.value) &&
+    menuOrderPositivePrice(lineTotal.value) &&
+    Number.isInteger(quantity.value) &&
+    quantity.value >= 1 &&
+    quantity.value <= 99
 )
 const lineTotalLabel = computed(() =>
   canAdd.value ? formatPrice(lineTotal.value) : ''
@@ -195,7 +205,8 @@ watch(
 )
 
 function toggleAddOn(id: string, event: Event) {
-  const checked = event.target instanceof HTMLInputElement && event.target.checked
+  const checked =
+    event.target instanceof HTMLInputElement && event.target.checked
 
   selectedAddOnIds.value = checked
     ? [...new Set([...selectedAddOnIds.value, id])].sort()

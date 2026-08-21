@@ -78,10 +78,13 @@ export function useCustomerDeliveryAddressAutocomplete(query: Ref<string>) {
   }
 }
 
-function cleanPrediction(value: unknown): CustomerDeliveryAddressPrediction | null {
-  const row = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, any>
-    : {}
+function cleanPrediction(
+  value: unknown
+): CustomerDeliveryAddressPrediction | null {
+  const row =
+    value && typeof value === 'object' && !Array.isArray(value)
+      ? (value as Record<string, any>)
+      : {}
   const placeId = text(row.place_id)
   const description = text(row.description)
   if (!placeId || !description) return null

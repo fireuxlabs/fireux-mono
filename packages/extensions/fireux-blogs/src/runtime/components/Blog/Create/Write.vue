@@ -77,11 +77,11 @@
 
 <script setup lang="ts">
 import {
-    defineAsyncComponent,
-    onBeforeUnmount,
-    onMounted,
-    shallowRef,
-    watch,
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+  shallowRef,
+  watch,
 } from 'vue'
 import { useBlogUtils } from '../../../composables/fireux/firestore/blog/utils/useBlogUtils'
 import { useBlogDraftState } from '../../../composables/fireux/blog/editor/useBlogDraftState'
@@ -201,7 +201,9 @@ defineExpose({
 .write-system {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacing) * 6); /* Increased from 1.5rem to match product system */
+  gap: calc(
+    var(--spacing) * 6
+  ); /* Increased from 1.5rem to match product system */
 }
 
 .editor-shell {

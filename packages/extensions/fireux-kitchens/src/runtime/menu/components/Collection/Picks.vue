@@ -22,11 +22,14 @@ import {
   type MenuCollectionPick,
 } from '../../utils/menu-collection-picks'
 
-const props = withDefaults(defineProps<{
-  modelValue?: MenuCollectionPick[]
-}>(), {
-  modelValue: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: MenuCollectionPick[]
+  }>(),
+  {
+    modelValue: () => [],
+  }
+)
 
 const emit = defineEmits<{
   (event: 'update:modelValue', value: MenuCollectionPick[]): void

@@ -41,7 +41,6 @@ type CanonicalKitchenManagementTarget = {
 type KitchenReadParts = {
   document: KitchenRootRecord
   managementTarget: CanonicalKitchenManagementTarget | null
-  supportData: Record<string, unknown>
   placeData: Record<string, unknown>
   identity: ReturnType<typeof menuKitchenIdentity>
   rootIdentity: ReturnType<typeof readKitchenIdentity>
@@ -83,7 +82,7 @@ function canonicalKitchenManagementTarget(
 export async function readKitchenRelatedRecords(
   db: RuntimeFirestore,
   documents: KitchenRootRecord[],
-  scope: KitchenReadScope
+  _scope: KitchenReadScope
 ) {
   const references = new Map<string, ReturnType<typeof db.doc>>()
 
@@ -92,16 +91,6 @@ export async function readKitchenRelatedRecords(
       const placeRef = db.collection(PlaceStorage.collection).doc(document.id)
       references.set(placeRef.path, placeRef)
     }
-
-    const managementTarget = canonicalKitchenManagementTarget(
-      document.data,
-      scope.ecosystem
-    )
-    if (!managementTarget) continue
-    const appKitchenRef = db
-      .collection(`apps/${managementTarget.appId}/kitchens`)
-      .doc(document.id)
-    references.set(appKitchenRef.path, appKitchenRef)
   }
 
   if (!references.size) return new Map<string, Record<string, unknown>>()
@@ -129,13 +118,7 @@ function resolveKitchenReadParts(
     rootData,
     scope.ecosystem
   )
-  const supportData = managementTarget
-    ? dataByPath.get(
-        `apps/${managementTarget.appId}/kitchens/${document.id}`
-      ) || {}
-    : {}
-
-  const identity = menuKitchenIdentity(rootData, supportData, placeData)
+  const identity = menuKitchenIdentity(rootData, placeData)
   if (!text(identity.name)) return null
 
   const slug = readRecordString(rootData, 'slug')
@@ -145,7 +128,6 @@ function resolveKitchenReadParts(
   return {
     document,
     managementTarget,
-    supportData,
     placeData,
     identity,
     rootIdentity: readKitchenIdentity(rootData),
@@ -226,7 +208,7 @@ export function projectKitchenDetail(
   const tagline = item.brand_tagline || ''
   const imageUrl = item.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
-  const sproochli = readKitchenSproochliConfig(parts.rootData)
+  const sproochli = readKitchenSproochliConfig(parts.document.data)
 
   const presentation: KitchenDetailPresentation = {
     ...item,

@@ -1,12 +1,6 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
-    <div
-      class="fx-card--cell"
-    >
+  <NuxtLink v-if="link && to" :to="to" class="block w-full">
+    <div class="fx-card--cell">
       <UAvatar
         :src="imageUrl || undefined"
         icon="i-lucide-carrot"
@@ -39,12 +33,7 @@
               :text="warningDescription"
               :popper="{ placement: 'top' }"
             >
-              <UBadge
-                color="warning"
-                variant="soft"
-                size="xs"
-                class="shrink-0"
-              >
+              <UBadge color="warning" variant="soft" size="xs" class="shrink-0">
                 <UIcon name="i-lucide-triangle-alert" class="mr-1" />
                 {{ warningLabel }}
               </UBadge>
@@ -73,16 +62,10 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
-    <div
-      class="fx-card--cell"
-    >
+  <div v-else class="block w-full" @click="onClick">
+    <div class="fx-card--cell">
       <UAvatar
         :src="imageUrl || undefined"
         icon="i-lucide-carrot"
@@ -115,12 +98,7 @@
               :text="warningDescription"
               :popper="{ placement: 'top' }"
             >
-              <UBadge
-                color="warning"
-                variant="soft"
-                size="xs"
-                class="shrink-0"
-              >
+              <UBadge color="warning" variant="soft" size="xs" class="shrink-0">
                 <UIcon name="i-lucide-triangle-alert" class="mr-1" />
                 {{ warningLabel }}
               </UBadge>
@@ -149,7 +127,7 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -157,10 +135,12 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { IngredientCard } from '../../composables/useIngredientInterface'
 
-type Props = Partial<Pick<
-  IngredientCard.Card,
-  'slug' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
->> & {
+type Props = Partial<
+  Pick<
+    IngredientCard.Card,
+    'slug' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
+  >
+> & {
   warning?: string
   showSlug?: boolean
   showSubtitle?: boolean

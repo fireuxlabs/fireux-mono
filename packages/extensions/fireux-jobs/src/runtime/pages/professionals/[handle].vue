@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDetailSurface
+  <UserProfileDetailSurface
     entity-label="Professional"
     plural-label="Professionals"
     back-to="/professionals"
@@ -50,19 +50,19 @@
         :default-open="false"
       />
     </div>
-  </PublicProfileDetailSurface>
+  </UserProfileDetailSurface>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, setResponseStatus, useToast } from '#imports'
-import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
+import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { PublicProfessionalProfilePayload } from '../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfilePayload } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   visibility: { profiles: ['professional'] },
@@ -79,7 +79,7 @@ const {
   missing,
   failed,
   outcome,
-} = await usePublicProfileDetail<PublicProfessionalProfilePayload>(
+} = await useProfileDetail<ProfessionalProfilePayload>(
   { collection: 'professionals', kind: 'professional' },
   requestedIdentifier
 )

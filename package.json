@@ -59,6 +59,7 @@
     "align:onboarding": "node scripts/align-user-app-onboarding.mjs",
     "migrate:workspace-entity-management": "node scripts/migrate-workspace-entity-management.mjs",
     "migrate:misebox-kitchen-ownership": "node scripts/migrate-misebox-kitchen-ownership.mjs",
+    "migrate:firestore-entity-canon": "node scripts/migrate-firestore-entity-canon.mjs",
     "align:user-avatars": "node scripts/align-user-avatars.mjs",
     "interlaken:menu-audit": "node scripts/interlaken-menu-audit.mjs",
     "interlaken:images": "node scripts/interlaken-menu-audit.mjs --images",

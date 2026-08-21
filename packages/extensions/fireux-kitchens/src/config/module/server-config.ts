@@ -51,9 +51,34 @@ const baseServerHandlers = [
     handler: './runtime/server/api/kitchens/index.get',
   },
   {
-    route: '/api/kitchens/:id/flagship-dish',
+    route: '/api/kitchens/:kitchen/fulfilment',
     method: 'get',
-    handler: './runtime/server/api/kitchens/[id]/flagship-dish.get',
+    handler: './runtime/server/api/kitchens/[kitchen]/fulfilment.get',
+  },
+  {
+    route: '/api/kitchens/:kitchen/identity',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/[kitchen]/identity.get',
+  },
+  {
+    route: '/api/kitchens/:kitchen/identity',
+    method: 'patch',
+    handler: './runtime/server/api/kitchens/[kitchen]/identity.patch',
+  },
+  {
+    route: '/api/kitchens/:kitchen/menu-presentation',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/[kitchen]/menu-presentation.get',
+  },
+  {
+    route: '/api/kitchens/:kitchen',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/[kitchen].get',
+  },
+  {
+    route: '/api/kitchens/:kitchen/flagship-dish',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/[kitchen]/flagship-dish.get',
   },
   {
     route: '/sitemaps/kitchens.xml',
@@ -86,24 +111,24 @@ const baseServerHandlers = [
     handler: './runtime/server/api/internal/profiles/driver.post',
   },
   {
-    route: '/api/public/chefs',
+    route: '/api/chefs',
     method: 'get',
-    handler: './runtime/server/api/public/chefs.get',
+    handler: './runtime/server/api/chefs/index.get',
   },
   {
-    route: '/api/public/chefs/:id',
+    route: '/api/chefs/:id',
     method: 'get',
-    handler: './runtime/server/api/public/chefs/[id].get',
+    handler: './runtime/server/api/chefs/[id].get',
   },
   {
-    route: '/api/public/drivers',
+    route: '/api/drivers',
     method: 'get',
-    handler: './runtime/server/api/public/drivers.get',
+    handler: './runtime/server/api/drivers/index.get',
   },
   {
-    route: '/api/public/drivers/:id',
+    route: '/api/drivers/:id',
     method: 'get',
-    handler: './runtime/server/api/public/drivers/[id].get',
+    handler: './runtime/server/api/drivers/[id].get',
   },
   {
     route: '/api/internal/kitchen/driver-access',
@@ -175,8 +200,7 @@ const baseServerHandlers = [
   {
     route: '/api/workspace/kitchen/reports/gross-sales',
     method: 'get',
-    handler:
-      './runtime/server/api/workspace/kitchen/reports/gross-sales.get',
+    handler: './runtime/server/api/workspace/kitchen/reports/gross-sales.get',
   },
   {
     route: '/api/workspace/kitchen/dishes/:dishId/image',
@@ -201,6 +225,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/workspace/kitchen/menus/publish.post',
   },
   {
+    route: '/api/workspace/kitchen/menus/sync-directory',
+    method: 'post',
+    handler: './runtime/server/api/workspace/kitchen/menus/sync-directory.post',
+  },
+  {
     route: '/api/workspace/kitchen/menus/upload',
     method: 'options',
     handler: './runtime/server/api/workspace/kitchen/menus/upload.options',
@@ -208,7 +237,8 @@ const baseServerHandlers = [
   {
     route: '/api/workspace/kitchen/menus/upload/availability',
     method: 'get',
-    handler: './runtime/server/api/workspace/kitchen/menus/upload/availability.get',
+    handler:
+      './runtime/server/api/workspace/kitchen/menus/upload/availability.get',
   },
   {
     route: '/api/workspace/kitchen/menus/upload/availability',
@@ -217,9 +247,54 @@ const baseServerHandlers = [
       './runtime/server/api/workspace/kitchen/menus/upload/availability.options',
   },
   {
+    route: '/api/menus',
+    method: 'get',
+    handler: './runtime/server/api/menus/index.get',
+  },
+  {
+    route: '/api/menus/availability',
+    method: 'get',
+    handler: './runtime/server/api/menus/availability.get',
+  },
+  {
+    route: '/api/menus/availability',
+    method: 'options',
+    handler: './runtime/server/api/menus/availability.options',
+  },
+  {
+    route: '/api/menus/create',
+    method: 'post',
+    handler: './runtime/server/api/menus/create.post',
+  },
+  {
+    route: '/api/menus/create',
+    method: 'options',
+    handler: './runtime/server/api/menus/create.options',
+  },
+  {
+    route: '/api/menus/:menuId',
+    method: 'get',
+    handler: './runtime/server/api/menus/[menuId].get',
+  },
+  {
+    route: '/api/menus/:menuId',
+    method: 'options',
+    handler: './runtime/server/api/menus/[menuId].options',
+  },
+  {
+    route: '/api/menus/:menuId/file',
+    method: 'get',
+    handler: './runtime/server/api/menus/[menuId]/file.get',
+  },
+  {
     route: '/api/menus/:menuId/delivery-address',
     method: 'post',
     handler: './runtime/server/api/menus/[menuId]/delivery-address.post',
+  },
+  {
+    route: '/api/menus/:menuId/delivery-address',
+    method: 'options',
+    handler: './runtime/server/api/menus/[menuId]/delivery-address.options',
   },
   {
     route: '/api/menus/:menuId/orders',

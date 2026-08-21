@@ -9,9 +9,7 @@ import type {
   FinancialReportComparisonTone,
   FinancialReportTrendView,
 } from 'fireux-finance/runtime/models/report-presentation.model'
-import {
-  formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money'
+import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 
 type KitchenFinanceTrendPoint = {
   id: string
@@ -21,44 +19,46 @@ type KitchenFinanceTrendPoint = {
   grossSalesMinor: number
 }
 
-const props = withDefaults(defineProps<{
-  averageDailyGrossSalesMinor?: number | null
-  bestDay?: {
-    date: string
-    saleCount: number
-    grossSalesMinor: number
-  } | null
-  comparisonPercent?: number | null
-  currencyCode: string
-  intervalDays: number
-  locale?: string
-  periodLabel: string
-  points: readonly KitchenFinanceTrendPoint[]
-  previousPoints?: readonly KitchenFinanceTrendPoint[]
-  showInsights?: boolean
-  size?: 'md' | 'lg'
-}>(), {
-  averageDailyGrossSalesMinor: null,
-  bestDay: null,
-  comparisonPercent: null,
-  locale: 'en-GB',
-  previousPoints: () => [],
-  showInsights: true,
-  size: 'md',
-})
+const props = withDefaults(
+  defineProps<{
+    averageDailyGrossSalesMinor?: number | null
+    bestDay?: {
+      date: string
+      saleCount: number
+      grossSalesMinor: number
+    } | null
+    comparisonPercent?: number | null
+    currencyCode: string
+    intervalDays: number
+    locale?: string
+    periodLabel: string
+    points: readonly KitchenFinanceTrendPoint[]
+    previousPoints?: readonly KitchenFinanceTrendPoint[]
+    showInsights?: boolean
+    size?: 'md' | 'lg'
+  }>(),
+  {
+    averageDailyGrossSalesMinor: null,
+    bestDay: null,
+    comparisonPercent: null,
+    locale: 'en-GB',
+    previousPoints: () => [],
+    showInsights: true,
+    size: 'md',
+  }
+)
 
 const money = (amountMinor: number) =>
-  formatFinancialMinorAmount(
-    amountMinor,
-    props.currencyCode,
-    { locales: props.locale }
-  )
-const dateFormatter = computed(() =>
-  new Intl.DateTimeFormat(props.locale, {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
+  formatFinancialMinorAmount(amountMinor, props.currencyCode, {
+    locales: props.locale,
   })
+const dateFormatter = computed(
+  () =>
+    new Intl.DateTimeFormat(props.locale, {
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'UTC',
+    })
 )
 
 const trendView = computed<FinancialReportTrendView>(() => ({
@@ -82,44 +82,45 @@ const trendView = computed<FinancialReportTrendView>(() => ({
       ? { comparisonLabel: 'Previous period' }
       : {}),
   },
-  points: props.points.map(point => ({
+  points: props.points.map((point) => ({
     id: point.id,
     label: formatRange(point.fromDate, point.toDate),
     value: point.grossSalesMinor,
     valueLabel: money(point.grossSalesMinor),
-    secondaryLabel:
-      `${point.saleCount.toLocaleString(props.locale)} completed ${
-        point.saleCount === 1 ? 'sale' : 'sales'
-      }`,
+    secondaryLabel: `${point.saleCount.toLocaleString(props.locale)} completed ${
+      point.saleCount === 1 ? 'sale' : 'sales'
+    }`,
   })),
-  comparisonPoints: props.previousPoints.map(point => ({
+  comparisonPoints: props.previousPoints.map((point) => ({
     id: point.id,
     label: formatRange(point.fromDate, point.toDate),
     value: point.grossSalesMinor,
     valueLabel: money(point.grossSalesMinor),
-    secondaryLabel:
-      `${point.saleCount.toLocaleString(props.locale)} completed ${
-        point.saleCount === 1 ? 'sale' : 'sales'
-      }`,
+    secondaryLabel: `${point.saleCount.toLocaleString(props.locale)} completed ${
+      point.saleCount === 1 ? 'sale' : 'sales'
+    }`,
   })),
   insights: props.showInsights
     ? [
         ...(props.bestDay
-          ? [{
-              label: 'Best day',
-              value: money(props.bestDay.grossSalesMinor),
-              description:
-                `${formatDate(props.bestDay.date)} · `
-                + `${props.bestDay.saleCount.toLocaleString(props.locale)} completed sales`,
-            }]
+          ? [
+              {
+                label: 'Best day',
+                value: money(props.bestDay.grossSalesMinor),
+                description:
+                  `${formatDate(props.bestDay.date)} · ` +
+                  `${props.bestDay.saleCount.toLocaleString(props.locale)} completed sales`,
+              },
+            ]
           : []),
         ...(props.averageDailyGrossSalesMinor !== null
-          ? [{
-              label: 'Daily average',
-              value: money(props.averageDailyGrossSalesMinor),
-              description:
-                `Across the selected ${props.periodLabel.toLowerCase()}.`,
-            }]
+          ? [
+              {
+                label: 'Daily average',
+                value: money(props.averageDailyGrossSalesMinor),
+                description: `Across the selected ${props.periodLabel.toLowerCase()}.`,
+              },
+            ]
           : []),
       ]
     : [],

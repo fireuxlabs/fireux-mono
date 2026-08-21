@@ -53,16 +53,12 @@ type KitchenDemoSupplierSelectionInput<
 
 export function selectKitchenDemoSupplierScenarios<
   TScenario extends KitchenDemoSupplierScenarioLike,
->(
-  input: KitchenDemoSupplierSelectionInput<TScenario>
-): TScenario[] {
+>(input: KitchenDemoSupplierSelectionInput<TScenario>): TScenario[] {
   const selectedSupplierIds = new Set(
-    input.links
-      .map(link => clean(link.supplier_id))
-      .filter(Boolean)
+    input.links.map((link) => clean(link.supplier_id)).filter(Boolean)
   )
 
-  return input.supplierScenarios.filter(scenario =>
+  return input.supplierScenarios.filter((scenario) =>
     selectedSupplierIds.has(clean(scenario.supplier.id))
   )
 }
@@ -75,22 +71,19 @@ export function buildKitchenDemoSuppliersOperation(
   input: KitchenDemoSupplierSelectionInput<KitchenDemoSupplierScenarioLike>
 ): { items: KitchenDemoSupplierSummary[] } {
   const supplierIds = [
-    ...new Set(input.links.map(link => clean(link.supplier_id))),
+    ...new Set(input.links.map((link) => clean(link.supplier_id))),
   ]
-  if (
-    supplierIds.some(id => !id)
-    || supplierIds.length === 0
-  ) {
+  if (supplierIds.some((id) => !id) || supplierIds.length === 0) {
     throw new Error('Kitchen Demo Suppliers require valid usage links.')
   }
 
   const selectedScenarios = selectKitchenDemoSupplierScenarios(input)
-  const selectedScenarioIds = selectedScenarios.map(
-    scenario => clean(scenario.supplier.id)
+  const selectedScenarioIds = selectedScenarios.map((scenario) =>
+    clean(scenario.supplier.id)
   )
   if (
-    new Set(selectedScenarioIds).size !== selectedScenarioIds.length
-    || selectedScenarios.length !== supplierIds.length
+    new Set(selectedScenarioIds).size !== selectedScenarioIds.length ||
+    selectedScenarios.length !== supplierIds.length
   ) {
     throw new Error(
       'Kitchen Demo Suppliers must resolve each linked Supplier exactly once.'
@@ -98,10 +91,7 @@ export function buildKitchenDemoSuppliersOperation(
   }
 
   const scenarioById = new Map(
-    selectedScenarios.map(scenario => [
-      clean(scenario.supplier.id),
-      scenario,
-    ])
+    selectedScenarios.map((scenario) => [clean(scenario.supplier.id), scenario])
   )
   const items = supplierIds.map((supplierId) => {
     const scenario = scenarioById.get(supplierId)
@@ -110,29 +100,28 @@ export function buildKitchenDemoSuppliersOperation(
     }
 
     const linkedIngredientIds = input.links
-      .filter(link => clean(link.supplier_id) === supplierId)
-      .map(link => clean(link.ingredient_id))
+      .filter((link) => clean(link.supplier_id) === supplierId)
+      .map((link) => clean(link.ingredient_id))
     const linkedIngredientIdSet = new Set(linkedIngredientIds)
     if (
-      linkedIngredientIdSet.size !== linkedIngredientIds.length
-      || linkedIngredientIds.some(id => !id)
+      linkedIngredientIdSet.size !== linkedIngredientIds.length ||
+      linkedIngredientIds.some((id) => !id)
     ) {
-      throw new Error(
-        `Kitchen Demo Supplier links are invalid: ${supplierId}`
-      )
+      throw new Error(`Kitchen Demo Supplier links are invalid: ${supplierId}`)
     }
 
     const coveredIngredientIds = new Set(
       scenario.ingredients
-        .filter(ingredient =>
-          ingredient.active !== false
-          && clean(ingredient.supplier_id) === supplierId
+        .filter(
+          (ingredient) =>
+            ingredient.active !== false &&
+            clean(ingredient.supplier_id) === supplierId
         )
-        .map(ingredient => clean(ingredient.ingredient_id))
+        .map((ingredient) => clean(ingredient.ingredient_id))
         .filter(Boolean)
     )
     const unresolvedIngredientIds = linkedIngredientIds.filter(
-      ingredientId => !coveredIngredientIds.has(ingredientId)
+      (ingredientId) => !coveredIngredientIds.has(ingredientId)
     )
     if (unresolvedIngredientIds.length) {
       throw new Error(
@@ -147,15 +136,15 @@ export function buildKitchenDemoSuppliersOperation(
     const logoImageUrl = clean(scenario.supplier.supplier_image)
     const placeImageUrl = clean(scenario.supplier.company_place?.image_url)
     const headquartersLabel =
-      clean(scenario.supplier.company_place?.short_address)
-      || clean(scenario.supplier.company_place?.name)
+      clean(scenario.supplier.company_place?.short_address) ||
+      clean(scenario.supplier.company_place?.name)
     if (
-      !name
-      || !companyPlaceId
-      || companyPlaceId !== clean(scenario.supplier.company_id)
-      || !placeImageUrl
-      || !logoImageUrl
-      || !headquartersLabel
+      !name ||
+      !companyPlaceId ||
+      companyPlaceId !== clean(scenario.supplier.company_id) ||
+      !placeImageUrl ||
+      !logoImageUrl ||
+      !headquartersLabel
     ) {
       throw new Error(
         `Kitchen Demo Supplier presentation is incomplete: ${supplierId}`
@@ -171,9 +160,7 @@ export function buildKitchenDemoSuppliersOperation(
       placeImageUrl,
       headquartersLabel,
       categories: cleanList(scenario.supplier.supplier_item_categories),
-      deliveryAreas: cleanList(
-        scenario.supplier.supplier_delivery_areas
-      ),
+      deliveryAreas: cleanList(scenario.supplier.supplier_delivery_areas),
       linkedIngredientCount: linkedIngredientIdSet.size,
       catalogueCount: scenario.catalogues.length,
     }

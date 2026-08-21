@@ -12,7 +12,6 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  serverAppKitchensTarget,
   serverKitchenMemberInvitationsTarget,
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -142,8 +141,8 @@ export async function createKitchenMemberInvitation(
       kitchenId
     )
     appId = kitchen.ownerAppId
-    const members = serverKitchenTeamMembersTarget(appId, kitchenId)
-    const invitations = serverKitchenMemberInvitationsTarget(appId, kitchenId)
+    const members = serverKitchenTeamMembersTarget(kitchenId)
+    const invitations = serverKitchenMemberInvitationsTarget(kitchenId)
     const member = await mutations.read<Record<string, unknown>>(
       members,
       memberId
@@ -197,9 +196,7 @@ export async function inspectKitchenMemberInvitation(
   requireRuntimeApp(event, parsed.locator.appId)
   const db = getRuntimeFirestore()
   const invitationRef = db
-    .collection(
-      `apps/${parsed.locator.appId}/kitchens/${parsed.locator.kitchenId}/member-invitations`
-    )
+    .collection(`kitchens/${parsed.locator.kitchenId}/member-invitations`)
     .doc(parsed.locator.invitationId)
   const invitationSnapshot = await invitationRef.get()
   if (!invitationSnapshot.exists) {
@@ -212,9 +209,7 @@ export async function inspectKitchenMemberInvitation(
   const expiresAt = requirePendingInvitation(invitation, parsed.secret)
   const memberId = requireFirestoreDocumentId(invitation.member_id, 'Member id')
   const memberSnapshot = await db
-    .collection(
-      `apps/${parsed.locator.appId}/kitchens/${parsed.locator.kitchenId}/team`
-    )
+    .collection(`kitchens/${parsed.locator.kitchenId}/team`)
     .doc(memberId)
     .get()
   if (!memberSnapshot.exists || text(memberSnapshot.data()?.user_id)) {
@@ -245,22 +240,14 @@ export async function acceptKitchenMemberInvitation(
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const invitations = serverKitchenMemberInvitationsTarget(
-      parsed.locator.appId,
       parsed.locator.kitchenId
     )
-    const members = serverKitchenTeamMembersTarget(
-      parsed.locator.appId,
-      parsed.locator.kitchenId
+    const members = serverKitchenTeamMembersTarget(parsed.locator.kitchenId)
+    const invitation = await mutations.read<StoredInvitation>(
+      invitations,
+      parsed.locator.invitationId
     )
-    const supports = serverAppKitchensTarget(parsed.locator.appId)
-    const [invitation, support] = await Promise.all([
-      mutations.read<StoredInvitation>(
-        invitations,
-        parsed.locator.invitationId
-      ),
-      mutations.read(supports, parsed.locator.kitchenId),
-    ])
-    if (!invitation.exists || !support.exists) {
+    if (!invitation.exists) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Invitation not found.',
@@ -309,10 +296,6 @@ export async function acceptKitchenMemberInvitation(
       status: 'accepted',
       accepted_by: uid,
       accepted_at: FieldValue.serverTimestamp(),
-      updated: serverAuditStamp({ by: uid }),
-    })
-    mutations.update(supports, parsed.locator.kitchenId, {
-      team_ids: FieldValue.arrayUnion(uid),
       updated: serverAuditStamp({ by: uid }),
     })
   })

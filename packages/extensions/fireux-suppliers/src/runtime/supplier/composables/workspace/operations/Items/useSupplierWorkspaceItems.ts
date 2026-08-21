@@ -10,10 +10,7 @@ import {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierWorkspaceItems() {
-  const {
-    selection,
-    runtime,
-  } = useSupplierWorkspace()
+  const { selection, runtime } = useSupplierWorkspace()
 
   const supplierLabel = computed(() =>
     normalizeString(selection.supplier.value?.supplier_organization_name)
@@ -31,9 +28,10 @@ export function useSupplierWorkspaceItems() {
   const catalogueState = computed(() =>
     normalizeString(selection.supplier.value?.catalogue_state)
   )
-  const supplierItemsEnabled = computed(() =>
-    !runtime.isDemo.value
-    && Boolean(runtime.rootCollection.value && selection.supplierId.value)
+  const supplierItemsEnabled = computed(
+    () =>
+      !runtime.isDemo.value &&
+      Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath: supplierItemsCollectionPath,
@@ -44,22 +42,20 @@ export function useSupplierWorkspaceItems() {
     supplierCollectionPath: runtime.rootCollection,
   })
 
-  const demoData = useSupplierWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useSupplierWorkspaceDemoData(runtime.isDemo)
+  const demoScenario = computed(() =>
+    findSupplierWorkspaceDemoScenario(
+      demoData.data.value,
+      selection.supplierId.value
+    )
   )
-  const demoScenario = computed(() => findSupplierWorkspaceDemoScenario(
-    demoData.data.value,
-    selection.supplierId.value
-  ))
   const supplierItems = computed<SupplierItemSurface[]>(() =>
     runtime.isDemo.value
-      ? demoScenario.value?.items ?? []
+      ? (demoScenario.value?.items ?? [])
       : supplierItemsFromStore.value
   )
   const pending = computed(() =>
-    runtime.isDemo.value
-      ? demoData.pending.value
-      : supplierItemsPending.value
+    runtime.isDemo.value ? demoData.pending.value : supplierItemsPending.value
   )
 
   const emptyTitle = computed(() => 'No supplier items yet')
@@ -82,9 +78,7 @@ export function useSupplierWorkspaceItems() {
     return parts.join(' · ')
   })
 
-  const devJsonContext = computed(
-    () => 'workspace supplier · items'
-  )
+  const devJsonContext = computed(() => 'workspace supplier · items')
   const debug = computed(() => ({
     supplierId: selection.supplierId.value,
     supplierName: supplierLabel.value,

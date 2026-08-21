@@ -48,7 +48,9 @@
           <template v-if="canEdit">
             <KitchenDetailOperatorPanel :kitchen="hydratedKitchen" />
 
-            <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+            <div
+              class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
+            >
               <KitchenEditIdentity
                 :kitchen="rootKitchen"
                 :kitchen-id="kitchenId"
@@ -111,45 +113,47 @@ const claimedBy = computed(() =>
 )
 const operatorIds = computed(() =>
   Array.isArray(hydratedKitchen.value?.operator_ids)
-    ? hydratedKitchen.value.operator_ids.map((value: unknown) => String(value || '').trim())
+    ? hydratedKitchen.value.operator_ids.map((value: unknown) =>
+        String(value || '').trim()
+      )
     : []
 )
 const canEdit = computed(() => {
   const uid = String(currentUser.value?.id || '').trim()
   return Boolean(
     isAdmin.value ||
-    (uid && claimedBy.value === uid) ||
-    (uid && operatorIds.value.includes(uid))
+      (uid && claimedBy.value === uid) ||
+      (uid && operatorIds.value.includes(uid))
   )
 })
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const kitchenTitle = computed(() =>
-  clean(hydratedKitchen.value?.display_name || hydratedKitchen.value?.name) || 'Kitchen'
+const kitchenTitle = computed(
+  () =>
+    clean(hydratedKitchen.value?.display_name || hydratedKitchen.value?.name) ||
+    'Kitchen'
 )
-const address = computed(() =>
-  clean(hydratedKitchen.value?.formatted_address) ||
+const address = computed(
+  () =>
+    clean(hydratedKitchen.value?.formatted_address) ||
     clean(hydratedKitchen.value?.short_address)
 )
-const placeLocator = computed(() =>
-  clean(hydratedKitchen.value?.place_id)
-)
+const placeLocator = computed(() => clean(hydratedKitchen.value?.place_id))
 const placeEditTo = computed(() =>
   placeLocator.value
     ? `/places/${encodeURIComponent(placeLocator.value)}/edit`
     : ''
 )
 
-const pageTitle = computed(
-  () =>
-    String(
-      hydratedKitchen.value?.display_name ||
-        hydratedKitchen.value?.name ||
-        'Edit kitchen'
-    )
+const pageTitle = computed(() =>
+  String(
+    hydratedKitchen.value?.display_name ||
+      hydratedKitchen.value?.name ||
+      'Edit kitchen'
+  )
 )
-const pageSubtitle = computed(() =>
-  address.value || 'Finish this kitchen profile.'
+const pageSubtitle = computed(
+  () => address.value || 'Finish this kitchen profile.'
 )
 
 const toast = useToastify()

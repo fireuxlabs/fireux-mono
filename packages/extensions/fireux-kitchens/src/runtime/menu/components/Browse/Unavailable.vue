@@ -63,5 +63,4 @@ defineProps<{
   color: var(--menu-muted);
   line-height: 1.6;
 }
-
 </style>

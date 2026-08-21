@@ -31,7 +31,9 @@
     <UCard v-else-if="!deliveryConfig">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">Delivery is not enabled</h2>
+          <h2 class="text-base font-semibold text-highlighted">
+            Delivery is not enabled
+          </h2>
           <p class="text-sm text-dimmed">
             Enable it to create a Delivery policy for this Menu.
           </p>
@@ -51,7 +53,9 @@
     <UCard v-if="deliveryConfig">
       <template #header>
         <div>
-          <h3 class="text-sm font-semibold text-highlighted">Kitchen foundation</h3>
+          <h3 class="text-sm font-semibold text-highlighted">
+            Kitchen foundation
+          </h3>
           <p class="text-sm text-dimmed">
             Shared operational truth used by every Delivery-enabled Menu.
           </p>
@@ -136,16 +140,21 @@ const {
   setOrderType,
 } = useKitchenWorkspaceMenuOrdering()
 const enabling = ref(false)
-const fulfilment = computed(() => readKitchenFulfilmentConfig(
-  selectedKitchen.value as Record<string, unknown> | null
-))
+const fulfilment = computed(() =>
+  readKitchenFulfilmentConfig(
+    selectedKitchen.value as Record<string, unknown> | null
+  )
+)
 const deliveryZones = computed(() => fulfilment.value.delivery_zones)
 const paymentMethods = computed(() =>
   kitchenPaymentMethodsForOrderType(fulfilment.value, 'delivery')
 )
-const paymentSummary = computed(() => paymentMethods.value.length
-  ? paymentMethods.value.map(method => method.replaceAll('_', ' ')).join(', ')
-  : 'No compatible methods configured'
+const paymentSummary = computed(() =>
+  paymentMethods.value.length
+    ? paymentMethods.value
+        .map((method) => method.replaceAll('_', ' '))
+        .join(', ')
+    : 'No compatible methods configured'
 )
 
 async function enableDelivery() {

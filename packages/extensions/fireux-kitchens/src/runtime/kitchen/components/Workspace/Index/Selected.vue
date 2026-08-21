@@ -56,9 +56,7 @@ const targetCard = computed<WorkspaceTargetCard | null>(() => {
     imageFit: 'contain',
     imageBackground: card.mediaBackdropColor,
     icon: 'i-lucide-chef-hat',
-    badges: [
-      props.source === 'demo' ? 'Demo · Read-only' : 'Live',
-    ],
+    badges: [props.source === 'demo' ? 'Demo · Read-only' : 'Live'],
   }
 })
 </script>

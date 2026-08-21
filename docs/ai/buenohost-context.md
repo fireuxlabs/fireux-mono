@@ -1,7 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -27,15 +27,17 @@ select their own bounded property targets.
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
 - Live Reservation PII is server-only. Authenticated package handlers validate
-  the current App membership and exact Property support; operators and App
-  admins mutate, while Property team members may read. Active stays claim one
+  the current App membership, root management, and exact Property Team;
+  authorized operators and applicable App admins mutate, while Property Team
+  readers may read. Active stays claim one
   deterministic Property-scoped night document per occupied date in the same
   transaction as Reservation creation or lifecycle changes.
-- The BuenoHost global app owns ecosystem-level public product and management
+- The BuenoHost global app owns ecosystem-level product-directory and management
   composition.
 - Tenant apps own their property-specific presentation, copy, and
-  contact/booking-channel configuration. Persisted same-id AppProperty support
-  records own their bounded Property targets and operator/team access; Nuxt
+  contact/booking-channel configuration. Each root Property owns
+  `team/{uid}`, Team requests, Reservations, Calendar records, and protected
+  support; root management plus AppUser membership bounds tenant targets. Nuxt
   config does not pin target IDs.
 - Apps that expose the Property Reservation Workspace use the shared SSR
   Functions deployment shape; static-only hosting cannot provide its trusted

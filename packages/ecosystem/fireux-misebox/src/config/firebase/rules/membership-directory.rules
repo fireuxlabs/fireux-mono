@@ -13,46 +13,96 @@
         get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
     }
 
-    function isTargetMember(appId, collectionName, targetId) {
-      return isAppMember(appId) &&
+    function workspaceRootPath(collectionName, workspaceId) {
+      return /databases/$(database)/documents/$(collectionName)/$(workspaceId);
+    }
+
+    function workspaceTeamPath(collectionName, workspaceId, userId) {
+      return /databases/$(database)/documents/$(collectionName)/$(workspaceId)/team/$(userId);
+    }
+
+    function hasValidWorkspaceManagement(data) {
+      return data is map &&
+        data.keys().hasAll(['management']) &&
+        data.management is map &&
         (
-          (get(
-            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-          ).data.operator_ids is list &&
-            get(
-              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-            ).data.operator_ids.hasAny([request.auth.uid])) ||
-          (get(
-            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-          ).data.team_ids is list &&
-            get(
-              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-            ).data.team_ids.hasAny([request.auth.uid]))
+          (
+            data.management.keys().hasOnly(['mode']) &&
+            data.management.mode == 'workspace'
+          ) ||
+          (
+            data.management.keys().hasAll(['mode', 'app_id']) &&
+            data.management.keys().hasOnly(['mode', 'app_id']) &&
+            data.management.mode == 'app' &&
+            isValidFirestoreDocumentId(data.management.app_id)
+          )
         );
     }
 
-    function isTargetOperator(appId, collectionName, targetId) {
-      return isAppMember(appId) &&
-        get(
-          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-        ).data.operator_ids is list &&
-        get(
-          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-        ).data.operator_ids.hasAny([request.auth.uid]);
+    function workspaceManagementAppId(data) {
+      return data.management.mode == 'workspace'
+        ? 'misebox-app'
+        : data.management.app_id;
     }
 
-    function isResourceTargetMember(appId) {
-      return isAppMember(appId) &&
+    function canReadWorkspace(collectionName, workspaceId) {
+      let rootPath = workspaceRootPath(collectionName, workspaceId);
+      let root = get(rootPath);
+      let appId = workspaceManagementAppId(root.data);
+      let membershipPath = appMembershipPath(appId, request.auth.uid);
+      let membership = get(membershipPath);
+      let teamPath = workspaceTeamPath(
+        collectionName,
+        workspaceId,
+        request.auth.uid
+      );
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        hasValidWorkspaceManagement(root.data) &&
+        exists(membershipPath) &&
         (
-          (resource.data.operator_ids is list &&
-            resource.data.operator_ids.hasAny([request.auth.uid])) ||
-          (resource.data.team_ids is list &&
-            resource.data.team_ids.hasAny([request.auth.uid]))
+          membership.data.role == 'admin' ||
+          (
+            membership.data.role in ['admin', 'user'] &&
+            exists(teamPath) &&
+            member.data.user_id == request.auth.uid &&
+            member.data.status == 'active' &&
+            member.data.role in ['owner', 'operator', 'member']
+          )
+        );
+    }
+
+    function canOperateWorkspace(collectionName, workspaceId) {
+      let rootPath = workspaceRootPath(collectionName, workspaceId);
+      let root = get(rootPath);
+      let appId = workspaceManagementAppId(root.data);
+      let membershipPath = appMembershipPath(appId, request.auth.uid);
+      let membership = get(membershipPath);
+      let teamPath = workspaceTeamPath(
+        collectionName,
+        workspaceId,
+        request.auth.uid
+      );
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        hasValidWorkspaceManagement(root.data) &&
+        exists(membershipPath) &&
+        (
+          membership.data.role == 'admin' ||
+          (
+            membership.data.role in ['admin', 'user'] &&
+            exists(teamPath) &&
+            member.data.user_id == request.auth.uid &&
+            member.data.status == 'active' &&
+            member.data.role in ['owner', 'operator']
+          )
         );
     }
 
     // ===============================================================
-    // Public User and owner-only private account
+    // User identity and owner-only account state
     // ===============================================================
     match /user-handles/{handle} {
       // Reservations are server-owned uniqueness locks, never a client API.
@@ -111,15 +161,9 @@
         );
     }
 
-    function hasValidCanonicalUserProfile(userId, profileId) {
-      return hasValidCanonicalUser(userId) &&
-        profileId == 'driver' &&
-        exists(/databases/$(database)/documents/drivers/$(userId));
-    }
-
     match /users/{userId} {
       allow get: if isOwner(userId) || isValidUser(resource.data);
-      // Public directory listing is projected by /api/public/users.
+      // Directory listing is projected by the trusted User API.
       allow list: if false;
       // The trusted handle endpoint owns consent validation, uniqueness, and
       // atomic User creation through the Admin SDK.

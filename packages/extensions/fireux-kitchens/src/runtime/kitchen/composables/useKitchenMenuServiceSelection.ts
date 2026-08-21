@@ -1,10 +1,5 @@
 import { useState } from '#imports'
-import {
-  computed,
-  toValue,
-  watchEffect,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, toValue, watchEffect, type MaybeRefOrGetter } from 'vue'
 
 export type KitchenMenuServiceDefinition = {
   defaultInService: boolean
@@ -20,9 +15,7 @@ const clean = (value: unknown) => String(value ?? '').trim()
  */
 export function useKitchenMenuServiceSelection(
   kitchenId: MaybeRefOrGetter<string>,
-  definitions: MaybeRefOrGetter<
-    readonly KitchenMenuServiceDefinition[]
-  >
+  definitions: MaybeRefOrGetter<readonly KitchenMenuServiceDefinition[]>
 ) {
   const state = useState<Record<string, Record<string, boolean>>>(
     'fireux-kitchens:demo-menu-service',
@@ -31,11 +24,11 @@ export function useKitchenMenuServiceSelection(
   const normalizedKitchenId = computed(() => clean(toValue(kitchenId)))
   const normalizedDefinitions = computed(() =>
     toValue(definitions)
-      .map(definition => ({
+      .map((definition) => ({
         id: clean(definition.id),
         defaultInService: definition.defaultInService === true,
       }))
-      .filter(definition => definition.id)
+      .filter((definition) => definition.id)
   )
 
   watchEffect(() => {
@@ -61,7 +54,7 @@ export function useKitchenMenuServiceSelection(
   const inServiceByMenuId = computed(() => {
     const current = state.value[normalizedKitchenId.value] ?? {}
     return Object.fromEntries(
-      normalizedDefinitions.value.map(definition => [
+      normalizedDefinitions.value.map((definition) => [
         definition.id,
         current[definition.id] ?? definition.defaultInService,
       ])
@@ -75,11 +68,9 @@ export function useKitchenMenuServiceSelection(
     const kitchen = normalizedKitchenId.value
     const menu = clean(menuId)
     if (
-      !kitchen
-      || !menu
-      || !normalizedDefinitions.value.some(definition =>
-        definition.id === menu
-      )
+      !kitchen ||
+      !menu ||
+      !normalizedDefinitions.value.some((definition) => definition.id === menu)
     ) {
       return
     }
@@ -99,7 +90,7 @@ export function useKitchenMenuServiceSelection(
     state.value = {
       ...state.value,
       [kitchen]: Object.fromEntries(
-        normalizedDefinitions.value.map(definition => [
+        normalizedDefinitions.value.map((definition) => [
           definition.id,
           definition.defaultInService,
         ])

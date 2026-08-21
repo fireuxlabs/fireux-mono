@@ -34,7 +34,7 @@ export const PlaceEntity = defineFireuxEntity({
   name: 'Place',
   family: ['place'],
   identity: 'root',
-  authority: 'owning-app-database',
+  authority: 'domain-database',
   appSupport: 'none',
   workspace: false,
   root: PlaceStorage.path,

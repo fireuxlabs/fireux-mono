@@ -52,7 +52,7 @@ const props = withDefaults(
 
 const { appName } = useFireUXConfig()
 const needsAttachment = computed(
-  () => props.readiness === 'needs-agent-app-support'
+  () => props.readiness === 'needs-agent-capability'
 )
 const gateTitle = computed(() =>
   needsAttachment.value

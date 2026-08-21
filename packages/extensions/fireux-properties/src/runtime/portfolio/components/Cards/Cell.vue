@@ -6,9 +6,7 @@
     class="block w-full"
     @activate="emit('action')"
   >
-    <div
-      class="fx-card--cell"
-    >
+    <div class="fx-card--cell">
       <UAvatar
         :alt="title"
         icon="i-lucide-briefcase-business"
@@ -20,12 +18,18 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badgeItems.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div
+            v-if="showBadges && badgeItems.length"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+          >
             <UBadge
               v-for="badge in badgeItems"
               :key="badge"
@@ -53,7 +57,13 @@ import type { PortfolioCard } from '../../composables/firestore/utils/view/usePo
 
 type PortfolioCellProps = Pick<
   PortfolioCard.Card,
-  'to' | 'title' | 'subtitle' | 'badges' | 'ownerLabel' | 'status' | 'regionLabel'
+  | 'to'
+  | 'title'
+  | 'subtitle'
+  | 'badges'
+  | 'ownerLabel'
+  | 'status'
+  | 'regionLabel'
 > & {
   showSubtitle?: boolean
   showMeta?: boolean
@@ -77,8 +87,12 @@ const props = withDefaults(defineProps<PortfolioCellProps>(), {
   disabled: false,
 })
 
-const badgeItems = computed(() => [...props.badges, props.status].filter(Boolean))
+const badgeItems = computed(() =>
+  [...props.badges, props.status].filter(Boolean)
+)
 const meta = computed(() =>
-  [props.ownerLabel, props.status ? `status ${props.status}` : ''].filter(Boolean).join(' · ')
+  [props.ownerLabel, props.status ? `status ${props.status}` : '']
+    .filter(Boolean)
+    .join(' · ')
 )
 </script>

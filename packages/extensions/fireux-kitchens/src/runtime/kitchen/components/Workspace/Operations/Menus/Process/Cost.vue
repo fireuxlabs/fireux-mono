@@ -2,9 +2,7 @@
   <UCard>
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="space-y-1">
-        <p class="text-sm font-medium text-highlighted">
-          AI cost estimate
-        </p>
+        <p class="text-sm font-medium text-highlighted">AI cost estimate</p>
         <p class="text-sm text-dimmed">
           This will be recorded against the selected kitchen when you confirm.
         </p>
@@ -92,9 +90,7 @@
       </div>
     </UCard>
 
-    <p v-if="pending" class="mt-3 text-sm text-dimmed">
-      Estimating AI cost...
-    </p>
+    <p v-if="pending" class="mt-3 text-sm text-dimmed">Estimating AI cost...</p>
     <p v-else-if="error" class="mt-3 text-sm text-warning">
       {{ error }}
     </p>
@@ -114,13 +110,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: ['standard' | 'strong']
 }>()
-const {
-  source,
-  menuId,
-  kitchenId,
-  activeKitchenAppId,
-  canWrite,
-} = useKitchenWorkspaceMenu()
+const { source, menuId, kitchenId, activeKitchenAppId, canWrite } =
+  useKitchenWorkspaceMenu()
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const estimate = ref<Record<string, unknown> | null>(null)
@@ -131,9 +122,11 @@ const selectedMode = ref<'standard' | 'strong' | ''>('')
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
-const standard = computed(() => record(record(estimate.value?.estimates).standard))
+const standard = computed(() =>
+  record(record(estimate.value?.estimates).standard)
+)
 const strong = computed(() => record(record(estimate.value?.estimates).strong))
 const amount = (value: Record<string, unknown>) =>
   text(value.amount_label) || 'Estimating'
@@ -142,7 +135,9 @@ const modelLine = (value: Record<string, unknown>) =>
     text(value.file_profile),
     text(value.extraction_model),
     `${Number(value.planned_ai_calls || 0)} AI call(s)`,
-  ].filter(Boolean).join(' · ')
+  ]
+    .filter(Boolean)
+    .join(' · ')
 const standardAmount = computed(() => amount(standard.value))
 const strongAmount = computed(() => amount(strong.value))
 const selectedEstimate = computed(() =>
@@ -150,19 +145,25 @@ const selectedEstimate = computed(() =>
 )
 const selectedAmount = computed(() => amount(selectedEstimate.value))
 const selectedLabel = computed(() =>
-  selectedMode.value === 'strong' ? 'stronger processing' : 'recommended processing'
+  selectedMode.value === 'strong'
+    ? 'stronger processing'
+    : 'recommended processing'
 )
-const standardDescription = computed(() =>
-  modelLine(standard.value) || 'Uses the best default for this upload.'
+const standardDescription = computed(
+  () => modelLine(standard.value) || 'Uses the best default for this upload.'
 )
-const strongDescription = computed(() =>
-  modelLine(strong.value) || 'Uses the stronger model if the first run needs help.'
+const strongDescription = computed(
+  () =>
+    modelLine(strong.value) ||
+    'Uses the stronger model if the first run needs help.'
 )
-const sourceLabel = computed(() =>
-  text(standard.value.file_profile) || 'menu source'
+const sourceLabel = computed(
+  () => text(standard.value.file_profile) || 'menu source'
 )
 const isPhotoSource = computed(() => sourceLabel.value === 'photo')
-const uploadId = computed(() => text(record(source.value).id) || text(menuId.value))
+const uploadId = computed(
+  () => text(record(source.value).id) || text(menuId.value)
+)
 const canSelect = computed(() =>
   Boolean(props.canProcess && estimate.value && !pending.value)
 )
@@ -180,12 +181,12 @@ async function refreshEstimate() {
 
   if (
     !import.meta.client ||
-      !canWrite.value ||
-      !currentUser.value ||
-      !source.value ||
-      !activeKitchenAppId.value ||
-      !kitchenId.value ||
-      !menuId.value
+    !canWrite.value ||
+    !currentUser.value ||
+    !source.value ||
+    !activeKitchenAppId.value ||
+    !kitchenId.value ||
+    !menuId.value
   ) {
     return
   }
@@ -208,19 +209,22 @@ async function refreshEstimate() {
     ) {
       return
     }
-    const response = await fetch('/api/workspace/kitchen/menus/process-estimate', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        appId,
-        kitchenId: selectedKitchenId,
-        menuId: selectedMenuId,
-        uploadId: selectedUploadId,
-      }),
-    })
+    const response = await fetch(
+      '/api/workspace/kitchen/menus/process-estimate',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          appId,
+          kitchenId: selectedKitchenId,
+          menuId: selectedMenuId,
+          uploadId: selectedUploadId,
+        }),
+      }
+    )
     const payload = await response.json().catch(() => null)
 
     if (!response.ok) {
@@ -233,9 +237,8 @@ async function refreshEstimate() {
 
     estimate.value = payload as Record<string, unknown>
   } catch (cause) {
-    error.value = cause instanceof Error
-      ? cause.message
-      : 'Could not estimate AI cost.'
+    error.value =
+      cause instanceof Error ? cause.message : 'Could not estimate AI cost.'
   } finally {
     pending.value = false
   }

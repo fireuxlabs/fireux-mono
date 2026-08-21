@@ -1,12 +1,12 @@
 # Menu ordering
 
-Updated: 2026-07-29
-Ref: b50a23747
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
 
-Map the boundary between a readable public Menu, an ordering doorway, and the
+Map the boundary between a readable Menu, an ordering doorway, and the
 KitchenOrder created from that doorway. This document records the shared spine,
 explains legitimate surface differences, and exposes migration debt. Current
 source and executable guards remain authority.
@@ -164,11 +164,11 @@ parent and infer from a grandparent.
 - Browser tracking stores only a safe post-submit reference/capability. It is
   not lifecycle authority and does not persist basket or customer form data.
 - The ordering allergy acknowledgement is a transient submission gate. It is
-  not a second public notice and does not become KitchenOrder truth.
+  not a second directory notice and does not become KitchenOrder truth.
 - A signed-in customer may receive a lightweight User-owned link at
-  `apps/{appId}/customers/{userId}/orders/{orderId}`. It points to the
-  KitchenOrder in that same App and must not duplicate mutable Order status;
-  it does not require the optional CustomerProfile preferences record.
+  `users/{userId}/orders/{orderId}`. It points to the canonical KitchenOrder
+  and records its App/Kitchen identity without duplicating mutable Order
+  status; it does not require the optional CustomerProfile preferences record.
 - Anonymous orders are not silently attached to an account later.
 
 The detailed state machine and operator transitions live in
@@ -179,7 +179,7 @@ The detailed state machine and operator transitions live in
 - Menu configuration owns catalogue identity and Menu service hours.
 - Focused ordering routes own one order-type row at a time.
 - Kitchen configuration owns reusable fulfilment and payment capability.
-- Public suffix routes are projections, never configuration owners.
+- Ordering suffix routes are projections, never configuration owners.
 - Empty or inherited optional configuration should be absent rather than
   persisted as blank objects.
 - Pausing a surface is temporary operational availability, not Menu deletion or

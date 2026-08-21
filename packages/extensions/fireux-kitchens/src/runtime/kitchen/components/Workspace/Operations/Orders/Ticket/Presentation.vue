@@ -5,9 +5,11 @@
     :class="{
       'order-ticket-frame--expanded': linesExpanded,
     }"
-    :style="linesExpanded && collapsedHeight
-      ? { height: `${collapsedHeight}px` }
-      : undefined"
+    :style="
+      linesExpanded && collapsedHeight
+        ? { height: `${collapsedHeight}px` }
+        : undefined
+    "
   >
     <UCard
       class="order-ticket"
@@ -83,21 +85,18 @@ import {
 } from '../../../../../composables/workspace/operations/Orders/useKitchenOrderTicket'
 import { printKitchenOrderTicket } from '../../../../../composables/workspace/operations/Orders/utils/useKitchenOrderReceiptPrint'
 
-const props = withDefaults(
-  defineProps<KitchenOrderTicketProps>(),
-  {
-    trashMode: false,
-    interactive: true,
-    prominent: false,
-    selected: false,
-    showCustomerDetails: true,
-    headerActionLabel: '',
-    bodyActionLabel: '',
-    statusActionLabel: '',
-    statusActionAriaLabel: '',
-    statusActionPending: false,
-  }
-)
+const props = withDefaults(defineProps<KitchenOrderTicketProps>(), {
+  trashMode: false,
+  interactive: true,
+  prominent: false,
+  selected: false,
+  showCustomerDetails: true,
+  headerActionLabel: '',
+  bodyActionLabel: '',
+  statusActionLabel: '',
+  statusActionAriaLabel: '',
+  statusActionPending: false,
+})
 const emit = defineEmits<{
   (event: 'trash', id: string): void
   (event: 'touch-header', id: string): void
@@ -186,11 +185,8 @@ function printTicket() {
     var(--order-ticket-reading-color) 12%,
     var(--ui-bg)
   );
-  outline: 2px solid color-mix(
-    in srgb,
-    var(--order-ticket-reading-color) 60%,
-    transparent
-  );
+  outline: 2px solid
+    color-mix(in srgb, var(--order-ticket-reading-color) 60%, transparent);
 }
 
 :deep(.order-ticket__content) {
@@ -211,19 +207,16 @@ function printTicket() {
     var(--order-ticket-selected-color) 12%,
     var(--ui-bg)
   );
-  outline: 3px solid color-mix(
-    in srgb,
-    var(--ui-success) 45%,
-    transparent
-  );
+  outline: 3px solid color-mix(in srgb, var(--ui-success) 45%, transparent);
 }
 
 .order-ticket--interactive {
   cursor: pointer;
 }
 
-.order-ticket--interactive:not(.order-ticket--expanded):not(.order-ticket--selected):hover {
+.order-ticket--interactive:not(.order-ticket--expanded):not(
+    .order-ticket--selected
+  ):hover {
   background: color-mix(in srgb, var(--ui-bg-muted) 40%, transparent);
 }
-
 </style>

@@ -10,7 +10,9 @@ export function useSupplierWorkspaceSelection() {
   const { selectedId, selectTarget, clearSelection } =
     useWorkspaceSelection('supplier')
 
-  const setSupplierWorkspaceSelection = (selectionPatch: SupplierWorkspaceSelectionInput = {}) => {
+  const setSupplierWorkspaceSelection = (
+    selectionPatch: SupplierWorkspaceSelectionInput = {}
+  ) => {
     const hasNextId =
       selectionPatch.selectedId !== undefined ||
       selectionPatch.supplierId !== undefined

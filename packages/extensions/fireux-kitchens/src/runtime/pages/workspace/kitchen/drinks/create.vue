@@ -21,7 +21,11 @@ import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/w
 provideKitchenDishesWorkspace('drink')
 
 const breadcrumbItems = [
-  { label: 'Drinks', icon: 'i-lucide-glass-water', to: '/workspace/kitchen/drinks' },
+  {
+    label: 'Drinks',
+    icon: 'i-lucide-glass-water',
+    to: '/workspace/kitchen/drinks',
+  },
   { label: 'Create drink', icon: 'i-lucide-plus' },
 ]
 

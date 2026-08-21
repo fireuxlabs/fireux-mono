@@ -247,7 +247,7 @@ export function useKitchenInterface() {
 
     if (!id || !hasKitchenDisplayData) return null
 
-    const badges = [target.show === false ? 'Hidden' : ''].filter(
+    const badges = [target.visibility === false ? 'Hidden' : ''].filter(
       (badge): badge is string => Boolean(badge)
     )
     const title = displayName || 'Kitchen'
@@ -352,7 +352,7 @@ export function useKitchenInterface() {
         publicPath || (slug ? `/kitchens/${slug}` : ''),
         safeString(target.place_id) ? 'Place linked' : '',
         safeString(target.claimed_by) ? 'Claimed' : '',
-        target.show === false ? 'Hidden' : '',
+        target.visibility === false ? 'Hidden' : '',
       ].filter(Boolean),
       to: publicPath,
       mapUrl:

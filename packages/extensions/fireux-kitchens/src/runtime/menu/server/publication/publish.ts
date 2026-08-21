@@ -26,7 +26,7 @@ export async function publishKitchenMenu(
   dependencies: PublishDependencies = {}
 ) {
   const menuRef = input.db.doc(
-    `apps/${input.appId}/kitchens/${input.kitchenId}/menus/${input.menuId}`
+    `kitchens/${input.kitchenId}/menus/${input.menuId}`
   )
   const menuSnap = await menuRef.get()
   if (!menuSnap.exists) throw new Error('Menu not found.')
@@ -49,7 +49,7 @@ export async function publishKitchenMenu(
       const dishId = text(item.get('dish_id'))
       if (!dishId) throw new Error('Every menu item needs a dish')
       const dishSnap = await input.db
-        .doc(`apps/${input.appId}/kitchens/${input.kitchenId}/dishes/${dishId}`)
+        .doc(`kitchens/${input.kitchenId}/dishes/${dishId}`)
         .get()
       if (!dishSnap.exists) {
         throw new Error(`Menu item references missing dish: ${dishId}`)
@@ -65,11 +65,10 @@ export async function publishKitchenMenu(
     dependencies.ensureRootEntry || ensureKitchenMenuRootEntry
   const root = await completeKitchenMenuPublication({
     updateScopedMenu: () =>
-      updateMenu(
-        serverKitchenMenusTarget(input.appId, input.kitchenId),
-        input.menuId,
-        { status: 'published', updated: stamp }
-      ),
+      updateMenu(serverKitchenMenusTarget(input.kitchenId), input.menuId, {
+        status: 'published',
+        updated: stamp,
+      }),
     ensureRootEntry: () =>
       ensureRootEntry(input.db, {
         appId: input.appId,

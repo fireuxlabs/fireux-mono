@@ -19,7 +19,7 @@ type UseKitchenOrderServiceStateOptions = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -55,11 +55,9 @@ export function useKitchenOrderServiceState(
       now.value
     )
   )
-  const isOpen = computed(() =>
-    scheduledState.value.open || sessionOpen.value
-  )
-  const canOpenNow = computed(() =>
-    options.allowManualOpen.value && !isOpen.value
+  const isOpen = computed(() => scheduledState.value.open || sessionOpen.value)
+  const canOpenNow = computed(
+    () => options.allowManualOpen.value && !isOpen.value
   )
   const statusLabel = computed(() =>
     isOpen.value
@@ -70,9 +68,10 @@ export function useKitchenOrderServiceState(
   )
   const message = computed(() => {
     if (options.waitingOrderCount.value) {
-      const noun = options.waitingOrderCount.value === 1
-        ? 'scheduled order'
-        : 'scheduled orders'
+      const noun =
+        options.waitingOrderCount.value === 1
+          ? 'scheduled order'
+          : 'scheduled orders'
       return `${options.waitingOrderCount.value} ${noun} waiting.`
     }
     if (isOpen.value && options.activeOrderCount.value === 0) {

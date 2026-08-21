@@ -1,10 +1,9 @@
-// Concurrent edit — 2026-07-20 22:39 CEST — Property public projection: define the bounded allowlisted Property index DTO.
 import type { Property } from './property.model.ts'
 
-export const PUBLIC_PROPERTY_INDEX_PAGE_SIZE = 24
-export const PUBLIC_PROPERTY_INDEX_MAX_PAGE_SIZE = 48
+export const PROPERTY_DIRECTORY_PAGE_SIZE = 24
+export const PROPERTY_DIRECTORY_MAX_PAGE_SIZE = 48
 
-export type PublicPropertyIndexItem = {
+export type PropertyDirectoryEntry = {
   id: string
   slug: string
   name: string
@@ -13,7 +12,7 @@ export type PublicPropertyIndexItem = {
   unit_count: number
 }
 
-export type PublicPropertyIndexPage = {
-  items: PublicPropertyIndexItem[]
+export type PropertyDirectoryPage = {
+  items: PropertyDirectoryEntry[]
   nextCursor?: string
 }

@@ -1,4 +1,4 @@
-import type { PublicIngredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
+import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient.model'
 import { resolveIngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
 import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
 
@@ -29,7 +29,7 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
   workspaceScenario: WorkspaceScenario
   financeModule: FinanceModule
   kitchenSpineModule: KitchenSpineModule
-  loadIngredientRoots: (ids: string[]) => Promise<PublicIngredient[]>
+  loadIngredientRoots: (ids: string[]) => Promise<Ingredient[]>
 }) {
   const workspaceIngredientCascadeById = new Map(
     workspaceMenuCascade.ingredients.map(ingredient => [

@@ -1,8 +1,8 @@
 export {
   getManagedMarketplaceStore,
-  getPublicMarketplaceStore,
+  readMarketplaceStoreDetail,
   listManagedMarketplaceStores,
-  listPublicMarketplaceStores,
+  readMarketplaceStoreDirectoryPage,
 } from '../directory/read'
 export {
   createMarketplaceStore,

@@ -7,12 +7,10 @@ import type {
   FireuxEntityCreateResult,
   FireuxRootCreateResult,
 } from 'fireux-core/runtime/models/utils/entity-create.model'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import {
   PropertyManualStorage,
   PropertyStorage,
@@ -37,7 +35,6 @@ export type PropertyCreateModeOptions = {
 
 export function usePropertyCreate() {
   const db = useFirestore()
-  const { appId } = useFireUXConfig()
   const create = useFirestoreClientCreate()
 
   async function createPropertyRootResult(
@@ -80,7 +77,7 @@ export function usePropertyCreate() {
     return {
       id: root.id,
       createdRoot: root.created,
-      createdAppSupport: false,
+      createdTeamMember: false,
     }
   }
 
@@ -96,19 +93,19 @@ export function usePropertyCreate() {
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
-        body: existingRootId
-          ? { property_id: existingRootId }
-          : input,
+        body: existingRootId ? { property_id: existingRootId } : input,
       }
     )
     if (response?.ok !== true || !normalizeString(response.property_id)) {
-      throw new Error('[fireux-properties] Property onboarding completion was invalid.')
+      throw new Error(
+        '[fireux-properties] Property onboarding completion was invalid.'
+      )
     }
 
     const result: FireuxEntityCreateResult = {
       id: response.property_id,
       createdRoot: response.created_root,
-      createdAppSupport: response.created_app_support,
+      createdTeamMember: response.created_team_member,
     }
 
     if (options.manual) {
@@ -122,30 +119,29 @@ export function usePropertyCreate() {
     propertyId: string,
     input: PropertyManual
   ): Promise<boolean> {
-    const resolvedAppId = normalizeString(appId)
     const resolvedPropertyId = normalizeString(propertyId)
     const manual = canonicalPropertyManual(input)
-    if (!resolvedAppId) {
-      throw new Error('[fireux-properties] app id is required for private manual creation.')
-    }
     if (!resolvedPropertyId) {
-      throw new Error('[fireux-properties] property id is required for private manual creation.')
+      throw new Error(
+        '[fireux-properties] property id is required for private manual creation.'
+      )
     }
     if (!manual) {
-      throw new Error('[fireux-properties] complete Property manual input is required.')
-    }
-
-    const appPropertyCollection = `${AppStorage.collection}/${resolvedAppId}/${PropertyStorage.appSupportCollection}`
-    const appPropertySnap = await getDoc(
-      doc(db, appPropertyCollection, resolvedPropertyId)
-    )
-    if (!appPropertySnap.exists()) {
       throw new Error(
-        `[fireux-properties] AppProperty access record is required before its private manual: ${resolvedPropertyId}`
+        '[fireux-properties] complete Property manual input is required.'
       )
     }
 
-    const manualCollection = `${appPropertyCollection}/${resolvedPropertyId}/${PropertyManualStorage.collection}`
+    const propertySnap = await getDoc(
+      doc(db, PropertyStorage.rootCollection, resolvedPropertyId)
+    )
+    if (!propertySnap.exists()) {
+      throw new Error(
+        `[fireux-properties] Property is required before its private manual: ${resolvedPropertyId}`
+      )
+    }
+
+    const manualCollection = `${PropertyStorage.rootCollection}/${resolvedPropertyId}/${PropertyManualStorage.collection}`
     const manualRef = doc(
       db,
       manualCollection,
@@ -155,7 +151,7 @@ export function usePropertyCreate() {
 
     await create(
       defineRuntimeClientCreateTarget(
-        'project.app-property-manuals',
+        'project.property-manuals',
         manualCollection
       ),
       manual,

@@ -1,22 +1,10 @@
 <template>
-  <div
-    ref="viewerHost"
-    class="menu-document-pdf"
-    :aria-busy="rendering"
-  >
-    <p
-      v-if="loading"
-      class="menu-document-pdf__state"
-      role="status"
-    >
+  <div ref="viewerHost" class="menu-document-pdf" :aria-busy="rendering">
+    <p v-if="loading" class="menu-document-pdf__state" role="status">
       Loading menu document…
     </p>
 
-    <p
-      v-else-if="previewFailed"
-      class="menu-document-pdf__state"
-      role="alert"
-    >
+    <p v-else-if="previewFailed" class="menu-document-pdf__state" role="alert">
       PDF preview unavailable. Use Open original instead.
     </p>
 
@@ -67,11 +55,14 @@ onBeforeUnmount(() => {
   resizeObserver = undefined
 })
 
-watch(() => props.url, () => {
-  renderedWidth = 0
-  clearHost()
-  loadPdf()
-})
+watch(
+  () => props.url,
+  () => {
+    renderedWidth = 0
+    clearHost()
+    loadPdf()
+  }
+)
 
 function queueResizeRender() {
   const width = viewerHost.value?.clientWidth || 0
@@ -105,7 +96,11 @@ async function loadPdf() {
   try {
     const pdfDocument = await pdfjs.getDocument({ url }).promise
     try {
-      for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+      for (
+        let pageNumber = 1;
+        pageNumber <= pdfDocument.numPages;
+        pageNumber++
+      ) {
         if (currentRun !== renderRun) return
 
         const page = await pdfDocument.getPage(pageNumber)
@@ -137,9 +132,10 @@ async function loadPdf() {
         await page.render({
           canvas,
           canvasContext: context,
-          transform: outputScale === 1
-            ? undefined
-            : [outputScale, 0, 0, outputScale, 0, 0],
+          transform:
+            outputScale === 1
+              ? undefined
+              : [outputScale, 0, 0, outputScale, 0, 0],
           viewport,
         }).promise
       }

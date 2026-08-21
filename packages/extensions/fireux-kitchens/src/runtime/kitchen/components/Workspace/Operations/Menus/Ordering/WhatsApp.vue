@@ -5,7 +5,8 @@
       <div>
         <h3 class="text-sm font-semibold text-highlighted">WhatsApp alert</h3>
         <p class="text-sm text-dimmed">
-          Send a Kitchen alert when a Pre-order reaches intake. Pay-now orders notify after payment.
+          Send a Kitchen alert when a Pre-order reaches intake. Pay-now orders
+          notify after payment.
         </p>
       </div>
     </template>
@@ -31,9 +32,11 @@
         false-label="Alerts disabled"
         :firebase-value="enabled"
         :disabled="disabled || !recipientPhone"
-        :disabled-message="disabled
-          ? 'This menu is read-only.'
-          : 'Add a valid international number first.'"
+        :disabled-message="
+          disabled
+            ? 'This menu is read-only.'
+            : 'Add a valid international number first.'
+        "
         :update-function="updateEnabled"
       />
 
@@ -105,13 +108,14 @@ const {
   kitchenId: computed(() => props.kitchenId),
   menuId: computed(() => props.menuId),
 })
-const testDisabled = computed(() =>
-  props.disabled ||
-  !enabled.value ||
-  !recipientPhone.value ||
-  !props.appId ||
-  !props.kitchenId ||
-  !props.menuId
+const testDisabled = computed(
+  () =>
+    props.disabled ||
+    !enabled.value ||
+    !recipientPhone.value ||
+    !props.appId ||
+    !props.kitchenId ||
+    !props.menuId
 )
 
 const validateRecipientPhone = (value: string): ValidationResult => {
@@ -121,7 +125,8 @@ const validateRecipientPhone = (value: string): ValidationResult => {
 
   return {
     isValid: false,
-    message: 'Use an international number beginning with + and its country code.',
+    message:
+      'Use an international number beginning with + and its country code.',
   }
 }
 
@@ -138,14 +143,15 @@ const updateRecipientPhone = (value: string) => {
   })
 }
 
-const updateEnabled = (value: boolean) => props.updateFunction({
-  notifications: {
-    whatsapp: {
-      enabled: value && Boolean(recipientPhone.value),
-      recipient_phone: recipientPhone.value,
+const updateEnabled = (value: boolean) =>
+  props.updateFunction({
+    notifications: {
+      whatsapp: {
+        enabled: value && Boolean(recipientPhone.value),
+        recipient_phone: recipientPhone.value,
+      },
     },
-  },
-})
+  })
 
 const runTest = () => sendTest().catch(() => undefined)
 </script>

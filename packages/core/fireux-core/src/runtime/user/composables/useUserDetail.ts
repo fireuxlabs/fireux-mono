@@ -7,10 +7,8 @@ import {
   type MaybeRef,
 } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type {
-  PublicDetailResponse,
-  PublicUserDto,
-} from '../../server/utils/public-projection/public-dto.types.ts'
+import type { DetailResponse } from '../../models/utils/directory.ts'
+import type { UserDetail } from '../models/user-directory.model.ts'
 
 export type UserDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -20,7 +18,7 @@ type UserDetailControls = Pick<
 >
 
 export type UseUserDetailReturn = UserDetailControls & {
-  user: ComputedRef<PublicUserDto | null>
+  user: ComputedRef<UserDetail | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -50,7 +48,7 @@ export function useUserDetail(
       .trim()
       .toLowerCase()
   )
-  const state = useAsyncData<PublicDetailResponse<PublicUserDto> | null>(
+  const state = useAsyncData<DetailResponse<UserDetail> | null>(
     () => [
       'user-detail',
       fireux.appId,
@@ -58,14 +56,14 @@ export function useUserDetail(
     ].join('|'),
     async () => {
       if (!handle.value) return null
-      return $fetch<PublicDetailResponse<PublicUserDto>>(
-        `/api/public/users/${encodeURIComponent(handle.value)}`
+      return $fetch<DetailResponse<UserDetail>>(
+        `/api/users/${encodeURIComponent(handle.value)}`
       )
     },
     { server: true, watch: [handle] }
   )
 
-  const user = computed<PublicUserDto | null>(() => {
+  const user = computed<UserDetail | null>(() => {
     const item = state.data.value?.item ?? null
     return item?.handle === handle.value && !state.pending.value ? item : null
   })

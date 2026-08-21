@@ -6,9 +6,7 @@
     class="block w-full"
     @activate="emit('action')"
   >
-    <div
-      class="fx-card--cell"
-    >
+    <div class="fx-card--cell">
       <UAvatar
         :src="props.imageUrl || undefined"
         :alt="props.title"
@@ -21,7 +19,10 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ props.title }}</div>
-            <div v-if="showSubtitle && props.subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && props.subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ props.subtitle }}
             </div>
           </div>

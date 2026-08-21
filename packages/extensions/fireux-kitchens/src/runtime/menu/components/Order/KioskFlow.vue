@@ -85,27 +85,38 @@ const props = defineProps<{
 }>()
 
 const selectedType = ref<MenuOrderKioskType | null>(null)
-const stage = computed(() => activeType.value ? 'order' : 'mode')
-const options = computed(() => props.configs.flatMap((config) => {
-  if (config.type !== 'eat_in' && config.type !== 'takeaway') return []
+const stage = computed(() => (activeType.value ? 'order' : 'mode'))
+const options = computed(() =>
+  props.configs.flatMap((config) => {
+    if (config.type !== 'eat_in' && config.type !== 'takeaway') return []
 
-  return [{
-    type: config.type,
-    label: config.type === 'eat_in' ? 'Eat here' : 'Take away',
-    icon: config.type === 'eat_in' ? 'i-lucide-armchair' : 'i-lucide-shopping-bag',
-    description: config.type === 'eat_in'
-      ? 'We’ll bring it to your table'
-      : 'Collect your order at the counter',
-    paused: config.availability?.paused === true,
-  }]
-}))
+    return [
+      {
+        type: config.type,
+        label: config.type === 'eat_in' ? 'Eat here' : 'Take away',
+        icon:
+          config.type === 'eat_in'
+            ? 'i-lucide-armchair'
+            : 'i-lucide-shopping-bag',
+        description:
+          config.type === 'eat_in'
+            ? 'We’ll bring it to your table'
+            : 'Collect your order at the counter',
+        paused: config.availability?.paused === true,
+      },
+    ]
+  })
+)
 const fixedConfig = computed(() => {
   if (!props.fixedOrderType) return null
 
-  return props.configs.find(config =>
-    config.type === props.fixedOrderType
-    && config.availability?.paused !== true
-  ) || null
+  return (
+    props.configs.find(
+      (config) =>
+        config.type === props.fixedOrderType &&
+        config.availability?.paused !== true
+    ) || null
+  )
 })
 const activeType = computed<MenuOrderKioskType | null>(() => {
   const fixedType = fixedConfig.value?.type
@@ -113,9 +124,9 @@ const activeType = computed<MenuOrderKioskType | null>(() => {
 
   return selectedType.value
 })
-const selectedConfig = computed(() => props.configs.find(
-  config => config.type === activeType.value
-) || null)
+const selectedConfig = computed(
+  () => props.configs.find((config) => config.type === activeType.value) || null
+)
 function clearSelection() {
   if (fixedConfig.value) return
   selectedType.value = null
@@ -138,9 +149,21 @@ function clearSelection() {
   z-index: -1;
   inset: 0;
   background:
-    radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--menu-primary) 13%, transparent) 0 14rem, transparent 38rem),
-    radial-gradient(circle at 92% 88%, color-mix(in srgb, var(--menu-secondary) 10%, transparent) 0 12rem, transparent 34rem),
-    repeating-linear-gradient(135deg, color-mix(in srgb, var(--menu-text) 2.6%, transparent) 0 1px, transparent 1px 9px);
+    radial-gradient(
+      circle at 14% 8%,
+      color-mix(in srgb, var(--menu-primary) 13%, transparent) 0 14rem,
+      transparent 38rem
+    ),
+    radial-gradient(
+      circle at 92% 88%,
+      color-mix(in srgb, var(--menu-secondary) 10%, transparent) 0 12rem,
+      transparent 34rem
+    ),
+    repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--menu-text) 2.6%, transparent) 0 1px,
+      transparent 1px 9px
+    );
   content: '';
   pointer-events: none;
 }

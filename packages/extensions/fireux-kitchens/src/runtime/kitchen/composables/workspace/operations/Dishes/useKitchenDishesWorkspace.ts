@@ -1,22 +1,34 @@
-import {
-  computed,
-  inject,
-  provide,
-  type InjectionKey,
-} from 'vue'
+import { computed, inject, provide, type InjectionKey } from 'vue'
 import { useKitchenWorkspaceDishes } from './useKitchenWorkspaceDishes'
 
 export type KitchenDishCatalogueKind = 'food' | 'drink'
 
 const catalogueByKind = {
-  food: { itemKind: 'food', singular: 'dish', plural: 'dishes', title: 'Dishes', path: '/workspace/kitchen/dishes', icon: 'i-lucide-cooking-pot' },
-  drink: { itemKind: 'drink', singular: 'drink', plural: 'drinks', title: 'Drinks', path: '/workspace/kitchen/drinks', icon: 'i-lucide-glass-water' },
+  food: {
+    itemKind: 'food',
+    singular: 'dish',
+    plural: 'dishes',
+    title: 'Dishes',
+    path: '/workspace/kitchen/dishes',
+    icon: 'i-lucide-cooking-pot',
+  },
+  drink: {
+    itemKind: 'drink',
+    singular: 'drink',
+    plural: 'drinks',
+    title: 'Drinks',
+    path: '/workspace/kitchen/drinks',
+    icon: 'i-lucide-glass-water',
+  },
 } as const
 
-export type KitchenDishesWorkspace = ReturnType<typeof createKitchenDishesWorkspace>
+export type KitchenDishesWorkspace = ReturnType<
+  typeof createKitchenDishesWorkspace
+>
 
-const kitchenDishesWorkspaceKey: InjectionKey<KitchenDishesWorkspace> =
-  Symbol('KitchenDishesWorkspace')
+const kitchenDishesWorkspaceKey: InjectionKey<KitchenDishesWorkspace> = Symbol(
+  'KitchenDishesWorkspace'
+)
 
 function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   const source = useKitchenWorkspaceDishes()
@@ -25,7 +37,7 @@ function createKitchenDishesWorkspace(itemKind: KitchenDishCatalogueKind) {
   return {
     ...source,
     dishes: computed(() =>
-      source.dishes.value.filter(dish => dish.item_kind === itemKind)
+      source.dishes.value.filter((dish) => dish.item_kind === itemKind)
     ),
     catalogue: { ...catalogue, createPath: `${catalogue.path}/create` },
   }

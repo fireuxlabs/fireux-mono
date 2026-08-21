@@ -23,8 +23,9 @@ export function useKitchenWorkspaceRecipe() {
 
   const recipe = computed<Recipe | null>(
     () =>
-      recipes.value.find((item) => normalizeString(item?.id) === recipeId.value) ??
-      null
+      recipes.value.find(
+        (item) => normalizeString(item?.id) === recipeId.value
+      ) ?? null
   )
   const dishUsage = computed(() => getDishUsageForRecipe(recipeId.value))
 

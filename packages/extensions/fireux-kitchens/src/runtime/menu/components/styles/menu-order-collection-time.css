@@ -98,7 +98,7 @@
   height: 1px;
   flex: 1;
   background: color-mix(in srgb, var(--menu-text) 14%, transparent);
-  content: "";
+  content: '';
 }
 
 .menu-order-collection-time__days {
@@ -125,7 +125,7 @@
   padding: calc(var(--spacing) * 2) 0.7rem;
 }
 
-.menu-order-collection-time__days button[aria-pressed="true"] {
+.menu-order-collection-time__days button[aria-pressed='true'] {
   border-color: var(--menu-primary);
   background: var(--menu-primary);
   color: var(--menu-bg);
@@ -142,8 +142,16 @@
 }
 
 .menu-order-collection-time__slot--active {
-  border-color: color-mix(in srgb, var(--menu-primary) 55%, transparent) !important;
-  background: color-mix(in srgb, var(--menu-primary) 13%, var(--menu-bg)) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--menu-primary) 55%,
+    transparent
+  ) !important;
+  background: color-mix(
+    in srgb,
+    var(--menu-primary) 13%,
+    var(--menu-bg)
+  ) !important;
   color: var(--menu-text) !important;
 }
 

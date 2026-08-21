@@ -28,7 +28,7 @@ export function useBuenoHostHome() {
     sproochli: 'https://sproochli.web.app',
     findMySeo: 'https://find-my-seo.web.app',
   }
-  
+
   const localIntegrationBaseUrls: Record<IntegrationAppKey, string> = {
     fireux: 'http://localhost:3000',
     misebox: 'http://localhost:3001',
@@ -36,8 +36,10 @@ export function useBuenoHostHome() {
     sproochli: 'http://localhost:3011',
     findMySeo: 'http://localhost:3010',
   }
-  
-  const integrationAppInfo = ref<Partial<Record<IntegrationAppKey, PublicAppInfo>>>({})
+
+  const integrationAppInfo = ref<
+    Partial<Record<IntegrationAppKey, PublicAppInfo>>
+  >({})
 
   const resolvedIntegrationCards = computed(() =>
     integrationCards.map((card) => ({
@@ -71,12 +73,19 @@ export function useBuenoHostHome() {
   }
 
   function integrationInfoUrls(appKey: IntegrationAppKey): string[] {
-    return integrationBaseUrls(appKey).map((baseUrl) => `${baseUrl}/api/public/app/info`)
+    return integrationBaseUrls(appKey).map(
+      (baseUrl) => `${baseUrl}/api/app/info`
+    )
   }
 
   function resolveIntegrationBrandSrc(appKey: IntegrationAppKey): string {
     const media = integrationAppInfo.value[appKey]?.app?.media
-    return media?.wordmark_dark_url || media?.logo_url || media?.wordmark_light_url || ''
+    return (
+      media?.wordmark_dark_url ||
+      media?.logo_url ||
+      media?.wordmark_light_url ||
+      ''
+    )
   }
 
   function resolveIntegrationHref(card: IntegrationCard): string {
@@ -94,7 +103,9 @@ export function useBuenoHostHome() {
     return /^https?:\/\//i.test(value)
   }
 
-  async function fetchIntegrationAppInfo(appKey: IntegrationAppKey): Promise<void> {
+  async function fetchIntegrationAppInfo(
+    appKey: IntegrationAppKey
+  ): Promise<void> {
     for (const url of integrationInfoUrls(appKey)) {
       try {
         const response = await fetch(url, {
@@ -118,9 +129,14 @@ export function useBuenoHostHome() {
 
   onMounted(async () => {
     const configuredBaseUrl = configString('buenoHostBaseUrl')
-    const baseUrl = configuredBaseUrl || (import.meta.client ? window.location.origin : defaultBuenoHostBaseUrl)
+    const baseUrl =
+      configuredBaseUrl ||
+      (import.meta.client ? window.location.origin : defaultBuenoHostBaseUrl)
 
-    qrTargetUrl.value = new URL(previewInfoPath, normalizeBaseUrl(baseUrl)).toString()
+    qrTargetUrl.value = new URL(
+      previewInfoPath,
+      normalizeBaseUrl(baseUrl)
+    ).toString()
     qrDataUrl.value = await toDataURL(qrTargetUrl.value, {
       width: 512,
       margin: 1,

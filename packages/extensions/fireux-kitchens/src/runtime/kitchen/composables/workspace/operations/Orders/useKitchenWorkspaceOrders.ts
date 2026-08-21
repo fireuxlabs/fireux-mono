@@ -18,10 +18,7 @@ import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition
 import { useKitchenOrderService } from './mutations/useKitchenOrderService'
 
 export function useKitchenWorkspaceOrders() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
@@ -32,19 +29,19 @@ export function useKitchenWorkspaceOrders() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const demoData = useKitchenWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
+  const demoOrders = computed<KitchenOrder[]>(
+    () =>
+      findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
+        ?.orders ?? []
   )
-  const demoOrders = computed<KitchenOrder[]>(() =>
-    findKitchenWorkspaceDemoScenario(
-      demoData.data.value,
-      kitchenId.value
-    )?.orders ?? []
-  )
-  const { orders, pending: ordersPending, ordersPath } =
-    useKitchenOrdersFetch(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
+  const {
+    orders,
+    pending: ordersPending,
+    ordersPath,
+  } = useKitchenOrdersFetch(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const {
     error: transitionError,
@@ -66,9 +63,7 @@ export function useKitchenWorkspaceOrders() {
     collectionPath: ordersPath,
   })
   const workspaceOrders = computed(() =>
-    runtime.isDemo.value
-      ? demoOrders.value
-      : page.collection.value.items
+    runtime.isDemo.value ? demoOrders.value : page.collection.value.items
   )
   const pending = computed(() =>
     runtime.isDemo.value
@@ -94,9 +89,7 @@ export function useKitchenWorkspaceOrders() {
   const queueOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'queue')
   )
-  const passOrders = computed(() =>
-    ordersAtStage(visibleOrders.value, 'pass')
-  )
+  const passOrders = computed(() => ordersAtStage(visibleOrders.value, 'pass'))
   const recentOrders = computed(() =>
     ordersAtStage(visibleOrders.value, 'recent')
   )
@@ -115,9 +108,7 @@ export function useKitchenWorkspaceOrders() {
       ? [{ label: 'Needs mapping', count: unmappedOrders.value.length }]
       : []),
   ])
-  const ticketOrders = computed(() =>
-    sortOrders(visibleOrders.value)
-  )
+  const ticketOrders = computed(() => sortOrders(visibleOrders.value))
   const debugOrder = (order: KitchenOrder) => ({
     id: order.id,
     orderNumber: order.order_number || '',
@@ -168,8 +159,7 @@ export function useKitchenWorkspaceOrders() {
     transitionOrder('mark_ready', orderId)
   const completeOrder = (orderId: string) =>
     transitionOrder('complete', orderId)
-  const trashOrder = (orderId: string) =>
-    transitionOrder('trash', orderId)
+  const trashOrder = (orderId: string) => transitionOrder('trash', orderId)
   const endService = async () => {
     if (readOnly.value || !canWrite.value) return
     return endKitchenOrderService()
@@ -266,11 +256,17 @@ const timestampMs = (value: unknown, baseMs = 0) => {
 
 const collectionRequestedFor = (order: KitchenOrder) => {
   const collection = (order as Record<string, unknown>).collection
-  if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
+  if (
+    !collection ||
+    typeof collection !== 'object' ||
+    Array.isArray(collection)
+  ) {
     return ''
   }
 
-  return String((collection as Record<string, unknown>).requested_for || '').trim()
+  return String(
+    (collection as Record<string, unknown>).requested_for || ''
+  ).trim()
 }
 
 const getCreatedMs = (order: KitchenOrder) =>
@@ -284,12 +280,10 @@ const getPickupMs = (order: KitchenOrder) => {
   )
 }
 
-const ordersAtStage = (
-  orders: KitchenOrder[],
-  stage: KitchenOrderBoardStage
-) => sortOrders(
-  orders.filter((order) => deriveKitchenOrderBoardStage(order) === stage)
-)
+const ordersAtStage = (orders: KitchenOrder[], stage: KitchenOrderBoardStage) =>
+  sortOrders(
+    orders.filter((order) => deriveKitchenOrderBoardStage(order) === stage)
+  )
 
 const sortOrders = (orders: KitchenOrder[]) =>
   [...orders].sort((a, b) => {
@@ -306,7 +300,5 @@ const getRailTime = (order: KitchenOrder) => {
   if (order.order_type !== 'collection') return createdMs
 
   const pickupMs = getPickupMs(order)
-  return pickupMs
-    ? pickupMs - defaultTargetMinutes * 60 * 1000
-    : createdMs
+  return pickupMs ? pickupMs - defaultTargetMinutes * 60 * 1000 : createdMs
 }

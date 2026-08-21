@@ -1,12 +1,6 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block min-w-0 w-full"
->
-    <div
-      class="fx-card--cell"
-    >
+  <NuxtLink v-if="link && to" :to="to" class="block min-w-0 w-full">
+    <div class="fx-card--cell">
       <UAvatar
         :src="imageUrl || undefined"
         :icon="icon || 'i-lucide-list-checks'"
@@ -28,25 +22,16 @@
           </div>
         </div>
 
-        <div
-          v-if="showTagline"
-          class="truncate text-xs text-dimmed"
-        >
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop || description">{{ prop || description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block min-w-0 w-full"
-  @click="onClick"
->
-    <div
-      class="fx-card--cell"
-    >
+  <div v-else class="block min-w-0 w-full" @click="onClick">
+    <div class="fx-card--cell">
       <UAvatar
         :src="imageUrl || undefined"
         :icon="icon || 'i-lucide-list-checks'"
@@ -68,16 +53,13 @@
           </div>
         </div>
 
-        <div
-          v-if="showTagline"
-          class="truncate text-xs text-dimmed"
-        >
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop || description">{{ prop || description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -85,10 +67,12 @@ import { navigateTo } from '#imports'
 
 import type { MiseEnPlaceCard } from '../../../../../composables/workspace/operations/Mise/utils/view/useMiseEnPlaceInterface'
 
-type Props = Partial<Pick<
-  MiseEnPlaceCard.Card,
-  'to' | 'name' | 'subtitle' | 'icon' | 'imageUrl' | 'description'
->> & {
+type Props = Partial<
+  Pick<
+    MiseEnPlaceCard.Card,
+    'to' | 'name' | 'subtitle' | 'icon' | 'imageUrl' | 'description'
+  >
+> & {
   prop?: string
   showSubtitle?: boolean
   showTagline?: boolean

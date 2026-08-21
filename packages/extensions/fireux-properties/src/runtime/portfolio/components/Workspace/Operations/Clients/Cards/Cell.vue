@@ -5,9 +5,7 @@
     class="block w-full"
     @click="onClick"
   >
-    <div
-      class="fx-card--cell"
-    >
+    <div class="fx-card--cell">
       <UAvatar
         :src="record.imageUrl || undefined"
         :alt="record.title"
@@ -20,12 +18,20 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ record.title }}</div>
-            <div v-if="showSubtitle && record.subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && record.subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ record.subtitle }}
             </div>
           </div>
 
-          <UBadge :color="statusColor(record.status || '')" variant="soft" size="xs" class="shrink-0">
+          <UBadge
+            :color="statusColor(record.status || '')"
+            variant="soft"
+            size="xs"
+            class="shrink-0"
+          >
             {{ record.status }}
           </UBadge>
         </div>

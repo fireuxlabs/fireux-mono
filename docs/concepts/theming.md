@@ -1,7 +1,7 @@
 # Theming and branded presentation
 
 Updated: 2026-08-20
-Ref: 9412d8b2c
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -291,8 +291,7 @@ The Kitchen Identity Workspace mirrors onboarding as four explicit capability
 layers: Place → Kitchen → Workspace → App. Place edits its Primary identity
 colour; Kitchen stores sparse identity media additions but no colour override;
 Kitchen stores its functional four-colour palette and optional menu font
-choices on its canonical root. The same-id AppKitchen remains access-only. The
-App section appears only for
+choices on its canonical root. The App section appears only for
 `management.mode === 'app'` and edits the dedicated App's eight effective
 palette roles plus `display_family` and `body_family`; the writer compacts the
 palette back to an App-only delta over Workspace. It also reports the universal

@@ -1,22 +1,26 @@
 <!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: consume shared timing, details, and availability editors. -->
 <template>
   <section class="workspace-surface">
-    <WorkspaceKitchenOperationsMenusWorkspaceHeader current-label="Collection" />
+    <WorkspaceKitchenOperationsMenusWorkspaceHeader
+      current-label="Collection"
+    />
 
     <UCard>
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="max-w-2xl space-y-1">
-          <h1 class="text-lg font-semibold text-highlighted">
-            Collection
-          </h1>
+          <h1 class="text-lg font-semibold text-highlighted">Collection</h1>
           <p class="text-sm leading-6 text-dimmed">
-            Configure when this Menu accepts pickup orders. These settings belong
-            only to Collection and do not change Delivery or private surfaces.
+            Configure when this Menu accepts pickup orders. These settings
+            belong only to Collection and do not change Delivery or private
+            surfaces.
           </p>
         </div>
 
         <div class="flex items-center gap-2">
-          <UBadge :color="collectionConfig ? 'success' : 'neutral'" variant="soft">
+          <UBadge
+            :color="collectionConfig ? 'success' : 'neutral'"
+            variant="soft"
+          >
             {{ collectionConfig ? 'Enabled' : 'Disabled' }}
           </UBadge>
         </div>

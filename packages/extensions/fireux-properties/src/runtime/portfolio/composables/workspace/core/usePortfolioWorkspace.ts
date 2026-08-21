@@ -11,9 +11,7 @@ import { useWorkspaceEntityRuntime } from 'fireux-core/runtime/composables/fireu
 import { useWorkspaceFamilyRuntime } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceFamilyRuntime'
 import { useWorkspaceTargets } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  usePortfolioCollection,
-} from '../../firestore/fetch/usePortfolioCollection'
+import { usePortfolioCollection } from '../../firestore/fetch/usePortfolioCollection'
 import {
   usePortfolioInterface,
   type PortfolioSurface,
@@ -73,7 +71,9 @@ function createPortfolioWorkspace() {
         : workspaceRoot.source.value === 'test'
           ? 'test'
           : 'live'
-    return targetPortfolios.value.map(portfolio => workspaceData(type, portfolio))
+    return targetPortfolios.value.map((portfolio) =>
+      workspaceData(type, portfolio)
+    )
   })
   const targetsPending = computed(() =>
     workspaceRoot.source.value === 'demo'
@@ -111,7 +111,8 @@ function createPortfolioWorkspace() {
   })
 
   const selectedPortfolio = computed<PortfolioWorkspaceEntity | null>(
-    () => entity.selection.selectedTarget.value as PortfolioWorkspaceEntity | null
+    () =>
+      entity.selection.selectedTarget.value as PortfolioWorkspaceEntity | null
   )
   const portfolioId = entity.selection.entityId
 

@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: skip root reads for app-private profiles.
+// Read one User-owned profile and its optional App-specific state.
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -9,72 +9,67 @@ import {
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 import type { Ref } from 'vue'
-import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import type {
-  AppProfileBase,
+  ProfileAppStateBase,
   ProfileBase,
   ProfileConfig,
   ProfileRecord,
 } from '../../../../../../models/utils/profile.model'
 
-/**
- * Minimal profile fetch:
- * - Fires global + app listeners (when path pieces exist)
- * - Returns refs directly (no computed merge)
- */
+/** Read one User-owned profile and its optional current-App state. */
 export type ProfileRefs<
   TCore extends ProfileRecord = ProfileBase,
-  TApp extends ProfileRecord = AppProfileBase,
+  TApp extends ProfileRecord = ProfileAppStateBase,
 > = {
-  coreProfile: Ref<TCore | undefined | null>
-  appProfile: Ref<Partial<TApp> | undefined | null>
+  profile: Ref<TCore | undefined | null>
+  appState: Ref<Partial<TApp> | undefined | null>
 }
 
 export function useProfileFetch<
   TCore extends ProfileRecord = ProfileBase,
-  TApp extends ProfileRecord = AppProfileBase,
+  TApp extends ProfileRecord = ProfileAppStateBase,
 >(
   id: string | null | undefined | Ref<string | null | undefined>,
   config: ProfileConfig
 ) {
-  const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const { appId } = useFireUXConfig()
 
   const uid = computed(() => (isRef(id) ? id.value : id))
 
-  const coreDoc = computed(() =>
-    uid.value && config.storage !== 'app-only'
-      ? (doc(identityDb, config.collectionName, uid.value) as any)
+  const profileDoc = computed(() =>
+    uid.value
+      ? (doc(identityDb, 'users', uid.value, 'profiles', config.kind) as any)
       : null
   )
 
-  /**
-   * Canon: App profile overlay (domain deltas)
-   * - Path: `apps/{appId}/{domainCollection}/{uid}` (e.g. `apps/misebox/chefs/{uid}`)
-   * - This is the app-scoped domain profile layer for the current app, including global apps.
-   * - The first scoped facade should usually live in the global app, then migrate or extend later
-   *   when a dedicated app becomes real.
-   */
-  const appDoc = computed(() =>
-    uid.value && appId
-      ? (doc(appDb, AppStorage.collection, appId, config.collectionName, uid.value) as any)
+  const appStateDoc = computed(() =>
+    uid.value && appId && config.storage === 'user-with-app-state'
+      ? (doc(
+          identityDb,
+          'users',
+          uid.value,
+          'profiles',
+          config.kind,
+          'app-state',
+          appId
+        ) as any)
       : null
   )
 
-  const { data: coreProfile, pending: corePending } = useDocument<
+  const { data: profile, pending: profilePending } = useDocument<
     TCore | undefined
-  >(coreDoc as any, {
+  >(profileDoc as any, {
     transform: (docSnap: DocumentSnapshot<TCore>) => {
       const raw = docSnap.data()
       if (!raw) return undefined
-      return { ...(raw as any), id: docSnap.id } as TCore
+      return { ...(raw as any), id: uid.value } as TCore
     },
   } as any)
 
-  const { data: appProfile, pending: appPending } = useDocument<
+  const { data: appState, pending: appStatePending } = useDocument<
     Partial<TApp> | undefined
-  >(appDoc as any, {
+  >(appStateDoc as any, {
     transform: (docSnap: DocumentSnapshot<Partial<TApp>>) => {
       const raw = docSnap.data()
       if (!raw) return undefined
@@ -82,10 +77,10 @@ export function useProfileFetch<
     },
   } as any)
 
-  const profile: ProfileRefs<TCore, TApp> = { coreProfile, appProfile }
+  const refs: ProfileRefs<TCore, TApp> = { profile, appState }
   const pending = computed(
-    () => Boolean(corePending.value) || Boolean(appPending?.value)
+    () => Boolean(profilePending.value) || Boolean(appStatePending?.value)
   )
 
-  return { profile, pending }
+  return { profile: refs, pending }
 }

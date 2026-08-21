@@ -25,9 +25,7 @@
         </div>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No stations found.
-      </p>
+      <p v-else class="text-sm text-dimmed">No stations found.</p>
     </UCard>
 
     <DevDebugPanel

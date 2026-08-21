@@ -34,11 +34,7 @@
       </template>
 
       <div v-if="cards.length" class="grid gap-3 md:grid-cols-2">
-        <UPageCard
-          v-for="card in cards"
-          :key="card.id"
-          variant="subtle"
-        >
+        <UPageCard v-for="card in cards" :key="card.id" variant="subtle">
           <div class="flex items-start gap-3">
             <UAvatar
               :src="card.imageUrl || undefined"
@@ -64,9 +60,7 @@
           </div>
         </UPageCard>
       </div>
-      <p v-else class="text-sm text-dimmed">
-        No supplier ingredients found.
-      </p>
+      <p v-else class="text-sm text-dimmed">No supplier ingredients found.</p>
     </UPageCard>
 
     <DevDebugPanel

@@ -36,18 +36,18 @@ type KitchenSpineRecord = Record<string, unknown> | null | undefined
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
-const optionalRecord = (value: unknown): Record<string, unknown> | undefined => {
+const optionalRecord = (
+  value: unknown
+): Record<string, unknown> | undefined => {
   const item = record(value)
   return Object.keys(item).length ? item : undefined
 }
 const bool = (value: unknown, fallback: boolean) =>
   typeof value === 'boolean' ? value : fallback
 const stringArray = (value: unknown) =>
-  Array.isArray(value)
-    ? value.map(text).filter(Boolean)
-    : []
+  Array.isArray(value) ? value.map(text).filter(Boolean) : []
 const hasKeys = (value: Record<string, unknown>) =>
   Boolean(Object.keys(value).length)
 
@@ -64,7 +64,14 @@ const kitchenPaymentRequirements = [
 ] as const satisfies readonly KitchenPaymentRequirement[]
 
 export const KitchenPaymentMethodDefaultOrderTypes = {
-  cash: ['collection', 'delivery', 'dine_in', 'eat_in', 'takeaway', 'pre_order'],
+  cash: [
+    'collection',
+    'delivery',
+    'dine_in',
+    'eat_in',
+    'takeaway',
+    'pre_order',
+  ],
   card_at_pickup: ['collection', 'eat_in', 'takeaway', 'pre_order'],
   card_to_driver: ['delivery'],
   room_charge: ['room_service'],
@@ -77,7 +84,10 @@ export const KitchenPaymentMethodDefaultOrderTypes = {
     'pre_order',
     'room_service',
   ],
-} as const satisfies Record<KitchenFulfilmentPaymentMethod, readonly KitchenOrderType[]>
+} as const satisfies Record<
+  KitchenFulfilmentPaymentMethod,
+  readonly KitchenOrderType[]
+>
 
 const readKitchenPaymentMethod = (value: unknown) => {
   const method = text(value) as KitchenFulfilmentPaymentMethod
@@ -95,31 +105,36 @@ const readKitchenPaymentPolicy = (
   const method = flatMethod || readKitchenPaymentMethod(row.method)
   if (!method) return null
 
-  const configuredTypes = stringArray(row.order_types)
-    .filter((type): type is KitchenOrderType =>
+  const configuredTypes = stringArray(row.order_types).filter(
+    (type): type is KitchenOrderType =>
       kitchenOrderTypes.includes(type as KitchenOrderType)
-    )
+  )
   const orderTypes = configuredTypes.length
     ? configuredTypes
     : [...KitchenPaymentMethodDefaultOrderTypes[method]]
-  const requirements = stringArray(row.requirements)
-    .filter((requirement): requirement is KitchenPaymentRequirement =>
-      kitchenPaymentRequirements.includes(requirement as KitchenPaymentRequirement)
-    )
+  const requirements = stringArray(row.requirements).filter(
+    (requirement): requirement is KitchenPaymentRequirement =>
+      kitchenPaymentRequirements.includes(
+        requirement as KitchenPaymentRequirement
+      )
+  )
 
   return {
     method,
     order_types: [...new Set(orderTypes)],
-    ...(requirements.length ? { requirements: [...new Set(requirements)] } : {}),
+    ...(requirements.length
+      ? { requirements: [...new Set(requirements)] }
+      : {}),
   }
 }
 
 export const kitchenPaymentMethodsForOrderType = (
   fulfilment: KitchenFulfilmentConfig | null | undefined,
   orderType: KitchenOrderType
-) => (fulfilment?.payment_methods || [])
-  .filter(policy => policy.order_types.includes(orderType))
-  .map(policy => policy.method)
+) =>
+  (fulfilment?.payment_methods || [])
+    .filter((policy) => policy.order_types.includes(orderType))
+    .map((policy) => policy.method)
 export const composeKitchenScopedSurface = (
   publicKitchen: KitchenSpineRecord,
   scopedKitchen: KitchenSpineRecord
@@ -174,16 +189,16 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
   const assets = record(source.assets)
 
   return {
-    displayName: text(identity.name),
+    displayName: text(identity.display_name),
     tagline: text(identity.tagline),
     imageUrl: text(assets.image),
     cardImageUrl: text(assets.image),
     logoImageUrl: text(assets.logo),
     wordmarkNoLogoImageUrl: text(assets.wordmark),
     wordmarkImageUrl: text(assets.wordmark),
-    mediaBackdropColor: readMediaBackdropColor(
-      assets.backdrop_color
-    ) as KitchenMediaBackdropColor | '',
+    mediaBackdropColor: readMediaBackdropColor(assets.backdrop_color) as
+      | KitchenMediaBackdropColor
+      | '',
     imageShade: 'none' as KitchenImageShade,
   }
 }
@@ -200,9 +215,8 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 
   return {
     context: text(menus.context),
-    currencyFormat: (
-      text(menus.currency_format) || 'dash'
-    ) as CurrencyDisplayFormat,
+    currencyFormat: (text(menus.currency_format) ||
+      'dash') as CurrencyDisplayFormat,
     showCurrency: bool(menus.show_currency, true),
     style: style as Partial<PageStyle> | undefined,
     available: bool(menus.available, true),
@@ -215,9 +229,7 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 export const readKitchenSproochliConfig = (
   value: KitchenSpineRecord
 ): SproochliAttachmentConfig =>
-  readSproochliAttachmentConfig(
-    record(record(value).integrations).sproochli
-  )
+  readSproochliAttachmentConfig(record(record(value).integrations).sproochli)
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
@@ -241,9 +253,7 @@ export const readKitchenTableCount = (value: KitchenSpineRecord) => {
   const tables = record(source.tables)
   const count = Number(tables.count)
 
-  return Number.isSafeInteger(count) && count > 0
-    ? Math.min(count, 500)
-    : 0
+  return Number.isSafeInteger(count) && count > 0 ? Math.min(count, 500) : 0
 }
 
 export const readKitchenFulfilmentConfig = (
@@ -253,11 +263,16 @@ export const readKitchenFulfilmentConfig = (
   const fulfilment = record(source.fulfilment)
   const paymentPolicies = Array.isArray(fulfilment.payment_methods)
     ? fulfilment.payment_methods
-      .map(readKitchenPaymentPolicy)
-      .filter((policy): policy is KitchenFulfilmentPaymentPolicy => Boolean(policy))
-      .filter((policy, index, policies) =>
-        policies.findIndex(candidate => candidate.method === policy.method) === index
-      )
+        .map(readKitchenPaymentPolicy)
+        .filter((policy): policy is KitchenFulfilmentPaymentPolicy =>
+          Boolean(policy)
+        )
+        .filter(
+          (policy, index, policies) =>
+            policies.findIndex(
+              (candidate) => candidate.method === policy.method
+            ) === index
+        )
     : []
 
   return {

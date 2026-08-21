@@ -1,6 +1,6 @@
 <template>
   <article class="public-profile-detail" data-profile-tone="agent">
-    <PublicProfileHero
+    <UserProfileHero
       kind-label="Hiring profile"
       icon="i-lucide-handshake"
       tone="info"
@@ -17,11 +17,11 @@
       <template #actions>
         <slot name="actions" />
       </template>
-    </PublicProfileHero>
+    </UserProfileHero>
 
     <div class="public-profile-detail__content">
       <div class="public-profile-detail__main">
-        <PublicProfileSection
+        <UserProfileSection
           v-if="aboutCopy"
           icon="i-lucide-building-2"
           eyebrow="Hiring team"
@@ -32,9 +32,9 @@
           >
             {{ aboutCopy }}
           </p>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="focusAreas.length"
           icon="i-lucide-briefcase-business"
           eyebrow="Hiring"
@@ -56,11 +56,11 @@
               </span>
             </div>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
       </div>
 
       <aside class="public-profile-detail__sidebar">
-        <PublicProfileSection
+        <UserProfileSection
           v-if="coverageAreas.length"
           compact
           icon="i-lucide-map-pinned"
@@ -76,9 +76,9 @@
               variant="soft"
             />
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="contactLinks.length"
           compact
           icon="i-lucide-message-circle"
@@ -99,7 +99,7 @@
               block
             />
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
       </aside>
     </div>
   </article>
@@ -108,12 +108,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AgentCard } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { PublicAgentProfile } from '../../../models/profiles/Agent/Agent.model'
+import type { AgentProfile } from '../../../models/profiles/Agent/Agent.model'
 
 const props = withDefaults(
   defineProps<{
     card: AgentCard.Card
-    profile?: PublicAgentProfile | null
+    profile?: AgentProfile | null
     prop?: string
     showSubtitle?: boolean
   }>(),

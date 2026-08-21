@@ -7,10 +7,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  MenuStorage,
-  type Menu,
-} from '../../../models/kitchen-menu.model.ts'
+import { MenuStorage, type Menu } from '../../../models/kitchen-menu.model.ts'
 import { useKitchenWorkspaceSelection } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { KitchenStorage } from '../../../../kitchen/models/kitchen.model.ts'
@@ -37,9 +34,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const compactValue = (value: unknown): unknown => {
   if (typeof value === 'string') return normalizeString(value) || undefined
   if (Array.isArray(value)) {
-    const items = value
-      .map(compactValue)
-      .filter(item => item !== undefined)
+    const items = value.map(compactValue).filter((item) => item !== undefined)
     return items.length ? items : undefined
   }
   if (isRecord(value)) {
@@ -51,16 +46,14 @@ const compactValue = (value: unknown): unknown => {
   return value === null || value === undefined ? undefined : value
 }
 
-function buildMenuPayload(
-  input: MenuCreateInput,
-  name: string
-): Partial<Menu> {
+function buildMenuPayload(input: MenuCreateInput, name: string): Partial<Menu> {
   const kitchenId = normalizeString(input.kitchenId)
   const orderTypes = Array.isArray(input.ordering?.order_types)
     ? input.ordering.order_types
         .map(compactValue)
-        .filter((row): row is Record<string, unknown> =>
-          isRecord(row) && Boolean(normalizeString(row.type))
+        .filter(
+          (row): row is Record<string, unknown> =>
+            isRecord(row) && Boolean(normalizeString(row.type))
         )
     : []
   const serviceHours = compactMenuServiceHoursDelta(
@@ -111,13 +104,15 @@ export function useMenuCreate(
   const { selectedId } = useKitchenWorkspaceSelection()
   const db = useFirestore(options.databaseId)
 
-  const kitchenCollectionPath = computed(() =>
-    normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      normalizeString(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
-  const defaultKitchenId = computed(() =>
-    normalizeString(unref(options.kitchenId)) ||
-    (options.useSelectedKitchen ? normalizeString(selectedId.value) : '')
+  const defaultKitchenId = computed(
+    () =>
+      normalizeString(unref(options.kitchenId)) ||
+      (options.useSelectedKitchen ? normalizeString(selectedId.value) : '')
   )
 
   async function requireLinkedPlaceCurrency(kitchenId: string) {
@@ -132,13 +127,14 @@ export function useMenuCreate(
     }
   }
 
-  async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
+  async function createMenu(
+    input: MenuCreateInput
+  ): Promise<{ created: boolean; id: string }> {
     requireWritableData()
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
     const menuId = normalizeSlug(input.id || name)
-    const collectionPath =
-      `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.scopeCollection}`
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${MenuStorage.scopeCollection}`
 
     if (!name) throw new Error('Menu name is required')
     if (!kitchenId) throw new Error('Kitchen id is required')
@@ -146,10 +142,7 @@ export function useMenuCreate(
 
     const payload = buildMenuPayload({ ...input, kitchenId }, name)
     const id = await create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-menus',
-        collectionPath
-      ),
+      defineRuntimeClientCreateTarget('project.kitchen-menus', collectionPath),
       payload,
       {
         ...(menuId ? { id: menuId } : {}),

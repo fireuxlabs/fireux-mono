@@ -125,8 +125,9 @@
     </div>
 
     <!-- 2026-07-19 14:57 CEST: Keep this dev projection while concurrent Order-stack work audits missing customer links and rejected-order history. -->
-<DevDebugPanel
-  object-origin="fetched"      launcher
+    <DevDebugPanel
+      object-origin="fetched"
+      launcher
       include-route
       title="Customer orders (JSON)"
       context="customer dashboard · customer order projection"

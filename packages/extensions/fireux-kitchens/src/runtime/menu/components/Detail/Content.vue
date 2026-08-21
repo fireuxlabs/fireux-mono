@@ -27,9 +27,7 @@
       />
     </article>
 
-    <p v-else class="menu-state">
-      Menu unavailable.
-    </p>
+    <p v-else class="menu-state">Menu unavailable.</p>
   </section>
 </template>
 

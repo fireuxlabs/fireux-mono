@@ -14,10 +14,7 @@
           <h2 class="text-2xl font-semibold text-highlighted">
             {{ dish.name }}
           </h2>
-          <p
-            v-if="dish.description"
-            class="max-w-2xl text-sm text-dimmed"
-          >
+          <p v-if="dish.description" class="max-w-2xl text-sm text-dimmed">
             {{ dish.description }}
           </p>
         </div>

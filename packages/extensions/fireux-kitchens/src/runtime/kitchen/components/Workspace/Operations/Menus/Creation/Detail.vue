@@ -40,7 +40,9 @@
           </div>
           <div>
             <dt class="text-dimmed">Files</dt>
-            <dd class="font-medium text-highlighted">{{ sourceFiles.length }}</dd>
+            <dd class="font-medium text-highlighted">
+              {{ sourceFiles.length }}
+            </dd>
           </div>
           <div>
             <dt class="text-dimmed">Storage owner</dt>
@@ -50,7 +52,9 @@
           </div>
           <div v-if="source.source_provider">
             <dt class="text-dimmed">Provider</dt>
-            <dd class="font-medium text-highlighted">{{ source.source_provider }}</dd>
+            <dd class="font-medium text-highlighted">
+              {{ source.source_provider }}
+            </dd>
           </div>
         </dl>
       </UCard>
@@ -59,9 +63,12 @@
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 class="text-base font-semibold text-highlighted">Source file</h2>
+              <h2 class="text-base font-semibold text-highlighted">
+                Source file
+              </h2>
               <p class="text-sm text-dimmed">
-                Review the saved source before turning it into a structured menu.
+                Review the saved source before turning it into a structured
+                menu.
               </p>
             </div>
             <UButton
@@ -104,10 +111,7 @@
           description="This upload record does not have a file URL."
         />
 
-        <div
-          v-if="sourceFiles.length > 1"
-          class="mt-4 grid gap-2"
-        >
+        <div v-if="sourceFiles.length > 1" class="mt-4 grid gap-2">
           <UButton
             v-for="file in sourceFiles"
             :key="file.storage_path || file.file_url"
@@ -125,14 +129,14 @@
       </UCard>
     </template>
 
-<DevDebugPanel
-  object-origin="fetched"
+    <DevDebugPanel
+      object-origin="fetched"
       launcher
       include-route
       title="Kitchen menu source debug"
       context="Kitchen menu source · /workspace/kitchen/menus/uploads/[uploadId]"
       :objects="debug"
-  :derived="{}"
+      :derived="{}"
       :default-open="false"
     />
   </section>
@@ -147,13 +151,17 @@ import type {
 } from '../../../../../../menu/models/menu-source-upload.model.ts'
 import { useKitchenWorkspaceMenus } from '../../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
 
-const { menuSources, menuSourcesPending, debug: menusDebug } =
-  useKitchenWorkspaceMenus()
+const {
+  menuSources,
+  menuSourcesPending,
+  debug: menusDebug,
+} = useKitchenWorkspaceMenus()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const uploadId = useRouteParam('uploadId')
 const source = computed(
-  () => menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
+  () =>
+    menuSources.value.find((item) => text(item.id) === uploadId.value) ?? null
 )
 const sourceKind = computed<MenuSourceUploadKind>(() => {
   if (source.value?.source_url) return 'url'
@@ -173,8 +181,8 @@ const sourceFiles = computed(() =>
       : []
 )
 const isPhoto = computed(() => source.value?.file_kind === 'photo')
-const sourceLink = computed(() =>
-  text(source.value?.source_url) || text(source.value?.file_url)
+const sourceLink = computed(
+  () => text(source.value?.source_url) || text(source.value?.file_url)
 )
 const breadcrumbItems = computed(() => [
   {

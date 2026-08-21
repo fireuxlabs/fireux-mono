@@ -1,10 +1,7 @@
 <template>
   <UCard>
     <div class="flex items-start gap-3">
-      <UAvatar
-        icon="i-lucide-list-checks"
-        size="md"
-      />
+      <UAvatar icon="i-lucide-list-checks" size="md" />
 
       <div class="min-w-0 flex-1 space-y-4">
         <div class="flex items-start justify-between gap-3">
@@ -110,7 +107,7 @@ const displayTitle = computed(() => title.value || 'Missing mise title')
 const description = computed(() => normalizeString(props.task.description))
 const statusOption = computed(() =>
   KITCHEN_MISE_STATUS_OPTIONS.find(
-    option => option.value === summary.value?.status
+    (option) => option.value === summary.value?.status
   )
 )
 </script>

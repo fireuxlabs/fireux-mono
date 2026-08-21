@@ -16,16 +16,15 @@ import type { WorkspaceTheme } from 'fireux-core/types/theme'
 /** Kitchen-owned operational Menu record. */
 export const KitchenMenuStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}',
+  path: 'kitchens/{kitchenId}/menus/{menuId}',
   collection: 'menus',
   scopeCollection: 'menus',
   parent: 'kitchen',
   idParam: 'menuId',
   children: {
-    sections:
-      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+    sections: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
     items:
-      'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+      'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   },
 } as const
 

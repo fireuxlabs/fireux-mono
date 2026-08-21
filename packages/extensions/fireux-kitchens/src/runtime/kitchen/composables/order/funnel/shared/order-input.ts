@@ -17,10 +17,12 @@ export const numberValue = (value: unknown) => {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
-export const normalizeVariant = (value: unknown): MenuOrderVariant | undefined => {
+export const normalizeVariant = (
+  value: unknown
+): MenuOrderVariant | undefined => {
   const source = record(value)
   const id = text(source.id)
   const label = text(source.label)
@@ -50,9 +52,9 @@ export const isDraftItem = (value: unknown): value is MenuOrderDraftItem => {
   const item = value as Partial<MenuOrderDraftItem>
   return Boolean(
     text(item.id) &&
-    text(item.name) &&
-    text(item.lineId || item.id) &&
-    Number(item.quantity) > 0
+      text(item.name) &&
+      text(item.lineId || item.id) &&
+      Number(item.quantity) > 0
   )
 }
 
@@ -73,7 +75,12 @@ export const cleanVariant = (variant: MenuOrderVariantInput | undefined) => {
 
 export const cleanAddOns = (addOns: MenuOrderVariantInput[] | undefined) =>
   Array.isArray(addOns)
-    ? addOns.map(cleanVariant).filter((addOn): addOn is NonNullable<ReturnType<typeof cleanVariant>> => Boolean(addOn))
+    ? addOns
+        .map(cleanVariant)
+        .filter(
+          (addOn): addOn is NonNullable<ReturnType<typeof cleanVariant>> =>
+            Boolean(addOn)
+        )
     : []
 
 export const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
@@ -88,9 +95,7 @@ export const cleanCustomer = (customer: KitchenOrderCustomer | undefined) => {
     party_size: Math.max(0, Math.floor(numberValue(customer?.party_size))),
   }
 
-  return Object.fromEntries(
-    Object.entries(clean).filter(([, value]) => value)
-  )
+  return Object.fromEntries(Object.entries(clean).filter(([, value]) => value))
 }
 
 export const customerFromDelivery = (

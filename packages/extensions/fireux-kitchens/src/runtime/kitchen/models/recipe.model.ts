@@ -7,7 +7,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped Entity
  * Storage: Kitchen-owned authored recipe content
- * Path: apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}
+ * Path: kitchens/{kitchenId}/recipes/{recipeId}
  * Owner app scope: Kitchen
  *
  * Recipe has its own lifecycle inside one Kitchen. It is not a root identity;
@@ -17,7 +17,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const RecipeStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}',
+  path: 'kitchens/{kitchenId}/recipes/{recipeId}',
   collection: 'recipes',
   parent: 'kitchen',
   idParam: 'recipeId',
@@ -77,7 +77,9 @@ export function normalizeTranslatedText(value: unknown): RecipeTranslatedText {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
 
   const translated: RecipeTranslatedText = {}
-  for (const [language, text] of Object.entries(value as Record<string, unknown>)) {
+  for (const [language, text] of Object.entries(
+    value as Record<string, unknown>
+  )) {
     const code = pickString(language).replace(/_/g, '-')
     const copy = pickString(text)
     if (code && copy) translated[code] = copy
@@ -87,13 +89,16 @@ export function normalizeTranslatedText(value: unknown): RecipeTranslatedText {
 }
 
 export function normalizeRecipe(value: unknown): Recipe {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  const created = source.created && typeof source.created === 'object'
-    ? (source.created as Recipe['created'])
-    : RecipeDefaults.created
-  const updated = source.updated && typeof source.updated === 'object'
-    ? (source.updated as Recipe['updated'])
-    : RecipeDefaults.updated
+  const source =
+    value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const created =
+    source.created && typeof source.created === 'object'
+      ? (source.created as Recipe['created'])
+      : RecipeDefaults.created
+  const updated =
+    source.updated && typeof source.updated === 'object'
+      ? (source.updated as Recipe['updated'])
+      : RecipeDefaults.updated
 
   return {
     ...RecipeDefaults,

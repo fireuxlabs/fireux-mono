@@ -4,12 +4,15 @@ import { AppStorage } from '../../models/app.model.ts'
 import { resolveAppUserAccess } from '../../utils/app-user-access.ts'
 import { AppUserStorage } from '../../../user/models/user.model.ts'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
-import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
-import { projectPublicApp } from '../projection/public-app.dto.ts'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from '../../../server/utils/getRuntimeFirestore'
+import { projectAppDetail } from '../index/projection.ts'
 import type {
   CurrentAppContextResponse,
-  CurrentAppMembershipDto,
-} from '../../../server/utils/public-projection/public-dto.types'
+  CurrentAppMembership,
+} from '../../models/app-context.model.ts'
 
 function conflict(message: string): never {
   throw createError({ statusCode: 409, statusMessage: message })
@@ -20,7 +23,7 @@ function membershipDto(
   value: Record<string, unknown>,
   isConfiguredDeveloper: boolean,
   profiles: string[]
-): CurrentAppMembershipDto {
+): CurrentAppMembership {
   const role =
     value.role === 'admin' || value.role === 'user' ? value.role : 'user'
   if (value.role !== 'admin' && value.role !== 'user') {
@@ -83,25 +86,37 @@ export async function readCurrentAppContext(event: H3Event) {
     developerId,
     profiles: configuredProfiles,
   } = useFireUXConfig(event)
-  const appRef = getRuntimeFirestore()
-    .collection(AppStorage.collection)
-    .doc(appId)
+  const runtimeDb = getRuntimeFirestore()
+  const identityDb = getRuntimeIdentityFirestore()
+  const appRef = runtimeDb.collection(AppStorage.collection).doc(appId)
   const membershipRef = appRef.collection(AppUserStorage.collection).doc(uid)
   const profileIds = configuredProfiles.filter((profile) =>
-    ['agent', 'chef', 'customer', 'driver', 'professional'].includes(profile)
+    [
+      'agent',
+      'chef',
+      'customer',
+      'driver',
+      'marketplace',
+      'professional',
+    ].includes(profile)
   )
   const profileRefs = profileIds.map((profile) =>
-    appRef.collection(`${profile}s`).doc(uid)
+    identityDb.doc(`users/${uid}/profiles/${profile}`)
   )
-  const [appSnapshot, membershipSnapshot, ...profileSnapshots] =
-    await getRuntimeFirestore().getAll(appRef, membershipRef, ...profileRefs)
+  const [[appSnapshot, membershipSnapshot], profileSnapshots] =
+    await Promise.all([
+      runtimeDb.getAll(appRef, membershipRef),
+      profileRefs.length
+        ? identityDb.getAll(...profileRefs)
+        : Promise.resolve([]),
+    ])
   const activeProfiles = profileIds.filter(
     (_profile, index) => profileSnapshots[index]?.exists
   )
 
   const appData = (appSnapshot.data() || {}) as Record<string, unknown>
   const projectedApp = appSnapshot.exists
-    ? projectPublicApp(appData, { id: appSnapshot.id })
+    ? projectAppDetail(appData, { id: appSnapshot.id })
     : null
   if (appSnapshot.exists && !projectedApp) {
     conflict('Current App has an invalid canonical shape.')

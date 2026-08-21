@@ -35,19 +35,20 @@ const props = defineProps<{
 }>()
 
 const kitchenSlug = computed(() => String(props.kitchenSlug || '').trim())
-const presentationPath = computed(() =>
-  `/api/kitchens/${encodeURIComponent(kitchenSlug.value)}/menu-presentation`
+const presentationPath = computed(
+  () =>
+    `/api/kitchens/${encodeURIComponent(kitchenSlug.value)}/menu-presentation`
 )
-const { data: presentation } = await useFetch<KitchenMenuPresentation>(
-  presentationPath
-)
-const kitchenPath = computed(() =>
-  `/kitchens/${encodeURIComponent(presentation.value?.kitchenSlug || '')}`
+const { data: presentation } =
+  await useFetch<KitchenMenuPresentation>(presentationPath)
+const kitchenPath = computed(
+  () => `/kitchens/${encodeURIComponent(presentation.value?.kitchenSlug || '')}`
 )
 const failure: MenuLoadFailure = {
   statusCode: 404,
   title: 'Collection unavailable',
-  description: 'This kitchen is not accepting collection orders here right now.',
+  description:
+    'This kitchen is not accepting collection orders here right now.',
 }
 const appPageStyle = {
   background_color_light: 'var(--ui-bg)',
@@ -59,15 +60,13 @@ const appPageStyle = {
   primary_color: 'var(--ui-primary)',
   secondary_color: 'var(--ui-text-muted)',
 } as const
-const surfacePageStyle = computed(() =>
-  presentation.value?.pageStyle || appPageStyle
+const surfacePageStyle = computed(
+  () => presentation.value?.pageStyle || appPageStyle
 )
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: surfacePageStyle,
-  colorMode: computed(() => presentation.value ? null : 'light' as const),
-  pageCanvas: true,
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: surfacePageStyle,
+    colorMode: computed(() => (presentation.value ? null : ('light' as const))),
+    pageCanvas: true,
+  })
 </script>

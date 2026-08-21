@@ -1,7 +1,7 @@
 # Firestore Rules source map
 
-Updated: 2026-07-26
-Ref: 318378b20
+Updated: 2026-08-21
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -34,6 +34,10 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
   and ordered Core fragments; its body owns every ecosystem policy delta.
 - `scripts/firebase/<ecosystem>/firestore.rules` is the deterministic complete
   artifact reviewed, compiled, hashed, staged, promoted, and rolled back.
+- `scripts/deploy-workspace-firestore-rules.mjs` owns the smaller FireUX,
+  Granite, and BuenoHost named-database releases. Promotion requires fresh
+  Entity migration evidence, the retained export URI, an exact source-hash
+  confirmation, and a protected release preimage.
 - `scripts/render-firestore-rules.mjs` is read-only by default. `--write` is an
   explicit local artifact update, never part of deploy or data migration.
 - Operational guards require byte-for-byte template composition and require
@@ -41,26 +45,36 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
 
 ## Current targets
 
-- Misebox: Firebase project `misebox-78f9c`; databases `misebox` and
-  `misebox-simulation`. Its AppKitchen and AppSupplier create/update validators require bounded
-  `operator_ids`, `team_ids`, and `join_requests` arrays so every accepted
-  support write remains readable by the fail-closed Workspace projection;
-  non-admin updates preserve all three authority arrays. Workspace target rules
-  distinguish membership from mutation authority: `operator_ids` grants
-  target/read access and writes, while `team_ids` grants target/read access
-  only. A team member cannot mutate merely because they can select the target;
-  current App admins remain the explicit administrative override. Descendant
-  target rules start with an explicit child collection/document pair before a
-  recursive tail, because a Rules v2 recursive wildcard also matches zero
-  segments and must not bypass the support-record validator.
+- Misebox: Firebase project `misebox-78f9c`; database `misebox`. Workspace
+  roots own `team/{uid}` records with bounded roles, permissions, status, and
+  audit stamps. Exact active Team membership grants target/read access;
+  permissions grant mutations. Current App admins are the explicit override
+  only for roots whose management names that App. Team requests never grant
+  authority. Root-owned operation Rules start with an explicit child
+  collection/document pair before a recursive tail, because a Rules v2
+  recursive wildcard also matches zero segments and must not bypass the Team
+  or operation validator.
   Canonical `/ingredients/{ingredientId}` roots are server-only and reach
   clients through the bounded Ingredient projection API. A Kitchen may store
   only an exact stamped `ingredient_id` reference whose canonical root is
   active; generic Kitchen-child branches explicitly exclude Ingredients.
   Stale Kitchen references remain deletable after a root is deprecated or
   merged.
-- Werkbox: legacy physical Firebase project `cleanbox-f15bc`; databases
-  `cleanbox` and `cleanbox-simulation`.
+- Werkbox: legacy physical Firebase project `cleanbox-f15bc`; database
+  `cleanbox`.
+- FireUX: Firebase project `fireux-2005`; database `fireux`; Client access is
+  deny-all and trusted servers own canonical Project reads and writes.
+- Granite: Firebase project `granite-ecosystem`; database `granite`; Client
+  access is deny-all and trusted servers own canonical Portfolio reads and
+  writes.
+- BuenoHost: Firebase project `buenohost-ecosystem`; database `buenohost`;
+  Property reservations and availability remain trusted-server-only beneath
+  the root Property.
+
+The owner-first Workspace rule described above is the deployed Rules boundary.
+Old App-nested records remain migration sources only until the corresponding
+runtime release is deployed and representative authenticated surfaces verify
+the canonical roots.
 
 ## Working rule
 

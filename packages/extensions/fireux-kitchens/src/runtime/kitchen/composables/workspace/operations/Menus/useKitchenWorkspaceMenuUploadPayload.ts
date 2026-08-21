@@ -34,14 +34,26 @@ export function useKitchenWorkspaceMenuUploadPayload(
 
   const kitchenSlug = computed(() =>
     normalizeSlug(
-      text((kitchenWorkspace.selection.kitchen.value as Record<string, unknown> | null)?.slug) ||
-        text((kitchenWorkspace.selection.kitchen.value as Record<string, unknown> | null)?.name) ||
+      text(
+        (
+          kitchenWorkspace.selection.kitchen.value as Record<
+            string,
+            unknown
+          > | null
+        )?.slug
+      ) ||
+        text(
+          (
+            kitchenWorkspace.selection.kitchen.value as Record<
+              string,
+              unknown
+            > | null
+          )?.name
+        ) ||
         kitchenWorkspace.selection.kitchenId.value
     )
   )
-  const currencyCode = computed(() =>
-    readPlaceCurrencyCode(place.value)
-  )
+  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
   const menuPath = computed(() =>
     normalizeSlug(optionText(options.uploadId) || 'main-menu')
   )
@@ -49,7 +61,11 @@ export function useKitchenWorkspaceMenuUploadPayload(
     import.meta.client ? origin(window.location.origin) : ''
   )
   const endpointQuery = computed(() => {
-    if (!kitchenWorkspace.runtime.appId.value || !kitchenWorkspace.selection.kitchenId.value) return ''
+    if (
+      !kitchenWorkspace.runtime.appId.value ||
+      !kitchenWorkspace.selection.kitchenId.value
+    )
+      return ''
 
     const query = new URLSearchParams({
       appId: kitchenWorkspace.runtime.appId.value,
@@ -121,9 +137,14 @@ export function useKitchenWorkspaceMenuUploadPayload(
     },
   }))
 
-  watch(currentUser, async (user: { getIdToken: () => Promise<string> } | null) => {
-    authToken.value = import.meta.client && user ? await user.getIdToken() : ''
-  }, { immediate: true })
+  watch(
+    currentUser,
+    async (user: { getIdToken: () => Promise<string> } | null) => {
+      authToken.value =
+        import.meta.client && user ? await user.getIdToken() : ''
+    },
+    { immediate: true }
+  )
 
   return {
     canUseTool,

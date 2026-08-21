@@ -1,20 +1,16 @@
-import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppPortfoliosTarget,
   serverAppUsersTarget,
+  serverPortfolioTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  assertOnboardingAuthority,
   assertManagement,
-  assertSupportCapacity,
-  readSupport,
+  requireActiveOperator,
   requireMemberRole,
   runtimePolicy,
   type Actor,
@@ -56,65 +52,44 @@ export async function completePortfolioOnboarding(
 
   const memberships = serverAppUsersTarget(current.appId)
   const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
-  const supports = serverAppPortfoliosTarget(current.appId)
+  const team = serverPortfolioTeamMembersTarget(portfolioId)
 
   return runGuardedServerTransaction(portfolios.database, async (mutations) => {
-    const [membership, root, support, operatorSupports] = await Promise.all([
+    const [membership, root, teamMember] = await Promise.all([
       mutations.read<Record<string, unknown>>(memberships, current.uid),
       mutations.read<Record<string, unknown>>(portfolios, portfolioId),
-      mutations.read<Record<string, unknown>>(supports, portfolioId),
-      mutations.query<Record<string, unknown>>(supports, {
-        field: 'operator_ids',
-        op: 'array-contains',
-        value: current.uid,
-        limit: 2,
-      }),
+      mutations.read<Record<string, unknown>>(team, current.uid),
     ])
-    const membershipData = membership.exists ? membership.data || {} : {}
     const role = requireMemberRole(membership.exists, membership.data?.role)
     const rootData = root.exists ? root.data || {} : null
-    if (existingRootId && !rootData) {
-      fail(404, 'Portfolio not found.')
+    if (existingRootId && !rootData) fail(404, 'Portfolio not found.')
+    if (!existingRootId && rootData) {
+      fail(409, 'A Portfolio with this id already exists.')
     }
+    if (!rootData && teamMember.exists) {
+      fail(409, 'Portfolio Team membership exists without its canonical root.')
+    }
+
     const management = rootData
       ? assertManagement(rootData, current.appId, current.ecosystem)
       : null
-    const supportData = support.exists ? support.data || {} : null
-    if (!rootData && supportData) {
-      fail(409, 'Portfolio access exists without its canonical root.')
-    }
-
-    const supportAuthority = readSupport(supportData)
-    assertOnboardingAuthority({
-      rootExists: root.exists,
-      support: supportAuthority,
-      uid: current.uid,
-      role,
-      canCreate: current.canCreate,
-    })
-    if (supportAuthority) {
-      assertSupportCapacity(supportAuthority, current.uid)
-    }
-
-    if (
-      !hasAppUserPremiumAccess(membershipData, {
-        isConfiguredDeveloper:
-          Boolean(current.developerId) && current.uid === current.developerId,
-      })
-    ) {
-      const otherPortfolio = operatorSupports.find(
-        (snapshot) => snapshot.id !== portfolioId
-      )
-      if (otherPortfolio) {
-        fail(
-          403,
-          'Standard users can only be on one live portfolio team per App. Premium unlocks multiple.'
-        )
-      }
-    }
-
     const createdRoot = !root.exists
-    const createdAppSupport = !support.exists
+    const createdTeamMember = !teamMember.exists
+
+    if (createdRoot && (!current.canCreate || role !== 'admin')) {
+      fail(
+        403,
+        current.canCreate
+          ? 'An App admin must create the Portfolio.'
+          : 'Portfolio creation is disabled for this App.'
+      )
+    }
+    if (!createdRoot && createdTeamMember && role !== 'admin') {
+      fail(403, 'An App admin must connect the Portfolio.')
+    }
+    if (teamMember.exists) {
+      requireActiveOperator(teamMember.data || {}, current.uid)
+    }
 
     if (createdRoot) {
       if (!draft)
@@ -130,7 +105,10 @@ export async function completePortfolioOnboarding(
         strategy_label: draft.strategyLabel,
         region_label: draft.regionLabel,
         notes: draft.notes,
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
+        created: serverAuditStamp({
+          by: current.uid,
+          appId: current.appId,
+        }),
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
@@ -145,18 +123,16 @@ export async function completePortfolioOnboarding(
       }
     }
 
-    if (createdAppSupport) {
-      mutations.create(supports, portfolioId, {
-        operator_ids: [current.uid],
-        team_ids: [current.uid],
-        join_requests: [],
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
-        updated: serverAuditStamp({ by: current.uid }),
-      })
-    } else {
-      mutations.update(supports, portfolioId, {
-        operator_ids: FieldValue.arrayUnion(current.uid),
-        team_ids: FieldValue.arrayUnion(current.uid),
+    if (createdTeamMember) {
+      mutations.create(team, current.uid, {
+        user_id: current.uid,
+        role: createdRoot ? 'owner' : 'operator',
+        permissions: [],
+        status: 'active',
+        created: serverAuditStamp({
+          by: current.uid,
+          appId: current.appId,
+        }),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }
@@ -170,7 +146,7 @@ export async function completePortfolioOnboarding(
       ok: true,
       portfolio_id: portfolioId,
       created_root: createdRoot,
-      created_app_support: createdAppSupport,
+      created_team_member: createdTeamMember,
     }
   })
 }

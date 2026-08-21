@@ -1,6 +1,9 @@
 <template>
   <ClientOnly>
-    <div v-if="selectedKitchen && !placePending && rootComplete" class="space-y-6">
+    <div
+      v-if="selectedKitchen && !placePending && rootComplete"
+      class="space-y-6"
+    >
       <UCard variant="subtle">
         <div class="flex items-start gap-3">
           <UIcon
@@ -74,7 +77,11 @@
         description="Workspace theme unlocks when the Place and Kitchen identity sections are complete."
       >
         <template #actions>
-          <UButton to="/workspace/kitchen/identity" color="neutral" variant="soft">
+          <UButton
+            to="/workspace/kitchen/identity"
+            color="neutral"
+            variant="soft"
+          >
             Return to identity
           </UButton>
         </template>

@@ -1,10 +1,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type {
-  PublicDetailResponse,
-  PublicEcosystemDto,
-} from '../../server/utils/public-projection/public-dto.types.ts'
+import type { Ecosystem } from '../models/ecosystem.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 
 export type EcosystemDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
@@ -15,7 +12,7 @@ type EcosystemDetailControls = Pick<
 >
 
 export type UseEcosystemDetailReturn = EcosystemDetailControls & {
-  ecosystem: ComputedRef<PublicEcosystemDto | null>
+  ecosystem: ComputedRef<Ecosystem | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -35,28 +32,27 @@ function readStatusCode(error: unknown): number {
   )
 }
 
-/** Resolve one Ecosystem through the current app's bounded public endpoint. */
+/** Resolve one canonical Ecosystem through the named Entity endpoint. */
 export function useEcosystemDetail(
   routeEcosystemId: MaybeRef<string | null | undefined>
 ): UseEcosystemDetailReturn {
   const fireux = useFireUXConfig()
-  const ecosystemId = computed(() => String(unref(routeEcosystemId) ?? '').trim())
-  const state = useAsyncData<PublicDetailResponse<PublicEcosystemDto> | null>(
-    () => [
-      'ecosystem-detail',
-      fireux.appId,
-      ecosystemId.value || 'none',
-    ].join('|'),
+  const ecosystemId = computed(() =>
+    String(unref(routeEcosystemId) ?? '').trim()
+  )
+  const state = useAsyncData<{ ecosystem: Ecosystem } | null>(
+    () =>
+      ['ecosystem-detail', fireux.appId, ecosystemId.value || 'none'].join('|'),
     async () => {
       if (!ecosystemId.value) return null
-      return $fetch<PublicDetailResponse<PublicEcosystemDto>>(
-        `/api/public/ecosystems/${encodeURIComponent(ecosystemId.value)}`
+      return $fetch<{ ecosystem: Ecosystem }>(
+        `/api/ecosystems/${encodeURIComponent(ecosystemId.value)}`
       )
     },
     { server: true, watch: [ecosystemId] }
   )
-  const ecosystem = computed<PublicEcosystemDto | null>(() => {
-    const item = state.data.value?.item ?? null
+  const ecosystem = computed<Ecosystem | null>(() => {
+    const item = state.data.value?.ecosystem ?? null
     return item?.id === ecosystemId.value && !state.pending.value ? item : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))

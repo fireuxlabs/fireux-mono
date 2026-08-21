@@ -16,6 +16,7 @@ export type FireuxEntityIdentity =
 
 export type FireuxEntityAuthority =
   | 'owning-app-database'
+  | 'domain-database'
   | 'ecosystem-identity-database'
   | 'fireux-control-plane'
   | 'identity-database'
@@ -24,10 +25,7 @@ export type FireuxEntityAuthority =
 
 export type FireuxEntityAppSupport =
   | 'none'
-  | 'access-record'
   | 'membership-record'
-  | 'operational-record'
-  | 'profile-delta'
   | 'to-confirm'
 
 export type FireuxEntityFamily =

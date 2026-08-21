@@ -7,12 +7,10 @@ import type {
   SupplierItem,
 } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import { computed } from 'vue'
-import type { PublicIngredient } from '../../../../../ingredient/models/ingredient-public.model.ts'
+import type { Ingredient } from '../../../../../ingredient/models/ingredient.model.ts'
 import type { KitchenIngredient } from '../../../../models/ingredient.model.ts'
 import type { KitchenSupplierIngredient } from '../../../../models/supplier-ingredient.model.ts'
-import {
-  selectKitchenDemoSupplierScenarios,
-} from '../../../../utils/demo-suppliers'
+import { selectKitchenDemoSupplierScenarios } from '../../../../utils/demo-suppliers'
 import {
   findKitchenWorkspaceDemoScenario,
   useKitchenWorkspaceDemoData,
@@ -23,7 +21,7 @@ import { useKitchenIngredientRoots } from '../Ingredients/fetch/useKitchenIngred
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export type KitchenWorkspaceSupplyLine = {
-  ingredient: PublicIngredient
+  ingredient: Ingredient
   kitchenIngredient: KitchenIngredient
   link: KitchenSupplierIngredient
   supplierScenario: SupplierWorkspaceDemoScenario
@@ -48,30 +46,32 @@ export function useKitchenWorkspaceSupplyWorkspace() {
       supplierScenarios: supplierDemo.data.value?.scenarios ?? [],
     })
   )
-  const supplierScenarioById = computed(() =>
-    new Map(
-      supplierScenarios.value.map(supplierScenario => [
-        clean(supplierScenario.supplier.id),
-        supplierScenario,
-      ])
-    )
+  const supplierScenarioById = computed(
+    () =>
+      new Map(
+        supplierScenarios.value.map((supplierScenario) => [
+          clean(supplierScenario.supplier.id),
+          supplierScenario,
+        ])
+      )
   )
   const linkedIngredientIds = computed(() =>
     (scenario.value?.kitchenIngredients ?? [])
-      .map(ingredient => clean(ingredient.ingredient_id))
+      .map((ingredient) => clean(ingredient.ingredient_id))
       .filter(Boolean)
   )
   const ingredientRoots = useKitchenIngredientRoots(linkedIngredientIds, {
     enabled: active,
   })
   const ingredientById = ingredientRoots.rootById
-  const kitchenIngredientById = computed(() =>
-    new Map(
-      (scenario.value?.kitchenIngredients ?? []).map(ingredient => [
-        clean(ingredient.ingredient_id),
-        ingredient,
-      ])
-    )
+  const kitchenIngredientById = computed(
+    () =>
+      new Map(
+        (scenario.value?.kitchenIngredients ?? []).map((ingredient) => [
+          clean(ingredient.ingredient_id),
+          ingredient,
+        ])
+      )
   )
 
   const resolveLine = (
@@ -85,7 +85,7 @@ export function useKitchenWorkspaceSupplyWorkspace() {
     if (!ingredient || !kitchenIngredient || !supplierScenario) return null
 
     const supplierIngredients = supplierScenario.ingredients.filter(
-      item =>
+      (item) =>
         item.active !== false &&
         clean(item.ingredient_id) === ingredientId &&
         clean(item.supplier_id) === supplierId
@@ -98,7 +98,7 @@ export function useKitchenWorkspaceSupplyWorkspace() {
     if (!preferredProductId) return null
 
     const offers = supplierScenario.items.filter(
-      item =>
+      (item) =>
         item.active !== false &&
         item.availability_state !== 'unavailable' &&
         clean(item.ingredient_id) === ingredientId &&
@@ -128,27 +128,26 @@ export function useKitchenWorkspaceSupplyWorkspace() {
       .map(resolveLine)
       .filter((line): line is KitchenWorkspaceSupplyLine => Boolean(line))
   )
-  const supplyLineByIngredientId = computed(() =>
-    new Map(
-      supplyLines.value.map(line => [
-        clean(line.ingredient.id),
-        line,
-      ])
-    )
+  const supplyLineByIngredientId = computed(
+    () =>
+      new Map(
+        supplyLines.value.map((line) => [clean(line.ingredient.id), line])
+      )
   )
   const unresolvedLinks = computed(() => {
-    const resolvedIds = new Set(supplyLines.value.map(line => clean(line.link.id)))
+    const resolvedIds = new Set(
+      supplyLines.value.map((line) => clean(line.link.id))
+    )
     return (scenario.value?.supplierIngredientLinks ?? []).filter(
-      link => !resolvedIds.has(clean(link.id))
+      (link) => !resolvedIds.has(clean(link.id))
     )
   })
-  const pending = computed(() =>
-    active.value &&
-    (
-      kitchenDemo.pending.value ||
-      supplierDemo.pending.value ||
-      ingredientRoots.pending.value
-    )
+  const pending = computed(
+    () =>
+      active.value &&
+      (kitchenDemo.pending.value ||
+        supplierDemo.pending.value ||
+        ingredientRoots.pending.value)
   )
 
   return {

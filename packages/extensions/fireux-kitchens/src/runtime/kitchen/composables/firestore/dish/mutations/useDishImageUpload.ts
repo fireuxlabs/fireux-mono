@@ -33,14 +33,17 @@ export function useDishImageUpload() {
       throw new Error('Select this Kitchen before uploading its Dish image.')
     }
     if (!dishId) throw new Error('Dish id is required.')
-    if (!(input.file instanceof File)) throw new Error('Dish image is required.')
+    if (!(input.file instanceof File))
+      throw new Error('Dish image is required.')
     if (pending.value) throw new Error('A Dish image is already uploading.')
 
     const token = await currentUser.value?.getIdToken()
     if (!token) throw new Error('Sign in before uploading a Dish image.')
     requireWritableData()
     if (text(selectedId.value) !== kitchenId) {
-      throw new Error('The selected Kitchen changed before the Dish image upload.')
+      throw new Error(
+        'The selected Kitchen changed before the Dish image upload.'
+      )
     }
 
     const form = new FormData()

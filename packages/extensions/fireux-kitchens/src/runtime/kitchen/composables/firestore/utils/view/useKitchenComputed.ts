@@ -9,22 +9,24 @@ export function useKitchenComputed(
   kitchen?: Ref<Partial<Kitchen> | null | undefined>
 ) {
   const view = computed(
-    () => kitchen?.value as (Partial<Kitchen> & Record<string, unknown>) | null | undefined
+    () =>
+      kitchen?.value as
+        | (Partial<Kitchen> & Record<string, unknown>)
+        | null
+        | undefined
   )
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
   const identity = computed(() => readKitchenIdentity(view.value))
   const visibility = computed(() => readKitchenVisibility(view.value))
-  const hasMissingName = computed(() =>
-    !String(identity.value.displayName || view.value?.name || '').trim()
+  const hasMissingName = computed(
+    () => !String(identity.value.displayName || view.value?.name || '').trim()
   )
-  const hasMissingSlug = computed(() =>
-    !String(kitchen?.value?.slug || '').trim()
+  const hasMissingSlug = computed(
+    () => !String(kitchen?.value?.slug || '').trim()
   )
   const isVisible = computed(() => visibility.value)
   const isHidden = computed(() => !visibility.value)
-  const displayStatus = computed(() =>
-    isVisible.value ? 'Visible' : 'Hidden'
-  )
+  const displayStatus = computed(() => (isVisible.value ? 'Visible' : 'Hidden'))
   const displayName = computed(() =>
     String(
       identity.value.displayName ||
@@ -42,9 +44,7 @@ export function useKitchenComputed(
   const hasAddress = computed(() =>
     Boolean(
       String(
-        view.value?.short_address ||
-          view.value?.formatted_address ||
-          ''
+        view.value?.short_address || view.value?.formatted_address || ''
       ).trim()
     )
   )

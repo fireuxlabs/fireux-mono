@@ -5,12 +5,11 @@
 import type { ProfileConfig } from 'fireux-core/runtime/models/utils/profile.model'
 
 export const driverConfig: ProfileConfig = {
-  id: 'driver',
-  collectionName: 'drivers',
+  kind: 'driver',
   profileType: 'Driver',
   cta: 'Create your Driver profile to accept kitchen delivery work.',
   navLabel: 'Driver',
   navIcon: 'i-lucide-car',
   provisionRoute: '/api/internal/profiles/driver',
-  storage: 'root-and-app',
+  storage: 'user-with-app-state',
 } as const

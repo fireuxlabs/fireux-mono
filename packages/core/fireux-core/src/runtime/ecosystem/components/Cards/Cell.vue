@@ -1,9 +1,5 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
-    class="card card--cell"
-  >
+  <NuxtLink v-if="link && to" :to="to" class="card card--cell">
     <div class="card__media">
       <UAvatar
         :src="imageUrl || undefined"
@@ -44,11 +40,7 @@
     </div>
   </NuxtLink>
 
-  <div
-    v-else
-    class="card card--cell"
-    @click="onClick"
-  >
+  <div v-else class="card card--cell" @click="onClick">
     <div class="card__media">
       <UAvatar
         :src="imageUrl || undefined"

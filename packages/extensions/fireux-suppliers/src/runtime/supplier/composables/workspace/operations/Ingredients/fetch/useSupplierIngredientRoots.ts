@@ -1,10 +1,5 @@
 import { useAsyncData } from '#imports'
-import {
-  computed,
-  toValue,
-  type ComputedRef,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 
 export type SupplierIngredientRoot = {
   id: string
@@ -30,7 +25,7 @@ export type SupplierIngredientRootsState = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const parseRoot = (value: unknown): SupplierIngredientRoot | null => {
@@ -39,9 +34,9 @@ const parseRoot = (value: unknown): SupplierIngredientRoot | null => {
   const name = text(source.name)
   const status = text(source.status)
   if (
-    !id
-    || !name
-    || (status !== 'active' && status !== 'deprecated' && status !== 'merged')
+    !id ||
+    !name ||
+    (status !== 'active' && status !== 'deprecated' && status !== 'merged')
   ) {
     return null
   }
@@ -64,12 +59,12 @@ export function useSupplierIngredientRoots(
     enabled?: MaybeRefOrGetter<boolean>
   } = {}
 ): SupplierIngredientRootsState {
-  const enabled = computed(() =>
-    options.enabled === undefined || Boolean(toValue(options.enabled))
+  const enabled = computed(
+    () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
-  const normalizedIds = computed(() => [
-    ...new Set(toValue(ids).map(text).filter(Boolean)),
-  ].sort())
+  const normalizedIds = computed(() =>
+    [...new Set(toValue(ids).map(text).filter(Boolean))].sort()
+  )
   const idKey = computed(() => normalizedIds.value.join(','))
   const state = useAsyncData<SupplierIngredientRoot[]>(
     () => `supplier-ingredient-roots-${idKey.value || 'none'}`,
@@ -80,7 +75,10 @@ export function useSupplierIngredientRoots(
         Array.from(
           { length: Math.ceil(normalizedIds.value.length / 100) },
           (_, index) => {
-            const chunk = normalizedIds.value.slice(index * 100, (index + 1) * 100)
+            const chunk = normalizedIds.value.slice(
+              index * 100,
+              (index + 1) * 100
+            )
             return $fetch<IngredientProjectionResponse>(
               `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
             )
@@ -88,7 +86,7 @@ export function useSupplierIngredientRoots(
         )
       )
       return pages
-        .flatMap(page => Array.isArray(page.items) ? page.items : [])
+        .flatMap((page) => (Array.isArray(page.items) ? page.items : []))
         .map(parseRoot)
         .filter((item): item is SupplierIngredientRoot => Boolean(item))
     },
@@ -98,18 +96,22 @@ export function useSupplierIngredientRoots(
       watch: [enabled, idKey],
     }
   )
-  const roots = computed<SupplierIngredientRoot[]>(
-    () => state.data.value ?? []
-  )
-  const rootById = computed(() =>
-    new Map(roots.value.map((root: SupplierIngredientRoot) => [root.id, root]))
+  const roots = computed<SupplierIngredientRoot[]>(() => state.data.value ?? [])
+  const rootById = computed(
+    () =>
+      new Map(
+        roots.value.map((root: SupplierIngredientRoot) => [root.id, root])
+      )
   )
 
   return {
     roots,
     rootById,
-    pending: computed(() =>
-      enabled.value && Boolean(normalizedIds.value.length) && state.pending.value
+    pending: computed(
+      () =>
+        enabled.value &&
+        Boolean(normalizedIds.value.length) &&
+        state.pending.value
     ),
     error: computed(() => state.error.value ?? undefined),
     refresh: async () => {

@@ -1,9 +1,4 @@
-import {
-  computed,
-  inject,
-  provide,
-  type InjectionKey,
-} from 'vue'
+import { computed, inject, provide, type InjectionKey } from 'vue'
 import type { KitchenOrder } from '../../../../models/order.model.ts'
 import { useKitchenWorkspaceOrders } from './useKitchenWorkspaceOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
@@ -13,8 +8,8 @@ const normalizeId = (value: unknown) => String(value ?? '').trim()
 
 function createKitchenOrdersWorkspace() {
   const orders = useKitchenWorkspaceOrders()
-  const canOperate = computed(() =>
-    orders.canWrite.value && !orders.readOnly.value
+  const canOperate = computed(
+    () => orders.canWrite.value && !orders.readOnly.value
   )
   const pass = useKitchenOrderPassSelection({
     canOperate,
@@ -25,20 +20,23 @@ function createKitchenOrdersWorkspace() {
   const scheduledWaitingOrders = computed(() =>
     orders.incomingOrders.value.filter((order) => {
       if (order.order_type === 'pre_order') return true
-      const collection = order.collection &&
+      const collection =
+        order.collection &&
         typeof order.collection === 'object' &&
         !Array.isArray(order.collection)
-        ? order.collection
-        : {}
-      return order.order_type === 'collection' &&
-        collection.mode === 'scheduled'
+          ? order.collection
+          : {}
+      return (
+        order.order_type === 'collection' && collection.mode === 'scheduled'
+      )
     })
   )
-  const activeOrderCount = computed(() =>
-    orders.paymentOrders.value.length +
-    orders.incomingOrders.value.length +
-    orders.queueOrders.value.length +
-    orders.passOrders.value.length
+  const activeOrderCount = computed(
+    () =>
+      orders.paymentOrders.value.length +
+      orders.incomingOrders.value.length +
+      orders.queueOrders.value.length +
+      orders.passOrders.value.length
   )
   const service = useKitchenOrderServiceState({
     activeOrderCount,
@@ -100,8 +98,9 @@ export type KitchenOrdersWorkspace = ReturnType<
   typeof createKitchenOrdersWorkspace
 >
 
-const kitchenOrdersWorkspaceKey: InjectionKey<KitchenOrdersWorkspace> =
-  Symbol('KitchenOrdersWorkspace')
+const kitchenOrdersWorkspaceKey: InjectionKey<KitchenOrdersWorkspace> = Symbol(
+  'KitchenOrdersWorkspace'
+)
 
 export function provideKitchenOrdersWorkspace() {
   const workspace = createKitchenOrdersWorkspace()

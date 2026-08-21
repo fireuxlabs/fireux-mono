@@ -33,7 +33,8 @@
       <pre
         v-if="menuConfig.context"
         class="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-lg border border-default bg-elevated p-4 text-sm text-highlighted"
-      >{{ menuConfig.context }}</pre>
+        >{{ menuConfig.context }}</pre
+      >
       <UAlert
         v-else
         color="neutral"
@@ -87,7 +88,9 @@ const sourceDebugRow = (source: Record<string, unknown>) => ({
   fileKind: text(source.file_kind),
   fileName: text(source.file_name),
   filesCount: Number(source.files_count) || 0,
-  hasMatchingMenu: menus.value.some((menu) => text(menu.id) === text(source.id)),
+  hasMatchingMenu: menus.value.some(
+    (menu) => text(menu.id) === text(source.id)
+  ),
 })
 const menusDebug = computed(() => ({
   objects: {

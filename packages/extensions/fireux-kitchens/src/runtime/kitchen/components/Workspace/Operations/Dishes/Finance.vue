@@ -23,9 +23,7 @@
             Cost of sales
           </h2>
         </div>
-        <UBadge color="warning" variant="soft">
-          Planning estimate
-        </UBadge>
+        <UBadge color="warning" variant="soft"> Planning estimate </UBadge>
       </div>
     </template>
 
@@ -73,17 +71,16 @@ const props = defineProps<{
   error?: unknown
 }>()
 
-const moneyFormatter = computed(() =>
-  new Intl.NumberFormat('en-CH', {
-    style: 'currency',
-    currency: props.finance?.currencyCode || 'CHF',
-    minimumFractionDigits: props.finance?.minorUnitDigits ?? 2,
-    maximumFractionDigits: props.finance?.minorUnitDigits ?? 2,
-  })
+const moneyFormatter = computed(
+  () =>
+    new Intl.NumberFormat('en-CH', {
+      style: 'currency',
+      currency: props.finance?.currencyCode || 'CHF',
+      minimumFractionDigits: props.finance?.minorUnitDigits ?? 2,
+      maximumFractionDigits: props.finance?.minorUnitDigits ?? 2,
+    })
 )
-const minorFactor = computed(() =>
-  10 ** (props.finance?.minorUnitDigits ?? 2)
-)
+const minorFactor = computed(() => 10 ** (props.finance?.minorUnitDigits ?? 2))
 
 const formatMoney = (minor: number | null) =>
   minor === null ? '—' : moneyFormatter.value.format(minor / minorFactor.value)

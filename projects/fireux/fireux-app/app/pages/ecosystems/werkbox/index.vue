@@ -85,7 +85,7 @@ definePageMeta({
 
 const { data } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
-  () => $fetch('/api/public/directory'),
+  () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
 const publishedApps = computed<AppDirectoryEntry[]>(() =>

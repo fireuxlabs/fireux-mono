@@ -13,9 +13,17 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Live runtime path: <code>misebox/kitchens/&lt;kitchenId&gt;</code>.</li>
-          <li>Writable test runtime path: <code>misebox-simulation/kitchens/&lt;kitchenId&gt;</code>.</li>
-          <li>Local demo scenarios remain read-only code fixtures while the product shape is still moving.</li>
+          <li>
+            Live runtime path: <code>misebox/kitchens/&lt;kitchenId&gt;</code>.
+          </li>
+          <li>
+            Writable test runtime path:
+            <code>misebox-simulation/kitchens/&lt;kitchenId&gt;</code>.
+          </li>
+          <li>
+            Local demo scenarios remain read-only code fixtures while the
+            product shape is still moving.
+          </li>
         </ul>
       </UCard>
 
@@ -35,14 +43,25 @@
           </div>
           <div class="fx-inset-panel">
             <p class="font-mono">/workspace/kitchen/&lt;page&gt;</p>
-            <p class="text-dimmed">Scoped kitchen workspace pages such as menu, recipes, ingredients, and team.</p>
+            <p class="text-dimmed">
+              Scoped kitchen workspace pages such as menu, recipes, ingredients,
+              and team.
+            </p>
           </div>
         </div>
       </UCard>
 
       <div class="flex flex-wrap gap-2">
-        <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat">Open kitchens</UButton>
-        <UButton to="/kitchens/learn-more" color="neutral" variant="soft" icon="i-lucide-book-open">Public guide</UButton>
+        <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat"
+          >Open kitchens</UButton
+        >
+        <UButton
+          to="/kitchens/learn-more"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-book-open"
+          >Public guide</UButton
+        >
       </div>
     </UPageBody>
   </UPage>
@@ -64,6 +83,7 @@ useHead({ title })
 
 useSeoMeta({
   title,
-  description: 'Technical reference for kitchen records, runtime modes, and workspace surfaces.',
+  description:
+    'Technical reference for kitchen records, runtime modes, and workspace surfaces.',
 })
 </script>

@@ -3,7 +3,11 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, toValue, unref, type MaybeRefOrGetter } from 'vue'
-import { DishStorage, normalizeDish, type Dish } from '../../../../models/dish.model.ts'
+import {
+  DishStorage,
+  normalizeDish,
+  type Dish,
+} from '../../../../models/dish.model.ts'
 import { resolveKitchenChildCollectionBasePath } from '../../utils/paths/useKitchenChildCollection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
@@ -51,9 +55,8 @@ export function useKitchenDishCollection(
   const remoteCollectionPath = computed(() =>
     usesRecordProvider.value ? '' : collectionPath.value
   )
-  const collectionRef = firestoreFetchCollection<Record<string, unknown>>(
-    remoteCollectionPath
-  )
+  const collectionRef =
+    firestoreFetchCollection<Record<string, unknown>>(remoteCollectionPath)
   const resolvedCollectionPath = computed(() =>
     usesRecordProvider.value
       ? String(toValue(options.recordProvider?.collectionPath) || '').trim()
@@ -61,12 +64,12 @@ export function useKitchenDishCollection(
   )
   const rawRecords = computed<readonly unknown[]>(() =>
     usesRecordProvider.value
-      ? toValue(options.recordProvider?.records) ?? []
-      : collectionRef.value ?? []
+      ? (toValue(options.recordProvider?.records) ?? [])
+      : (collectionRef.value ?? [])
   )
 
   const dishes = computed<Dish[]>(() =>
-    rawRecords.value.map(entry => normalizeDish(entry))
+    rawRecords.value.map((entry) => normalizeDish(entry))
   )
   const count = computed(() => dishes.value.length)
   const pending = computed(() =>

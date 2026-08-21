@@ -133,7 +133,9 @@ async function save(
     const token = await user.getIdToken()
     requireWritableData('live')
     if (!writable.value || props.kitchenId !== kitchenId) {
-      throw new Error('The selected Kitchen changed before Sproochli could be saved.')
+      throw new Error(
+        'The selected Kitchen changed before Sproochli could be saved.'
+      )
     }
     const result = await $fetch<{
       ok: true

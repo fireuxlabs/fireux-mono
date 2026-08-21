@@ -12,7 +12,7 @@
         :alt="title"
         class="size-full object-cover transition duration-300 group-hover:scale-[1.02]"
         loading="lazy"
-      >
+      />
       <div
         v-else
         class="flex size-full items-center justify-center text-muted"
@@ -22,9 +22,13 @@
       </div>
     </div>
 
-    <div class="flex min-w-0 flex-1 flex-col gap-1.5 border-t border-default px-3 py-2.5">
+    <div
+      class="flex min-w-0 flex-1 flex-col gap-1.5 border-t border-default px-3 py-2.5"
+    >
       <div class="flex min-w-0 items-start gap-2">
-        <h3 class="min-w-0 flex-1 truncate text-sm font-semibold text-highlighted">
+        <h3
+          class="min-w-0 flex-1 truncate text-sm font-semibold text-highlighted"
+        >
           {{ title || 'Untitled dish' }}
         </h3>
         <UIcon

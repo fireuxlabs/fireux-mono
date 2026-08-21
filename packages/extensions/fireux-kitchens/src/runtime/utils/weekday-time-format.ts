@@ -5,9 +5,7 @@ import type {
 import { weekdayTimeCore } from './weekday-time-core'
 import { weekdayTimeConfig } from './weekday-time-config'
 
-const formatWeekdayTimeWindowValue = (
-  window: WeekdayTimeWindow
-) => {
+const formatWeekdayTimeWindowValue = (window: WeekdayTimeWindow) => {
   const first = window.days[0]
   const last = window.days[window.days.length - 1]
   const dayLabel =
@@ -48,9 +46,10 @@ const zonedDayTime = (date: Date, timezone: string) => {
 
   return {
     day,
-    minutes: Number.isFinite(hour) && Number.isFinite(minute)
-      ? hour * 60 + minute
-      : -1,
+    minutes:
+      Number.isFinite(hour) && Number.isFinite(minute)
+        ? hour * 60 + minute
+        : -1,
   }
 }
 
@@ -118,12 +117,10 @@ const zonedDateTimeText = (date: Date, timezone: string) => {
   return `${dateText}T${hour}:${minute}`
 }
 
-const inputDateText = (
-  value: unknown,
-  timezone: string
-) => {
+const inputDateText = (value: unknown, timezone: string) => {
   const source = weekdayTimeCore.text(value)
-  if (source.toLowerCase() === 'today') return zonedDateText(new Date(), timezone)
+  if (source.toLowerCase() === 'today')
+    return zonedDateText(new Date(), timezone)
 
   return source.match(/^\d{4}-\d{2}-\d{2}$/) ? source : ''
 }

@@ -24,12 +24,15 @@
   border: 1px solid color-mix(in srgb, var(--menu-text) 15%, transparent);
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 94%, transparent);
-  box-shadow: 0 0.7rem 2rem color-mix(in srgb, var(--menu-bg-dark) 12%, transparent);
+  box-shadow: 0 0.7rem 2rem
+    color-mix(in srgb, var(--menu-bg-dark) 12%, transparent);
   color: var(--menu-text);
   cursor: pointer;
   list-style: none;
   backdrop-filter: blur(18px);
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .menu-section-nav summary::-webkit-details-marker {
@@ -38,7 +41,8 @@
 
 .menu-section-nav details[open] summary {
   border-color: color-mix(in srgb, var(--menu-secondary) 52%, transparent);
-  box-shadow: 0 0.8rem 2.25rem color-mix(in srgb, var(--menu-bg-dark) 18%, transparent);
+  box-shadow: 0 0.8rem 2.25rem
+    color-mix(in srgb, var(--menu-bg-dark) 18%, transparent);
 }
 
 .menu-section-nav__icon {
@@ -115,7 +119,8 @@
   border: 1px solid color-mix(in srgb, var(--menu-text) 15%, transparent);
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 98%, transparent);
-  box-shadow: 0 1.15rem 3rem color-mix(in srgb, var(--menu-bg-dark) 22%, transparent);
+  box-shadow: 0 1.15rem 3rem
+    color-mix(in srgb, var(--menu-bg-dark) 22%, transparent);
   backdrop-filter: blur(20px);
 }
 

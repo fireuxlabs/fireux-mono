@@ -86,24 +86,24 @@ const serverHandlers = [
     handler: './runtime/server/sitemaps/jobs.xml.get',
   },
   {
-    route: '/api/public/agents',
+    route: '/api/agents',
     method: 'get',
-    handler: './runtime/server/api/public/agents.get',
+    handler: './runtime/server/api/agents/index.get',
   },
   {
-    route: '/api/public/agents/:id',
+    route: '/api/agents/:id',
     method: 'get',
-    handler: './runtime/server/api/public/agents/[id].get',
+    handler: './runtime/server/api/agents/[id].get',
   },
   {
-    route: '/api/public/professionals',
+    route: '/api/professionals',
     method: 'get',
-    handler: './runtime/server/api/public/professionals.get',
+    handler: './runtime/server/api/professionals/index.get',
   },
   {
-    route: '/api/public/professionals/:id',
+    route: '/api/professionals/:id',
     method: 'get',
-    handler: './runtime/server/api/public/professionals/[id].get',
+    handler: './runtime/server/api/professionals/[id].get',
   },
 ] satisfies FireuxServerHandler[]
 

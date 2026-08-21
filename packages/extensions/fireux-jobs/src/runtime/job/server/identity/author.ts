@@ -9,7 +9,7 @@ import {
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { projectPublicCompany } from 'fireux-companies/runtime/place/server/company/public-projection'
+import { projectCompanyDirectoryEntry } from 'fireux-companies/runtime/place/server/company/projection'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   AuthorJobListResponse,
@@ -18,10 +18,7 @@ import type {
   PublishAuthorJobResponse,
 } from '../../models/job-author.model.ts'
 import { JobStorage, type Job } from '../../models/job.model.ts'
-import {
-  AgentStorage,
-  AppAgentStorage,
-} from '../../../models/profiles/Agent/Agent.model.ts'
+import { AgentStorage } from '../../../models/profiles/Agent/Agent.model.ts'
 import { readJobServerScope } from '../core/runtime.ts'
 import { canonicalJobRoot } from '../core/validation.ts'
 import {
@@ -112,7 +109,7 @@ export function assertCanonicalReferences(
       record(snapshots[index]?.data()),
     ])
   )
-  const company = projectPublicCompany(
+  const company = projectCompanyDirectoryEntry(
     job.company_id,
     values.get(`companies/${job.company_id}`) || {},
     values.get(`places/${job.company_id}`) || {}
@@ -121,7 +118,7 @@ export function assertCanonicalReferences(
     job.place_id,
     values.get(`places/${job.place_id}`) || {}
   )
-  if (!company) {
+  if (!company || !place) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Job Company and Place relationships must be canonical.',
@@ -147,14 +144,6 @@ export function appRef(db: FirebaseFirestore.Firestore, appId: string) {
   return db.doc(`apps/${appId}`)
 }
 
-export function appAgentRef(
-  db: FirebaseFirestore.Firestore,
-  appId: string,
-  uid: string
-) {
-  return db.doc(`apps/${appId}/${AppAgentStorage.collection}/${uid}`)
-}
-
 function assertCurrentMembership(snapshot: DocumentSnapshot): void {
   if (!isCurrentMembership(snapshot)) {
     throw createError({
@@ -177,25 +166,12 @@ export function assertCurrentAppMembership(
   assertCurrentMembership(membershipSnapshot)
 }
 
-export function assertActiveAgent(
-  membershipSnapshot: DocumentSnapshot,
-  appAgentSnapshot: DocumentSnapshot
-): void {
-  if (!isCurrentMembership(membershipSnapshot) || !appAgentSnapshot.exists) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'An active Agent profile in this App is required.',
-    })
-  }
-}
-
 export async function requireAgentRoot(
   databaseId: string,
   uid: string
 ): Promise<void> {
   const snapshot = await getRuntimeIdentityFirestore(databaseId)
-    .collection(AgentStorage.rootCollection)
-    .doc(uid)
+    .doc(`users/${uid}/profiles/${AgentStorage.document}`)
     .get()
   if (!snapshot.exists) {
     throw createError({
@@ -278,24 +254,16 @@ export async function createAuthorJob(
   const db = getRuntimeFirestore(scope.databaseId)
   const jobRef = db.collection(JobStorage.collection).doc()
   const references = referenceDocuments(db, job)
-  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
   const required = [
     appRef(db, scope.appId),
-    currentAppAgentRef,
     membershipRef(db, scope.appId, uid),
     ...references.map((reference) => reference.ref),
   ]
 
   await db.runTransaction(async (transaction) => {
     const snapshots = await transaction.getAll(...required)
-    const [
-      appSnapshot,
-      appAgentSnapshot,
-      membershipSnapshot,
-      ...referenceSnapshots
-    ] = snapshots
+    const [appSnapshot, membershipSnapshot, ...referenceSnapshots] = snapshots
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    assertActiveAgent(membershipSnapshot, appAgentSnapshot)
     assertCanonicalReferences(job, references, referenceSnapshots)
 
     transaction.create(jobRef, {
@@ -333,7 +301,6 @@ export async function publishAuthorJob(
   const jobRef = db.collection(JobStorage.collection).doc(id)
   const currentAppRef = appRef(db, scope.appId)
   const currentMembershipRef = membershipRef(db, scope.appId, uid)
-  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
 
   await db.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(jobRef)
@@ -343,19 +310,13 @@ export async function publishAuthorJob(
       scope
     )
     const references = referenceDocuments(db, normalized)
-    const [
-      appSnapshot,
-      membershipSnapshot,
-      appAgentSnapshot,
-      ...referenceSnapshots
-    ] = await transaction.getAll(
-      currentAppRef,
-      currentMembershipRef,
-      currentAppAgentRef,
-      ...references.map((reference) => reference.ref)
-    )
+    const [appSnapshot, membershipSnapshot, ...referenceSnapshots] =
+      await transaction.getAll(
+        currentAppRef,
+        currentMembershipRef,
+        ...references.map((reference) => reference.ref)
+      )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    assertActiveAgent(membershipSnapshot, appAgentSnapshot)
     assertCanonicalReferences(normalized, references, referenceSnapshots)
 
     transaction.update(jobRef, {

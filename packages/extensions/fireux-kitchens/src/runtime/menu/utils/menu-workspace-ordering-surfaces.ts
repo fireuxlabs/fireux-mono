@@ -52,7 +52,8 @@ export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
   {
     key: 'table-qr',
     label: 'Table QR',
-    description: 'The customer is seated and enters through a table-specific QR.',
+    description:
+      'The customer is seated and enters through a table-specific QR.',
     route: '/menus/{menuId}.dine_in',
     choices: [
       {
@@ -66,7 +67,8 @@ export const menuOrderSurfaceOptions: MenuOrderSurfaceOption[] = [
   {
     key: 'kiosk',
     label: 'Kiosk',
-    description: 'A shared terminal with eat-here and takeaway preparation flags.',
+    description:
+      'A shared terminal with eat-here and takeaway preparation flags.',
     route: '/menus/{menuId}.kiosk',
     settingsPath: 'kiosk',
     choices: [

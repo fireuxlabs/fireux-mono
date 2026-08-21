@@ -31,10 +31,16 @@ export function useKitchenIngredientSelection() {
     const resolvedKitchenId = String(kitchenId || '').trim()
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
 
-    const kitchenCollectionPath = String(options.kitchenCollectionPath || '').trim()
-    if (!kitchenCollectionPath) throw new Error('Kitchen collection path is required')
+    const kitchenCollectionPath = String(
+      options.kitchenCollectionPath || ''
+    ).trim()
+    if (!kitchenCollectionPath)
+      throw new Error('Kitchen collection path is required')
 
-    return resolveKitchenIngredientsPath(kitchenCollectionPath, resolvedKitchenId)
+    return resolveKitchenIngredientsPath(
+      kitchenCollectionPath,
+      resolvedKitchenId
+    )
   }
 
   const selectIngredient = async (
@@ -46,7 +52,10 @@ export function useKitchenIngredientSelection() {
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
-    const kitchenIngredientsPath = resolveKitchenIngredientsCollectionPath(kitchenId, options)
+    const kitchenIngredientsPath = resolveKitchenIngredientsCollectionPath(
+      kitchenId,
+      options
+    )
     await create(
       defineRuntimeClientCreateTarget(
         'project.kitchen-ingredients',
@@ -72,7 +81,10 @@ export function useKitchenIngredientSelection() {
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
-    const kitchenIngredientsPath = resolveKitchenIngredientsCollectionPath(kitchenId, options)
+    const kitchenIngredientsPath = resolveKitchenIngredientsCollectionPath(
+      kitchenId,
+      options
+    )
     await deleteDocument(kitchenIngredientsPath, resolvedIngredientId)
   }
 

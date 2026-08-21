@@ -129,7 +129,7 @@ import {
 
 const toast = useToastify()
 const {
-  coreProfile,
+  professionalProfile,
   updateTitle,
   updateSummary,
   updateBio,
@@ -147,7 +147,7 @@ const {
 const { placeCollections } = useJobsConfig()
 const relevantExperienceLabel = computed(() => 'Relevant Experience')
 
-const professional = computed(() => coreProfile.value ?? null)
+const professional = computed(() => professionalProfile.value ?? null)
 
 const headline = computed(() => professional.value?.title ?? '')
 const summary = computed(() => professional.value?.summary ?? '')

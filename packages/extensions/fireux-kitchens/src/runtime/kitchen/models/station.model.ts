@@ -18,8 +18,8 @@ export interface KitchenStation extends FireuxStamped {
  *
  * Family: Kitchen-scoped
  * Storage: scoped operational record
- * Path: /apps/<appId>/kitchens/<kitchenId>/stations/<stationId>
- * Owner: Kitchen through its same-id AppKitchen support record
+ * Path: /kitchens/<kitchenId>/stations/<stationId>
+ * Owner: Kitchen
  *
  * A Station is operational Kitchen configuration. It has a stable local id
  * because Team and Mise records may refer to it, but it has no lifecycle or
@@ -27,7 +27,7 @@ export interface KitchenStation extends FireuxStamped {
  */
 export const KitchenStationStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/stations/{stationId}',
+  path: 'kitchens/{kitchenId}/stations/{stationId}',
   collection: 'stations',
   parent: 'kitchen',
   idParam: 'stationId',
@@ -69,14 +69,17 @@ export const KitchenStationDefaults = {
   },
 } as const satisfies KitchenStation
 
-export type KitchenStationCreateInput = Omit<KitchenStation, 'created' | 'updated'>
+export type KitchenStationCreateInput = Omit<
+  KitchenStation,
+  'created' | 'updated'
+>
 export type KitchenStationUpdateInput = Partial<
   Omit<KitchenStation, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
 
 const stationRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const stationString = (value: unknown) => String(value ?? '').trim()
@@ -100,10 +103,10 @@ export function normalizeKitchenStation(value: unknown): KitchenStation {
     active: source.active !== false,
     sort_order: stationSortOrder(source.sort_order),
     created: Object.keys(created).length
-      ? created as unknown as KitchenStation['created']
+      ? (created as unknown as KitchenStation['created'])
       : KitchenStationDefaults.created,
     updated: Object.keys(updated).length
-      ? updated as unknown as KitchenStation['updated']
+      ? (updated as unknown as KitchenStation['updated'])
       : KitchenStationDefaults.updated,
   }
 }

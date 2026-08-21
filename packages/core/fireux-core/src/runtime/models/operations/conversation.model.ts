@@ -24,7 +24,8 @@ export const ConversationStorage = {
   parent: 'app',
   idParam: 'conversationId',
   children: {
-    messages: 'apps/{appId}/conversations/{conversationId}/messages/{messageId}',
+    messages:
+      'apps/{appId}/conversations/{conversationId}/messages/{messageId}',
   },
 } as const
 
@@ -45,6 +46,7 @@ export const ConversationAccessStorage = {
 } as const
 
 export type ConversationKind =
+  | 'ignition'
   | 'property_enquiry'
   | 'guest_support'
   | 'provider_lead'
@@ -52,7 +54,11 @@ export type ConversationKind =
 
 export type ConversationStatus = 'open' | 'pending' | 'closed' | 'archived'
 export type ConversationParticipantType = 'admin' | 'user' | 'guest' | 'system'
-export type ConversationPreferredChannel = 'chat' | 'email' | 'phone' | 'whatsapp'
+export type ConversationPreferredChannel =
+  | 'chat'
+  | 'email'
+  | 'phone'
+  | 'whatsapp'
 
 export type ConversationRelatedEntity = {
   family: string
@@ -75,6 +81,26 @@ export type ConversationLastMessage = {
   sender_type: ConversationParticipantType
   sender_name: string
   created_at: FirebaseTimestamp
+}
+
+export type ConversationIgnitionOrigin = {
+  surface: 'pricing' | 'solution' | 'app-directory'
+  ref: string
+}
+
+export type ConversationIgnition = {
+  stage: 'new' | 'accepted' | 'in-progress' | 'launched' | 'declined'
+  website: string
+  branding: 'ready' | 'use-existing' | 'help'
+  pages: string[]
+  app_job: string
+  access: string
+  origin: ConversationIgnitionOrigin | null
+  delivery: Record<string, boolean>
+  accepted?: {
+    at: FirebaseTimestamp
+    by: string
+  }
 }
 
 export const ConversationModel = {
@@ -105,6 +131,7 @@ export const ConversationModel = {
     sender_name: '',
     created_at: {} as FirebaseTimestamp,
   } as ConversationLastMessage,
+  ignition: null as ConversationIgnition | null,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -128,6 +155,7 @@ export interface Conversation {
   source_route: string
   expires_at: FirebaseTimestamp
   last_message: ConversationLastMessage
+  ignition?: ConversationIgnition | null
   created: typeof ConversationModel.created
   updated: typeof ConversationModel.updated
 }

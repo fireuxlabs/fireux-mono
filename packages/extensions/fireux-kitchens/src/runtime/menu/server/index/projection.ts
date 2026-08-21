@@ -3,7 +3,7 @@ import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
 import { readMenuOrderingConfig } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'
-import type { TenantPublicMenuScope } from '../ownership/public-target'
+import type { TenantMenuScope } from '../ownership/target'
 import type { MenuDirectoryContext } from './context'
 
 export type MenuDirectoryDocument = {
@@ -13,7 +13,7 @@ export type MenuDirectoryDocument = {
 
 export function projectMenuDirectoryEntry(
   document: MenuDirectoryDocument,
-  scopedKitchen?: TenantPublicMenuScope | null,
+  scopedKitchen?: TenantMenuScope | null,
   context: MenuDirectoryContext = {}
 ): MenuDirectoryEntry | null {
   const { id, data } = document

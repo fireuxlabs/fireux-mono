@@ -20,9 +20,9 @@ export function useKitchenWorkspacePaletteEditor() {
   const saving = ref(false)
   const saveState = ref('')
   const palette = computed<WorkspacePalette>(() => {
-    const kitchen = selectedKitchen.value as
-      | { workspace_theme?: { palette?: WorkspacePalette } }
-      | null
+    const kitchen = selectedKitchen.value as {
+      workspace_theme?: { palette?: WorkspacePalette }
+    } | null
     return kitchen?.workspace_theme?.palette || fallbackWorkspacePalette
   })
   const canSave = computed(() => canWrite.value && dataType.value === 'live')
@@ -43,7 +43,8 @@ export function useKitchenWorkspacePaletteEditor() {
       saveState.value = 'Saved'
     } catch (error) {
       saveState.value = 'Save failed'
-      const message = error instanceof Error ? error.message : 'Please try again.'
+      const message =
+        error instanceof Error ? error.message : 'Please try again.'
       toast.error(`Failed to update Workspace palette: ${message}`)
     } finally {
       saving.value = false

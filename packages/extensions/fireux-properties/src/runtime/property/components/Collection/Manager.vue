@@ -148,19 +148,19 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 23:02 CEST — Property public projection: keep bounded browse cards unlinked until public detail exists.
+// Property Directory cards remain unlinked until Property has a detail route.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import { usePublicPropertyIndex } from '../../composables/usePublicPropertyIndex'
-import type { PublicPropertyIndexItem } from '../../models/property-index.model.ts'
+import { usePropertyDirectory } from '../../composables/usePropertyDirectory'
+import type { PropertyDirectoryEntry } from '../../models/property-index.model.ts'
 import PropertyCardsCell from '../Cards/Cell.vue'
 import PropertyCardsPill from '../Cards/Pill.vue'
 import PropertyCollectionList from './List.vue'
 
-type PublicPropertyCard = {
+type PropertyDirectoryCard = {
   id: string
   to: string
   title: string
@@ -172,10 +172,10 @@ type PublicPropertyCard = {
   summary: string
 }
 
-const propertyTypeLabel = (value: PublicPropertyIndexItem['property_type']) =>
+const propertyTypeLabel = (value: PropertyDirectoryEntry['property_type']) =>
   value.charAt(0).toUpperCase() + value.slice(1)
 
-const makeCard = (property: PublicPropertyIndexItem): PublicPropertyCard => {
+const makeCard = (property: PropertyDirectoryEntry): PropertyDirectoryCard => {
   const typeLabel = propertyTypeLabel(property.property_type)
   const unitLabel = `${property.unit_count} unit${property.unit_count === 1 ? '' : 's'}`
 
@@ -222,7 +222,7 @@ const props = withDefaults(
   }
 )
 
-const fetched = usePublicPropertyIndex()
+const fetched = usePropertyDirectory()
 const collection = computed(() => fetched.properties.value)
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
@@ -248,7 +248,7 @@ const showSearchInput = computed(
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<PublicPropertyIndexItem, PublicPropertyCard>({
+  useCollectionSearch<PropertyDirectoryEntry, PropertyDirectoryCard>({
     items: collection,
     makeCard,
     initialVariant: props.initialVariant,

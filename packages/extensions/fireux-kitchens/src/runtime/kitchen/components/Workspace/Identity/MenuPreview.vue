@@ -5,9 +5,7 @@
         <div class="flex items-start gap-3">
           <UIcon name="i-lucide-eye" class="mt-1 size-5 shrink-0 text-muted" />
           <div>
-            <p class="text-sm font-medium text-highlighted">
-              Menu Preview
-            </p>
+            <p class="text-sm font-medium text-highlighted">Menu Preview</p>
             <p v-if="previewMenu?.name" class="text-xs text-dimmed">
               {{ previewMenu.name }}
             </p>
@@ -66,10 +64,7 @@
             description="This menu has no sections yet."
           />
 
-          <MenuDetailContentSectionList
-            v-else
-            :sections="previewSections"
-          />
+          <MenuDetailContentSectionList v-else :sections="previewSections" />
         </section>
 
         <UAlert
@@ -81,12 +76,11 @@
         />
       </section>
 
-      <MoleculesDisclosurePanel
-        title="Theme snapshot"
-        size="sm"
-        :block="false"
-      >
-        <pre class="mt-3 overflow-auto rounded-lg border border-default bg-muted p-3 text-xs text-highlighted">{{ snapshotJson }}</pre>
+      <MoleculesDisclosurePanel title="Theme snapshot" size="sm" :block="false">
+        <pre
+          class="mt-3 overflow-auto rounded-lg border border-default bg-muted p-3 text-xs text-highlighted"
+          >{{ snapshotJson }}</pre
+        >
       </MoleculesDisclosurePanel>
     </div>
   </UCard>
@@ -122,13 +116,11 @@ const previewModes = [
 ]
 
 const text = (value: unknown) => String(value ?? '').trim()
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: computed(() => props.pageStyle),
-  colorMode: previewMode,
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: computed(() => props.pageStyle),
+    colorMode: previewMode,
+  })
 const previewDescription = computed(() => text(props.menu?.description))
 const previewMenu = computed(() => props.menu ?? null)
 const previewSections = computed(() =>
@@ -195,7 +187,11 @@ const snapshotJson = computed(() => JSON.stringify(snapshot.value, null, 2))
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
   --menu-title: var(--menu-title-dark);
-  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
+  --menu-primary: color-mix(
+    in srgb,
+    var(--menu-primary-source) 58%,
+    var(--menu-text)
+  );
 }
 
 .menu-preview-surface {

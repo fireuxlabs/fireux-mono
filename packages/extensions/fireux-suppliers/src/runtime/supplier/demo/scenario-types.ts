@@ -1,5 +1,4 @@
 import type {
-  AppSupplier,
   Supplier,
   SupplierCatalogue,
   SupplierIngredient,
@@ -9,7 +8,6 @@ import type {
 export type SupplierDemoScenario = {
   appId: string
   supplier: Supplier
-  appSupport: AppSupplier
   ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]

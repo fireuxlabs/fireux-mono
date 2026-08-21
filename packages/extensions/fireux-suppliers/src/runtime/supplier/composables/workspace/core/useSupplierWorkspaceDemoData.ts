@@ -4,7 +4,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useWorkspaceDemoData } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDemoData'
 import { type SupplierSurface } from '../../firestore/utils/view/useSupplierInterface'
 import { projectSupplierDemoWorld } from '../../../utils/supplier-demo-world'
-import type { PublicCompanyProjection } from 'fireux-companies/runtime/place/models/company-public.model'
+import type { CompanyDirectoryEntry } from 'fireux-companies/runtime/place/models/company-directory.model'
 import type {
   SupplierCatalogue,
   SupplierIngredient,
@@ -14,7 +14,7 @@ import type {
 export type SupplierWorkspaceDemoScenario = {
   appId: string
   supplier: SupplierSurface
-  companyPlace: PublicCompanyProjection
+  companyPlace: CompanyDirectoryEntry
   ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]
@@ -25,7 +25,9 @@ export type SupplierWorkspaceDemoData = {
   scenarios: SupplierWorkspaceDemoScenario[]
 }
 
-export function useSupplierWorkspaceDemoData(active: MaybeRefOrGetter<boolean>) {
+export function useSupplierWorkspaceDemoData(
+  active: MaybeRefOrGetter<boolean>
+) {
   const { appId } = useFireUXConfig()
 
   return useWorkspaceDemoData<SupplierWorkspaceDemoData>({
@@ -39,30 +41,29 @@ export function useSupplierWorkspaceDemoData(active: MaybeRefOrGetter<boolean>) 
         scenarios: supplierModule.supplierDemoScenarios,
         companyTargets: companyModule.companyDemoTargets,
       })
-      const scenarios = supplierDemoWorld.reduce<SupplierWorkspaceDemoScenario[]>(
-        (items, scenario) => {
-          if (scenario.appId !== String(appId || '').trim()) return items
+      const scenarios = supplierDemoWorld.reduce<
+        SupplierWorkspaceDemoScenario[]
+      >((items, scenario) => {
+        if (scenario.appId !== String(appId || '').trim()) return items
 
-          items.push({
-            appId: scenario.appId,
-            supplier: scenario.supplier,
-            companyPlace: scenario.companyPlace,
-            ingredients: scenario.ingredients.map((ingredient) => ({
-              ...ingredient,
+        items.push({
+          appId: scenario.appId,
+          supplier: scenario.supplier,
+          companyPlace: scenario.companyPlace,
+          ingredients: scenario.ingredients.map((ingredient) => ({
+            ...ingredient,
+          })),
+          items: scenario.items.map((item) => ({ ...item })),
+          catalogues: scenario.catalogues.map((catalogue) => ({
+            ...catalogue,
+            sections: catalogue.sections.map((section) => ({
+              ...section,
+              items: section.items.map((item) => ({ ...item })),
             })),
-            items: scenario.items.map((item) => ({ ...item })),
-            catalogues: scenario.catalogues.map((catalogue) => ({
-              ...catalogue,
-              sections: catalogue.sections.map((section) => ({
-                ...section,
-                items: section.items.map((item) => ({ ...item })),
-              })),
-            })),
-          })
-          return items
-        },
-        []
-      )
+          })),
+        })
+        return items
+      }, [])
 
       return {
         suppliers: scenarios.map((scenario) => scenario.supplier),

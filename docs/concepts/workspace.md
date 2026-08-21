@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -215,9 +215,9 @@ behaviour; the map does not require empty symmetry.
 - Tenant apps can auto-select a single persisted authorized target.
 - Authority-proven single targets are committed inside the family runtime;
   index adapters never add a second auto-selection path.
-- Every Live App sources target relationships and operator/team access from
-  the owning entity family's persisted App-support records. AppUser does not
-  carry Workspace target IDs.
+- Every Live App derives targets from canonical root management plus the
+  owning Entity's `team/{uid}` record. AppUser proves App membership and
+  governance; it never carries Workspace target IDs.
 - Every family loads its authenticated chooser candidates through
   `/api/workspace/{family}/targets`. Core owns the App-, family-, and User-scoped
   request lifecycle; the family endpoint owns authority and the family core
@@ -253,14 +253,14 @@ behaviour; the map does not require empty symmetry.
   cannot race between `live`, `demo`, and `test`.
 - Global target adapters compose AppUser membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
-- Entity App-support operator/team records bound live reads. Exact
-  root and same-id App-support reads must fail the complete outcome on a missing
-  half, wrong management host, malformed support authority, or unauthorized indexed
-  id; they never leave an unused full-root listener behind client filtering.
+- Root management and exact Team records bound live reads. Target resolution
+  must fail on a missing root, wrong management host, malformed Team authority,
+  missing required AppUser membership, or unauthorized id; it never leaves an
+  unused full-root listener behind client filtering.
 - Kitchen live targets use the canonical authenticated
   `/api/workspace/kitchen/targets`
   projection. The fixed-runtime server derives candidate IDs, exact-loads and
-  authorizes every canonical root/App-support/Place join, and the selected live
+  authorizes every canonical root/Team/Place join, and the selected live
   Kitchen reuses that projected root instead of starting a second raw browser
   query. Its response is the sole live target outcome: do not overlay a second
   browser AppUser target read, and share the keyed request across selected/index
@@ -273,20 +273,20 @@ behaviour; the map does not require empty symmetry.
 
 ## Production onboarding
 
-- A root/App-support workspace family creates or attaches through its own
-  fixed-runtime authenticated server endpoint. The caller cannot choose the
-  App, database, collection path, or App-support id.
-- One Firestore transaction owns root management, same-id complete App support,
-  and caller operator/team authority. Missing or conflicting halves fail before a
-  partial chooser row can be created.
-- `operator_ids` is mutation authority. `team_ids` is target/read membership,
-  not write authority. Current App admins remain the explicit administrative
-  override; UI `canWrite` still does not replace server or Rules enforcement.
+- A Workspace family creates or attaches through its own fixed-runtime
+  authenticated server endpoint. The caller cannot choose the App, database,
+  collection path, Team id, or authority.
+- One Firestore transaction owns root management and the caller's exact
+  `team/{uid}` record. A Team record names roles and permissions; no second
+  operator/team array participates in access.
+- Current App admins remain the explicit administrative override only for
+  roots managed by that App; UI `canWrite` still does not replace server or
+  Rules enforcement.
 - Kitchen is the Place-backed reference with a server-projected live outcome
   and a separate lazy Demo outcome. Supplier, Portfolio, and Property retain
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
-  family and has no root/App-support onboarding.
+  family and has no production onboarding.
 - Workspace-capable roots use `management.mode`: `root` has no Workspace host;
   `workspace` uses the ecosystem App by convention; `app` names its
   dedicated Workspace App with `app_id`. Core resolves this vocabulary without
@@ -340,7 +340,8 @@ behaviour; the map does not require empty symmetry.
 ## Similarities
 
 - All workspace entities need target selection or a selected target.
-- Workspace entities expose access/team only when that lifecycle is real.
+- Workspace Entities always own Team authority, while a Console Team editor is
+  exposed only when its lifecycle is implemented.
 - All workspace indexes should stay thin.
 
 ## Differences
@@ -362,7 +363,7 @@ Demo, test, and simulation:
 
 - Now: preserve the guarded selected → targets → debug Index contract and one
   family-owned target outcome.
-- Next: align lifecycle sheets through the family delta register, especially
-  Property Identity/Create and Kitchen App-support migration.
+- Next: align lifecycle sheets through the family delta register while the
+  owner-first Team and operations cutover completes.
 - Later: guard Overview, Identity, and Team only after their shared jobs are as
   stable as Index.

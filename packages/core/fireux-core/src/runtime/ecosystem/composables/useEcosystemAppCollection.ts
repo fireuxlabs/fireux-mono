@@ -1,12 +1,14 @@
 import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import type { AppDirectoryEntry } from '../../models/utils/directory'
+import type {
+  AppDirectoryEntry,
+  CollectionResponse,
+} from '../../models/utils/directory'
 import type {
   AppDirectoryController,
   DirectoryOutcome,
 } from '../../types/directory-controller.types.ts'
-import type { PublicCollectionResponse } from '../../server/utils/public-projection/public-dto.types.ts'
 
 type UnknownError = {
   status?: unknown
@@ -25,7 +27,7 @@ function statusCode(error: unknown) {
   )
 }
 
-/** Read the current owning Ecosystem's allowlisted public App projection. */
+/** Read the current owning Ecosystem's App directory. */
 export function useEcosystemAppCollection(): AppDirectoryController {
   const { ecosystemId } = useFireUXConfig()
   const key = `ecosystem-app-directory-${ecosystemId || 'none'}`
@@ -33,9 +35,7 @@ export function useEcosystemAppCollection(): AppDirectoryController {
     key,
     async () => {
       try {
-        return await $fetch<PublicCollectionResponse<AppDirectoryEntry>>(
-          '/api/public/apps'
-        )
+        return await $fetch<CollectionResponse<AppDirectoryEntry>>('/api/apps')
       } catch (cause) {
         if (statusCode(cause) === 404) {
           return {

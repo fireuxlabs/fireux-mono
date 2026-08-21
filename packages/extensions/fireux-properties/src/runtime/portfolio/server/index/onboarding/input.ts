@@ -20,7 +20,7 @@ export type PortfolioOnboardingCompleteResult = {
   ok: true
   portfolio_id: string
   created_root: boolean
-  created_app_support: boolean
+  created_team_member: boolean
 }
 
 export const text = (value: unknown) => String(value ?? '').trim()

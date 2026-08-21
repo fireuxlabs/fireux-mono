@@ -12,17 +12,16 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
-import { agentConfig } from '../../config/agentConfig'
 import type {
   Agent,
-  PublicAgentDirectoryProfile,
+  AgentDirectoryProfile,
 } from '../../../../../../../models/profiles/Agent/Agent.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle'>>
 
-type AgentTarget = PublicAgentDirectoryProfile
+type AgentTarget = AgentDirectoryProfile
 
 export namespace AgentCard {
   export type Card = {
@@ -94,7 +93,7 @@ export function useAgentInterface(
     return {
       id,
       to: routeKey
-        ? `/${agentConfig.collectionName}/${encodeURIComponent(routeKey)}`
+        ? `/agents/${encodeURIComponent(routeKey)}`
         : '',
 
       imageUrl: profileImage || userAvatar,
@@ -119,7 +118,7 @@ export function useAgentInterface(
     target?: AgentTarget | null | undefined,
     userOverride?: UserLike | null
   ): AgentCard.Card | null {
-    const p = target ?? profileRefs?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.profile?.value ?? null
     if (!p) return null
     const u = userOverride ?? userRef?.value ?? null
     const mapped = map(p, u)

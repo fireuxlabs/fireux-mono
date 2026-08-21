@@ -18,7 +18,10 @@
       title="Portfolio workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedPortfolio: selection.portfolio, portfolios: sections.targets.collection }"
+      :objects="{
+        selectedPortfolio: selection.portfolio,
+        portfolios: sections.targets.collection,
+      }"
       :derived="debug"
       :default-open="false"
     />
@@ -28,10 +31,5 @@
 <script setup lang="ts">
 import { usePortfolioWorkspaceIndex } from '../../composables/workspace/index/usePortfolioWorkspaceIndex'
 
-const {
-  selection,
-  sections,
-  actions,
-  debug,
-} = usePortfolioWorkspaceIndex()
+const { selection, sections, actions, debug } = usePortfolioWorkspaceIndex()
 </script>

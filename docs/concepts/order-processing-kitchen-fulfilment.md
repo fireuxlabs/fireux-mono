@@ -1,10 +1,10 @@
 # Order processing and kitchen fulfilment spine
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
-Map the boundary between public menu ordering, kitchen-owned order records, and fulfilment rules so the next order patches do not spread business truth across unrelated surfaces.
+Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilment rules so the next Order patches do not spread business truth across unrelated surfaces.
 
 ## Vertical links
 - Parent: menu-ordering.md
@@ -25,15 +25,15 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 
 ## Entity checkpoint
 - KitchenOrder is a kitchen-scoped operational record.
-- It lives below the app-scoped Kitchen operations root, currently `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`.
-- It is not a root public index entity.
+- It lives below its root Kitchen at `kitchens/{kitchenId}/orders/{orderId}`.
+- It is not a root directory Entity.
 - FulfilmentPolicy and FulfilmentMatch are order snapshot shapes, not entities.
 - DeliveryZone is fulfilment configuration owned by Kitchen, not a standalone entity.
 - KitchenOrder is the active Order canon for menu ordering and kitchen processing.
 
 ## Core split
 - Menu content is readable by default; no stored view marker is needed.
-- `Menu.ordering.order_types[]`: what kind of order the public menu can create.
+- `Menu.ordering.order_types[]`: what kind of Order the Menu can create.
 - `Kitchen.fulfilment`: reusable venue rules such as delivery zones, payment methods, and deposits.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.
 - `Workspace/Kitchen/Operations/Orders`: operator board and ticket actions.
@@ -47,7 +47,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 6. Server writes a KitchenOrder under the selected Kitchen operations path.
 7. Created KitchenOrder copies the selected order-type policy into `fulfilment_policy`.
 8. Created KitchenOrder copies concrete fulfilment lookup results into `fulfilment_match`.
-9. Public status reads expose only small customer-safe state.
+9. Customer status reads expose only small customer-safe state.
 10. Kitchen workspace sends authenticated transition commands; it does not patch order lifecycle fields directly.
 
 ## Intake contract
@@ -58,7 +58,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 - After payment, collection, delivery, and pre-order produce
   `pending_acceptance` and require Accept or Send back.
 - Payment resume state is limited to `accepted` or `pending_acceptance`; it cannot skip forward to Ready/Completed or restore a terminal order.
-- Public ordering maps and kitchen ticket examples consume the same shared intake policy instead of restating status strings.
+- Ordering maps and Kitchen ticket examples consume the same shared intake policy instead of restating status strings.
 
 ## Working vocabulary
 - `order_type`: customer-facing service promise such as delivery, collection, dine-in, pre-order, or room service.
@@ -94,7 +94,7 @@ Map the boundary between public menu ordering, kitchen-owned order records, and 
 4. Completed orders enter Recent.
 5. `return_to_queue` is the single correction from Pass to Queue and clears the previous ready estimate.
 6. The server validates every transition against the exhaustive shared rule map inside the authenticated transaction.
-7. Public order status keeps observing automatic and operator-accepted orders through Ready to a terminal state.
+7. Customer Order status keeps observing automatic and operator-accepted Orders through Ready to a terminal state.
 
 There is no stored Preparing state in V1. Queue already means the kitchen owns the work; add another state only when a real start/hold preparation action exists.
 
@@ -102,14 +102,14 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Kitchen owns reusable fulfilment defaults.
 - Menu opts into order types and can add type-specific policy.
 - Order stores the exact policy and match used at creation.
-- Public UI renders the resolved policy; it does not infer rules from tenant app id or kitchen type.
+- Ordering UI renders the resolved policy; it does not infer rules from tenant App id or Kitchen type.
 - Workspace operations may update processing state after creation, but should not rewrite historical policy snapshots unless the operator is explicitly correcting the order.
 
 ## Delta register
 
 | Delta | Classification | Why | Alignment recommendation |
 | --- | --- | --- | --- |
-| Order types collect different public fields | `accepted` | Destination, timing, party, and handoff requirements genuinely differ | Keep input local to each funnel and submit through one creation contract |
+| Order types collect different customer fields | `accepted` | Destination, timing, party, and handoff requirements genuinely differ | Keep input local to each funnel and submit through one creation contract |
 | Operator copy differs by fulfilment type | `accepted` | Served, Collected, Dispatched, and Delivered describe different handoffs | Map copy to shared transitions; do not fork lifecycle states |
 | The board presents Incoming, Queue, Pass, and Recent rails | `accepted` | Rails are projections of operator work | Keep `board_stage` derived from the single stored status |
 | Static fulfilment setup can sit under Kitchen Identity | `accepted` | Zones and payment capability are venue setup, not daily work | Move only real pause/load commands into Operations |

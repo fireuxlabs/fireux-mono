@@ -17,7 +17,9 @@
 
   <div v-else-if="state" class="space-y-4">
     <div class="flex flex-wrap items-center gap-2">
-      <UBadge color="primary" variant="soft" icon="i-lucide-sparkles">App</UBadge>
+      <UBadge color="primary" variant="soft" icon="i-lucide-sparkles"
+        >App</UBadge
+      >
       <code class="text-xs text-dimmed">{{ state.app_id }}</code>
     </div>
 
@@ -53,12 +55,17 @@
         <div>
           <div class="font-semibold text-highlighted">App palette</div>
           <p class="text-sm text-dimmed">
-            Eight effective roles. Saving stores only additions and overrides above Workspace.
+            Eight effective roles. Saving stores only additions and overrides
+            above Workspace.
           </p>
         </div>
       </template>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <UFormField v-for="field in paletteFields" :key="field.key" :label="field.label">
+        <UFormField
+          v-for="field in paletteFields"
+          :key="field.key"
+          :label="field.label"
+        >
           <div class="flex items-center gap-2">
             <input
               v-if="validHex(draftPalette[field.key])"
@@ -66,9 +73,16 @@
               type="color"
               :value="draftPalette[field.key]"
               :disabled="!state.can_write"
-              @input="draftPalette[field.key] = ($event.target as HTMLInputElement).value"
-            >
-            <span v-else class="size-9 rounded-md border border-dashed border-default" />
+              @input="
+                draftPalette[field.key] = (
+                  $event.target as HTMLInputElement
+                ).value
+              "
+            />
+            <span
+              v-else
+              class="size-9 rounded-md border border-dashed border-default"
+            />
             <UInput
               v-model="draftPalette[field.key]"
               :disabled="!state.can_write"
@@ -90,10 +104,16 @@
       </template>
       <div class="grid gap-4 md:grid-cols-2">
         <UFormField label="Display family">
-          <UInput v-model="draftTypography.display_family" :disabled="!state.can_write" />
+          <UInput
+            v-model="draftTypography.display_family"
+            :disabled="!state.can_write"
+          />
         </UFormField>
         <UFormField label="Body family">
-          <UInput v-model="draftTypography.body_family" :disabled="!state.can_write" />
+          <UInput
+            v-model="draftTypography.body_family"
+            :disabled="!state.can_write"
+          />
         </UFormField>
       </div>
     </UCard>
@@ -135,7 +155,14 @@ type AppThemeState = {
   app_palette: AppPaletteLayer | null
   effective_palette: AppPalette | null
   typography: AppTypography | null
-  media: Record<'logo_url' | 'wordmark_light_url' | 'wordmark_dark_url' | 'cover_url' | 'thumbnail_url', string>
+  media: Record<
+    | 'logo_url'
+    | 'wordmark_light_url'
+    | 'wordmark_dark_url'
+    | 'cover_url'
+    | 'thumbnail_url',
+    string
+  >
 }
 
 const props = defineProps<{ kitchenId: string }>()
@@ -158,19 +185,22 @@ const paletteFields = [
   { key: 'accent_contrast', label: 'Accent contrast' },
 ] as const
 
-const draftPalette = reactive<AppPalette>(Object.fromEntries(
-  paletteFields.map(field => [field.key, ''])
-) as AppPalette)
+const draftPalette = reactive<AppPalette>(
+  Object.fromEntries(
+    paletteFields.map((field) => [field.key, ''])
+  ) as AppPalette
+)
 const draftTypography = reactive<AppTypography>({
   display_family: '',
   body_family: '',
 })
 
 const validHex = (value: string) => /^#[0-9a-f]{6}$/i.test(value)
-const valid = computed(() =>
-  paletteFields.every(field => validHex(draftPalette[field.key])) &&
-  Boolean(draftTypography.display_family.trim()) &&
-  Boolean(draftTypography.body_family.trim())
+const valid = computed(
+  () =>
+    paletteFields.every((field) => validHex(draftPalette[field.key])) &&
+    Boolean(draftTypography.display_family.trim()) &&
+    Boolean(draftTypography.body_family.trim())
 )
 
 const assets = computed(() => {
@@ -181,7 +211,7 @@ const assets = computed(() => {
     { key: 'wordmark_dark_url', label: 'Wordmark · dark' },
     { key: 'cover_url', label: 'Cover' },
     { key: 'thumbnail_url', label: 'Thumbnail' },
-  ].map(asset => ({
+  ].map((asset) => ({
     ...asset,
     present: Boolean(media?.[asset.key as keyof AppThemeState['media']]),
   }))
@@ -206,13 +236,17 @@ async function load() {
   errorMessage.value = ''
   try {
     const user = await useRequireUser()
-    const response = await $fetch<AppThemeState>('/api/workspace/kitchen/app-theme', {
-      query: { kitchen_id: props.kitchenId },
-      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-    })
+    const response = await $fetch<AppThemeState>(
+      '/api/workspace/kitchen/app-theme',
+      {
+        query: { kitchen_id: props.kitchenId },
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      }
+    )
     apply(response)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Please try again.'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Please try again.'
   } finally {
     pending.value = false
   }
@@ -244,5 +278,9 @@ async function save() {
   }
 }
 
-watch(() => props.kitchenId, () => void load(), { immediate: true })
+watch(
+  () => props.kitchenId,
+  () => void load(),
+  { immediate: true }
+)
 </script>

@@ -1,15 +1,8 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
-import {
-  computed,
-  unref,
-  type ComputedRef,
-  type MaybeRef,
-} from 'vue'
-import type {
-  PublicAppDto,
-  PublicDetailResponse,
-} from '../../server/utils/public-projection/public-dto.types.ts'
+import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
+import type { DetailResponse } from '../../models/utils/directory.ts'
+import type { AppDetail } from '../models/app-directory.model.ts'
 import { useFireUXConfig } from './config/FireUXConfig'
 
 export type AppDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
@@ -20,7 +13,7 @@ type AppDetailControls = Pick<
 >
 
 export type UseAppDetailReturn = AppDetailControls & {
-  app: ComputedRef<PublicAppDto | null>
+  app: ComputedRef<AppDetail | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -46,21 +39,22 @@ export function useAppDetail(
 ): UseAppDetailReturn {
   const fireux = useFireUXConfig()
   const appId = computed(() => String(unref(routeAppId) ?? '').trim())
-  const state = useAsyncData<PublicDetailResponse<PublicAppDto> | null>(
-    () => [
-      'app-detail',
-      fireux.ecosystemId || fireux.appId,
-      appId.value || 'none',
-    ].join('|'),
+  const state = useAsyncData<DetailResponse<AppDetail> | null>(
+    () =>
+      [
+        'app-detail',
+        fireux.ecosystemId || fireux.appId,
+        appId.value || 'none',
+      ].join('|'),
     async () => {
       if (!appId.value) return null
-      return $fetch<PublicDetailResponse<PublicAppDto>>(
-        `/api/public/apps/${encodeURIComponent(appId.value)}`
+      return $fetch<DetailResponse<AppDetail>>(
+        `/api/apps/${encodeURIComponent(appId.value)}`
       )
     },
     { server: true, watch: [appId] }
   )
-  const app = computed<PublicAppDto | null>(() => {
+  const app = computed<AppDetail | null>(() => {
     const item = state.data.value?.item ?? null
     return item?.id === appId.value && !state.pending.value ? item : null
   })

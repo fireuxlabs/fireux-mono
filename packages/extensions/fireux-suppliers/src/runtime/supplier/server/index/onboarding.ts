@@ -1,26 +1,22 @@
-// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: bind root and App support in one trusted transaction.
-import { FieldValue } from 'firebase-admin/firestore'
+// Supplier atomic onboarding binds the root Supplier and its exact Team member.
 import { createError, type H3Event } from 'h3'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
 } from 'fireux-core/runtime/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
-  assertWorkspaceEntitySupportCapacity,
-  readWorkspaceEntitySupportAuthority,
   requireWorkspaceEntityMemberRole,
   resolveWorkspaceEntityOnboardingPolicy,
 } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppSuppliersTarget,
   serverAppUsersTarget,
+  serverSupplierTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
@@ -34,8 +30,6 @@ type MemberRole = 'admin' | 'user'
 
 type RuntimePolicy = {
   appId: string
-  appRole: string
-  developerId: string
   ecosystem: string
   management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
@@ -86,20 +80,9 @@ function readRootManagement(value: Record<string, unknown>) {
   return management
 }
 
-function readSupport(value: Record<string, unknown>) {
-  return readWorkspaceEntitySupportAuthority(value, 'Supplier')!
-}
-
-function assertSupportCapacity(
-  support: ReturnType<typeof readSupport>,
-  uid: string
-) {
-  assertWorkspaceEntitySupportCapacity(support, uid, 'Supplier')
-}
-
 function resolveAction(input: {
   root: Record<string, unknown> | null
-  support: ReturnType<typeof readSupport> | null
+  teamMember: Record<string, unknown> | null
   uid: string
   role: MemberRole
   canCreate: boolean
@@ -124,23 +107,20 @@ function resolveAction(input: {
   if (management.mode !== 'root' && managementAppId !== input.appId) {
     fail(409, 'This Supplier is already attached to another App.')
   }
-  if (management.mode === 'root' && input.support) {
-    fail(409, 'Supplier access exists for an unattached canonical root.')
-  }
-
-  if (!input.support) {
+  if (!input.teamMember) {
     if (input.role !== 'admin') {
       fail(403, 'An App admin must connect the Supplier.')
     }
     return 'connect'
   }
 
+  const teamRole = text(input.teamMember.role)
   if (
-    input.role !== 'admin' &&
-    !input.support.operatorIds.includes(input.uid) &&
-    !input.support.teamIds.includes(input.uid)
+    text(input.teamMember.user_id) !== input.uid ||
+    text(input.teamMember.status) !== 'active' ||
+    (teamRole !== 'owner' && teamRole !== 'operator')
   ) {
-    fail(403, 'An App admin or existing Supplier operator must grant access.')
+    fail(403, 'Active Supplier Team membership is required.')
   }
   return 'open'
 }
@@ -164,8 +144,8 @@ function newSupplierRoot(
     supplier_image: '',
     supplier_item_categories: [],
     supplier_delivery_areas: [],
-    state: 'public',
-    catalogue_state: 'public_only',
+    state: 'published',
+    catalogue_state: 'directory_only',
     linked_ingredient_ids: [],
     hello: '',
     created: serverAuditStamp({ by: uid }),
@@ -204,24 +184,23 @@ export async function completeSupplierOnboarding(
 
   const memberships = serverAppUsersTarget(policy.appId)
   const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
-  const supports = serverAppSuppliersTarget(policy.appId)
+  const team = serverSupplierTeamMembersTarget(supplierId)
 
   return runGuardedServerTransaction(suppliers.database, async (mutations) => {
-    const [membership, root, support] = await Promise.all([
+    const [membership, root, teamMember] = await Promise.all([
       mutations.read<Record<string, unknown>>(memberships, uid),
       mutations.read<Record<string, unknown>>(suppliers, supplierId),
-      mutations.read<Record<string, unknown>>(supports, supplierId),
+      mutations.read<Record<string, unknown>>(team, uid),
     ])
     const role = memberRole(membership.exists, membership.data?.role)
-    const membershipData = membership.data || {}
     if (requestedSupplierId && !root.exists) {
       fail(404, 'Supplier not found.')
     }
     if (!requestedSupplierId && root.exists) {
       fail(409, 'A Supplier with this organization name already exists.')
     }
-    if (!root.exists && support.exists) {
-      fail(409, 'Supplier access exists without its canonical root.')
+    if (!root.exists && teamMember.exists) {
+      fail(409, 'Supplier Team membership exists without its canonical root.')
     }
 
     const rootData = root.exists ? root.data || {} : null
@@ -252,46 +231,18 @@ export async function completeSupplierOnboarding(
         'Supplier onboarding requires a valid Company and same-ID Place.'
       )
     }
-    const supportData = support.exists ? readSupport(support.data || {}) : null
+    const teamMemberData = teamMember.exists ? teamMember.data || {} : null
     const action = resolveAction({
       root: rootData,
-      support: supportData,
+      teamMember: teamMemberData,
       uid,
       role,
       canCreate: policy.canCreate,
       appId: policy.appId,
       ecosystem: policy.ecosystem,
     })
-    if (supportData && role === 'admin') {
-      assertSupportCapacity(supportData, uid)
-    }
-
-    if (
-      !support.exists &&
-      !hasAppUserPremiumAccess(membershipData, {
-        isConfiguredDeveloper:
-          Boolean(policy.developerId) && uid === policy.developerId,
-      })
-    ) {
-      const operatorSupports = await mutations.query<Record<string, unknown>>(
-        supports,
-        {
-          field: 'operator_ids',
-          op: 'array-contains',
-          value: uid,
-          limit: 1,
-        }
-      )
-      if (operatorSupports.length) {
-        fail(
-          403,
-          'Standard users can only be on one live supplier team per app. Premium unlocks multiple.'
-        )
-      }
-    }
-
     const createdRoot = !root.exists
-    const createdAppSupport = !support.exists
+    const createdTeamMember = !teamMember.exists
 
     if (createdRoot) {
       mutations.create(
@@ -309,18 +260,13 @@ export async function completeSupplierOnboarding(
       }
     }
 
-    if (createdAppSupport) {
-      mutations.create(supports, supplierId, {
-        operator_ids: [uid],
-        team_ids: [uid],
-        join_requests: [],
+    if (createdTeamMember) {
+      mutations.create(team, uid, {
+        user_id: uid,
+        role: createdRoot ? 'owner' : 'operator',
+        permissions: [],
+        status: 'active',
         created: serverAuditStamp({ by: uid, appId: policy.appId }),
-        updated: serverAuditStamp({ by: uid }),
-      })
-    } else if (role === 'admin') {
-      mutations.update(supports, supplierId, {
-        operator_ids: FieldValue.arrayUnion(uid),
-        team_ids: FieldValue.arrayUnion(uid),
         updated: serverAuditStamp({ by: uid }),
       })
     }
@@ -335,7 +281,7 @@ export async function completeSupplierOnboarding(
       supplier_id: supplierId,
       action,
       created_root: createdRoot,
-      created_app_support: createdAppSupport,
+      created_team_member: createdTeamMember,
     }
   })
 }

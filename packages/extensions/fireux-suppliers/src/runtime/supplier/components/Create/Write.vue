@@ -1,10 +1,7 @@
 <template>
   <div class="space-y-6">
     <div v-if="!create" class="space-y-3">
-      <CompanyCreateSystem
-        v-if="!companyId"
-        @created="onCompanyReady"
-      />
+      <CompanyCreateSystem v-if="!companyId" @created="onCompanyReady" />
       <UAlert
         v-else
         color="success"
@@ -114,7 +111,9 @@ const errorMessage = ref<string | null>(null)
 const organizationName = ref('')
 const companyId = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
-const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'workspace')
+const resolvedMode = computed<FireuxEntityCreateMode>(
+  () => props.mode ?? 'workspace'
+)
 const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 
 function onCompanyReady(payload: { id: string }) {
@@ -132,9 +131,9 @@ const handleCreate = async () => {
     return
   }
 
-  const create = props.create ?? (
-    isWorkspaceMode.value ? createSupplierWorkspace : createSupplier
-  )
+  const create =
+    props.create ??
+    (isWorkspaceMode.value ? createSupplierWorkspace : createSupplier)
   isCreating.value = true
   errorMessage.value = null
 
@@ -155,9 +154,7 @@ const handleCreate = async () => {
     }
     emit('created', result)
     const defaultReturnTo =
-      resolvedMode.value === 'public'
-        ? '/suppliers'
-        : '/workspace/supplier'
+      resolvedMode.value === 'public' ? '/suppliers' : '/workspace/supplier'
     await router.push(props.returnTo || defaultReturnTo)
   } catch (error) {
     const message =

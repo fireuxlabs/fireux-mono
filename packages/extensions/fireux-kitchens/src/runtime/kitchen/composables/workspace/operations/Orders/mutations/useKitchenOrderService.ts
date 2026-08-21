@@ -1,8 +1,4 @@
-import {
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 
@@ -35,7 +31,9 @@ export function useKitchenOrderService(options: {
         text(toValue(options.appId)) !== appId ||
         text(toValue(options.kitchenId)) !== kitchenId
       ) {
-        throw new Error('The selected Kitchen changed before service could end.')
+        throw new Error(
+          'The selected Kitchen changed before service could end.'
+        )
       }
 
       return await $fetch('/api/workspace/kitchen/orders/end-service', {
@@ -62,15 +60,18 @@ export function useKitchenOrderService(options: {
 }
 
 function errorMessage(error: unknown) {
-  const source = error && typeof error === 'object'
-    ? error as {
-        data?: { statusMessage?: unknown }
-        message?: unknown
-        statusMessage?: unknown
-      }
-    : {}
+  const source =
+    error && typeof error === 'object'
+      ? (error as {
+          data?: { statusMessage?: unknown }
+          message?: unknown
+          statusMessage?: unknown
+        })
+      : {}
 
-  return text(
-    source.data?.statusMessage || source.statusMessage || source.message
-  ) || 'Kitchen service could not be ended.'
+  return (
+    text(
+      source.data?.statusMessage || source.statusMessage || source.message
+    ) || 'Kitchen service could not be ended.'
+  )
 }

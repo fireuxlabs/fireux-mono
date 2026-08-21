@@ -16,15 +16,6 @@ export const validateSupplierDemoScenario = (
   const ingredientIds = scenario.ingredients.map(
     (ingredient) => ingredient.ingredient_id
   )
-  const appSupportKeys = [
-    'created',
-    'id',
-    'join_requests',
-    'operator_ids',
-    'team_ids',
-    'updated',
-  ]
-
   if (
     !scenario.appId ||
     !scenario.supplier.company_id ||
@@ -32,15 +23,10 @@ export const validateSupplierDemoScenario = (
     'place_id' in scenario.supplier ||
     scenario.supplier.management?.mode !== 'workspace' ||
     scenario.supplier.created.app_id !== scenario.appId ||
-    scenario.appSupport.id !== supplierId ||
-    scenario.appSupport.created.app_id !== scenario.appId ||
-    !sameStringSet(Object.keys(scenario.appSupport), appSupportKeys) ||
-    !Array.isArray(scenario.appSupport.operator_ids) ||
-    !Array.isArray(scenario.appSupport.team_ids) ||
-    !Array.isArray(scenario.appSupport.join_requests)
+    scenario.supplier.id !== supplierId
   ) {
     throw new Error(
-      `Supplier Demo ${supplierId} requires one same-App root and access-only AppSupplier pair.`
+      `Supplier Demo ${supplierId} requires one canonical root Supplier.`
     )
   }
 

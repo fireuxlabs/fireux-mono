@@ -19,7 +19,9 @@
       <div class="space-y-4">
         <div class="flex flex-wrap items-start gap-3">
           <UIcon
-            :name="isEcosystemSupplier ? 'i-lucide-store' : 'i-lucide-clipboard-list'"
+            :name="
+              isEcosystemSupplier ? 'i-lucide-store' : 'i-lucide-clipboard-list'
+            "
             class="mt-1 size-5 shrink-0 text-primary"
           />
           <div class="min-w-0 flex-1">

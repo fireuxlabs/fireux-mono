@@ -1,18 +1,10 @@
 <template>
   <div v-if="variant === 'pill'" class="collection-grid">
-    <CustomerCardsPill
-      v-for="card in cards"
-      :key="card.id"
-      v-bind="card"
-    />
+    <CustomerCardsPill v-for="card in cards" :key="card.id" v-bind="card" />
   </div>
 
   <div v-else class="collection-stack">
-    <CustomerCardsCell
-      v-for="card in cards"
-      :key="card.id"
-      v-bind="card"
-    />
+    <CustomerCardsCell v-for="card in cards" :key="card.id" v-bind="card" />
   </div>
 </template>
 

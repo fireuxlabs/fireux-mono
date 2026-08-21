@@ -47,19 +47,19 @@ import { computed, ref } from 'vue'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
 
-const { coreProfile, profile: professionalCardFromProfile } = useProfessional()
+const { professionalProfile, profile: professionalCardFromProfile } = useProfessional()
 const { createProfile: createProfileRecord } = useProfileCreate(professionalConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
-const isProfileLoading = computed(() => coreProfile.value === undefined)
-const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const isProfileLoading = computed(() => professionalProfile.value === undefined)
+const resolvedProfile = computed(() => professionalProfile.value ?? null)
 const professionalCard = computed(() =>
-  professionalCardFromProfile(resolvedCoreProfile.value)
+  professionalCardFromProfile(resolvedProfile.value)
 )
 const { model: professionalProfileView } = useProfessionalProfileView(
-  resolvedCoreProfile,
+  resolvedProfile,
   professionalCard
 )
 

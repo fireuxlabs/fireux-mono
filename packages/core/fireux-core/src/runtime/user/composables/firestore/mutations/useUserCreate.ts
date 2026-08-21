@@ -39,7 +39,7 @@ function toPublicDisplayNameSeed(
 }
 
 async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
-  const response = await fetch('/api/public/app/status', {
+  const response = await fetch('/api/app/status', {
     headers: { accept: 'application/json' },
     cache: 'no-store',
   })

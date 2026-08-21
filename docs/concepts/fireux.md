@@ -1,7 +1,7 @@
 # FireUX concept map
 
-Updated: 2026-07-21
-Ref: 5b6cfcc8e
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -40,7 +40,7 @@ Explain FireUX as the platform shape behind the repo.
 ## Package lanes
 
 - Core packages provide shared primitives and runtime foundations.
-- Ecosystem packages provide ecosystem identity, config, Firebase binding, and public assets.
+- Ecosystem packages provide ecosystem identity, config, Firebase binding, and bundled assets.
 - Extension packages provide domain runtime surfaces.
 - Core owns reusable Firestore Rules primitives; opted-in ecosystems own their
   complete target template and explicit policy deltas.
@@ -48,8 +48,8 @@ Explain FireUX as the platform shape behind the repo.
 ## Runtime app roles
 
 - `global`: app can expose multiple domains/workspaces.
-- `tenant`: App-support and AppUser membership records resolve its Workspace
-  targets; deploy-time configuration does not pin entity IDs.
+- `tenant`: root management, Team, and AppUser membership resolve its Workspace
+  targets; deploy-time configuration does not pin Entity IDs.
 - `standalone`: FireUX-owned standalone app mode.
 
 ## Current ecosystem ownership

@@ -43,9 +43,9 @@
         </label>
         <UInput
           v-model="partySizeModel"
-          :aria-describedby="partySizeError
-            ? 'menu-order-pre-order-party-size-error'
-            : undefined"
+          :aria-describedby="
+            partySizeError ? 'menu-order-pre-order-party-size-error' : undefined
+          "
           :aria-invalid="Boolean(partySizeError)"
           class="menu-order-pre-order-plan__input"
           icon="i-lucide-users"
@@ -75,9 +75,11 @@
         aria-hidden="true"
       />
       <span>
-        {{ ready
-          ? `Ready to choose dishes for ${guestLabel}.`
-          : 'The menu will open when both table details are set.' }}
+        {{
+          ready
+            ? `Ready to choose dishes for ${guestLabel}.`
+            : 'The menu will open when both table details are set.'
+        }}
       </span>
     </p>
   </section>
@@ -100,24 +102,26 @@ const emit = defineEmits<{
 
 const partySizeModel = computed({
   get: () => props.partySize,
-  set: value => emit('update:partySize', String(value ?? '')),
+  set: (value) => emit('update:partySize', String(value ?? '')),
 })
 const parsedPartySize = computed(() => Number(props.partySize))
-const validPartySize = computed(() =>
-  Number.isSafeInteger(parsedPartySize.value) &&
-  parsedPartySize.value >= 1 &&
-  parsedPartySize.value <= 500
+const validPartySize = computed(
+  () =>
+    Number.isSafeInteger(parsedPartySize.value) &&
+    parsedPartySize.value >= 1 &&
+    parsedPartySize.value <= 500
 )
-const ready = computed(() =>
-  Boolean(props.selection?.requestedFor) && validPartySize.value
+const ready = computed(
+  () => Boolean(props.selection?.requestedFor) && validPartySize.value
 )
 const partySizeError = computed(() =>
   props.partySize && !validPartySize.value
     ? 'Enter between 1 and 500 guests.'
     : ''
 )
-const guestLabel = computed(() =>
-  `${parsedPartySize.value} ${parsedPartySize.value === 1 ? 'guest' : 'guests'}`
+const guestLabel = computed(
+  () =>
+    `${parsedPartySize.value} ${parsedPartySize.value === 1 ? 'guest' : 'guests'}`
 )
 
 function chooseTime(event: MouseEvent) {
@@ -226,7 +230,7 @@ function chooseTime(event: MouseEvent) {
   font-weight: var(--font-weight-bold);
 }
 
-.menu-order-pre-order-plan[data-menu-pre-order-plan-state="ready"]
+.menu-order-pre-order-plan[data-menu-pre-order-plan-state='ready']
   .menu-order-pre-order-plan__state {
   color: var(--menu-primary);
 }

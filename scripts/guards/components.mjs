@@ -417,6 +417,7 @@ function validateCardFamily(filePath, source, violations, repoRoot) {
   if (
     anatomyPattern &&
     !anatomyPattern.test(source) &&
+    !source.includes('UserProfileDirectoryCard') &&
     !source.includes('PublicProfileDirectoryCard') &&
     !source.includes('PublicEntityDirectoryCard')
   ) {

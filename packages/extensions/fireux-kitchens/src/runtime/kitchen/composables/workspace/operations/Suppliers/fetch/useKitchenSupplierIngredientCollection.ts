@@ -13,15 +13,12 @@ export function useKitchenSupplierIngredientCollection(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const {
-    items,
-    pending,
-    collectionPath,
-  } = useKitchenChildCollection<KitchenSupplierIngredient>(
-    KitchenSupplierIngredientStorage.collection,
-    kitchenId,
-    options
-  )
+  const { items, pending, collectionPath } =
+    useKitchenChildCollection<KitchenSupplierIngredient>(
+      KitchenSupplierIngredientStorage.collection,
+      kitchenId,
+      options
+    )
   const { byId: kitchenSupplierIngredient } = useCollectionById(items)
 
   return {

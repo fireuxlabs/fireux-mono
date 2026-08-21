@@ -8,7 +8,7 @@ import {
   readMenuKitchenPlaceData,
 } from '../ownership/kitchen-scope'
 import { menuSourceFromData } from '../payload/source'
-import type { TenantPublicMenuScope } from '../ownership/public-target'
+import type { TenantMenuScope } from '../ownership/target'
 import type { MenuDirectoryDocument } from './projection'
 
 export type MenuDirectoryContext = {
@@ -31,13 +31,8 @@ export async function readMenuDirectoryContext(
     if (!source.kitchen_id) continue
     const rootRef = db.collection('kitchens').doc(source.kitchen_id)
     references.set(rootRef.path, rootRef)
-    if (!source.app_id) continue
-    const appRef = db
-      .collection(`apps/${source.app_id}/kitchens`)
-      .doc(source.kitchen_id)
-    references.set(appRef.path, appRef)
     if (source.menu_id) {
-      const menuRef = appRef
+      const menuRef = rootRef
         .collection(KitchenMenuStorage.collection)
         .doc(source.menu_id)
       references.set(menuRef.path, menuRef)
@@ -72,23 +67,17 @@ export async function readMenuDirectoryContext(
     sources.map(({ document, source }) => {
       if (!source.kitchen_id) return [document.id, {}] as const
       const rootPath = `kitchens/${source.kitchen_id}`
-      const appPath = source.app_id
-        ? `apps/${source.app_id}/kitchens/${source.kitchen_id}`
-        : ''
       const rootData = dataByPath.get(rootPath) || {}
-      const appData = appPath ? dataByPath.get(appPath) || {} : {}
       const placeData =
         dataByPath.get(`${PlaceStorage.collection}/${source.kitchen_id}`) || {}
-      const identity = menuKitchenIdentity(rootData, appData, placeData)
+      const identity = menuKitchenIdentity(rootData, placeData)
       const kitchenOperationHours = menuKitchenOperationHours(
         rootData,
-        appData,
         placeData
       )
-      const menuPath =
-        appPath && source.menu_id
-          ? `${appPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
-          : ''
+      const menuPath = source.menu_id
+        ? `${rootPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
+        : ''
       const menuData = menuPath ? dataByPath.get(menuPath) : undefined
       const kitchen = identity.name
         ? {
@@ -118,24 +107,13 @@ export async function readMenuDirectoryContext(
 }
 
 export async function readScopedMenuDirectoryContext(
-  db: ReturnType<typeof getRuntimeFirestore>,
-  scope: TenantPublicMenuScope
+  _db: ReturnType<typeof getRuntimeFirestore>,
+  scope: TenantMenuScope
 ): Promise<MenuDirectoryContext> {
-  const [appKitchenSnap, placeData] = await Promise.all([
-    db.collection(`apps/${scope.appId}/kitchens`).doc(scope.kitchenId).get(),
-    readMenuKitchenPlaceData(scope.kitchenId),
-  ])
-  const appKitchenData = appKitchenSnap.exists
-    ? appKitchenSnap.data() || {}
-    : {}
-  const identity = menuKitchenIdentity(
-    scope.rootKitchenData,
-    appKitchenData,
-    placeData
-  )
+  const placeData = await readMenuKitchenPlaceData(scope.kitchenId)
+  const identity = menuKitchenIdentity(scope.rootKitchenData, placeData)
   const kitchenOperationHours = menuKitchenOperationHours(
     scope.rootKitchenData,
-    appKitchenData,
     placeData
   )
   const kitchen = identity.name

@@ -65,9 +65,14 @@ const DEV_PROCESS_MARKERS = [
 
 function activeDevProcesses() {
   try {
-    const output = execFileSync('ps', ['-ax', '-o', 'pid=,command='], {
-      encoding: 'utf8',
-    })
+    const output = execFileSync(
+      'pgrep',
+      ['-af', DEV_PROCESS_MARKERS.join('|')],
+      {
+        encoding: 'utf8',
+        timeout: 5_000,
+      }
+    )
 
     return output
       .split('\n')
@@ -86,7 +91,15 @@ function activeDevProcesses() {
         command.includes(repoRoot) &&
         DEV_PROCESS_MARKERS.some((marker) => command.includes(marker))
       )
-  } catch {
+  } catch (error) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'status' in error &&
+      error.status === 1
+    ) {
+      return []
+    }
     return [
       {
         pid: '?',

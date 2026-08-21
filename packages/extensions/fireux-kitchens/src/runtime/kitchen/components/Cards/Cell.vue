@@ -74,10 +74,7 @@
             </div>
           </div>
 
-          <div
-            v-if="visibleBadges.length"
-            class="card__badges"
-          >
+          <div v-if="visibleBadges.length" class="card__badges">
             <UBadge
               v-for="badge in visibleBadges"
               :key="badge"
@@ -103,16 +100,18 @@
 import { computed } from 'vue'
 import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
 
-type Props = Partial<Pick<
-  KitchenCard.Card,
-  | 'id'
-  | 'to'
-  | 'name'
-  | 'shortAddress'
-  | 'imageUrl'
-  | 'imageShade'
-  | 'imageKind'
->> & {
+type Props = Partial<
+  Pick<
+    KitchenCard.Card,
+    | 'id'
+    | 'to'
+    | 'name'
+    | 'shortAddress'
+    | 'imageUrl'
+    | 'imageShade'
+    | 'imageKind'
+  >
+> & {
   badges?: KitchenCard.Card['badges']
   mediaBackdropColor?: string
   prop?: string
@@ -167,11 +166,12 @@ const visibleBadges = computed(() =>
   props.showBadges === false
     ? []
     : (props.badges ?? []).filter(
-        badge => String(badge).trim().toLocaleLowerCase() !== 'active'
+        (badge) => String(badge).trim().toLocaleLowerCase() !== 'active'
       )
 )
 const cardClass = computed(() => ({
-  'cursor-pointer': !props.disabled && (props.action || (props.link && props.to)),
+  'cursor-pointer':
+    !props.disabled && (props.action || (props.link && props.to)),
 }))
 </script>
 

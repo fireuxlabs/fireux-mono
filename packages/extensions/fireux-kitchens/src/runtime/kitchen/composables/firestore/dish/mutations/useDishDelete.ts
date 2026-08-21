@@ -15,13 +15,16 @@ export function useDishDelete(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
+  const { deleteDocument } = useFirestoreDelete({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
 
-  const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      String(unref(options.kitchenCollectionPath) || '').trim() ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const deleteDish = async (

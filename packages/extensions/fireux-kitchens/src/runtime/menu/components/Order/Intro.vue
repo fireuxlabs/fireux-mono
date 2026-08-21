@@ -24,27 +24,30 @@
 <script setup lang="ts">
 import type { GuestMenuSurfaceOption } from '../../utils/menu-context'
 
-withDefaults(defineProps<{
-  menuName: string
-  description?: string
-  kitchenName?: string
-  currencyCode?: string
-  showCurrency?: boolean
-  contextLabel: string
-  contextIcon: string
-  message: string
-  surfaceOptions?: GuestMenuSurfaceOption[]
-  statusColor?: 'neutral' | 'success' | 'error'
-  statusLabel?: string
-}>(), {
-  description: '',
-  kitchenName: '',
-  currencyCode: '',
-  showCurrency: true,
-  surfaceOptions: () => [],
-  statusColor: 'neutral',
-  statusLabel: '',
-})
+withDefaults(
+  defineProps<{
+    menuName: string
+    description?: string
+    kitchenName?: string
+    currencyCode?: string
+    showCurrency?: boolean
+    contextLabel: string
+    contextIcon: string
+    message: string
+    surfaceOptions?: GuestMenuSurfaceOption[]
+    statusColor?: 'neutral' | 'success' | 'error'
+    statusLabel?: string
+  }>(),
+  {
+    description: '',
+    kitchenName: '',
+    currencyCode: '',
+    showCurrency: true,
+    surfaceOptions: () => [],
+    statusColor: 'neutral',
+    statusLabel: '',
+  }
+)
 </script>
 
 <style scoped>
@@ -52,5 +55,4 @@ withDefaults(defineProps<{
   display: grid;
   gap: clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 8));
 }
-
 </style>

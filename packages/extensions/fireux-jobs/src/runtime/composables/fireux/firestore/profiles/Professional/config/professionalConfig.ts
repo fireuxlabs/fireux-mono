@@ -2,11 +2,11 @@
 import type { ProfileConfig } from 'fireux-core/runtime/models/utils/profile.model'
 
 export const professionalConfig: ProfileConfig = {
-  id: 'professional',
-  collectionName: 'professionals',
+  kind: 'professional',
   profileType: 'Professional',
   cta: 'Create your Professional profile to appear in listings.',
   navLabel: 'Professional',
   navIcon: 'i-lucide-user-star',
   provisionRoute: '/api/internal/profiles/professional',
+  storage: 'user',
 } as const

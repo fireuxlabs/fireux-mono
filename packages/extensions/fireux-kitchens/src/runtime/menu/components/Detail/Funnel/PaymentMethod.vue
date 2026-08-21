@@ -1,8 +1,6 @@
 <template>
   <section v-if="methods.length" class="grid gap-2 text-left">
-    <p class="m-0 text-sm font-black text-highlighted">
-      Payment method
-    </p>
+    <p class="m-0 text-sm font-black text-highlighted">Payment method</p>
 
     <URadioGroup
       v-model="selected"
@@ -32,19 +30,22 @@ const labels: Record<KitchenOrderPaymentMethod, string> = {
   pay_later: 'Pay later',
 }
 const methods = computed<KitchenOrderPaymentMethod[]>(() => {
-  const configured = props.funnel.order.policy?.fulfilment?.payment_methods || []
+  const configured =
+    props.funnel.order.policy?.fulfilment?.payment_methods || []
   const withDeposit = props.funnel.order.policy?.fulfilment?.deposit
     ? ['deposit' as const]
     : configured
 
-  return withDeposit.filter((method, index, source) =>
-    source.indexOf(method) === index
+  return withDeposit.filter(
+    (method, index, source) => source.indexOf(method) === index
   )
 })
-const options = computed(() => methods.value.map((value) => ({
-  value,
-  label: labels[value],
-})))
+const options = computed(() =>
+  methods.value.map((value) => ({
+    value,
+    label: labels[value],
+  }))
+)
 const selected = computed({
   get: () => props.funnel.incoming.payment_method,
   set: (payment_method: KitchenOrderPaymentMethod | undefined) => {

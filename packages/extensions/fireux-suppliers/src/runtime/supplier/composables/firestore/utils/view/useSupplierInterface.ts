@@ -7,18 +7,11 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import {
   SupplierStorage,
-  type AppSupplier,
   type Supplier,
 } from '../../../../models/Supplier.model.ts'
-import type { PublicCompanyProjection } from 'fireux-companies/runtime/place/models/company-public.model'
-import type { Ref } from 'vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
 const supplierCollection = SupplierStorage.collection
-
-type SupplierRootAndAppSupport = {
-  coreSupplier: Ref<Supplier | null | undefined>
-  appSupplier: Ref<AppSupplier | null | undefined>
-}
 
 export namespace SupplierCard {
   export type Card = {
@@ -28,7 +21,7 @@ export namespace SupplierCard {
     avatarUrl: string
     logoImageUrl: string
     placeImageUrl: string
-    imageShade: PublicCompanyProjection['image_shade']
+    imageShade: Place['image_shade']
     title: string
     subtitle: string
     badges: string[]
@@ -44,24 +37,14 @@ export namespace SupplierCard {
   }
 }
 
-type SupplierAccessSurface = Partial<
-  Pick<AppSupplier, 'operator_ids' | 'team_ids' | 'join_requests'>
->
-
-export type SupplierSurface = Partial<Supplier> &
-  SupplierAccessSurface & {
-    company_place?: PublicCompanyProjection
-  }
+export type SupplierSurface = Partial<Supplier> & { company_place?: Place }
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
   {
     supplier?: TSupplier | null | undefined
-    appSupport?: Partial<AppSupplier> | null | undefined
-    companyPlace?: PublicCompanyProjection | null | undefined
+    companyPlace?: Place | null | undefined
   }
 
-export function useSupplierInterface(
-  supplier?: SupplierRootAndAppSupport | null
-) {
+export function useSupplierInterface() {
   type SupplierIdentity = SupplierCard.Card
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
@@ -81,7 +64,6 @@ export function useSupplierInterface(
       company_place: _rootCompanyPlace,
       ...root
     } = source as Record<string, unknown>
-    const appSupport = parts.appSupport ?? null
     const companyPlace = parts.companyPlace ?? null
     if (companyPlace) {
       const companyId = safeString(root.company_id).trim()
@@ -90,13 +72,6 @@ export function useSupplierInterface(
     }
     const merged = {
       ...root,
-      ...(appSupport
-        ? {
-            operator_ids: safeStringArray(appSupport.operator_ids),
-            team_ids: safeStringArray(appSupport.team_ids),
-            join_requests: safeStringArray(appSupport.join_requests),
-          }
-        : {}),
       ...(companyPlace
         ? {
             company_place: { ...companyPlace },
@@ -155,7 +130,7 @@ export function useSupplierInterface(
   function buildInterface(
     target?: SupplierSurface | null | undefined
   ): SupplierCard.Card | null {
-    const source = target ?? supplier?.coreSupplier.value ?? null
+    const source = target ?? null
     if (!source) return null
 
     const mapped = map(source)

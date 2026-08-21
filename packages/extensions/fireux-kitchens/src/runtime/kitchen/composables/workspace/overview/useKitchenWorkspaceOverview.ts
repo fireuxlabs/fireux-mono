@@ -33,32 +33,29 @@ const identityTo = '/workspace/kitchen/identity'
 export function useKitchenWorkspaceOverview() {
   const fireux = useFireUXConfig()
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
-  const {
-    targets,
-    selection,
-    runtime,
-    actions,
-  } = useKitchenWorkspace()
+  const { targets, selection, runtime, actions } = useKitchenWorkspace()
   const { pill, surface } = useKitchenInterface()
   const { place, currencyCode } = useKitchenWorkspacePlace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
-  const kitchenSource = computed(() =>
-    (selectedKitchen.value || {}) as Record<string, any>
+  const kitchenSource = computed(
+    () => (selectedKitchen.value || {}) as Record<string, any>
   )
-  const kitchenTitle = computed(() =>
-    normalizeString(
-      kitchenSource.value.identity?.display_name ||
-        kitchenSource.value.display_name ||
-        kitchenSource.value.name ||
-        place.value?.name ||
-        place.value?.short_name
-    ) || 'Kitchen'
+  const kitchenTitle = computed(
+    () =>
+      normalizeString(
+        kitchenSource.value.identity?.display_name ||
+          kitchenSource.value.display_name ||
+          kitchenSource.value.name ||
+          place.value?.name ||
+          place.value?.short_name
+      ) || 'Kitchen'
   )
-  const kitchenSubtitle = computed(() =>
-    normalizeString(
-      kitchenSource.value.identity?.tagline || kitchenSource.value.tagline
-    ) ||
+  const kitchenSubtitle = computed(
+    () =>
+      normalizeString(
+        kitchenSource.value.identity?.tagline || kitchenSource.value.tagline
+      ) ||
       normalizeString(place.value?.brand_tagline) ||
       normalizeString(place.value?.short_address) ||
       normalizeString(place.value?.formatted_address) ||
@@ -74,25 +71,34 @@ export function useKitchenWorkspaceOverview() {
         kitchenSource.value.identity?.image_url
     )
   )
-  const coverImage = computed(() => normalizeString(kitchenSource.value.cover_image))
-  const address = computed(() =>
-    normalizeString(place.value?.formatted_address) ||
+  const coverImage = computed(() =>
+    normalizeString(kitchenSource.value.cover_image)
+  )
+  const address = computed(
+    () =>
+      normalizeString(place.value?.formatted_address) ||
       normalizeString(place.value?.short_address) ||
       normalizeString(kitchenSource.value.formatted_address) ||
       normalizeString(kitchenSource.value.short_address)
   )
-  const phone = computed(() =>
-    normalizeString(place.value?.phone) || normalizeString(kitchenSource.value.phone)
+  const phone = computed(
+    () =>
+      normalizeString(place.value?.phone) ||
+      normalizeString(kitchenSource.value.phone)
   )
-  const website = computed(() =>
-    normalizeString(place.value?.website) || normalizeString(kitchenSource.value.website)
+  const website = computed(
+    () =>
+      normalizeString(place.value?.website) ||
+      normalizeString(kitchenSource.value.website)
   )
   const placeId = computed(() => normalizeString(kitchenSource.value.place_id))
   const visibilityBadgeLabel = computed(() =>
     kitchenSource.value.visibility === true ? 'Visible' : 'Hidden'
   )
   const visibilityBadgeColor = computed(() =>
-    kitchenSource.value.visibility === true ? 'success' as const : 'neutral' as const
+    kitchenSource.value.visibility === true
+      ? ('success' as const)
+      : ('neutral' as const)
   )
   const managementTarget = computed(() =>
     readKitchenManagementTarget(kitchenSource.value, fireux.ecosystem)
@@ -103,16 +109,23 @@ export function useKitchenWorkspaceOverview() {
   const operatorIds = computed(() =>
     Array.from(
       new Set(
-        ((selectedKitchen.value as { operator_ids?: unknown[] } | null)?.operator_ids ?? [])
+        (
+          (selectedKitchen.value as { operator_ids?: unknown[] } | null)
+            ?.operator_ids ?? []
+        )
           .map((id) => normalizeString(id))
           .filter(Boolean)
       )
     )
   )
-  const kitchenPill = computed(() => pill(surface({
-    kitchen: selectedKitchen.value,
-    place: place.value,
-  })))
+  const kitchenPill = computed(() =>
+    pill(
+      surface({
+        kitchen: selectedKitchen.value,
+        place: place.value,
+      })
+    )
+  )
   const imageInitials = computed(() => {
     const parts = kitchenTitle.value.split(/\s+/).filter(Boolean)
     if (!parts.length) return 'K'
@@ -168,17 +181,42 @@ export function useKitchenWorkspaceOverview() {
       complete: Boolean(normalizeString(kitchenSource.value.slug)),
       to: identityTo,
     },
-    { key: 'address', label: 'Address', complete: Boolean(address.value), to: identityTo },
-    { key: 'place', label: 'Linked place', complete: Boolean(placeId.value), to: identityTo },
-    { key: 'phone', label: 'Phone', complete: Boolean(phone.value), to: identityTo },
-    { key: 'website', label: 'Website', complete: Boolean(website.value), to: identityTo },
+    {
+      key: 'address',
+      label: 'Address',
+      complete: Boolean(address.value),
+      to: identityTo,
+    },
+    {
+      key: 'place',
+      label: 'Linked place',
+      complete: Boolean(placeId.value),
+      to: identityTo,
+    },
+    {
+      key: 'phone',
+      label: 'Phone',
+      complete: Boolean(phone.value),
+      to: identityTo,
+    },
+    {
+      key: 'website',
+      label: 'Website',
+      complete: Boolean(website.value),
+      to: identityTo,
+    },
     {
       key: 'currency',
       label: 'Currency',
       complete: Boolean(currencyCode.value),
       to: identityTo,
     },
-    { key: 'image', label: 'Profile image', complete: Boolean(identityImage.value), to: identityTo },
+    {
+      key: 'image',
+      label: 'Profile image',
+      complete: Boolean(identityImage.value),
+      to: identityTo,
+    },
     {
       key: 'cover',
       label: 'Cover image',
@@ -192,12 +230,14 @@ export function useKitchenWorkspaceOverview() {
       to: identityTo,
     },
   ])
-  const completeIdentityCount = computed(() =>
-    identityFields.value.filter((field) => field.complete).length
+  const completeIdentityCount = computed(
+    () => identityFields.value.filter((field) => field.complete).length
   )
   const identityPercent = computed(() =>
     identityFields.value.length
-      ? Math.round((completeIdentityCount.value / identityFields.value.length) * 100)
+      ? Math.round(
+          (completeIdentityCount.value / identityFields.value.length) * 100
+        )
       : 0
   )
   const missingIdentityFields = computed(() =>
@@ -296,7 +336,7 @@ export function useKitchenWorkspaceOverview() {
         .filter((field) => !field.complete)
         .map((field) => field.key),
     },
-    operations: operationCards.value.map(card => card.key),
+    operations: operationCards.value.map((card) => card.key),
   }))
 
   return {

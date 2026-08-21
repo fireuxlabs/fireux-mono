@@ -5,59 +5,52 @@
     icon="i-lucide-type"
   >
     <div class="mt-4 space-y-4">
-        <UCard>
-          <div class="space-y-4">
-            <div>
-              <p class="text-sm font-medium text-highlighted">
-                Wordmark
-              </p>
-              <p class="text-xs text-dimmed">
-                Current Kitchen wordmark. Recommended: 1600 × 400 px,
-                transparent PNG.
-              </p>
-            </div>
-
-            <div
-              class="mx-auto flex aspect-[4/1] w-full max-w-xl items-center justify-center rounded-lg border border-default p-3"
-              :style="{ backgroundColor: mediaBackdropColor || undefined }"
-            >
-              <img
-                v-if="kioskWordmarkImageUrl"
-                class="size-full object-contain"
-                :src="kioskWordmarkImageUrl"
-                :alt="`${name || 'Kitchen'} wordmark`"
-              >
-              <p
-                v-else
-                class="text-center text-xs text-dimmed"
-              >
-                1600 × 400
-              </p>
-            </div>
-
-            <input
-              ref="wordmarkInput"
-              class="hidden"
-              type="file"
-              accept="image/*"
-              @change="handleWordmarkFileChange"
-            >
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                size="sm"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-upload"
-                :disabled="!canWrite || pending"
-                :loading="pending"
-                @click="openWordmarkUpload"
-              >
-                Upload wordmark
-              </UButton>
-            </div>
+      <UCard>
+        <div class="space-y-4">
+          <div>
+            <p class="text-sm font-medium text-highlighted">Wordmark</p>
+            <p class="text-xs text-dimmed">
+              Current Kitchen wordmark. Recommended: 1600 × 400 px, transparent
+              PNG.
+            </p>
           </div>
-        </UCard>
+
+          <div
+            class="mx-auto flex aspect-[4/1] w-full max-w-xl items-center justify-center rounded-lg border border-default p-3"
+            :style="{ backgroundColor: mediaBackdropColor || undefined }"
+          >
+            <img
+              v-if="kioskWordmarkImageUrl"
+              class="size-full object-contain"
+              :src="kioskWordmarkImageUrl"
+              :alt="`${name || 'Kitchen'} wordmark`"
+            />
+            <p v-else class="text-center text-xs text-dimmed">1600 × 400</p>
+          </div>
+
+          <input
+            ref="wordmarkInput"
+            class="hidden"
+            type="file"
+            accept="image/*"
+            @change="handleWordmarkFileChange"
+          />
+
+          <div class="flex flex-wrap gap-2">
+            <UButton
+              size="sm"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-upload"
+              :disabled="!canWrite || pending"
+              :loading="pending"
+              @click="openWordmarkUpload"
+            >
+              Upload wordmark
+            </UButton>
+          </div>
+        </div>
+      </UCard>
     </div>
   </MoleculesDisclosurePanel>
 </template>
@@ -80,12 +73,13 @@ const wordmarkInput = ref<HTMLInputElement | null>(null)
 
 const identity = computed(() => readKitchenIdentity(props.kitchen))
 const name = computed(() => identity.value.displayName)
-const kioskWordmarkImageUrl = computed(() =>
-  identity.value.wordmarkNoLogoImageUrl || identity.value.wordmarkImageUrl
+const kioskWordmarkImageUrl = computed(
+  () => identity.value.wordmarkNoLogoImageUrl || identity.value.wordmarkImageUrl
 )
-const mediaBackdropColor = computed(() =>
-  identity.value.mediaBackdropColor ||
-  String((props.kitchen as any)?.media_backdrop_color || '').trim()
+const mediaBackdropColor = computed(
+  () =>
+    identity.value.mediaBackdropColor ||
+    String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )
 
 const openWordmarkUpload = () => {

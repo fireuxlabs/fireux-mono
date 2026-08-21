@@ -19,8 +19,7 @@ export function usePortfolioWorkspaceProperties(
     pending,
     error,
     outcome,
-  } =
-    usePortfolioPropertyCollection(runtimePortfolio)
+  } = usePortfolioPropertyCollection(runtimePortfolio)
 
   const portfolioName = computed(() =>
     normalizeString(selectedPortfolio.value?.name)

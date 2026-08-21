@@ -1,21 +1,21 @@
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: make Customer an app-private ordering record.
+// Registered Customer preferences are User-owned; guest details remain on Order.
 // Profile family canon: docs/concepts/entities.md
 // Concurrent edit — 2026-07-20 18:00 CEST — Repo Efficiency Pass 2 of 6: own a server-loadable exact private Customer provisioning seed.
-import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Family: Identity/profile capability.
  * Sibling: chef.model.ts
- * Delta: Customer is private ordering identity, not a public profile surface.
+ * Delta: Customer is optional ordering preferences, not another identity.
  */
 export const CustomerStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/customers/{userId}',
-  collection: 'customers',
-  parent: 'app',
+  shape: 'user-owned',
+  path: 'users/{userId}/profiles/customer',
+  collection: 'profiles',
+  document: 'customer',
+  parent: 'user',
   idParam: 'userId',
 } as const
 
@@ -30,12 +30,10 @@ export const CustomerProfileRecord = defineFireuxEntity({
   parent: 'User',
   scoped: CustomerStorage.path,
   notes: [
-    'CustomerProfile stores App-scoped ordering preferences for one User.',
+    'CustomerProfile stores optional ordering preferences for one User.',
     'User owns person identity; CustomerProfile never becomes another User root.',
   ],
 })
-
-export const AppCustomerStorage = CustomerStorage
 
 export type CustomerSavedAddress = {
   id: string
@@ -46,64 +44,57 @@ export type CustomerSavedAddress = {
   is_default: boolean
 }
 
-export type CustomerOrderHistoryItem = {
-  order_id: string
-  app_id: string
-  kitchen_id: string
-  kitchen_name: string
-  ordered_at?: FirebaseTimestamp
-  total_cents?: number
-  status?: string
-}
-
-export type CustomerPrivate = {
+export type CustomerPreferences = {
   name: string
   phone: string
   allergy_note: string
   default_delivery_address: string
   saved_addresses: CustomerSavedAddress[]
-  order_history: CustomerOrderHistoryItem[]
 }
 
-export const CustomerPrivateDefaults = {
+export const CustomerPreferencesDefaults = {
   name: '' as string,
   phone: '' as string,
   allergy_note: '' as string,
   default_delivery_address: '' as string,
   saved_addresses: [] as CustomerSavedAddress[],
-  order_history: [] as CustomerOrderHistoryItem[],
-} as const satisfies CustomerPrivate
+} as const satisfies CustomerPreferences
 
 export const CustomerDefaults = {
   id: '' as string,
-  // This whole record is app-private; the nested shape keeps ordering fields
-  // out of generic identity/card projections.
-  private: { ...CustomerPrivateDefaults } as CustomerPrivate,
-  ...AppProfileStamps,
+  kind: 'customer' as const,
+  preferences: { ...CustomerPreferencesDefaults } as CustomerPreferences,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
 } as const
 
-export type Customer = AppProfileBase & {
-  private: CustomerPrivate
+export type Customer = FireuxStamped & {
+  id: string
+  kind: 'customer'
+  preferences: CustomerPreferences
 }
-
-export const AppCustomerDefaults = CustomerDefaults
-
-export type AppCustomer = Customer
 
 export type CustomerCreateInput = Omit<Customer, 'id' | 'created' | 'updated'>
 export type CustomerUpdateInput = Partial<
   Omit<Customer, 'id' | 'created' | 'updated'>
 >
 
-export function createAppCustomerProfileSeed(): CustomerCreateInput {
+export function createCustomerProfileSeed(): CustomerCreateInput {
   return {
-    private: {
-      name: CustomerPrivateDefaults.name,
-      phone: CustomerPrivateDefaults.phone,
-      allergy_note: CustomerPrivateDefaults.allergy_note,
-      default_delivery_address: CustomerPrivateDefaults.default_delivery_address,
-      saved_addresses: [...CustomerPrivateDefaults.saved_addresses],
-      order_history: [...CustomerPrivateDefaults.order_history],
+    preferences: {
+      name: CustomerPreferencesDefaults.name,
+      phone: CustomerPreferencesDefaults.phone,
+      allergy_note: CustomerPreferencesDefaults.allergy_note,
+      default_delivery_address:
+        CustomerPreferencesDefaults.default_delivery_address,
+      saved_addresses: [...CustomerPreferencesDefaults.saved_addresses],
     },
+    kind: CustomerDefaults.kind,
   }
 }

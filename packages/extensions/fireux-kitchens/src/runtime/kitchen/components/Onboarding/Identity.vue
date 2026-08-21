@@ -34,7 +34,6 @@
       icon="i-lucide-circle-check"
       title="Kitchen found"
     />
-
   </section>
 </template>
 

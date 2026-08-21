@@ -22,7 +22,9 @@ export function useKitchenPrepItemCollection(
     databaseId: options.databaseId,
   })
   const { appId } = useFireUXConfig()
-  const resolvedKitchenId = computed(() => String(unref(kitchenId) || '').trim())
+  const resolvedKitchenId = computed(() =>
+    String(unref(kitchenId) || '').trim()
+  )
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
@@ -30,10 +32,13 @@ export function useKitchenPrepItemCollection(
       appId,
     })
   )
-  const collectionPath = computed(() => resolvedKitchenId.value
-    ? `${kitchenCollectionPath.value}/${resolvedKitchenId.value}/${KitchenPrepItemStorage.collection}`
-    : '')
-  const collectionRef = firestoreFetchCollection<Record<string, unknown>>(collectionPath)
+  const collectionPath = computed(() =>
+    resolvedKitchenId.value
+      ? `${kitchenCollectionPath.value}/${resolvedKitchenId.value}/${KitchenPrepItemStorage.collection}`
+      : ''
+  )
+  const collectionRef =
+    firestoreFetchCollection<Record<string, unknown>>(collectionPath)
   const prepItems = computed<KitchenPrepItem[]>(() =>
     (collectionRef.value ?? []).map(normalizeKitchenPrepItem)
   )

@@ -4,15 +4,11 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
 
 export function usePropertyWorkspaceIdentity() {
-  const {
-    selection,
-    runtime,
-    actions,
-  } = usePropertyWorkspace()
+  const { selection, runtime, actions } = usePropertyWorkspace()
 
   const identity = computed(() => selection.property.value?.identity)
-  const name = computed(() =>
-    normalizeString(identity.value?.name) || selection.propertyId.value
+  const name = computed(
+    () => normalizeString(identity.value?.name) || selection.propertyId.value
   )
   const placeId = computed(() =>
     normalizeString(selection.property.value?.place_id)

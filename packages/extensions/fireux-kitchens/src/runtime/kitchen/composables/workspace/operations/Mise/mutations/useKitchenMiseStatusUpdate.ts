@@ -36,8 +36,8 @@ export function useKitchenMiseStatusUpdate() {
     if (!taskId) throw new Error('Mise task id is required')
 
     const kitchenCollectionPath =
-      String(input.kitchenCollectionPath || '').trim()
-      || resolveKitchenScopeCollectionPath(appId)
+      String(input.kitchenCollectionPath || '').trim() ||
+      resolveKitchenScopeCollectionPath(appId)
     const collectionPath = resolveKitchenCollectionPath(
       kitchenCollectionPath,
       kitchenId
@@ -46,9 +46,10 @@ export function useKitchenMiseStatusUpdate() {
 
     await updateDocument<KitchenMiseTask>(collectionPath, taskId, {
       status,
-      completed_at: status === 'done'
-        ? serverTimestamp() as never
-        : KitchenMiseTaskDefaults.completed_at,
+      completed_at:
+        status === 'done'
+          ? (serverTimestamp() as never)
+          : KitchenMiseTaskDefaults.completed_at,
     })
   }
 

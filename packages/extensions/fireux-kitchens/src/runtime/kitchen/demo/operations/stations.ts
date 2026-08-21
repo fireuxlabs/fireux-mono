@@ -7,11 +7,41 @@ import {
 import { station } from './station-builders'
 
 export const deanosKitchenDemoStations: KitchenStation[] = [
-  station(deanosKitchenDemoIdentity, 'prep', 'Prep', 'Cold prep, sauces and batch work.', 1),
-  station(deanosKitchenDemoIdentity, 'grill', 'Grill', 'Burgers and hot holding.', 2),
-  station(deanosKitchenDemoIdentity, 'fryers', 'Fryers', 'Chicken and fries.', 3),
-  station(deanosKitchenDemoIdentity, 'drinks', 'Drinks', 'Shakes, coolers and garnish.', 4),
-  station(deanosKitchenDemoIdentity, 'pass', 'Pass', 'Final checks and guest handoff.', 5),
+  station(
+    deanosKitchenDemoIdentity,
+    'prep',
+    'Prep',
+    'Cold prep, sauces and batch work.',
+    1
+  ),
+  station(
+    deanosKitchenDemoIdentity,
+    'grill',
+    'Grill',
+    'Burgers and hot holding.',
+    2
+  ),
+  station(
+    deanosKitchenDemoIdentity,
+    'fryers',
+    'Fryers',
+    'Chicken and fries.',
+    3
+  ),
+  station(
+    deanosKitchenDemoIdentity,
+    'drinks',
+    'Drinks',
+    'Shakes, coolers and garnish.',
+    4
+  ),
+  station(
+    deanosKitchenDemoIdentity,
+    'pass',
+    'Pass',
+    'Final checks and guest handoff.',
+    5
+  ),
 ]
 
 export const miseboxRestaurantKitchenDemoStations: KitchenStation[] = [
@@ -47,4 +77,3 @@ export const pizzaTheActionKitchenDemoStations: KitchenStation[] = [
     2
   ),
 ]
-

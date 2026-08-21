@@ -98,17 +98,17 @@ const kioskOrderTypes = ['eat_in', 'takeaway'] as const
 const destinationOrderTypes = ['dine_in', 'room_service'] as const
 const isTakeAwayOrder = computed(() =>
   takeAwayOrderTypes.includes(
-    props.funnel.order.orderType as typeof takeAwayOrderTypes[number]
+    props.funnel.order.orderType as (typeof takeAwayOrderTypes)[number]
   )
 )
 const isKioskFunnel = computed(() =>
   kioskOrderTypes.includes(
-    props.funnel.order.orderType as typeof kioskOrderTypes[number]
+    props.funnel.order.orderType as (typeof kioskOrderTypes)[number]
   )
 )
 const hasDestinationStep = computed(() =>
   destinationOrderTypes.includes(
-    props.funnel.order.orderType as typeof destinationOrderTypes[number]
+    props.funnel.order.orderType as (typeof destinationOrderTypes)[number]
   )
 )
 const isPreOrder = computed(() => props.funnel.order.orderType === 'pre_order')
@@ -140,12 +140,10 @@ const shouldSubmitOrderRequest = computed(() => {
   if (isKioskFunnel.value) return step.value === 3
   if (hasDestinationStep.value) return step.value === 3
 
-  return isTakeAwayOrder.value
-    ? step.value === 3
-    : step.value === 2
+  return isTakeAwayOrder.value ? step.value === 3 : step.value === 2
 })
-const continueBlocked = computed(() =>
-  continueDisabled.value || submittingStep.value
+const continueBlocked = computed(
+  () => continueDisabled.value || submittingStep.value
 )
 const orderSent = computed(() => Boolean(props.funnel.sending.sent_order))
 const continueLabel = computed(() => {
@@ -153,13 +151,17 @@ const continueLabel = computed(() => {
   return isLastStep.value && !continueBlocked.value ? 'Done' : 'Continue'
 })
 
-watch(() => props.funnel.sending.sent_order?.id || '', (orderId: string) => {
-  if (orderId) return
-  if (!isTakeAwayOrder.value && !isPreOrder.value && !isKioskFunnel.value) return
-  if (step.value <= 3) return
+watch(
+  () => props.funnel.sending.sent_order?.id || '',
+  (orderId: string) => {
+    if (orderId) return
+    if (!isTakeAwayOrder.value && !isPreOrder.value && !isKioskFunnel.value)
+      return
+    if (step.value <= 3) return
 
-  step.value = 3
-})
+    step.value = 3
+  }
+)
 
 async function continueFunnel() {
   if (continueBlocked.value) return
@@ -190,7 +192,9 @@ async function continueFunnel() {
           ? {
               customer: {
                 ...customer,
-                ...(preOrder?.party_size ? { party_size: preOrder.party_size } : {}),
+                ...(preOrder?.party_size
+                  ? { party_size: preOrder.party_size }
+                  : {}),
               },
             }
           : {}),

@@ -1,0 +1,116 @@
+// @fireux-ecosystem-rules-fragment misebox/driver-profile
+    // ===============================================================
+    // Driver capability
+    // ===============================================================
+    function isValidDriverProfile(data) {
+      return data.keys().hasAll([
+          'kind',
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'kind',
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'created',
+          'updated'
+        ]) &&
+        data.kind == 'driver' &&
+        data.title is string && data.title.size() <= 120 &&
+        data.subtitle is string && data.subtitle.size() <= 240 &&
+        data.tagline is string && data.tagline.size() <= 240 &&
+        data.tags is list &&
+        data.tags.size() <= 20 &&
+        data.tags.hasOnly([
+          'available',
+          'courier',
+          'delivery',
+          'driver',
+          'exclusive',
+          'preferred'
+        ]) &&
+        data.coverage is map &&
+        data.coverage.keys().hasAll(['radius_m']) &&
+        data.coverage.keys().hasOnly(['radius_m']) &&
+        data.coverage.radius_m is int &&
+        data.coverage.radius_m >= 0 &&
+        data.coverage.radius_m <= 200000 &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /users/{userId}/profiles/driver {
+      allow get: if isOwner(userId) ||
+        (isValidDriverProfile(resource.data) &&
+          hasValidCanonicalUser(userId));
+      // Driver directory listing is projected by the trusted Driver API.
+      allow list: if false;
+      // Trusted profile provisioning creates the root profile document.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        isValidDriverProfile(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'updated'
+        ]) &&
+        request.resource.data.updated.at == request.time &&
+        request.resource.data.updated.by == userId;
+      allow delete: if false;
+    }
+
+    match /users/{userId}/profiles/driver/app-state/{appId} {
+      function isValidDriverAppState(data) {
+        return data.keys().hasAll([
+            'profile_kind', 'app_id', 'driver_phone',
+            'accepts_weak_pings', 'accepts_delivery_tenders',
+            'active_kitchen_ids', 'kitchen_links', 'created', 'updated'
+          ]) &&
+          data.keys().hasOnly([
+            'profile_kind', 'app_id', 'driver_phone',
+            'accepts_weak_pings', 'accepts_delivery_tenders',
+            'active_kitchen_ids', 'kitchen_links', 'created', 'updated'
+          ]) &&
+          data.profile_kind == 'driver' &&
+          data.app_id == appId &&
+          validOptionalText(data, 'driver_phone', 40) &&
+          data.accepts_weak_pings is bool &&
+          data.accepts_delivery_tenders is bool &&
+          validOptionalList(data, 'active_kitchen_ids', 50) &&
+          validOptionalList(data, 'kitchen_links', 50) &&
+          validCreatedStamp(data.created) &&
+          data.created.app_id == appId &&
+          validUpdatedStamp(data.updated);
+      }
+
+      allow get: if isOwner(userId) && isAppMember(appId) &&
+        isValidDriverAppState(resource.data);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isAppMember(appId) &&
+        isValidDriverAppState(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.profile_kind == resource.data.profile_kind &&
+        request.resource.data.app_id == resource.data.app_id &&
+        request.resource.data.active_kitchen_ids == resource.data.active_kitchen_ids &&
+        request.resource.data.kitchen_links == resource.data.kitchen_links &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'driver_phone',
+          'accepts_weak_pings',
+          'accepts_delivery_tenders',
+          'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }

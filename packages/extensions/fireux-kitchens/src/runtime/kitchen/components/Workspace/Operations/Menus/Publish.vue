@@ -42,13 +42,8 @@ import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenu'
 
-const {
-  menu,
-  kitchenId,
-  menuId,
-  canWrite,
-  publishMenu,
-} = useKitchenWorkspaceMenu()
+const { menu, kitchenId, menuId, canWrite, publishMenu } =
+  useKitchenWorkspaceMenu()
 const toast = useToastify()
 const busy = ref(false)
 

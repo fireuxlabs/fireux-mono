@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const kitchenId = requirePathSegment(body?.kitchenId, 'Kitchen id')
   const menuId = requirePathSegment(body?.menuId, 'Menu id')
   const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
-  const kitchenPath = `apps/${appId}/kitchens/${kitchenId}`
+  const kitchenPath = `kitchens/${kitchenId}`
 
   const published = await publishKitchenMenu({
     appId,

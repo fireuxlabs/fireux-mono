@@ -24,7 +24,10 @@
           <h2>{{ copy('marketplace_empty_title') }}</h2>
           <p>{{ copy('marketplace_empty_body') }}</p>
         </div>
-        <NuxtLink to="/auth?mode=sign-up&redirect=/mis" class="market-action market-action--light">
+        <NuxtLink
+          to="/auth?mode=sign-up&redirect=/mis"
+          class="market-action market-action--light"
+        >
           <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
           <strong>{{ copy('register_business') }}</strong>
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
@@ -37,9 +40,7 @@
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type {
-  PublicMarketplaceStoreListResponse,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { MarketplaceStoreDirectoryPage } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',
@@ -47,11 +48,11 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const { currentUser, hasAuthState } = useAuth()
-const { data } = await useFetch<PublicMarketplaceStoreListResponse>(
-  '/api/public/marketplace/stores',
+const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
+  '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )
-const preview = ref<PublicMarketplaceStoreListResponse | null>(null)
+const preview = ref<MarketplaceStoreDirectoryPage | null>(null)
 const stores = computed(() => preview.value?.items || data.value?.items || [])
 
 async function requestAdminPreview() {
@@ -60,8 +61,8 @@ async function requestAdminPreview() {
   if (!import.meta.client || !hasAuthState.value || !user) return
   try {
     const token = await user.getIdToken()
-    preview.value = await $fetch<PublicMarketplaceStoreListResponse>(
-      '/api/public/marketplace/stores?visibility=all',
+    preview.value = await $fetch<MarketplaceStoreDirectoryPage>(
+      '/api/marketplace-stores?visibility=all',
       { headers: { Authorization: `Bearer ${token}` } }
     )
   } catch {

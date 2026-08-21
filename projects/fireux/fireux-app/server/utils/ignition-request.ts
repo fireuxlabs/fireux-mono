@@ -1,12 +1,6 @@
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: validate and preserve pricing, solution, and App entry points.
 import { createError } from 'h3'
 
-export const IgnitionRequestStorage = {
-  path: 'apps/{appId}/ignition-requests/{requestId}',
-  collection: 'ignition-requests',
-  parent: 'app',
-} as const
-
 export const IGNITION_PAGE_OPTIONS = [
   'home',
   'about',
@@ -54,7 +48,7 @@ export type IgnitionOrigin = {
   ref: string
 }
 
-export type PublicIgnitionRequestInput = {
+export type IgnitionConversationInput = {
   contactName: string
   contactEmail: string
   businessName: string
@@ -70,7 +64,8 @@ export type IgnitionRequestPatch =
   | { kind: 'status'; status: IgnitionStatus }
   | { kind: 'checklist'; key: IgnitionChecklistKey; value: boolean }
 
-const PUBLIC_FIELDS = new Set([
+const INTAKE_FIELDS = new Set([
+  'kind',
   'contact_name',
   'contact_email',
   'business_name',
@@ -177,11 +172,14 @@ function parseOrigin(value: unknown): IgnitionOrigin | null {
   }
 }
 
-export function parsePublicIgnitionRequest(
+export function parseIgnitionConversationInput(
   body: unknown
-): PublicIgnitionRequestInput {
+): IgnitionConversationInput {
   const source = record(body)
-  if (Object.keys(source).some((key) => !PUBLIC_FIELDS.has(key))) {
+  if (
+    source.kind !== 'ignition' ||
+    Object.keys(source).some((key) => !INTAKE_FIELDS.has(key))
+  ) {
     throw createError({
       statusCode: 400,
       statusMessage: 'The Ignition request contains an unsupported field.',
@@ -267,8 +265,8 @@ export function parsePublicIgnitionRequest(
       160
     ),
     website: parseWebsite(source.website),
-    branding: branding as PublicIgnitionRequestInput['branding'],
-    pages: Array.from(pageSet) as PublicIgnitionRequestInput['pages'],
+    branding: branding as IgnitionConversationInput['branding'],
+    pages: Array.from(pageSet) as IgnitionConversationInput['pages'],
     appJob,
     access,
     origin: parseOrigin(source.origin),
@@ -348,11 +346,11 @@ export function serializeIgnitionRequest(
   id: string,
   source: Record<string, unknown>
 ) {
-  const contact = nestedRecord(source.contact)
-  const business = nestedRecord(source.business)
-  const delivery = nestedRecord(source.delivery)
+  const contact = nestedRecord(source.guest_contact)
+  const ignition = nestedRecord(source.ignition)
+  const delivery = nestedRecord(ignition.delivery)
   const created = nestedRecord(source.created)
-  const status = cleanLine(source.status, 32)
+  const status = cleanLine(ignition.stage, 32)
 
   return {
     id,
@@ -364,16 +362,16 @@ export function serializeIgnitionRequest(
       email: cleanLine(contact.email, 320),
     },
     business: {
-      name: cleanLine(business.name, 160),
-      website: cleanLine(business.website, 2048),
-      branding: cleanLine(business.branding, 32),
+      name: cleanLine(contact.company, 160),
+      website: cleanLine(ignition.website, 2048),
+      branding: cleanLine(ignition.branding, 32),
     },
-    pages: Array.isArray(source.pages)
-      ? source.pages.map((value) => cleanLine(value, 32)).filter(Boolean)
+    pages: Array.isArray(ignition.pages)
+      ? ignition.pages.map((value) => cleanLine(value, 32)).filter(Boolean)
       : [],
-    app_job: cleanText(source.app_job, 2000),
-    access: cleanText(source.access, 1000),
-    origin: serializeOrigin(source.origin),
+    app_job: cleanText(ignition.app_job, 2000),
+    access: cleanText(ignition.access, 1000),
+    origin: serializeOrigin(ignition.origin),
     delivery: Object.fromEntries(
       IGNITION_CHECKLIST.map((key) => [key, delivery[key] === true])
     ) as Record<IgnitionChecklistKey, boolean>,

@@ -64,9 +64,7 @@
       v-else
       state="empty"
       surface="bare"
-      :title="
-        query ? 'No customers match your search.' : 'No customers found.'
-      "
+      :title="query ? 'No customers match your search.' : 'No customers found.'"
       :description="
         query
           ? 'Try a different search term.'
@@ -74,14 +72,14 @@
       "
     />
 
-<DevDebugPanel
-  object-origin="fetched"
+    <DevDebugPanel
+      object-origin="fetched"
       launcher
       include-route
       title="Customers (JSON)"
       context="collection manager · customers"
       :objects="devJsonData"
-  :derived="{}"
+      :derived="{}"
       :default-open="false"
       @opened="loadDevJson"
       @closed="unloadDevJson"
@@ -99,7 +97,11 @@ import { useCustomerFetch } from '../../../composables/firestore/profiles/Custom
 import { useCustomerInterface } from '../../../composables/customer/useCustomerInterface'
 import type { Customer } from '../../../models/customer.model.ts'
 
-type CustomerEntry = Partial<Customer> & { id: string, user?: unknown }
+type CustomerEntry = Partial<Customer> & {
+  id: string
+  user?: unknown
+  appUser?: unknown
+}
 
 const props = withDefaults(
   defineProps<{
@@ -124,16 +126,16 @@ const props = withDefaults(
 
 const fetched = useCustomerFetch()
 const { outcome } = fetched
-const collection = computed<CustomerEntry[]>(() =>
-  [
-    ...(fetched.appCustomers.value ?? []),
-    ...(fetched.coreCustomers.value ?? []),
-  ] as CustomerEntry[]
+const collection = computed<CustomerEntry[]>(
+  () => (fetched.customers.value ?? []) as CustomerEntry[]
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Customers'))
 const description = computed(() =>
-  String(props.description || 'Browse customer profiles available to this runtime.')
+  String(
+    props.description || 'Browse customer profiles available to this runtime.'
+  )
 )
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search customers…')
@@ -143,8 +145,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const showSettledCount = computed(
   () =>
-    showCount.value &&
-    (outcome.value === 'ready' || outcome.value === 'empty')
+    showCount.value && (outcome.value === 'ready' || outcome.value === 'empty')
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(

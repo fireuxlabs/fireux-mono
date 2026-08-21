@@ -15,7 +15,7 @@
         Use the dedicated Dev Tool at
         <NuxtLink to="/dev/registry">/dev/registry</NuxtLink> to copy the
         combined <code>apps</code> and <code>ecosystems</code> projection. It calls
-        <code>/api/public/directory</code> and exposes the response as a
+        <code>/api/directory</code> and exposes the response as a
         formatted JSON block with a copy helper.
       </p>
 

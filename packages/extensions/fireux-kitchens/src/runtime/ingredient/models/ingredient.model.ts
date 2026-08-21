@@ -38,7 +38,7 @@ export const IngredientEntity = defineFireuxEntity({
   name: 'Ingredient',
   family: ['kitchen', 'supplier'],
   identity: 'root',
-  authority: 'owning-app-database',
+  authority: 'domain-database',
   appSupport: 'none',
   workspace: false,
   root: IngredientStorage.path,

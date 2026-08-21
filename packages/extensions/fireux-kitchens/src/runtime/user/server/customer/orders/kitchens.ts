@@ -17,14 +17,9 @@ export async function readCustomerOrderKitchens(
   const references = new Map<string, ReturnType<typeof db.doc>>()
   for (const link of links) {
     const kitchenId = text(link.kitchen_id)
-    const appId = text(link.app_id)
     if (!kitchenId) continue
     const rootRef = db.doc(`kitchens/${kitchenId}`)
     references.set(rootRef.path, rootRef)
-    if (appId) {
-      const appRef = db.doc(`apps/${appId}/kitchens/${kitchenId}`)
-      references.set(appRef.path, appRef)
-    }
   }
   if (!references.size) return new Map<string, CustomerOrderKitchenSummary>()
 
@@ -56,15 +51,11 @@ export async function readCustomerOrderKitchens(
     links.flatMap((link) => {
       const kitchenId = text(link.kitchen_id)
       if (!kitchenId) return []
-      const appId = text(link.app_id)
       const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
-      const appData = appId
-        ? dataByPath.get(`apps/${appId}/kitchens/${kitchenId}`) || {}
-        : {}
       const placeData =
         dataByPath.get(`${PlaceStorage.collection}/${kitchenId}`) || {}
-      const identity = menuKitchenIdentity(rootData, appData, placeData)
-      const slug = text(rootData.slug) || text(appData.slug)
+      const identity = menuKitchenIdentity(rootData, placeData)
+      const slug = text(rootData.slug)
       return [
         [
           kitchenKey(link),

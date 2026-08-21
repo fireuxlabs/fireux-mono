@@ -23,11 +23,8 @@ export function useMenuServiceComputed(
     const known = menuServiceOpenState.value.known
     const open = menuServiceOpenState.value.open
     const isPreOrder = orderType.value === 'pre_order'
-    const color: MenuServiceChipColor = isPreOrder || !known
-      ? 'neutral'
-      : open
-        ? 'success'
-        : 'error'
+    const color: MenuServiceChipColor =
+      isPreOrder || !known ? 'neutral' : open ? 'success' : 'error'
 
     return {
       known,
@@ -40,9 +37,9 @@ export function useMenuServiceComputed(
         ? ''
         : !known
           ? 'Opening hours unavailable'
-        : open
-          ? 'Open now'
-          : 'Not open',
+          : open
+            ? 'Open now'
+            : 'Not open',
     }
   })
 
@@ -57,13 +54,15 @@ export function useMenuComputed(
   pending: Ref<boolean>
 ) {
   const { pill: menuInterface } = useMenuInterface()
-  const menuServiceHours = computed(() =>
-    menu.value?.ordering?.service_hours?.operation_hours
+  const menuServiceHours = computed(
+    () => menu.value?.ordering?.service_hours?.operation_hours
   )
   const menuServiceComputed = useMenuServiceComputed(menuServiceHours)
 
   const isPending = computed(() => Boolean(pending.value))
-  const menuCard = computed(() => (menu.value ? menuInterface(menu.value) : null))
+  const menuCard = computed(() =>
+    menu.value ? menuInterface(menu.value) : null
+  )
   const menuSearchText = computed(() =>
     menuCard.value ? JSON.stringify(menuCard.value).toLowerCase() : ''
   )

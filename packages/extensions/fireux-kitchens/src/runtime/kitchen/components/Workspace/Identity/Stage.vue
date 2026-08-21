@@ -1,7 +1,9 @@
 <template>
   <UCard>
     <div class="space-y-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div
+        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div class="flex min-w-0 items-start gap-3">
           <div
             class="flex size-10 shrink-0 items-center justify-center rounded-full border border-default text-sm font-semibold"
@@ -36,7 +38,11 @@
           class="flex items-start gap-2 rounded-lg border border-default p-3"
         >
           <UIcon
-            :name="requirement.complete ? 'i-lucide-circle-check' : 'i-lucide-circle-dashed'"
+            :name="
+              requirement.complete
+                ? 'i-lucide-circle-check'
+                : 'i-lucide-circle-dashed'
+            "
             class="mt-0.5 size-4 shrink-0"
             :class="requirement.complete ? 'text-success' : 'text-dimmed'"
           />
@@ -70,19 +76,23 @@
 <script setup lang="ts">
 import type { KitchenIdentityRequirement } from '../../../composables/workspace/identity/useKitchenIdentityProgression'
 
-withDefaults(defineProps<{
-  number: string
-  title: string
-  description: string
-  percent: number
-  complete: boolean
-  locked?: boolean
-  lockedTitle?: string
-  lockedDescription?: string
-  requirements: KitchenIdentityRequirement[]
-}>(), {
-  locked: false,
-  lockedTitle: 'Complete the previous identity first',
-  lockedDescription: 'This stage becomes available when the earlier identity reaches 100%.',
-})
+withDefaults(
+  defineProps<{
+    number: string
+    title: string
+    description: string
+    percent: number
+    complete: boolean
+    locked?: boolean
+    lockedTitle?: string
+    lockedDescription?: string
+    requirements: KitchenIdentityRequirement[]
+  }>(),
+  {
+    locked: false,
+    lockedTitle: 'Complete the previous identity first',
+    lockedDescription:
+      'This stage becomes available when the earlier identity reaches 100%.',
+  }
+)
 </script>

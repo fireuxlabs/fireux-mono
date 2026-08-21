@@ -3,7 +3,6 @@
 import {
   PropertyManualModel,
   PropertyStorage,
-  type AppProperty,
   type Property,
   type PropertyManual,
 } from '../../../../models/property.model.ts'
@@ -13,9 +12,12 @@ const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'
 const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : null
-const hasOnlyKeys = (value: Record<string, unknown>, keys: readonly string[]) => {
+const hasOnlyKeys = (
+  value: Record<string, unknown>,
+  keys: readonly string[]
+) => {
   const allowed = new Set(keys)
   return Object.keys(value).every((key) => allowed.has(key))
 }
@@ -30,28 +32,28 @@ const validStamp = (
     (key) => stamp[key] === undefined || typeof stamp[key] === 'string'
   )
 }
-const safeStringArray = (value: unknown) =>
-  Array.isArray(value)
-    ? [...new Set(value.map((entry) => safeString(entry)).filter(Boolean))]
-    : []
+export type PropertySurface = Property
 
-export type PropertySurface = Property &
-  Pick<AppProperty, 'operator_ids' | 'team_ids' | 'join_requests'>
-
-export function canonicalPropertyRoot(source?: Property | null): Property | null {
+export function canonicalPropertyRoot(
+  source?: Property | null
+): Property | null {
   const root = asRecord(source)
-  if (!root || !hasOnlyKeys(root, [
-    'id',
-    'slug',
-    'portfolio_id',
-    'place_id',
-    'management',
-    'identity',
-    'status',
-    'publication_state',
-    'created',
-    'updated',
-  ])) return null
+  if (
+    !root ||
+    !hasOnlyKeys(root, [
+      'id',
+      'slug',
+      'portfolio_id',
+      'place_id',
+      'management',
+      'identity',
+      'status',
+      'publication_state',
+      'created',
+      'updated',
+    ])
+  )
+    return null
   if (
     typeof source?.id !== 'string' ||
     typeof source.slug !== 'string' ||
@@ -59,7 +61,8 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     typeof source.place_id !== 'string' ||
     typeof source.status !== 'string' ||
     typeof source.publication_state !== 'string'
-  ) return null
+  )
+    return null
   const id = source.id.trim()
   const slug = source.slug.trim()
   const placeId = source.place_id.trim()
@@ -70,14 +73,17 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
   const publicationState = source.publication_state
 
   if (!id || !slug || !placeId || !identity || !management) return null
-  if (!hasOnlyKeys(identity, [
-    'name',
-    'image_url',
-    'property_type',
-    'unit_count',
-    'estimated_value',
-    'estimated_value_currency',
-  ])) return null
+  if (
+    !hasOnlyKeys(identity, [
+      'name',
+      'image_url',
+      'property_type',
+      'unit_count',
+      'estimated_value',
+      'estimated_value_currency',
+    ])
+  )
+    return null
   if (
     typeof identity.name !== 'string' ||
     !identity.name.trim() ||
@@ -86,10 +92,12 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     typeof identity.unit_count !== 'number' ||
     typeof identity.estimated_value !== 'number' ||
     typeof identity.estimated_value_currency !== 'string'
-  ) return null
+  )
+    return null
   if (!validStamp(source.created, ['at', 'by', 'app_id'])) return null
   if (!validStamp(source.updated, ['at', 'by'])) return null
-  if (!['residential', 'commercial', 'mixed'].includes(propertyType)) return null
+  if (!['residential', 'commercial', 'mixed'].includes(propertyType))
+    return null
   if (status !== 'active' && status !== 'inactive') return null
   if (!['draft', 'published', 'retired'].includes(publicationState)) return null
 
@@ -138,7 +146,9 @@ export function canonicalPropertyManual(value: unknown): PropertyManual | null {
       if (typeof sectionSource[fieldName as string] !== 'string') {
         return null
       }
-      section[fieldName as string] = sectionSource[fieldName as string] as string
+      section[fieldName as string] = sectionSource[
+        fieldName as string
+      ] as string
     }
     manual[sectionName as string] = section
   }
@@ -148,19 +158,13 @@ export function canonicalPropertyManual(value: unknown): PropertyManual | null {
 
 export function composePropertySurface(parts: {
   source?: Property | null
-  appSupport?: Partial<AppProperty> | null
 }): PropertySurface | null {
   // Stored legacy roots can still carry access/manual fields. They are not part
   // of the canonical root surface and must not leak back through a broad spread.
   const canonicalRoot = canonicalPropertyRoot(parts.source)
   if (!canonicalRoot) return null
 
-  return {
-    ...canonicalRoot,
-    operator_ids: safeStringArray(parts.appSupport?.operator_ids),
-    team_ids: safeStringArray(parts.appSupport?.team_ids),
-    join_requests: safeStringArray(parts.appSupport?.join_requests),
-  }
+  return canonicalRoot
 }
 
 const formatEstimatedValue = (value: unknown, currency: unknown) => {
@@ -230,7 +234,9 @@ export function usePropertyInterface() {
 
     return {
       id,
-      to: slug ? `/${PropertyStorage.rootCollection}/${encodeURIComponent(slug)}` : '',
+      to: slug
+        ? `/${PropertyStorage.rootCollection}/${encodeURIComponent(slug)}`
+        : '',
       title,
       subtitle,
       meta,

@@ -1,8 +1,5 @@
 <template>
-  <MenuRoute
-    :menu-route-scope="menuRouteScope"
-    :route-menu-id="routeMenuId"
-  />
+  <MenuRoute :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
 </template>
 
 <script setup lang="ts">
@@ -17,5 +14,7 @@ definePageMeta({
 
 const kitchenSlug = useRouteParam('slug')
 const routeMenuId = useRouteParam('menuId')
-const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
+const menuRouteScope = computed(() =>
+  directoryMenuRouteScope(kitchenSlug.value)
+)
 </script>

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/config/FireUXConfig'
+import { useFireUXConfig } from '../config/FireUXConfig'
 import { useAssets } from './useAssets'
 
 function isCorePlaceholderPath(value: string | undefined) {

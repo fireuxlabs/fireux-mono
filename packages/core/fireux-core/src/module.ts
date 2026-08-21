@@ -87,33 +87,31 @@ export default defineNuxtModule({
       handler: resolver.resolve('./runtime/server/manifest.webmanifest.get'),
     })
     addServerHandler({
-      route: '/api/public/users',
-      handler: resolver.resolve('./runtime/server/api/public/users.get'),
+      route: '/api/users',
+      handler: resolver.resolve('./runtime/server/api/users/index.get'),
     })
     addServerHandler({
-      route: '/api/public/users/:handle',
-      handler: resolver.resolve(
-        './runtime/server/api/public/users/[handle].get'
-      ),
+      route: '/api/users/:handle',
+      handler: resolver.resolve('./runtime/server/api/users/[handle].get'),
     })
     addServerHandler({
-      route: '/api/public/user-identities/:userId',
+      route: '/api/user-identities/:userId',
       method: 'get',
       handler: resolver.resolve(
-        './runtime/server/api/public/user-identities/[userId].get'
+        './runtime/server/api/user-identities/[userId].get'
       ),
     })
     addServerHandler({
-      route: '/api/public/apps',
-      handler: resolver.resolve('./runtime/server/api/public/apps.get'),
+      route: '/api/apps',
+      handler: resolver.resolve('./runtime/server/api/apps/index.get'),
     })
     addServerHandler({
-      route: '/api/public/apps/:id',
-      handler: resolver.resolve('./runtime/server/api/public/apps/[id].get'),
+      route: '/api/apps/:id',
+      handler: resolver.resolve('./runtime/server/api/apps/[id].get'),
     })
     addServerHandler({
-      route: '/api/public/app/status',
-      handler: resolver.resolve('./runtime/server/api/public/app/status.get'),
+      route: '/api/app/status',
+      handler: resolver.resolve('./runtime/server/api/app/status.get'),
     })
     if (nuxt.options.dev) {
       addServerHandler({

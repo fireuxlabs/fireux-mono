@@ -17,14 +17,15 @@ export function useKitchenWorkspaceSupplierSupplyOptions() {
     supplierSupplyLines,
   } = supplierState
 
-  const supplierName = computed(() =>
-    normalizeString(supplier.value?.supplier_organization_name) ||
-    normalizeString(supplier.value?.name) ||
-    supplierId.value
+  const supplierName = computed(
+    () =>
+      normalizeString(supplier.value?.supplier_organization_name) ||
+      normalizeString(supplier.value?.name) ||
+      supplierId.value
   )
   const linkedIngredientIds = computed(() =>
     supplierScenario.value
-      ? supplierSupplyLines.value.map(line => line.ingredient.id)
+      ? supplierSupplyLines.value.map((line) => line.ingredient.id)
       : normalizeStringArray(supplier.value?.linked_ingredient_ids)
   )
   const supplyOptionLines = computed(() =>
@@ -33,14 +34,15 @@ export function useKitchenWorkspaceSupplierSupplyOptions() {
       const packCostMinor = Number(item.pack_cost_minor)
       const currencyCode =
         normalizeString(item.currency_code).toUpperCase() || 'CHF'
-      const packPrice = Number.isFinite(packCostMinor) && packCostMinor > 0
-        ? new Intl.NumberFormat('de-CH', {
-            style: 'currency',
-            currency: currencyCode,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(packCostMinor / 100)
-        : ''
+      const packPrice =
+        Number.isFinite(packCostMinor) && packCostMinor > 0
+          ? new Intl.NumberFormat('de-CH', {
+              style: 'currency',
+              currency: currencyCode,
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(packCostMinor / 100)
+          : ''
 
       return {
         id: line.link.id,
@@ -53,7 +55,9 @@ export function useKitchenWorkspaceSupplierSupplyOptions() {
     })
   )
   const title = computed(() =>
-    supplierName.value ? `${supplierName.value} Supply Options` : 'Supplier Supply Options'
+    supplierName.value
+      ? `${supplierName.value} Supply Options`
+      : 'Supplier Supply Options'
   )
   const description = computed(() =>
     isEcosystemSupplier.value

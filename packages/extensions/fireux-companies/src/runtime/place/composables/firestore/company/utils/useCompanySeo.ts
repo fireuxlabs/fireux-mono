@@ -1,7 +1,7 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { CompanyStorage } from '../../../../models/company.model.ts'
-import type { CompanyView } from '../../../../models/company-public.model.ts'
+import type { CompanyView } from '../../../../models/company-directory.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)

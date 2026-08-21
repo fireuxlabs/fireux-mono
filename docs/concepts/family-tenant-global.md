@@ -1,7 +1,7 @@
 # Tenant and global App family
 
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -29,7 +29,7 @@ Global and tenant Apps must:
 - Resolve a bounded target set before selecting or reading scoped data.
 - Derive storage/authority scope from the selected target and fixed runtime,
   never from a caller-provided collection path or host guess.
-- Keep public route scope separate from data ownership scope.
+- Keep directory route scope separate from data ownership scope.
 - Treat target pinning as configuration, not as an ownership transfer.
 - Reject cross-App target conflicts instead of silently copying, reclaiming, or
   merging data.
@@ -40,29 +40,27 @@ Global and tenant Apps must:
 | --------------------- | ---------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- |
 | Example               | Misebox                                  | La Tap Berne                             | Product composition                                                        |
 | App role              | `global`                                 | `tenant`                                 | Explicit runtime identity                                                  |
-| Target source         | Bounded AppUser membership/authority     | Bounded AppUser membership/authority     | Firestore App support owns relationships; memberships own operator indexes |
+| Target source         | Root management + Team + AppUser          | Root management + Team + AppUser          | Entity Team owns Workspace access; AppUser proves App membership           |
 | Selection             | User chooses among authorized targets    | One persisted target may auto-select     | Tenant removes redundant choice, not authority checks                      |
 | Create default        | Allowed unless family config disables it | Disabled unless family config enables it | Tenant Apps usually manage an existing bounded target                      |
-| Public routes         | Often explicit entity/directory scope    | May omit the persisted target segment    | Tenant App support supplies the bounded scope                              |
+| Directory routes      | Often explicit entity/directory scope    | May omit the persisted target segment    | Authorized target selection supplies the bounded scope                    |
 | Domain implementation | Owning package                           | Same owning package                      | App role is composition, not a domain fork                                 |
 
 `standalone` is a third FireUX-owned App role. It shares explicit config and
 package contracts; it must not become an implicit fallback for unknown roles.
 
-## App-scope vocabulary
+## Entity management vocabulary
 
-- App role is `tenant`; the corresponding entity support scope is
-  `tenant_app`.
-- `parent_app` means the entity's App support record is owned by the
-  ecosystem/global App.
-- `tenant_app` means the support record is owned by the tenant App.
-- `root_only` means the entity has no App support record.
-- `dedicated_app` is legacy migration input only. New writes use `tenant_app`.
-- Global and standalone roles write `parent_app`; tenant writes `tenant_app`.
-  Unknown roles receive no ownership default.
+App role remains `global`, `tenant`, or `standalone`. Workspace roots use one
+separate management relationship:
 
-These values classify support ownership. They do not create a second entity
-identity.
+- `{ mode: 'root' }` has no App host;
+- `{ mode: 'workspace' }` uses the ecosystem Workspace App convention; and
+- `{ mode: 'app', app_id }` names a dedicated App host.
+
+Management affects host and App-admin override, never the Entity path. Former
+`parent_app`, `tenant_app`, `root_only`, and `dedicated_app` support-scope values
+are migration input only and receive no new writes.
 
 ## Accepted deltas
 
@@ -76,16 +74,15 @@ identity.
 
 ## Ownership and transfer
 
-- Creating an App record does not transfer a pinned entity from another App.
-- A new tenant-owned entity may be created directly with `tenant_app` support.
-- Attaching an existing root owned by another App must stop and use an explicit
+- Creating an App record does not transfer a root from another host.
+- A new tenant-managed Entity is created at its canonical root with
+  `{ mode: 'app', app_id }` and root-owned Team.
+- Attaching an existing root managed by another App requires an explicit
   transfer workflow.
-- Writers preserve a family's current support-path representation until that
-  family is deliberately migrated.
-- A transfer must inventory the complete support subtree. Copying one Firestore
-  document does not copy its subcollections.
-- The fixed safe phase order is inspect source → copy complete support tree →
-  verify destination → repoint root → delete source last.
+- A transfer updates the root management relationship and verifies Team and
+  AppUser authority. The root, Team, and operations do not move collections.
+- The fixed safe phase order is inspect authority → retained preimage → update
+  management → verify old and new access → retire obsolete membership support.
 
 The shared transfer planner is currently dry-run only. It is evidence for the
 required sequence, not permission to perform a live migration.
@@ -101,7 +98,7 @@ required sequence, not permission to perform a live migration.
   result proves exactly one published menu and no next page.
 - Zero menus render an empty index; multiple menus render the tenant list.
 - Tenant Menu details remain `/<menuId>` if more menus are added later.
-- Provider preview URLs are not public Menu ownership or routing authority.
+- Provider preview URLs are not Menu ownership or routing authority.
 
 ## Tenant page composition
 
@@ -122,7 +119,7 @@ accepted while only one mature tenant proves the shape.
 
 | Difference                                                            | State        | Required direction                                                                                    |
 | --------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
-| Stored `dedicated_app` values                                         | `migration`  | Normalize through reviewed family migrations to `tenant_app`                                          |
+| Stored support-scope values                                          | `migration`  | Replace them with root management and Team through reviewed family migrations                         |
 | Transfer executor is absent                                           | `to-confirm` | Define authentication, recursive inventory, backup, verification ledger, and recovery before live use |
 | La Tap Berne is the only mature tenant page-composition reference     | `to-confirm` | Compare a second tenant before extracting generic Tenant Page components                              |
 | Hard-coded tenant ids, hosts, or domain branches in reusable packages | `drift`      | Replace with App config, target authority, or entity support data; do not add another branch          |
@@ -138,7 +135,7 @@ accepted while only one mature tenant proves the shape.
 
 ### Next
 
-- Remove legacy `dedicated_app` data through explicit migrations.
+- Remove legacy support-scope data through explicit migrations.
 - Design and verify the authenticated transfer executor.
 - Use a second tenant to confirm which Page/Backdrop/Hero layers are reusable.
 

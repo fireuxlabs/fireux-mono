@@ -11,6 +11,10 @@ const read = (repoRoot, relativePath) =>
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const base = 'packages/extensions/fireux-kitchens/src/runtime/'
+  const serverConfig = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
+  )
   const kitchenBase = `${base}kitchen/`
   const canonicalCollectionPath = `${kitchenBase}composables/firestore/fetch/useKitchenCollection.ts`
   const retiredCollectionPath = `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
@@ -41,7 +45,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}models/kitchen-directory.model.ts`
   )
-  const detailApi = read(repoRoot, `${base}server/api/kitchens/[slug].get.ts`)
+  const detailApi = read(repoRoot, `${base}server/api/kitchens/[kitchen].get.ts`)
   const operatorPanel = read(
     repoRoot,
     `${kitchenBase}components/Detail/OperatorPanel.vue`
@@ -96,6 +100,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(indexModel, /PublicKitchen|PUBLIC_KITCHEN/)
   assert.match(detailApi, /projectKitchenDetail/)
   assert.match(detailApi, /server\/identity\/read\.ts/)
+  for (const route of [
+    '/api/kitchens/:kitchen',
+    '/api/kitchens/:kitchen/fulfilment',
+    '/api/kitchens/:kitchen/identity',
+    '/api/kitchens/:kitchen/menu-presentation',
+  ]) {
+    assert.match(serverConfig, new RegExp(`route: ['"]${route}['"]`))
+  }
+  assert.ok(
+    serverConfig.indexOf("route: '/api/kitchens/:kitchen/fulfilment'") <
+      serverConfig.indexOf("route: '/api/kitchens/:kitchen'"),
+    'Specific Kitchen routes must be registered before the generic Kitchen detail route.'
+  )
   assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
   assert.match(detail, /KitchenDetailState/)
   assert.match(detail, /:objects="\{ kitchen, place \}"/)
@@ -142,7 +159,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(identityEdit, /identity\/card\/current/)
   assert.match(identityEdit, /identity\/logo\/current/)
   assert.match(identityEdit, /runtimeRole !== 'global'/)
-  assert.match(identityEdit, /readKitchenOnboardingSupport/)
+  assert.match(identityEdit, /serverKitchenTeamMembersTarget/)
+  assert.match(identityEdit, /teamMember\.data\?\.user_id/)
   assert.match(identityEdit, /runGuardedServerTransaction/)
   assert.match(identityEdit, /FIRESTORE_MUTATION_TARGETS\.kitchens/)
   assert.match(identityEdit, /mutations\.update\(/)

@@ -22,15 +22,8 @@ export async function deleteKitchenTeamMember(
   const actor = await readKitchenMutationActor(event)
   let name = ''
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const kitchen = await requireKitchenMutationAuthority(
-      mutations,
-      actor,
-      kitchenId
-    )
-    const members = serverKitchenTeamMembersTarget(
-      kitchen.ownerAppId,
-      kitchenId
-    )
+    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const members = serverKitchenTeamMembersTarget(kitchenId)
     const member = await mutations.read<Record<string, unknown>>(
       members,
       memberId
@@ -48,10 +41,7 @@ export async function deleteKitchenTeamMember(
       })
     }
     name = text(member.data?.name) || 'Team member'
-    const invitations = serverKitchenMemberInvitationsTarget(
-      kitchen.ownerAppId,
-      kitchenId
-    )
+    const invitations = serverKitchenMemberInvitationsTarget(kitchenId)
     const pending = await mutations.query<Record<string, unknown>>(
       invitations,
       {

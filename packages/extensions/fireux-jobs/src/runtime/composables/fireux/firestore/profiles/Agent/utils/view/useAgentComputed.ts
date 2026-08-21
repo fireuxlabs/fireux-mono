@@ -14,7 +14,7 @@ export function useAgentComputed(
 ) {
   void pending
 
-  const agentProfile = computed(() => refs.coreProfile.value ?? null)
+  const agentProfile = computed(() => refs.profile.value ?? null)
   const hasAgentProfile = computed(() => Boolean(agentProfile.value?.id))
   const displayName = computed(() =>
     String(
@@ -28,7 +28,6 @@ export function useAgentComputed(
   const displayImageUrl = computed(() =>
     String(agentProfile.value?.agent_image || '').trim()
   )
-  const hasAppOverlay = computed(() => Boolean(refs.appProfile.value?.id))
   const hasBio = computed(() =>
     Boolean(
       String(
@@ -45,7 +44,6 @@ export function useAgentComputed(
     hasDisplayName,
     displayName,
     displayImageUrl,
-    hasAppOverlay,
     hasBio,
   }
 }

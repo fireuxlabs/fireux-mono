@@ -9,13 +9,10 @@ import { computed } from 'vue'
  * - Keeps Kitchen authority out of the identity capability seam
  * - Safe to spread into useChef() return
  */
-export function useChefComputed(
-  refs: ProfileRefs<Chef>,
-  pending?: unknown
-) {
+export function useChefComputed(refs: ProfileRefs<Chef>, pending?: unknown) {
   void pending
 
-  const chefProfile = computed(() => refs.coreProfile.value ?? null)
+  const chefProfile = computed(() => refs.profile.value ?? null)
   const hasChefProfile = computed(() => Boolean(chefProfile.value?.id))
   const displayName = computed(() =>
     String(
@@ -29,16 +26,10 @@ export function useChefComputed(
   const displayImageUrl = computed(() =>
     String(chefProfile.value?.chef_image || '').trim()
   )
-  const hasAppOverlay = computed(() => Boolean(refs.appProfile.value?.id))
-  const hasKitchenLinks = computed(() =>
-    Boolean(chefProfile.value?.kitchen_ids?.length)
-  )
   const hasBio = computed(() =>
     Boolean(
       String(
-        chefProfile.value?.summary ||
-          chefProfile.value?.chef_bio ||
-          ''
+        chefProfile.value?.summary || chefProfile.value?.chef_bio || ''
       ).trim()
     )
   )
@@ -49,8 +40,6 @@ export function useChefComputed(
     displayName,
     hasDisplayName,
     displayImageUrl,
-    hasAppOverlay,
-    hasKitchenLinks,
     hasBio,
   }
 }

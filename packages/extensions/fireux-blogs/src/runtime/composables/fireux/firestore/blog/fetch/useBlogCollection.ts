@@ -14,7 +14,9 @@ const timestampToMillis = (value: unknown): number => {
   if (value instanceof Date) return value.getTime()
   if (typeof value === 'object' && value !== null) {
     const seconds = Number((value as { seconds?: unknown }).seconds ?? 0)
-    const nanoseconds = Number((value as { nanoseconds?: unknown }).nanoseconds ?? 0)
+    const nanoseconds = Number(
+      (value as { nanoseconds?: unknown }).nanoseconds ?? 0
+    )
     return seconds * 1000 + Math.floor(nanoseconds / 1_000_000)
   }
   return 0
@@ -26,7 +28,7 @@ export function useBlogCollection() {
   const source = firestoreFetchCollection<BlogPost>(BlogPostStorage.collection)
 
   const collection = computed(() => {
-    const posts = (source.value ?? []).filter(post =>
+    const posts = (source.value ?? []).filter((post) =>
       isBlogPostInRuntimeScope(post, fireux)
     )
     return posts.slice().sort((a, b) => {

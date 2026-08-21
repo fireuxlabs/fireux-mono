@@ -2,11 +2,11 @@
 import type { ProfileConfig } from 'fireux-core/runtime/models/utils/profile.model'
 
 export const agentConfig: ProfileConfig = {
-  id: 'agent',
-  collectionName: 'agents',
+  kind: 'agent',
   profileType: 'Agent',
   cta: 'Create your hiring profile to appear in listings.',
   navLabel: 'Hiring profile',
   navIcon: 'i-lucide-shield-user',
   provisionRoute: '/api/internal/profiles/agent',
+  storage: 'user',
 } as const

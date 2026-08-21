@@ -53,7 +53,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const dishId = requirePathSegment(getRouterParam(event, 'dishId'), 'Dish id')
   const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
   const dishRef = db.doc(
-    `apps/${appId}/kitchens/${kitchenId}/${DishStorage.collection}/${dishId}`
+    `kitchens/${kitchenId}/${DishStorage.collection}/${dishId}`
   )
   const dishSnapshot = await dishRef.get()
   const dishData = dishSnapshot.data() ?? {}

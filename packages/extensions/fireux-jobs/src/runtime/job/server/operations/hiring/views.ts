@@ -73,7 +73,9 @@ export async function hydrateViews(
       candidateIds.length
         ? identityDb.getAll(
             ...candidateIds.map((id) =>
-              identityDb.collection(ProfessionalStorage.rootCollection).doc(id)
+              identityDb.doc(
+                `users/${id}/profiles/${ProfessionalStorage.document}`
+              )
             )
           )
         : Promise.resolve([] as DocumentSnapshot[]),

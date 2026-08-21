@@ -1,22 +1,9 @@
-import {
-  computed,
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { CreatedMenuOrder } from '../../../../../menu/models/menu-ordering.model.ts'
 import { useOrderIdempotency } from './useOrderIdempotency'
-import {
-  cleanAddOns,
-  cleanCustomer,
-  cleanVariant,
-  text,
-} from './order-input'
-import type {
-  CreateMenuOrderInput,
-  UseMenuOrderCreateOptions,
-} from './types'
+import { cleanAddOns, cleanCustomer, cleanVariant, text } from './order-input'
+import type { CreateMenuOrderInput, UseMenuOrderCreateOptions } from './types'
 
 export function useOrderCreate(
   menuId: MaybeRefOrGetter<string>,
@@ -113,9 +100,10 @@ export function useOrderCreate(
       idempotency.complete()
       return created
     } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
+      const statusMessage =
+        err && typeof err === 'object' && 'statusMessage' in err
+          ? text((err as { statusMessage?: unknown }).statusMessage)
+          : ''
       const causeMessage = err instanceof Error ? err.message : ''
       error.value = statusMessage || causeMessage || 'Order could not be sent.'
 
@@ -151,10 +139,12 @@ export function useOrderCreate(
         window.location.href = checkoutUrl
       }
     } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
-      checkoutError.value = statusMessage || 'Payment checkout could not be started.'
+      const statusMessage =
+        err && typeof err === 'object' && 'statusMessage' in err
+          ? text((err as { statusMessage?: unknown }).statusMessage)
+          : ''
+      checkoutError.value =
+        statusMessage || 'Payment checkout could not be started.'
       throw err
     } finally {
       checkoutPending.value = false

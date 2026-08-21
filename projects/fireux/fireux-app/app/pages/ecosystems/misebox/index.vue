@@ -185,7 +185,7 @@ definePageMeta({
 
 const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-misebox-public-directory',
-  () => $fetch('/api/public/directory'),
+  () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
 

@@ -52,7 +52,10 @@ const toStringArray = (value: unknown) =>
     )
   )
 
-const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): KitchenMiseTaskDoc => ({
+const buildMisePayload = (
+  kitchenId: string,
+  draft: KitchenMiseCreateDraft
+): KitchenMiseTaskDoc => ({
   ...KitchenMiseTaskDefaults,
   kitchen_id: kitchenId,
   title: normalizeString(draft.title),
@@ -91,7 +94,8 @@ export function useKitchenMiseCreate() {
 
     const payload = buildMisePayload(resolvedKitchenId, draft)
     const kitchenCollectionPath =
-      normalizeString(options.kitchenCollectionPath) || resolveKitchenScopeCollectionPath(appId)
+      normalizeString(options.kitchenCollectionPath) ||
+      resolveKitchenScopeCollectionPath(appId)
     const collectionPath = resolveKitchenCollectionPath(
       kitchenCollectionPath,
       resolvedKitchenId

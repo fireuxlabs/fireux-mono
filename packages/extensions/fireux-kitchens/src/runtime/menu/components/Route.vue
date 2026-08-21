@@ -39,12 +39,14 @@ const isOrder = computed(() => projection.value === 'order')
 const orderContext = computed(() => {
   const context = menuTarget.value.context
 
-  return context === 'delivery' || context === 'pre_order' || context === 'kiosk'
+  return context === 'delivery' ||
+    context === 'pre_order' ||
+    context === 'kiosk'
     ? context
     : 'collection'
 })
-const endpoint = computed(() =>
-  `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
+const endpoint = computed(
+  () => `/api/menus/${encodeURIComponent(menuTarget.value.menuId)}`
 )
 const query = computed(() => {
   const value = {

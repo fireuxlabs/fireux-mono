@@ -9,7 +9,7 @@ export type JobAuthorReadiness =
   | 'unavailable'
   | 'needs-app-membership'
   | 'needs-agent-profile'
-  | 'needs-agent-app-support'
+  | 'needs-agent-capability'
   | 'ready'
 
 export function useJobPermissions(
@@ -26,10 +26,10 @@ export function useJobPermissions(
     const role = appUser.value?.role
     return role === 'user' || role === 'admin'
   })
-  const hasAgentProfile = computed(() => Boolean(resolvedAgent.value?.core?.id))
-  const hasAgentAppSupport = computed(() =>
+  const hasAgentProfile = computed(() => Boolean(resolvedAgent.value?.profile?.id))
+  const hasAgentCapability = computed(() =>
     Boolean(
-      resolvedAgent.value?.app?.id && appUser.value?.profiles.includes('agent')
+      appUser.value?.profiles.includes('agent')
     )
   )
   const authorReadiness = computed<JobAuthorReadiness>(() => {
@@ -45,7 +45,7 @@ export function useJobPermissions(
       return 'needs-app-membership'
     }
     if (!hasAgentProfile.value) return 'needs-agent-profile'
-    if (!hasAgentAppSupport.value) return 'needs-agent-app-support'
+    if (!hasAgentCapability.value) return 'needs-agent-capability'
     return 'ready'
   })
   const canPostJob = computed(() => authorReadiness.value === 'ready')
@@ -54,7 +54,7 @@ export function useJobPermissions(
   return {
     authorReadiness,
     canPostJob,
-    hasAgentAppSupport,
+    hasAgentCapability,
     hasAgentProfile,
     hasAppMembership,
     isChecking,

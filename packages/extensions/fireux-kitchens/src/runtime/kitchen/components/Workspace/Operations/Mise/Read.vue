@@ -46,7 +46,7 @@ const workflowGroups = computed(() =>
   groupKitchenMiseTaskSummariesByWorkflow(tasks.value)
 )
 const activeTaskCount = computed(
-  () => tasks.value.filter(task => task.status !== 'done').length
+  () => tasks.value.filter((task) => task.status !== 'done').length
 )
 const selectedKitchenName = computed(() =>
   cleanKitchenMiseText(selectedKitchen.value?.name)
@@ -58,7 +58,7 @@ const pageDebug = computed(() => ({
     outcome: outcome.value,
     activeTaskCount: activeTaskCount.value,
     taskCountsByWorkflowStage: Object.fromEntries(
-      workflowGroups.value.map(group => [group.value, group.tasks.length])
+      workflowGroups.value.map((group) => [group.value, group.tasks.length])
     ),
   },
 }))

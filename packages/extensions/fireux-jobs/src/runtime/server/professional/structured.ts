@@ -6,9 +6,8 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverUserProfileTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  AppProfessionalStorage,
   ProfessionalConstraints,
 } from '../../models/profiles/Professional/Professional.model.ts'
 import {
@@ -60,7 +59,7 @@ function runtimeDatabases(event: H3Event) {
 function assertActiveProfessional(
   snapshots: FirebaseFirestore.DocumentSnapshot[]
 ): void {
-  const [appSnapshot, membershipSnapshot, appProfileSnapshot] = snapshots
+  const [appSnapshot, membershipSnapshot] = snapshots
   const membership = requireProfessionalStructuredObject(
     membershipSnapshot?.data() ?? {},
     'App membership'
@@ -69,7 +68,6 @@ function assertActiveProfessional(
   if (
     !appSnapshot?.exists ||
     !membershipSnapshot?.exists ||
-    !appProfileSnapshot?.exists ||
     (membershipRole !== 'user' && membershipRole !== 'admin')
   ) {
     throw createError({
@@ -102,13 +100,12 @@ export async function updateProfessionalStructuredField(
   const checks = [
     appDb.doc(`apps/${appId}`),
     appDb.doc(`apps/${appId}/users/${uid}`),
-    appDb.doc(`apps/${appId}/${AppProfessionalStorage.collection}/${uid}`),
     ...normalized.references.map((reference) => appDb.doc(reference.path)),
   ]
   const snapshots = await appDb.getAll(...checks)
   assertActiveProfessional(snapshots)
   const missingReference = normalized.references.find(
-    (_, index) => !snapshots[index + 3]?.exists
+    (_, index) => !snapshots[index + 2]?.exists
   )
   if (missingReference) {
     failProfessionalStructuredInput(
@@ -117,9 +114,10 @@ export async function updateProfessionalStructuredField(
   }
 
   await runGuardedServerTransaction({ kind: 'identity' }, async (mutations) => {
+    const profiles = serverUserProfileTarget(uid, 'professional', 'identity')
     const snapshot = await mutations.read(
-      FIRESTORE_MUTATION_TARGETS.identityProfessionals,
-      uid
+      profiles,
+      'professional'
     )
     if (!snapshot.exists) {
       throw createError({
@@ -148,8 +146,8 @@ export async function updateProfessionalStructuredField(
       updated: serverAuditStamp({ by: uid }),
     }
     mutations.update(
-      FIRESTORE_MUTATION_TARGETS.identityProfessionals,
-      uid,
+      profiles,
+      'professional',
       patch
     )
   })

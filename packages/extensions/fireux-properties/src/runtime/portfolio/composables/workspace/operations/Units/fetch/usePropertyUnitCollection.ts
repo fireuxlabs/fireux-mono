@@ -5,7 +5,10 @@ import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
 } from '../../useActivePortfolio'
-import { UnitStorage, type Unit } from '../../../../../../property/models/unit.model.ts'
+import {
+  UnitStorage,
+  type Unit,
+} from '../../../../../../property/models/unit.model.ts'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -14,14 +17,18 @@ export function usePropertyUnitCollection(
   runtimePortfolio = useActivePortfolio()
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Unit[] | undefined> | null>
+  const sourceRef = shallowRef(null) as ShallowRef<Ref<
+    Unit[] | undefined
+  > | null>
   const unitsPath = usePortfolioWorkspaceChildPath(
     runtimePortfolio,
     UnitStorage.collection
   )
 
   const normalizedPropertyId = computed(() =>
-    typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)
+    typeof propertyId === 'function'
+      ? normalizeId(propertyId())
+      : normalizeId(propertyId)
   )
 
   watch(

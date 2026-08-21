@@ -8,11 +8,6 @@ import type { FireuxEntityManagement } from '../../../../models/utils/scope.mode
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-
 export type PublicScopeOptions<TScope> = {
   scopeKey: MaybeRef<unknown>
   scopes: MaybeRef<TScope[] | null | undefined>

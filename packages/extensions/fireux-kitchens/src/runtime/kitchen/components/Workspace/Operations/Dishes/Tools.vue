@@ -1,8 +1,14 @@
 <template>
-  <UCard v-if="canWrite" :aria-labelledby="`create-${catalogue.singular}-title`">
+  <UCard
+    v-if="canWrite"
+    :aria-labelledby="`create-${catalogue.singular}-title`"
+  >
     <template #header>
       <div>
-        <h2 :id="`create-${catalogue.singular}-title`" class="text-sm font-semibold text-highlighted">
+        <h2
+          :id="`create-${catalogue.singular}-title`"
+          class="text-sm font-semibold text-highlighted"
+        >
           Tools
         </h2>
         <p class="mt-1 text-sm text-muted">

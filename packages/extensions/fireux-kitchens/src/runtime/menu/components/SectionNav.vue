@@ -248,4 +248,4 @@ watch(
 )
 </script>
 
-<style scoped src="../assets/styles/menu-section-nav.css"></style>
+<style scoped src="./styles/menu-section-nav.css"></style>

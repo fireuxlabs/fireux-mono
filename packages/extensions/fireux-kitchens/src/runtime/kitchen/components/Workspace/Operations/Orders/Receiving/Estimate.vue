@@ -8,7 +8,10 @@
       <UIcon name="i-lucide-clock-3" aria-hidden="true" />
     </header>
 
-    <div class="receiving-estimate__adjustment" aria-label="Adjust preparation time">
+    <div
+      class="receiving-estimate__adjustment"
+      aria-label="Adjust preparation time"
+    >
       <UButton
         size="lg"
         color="neutral"
@@ -83,7 +86,6 @@ function nudge(amount: number) {
     amount,
   })
 }
-
 </script>
 
 <style scoped>

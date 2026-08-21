@@ -91,7 +91,7 @@ const props = withDefaults(
 const fireux = useFireUXConfig()
 
 const { data } = await useAsyncData('public-app-solutions', () =>
-  $fetch<SolutionsResponse>('/api/public/app/solutions')
+  $fetch<SolutionsResponse>('/api/app/solutions')
 )
 
 const allSolutions = computed<FireuxMetaSolution[]>(

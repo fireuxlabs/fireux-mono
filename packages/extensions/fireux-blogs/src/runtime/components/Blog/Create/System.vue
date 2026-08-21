@@ -27,10 +27,13 @@ const { blogPost, resetCreateBlogPostState } = useBlogDraftState()
 const { submit } = useBlogCreateSubmit()
 const isCreating = ref(false)
 const writeRef = ref<{
-  uploadImages: (blogId: string) => Promise<{
-    featuredImage: string
-    socialImage: string
-  } | undefined>
+  uploadImages: (blogId: string) => Promise<
+    | {
+        featuredImage: string
+        socialImage: string
+      }
+    | undefined
+  >
 } | null>(null)
 const router = useRouter()
 
@@ -38,7 +41,7 @@ async function handleCreate() {
   isCreating.value = true
 
   try {
-    const slug = await submit(blogId => writeRef.value?.uploadImages(blogId))
+    const slug = await submit((blogId) => writeRef.value?.uploadImages(blogId))
 
     if (toast) {
       toast.add({

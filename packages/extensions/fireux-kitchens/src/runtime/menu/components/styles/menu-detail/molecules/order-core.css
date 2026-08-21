@@ -20,8 +20,7 @@
 .menu-order-funnel--panel {
   inset: 0;
   place-items: end center;
-  padding:
-    max(var(--menu-space-md), env(safe-area-inset-top))
+  padding: max(var(--menu-space-md), env(safe-area-inset-top))
     max(var(--menu-space-md), env(safe-area-inset-right))
     max(var(--menu-space-md), env(safe-area-inset-bottom))
     max(var(--menu-space-md), env(safe-area-inset-left));
@@ -37,14 +36,16 @@
   max-width: calc(100vw - 2rem);
   min-height: 4.2rem;
   align-items: center;
-  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3) calc(var(--spacing) * 2) 0.55rem;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3)
+    calc(var(--spacing) * 2) 0.55rem;
   border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
   border-radius: var(--menu-radius);
   background: var(--menu-primary);
   color: var(--menu-bg);
   cursor: pointer;
   font: inherit;
-  box-shadow: 0 1rem 2.5rem color-mix(in srgb, var(--menu-text) 22%, transparent);
+  box-shadow: 0 1rem 2.5rem
+    color-mix(in srgb, var(--menu-text) 22%, transparent);
   text-align: left;
 }
 
@@ -106,7 +107,8 @@
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-bg) 96%, transparent);
   color: var(--menu-text);
-  box-shadow: 0 1.25rem 3rem color-mix(in srgb, var(--menu-text) 18%, transparent);
+  box-shadow: 0 1.25rem 3rem
+    color-mix(in srgb, var(--menu-text) 18%, transparent);
   text-align: left;
 }
 

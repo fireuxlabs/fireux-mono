@@ -1,13 +1,18 @@
 <template>
-  <nav aria-label="Menu workspace" class="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+  <nav
+    aria-label="Menu workspace"
+    class="grid gap-2 sm:grid-cols-2 xl:grid-cols-5"
+  >
     <NuxtLink
       v-for="item in items"
       :key="item.key"
       :to="item.to"
       class="group rounded-lg border p-3 transition-colors"
-      :class="isActive(item)
-        ? 'border-primary bg-primary/10'
-        : 'border-default bg-default hover:border-primary/50'"
+      :class="
+        isActive(item)
+          ? 'border-primary bg-primary/10'
+          : 'border-default bg-default hover:border-primary/50'
+      "
     >
       <span class="flex items-center justify-between gap-3">
         <span class="flex min-w-0 items-center gap-2">
@@ -16,12 +21,7 @@
             {{ item.label }}
           </span>
         </span>
-        <UBadge
-          v-if="item.meta"
-          color="neutral"
-          variant="soft"
-          size="sm"
-        >
+        <UBadge v-if="item.meta" color="neutral" variant="soft" size="sm">
           {{ item.meta }}
         </UBadge>
       </span>
@@ -47,15 +47,10 @@ type WorkspaceItem = {
 }
 
 const route = useRoute()
-const {
-  menu,
-  menuId,
-  orderingEnabled,
-  sections,
-  source,
-} = useKitchenWorkspaceMenuOrdering()
-const basePath = computed(() =>
-  `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`
+const { menu, menuId, orderingEnabled, sections, source } =
+  useKitchenWorkspaceMenuOrdering()
+const basePath = computed(
+  () => `/workspace/kitchen/menus/${encodeURIComponent(menuId.value)}`
 )
 const items = computed<WorkspaceItem[]>(() => [
   {

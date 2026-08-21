@@ -32,29 +32,21 @@
       </div>
 
       <div class="delivery-zone-map-editor">
-        <div
-          ref="mapEl"
-          class="delivery-zone-map-editor__google"
-        />
+        <div ref="mapEl" class="delivery-zone-map-editor__google" />
 
-        <p
-          v-if="mapMessage"
-          class="delivery-zone-map-editor__message"
-        >
+        <p v-if="mapMessage" class="delivery-zone-map-editor__message">
           {{ mapMessage }}
         </p>
 
-        <p
-          v-if="mapError"
-          class="delivery-zone-map-editor__error"
-        >
+        <p v-if="mapError" class="delivery-zone-map-editor__error">
           {{ mapError }}
         </p>
       </div>
 
       <div class="flex flex-wrap items-center justify-between gap-3">
         <p class="m-0 text-xs text-dimmed">
-          {{ pointCount }} point{{ pointCount === 1 ? '' : 's' }} in this boundary.
+          {{ pointCount }} point{{ pointCount === 1 ? '' : 's' }} in this
+          boundary.
         </p>
 
         <div class="flex flex-wrap gap-2">
@@ -90,7 +82,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useGoogleMaps } from 'fireux-places/runtime/place/composables/useGoogleMaps'
 import type { KitchenDeliveryZone } from '../../../../../models/kitchen.model.ts'
 
-type LatLngPoint = { lat: number, lng: number }
+type LatLngPoint = { lat: number; lng: number }
 
 const props = withDefaults(
   defineProps<{
@@ -121,7 +113,9 @@ const mapClickListener = ref<any>(null)
 const polygonLayers = ref<any[]>([])
 const markers = ref<any[]>([])
 const activeZone = computed(() => props.zones[props.selectedIndex] || null)
-const activePolygon = computed<LatLngPoint[]>(() => activeZone.value?.polygon || [])
+const activePolygon = computed<LatLngPoint[]>(
+  () => activeZone.value?.polygon || []
+)
 const pointCount = computed(() => activePolygon.value.length)
 
 onMounted(async () => {
@@ -153,9 +147,8 @@ onMounted(async () => {
   } catch (error) {
     if (!isMounted.value) return
     mapMessage.value = ''
-    mapError.value = error instanceof Error
-      ? error.message
-      : 'Google Maps could not load.'
+    mapError.value =
+      error instanceof Error ? error.message : 'Google Maps could not load.'
   }
 })
 

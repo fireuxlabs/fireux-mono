@@ -35,7 +35,7 @@ export type KitchenOnboardingCompleteResult = {
   place_id: string
   action: Exclude<KitchenOnboardingAction, 'request_access'>
   created_root: boolean
-  created_app_support: boolean
+  created_team_member: boolean
   slug?: string
   palette_override?: SparseBrandPalette
 }

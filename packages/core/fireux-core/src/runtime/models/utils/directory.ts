@@ -7,10 +7,8 @@ import type {
 import type { EcosystemStatus } from '../../ecosystem/models/ecosystem.model.ts'
 
 /**
- * Public directory projections are transport records, not stored entities.
- * They contain only the fields needed to discover canonical App/Ecosystem
- * records and deliberately exclude access, moderation, build, and inverse
- * relationship state.
+ * Directory entries are transport records, not stored entities. They contain
+ * only the fields needed to discover canonical App/Ecosystem records.
  */
 export type AppDirectoryEntry = {
   id: string
@@ -51,4 +49,17 @@ export type PlatformDirectoryResponse = {
   generatedAt: string
   apps: AppDirectoryEntry[]
   ecosystems: EcosystemDirectoryEntry[]
+}
+
+export type CollectionResponse<T> = {
+  ok: true
+  count: number
+  generatedAt: string
+  items: T[]
+}
+
+export type DetailResponse<T> = {
+  ok: true
+  generatedAt: string
+  item: T
 }

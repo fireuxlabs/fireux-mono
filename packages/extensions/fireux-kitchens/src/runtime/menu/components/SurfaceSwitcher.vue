@@ -40,25 +40,28 @@
 import { computed } from 'vue'
 import type { GuestMenuSurfaceOption } from '../utils/menu-context'
 
-const props = withDefaults(defineProps<{
-  headingId?: string
-  icon: string
-  label: string
-  message: string
-  openByDefault?: boolean
-  options?: GuestMenuSurfaceOption[]
-  statusColor?: 'neutral' | 'success' | 'error'
-  statusLabel?: string
-}>(), {
-  headingId: 'menu-surface-title',
-  openByDefault: false,
-  options: () => [],
-  statusColor: 'neutral',
-  statusLabel: '',
-})
+const props = withDefaults(
+  defineProps<{
+    headingId?: string
+    icon: string
+    label: string
+    message: string
+    openByDefault?: boolean
+    options?: GuestMenuSurfaceOption[]
+    statusColor?: 'neutral' | 'success' | 'error'
+    statusLabel?: string
+  }>(),
+  {
+    headingId: 'menu-surface-title',
+    openByDefault: false,
+    options: () => [],
+    statusColor: 'neutral',
+    statusLabel: '',
+  }
+)
 
 const otherOptions = computed(() =>
-  props.options.filter(option => !option.active)
+  props.options.filter((option) => !option.active)
 )
 </script>
 

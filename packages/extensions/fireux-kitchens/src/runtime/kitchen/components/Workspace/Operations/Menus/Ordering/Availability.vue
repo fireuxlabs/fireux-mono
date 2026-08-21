@@ -3,9 +3,12 @@
   <UCard>
     <template #header>
       <div>
-        <h3 class="text-sm font-semibold text-highlighted">Operational availability</h3>
+        <h3 class="text-sm font-semibold text-highlighted">
+          Operational availability
+        </h3>
         <p class="text-sm text-dimmed">
-          Pause new {{ surfaceLabel }} orders without changing service hours or disabling the surface.
+          Pause new {{ surfaceLabel }} orders without changing service hours or
+          disabling the surface.
         </p>
       </div>
     </template>
@@ -59,11 +62,15 @@ const props = defineProps<{
   surfaceLabel: string
   updateFunction: UpdateFn
 }>()
-const defaultPauseMessage = computed(() =>
-  `${props.surfaceLabel} is temporarily paused. Please try again later.`
+const defaultPauseMessage = computed(
+  () => `${props.surfaceLabel} is temporarily paused. Please try again later.`
 )
-const acceptingOrders = computed(() => props.config.availability?.paused !== true)
-const pauseMessage = computed(() => String(props.config.availability?.message || ''))
+const acceptingOrders = computed(
+  () => props.config.availability?.paused !== true
+)
+const pauseMessage = computed(() =>
+  String(props.config.availability?.message || '')
+)
 
 const updateAcceptingOrders = (value: boolean) =>
   props.updateFunction({

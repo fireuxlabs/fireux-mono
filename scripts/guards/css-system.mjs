@@ -443,6 +443,7 @@ const STATIC_CLASS_ATTRIBUTE_RE =
   /(?<![:@A-Za-z0-9_-])class\s*=\s*(["'])([\s\S]*?)\1/g
 const DIRECT_MENU_DETAIL_CSS_IMPORT_RE =
   /\bimport\s*(?:\(\s*)?["']fireux-kitchens\/runtime\/assets\/styles\/menu-detail\.css["']\s*\)?/g
+const VUE_STYLE_SOURCE_RE = /<style\b[^>]*\bsrc=(["'])(\.[^"']+)\1[^>]*>/g
 const LEGACY_SEMANTIC_COLOR_PAIRS = [
   {
     pattern: /text-gray-900\s+dark:text-white/g,
@@ -521,6 +522,7 @@ export async function run(ctx) {
     localNuxtPageTransitions: [],
     copiedCorePageTransitions: [],
     copiedDesignPackSelectors: [],
+    missingVueStyleSources: [],
     legacySemanticColors: [],
     legacyGenericSurfaces: [],
   }
@@ -938,6 +940,24 @@ function scan(dir, repoRoot, violations) {
 
     const source = readFileSync(filePath, 'utf8')
     const relativePath = path.relative(repoRoot, filePath)
+
+    if (extension === '.vue') {
+      VUE_STYLE_SOURCE_RE.lastIndex = 0
+      let styleSource
+      while ((styleSource = VUE_STYLE_SOURCE_RE.exec(source))) {
+        const referencedPath = path.resolve(
+          path.dirname(filePath),
+          styleSource[2]
+        )
+        if (!existsSync(referencedPath)) {
+          violations.missingVueStyleSources.push({
+            path: relativePath,
+            line: lineNumberAt(source, styleSource.index),
+            label: `missing style source ${styleSource[2]}`,
+          })
+        }
+      }
+    }
 
     collectMatches({
       source,
@@ -1895,6 +1915,11 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Vue components referencing missing local stylesheets:',
+    violations.missingVueStyleSources
+  )
+  appendGroup(
+    lines,
     'Legacy hard-coded semantic text color pairs:',
     violations.legacySemanticColors
   )
@@ -1934,6 +1959,7 @@ function formatViolations(violations) {
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',
     '- Replace the guarded generic surface pairs with `border-default` and `bg-default/*`.',
     '- Register Menu detail CSS once through the kitchens module; do not import it from leaf pages or components.',
+    '- Keep every relative Vue `<style src>` next to its owning component or update the reference when the component moves.',
     '- Use the Core Nuxt page-transition default. Route-specific exceptions belong in page meta.',
     '- One-off Tailwind for local layout or pixel-perfect deltas remains allowed.'
   )

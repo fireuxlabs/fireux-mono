@@ -21,9 +21,7 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No suppliers found.
-      </p>
+      <p v-else class="text-sm text-dimmed">No suppliers found.</p>
     </UCard>
 
     <DevDebugPanel
@@ -50,9 +48,7 @@ const cards = computed(() =>
       return card
         ? {
             ...card,
-            to: `/workspace/kitchen/suppliers/${
-              encodeURIComponent(card.id)
-            }`,
+            to: `/workspace/kitchen/suppliers/${encodeURIComponent(card.id)}`,
           }
         : null
     })

@@ -15,7 +15,7 @@ import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import type {
-  PublicMarketplaceStoreResponse,
+  MarketplaceStoreDetailResponse,
 } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
@@ -24,8 +24,8 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const sellerId = useRouteParam('sellerId')
-const { data } = await useFetch<PublicMarketplaceStoreResponse>(
-  () => `/api/public/marketplace/stores/${encodeURIComponent(sellerId.value)}`,
+const { data } = await useFetch<MarketplaceStoreDetailResponse>(
+  () => `/api/marketplace-stores/${encodeURIComponent(sellerId.value)}`,
   { default: () => null }
 )
 const canonicalStore = computed(() => data.value?.store)

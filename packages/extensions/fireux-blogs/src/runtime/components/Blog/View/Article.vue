@@ -14,16 +14,13 @@
                 class="h-full w-full object-cover"
               />
             </span>
-            <span class="font-semibold text-highlighted">{{ card.author }}</span>
+            <span class="font-semibold text-highlighted">{{
+              card.author
+            }}</span>
             <span v-if="card.readingTime" class="text-muted">
               · {{ card.readingTime }} min
             </span>
-            <UBadge
-              v-if="card.badge"
-              color="neutral"
-              size="xs"
-              variant="soft"
-            >
+            <UBadge v-if="card.badge" color="neutral" size="xs" variant="soft">
               {{ card.badge }}
             </UBadge>
           </div>
@@ -39,11 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { PublicBlogPostProjection } from '../../../models/blogPost-public.model';
-import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface';
+import { computed } from 'vue'
+import type { BlogDetail } from '../../../models/blog-directory.model'
+import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface'
 
-const props = defineProps<{ post: PublicBlogPostProjection }>()
+const props = defineProps<{ post: BlogDetail }>()
 
 const { preview: toPreview } = useBlogInterface()
 const card = computed(() => {

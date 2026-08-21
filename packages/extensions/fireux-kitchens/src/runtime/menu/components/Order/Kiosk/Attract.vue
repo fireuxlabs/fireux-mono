@@ -15,7 +15,7 @@
         :src="identityImageUrl"
         :alt="kitchenName"
         class="menu-kiosk-attract__identity"
-      >
+      />
       <strong v-else class="menu-kiosk-attract__name">{{ kitchenName }}</strong>
 
       <span class="menu-kiosk-attract__promise">
@@ -31,7 +31,10 @@
           :src="touchAnimationUrl"
         />
         <template #fallback>
-          <UIcon class="menu-kiosk-attract__touch-fallback" name="i-lucide-hand" />
+          <UIcon
+            class="menu-kiosk-attract__touch-fallback"
+            name="i-lucide-hand"
+          />
         </template>
       </ClientOnly>
       <UIcon
@@ -82,7 +85,12 @@ const backdropStyle = computed(() =>
   padding: 0;
   border: 0;
   background:
-    linear-gradient(180deg, transparent 20%, rgb(0 0 0 / 28%) 58%, rgb(0 0 0 / 88%) 100%),
+    linear-gradient(
+      180deg,
+      transparent 20%,
+      rgb(0 0 0 / 28%) 58%,
+      rgb(0 0 0 / 88%) 100%
+    ),
     var(--menu-kiosk-attract-image),
     radial-gradient(circle at 50% 28%, var(--menu-primary), #07140c 68%);
   background-position: center;
@@ -96,7 +104,12 @@ const backdropStyle = computed(() =>
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 20%, transparent 0 16%, rgb(0 0 0 / 40%) 54%, rgb(0 0 0 / 82%) 100%),
+    radial-gradient(
+      circle at 50% 20%,
+      transparent 0 16%,
+      rgb(0 0 0 / 40%) 54%,
+      rgb(0 0 0 / 82%) 100%
+    ),
     linear-gradient(180deg, rgb(0 0 0 / 48%), transparent 32%, rgb(0 0 0 / 30%));
 }
 
@@ -149,12 +162,18 @@ const backdropStyle = computed(() =>
 .menu-kiosk-attract__touch-fallback {
   width: clamp(8rem, 24vw, 15rem);
   height: clamp(8rem, 24vw, 15rem);
-  filter: drop-shadow(0 0 2rem color-mix(in srgb, var(--menu-primary) 72%, transparent));
+  filter: drop-shadow(
+    0 0 2rem color-mix(in srgb, var(--menu-primary) 72%, transparent)
+  );
 }
 
-.menu-kiosk-attract__touch { filter: brightness(0) invert(1); }
+.menu-kiosk-attract__touch {
+  filter: brightness(0) invert(1);
+}
 
-.menu-kiosk-attract__touch-reduced { display: none; }
+.menu-kiosk-attract__touch-reduced {
+  display: none;
+}
 
 .menu-kiosk-attract__touch-fallback {
   padding: 2.6rem;
@@ -175,7 +194,11 @@ const backdropStyle = computed(() =>
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .menu-kiosk-attract__touch { display: none; }
-  .menu-kiosk-attract__touch-fallback { display: block; }
+  .menu-kiosk-attract__touch {
+    display: none;
+  }
+  .menu-kiosk-attract__touch-fallback {
+    display: block;
+  }
 }
 </style>

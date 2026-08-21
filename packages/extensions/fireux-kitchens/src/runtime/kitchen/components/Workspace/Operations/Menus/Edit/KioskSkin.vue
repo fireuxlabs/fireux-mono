@@ -37,9 +37,11 @@
         :key="skin.id"
         type="button"
         class="overflow-hidden rounded-lg border text-left transition"
-        :class="skin.id === selectedSkinId
-          ? 'border-primary ring-2 ring-primary/30'
-          : 'border-default hover:border-primary/60'"
+        :class="
+          skin.id === selectedSkinId
+            ? 'border-primary ring-2 ring-primary/30'
+            : 'border-default hover:border-primary/60'
+        "
         :disabled="!canWrite"
         @click="selectSkin(skin.id)"
       >
@@ -47,7 +49,7 @@
           :src="skin.thumbnailImageUrl || skin.backgroundImageUrl"
           :alt="skin.label"
           class="aspect-[9/16] w-full object-cover"
-        >
+        />
 
         <div class="flex items-center justify-between gap-3 p-3">
           <span class="flex min-w-0 items-center gap-2">
@@ -94,16 +96,15 @@ const {
   updateMenu,
 } = useKitchenWorkspaceMenu()
 const toast = useToastify()
-const {
-  skins,
-  pending,
-} = useMenuKioskSkinCollection({
+const { skins, pending } = useMenuKioskSkinCollection({
   appId: activeKitchenAppId,
   databaseId,
   enabled: canWrite,
 })
 
-const selectedSkinId = computed(() => String(menu.value?.kiosk_skin_id || '').trim())
+const selectedSkinId = computed(() =>
+  String(menu.value?.kiosk_skin_id || '').trim()
+)
 
 async function selectSkin(skinId: string) {
   if (!canWrite.value || skinId === selectedSkinId.value) return

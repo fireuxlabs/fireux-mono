@@ -128,7 +128,7 @@ async function readMenus(
   input: { appId: string; kitchenId: string }
 ) {
   const snapshot = await access.db
-    .collection(`apps/${input.appId}/kitchens/${input.kitchenId}/menus`)
+    .collection(`kitchens/${input.kitchenId}/menus`)
     .limit(MAX_MENUS)
     .get()
   let remainingItems = MAX_ITEMS

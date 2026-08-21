@@ -1,4 +1,4 @@
-import type { PublicIngredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
+import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient.model'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
 import { projectKitchenMiseTasks } from 'fireux-kitchens/runtime/kitchen/models/mise-presentation'
 import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
@@ -9,7 +9,7 @@ const productDemoSurface = 'showroom' as const
 const productDemoDataSource = 'demo' as const
 
 export async function loadMiseboxProductDemo(
-  loadIngredientRoots: (ids: string[]) => Promise<PublicIngredient[]>
+  loadIngredientRoots: (ids: string[]) => Promise<Ingredient[]>
 ): Promise<MiseboxProductDemoModel> {
   const { pill: projectKitchenPill, surface: projectKitchenSurface } =
     useKitchenInterface()

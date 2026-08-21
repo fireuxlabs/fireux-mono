@@ -1,11 +1,7 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import {
-  assertWorkspaceEntitySupportCapacity,
-  readWorkspaceEntitySupportAuthority,
-  requireWorkspaceEntityMemberRole,
-} from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
   readFireuxEntityManagement,
@@ -84,36 +80,9 @@ export function assertKitchenOnboardingPlaceDefaults(
   }
 }
 
-export function readKitchenOnboardingSupport(
-  value: Record<string, unknown> | null
-) {
-  if (!value) return null
-  const allowedKeys = new Set([
-    'operator_ids',
-    'team_ids',
-    'join_requests',
-    'created',
-    'updated',
-    'workspace',
-  ])
-  const unsupported = Object.keys(value).find((key) => !allowedKeys.has(key))
-  if (unsupported) {
-    fail(409, `Kitchen App support contains unsupported field: ${unsupported}.`)
-  }
-
-  return readWorkspaceEntitySupportAuthority(value, 'Kitchen')
-}
-
-export function assertKitchenOnboardingSupportCapacity(
-  support: NonNullable<ReturnType<typeof readKitchenOnboardingSupport>>,
-  uid: string
-) {
-  assertWorkspaceEntitySupportCapacity(support, uid, 'Kitchen')
-}
-
 export function kitchenOnboardingAccessDecision(input: {
   kitchen: Record<string, unknown> | null
-  support: ReturnType<typeof readKitchenOnboardingSupport>
+  teamMember: Record<string, unknown> | null
   uid: string
   role: KitchenOnboardingMemberRole
   canCreate: boolean
@@ -131,11 +100,10 @@ export function kitchenOnboardingAccessDecision(input: {
     }
   }
 
-  const operators = new Set([
-    ...(input.support?.operatorIds || []),
-    ...(input.support?.teamIds || []),
-  ])
-  if (input.support && operators.has(input.uid)) {
+  if (
+    input.teamMember?.user_id === input.uid &&
+    input.teamMember?.status === 'active'
+  ) {
     return { action: 'open', can_complete: true }
   }
   if (input.role === 'admin') {
@@ -144,6 +112,6 @@ export function kitchenOnboardingAccessDecision(input: {
   return {
     action: 'request_access',
     can_complete: false,
-    message: 'An App admin or existing Kitchen operator must grant access.',
+    message: 'A Kitchen owner or operator must grant Team access.',
   }
 }

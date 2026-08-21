@@ -237,7 +237,7 @@ const {
   initialized: boolean
   mediaReady: boolean
   paletteReady: boolean
-}>('/api/public/app/status', { server: false, lazy: true })
+}>('/api/app/status', { server: false, lazy: true })
 const isResolved = computed(
   () =>
     !appStatusPending.value &&

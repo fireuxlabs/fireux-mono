@@ -1,10 +1,10 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import {
-  projectPublicApp,
+  projectAppDetail,
   toAppDirectoryEntry,
-} from 'fireux-core/runtime/app/server/projection/public-app.dto'
-import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/projection/public-ecosystem.dto'
+} from 'fireux-core/runtime/app/server/index/projection'
+import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/ecosystem/server/directory/projection'
 import {
   PLATFORM_DIRECTORY_TARGETS,
   type PlatformDirectoryTarget,
@@ -27,9 +27,7 @@ async function fetchCollection(
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
 }
 
-async function readTarget(
-  target: PlatformDirectoryTarget
-) {
+async function readTarget(target: PlatformDirectoryTarget) {
   try {
     const db = await getFirestoreProjectDb(target.projectId)
     const [ecosystem, apps] = await Promise.all([
@@ -61,7 +59,9 @@ function uniqueDocuments(
   const byId = new Map<string, StoredDocument>()
   for (const document of documents) {
     if (byId.has(document.id)) {
-      throw new Error(`Duplicate ${family} id in platform directory: ${document.id}`)
+      throw new Error(
+        `Duplicate ${family} id in platform directory: ${document.id}`
+      )
     }
     byId.set(document.id, document)
   }
@@ -95,7 +95,7 @@ export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse
 
   const apps = activeApps
     .map((raw) => {
-      const projected = projectPublicApp(raw, { id: raw.id })
+      const projected = projectAppDetail(raw, { id: raw.id })
       return projected
         ? { entry: toAppDirectoryEntry(projected), order: launchOrder(raw) }
         : null

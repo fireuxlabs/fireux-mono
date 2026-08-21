@@ -22,19 +22,14 @@ export type FireuxWorkspaceEntityIdentity = {
   [K in keyof typeof FireuxWorkspaceEntityIdentityModel]: (typeof FireuxWorkspaceEntityIdentityModel)[K]
 }
 
-export const FireuxWorkspaceAccessModel = {
-  operator_ids: [] as string[],
-} as const
+export type FireuxWorkspaceTeamStatus = 'active' | 'inactive'
+export type FireuxWorkspaceTeamRole = 'owner' | 'operator' | 'member'
 
-export type FireuxWorkspaceAccess = {
-  [K in keyof typeof FireuxWorkspaceAccessModel]: (typeof FireuxWorkspaceAccessModel)[K]
-}
-
-export const FireuxAppAccessRecordModel = {
-  id: '' as string,
-  ...FireuxWorkspaceAccessModel,
-  team_ids: [] as string[],
-  join_requests: [] as string[],
+export const FireuxWorkspaceTeamMemberModel = {
+  user_id: '' as string,
+  role: 'member' as FireuxWorkspaceTeamRole,
+  permissions: [] as string[],
+  status: 'active' as FireuxWorkspaceTeamStatus,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -46,6 +41,30 @@ export const FireuxAppAccessRecordModel = {
   },
 } as const
 
-export type FireuxAppAccessRecord = {
-  [K in keyof typeof FireuxAppAccessRecordModel]: (typeof FireuxAppAccessRecordModel)[K]
+export type FireuxWorkspaceTeamMember = {
+  [K in keyof typeof FireuxWorkspaceTeamMemberModel]: (typeof FireuxWorkspaceTeamMemberModel)[K]
+}
+
+export type FireuxWorkspaceTeamRequestStatus =
+  | 'pending'
+  | 'approved'
+  | 'rejected'
+
+export const FireuxWorkspaceTeamRequestModel = {
+  user_id: '' as string,
+  message: '' as string,
+  status: 'pending' as FireuxWorkspaceTeamRequestStatus,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type FireuxWorkspaceTeamRequest = {
+  [K in keyof typeof FireuxWorkspaceTeamRequestModel]: (typeof FireuxWorkspaceTeamRequestModel)[K]
 }

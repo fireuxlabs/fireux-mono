@@ -50,9 +50,7 @@ export function useKitchenOrderCreate() {
             : {}),
           ...(input.customer ? { customer: input.customer } : {}),
           ...(input.table ? { table: input.table } : {}),
-          ...(input.room_service
-            ? { room_service: input.room_service }
-            : {}),
+          ...(input.room_service ? { room_service: input.room_service } : {}),
           idempotency_key: crypto.randomUUID(),
         },
       }

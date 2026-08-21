@@ -131,11 +131,11 @@ const greetingName = computed(() => {
   return user?.display_name?.trim() || 'there'
 })
 
-const { coreProfile } = useAgent()
+const { agentProfile } = useAgent()
 
 const profileComplete = computed<number | null>(() => {
-  if (coreProfile.value === undefined) return null
-  const profile = coreProfile.value ?? null
+  if (agentProfile.value === undefined) return null
+  const profile = agentProfile.value ?? null
   if (!profile) return 0
 
   const isFilledString = (value?: string | null) => Boolean(value?.trim())

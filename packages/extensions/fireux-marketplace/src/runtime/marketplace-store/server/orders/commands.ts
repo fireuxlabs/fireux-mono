@@ -31,6 +31,7 @@ import {
   requireMarketplaceMember,
   sortRecent,
   storeRef,
+  storeAppId,
   text,
 } from '../core/authority'
 
@@ -41,7 +42,7 @@ export async function createMarketplaceOrder(
   const current = await requireMarketplaceMember(event)
   const intent = badRequest(() => normalizeMarketplaceOrderCreate(input))
   const parent = storeRef(current.db, current.appId, intent.store_id)
-  const orderRef = ordersRef(current.db, current.appId).doc()
+  const orderRef = ordersRef(parent).doc()
   const offerRefs = intent.lines.map((line) =>
     offersRef(parent).doc(line.offer_id)
   )
@@ -49,7 +50,7 @@ export async function createMarketplaceOrder(
     const snapshots = await transaction.getAll(parent, ...offerRefs)
     const store = canonicalStore(snapshots[0])
     if (
-      store.app_id !== current.appId ||
+      storeAppId(store) !== current.appId ||
       store.publication_state !== 'published'
     ) {
       throw createError({
@@ -98,6 +99,7 @@ export async function createMarketplaceOrder(
     )
     transaction.create(orderRef, {
       id: orderRef.id,
+      record_type: 'marketplace-order',
       app_id: current.appId,
       store_id: store.id,
       store_name: store.name,
@@ -138,11 +140,14 @@ export async function listMarketplaceOrders(
       await storeRef(current.db, current.appId, storeId).get()
     )
     assertCanManageStore(store, current)
-    query = ordersRef(current.db, current.appId)
+    query = ordersRef(storeRef(current.db, current.appId, store.id))
       .where('store_id', '==', store.id)
       .limit(ORDER_LIMIT + 1)
   } else {
-    query = ordersRef(current.db, current.appId)
+    query = current.db
+      .collectionGroup('orders')
+      .where('record_type', '==', 'marketplace-order')
+      .where('app_id', '==', current.appId)
       .where('buyer_uid', '==', current.uid)
       .limit(ORDER_LIMIT + 1)
   }
@@ -179,7 +184,17 @@ export async function transitionMarketplaceOrder(
     marketplaceDocumentId(rawOrderId, 'Order id')
   )
   const requested = text(input?.status) as MarketplaceOrderStatus
-  const ref = ordersRef(current.db, current.appId).doc(orderId)
+  const matches = await current.db
+    .collectionGroup('orders')
+    .where('record_type', '==', 'marketplace-order')
+    .where('id', '==', orderId)
+    .where('app_id', '==', current.appId)
+    .limit(2)
+    .get()
+  if (matches.size !== 1) {
+    throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
+  }
+  const ref = matches.docs[0]!.ref
   await current.db.runTransaction(async (transaction) => {
     const orderSnapshot = await transaction.get(ref)
     const order = canonicalOrder(orderSnapshot)

@@ -166,7 +166,8 @@
 
             <p class="text-xs leading-5 text-muted">
               Address, contact details, cover imagery and gallery remain owned
-              by the linked Place. Menus remain managed in the Kitchen Workspace.
+              by the linked Place. Menus remain managed in the Kitchen
+              Workspace.
             </p>
           </form>
         </div>

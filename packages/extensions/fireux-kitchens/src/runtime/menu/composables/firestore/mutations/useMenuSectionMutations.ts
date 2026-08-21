@@ -16,12 +16,15 @@ type Options = {
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
+const optionPath = (value: Options['kitchenCollectionPath']) =>
+  clean(unref(value))
 
 export function useMenuSectionMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
   const path = (kitchenId: string, menuId: string) =>
@@ -73,8 +76,10 @@ export function useMenuSectionMutations(options: Options = {}) {
     const id = clean(sectionId)
     if (!collectionPath || !id) throw new Error('Missing section')
     const immutable = ['id', 'kitchen_id', 'menu_id', 'created']
-    if (immutable.some(key => Object.hasOwn(patch, key))) {
-      throw new Error('Menu Section identity and relationships cannot be changed.')
+    if (immutable.some((key) => Object.hasOwn(patch, key))) {
+      throw new Error(
+        'Menu Section identity and relationships cannot be changed.'
+      )
     }
     await updateDocument<MenuSection>(collectionPath, id, patch)
   }
@@ -88,7 +93,9 @@ export function useMenuSectionMutations(options: Options = {}) {
       orderedIds
         .map(clean)
         .filter(Boolean)
-        .map((id, index) => updateSection(kitchenId, menuId, id, { sort_order: index }))
+        .map((id, index) =>
+          updateSection(kitchenId, menuId, id, { sort_order: index })
+        )
     )
   }
 

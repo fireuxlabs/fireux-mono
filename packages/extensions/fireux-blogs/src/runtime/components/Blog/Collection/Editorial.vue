@@ -50,7 +50,11 @@
       </div>
 
       <div class="blog-editorial__grid">
-        <div v-for="index in 3" :key="index" class="blog-editorial__card-skeleton">
+        <div
+          v-for="index in 3"
+          :key="index"
+          class="blog-editorial__card-skeleton"
+        >
           <USkeleton class="aspect-video w-full" />
           <USkeleton class="h-7 w-4/5" />
           <USkeleton class="h-4 w-full" />
@@ -143,11 +147,7 @@
       </UBlogPosts>
 
       <template v-else>
-        <BlogCardsStory
-          v-if="leadCard"
-          v-bind="leadCard"
-          lead
-        />
+        <BlogCardsStory v-if="leadCard" v-bind="leadCard" lead />
 
         <div v-if="remainingCards.length" class="blog-editorial__more">
           <p class="fx-type-label">More from the journal</p>
@@ -163,11 +163,12 @@
         </div>
       </template>
 
-      <div
-        v-if="hasMore || loadMoreFailed"
-        class="blog-editorial__pagination"
-      >
-        <p v-if="loadMoreFailed" role="alert" class="blog-editorial__load-error">
+      <div v-if="hasMore || loadMoreFailed" class="blog-editorial__pagination">
+        <p
+          v-if="loadMoreFailed"
+          role="alert"
+          class="blog-editorial__load-error"
+        >
           More stories could not be loaded. You can try again.
         </p>
         <UButton
@@ -239,11 +240,7 @@ const storyCountLabel = computed(() => {
 <style scoped>
 .blog-editorial {
   display: grid;
-  gap: clamp(
-    calc(var(--spacing) * 8),
-    5vw,
-    calc(var(--spacing) * 14)
-  );
+  gap: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 14));
   scroll-margin-top: calc(var(--spacing) * 20);
 }
 
@@ -282,11 +279,7 @@ const storyCountLabel = computed(() => {
 .blog-editorial__more,
 .blog-editorial__loading {
   display: grid;
-  gap: clamp(
-    calc(var(--spacing) * 8),
-    5vw,
-    calc(var(--spacing) * 14)
-  );
+  gap: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 14));
 }
 
 .blog-editorial__grid {

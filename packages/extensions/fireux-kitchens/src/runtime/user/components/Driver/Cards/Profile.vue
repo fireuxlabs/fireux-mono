@@ -1,6 +1,6 @@
 <template>
   <article class="public-profile-detail" data-profile-tone="driver">
-    <PublicProfileHero
+    <UserProfileHero
       kind-label="Driver"
       icon="i-lucide-truck"
       tone="success"
@@ -16,12 +16,12 @@
       <template #actions>
         <slot name="actions" />
       </template>
-    </PublicProfileHero>
+    </UserProfileHero>
 
     <div
       class="public-profile-detail__content public-profile-detail__content--split"
     >
-      <PublicProfileSection
+      <UserProfileSection
         icon="i-lucide-route"
         eyebrow="Service area"
         title="Delivery coverage"
@@ -38,9 +38,9 @@
           Available for delivery work within this public service radius. Kitchen
           assignments and contact details stay private.
         </p>
-      </PublicProfileSection>
+      </UserProfileSection>
 
-      <PublicProfileSection
+      <UserProfileSection
         icon="i-lucide-package-check"
         eyebrow="Delivery profile"
         title="Capabilities"
@@ -57,7 +57,7 @@
         <p v-else class="text-sm leading-6 text-muted">
           This driver is available through the kitchen delivery network.
         </p>
-      </PublicProfileSection>
+      </UserProfileSection>
     </div>
   </article>
 </template>
@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { DriverCard } from '../../../composables/driver/useDriverInterface'
-import type { PublicDriverProfile } from '../../../models/driver.model.ts'
+import type { DriverProfile } from '../../../models/driver.model.ts'
 
 const props = defineProps<{
   card: DriverCard.Card
-  profile: PublicDriverProfile
+  profile: DriverProfile
 }>()
 
 const radiusMetres = computed(() =>

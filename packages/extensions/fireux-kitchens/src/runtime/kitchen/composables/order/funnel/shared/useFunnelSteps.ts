@@ -1,10 +1,4 @@
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import type { MenuOrderingFunnelState } from '../../../../../menu/models/menu-ordering.model.ts'
 
 type UseFunnelStepsOptions = {
@@ -19,11 +13,13 @@ export function useFunnelSteps(
   const step = ref(1)
   const screenReady = ref(true)
   const currentOrder = computed(() => toValue(order))
-  const stepCount = computed(() => Math.max(1, Number(toValue(options.stepCount)) || 1))
+  const stepCount = computed(() =>
+    Math.max(1, Number(toValue(options.stepCount)) || 1)
+  )
   const isFirstStep = computed(() => step.value === 1)
   const isLastStep = computed(() => step.value >= stepCount.value)
-  const continueDisabled = computed(() =>
-    currentOrder.value.pending || !screenReady.value
+  const continueDisabled = computed(
+    () => currentOrder.value.pending || !screenReady.value
   )
 
   function goBack() {
@@ -53,15 +49,21 @@ export function useFunnelSteps(
     screenReady.value = true
   })
 
-  watch(() => currentOrder.value.quantity, (quantity: number) => {
-    if (quantity) return
+  watch(
+    () => currentOrder.value.quantity,
+    (quantity: number) => {
+      if (quantity) return
 
-    reset()
-  })
+      reset()
+    }
+  )
 
-  watch(() => currentOrder.value.orderType, () => {
-    reset()
-  })
+  watch(
+    () => currentOrder.value.orderType,
+    () => {
+      reset()
+    }
+  )
 
   return {
     continueDisabled,

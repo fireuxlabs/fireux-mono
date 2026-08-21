@@ -49,27 +49,31 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
       : '',
     receipt.customer?.notes ? `Notes: ${receipt.customer.notes}` : '',
   ].filter(Boolean)
-  const rows = receipt.items.map((item) => {
-    const detailLines = [
-      item.variant_label && !item.label.includes(item.variant_label)
-        ? item.variant_label
-        : '',
-      ...(item.add_ons || []).map((addOn) => `+ ${addOn.label}`),
-    ].filter(Boolean)
+  const rows = receipt.items
+    .map((item) => {
+      const detailLines = [
+        item.variant_label && !item.label.includes(item.variant_label)
+          ? item.variant_label
+          : '',
+        ...(item.add_ons || []).map((addOn) => `+ ${addOn.label}`),
+      ].filter(Boolean)
 
-    return `
+      return `
       <tr>
         <td class="qty">${escapeHtml(item.quantity)}x</td>
         <td>
           <strong>${escapeHtml(item.label)}</strong>
-          ${detailLines.length
-            ? `<small>${detailLines.map(escapeHtml).join('<br>')}</small>`
-            : ''}
+          ${
+            detailLines.length
+              ? `<small>${detailLines.map(escapeHtml).join('<br>')}</small>`
+              : ''
+          }
         </td>
         <td class="money">${escapeHtml(money(item.total_chf))}</td>
       </tr>
     `
-  }).join('')
+    })
+    .join('')
 
   return `<!doctype html>
 <html>
@@ -164,11 +168,13 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
       <p class="meta">${escapeHtml(orderTypeLabel(receipt.order_type))} · ${escapeHtml(formatCreatedAt(receipt.created_at))}</p>
     </section>
 
-    ${customerLines.length
-      ? `<section class="section">${customerLines
-        .map((line) => `<p>${escapeHtml(line)}</p>`)
-        .join('')}</section>`
-      : ''}
+    ${
+      customerLines.length
+        ? `<section class="section">${customerLines
+            .map((line) => `<p>${escapeHtml(line)}</p>`)
+            .join('')}</section>`
+        : ''
+    }
 
     <section class="section">
       <table>
@@ -178,9 +184,11 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
 
     <section class="totals">
       <p><span>Subtotal</span><span>${escapeHtml(money(receipt.subtotal_chf))}</span></p>
-      ${receipt.delivery_fee_chf
-        ? `<p><span>Delivery</span><span>${escapeHtml(money(receipt.delivery_fee_chf))}</span></p>`
-        : ''}
+      ${
+        receipt.delivery_fee_chf
+          ? `<p><span>Delivery</span><span>${escapeHtml(money(receipt.delivery_fee_chf))}</span></p>`
+          : ''
+      }
       <p class="total"><span>Total</span><span>${escapeHtml(money(receipt.total_chf))}</span></p>
     </section>
   </main>
@@ -202,13 +210,16 @@ export function printKitchenOrderReceipt(order: CreatedMenuOrder | null) {
 
 export function printKitchenOrderTicket(order: KitchenOrder) {
   const subtotal = order.items.reduce(
-    (sum, item) => sum + Number(item.unit_price || 0) * Number(item.quantity || 0),
+    (sum, item) =>
+      sum + Number(item.unit_price || 0) * Number(item.quantity || 0),
     0
   )
   const total = Number(order.payment.amount_chf || subtotal)
   const receipt: CreatedMenuOrderReceipt = {
     id: order.id,
-    order_number: String(order.service_number || order.order_number || order.id),
+    order_number: String(
+      order.service_number || order.order_number || order.id
+    ),
     order_type: order.order_type,
     channel: order.channel || 'menu',
     status: order.status,

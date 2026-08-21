@@ -17,17 +17,17 @@ export function menuCatalogueFamilies(
       id: 'food',
       label: 'Food',
       icon: 'i-lucide-utensils',
-      sections: sections.filter(section =>
-        section.items.some(item => item.itemKind !== 'drink')
+      sections: sections.filter((section) =>
+        section.items.some((item) => item.itemKind !== 'drink')
       ),
     },
     {
       id: 'drinks',
       label: 'Drinks',
       icon: 'i-lucide-cup-soda',
-      sections: sections.filter(section =>
-        section.items.every(item => item.itemKind === 'drink')
+      sections: sections.filter((section) =>
+        section.items.every((item) => item.itemKind === 'drink')
       ),
     },
-  ].filter(family => family.sections.length) as MenuCatalogueFamily[]
+  ].filter((family) => family.sections.length) as MenuCatalogueFamily[]
 }

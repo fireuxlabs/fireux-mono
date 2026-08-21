@@ -20,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { usePublicBlogFetch } from '../../composables/fireux/blog/public/usePublicBlogFetch'
+import { useBlogDetail } from '../../composables/fireux/blog/directory/useBlogDetail'
 import { useBlogSeo } from '../../composables/fireux/firestore/blog/utils/useBlogSeo'
 
 const route = useRoute()
-const { post, pending } = usePublicBlogFetch(String(route.params.slug ?? ''))
+const { post, pending } = useBlogDetail(String(route.params.slug ?? ''))
 
 useBlogSeo(post)
 </script>

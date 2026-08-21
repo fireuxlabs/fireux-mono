@@ -1,9 +1,5 @@
-import {
-  useWorkspaceSelection,
-} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
-import type {
-  WorkspaceSource,
-} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 type KitchenWorkspaceSelectionInput = {
@@ -18,7 +14,9 @@ export function useKitchenWorkspaceSelection() {
   const { selectedId, selectTarget, clearSelection } =
     useWorkspaceSelection('kitchen')
 
-  const setKitchenWorkspaceSelection = (selectionPatch: KitchenWorkspaceSelectionInput = {}) => {
+  const setKitchenWorkspaceSelection = (
+    selectionPatch: KitchenWorkspaceSelectionInput = {}
+  ) => {
     const hasNextId =
       selectionPatch.selectedId !== undefined ||
       selectionPatch.kitchenId !== undefined
@@ -26,10 +24,7 @@ export function useKitchenWorkspaceSelection() {
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
       : selectedId.value
 
-    selectTarget(
-      nextId,
-      selectionPatch.type ?? selectionPatch.source ?? 'live'
-    )
+    selectTarget(nextId, selectionPatch.type ?? selectionPatch.source ?? 'live')
   }
 
   return {

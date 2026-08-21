@@ -13,11 +13,14 @@
 import EcosystemFeatured from './Featured.vue'
 import type { EcosystemInterfaceInput } from '../composables/useEcosystemInterface'
 
-withDefaults(defineProps<{
-  collection?: EcosystemInterfaceInput[]
-  featuredSlugs?: string[]
-}>(), {
-  collection: () => [],
-  featuredSlugs: () => [],
-})
+withDefaults(
+  defineProps<{
+    collection?: EcosystemInterfaceInput[]
+    featuredSlugs?: string[]
+  }>(),
+  {
+    collection: () => [],
+    featuredSlugs: () => [],
+  }
+)
 </script>

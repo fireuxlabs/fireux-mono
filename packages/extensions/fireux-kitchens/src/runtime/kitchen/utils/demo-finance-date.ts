@@ -17,4 +17,3 @@ export function validTimezone(value: string) {
     return false
   }
 }
-

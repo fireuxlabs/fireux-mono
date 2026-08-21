@@ -40,7 +40,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
   '10484b476023427fedf10a770b83c5c71f19583e3e8ec7ee1e30f1c20b438899'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
-  '2db124cf412dcf5ee556b317a4716f90a9161fd887bebbfc986f007febe4f8fa'
+  '18945b1edbb56799f570318a723732e8e417e74c26f16d6a805b31e9511f4b7b'
 
 function sourceFiles(repoRoot) {
   const files = []
@@ -152,7 +152,7 @@ export function run({ repoRoot }) {
   )
   assert.match(
     serverTargetsSource,
-    /serverKitchenMenuUploadsTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*menu-uploads/,
+    /serverKitchenMenuUploadsTarget[\s\S]*serverKitchenChildTarget\([^\n]*'kitchens\.menu-uploads',\s*'menu-uploads'\)/,
     'Kitchen Menu uploads must use their runtime Server target.'
   )
   for (const file of ['upload.post.ts', 'source-url.post.ts']) {
@@ -230,6 +230,37 @@ export function run({ repoRoot }) {
     kitchenIngredientCurationStorage,
     /getRuntimeFirestore|\.collection\(|\.doc\(/
   )
+  const ignitionConversationCreate = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/fireux/fireux-app/server/api/conversations/index.post.ts'
+    ),
+    'utf8'
+  )
+  assert.match(ignitionConversationCreate, /runGuardedServerTransaction/)
+  assert.match(ignitionConversationCreate, /serverAppConversationsTarget/)
+  assert.match(ignitionConversationCreate, /serverConversationMessagesTarget/)
+  assert.match(
+    ignitionConversationCreate,
+    /serverIdentityUserNotificationsTarget/
+  )
+  assert.doesNotMatch(
+    ignitionConversationCreate,
+    /\.batch\(|batch\.|\.runTransaction\(|transaction\./
+  )
+  const ignitionConversationUpdate = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/fireux/fireux-app/server/api/internal/control/ignition-requests/[requestId].patch.ts'
+    ),
+    'utf8'
+  )
+  assert.match(ignitionConversationUpdate, /runGuardedServerTransaction/)
+  assert.match(ignitionConversationUpdate, /serverAppConversationsTarget/)
+  assert.doesNotMatch(
+    ignitionConversationUpdate,
+    /\.batch\(|batch\.|\.runTransaction\(|transaction\./
+  )
   const kitchenMenuConfirm = readFileSync(
     path.join(
       repoRoot,
@@ -269,6 +300,28 @@ export function run({ repoRoot }) {
   assert.match(kitchenMenuRootEntry, /FIRESTORE_MUTATION_TARGETS\.menus/)
   assert.match(kitchenMenuRootEntry, /serverCreate/)
   assert.match(kitchenMenuRootEntry, /serverUpdate/)
+  const kitchenMenuDirectorySync = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/menu/server/directory/sync.ts'
+    ),
+    'utf8'
+  )
+  assert.match(kitchenMenuDirectorySync, /FIRESTORE_MUTATION_TARGETS\.menus/)
+  assert.match(kitchenMenuDirectorySync, /serverUpdate/)
+  assert.match(kitchenMenuDirectorySync, /ensureKitchenMenuRootEntry/)
+  const kitchenMenuClientUpdate = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuUpdate.ts'
+    ),
+    'utf8'
+  )
+  assert.match(kitchenMenuClientUpdate, /syncMenuDirectory/)
+  assert.doesNotMatch(
+    kitchenMenuClientUpdate,
+    /RootMenuStorage|readMenuRootEntryDocs|FIRESTORE_MUTATION_TARGETS\.menus/
+  )
   const kitchenOrderTransition = readFileSync(
     path.join(
       repoRoot,
@@ -315,7 +368,7 @@ export function run({ repoRoot }) {
   for (const target of [
     'serverKitchenOrderServiceTarget',
     'serverKitchenOrdersTarget',
-    'serverCustomerOrdersTarget',
+    'serverUserOrdersTarget',
   ]) {
     assert.match(kitchenOrderServiceSequence, new RegExp(target))
   }
@@ -333,7 +386,7 @@ export function run({ repoRoot }) {
   assert.match(kitchenOrderIdempotency, /runGuardedServerTransaction/)
   assert.match(kitchenOrderIdempotency, /serverKitchenOrderIdempotencyTarget/)
   assert.match(kitchenOrderIdempotency, /serverKitchenOrdersTarget/)
-  assert.match(kitchenOrderIdempotency, /serverCustomerOrdersTarget/)
+  assert.match(kitchenOrderIdempotency, /serverUserOrdersTarget/)
   assert.doesNotMatch(
     kitchenOrderIdempotency,
     /linkedRecord\.path|\.runTransaction\(|transaction\./
@@ -372,11 +425,7 @@ export function run({ repoRoot }) {
     'utf8'
   )
   assert.match(kitchenDriverDispatch, /runGuardedServerTransaction/)
-  for (const target of [
-    'serverAppUsersTarget',
-    'serverAppDriversTarget',
-    'serverKitchenOrdersTarget',
-  ]) {
+  for (const target of ['serverAppUsersTarget', 'serverKitchenOrdersTarget']) {
     assert.match(kitchenDriverDispatch, new RegExp(target))
   }
   assert.match(kitchenDriverDispatch, /mutations\.update/)
@@ -388,7 +437,7 @@ export function run({ repoRoot }) {
   for (const file of marketplaceStoreWriters) {
     const source = readFileSync(path.join(repoRoot, file), 'utf8')
     assert.match(source, /runGuardedServerTransaction/)
-    assert.match(source, /serverAppMarketplaceStoresTarget/)
+    assert.match(source, /serverMarketplaceStoresTarget/)
     assert.match(source, /mutations\.update|mutations\.create/)
     assert.doesNotMatch(source, /\.runTransaction\(|transaction\./)
   }

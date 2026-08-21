@@ -63,6 +63,11 @@ export type FireuxMetaOperation = {
   icon?: string
   /** Search-intent phrases used to map operator demand into product literature. */
   keywords?: string[]
+  /** Authored research notes that explain what the search phrases ask the product to provide. */
+  guidingLiterature?: {
+    summary: string
+    needs: string[]
+  }
 }
 
 export type FireuxMetaSolution = {

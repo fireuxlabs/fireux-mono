@@ -47,15 +47,15 @@ import { chefConfig } from '../../composables/firestore/profiles/Chef/config/che
 import { computed, ref } from 'vue'
 import { useChef } from '../../composables/chef/useChef'
 
-const { coreProfile, profile: chefCardFromProfile } = useChef()
+const { chefProfile, profile: chefCardFromProfile } = useChef()
 const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
-const isProfileLoading = computed(() => coreProfile.value === undefined)
-const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
-const chefCard = computed(() => chefCardFromProfile(resolvedCoreProfile.value))
+const isProfileLoading = computed(() => chefProfile.value === undefined)
+const resolvedProfile = computed(() => chefProfile.value ?? null)
+const chefCard = computed(() => chefCardFromProfile(resolvedProfile.value))
 
 const createProfile = async () => {
   if (isCreating.value) return

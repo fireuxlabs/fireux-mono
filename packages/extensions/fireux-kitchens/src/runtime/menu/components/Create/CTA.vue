@@ -9,9 +9,7 @@
         <UBadge v-if="countLabel" color="neutral" variant="soft">
           {{ countLabel }}
         </UBadge>
-        <UBadge color="primary" variant="soft">
-          QR ready
-        </UBadge>
+        <UBadge color="primary" variant="soft"> QR ready </UBadge>
       </div>
 
       <AppToolFoldaway
@@ -61,11 +59,14 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { computed, ref, watch } from 'vue'
 
-withDefaults(defineProps<{
-  countLabel?: string
-}>(), {
-  countLabel: '',
-})
+withDefaults(
+  defineProps<{
+    countLabel?: string
+  }>(),
+  {
+    countLabel: '',
+  }
+)
 
 const { currentUser } = useAuth()
 const authToken = ref('')
@@ -101,7 +102,11 @@ const uploadTool = computed(() => ({
   },
 }))
 
-watch(currentUser, async (user: { getIdToken: () => Promise<string> } | null) => {
-  authToken.value = import.meta.client && user ? await user.getIdToken() : ''
-}, { immediate: true })
+watch(
+  currentUser,
+  async (user: { getIdToken: () => Promise<string> } | null) => {
+    authToken.value = import.meta.client && user ? await user.getIdToken() : ''
+  },
+  { immediate: true }
+)
 </script>

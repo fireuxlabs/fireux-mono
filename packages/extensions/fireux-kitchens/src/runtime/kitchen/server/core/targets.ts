@@ -16,7 +16,6 @@ import type {
   KitchenOrdersConfig,
   KitchenTablesConfig,
 } from '../../models/kitchen.model.ts'
-import { readKitchenOnboardingSupport } from '../index/onboarding/onboarding-policy.ts'
 import {
   readFireuxEntityManagement,
   resolveFireuxEntityManagementAppId,
@@ -90,17 +89,12 @@ function projectKitchenTarget(input: {
   id: string
   canWrite: boolean
   root: StoredRecord
-  support: StoredRecord
   place: StoredRecord
   scope: CanonicalKitchenScope
 }): KitchenWorkspaceTargetItem {
   const rootIdentity = readKitchenIdentity(input.root)
   const place = readPlacePresentation(input.place)
-  const resolvedIdentity = menuKitchenIdentity(
-    input.root,
-    input.support,
-    input.place
-  )
+  const resolvedIdentity = menuKitchenIdentity(input.root, input.place)
   const displayName = text(resolvedIdentity.name)
   if (!displayName) {
     conflict(`Kitchen ${input.id} has no usable canonical identity.`)
@@ -166,7 +160,9 @@ function projectKitchenTarget(input: {
         ? { style: resolvedMenuStyle }
         : {}),
     },
-    ...(workspacePalette ? { workspace_theme: { palette: workspacePalette } } : {}),
+    ...(workspacePalette
+      ? { workspace_theme: { palette: workspacePalette } }
+      : {}),
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
       : {}),
@@ -223,10 +219,7 @@ export async function readKitchenWorkspaceTargets(
     })
   }
 
-  const indexedTargetIds = await resolveKitchenWorkspaceTargetIds(
-    uid,
-    currentMembership
-  )
+  const indexedTargetIds = await resolveKitchenWorkspaceTargetIds(uid)
   if (!indexedTargetIds.length) {
     return { ok: true, appId, family: 'kitchen', items: [] }
   }
@@ -254,10 +247,8 @@ export async function readKitchenWorkspaceTargets(
     ? indexedTargetIds
     : indexedTargetIds.filter((id) => scopes.get(id)?.appId === appId)
   for (const id of targetIds) {
-    const scope = scopes.get(id)!
     for (const ref of [
-      db.doc(`apps/${scope.appId}/kitchens/${id}`),
-      db.doc(`apps/${scope.appId}/users/${uid}`),
+      db.doc(`kitchens/${id}/team/${uid}`),
       db.doc(`${PlaceStorage.collection}/${id}`),
     ]) {
       relatedRefs.set(ref.path, ref)
@@ -272,51 +263,35 @@ export async function readKitchenWorkspaceTargets(
     const rootSnapshot = roots.get(id)!
     const root = rootSnapshot.data() || {}
     const scope = scopes.get(id)!
-    const supportPath = `apps/${scope.appId}/kitchens/${id}`
-    const membershipPath = `apps/${scope.appId}/users/${uid}`
+    const teamPath = `kitchens/${id}/team/${uid}`
     const placeId = id
     const placePath = `${PlaceStorage.collection}/${placeId}`
-    const supportSnapshot = related.get(supportPath)
-    const membershipSnapshot = related.get(membershipPath)
+    const teamSnapshot = related.get(teamPath)
     const placeSnapshot = related.get(placePath)
 
-    if (!supportSnapshot?.exists) {
-      conflict(`Kitchen target ${id} is missing its same-id App support.`)
+    if (!teamSnapshot?.exists) {
+      conflict(`Kitchen target ${id} is missing its Team membership.`)
     }
     if (!placeSnapshot?.exists) {
       conflict(`Kitchen target ${id} is missing its canonical Place.`)
     }
-    const support = supportSnapshot.data() || {}
-    const authority = readKitchenOnboardingSupport(support)
-    if (!authority) {
-      conflict(`Kitchen target ${id} has invalid App support.`)
-    }
-    const scopedRole = text(membershipSnapshot?.get('role'))
+    const member = teamSnapshot.data() || {}
+    const teamRole = text(member.role)
     if (
-      !membershipSnapshot?.exists ||
-      (scopedRole !== 'admin' && scopedRole !== 'user')
+      text(member.user_id) !== uid ||
+      member.status !== 'active' ||
+      !['owner', 'operator', 'member'].includes(teamRole)
     ) {
       throw createError({
         statusCode: 403,
-        statusMessage: `Kitchen target ${id} requires scoped App membership.`,
-      })
-    }
-    if (
-      scopedRole !== 'admin' &&
-      !authority.operatorIds.includes(uid) &&
-      !authority.teamIds.includes(uid)
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: `Kitchen target ${id} requires operator access.`,
+        statusMessage: `Kitchen target ${id} requires active Team membership.`,
       })
     }
 
     return projectKitchenTarget({
       id,
-      canWrite: scopedRole === 'admin' || authority.operatorIds.includes(uid),
+      canWrite: teamRole === 'owner' || teamRole === 'operator',
       root,
-      support,
       place: placeSnapshot.data() || {},
       scope,
     })

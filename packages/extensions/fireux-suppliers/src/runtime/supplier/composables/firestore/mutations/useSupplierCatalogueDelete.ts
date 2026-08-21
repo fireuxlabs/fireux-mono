@@ -3,9 +3,11 @@ import { resolveSupplierCatalogueCollectionPath } from '../fetch/useSupplierCata
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierCatalogueDelete(options: {
-  supplierCollectionPath?: string
-} = {}) {
+export function useSupplierCatalogueDelete(
+  options: {
+    supplierCollectionPath?: string
+  } = {}
+) {
   const { deleteDocument } = useFirestoreDelete()
 
   async function deleteSupplierCatalogue(

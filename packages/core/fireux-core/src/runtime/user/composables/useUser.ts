@@ -20,7 +20,7 @@ export { useUserInterface } from './useUserInterface'
  * This seam resolves the active authenticated user, not an arbitrary root User.
  * User is public identity; UserAccount is account data; AppUser is the current
  * app's membership, authorization, and capability record.
- * For cross-user display reads, use usePublicUserIdentity so callers receive
+ * For cross-user display reads, use useUserIdentitySummary so callers receive
  * only the bounded public projection instead of a raw User document.
  * Entity commands remain explicit `useUserCreate/Update/Delete` imports; this
  * active-session aggregate does not advertise unsupported lifecycle parity.

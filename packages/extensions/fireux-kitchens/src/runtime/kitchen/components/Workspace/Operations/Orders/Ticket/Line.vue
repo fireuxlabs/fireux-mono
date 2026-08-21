@@ -1,8 +1,6 @@
 <template>
   <div class="order-ticket-line">
-    <UBadge color="primary" variant="soft" size="sm">
-      {{ line.qty }}×
-    </UBadge>
+    <UBadge color="primary" variant="soft" size="sm"> {{ line.qty }}× </UBadge>
     <span class="order-ticket-line__content">
       {{ line.label }}
       <small
@@ -11,10 +9,7 @@
       >
         {{ line.variant }}
       </small>
-      <small
-        v-if="line.addOns.length"
-        class="order-ticket-line__option"
-      >
+      <small v-if="line.addOns.length" class="order-ticket-line__option">
         + {{ line.addOns.join(', ') }}
       </small>
     </span>

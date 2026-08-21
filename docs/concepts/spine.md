@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -157,15 +157,15 @@ contract.
 | Menu ordering                 | `menu-ordering.md`           | Menu route grammar, order models, and lifecycle composables                                         | One lifecycle is mapped; the older funnel tree remains migration debt                                                                               |
 | Place/Kitchen media           | `place-kitchen-media.md`     | Place/Kitchen models, projectors, media writers, and entity authority guard                         | Media ownership is shared; Place `identity_color`, legacy field names, and removal of Kitchen colour overrides remain a guarded migration           |
 | Finance                       | `finance.md`                 | Finance primitives, trusted fact producer, and `scripts/guards/finance.mjs`                         | Money and immutable fact ownership are guarded; new producers require dated authoritative operations                                                |
-| Marketplace                   | `marketplace.md`             | `fireux-marketplace` models, trusted handlers, and closed raw Rules                                 | Supplier-backed App listings and supplier-partitioned offline Order requests are the accepted boundary                                              |
-| Supplier                      | `suppliers.md`               | `SupplierEntity`, atomic onboarding, Supplier Workspace, and root/App-support guards                  | Supplier owns identity and Items; the unshipped marketplace Store/Offer prototype is being replaced outright                                        |
+| Marketplace                   | `marketplace.md`             | `fireux-marketplace` models, trusted handlers, and closed raw Rules                                 | Marketplace Store is a root Workspace Entity and owns Store Team, Offers, and Orders                                                                |
+| Supplier                      | `suppliers.md`               | `SupplierEntity`, atomic onboarding, Supplier Workspace, and Workspace authority guards             | Supplier owns identity, Team, Catalogue, Ingredients, and Items; Store publication remains marketplace-owned                                        |
 | Collection manager            | `collection-manager.md`      | Shared directory components, manager siblings, and CSS guards                                       | Ownership roles are clear; presentation classes still need deliberate classification                                                                |
 | Card                          | `card-family.md`             | Prop-driven Card variants plus `scripts/guards/components.mjs`                                      | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt                                                               |
 | Core models                   | `core-models.md`             | Canonical model files plus entity-authority and user-app-access guards                              | App, Ecosystem, User/AppUser, and Project ownership is explicit; named stored projections remain migration debt                                     |
 | Product language              | `product-language.md`        | Atomic source fields, child surfaces, operation catalogues, and parent composition                  | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review                                                            |
 | Landing templates             | `landing-templates.md`       | Canonical Kitchen projection, package-owned six-scene page, two brand injections, and focused guard | Template One is the baseline; a future real Template Two may enter as a separately named proving sibling before deliberate differentiation          |
 | Theming                       | `theming.md`                 | Core primitives, App/Kitchen brand ownership, injections, templates, and seller doorways            | FireUX owns canonical previews; FireUX and Misebox may offer one shared theme family                                                                |
-| Blog                          | `blog.md`                    | Blog root/public projection plus `scripts/guards/blog-authority.mjs`                                | Blog truth and ecosystem-wide publication are shared; authored story language remains owner-defined                                                 |
+| Blog                          | `blog.md`                    | Blog root/directory response plus `scripts/guards/blog-authority.mjs`                               | Blog truth and ecosystem-wide publication are shared; authored story language remains owner-defined                                                 |
 | Search visibility             | `search-visibility.md`       | Core SEO runtime plus `scripts/guards/seo-spine.mjs`                                                | Route identity, private indexing, and bounded Jobs discovery are guarded; metadata adoption, entity graphs, and multilingual URLs remain incomplete |
 | Create                        | `create.md`                  | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts`                                   | Create families are classified; plan metadata and optional-field handling are not aligned                                                           |
 | Tool provider                 | `tool-provider.md`           | Core registry, loader, iframe protocol, and provider APIs                                           | Transport is shared; Go QR wrappers and dogfood config contain duplication                                                                          |
@@ -211,9 +211,9 @@ contract.
 
 - Align Entity Directory presentation where no product reason explains the current
   split.
-- Resolve route identity per public-detail entity instead of changing all
+- Resolve route identity per Entity Detail instead of changing all
   `[id]` and `[slug]` routes mechanically.
-- Keep Kitchen root, required Place, and access-only AppKitchen composition
+- Keep Kitchen root, required Place, and root-owned Team composition
   strict; do not reintroduce pre-release compatibility identity.
 - Reconcile descriptive entities with the executable matrix before adding more
   root or scoped ceremony.

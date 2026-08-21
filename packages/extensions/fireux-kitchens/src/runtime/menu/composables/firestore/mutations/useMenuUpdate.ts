@@ -1,4 +1,3 @@
-import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
@@ -10,25 +9,16 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../kitchen/models/dish.model.ts'
-import {
-  MenuStorage as RootMenuStorage,
-  type MenuStatus,
-} from '../../../models/menu.model.ts'
+import { type MenuStatus } from '../../../models/menu.model.ts'
 import {
   type KitchenMenu as Menu,
   type KitchenMenuUpdateInput as MenuUpdateInput,
 } from '../../../models/kitchen-menu.model.ts'
 import { menuPath } from '../utils/paths'
-import {
-  menuRootEntryPatch,
-  menuRootEntryPatchFromSourceMenu,
-  menuRootEntrySourceIsCurrent,
-  readMenuRootEntryDocs,
-  readSingleStaleMenuRootEntryDoc,
-} from '../utils/root-entry'
 import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { assertMenuCanPublish } from './assertMenuCanPublish'
 import { renameKitchenMenuDocuments } from './renameKitchenMenuDocuments'
+import { syncMenuDirectory } from './syncMenuDirectory'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -92,69 +82,7 @@ export function useMenuUpdate(
     if (!path || !id) throw new Error('Menu id is required')
     await updateDocument<Menu>(path, id, patch)
 
-    let rootMenuPatch = menuRootEntryPatch(patch as Record<string, unknown>)
-    if (!Object.keys(rootMenuPatch).length) return
-
-    const db = resolveDb()
-    let rootMenuDocs = await readMenuRootEntryDocs({
-      db,
-      appId,
-      kitchenId,
-      menuId: id,
-    })
-    if (!rootMenuDocs.length) {
-      rootMenuDocs = await readSingleStaleMenuRootEntryDoc({
-        db,
-        appId,
-        kitchenId,
-        scopedMenuCollectionPath: path,
-        menuId: id,
-      })
-      if (rootMenuDocs.length) {
-        const menuSnap = await getDoc(doc(db, path, id))
-        if (menuSnap.exists()) {
-          rootMenuPatch = menuRootEntryPatchFromSourceMenu({
-            scopedMenuCollectionPath: path,
-            menuId: id,
-            data: menuSnap.data() as Record<string, unknown>,
-          })
-        }
-      }
-    }
-    const needsSourceRepair = rootMenuDocs.some(
-      (docSnap) =>
-        !menuRootEntrySourceIsCurrent(
-          docSnap.data() as Record<string, unknown>,
-          {
-            scopedMenuCollectionPath: path,
-            menuId: id,
-          }
-        )
-    )
-
-    if (needsSourceRepair) {
-      const menuSnap = await getDoc(doc(db, path, id))
-      if (menuSnap.exists()) {
-        rootMenuPatch = {
-          ...rootMenuPatch,
-          ...menuRootEntryPatchFromSourceMenu({
-            scopedMenuCollectionPath: path,
-            menuId: id,
-            data: menuSnap.data() as Record<string, unknown>,
-          }),
-        }
-      }
-    }
-
-    await Promise.all(
-      rootMenuDocs.map((docSnap) =>
-        updateDocument<Record<string, unknown>>(
-          RootMenuStorage.rootCollection,
-          docSnap.id,
-          rootMenuPatch
-        )
-      )
-    )
+    await syncMenuDirectory({ kitchenId, menuId: id })
   }
 
   async function renameMenu(
@@ -171,7 +99,7 @@ export function useMenuUpdate(
     assertTenantMenuRoute(nextId)
     if (nextId === oldId) return { id: oldId, changed: false }
 
-    return renameKitchenMenuDocuments({
+    const result = await renameKitchenMenuDocuments({
       appId,
       db: resolveDb(),
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
@@ -180,6 +108,12 @@ export function useMenuUpdate(
       menuId: oldId,
       nextMenuId: nextId,
     })
+    await syncMenuDirectory({
+      kitchenId,
+      menuId: nextId,
+      previousMenuId: oldId,
+    })
+    return result
   }
 
   async function setMenuStatus(

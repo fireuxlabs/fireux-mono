@@ -54,7 +54,7 @@ import { run as runBuenoHostBrandAssets } from './guards/buenohost-brand-assets.
 import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runEntityUpdateContract } from './guards/entity-update-contract.mjs'
-import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
+import { run as runWorkspaceEntityAuthority } from './guards/workspace-entity-authority.mjs'
 import { run as runEntityManagement } from './guards/entity-management.mjs'
 import { run as runAppUserAccess } from './guards/user-app-access.mjs'
 import { run as runKitchenEntity } from './guards/kitchen-entity.mjs'
@@ -116,7 +116,7 @@ const guards = [
   { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'entity-update-contract', run: runEntityUpdateContract },
-  { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
+  { key: 'workspace-entity-authority', run: runWorkspaceEntityAuthority },
   { key: 'entity-management', run: runEntityManagement },
   { key: 'user-app-access', run: runAppUserAccess },
   { key: 'kitchen-entity', run: runKitchenEntity },

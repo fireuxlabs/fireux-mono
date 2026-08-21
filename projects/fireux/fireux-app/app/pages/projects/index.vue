@@ -109,9 +109,9 @@
 
 <script setup lang="ts">
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePlatformProjectDirectory } from '../../composables/usePlatformProjectDirectory'
+import { useProjectDirectory } from '../../composables/useProjectDirectory'
 
-const { projects, pending, error, refresh } = usePlatformProjectDirectory()
+const { projects, pending, error, refresh } = useProjectDirectory()
 const statusLabel = (value: unknown) => {
   const status = String(value ?? '').trim()
   return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Draft'

@@ -8,12 +8,7 @@ import {
 } from '../core/usePortfolioWorkspace'
 
 export function usePortfolioWorkspaceOverview() {
-  const {
-    portfolios,
-    selection,
-    runtime,
-    actions,
-  } = usePortfolioWorkspace()
+  const { portfolios, selection, runtime, actions } = usePortfolioWorkspace()
 
   const overview = useWorkspaceOverview<PortfolioWorkspaceEntity>({
     selectedEntity: selection.portfolio,
@@ -30,7 +25,9 @@ export function usePortfolioWorkspaceOverview() {
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
-      ids: overview.multiple.value.items.map((item) => normalizeString(item?.id)),
+      ids: overview.multiple.value.items.map((item) =>
+        normalizeString(item?.id)
+      ),
     },
   }))
 

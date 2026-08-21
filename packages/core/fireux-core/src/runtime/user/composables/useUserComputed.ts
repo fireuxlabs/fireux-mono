@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: keep auth, read error, and missing states distinct.
 import { computed } from '#imports'
 import type { User } from '../models/user.model.ts'
-import type { CurrentAppMembershipDto } from '../../server/utils/public-projection/public-dto.types.ts'
+import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
@@ -36,7 +36,7 @@ const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as {
-    value: CurrentAppMembershipDto | null | undefined
+    value: CurrentAppMembership | null | undefined
   }
 
   const {

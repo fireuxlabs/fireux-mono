@@ -3,5 +3,5 @@ export type PropertyOnboardingCompleteResult = {
   ok: true
   property_id: string
   created_root: boolean
-  created_app_support: boolean
+  created_team_member: boolean
 }

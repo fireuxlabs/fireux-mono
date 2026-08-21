@@ -184,10 +184,15 @@ export function safeMenuOrderReceiptItems(
     const unitPrice = finiteMoney(item.unit_price_chf)
     const total = finiteMoney(item.total_chf)
     if (
-      !id || !label ||
-      !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99 ||
-      unitPrice <= 0 || total <= 0
-    ) return []
+      !id ||
+      !label ||
+      !Number.isSafeInteger(quantity) ||
+      quantity < 1 ||
+      quantity > 99 ||
+      unitPrice <= 0 ||
+      total <= 0
+    )
+      return []
 
     const addOns = (Array.isArray(item.add_ons) ? item.add_ons : [])
       .slice(0, 50)
@@ -197,29 +202,33 @@ export function safeMenuOrderReceiptItems(
         const addOnLabel = boundedText(addOn.label, 256)
         if (!addOnId || !addOnLabel) return []
 
-        return [{
-          id: addOnId,
-          label: addOnLabel,
-          price: finiteMoney(addOn.price),
-        }]
+        return [
+          {
+            id: addOnId,
+            label: addOnLabel,
+            price: finiteMoney(addOn.price),
+          },
+        ]
       })
 
-    return [{
-      id,
-      ...(sourceItemId ? { source_item_id: sourceItemId } : {}),
-      ...(menuId ? { menu_id: menuId } : {}),
-      label,
-      quantity,
-      unit_price_chf: unitPrice,
-      total_chf: total,
-      ...(addOns.length ? { add_ons: addOns } : {}),
-      ...(boundedText(item.variant_label, 256)
-        ? { variant_label: boundedText(item.variant_label, 256) }
-        : {}),
-      ...(boundedText(item.variant_id, 256)
-        ? { variant_id: boundedText(item.variant_id, 256) }
-        : {}),
-    }]
+    return [
+      {
+        id,
+        ...(sourceItemId ? { source_item_id: sourceItemId } : {}),
+        ...(menuId ? { menu_id: menuId } : {}),
+        label,
+        quantity,
+        unit_price_chf: unitPrice,
+        total_chf: total,
+        ...(addOns.length ? { add_ons: addOns } : {}),
+        ...(boundedText(item.variant_label, 256)
+          ? { variant_label: boundedText(item.variant_label, 256) }
+          : {}),
+        ...(boundedText(item.variant_id, 256)
+          ? { variant_id: boundedText(item.variant_id, 256) }
+          : {}),
+      },
+    ]
   })
 }
 
@@ -235,9 +244,10 @@ function readStoredSession(
   if (!order) return null
 
   const rawStatus = stored.status
-  const status = rawStatus === null || rawStatus === undefined
-    ? null
-    : safeMenuOrderTrackingStatus(rawStatus, orderType)
+  const status =
+    rawStatus === null || rawStatus === undefined
+      ? null
+      : safeMenuOrderTrackingStatus(rawStatus, orderType)
   if (rawStatus && !status) return null
 
   return {
@@ -289,7 +299,8 @@ function safeCollection(
   value: unknown
 ): NonNullable<CreatedMenuOrder['collection']> | null {
   const collection = record(value)
-  if (collection.mode !== 'queue' && collection.mode !== 'scheduled') return null
+  if (collection.mode !== 'queue' && collection.mode !== 'scheduled')
+    return null
 
   return {
     mode: collection.mode,
@@ -301,7 +312,7 @@ function safeCollection(
 
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 }
 

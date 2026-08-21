@@ -9,19 +9,29 @@ function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
 }
 
-export async function resolveKitchenWorkspaceTargetIds(
-  uid: string,
-  membership: Record<string, unknown>
-) {
-  const role = text(membership.role)
-  if (role !== 'admin' && role !== 'user') return []
+export async function resolveKitchenWorkspaceTargetIds(uid: string) {
   const snapshot = await getRuntimeFirestore()
-    .doc(`users/${uid}/private/targets`)
+    .collectionGroup('team')
+    .where('user_id', '==', uid)
+    .where('status', '==', 'active')
     .get()
-  const rawIds = snapshot.data()?.kitchen_ids
-  const ids = Array.isArray(rawIds)
-    ? [...new Set(rawIds.map(text).filter((id) => id && !id.includes('/')))]
-    : []
+  const ids = [
+    ...new Set(
+      snapshot.docs.flatMap((member) => {
+        const parts = member.ref.path.split('/')
+        if (
+          parts.length !== 4 ||
+          parts[0] !== 'kitchens' ||
+          parts[2] !== 'team' ||
+          parts[3] !== uid ||
+          text(member.get('user_id')) !== uid
+        ) {
+          return []
+        }
+        return [parts[1]]
+      })
+    ),
+  ]
 
   if (ids.length > KITCHEN_CONSOLE_TARGET_LIMIT) {
     conflict('Kitchen workspace targets exceed the supported limit.')

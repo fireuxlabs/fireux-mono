@@ -2,42 +2,44 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Property root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
+import {
+  FireuxWorkspaceTeamMemberModel,
+  type FireuxWorkspaceTeamMember,
+} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown>
-    ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? WidenLiteral<U>[]
+        : T extends Record<string, unknown>
+          ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+          : T
 
 /**
  * Family: Property
- * Storage: canonical root property plus an app-scoped support record
- * Owner app scope: Property workspace / product shell
+ * Storage: canonical root Property with root-owned Team, operations, and protected support
  * Scope: BuenoHost-style property information records
  *
  * Decision note:
- * - Root means canonical identity, not automatically public-readable.
+ * - Root means canonical identity; protected fields remain separate.
  * - BuenoHost can use Property without Portfolio.
  * - Property owns its optional Portfolio relationship through `portfolio_id`.
- * - Access belongs only to AppProperty.
+ * - Access belongs to `properties/{propertyId}/team/{userId}`.
  * - Guest-manual secrets use a separate private support record so access-list
  *   reads never download operational credentials.
  */
 export const PropertyStorage = {
-  shape: 'root-and-app-support',
+  shape: 'root',
   root: 'properties/{propertyId}',
-  appSupport: 'apps/{appId}/properties/{propertyId}',
   rootCollection: 'properties',
-  appSupportCollection: 'properties',
   idParam: 'propertyId',
 } as const
 
@@ -46,27 +48,26 @@ export const PropertyEntity = defineFireuxEntity({
   name: 'Property',
   family: ['property', 'workspace-entity'],
   identity: 'root',
-  authority: 'owning-app-database',
-  appSupport: 'access-record',
+  authority: 'domain-database',
+  appSupport: 'none',
   workspace: true,
   root: PropertyStorage.root,
-  appSupportPath: PropertyStorage.appSupport,
 })
 
-export const AppPropertyStorage = {
+export const PropertyTeamStorage = {
   shape: 'scoped',
-  path: PropertyStorage.appSupport,
-  collection: PropertyStorage.appSupportCollection,
-  parent: 'app',
-  idParam: PropertyStorage.idParam,
+  path: 'properties/{propertyId}/team/{userId}',
+  collection: 'team',
+  parent: 'property',
+  idParam: 'userId',
 } as const
 
 export const PropertyManualStorage = {
   shape: 'scoped-support',
-  path: 'apps/{appId}/properties/{propertyId}/private/manual',
+  path: 'properties/{propertyId}/private/manual',
   collection: 'private',
   documentId: 'manual',
-  parent: 'app-property',
+  parent: 'property',
   propertyIdParam: PropertyStorage.idParam,
 } as const
 
@@ -194,11 +195,11 @@ export type Property = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-export const AppPropertyModel = {
-  ...FireuxAppAccessRecordModel,
+export const PropertyTeamMemberModel = {
+  ...FireuxWorkspaceTeamMemberModel,
 } as const
 
-export type AppProperty = FireuxAppAccessRecord
+export type PropertyTeamMember = FireuxWorkspaceTeamMember
 
 export type PropertyCreateInput = {
   id?: string
@@ -211,9 +212,4 @@ export type PropertyCreateInput = {
 
 export type PropertyUpdateInput = Partial<
   Pick<Property, 'slug' | 'portfolio_id' | 'place_id' | 'identity' | 'status'>
->
-
-export type AppPropertyCreateInput = Pick<
-  AppProperty,
-  'operator_ids' | 'team_ids' | 'join_requests'
 >

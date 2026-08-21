@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: route every structured family through fixed-user Admin validation.
 
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileRootUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/httpsUrl'
@@ -54,8 +54,8 @@ const STRUCTURED_FIELDS: StructuredField[] = [
 export function useProfessionalUpdate(
   profile?: ProfileRefs<Professional> | null
 ) {
-  const base = useProfileRootUpdateBase<Professional>(
-    ProfessionalStorage.rootCollection,
+  const base = useProfileUpdateBase<Professional>(
+    ProfessionalStorage.document,
     profile
   )
   const { uploadImage } = useImageStorage()
@@ -64,11 +64,11 @@ export function useProfessionalUpdate(
     patch: Partial<Professional>,
     options: UpdateOptions = {}
   ) => {
-    await base.updateCoreProfile(patch, options)
+    await base.updateProfile(patch, options)
   }
 
   const assertStructuredTotal = (field: StructuredField, nextCount: number) => {
-    const current = profile?.coreProfile?.value
+    const current = profile?.profile?.value
     if (!current) {
       throw new Error(
         'Load the Professional profile before updating its lists.'
@@ -203,7 +203,7 @@ export function useProfessionalUpdate(
     options: UpdateOptions = {}
   ) => {
     const id = await base.resolveUid(
-      ProfessionalStorage.rootCollection,
+      ProfessionalStorage.document,
       options.id
     )
     const path = `professionals/${id}/image/current`

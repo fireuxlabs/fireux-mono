@@ -1,7 +1,7 @@
 # Marketplace
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -12,41 +12,39 @@ Firestore Rules remain authority.
 
 ## Classification and storage
 
-The current Store/Offer implementation is an unshipped prototype, not a
-legacy contract. Supplier identity and saleable item truth belong to
-`fireux-suppliers`; the prototype will be replaced outright rather than kept
-behind compatibility routes or adapters.
+Marketplace Store is a root Workspace Entity because it has independent
+identity, Team, operations, and a future Dashboard/Console lifecycle. The
+current App-nested prototype is migration input, not a compatibility contract.
 
-- `MarketplaceListing` is App-scoped publication configuration for one
-  canonical Supplier. Its document id and `supplier_id` are the Supplier id.
-- A Listing selects canonical Supplier Items and owns only channel-specific
-  sections, editorial copy, fulfilment choices, and publication state.
-- `MarketplaceOrder` is a private App-scoped operational Record partitioned
-  by Supplier and references one authenticated buyer.
-- Canonical marketplace paths are
-  `apps/{appId}/marketplace-listings/{supplierId}` and
-  `apps/{appId}/marketplace-orders/{orderId}`. Supplier Items remain at
-  `suppliers/{supplierId}/items/{supplierItemId}`.
+- `marketplace-stores/{storeId}` owns Store identity and management.
+- `marketplace-stores/{storeId}/team/{uid}` owns Store access.
+- `marketplace-stores/{storeId}/offers/{offerId}` owns Store publication of a
+  canonical Supplier Item.
+- `marketplace-stores/{storeId}/orders/{orderId}` owns Store fulfilment truth.
+- Supplier Items remain at `suppliers/{supplierId}/items/{supplierItemId}`.
+- Registered buyers are AppUsers and Orders reference their User uid. Guest
+  buyer details remain on the Order.
 
 ## Authority
 
-- AppUser governs App access only. Buyer and seller are surfaces, not stored
-  account roles.
-- Supplier App-support operators grant Supplier management. App Admin remains
-  the marketplace publication and moderation authority; Listings do not own a
-  second seller-membership system.
-- Public browsers consume a bounded joined Supplier/Listing/Item projection. All
+- AppUser governs App membership only. Store Team governs Store access;
+  Supplier Team governs Supplier access. Buyer and seller are surfaces, not
+  stored account roles.
+- Current App Admin is an explicit override only for Stores managed by that
+  App. Offers do not own another seller-membership system.
+- Directory browsers consume bounded canonical Store, Supplier, and Item
+  records. All
   authoring, moderation and Order reads/writes use trusted fixed-runtime
   endpoints.
-- Public marketplace routes never merge source-authored preview sellers,
+- Marketplace directory routes never merge source-authored preview sellers,
   fixtures, or seed records into those projections. The directory renders its
   bounded published projection first. A signed-in current-App admin may then
   request the same bounded directory DTO with unpublished publication states;
   local development uses that all-record projection by default, matching the
   Kitchen directory preview convention. Deployed guests remain published-only,
-  and unpublished cards route to administration rather than a public detail
-  route. Canonical owner, editor, moderation and Offer fields never enter the
-  directory DTO.
+  and unpublished cards route to administration rather than a directory detail
+  route. Canonical Team, moderation, and protected Order fields never enter the
+  directory response.
 - Marketplace Orders are requests for offline collection or local delivery.
   They do not reuse KitchenOrder and do not create payment or FinancialFact
   truth.
@@ -73,4 +71,4 @@ families.
 
 The boundary is mapped in `docs/concepts/suppliers.md`: a marketplace
 listing references one canonical Supplier and selected Supplier Items, while
-the marketplace continues to own customer baskets, publication, and Orders.
+the Store continues to own customer baskets, publication, and Orders.

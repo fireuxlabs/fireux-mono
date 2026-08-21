@@ -79,11 +79,12 @@ export const makeOrder = (input: DemoOrderInput): KitchenOrder => {
     0
   )
   const reference = input.orderNumber ?? String(input.serviceNumber)
-  const handoffInstructions = input.handoff === 'tray'
-    ? 'Watch the screen for your tray number.'
-    : input.handoff === 'bag'
-      ? 'Collect your bag when your number is called.'
-      : 'Collect from the counter.'
+  const handoffInstructions =
+    input.handoff === 'tray'
+      ? 'Watch the screen for your tray number.'
+      : input.handoff === 'bag'
+        ? 'Collect your bag when your number is called.'
+        : 'Collect from the counter.'
 
   return {
     ...KitchenOrderDefaults,
@@ -129,13 +130,15 @@ export const makeOrder = (input: DemoOrderInput): KitchenOrder => {
       handoff_instructions: handoffInstructions,
       payment_methods: paymentMethods(input.orderType),
     },
-    fulfilment_match: input.orderType === 'eat_in' || input.orderType === 'takeaway'
-      ? {
-          type: 'counter',
-          reference,
-          handoff: input.handoff || (input.orderType === 'eat_in' ? 'tray' : 'bag'),
-        }
-      : {},
+    fulfilment_match:
+      input.orderType === 'eat_in' || input.orderType === 'takeaway'
+        ? {
+            type: 'counter',
+            reference,
+            handoff:
+              input.handoff || (input.orderType === 'eat_in' ? 'tray' : 'bag'),
+          }
+        : {},
     customer: {
       ...(input.customerName ? { name: input.customerName } : {}),
       ...(input.customerPhone ? { phone: input.customerPhone } : {}),

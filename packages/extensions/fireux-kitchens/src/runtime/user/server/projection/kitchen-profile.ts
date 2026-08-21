@@ -2,9 +2,9 @@
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: project exact Chef bounds with HTTPS-only images.
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core HTTPS utility module.
 import type {
-  PublicProfileHandlerConfig,
-  PublicProfileMapper,
-} from 'fireux-core/runtime/server/utils/public-projection/public-profile'
+  ProfileDirectoryConfig,
+  ProfileDirectoryMapper,
+} from 'fireux-core/runtime/user/server/directory/profile-directory'
 import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
 import { CHEF_GALLERY_MAX_ITEMS } from '../../models/chef.model.ts'
 
@@ -48,7 +48,7 @@ function gallery(value: unknown) {
   return mapped.length === value.length ? mapped : []
 }
 
-export const mapChefPublicProfile: PublicProfileMapper = (data, mode) => ({
+export const mapChefProfile: ProfileDirectoryMapper = (data, mode) => ({
   title: text(data.title, 120),
   summary: text(data.summary, 1_000),
   chef_bio: text(data.chef_bio, 4_000),
@@ -63,7 +63,7 @@ export const mapChefPublicProfile: PublicProfileMapper = (data, mode) => ({
     : {}),
 })
 
-export const mapDriverPublicProfile: PublicProfileMapper = (data) => {
+export const mapDriverProfile: ProfileDirectoryMapper = (data) => {
   const rawCoverage =
     data.coverage &&
     typeof data.coverage === 'object' &&
@@ -82,14 +82,12 @@ export const mapDriverPublicProfile: PublicProfileMapper = (data) => {
   }
 }
 
-export const publicChefProfileConfig: PublicProfileHandlerConfig = {
-  collection: 'chefs',
+export const chefProfileDirectory: ProfileDirectoryConfig = {
   kind: 'chef',
-  mapProfile: mapChefPublicProfile,
+  mapProfile: mapChefProfile,
 }
 
-export const publicDriverProfileConfig: PublicProfileHandlerConfig = {
-  collection: 'drivers',
+export const driverProfileDirectory: ProfileDirectoryConfig = {
   kind: 'driver',
-  mapProfile: mapDriverPublicProfile,
+  mapProfile: mapDriverProfile,
 }

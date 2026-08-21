@@ -4,7 +4,7 @@ import {
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
-import type { CompanyView } from '../../models/company-public.model.ts'
+import type { CompanyView } from '../../models/company-directory.model.ts'
 import { CompanyStorage } from '../../models/company.model.ts'
 
 export namespace CompanyCard {

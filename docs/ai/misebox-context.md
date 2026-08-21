@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-08-20
-Ref: e23268507
+Ref: d1a7d5eec
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -19,7 +19,7 @@ Before each task:
    `packages/ecosystem/fireux-misebox` and the relevant app under
    `projects/misebox/*`.
 4. Use the context router in `AGENTS.md`. For kitchen, menu, ordering,
-   workspace, Firestore, public surfaces, layouts, or app configuration, read the
+   workspace, Firestore, directory surfaces, layouts, or app configuration, read the
    smallest relevant `docs/concepts/*.md` map before inspecting code.
 5. Find the nearest working sibling in the same FireUX family before proposing
    a Misebox-specific implementation.
@@ -50,20 +50,19 @@ Before each task:
   root collection and excludes only a root whose boolean `visibility` is
   explicitly `false` for ordinary visitors. A signed-in configured developer
   or current-App admin receives the same root collection with hidden rows
-  included and labelled `Hidden`; App attachment and AppKitchen support never
+  included and labelled `Hidden`; App attachment and Team authority never
   decide collection membership. The collection groups projected Kitchens by
   canonical `management.mode`: Root, Workspace and App. Demo status never changes
   that classification. Each collection row
   joins its required Place only to resolve Place-owned presentation. Kitchen
   detail resolves the same root and Place by authored slug during SSR; browser
-  code does not read raw root or AppKitchen documents.
+  code does not read broader authority records.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
   creates the required Place first, then creates the same-id canonical Kitchen
   root. Management is explicit: `root` has no Workspace, `workspace` resolves to
   the Misebox ecosystem App (`misebox-app`), and `app` names a dedicated
-  App with `app_id`. The same-id AppKitchen record owns only access,
-  relationship, and audit state. Neither relationship nor support substitutes
-  for the root.
+  App with `app_id`. The Kitchen owns `team/{uid}`, Team requests, operations,
+  and protected support beneath its root. Management never changes those paths.
 - A Kitchen root uses the same document ID as its required Place and owns
   `slug`, boolean `visibility`, sparse `identity`, `assets`, exact
   `management`, and audit stamps.
@@ -79,8 +78,8 @@ Before each task:
   media. Current Kitchen `assets.backdrop_color` data is migration input, not a
   second colour authority; bounded Kitchen reads receive the linked Place
   colour instead of copying or overriding it.
-- AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests` plus
-  audit stamps. Kitchen owns its `theme`, `menus`, `orders`, `tables`,
+- Kitchen Team owns bounded membership, roles, permissions, and audit stamps.
+  Kitchen owns its `theme`, `menus`, `orders`, `tables`,
   `fulfilment`, and `integrations` configuration. A missing Kitchen theme may
   be seeded from the owning App's reviewed semantic palette during trusted
   attachment; existing Kitchen colours are preserved. The Kitchen Identity
@@ -90,7 +89,7 @@ Before each task:
   then dedicated App controls only for `management.mode === 'app'`. App writes
   retain only the palette delta over Kitchen and exactly two typography family
   inputs; the five App masters remain the universal readiness gate.
-  Public Menu colour presentation resolves an optional KitchenMenu
+  Menu colour presentation resolves an optional KitchenMenu
   `theme.palette` over the Kitchen palette, deleting the Menu field
   to restore inheritance. The bounded DTO exposes the effective palette and
   its `menu | kitchen | place-default` source. The Workspace palette remains
@@ -104,9 +103,9 @@ Before each task:
   its published content is projected into the primary Menu using the primary
   renderer's presentation.
   Authenticated Workspace target projection requires the exact root, Place,
-  matching AppKitchen support, and scoped App membership. `operator_ids`
-  grants Kitchen mutation authority; `team_ids` grants target/read membership
-  only. Current App admins remain the explicit administrative override.
+  exact `team/{uid}` authority, and scoped App membership when management names
+  an App. Team roles/permissions grant Kitchen capabilities. Current App admins
+  remain the explicit administrative override for Kitchens managed by that App.
 - Media editors accept files rather than arbitrary URL text. Trusted upload
   and mutation boundaries own exact Kitchen asset targets and reject another
   bucket, external host, or wrong entity path. Kitchen assets never use the
@@ -115,8 +114,8 @@ Before each task:
 - `/places/<id>/edit`, `/kitchens/<locator>/edit`, and Kitchen Workspace Identity
   compose the same owner-level edit panels. The route framing may differ, but
   field ownership and mutation authority do not: Place media remains Place,
-  Kitchen identity/assets remain Kitchen, and Workspace/App settings remain on
-  their support or App owners.
+  Kitchen identity/assets, Team, and operations remain Kitchen-owned, while
+  App settings remain App-owned.
 - Supplier location follows a different owner contract:
   `Supplier.company_id -> Company`, with Company as a same-id role over Place.
   Supplier onboarding requires that complete relationship and validates both
@@ -134,14 +133,13 @@ Before each task:
 - Deanos Demo team members are Kitchen-shaped scenario records shared by the
   selected Kitchen's Team, Orders, and Finance projections. Operator audit
   stamps and transaction closers use stable team-member IDs; presentation
-  resolves names from that same scenario. Demo access ids live on a separate
-  read-only `AppKitchen`-shaped support fixture composed into the target
-  surface; they do not alter the Kitchen root or create Live membership.
-- Creating a new Kitchen root atomically creates the authenticated creator as
-  its first operational KitchenTeamMember, using the creator UID as the stable
-  member and User link. Connecting an existing Kitchen does not create an
-  operational member. AppKitchen `team_ids` and `operator_ids` remain Workspace
-  access authority and never substitute for Kitchen-owned Team records.
+  resolves names from that same scenario. Demo access uses read-only root-owned
+  Team fixtures composed into the target surface; it never creates Live
+  membership.
+- Creating a new Kitchen root atomically creates the authenticated creator at
+  `kitchens/{kitchenId}/team/{uid}` with owner/operator capability. Connecting
+  an existing Kitchen requires existing authority and does not manufacture a
+  Team record.
 - A named Kitchen member may exist without a User. An operator can create a
   named member and can correct that member's displayed name through a narrow
   trusted Server command. Name edits preserve the member document id, slug,
@@ -150,8 +148,9 @@ Before each task:
   seven-day, one-use member invitation whose stored record contains only a
   hash of the URL secret. Acceptance is a dedicated authenticated Server
   command: it atomically links the accepting UID to the existing member,
-  consumes the invitation, and adds that UID to AppKitchen `team_ids` without
-  adding `operator_ids`. Reissuing an invitation replaces older pending links.
+  consumes the invitation, and creates or links the exact Kitchen Team record
+  with its reviewed role and permissions. Reissuing an invitation replaces
+  older pending links.
 - `gross_sale` records the current authoritative total without claiming a VAT
   split, net revenue, or cash settlement. Reporting is derived; P&L remains
   absent until its required producing domains and accounting contract exist.
@@ -217,7 +216,7 @@ Before each task:
   Misebox owns the original client-initialized puff treatment and its
   reduced-motion state.
 - The ecosystem package must not own tenant-id branches, Kitchen/Menu source
-  defaults, or a competing public Menu renderer. Public Menu routes, layout,
+  defaults, or a competing Menu renderer. Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
 - `fireux-kitchens` owns the shared Bringli Supplier-directory endpoint used by
   its Supply surfaces. `fireux-places` owns Google provider resolution, browser
@@ -422,11 +421,11 @@ Before each task:
   status, priority, station, and checklist progress remain orthogonal task
   metadata, while unclassified legacy records remain visible under Unsorted.
   Live task storage is the dedicated Kitchen-owned
-  `apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}` collection. The older
+  `kitchens/{kitchenId}/mise-tasks/{taskId}` collection. The older
   `mise` collections contain legacy Prep Item documents and must not be read,
   normalized, secured, or migrated as Mise tasks. Canonical Prep Items are
   Kitchen-scoped Entities at
-  `apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}` and own inputs,
+  `kitchens/{kitchenId}/prep-items/{prepItemId}` and own inputs,
   yield, method, and presentation. A task links them explicitly through
   `prep_item_ids`; it never treats those ids as task dependencies. The
   protected legacy migration is complete. Do not restore `mise` documents or
@@ -451,7 +450,7 @@ Before each task:
   Kitchen catalogue and its operational vocabulary.
   The preview header keeps one `Open full Workspace` doorway visible across
   every operation. It selects Deanos as the read-only Demo Kitchen before
-  entering `/workspace/kitchen`; the public preview does not acquire Workspace
+  entering `/workspace/kitchen`; the landing preview does not acquire Workspace
   target authority. The Kitchen index continues to present the bounded Live
   and Demo target choosers together, so this doorway never hides the user's
   real Kitchens.
@@ -589,9 +588,9 @@ Before each task:
   generation.
 - Kitchen Sproochli participation is configured only on the canonical root
   Kitchen through the trusted Kitchen Workspace endpoint. Shared Menu projections
-  and the bounded public Kitchen detail show its Default/language trigger;
+  and the bounded Kitchen detail show its Default/language trigger;
   a language selected on the Kitchen route follows the visitor into its
-  published Menu doorways. AppKitchen remains access-only. Structured Menus
+  published Menu doorways. Structured Menus
   use the query selection as their sole input and the Menu server returns one
   final `default`, `translated`, or `unavailable` projection. Default never
   translates or contacts the provider. Misebox SSR reads readiness, complete
@@ -640,7 +639,8 @@ Before each task:
   root names, taxonomy, lifecycle, parents, or images.
 - Interlaken Essen onboarding keeps AppUser limited to App governance,
   capability, and lifecycle. Locality and offer presentation belong to the
-  app-private `apps/interlaken-essen/marketplace-profiles/{uid}` record; the
+  User-owned
+  `users/{uid}/profiles/marketplace/app-state/interlaken-essen` record; the
   trusted project endpoint owns strict validation and writes that profile with
   the AppUser `onboarding_status` transition in one transaction. The live
   contract is in the project's `app/content/marketplace-profile.ts` and
@@ -648,18 +648,16 @@ Before each task:
 - Interlaken Essen's `/mis` route is a project-owned personal marketplace home,
   not a Core Dashboard or Workspace. It reuses Core authentication, avatar, User,
   and AppUser state. Its buyer surface may store sparse private settings such
-  as `delivery_address` on the existing app-private marketplace profile through
+  as `delivery_address` on the existing User-owned marketplace App state through
   the fixed-runtime authenticated `/api/marketplace/account` projection.
-  The current `fireux-marketplace` App-scoped Store and Store-owned Offer
-  records are an unshipped prototype being replaced outright by
-  Supplier-backed marketplace listings; they are not a compatibility contract.
-  Do not extend them with Supplier identity, media, catalogue, or item
-  management. Marketplace remains the owner of App-local publication,
-  customer baskets, and private offline Order Records. Seller
-  visibility and writes derive from bounded Store owner/editor authority, not
+  Marketplace Store is a root Workspace Entity at
+  `marketplace-stores/{storeId}` with root-owned Team, Offers, and Orders. The
+  App-nested prototype is migration input only and receives no compatibility
+  adapter. Do not copy Supplier identity, media, catalogue, or Item truth into
+  Store. Seller visibility and writes derive from bounded Store Team authority, not
   the obsolete prototype profile `offers_enabled` presentation flag. App Admin creates
   Stores and assigns existing App members; an unassigned draft cannot enter
-  review. Public Store/Offer reads and every private mutation use the package's
+  review. Store/Offer directory reads and every protected mutation use the package's
   bounded trusted endpoints; raw browser Firestore access is closed.
   Marketplace Orders must not reuse
   KitchenOrder outside Menu fulfilment or create payment/FinancialFact truth.

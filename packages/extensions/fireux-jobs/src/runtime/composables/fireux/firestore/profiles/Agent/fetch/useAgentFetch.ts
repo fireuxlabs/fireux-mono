@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: expose the exact projected Agent directory source.
-import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
-import type { PublicAgentDirectoryProfilePayload } from '../../../../../../models/profiles/Agent/Agent.model'
+import { useProfileDirectoryCollection } from 'fireux-core/runtime/user/composables/profile/useProfileDirectoryCollection'
+import type { AgentDirectoryProfilePayload } from '../../../../../../models/profiles/Agent/Agent.model'
 
 // Agent profiles for UI use. Public identity joins canonical User by profile uid.
 export function useAgentFetch() {
@@ -12,7 +12,7 @@ export function useAgentFetch() {
     pending,
     error,
     outcome,
-  } = usePublicProfileCollection<PublicAgentDirectoryProfilePayload>({
+  } = useProfileDirectoryCollection<AgentDirectoryProfilePayload>({
     collection: 'agents',
   })
 

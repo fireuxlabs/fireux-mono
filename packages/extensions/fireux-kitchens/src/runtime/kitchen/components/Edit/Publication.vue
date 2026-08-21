@@ -28,7 +28,10 @@
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenPublish } from '../../composables/firestore/mutations/useKitchenPublish'
-import { readKitchenIdentity, readKitchenVisibility } from '../../utils/kitchen-spine'
+import {
+  readKitchenIdentity,
+  readKitchenVisibility,
+} from '../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -40,7 +43,9 @@ const toast = useToastify()
 const { publishKitchen, unpublishKitchen } = useKitchenPublish()
 const saving = ref(false)
 const slug = computed(() => String(props.kitchen?.slug ?? '').trim())
-const displayName = computed(() => readKitchenIdentity(props.kitchen).displayName)
+const displayName = computed(
+  () => readKitchenIdentity(props.kitchen).displayName
+)
 const isVisible = computed(() => readKitchenVisibility(props.kitchen))
 const statusTitle = computed(() =>
   isVisible.value ? 'Visible in directory' : 'Hidden from directory'

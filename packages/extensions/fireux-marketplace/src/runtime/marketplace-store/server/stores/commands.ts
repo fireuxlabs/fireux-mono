@@ -2,7 +2,10 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverAppMarketplaceStoresTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  serverMarketplaceStoresTarget,
+  serverMarketplaceStoreTeamMembersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { MarketplaceStore } from '../../models/marketplace.model.ts'
 import type { MarketplaceMutationResponse } from '../../models/marketplace-api.model.ts'
 import {
@@ -29,28 +32,44 @@ export async function createMarketplaceStore(
   const current = await requireMarketplaceAdmin(event)
   const intent = badRequest(() => normalizeMarketplaceStoreCreate(input))
   const ref = storeRef(current.db, current.appId, intent.slug)
-  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  const stores = serverMarketplaceStoresTarget
+  const team = serverMarketplaceStoreTeamMembersTarget(intent.slug)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const existing = await mutations.read(stores, intent.slug)
+    const [existing, teamMember] = await Promise.all([
+      mutations.read(stores, intent.slug),
+      mutations.read(team, current.uid),
+    ])
     if (existing.exists) {
       throw createError({
         statusCode: 409,
         statusMessage: 'That Store slug is already in use.',
       })
     }
+    if (teamMember.exists) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Store Team membership exists without its root.',
+      })
+    }
     mutations.create(stores, intent.slug, {
       id: intent.slug,
-      app_id: current.appId,
+      management: { mode: 'app', app_id: current.appId },
       ...intent,
       publication_state: 'draft',
-      owner_ids: [],
-      editor_ids: [],
       submitted_at: null,
       published_at: null,
       created: serverAuditStamp({
         by: current.uid,
         appId: current.appId,
       }),
+      updated: serverAuditStamp({ by: current.uid }),
+    })
+    mutations.create(team, current.uid, {
+      user_id: current.uid,
+      role: 'owner',
+      permissions: [],
+      status: 'active',
+      created: serverAuditStamp({ by: current.uid, appId: current.appId }),
       updated: serverAuditStamp({ by: current.uid }),
     })
   })
@@ -68,7 +87,7 @@ export async function patchMarketplaceStore(
   )
   const patch = badRequest(() => normalizeMarketplaceStorePatch(input))
   const ref = storeRef(current.db, current.appId, storeId)
-  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  const stores = serverMarketplaceStoresTarget
   if (patch.fulfilment_methods) {
     const existing = canonicalStore(await ref.get())
     assertCanManageStore(existing, current)
@@ -114,9 +133,13 @@ export async function submitMarketplaceStore(
     marketplaceDocumentId(rawStoreId, 'Store id')
   )
   const ref = storeRef(current.db, current.appId, storeId)
-  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  const stores = serverMarketplaceStoresTarget
+  const team = serverMarketplaceStoreTeamMembersTarget(storeId)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const snapshot = await mutations.read(stores, storeId)
+    const [snapshot, teamMembers] = await Promise.all([
+      mutations.read(stores, storeId),
+      mutations.readAll<Record<string, unknown>>(team, 100),
+    ])
     const store = canonicalGuardedStore(storeId, snapshot)
     assertCanManageStore(store, current)
     if (store.publication_state !== 'draft') {
@@ -132,7 +155,13 @@ export async function submitMarketplaceStore(
           'Choose collection or local delivery before submitting the Store.',
       })
     }
-    if (!store.owner_ids.length) {
+    if (
+      !teamMembers.some(
+        (member) =>
+          String(member.data.status || '').trim() === 'active' &&
+          String(member.data.role || '').trim() === 'owner'
+      )
+    ) {
       throw createError({
         statusCode: 409,
         statusMessage:

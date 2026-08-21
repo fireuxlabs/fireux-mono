@@ -17,33 +17,25 @@ import {
 import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
 
 export function useKitchenWorkspaceMise() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
+  const demoScenario = computed(() =>
+    findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
   )
-  const demoScenario = computed(() => findKitchenWorkspaceDemoScenario(
-    demoData.data.value,
-    kitchenId.value
-  ))
   const stationNames = computed<Readonly<Record<string, string>>>(() =>
     Object.fromEntries(
       (demoScenario.value?.stations ?? [])
-        .map(station => [
+        .map((station) => [
           String(station.id || '').trim(),
           String(station.name || '').trim(),
         ])
-        .filter(([stationId, stationName]) =>
-          Boolean(stationId && stationName)
-        )
+        .filter(([stationId, stationName]) => Boolean(stationId && stationName))
     )
   )
   const demoMenuService = useKitchenWorkspaceDemoMenuService(demoScenario)
@@ -56,10 +48,9 @@ export function useKitchenWorkspaceMise() {
     error: miseError,
     outcome: miseOutcome,
     collectionPath: fetchedCollectionPath,
-  } =
-    useKitchenMiseCollection(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
+  } = useKitchenMiseCollection(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const workspaceMiseTasks = computed(() =>
     runtime.isDemo.value
@@ -69,21 +60,19 @@ export function useKitchenWorkspaceMise() {
       : fetchedMiseTasks.value
   )
   const pending = computed(() =>
-    runtime.isDemo.value
-      ? demoData.pending.value
-      : misePending.value
+    runtime.isDemo.value ? demoData.pending.value : misePending.value
   )
   const error = computed(() =>
-    runtime.isDemo.value
-      ? demoData.error.value
-      : miseError.value
+    runtime.isDemo.value ? demoData.error.value : miseError.value
   )
   const outcome = computed(() => {
     if (pending.value) return 'pending' as const
     if (error.value) return 'error' as const
     if (!kitchenId.value) return 'idle' as const
     if (!runtime.isDemo.value) return miseOutcome.value
-    return workspaceMiseTasks.value.length ? 'ready' as const : 'empty' as const
+    return workspaceMiseTasks.value.length
+      ? ('ready' as const)
+      : ('empty' as const)
   })
   const collectionPath = computed(() =>
     runtime.isDemo.value
@@ -122,10 +111,11 @@ export function useKitchenWorkspaceMise() {
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: workspaceMiseTasks.value.length,
-    demoMenuAvailability: demoMenuService.cascade.value?.menus.map(menu => ({
-      ...menu,
-      inService: demoMenuService.isMenuInService(menu.id),
-    })) ?? [],
+    demoMenuAvailability:
+      demoMenuService.cascade.value?.menus.map((menu) => ({
+        ...menu,
+        inService: demoMenuService.isMenuInService(menu.id),
+      })) ?? [],
     pending: pending.value,
     outcome: outcome.value,
     loadError: Boolean(error.value),

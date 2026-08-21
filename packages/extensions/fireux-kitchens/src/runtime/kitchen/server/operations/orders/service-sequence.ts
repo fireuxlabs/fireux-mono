@@ -6,7 +6,7 @@ import {
   type GuardedServerTransaction,
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
-  serverCustomerOrdersTarget,
+  serverUserOrdersTarget,
   serverKitchenOrderServiceTarget,
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -27,7 +27,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 export const kitchenOrderServiceStatePath = (input: {
   appId: string
   kitchenId: string
-}) => `apps/${input.appId}/kitchens/${input.kitchenId}/order-service/current`
+}) => `kitchens/${input.kitchenId}/order-service/current`
 
 export async function nextKitchenOrderServiceSequence(
   mutations: GuardedServerTransaction,
@@ -37,7 +37,7 @@ export async function nextKitchenOrderServiceSequence(
     now: Timestamp
   }
 ): Promise<KitchenOrderServiceSequence> {
-  const services = serverKitchenOrderServiceTarget(input.appId, input.kitchenId)
+  const services = serverKitchenOrderServiceTarget(input.kitchenId)
   const snap = await mutations.read(services, 'current')
   const current = snap.data || {}
   const id = text(current.service_id) || `service-${input.now.toMillis()}`
@@ -126,13 +126,13 @@ export async function commitKitchenOrderWithServiceSequence<
       sequence,
     })
     mutations.create(
-      serverKitchenOrdersTarget(input.appId, input.kitchenId),
+      serverKitchenOrdersTarget(input.kitchenId),
       input.orderId,
       numbered.payload
     )
     if (input.linkedRecord) {
       mutations.create(
-        serverCustomerOrdersTarget(input.appId, input.linkedRecord.customerUid),
+        serverUserOrdersTarget(input.linkedRecord.customerUid),
         input.linkedRecord.orderId,
         input.linkedRecord.payload
       )
@@ -147,8 +147,8 @@ export async function endKitchenOrderService(input: {
   appId: string
   kitchenId: string
 }) {
-  const services = serverKitchenOrderServiceTarget(input.appId, input.kitchenId)
-  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
+  const services = serverKitchenOrderServiceTarget(input.kitchenId)
+  const orders = serverKitchenOrdersTarget(input.kitchenId)
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [snap, activeOrders] = await Promise.all([
       mutations.read(services, 'current'),

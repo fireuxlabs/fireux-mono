@@ -4,9 +4,7 @@
       <template #header>
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-list-checks" class="size-4 text-muted" />
-          <div class="text-base font-semibold text-highlighted">
-            Setup
-          </div>
+          <div class="text-base font-semibold text-highlighted">Setup</div>
         </div>
       </template>
 
@@ -81,8 +79,8 @@ const props = defineProps<{
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const source = computed(() => (props.kitchen || {}) as Record<string, any>)
-const kitchenTitle = computed(() =>
-  clean(source.value.display_name || source.value.name) || 'Kitchen'
+const kitchenTitle = computed(
+  () => clean(source.value.display_name || source.value.name) || 'Kitchen'
 )
 const coverImage = computed(() => clean(source.value.cover_image))
 const tagline = computed(() => clean(source.value.tagline))

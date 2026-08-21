@@ -17,9 +17,10 @@ export function useBlogFetch() {
     if (!slug) {
       throw new Error('Blog post slug is required')
     }
-    const source = firestoreFetchDoc<BlogPost>(BlogPostStorage.collection, slug) as Ref<
-      BlogPost | null | undefined
-    >
+    const source = firestoreFetchDoc<BlogPost>(
+      BlogPostStorage.collection,
+      slug
+    ) as Ref<BlogPost | null | undefined>
     return computed(() => {
       const post = source.value
       if (!post || isBlogPostInRuntimeScope(post, fireux)) return post

@@ -10,6 +10,7 @@ import {
   MarketplaceOfferStorage,
   MarketplaceOrderStorage,
   MarketplaceStoreStorage,
+  MarketplaceStoreTeamStorage,
   type MarketplaceOffer,
   type MarketplaceOrder,
   type MarketplaceStore,
@@ -35,6 +36,7 @@ export type MarketplaceMemberContext = {
   role: MemberRole
   appId: string
   db: Firestore
+  managedStoreIds: ReadonlySet<string>
 }
 
 export const text = (value: unknown) => String(value ?? '').trim()
@@ -109,20 +111,28 @@ export function membershipRef(db: Firestore, appId: string, uid: string) {
   return db.doc(`apps/${appId}/users/${uid}`)
 }
 
-export function storesRef(db: Firestore, appId: string) {
-  return appRef(db, appId).collection(MarketplaceStoreStorage.collection)
+export function storesRef(db: Firestore, _appId: string) {
+  return db.collection(MarketplaceStoreStorage.collection)
 }
 
 export function storeRef(db: Firestore, appId: string, storeId: string) {
   return storesRef(db, appId).doc(storeId)
 }
 
+export function storeTeamRef(store: DocumentReference) {
+  return store.collection(MarketplaceStoreTeamStorage.collection)
+}
+
+export function storeAppId(store: MarketplaceStore) {
+  return store.management.mode === 'app' ? store.management.app_id : ''
+}
+
 export function offersRef(store: DocumentReference) {
   return store.collection(MarketplaceOfferStorage.collection)
 }
 
-export function ordersRef(db: Firestore, appId: string) {
-  return appRef(db, appId).collection(MarketplaceOrderStorage.collection)
+export function ordersRef(store: DocumentReference) {
+  return store.collection(MarketplaceOrderStorage.collection)
 }
 
 export function validMemberRole(snapshot: DocumentSnapshot): MemberRole | '' {
@@ -148,7 +158,29 @@ export async function requireMarketplaceMember(
       statusMessage: 'A valid current App membership is required.',
     })
   }
-  return { uid, role, appId: scope.appId, db }
+  const teamMemberships = await db
+    .collectionGroup(MarketplaceStoreTeamStorage.collection)
+    .where('user_id', '==', uid)
+    .limit(STORE_LIMIT + 1)
+    .get()
+  if (teamMemberships.size > STORE_LIMIT) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Store Team membership exceeds the supported limit.',
+    })
+  }
+  const managedStoreIds = new Set(
+    teamMemberships.docs.flatMap((member) => {
+      const parent = member.ref.parent.parent
+      const teamRole = text(member.get('role'))
+      return parent?.parent.id === MarketplaceStoreStorage.collection &&
+        text(member.get('status')) === 'active' &&
+        (teamRole === 'owner' || teamRole === 'operator')
+        ? [parent.id]
+        : []
+    })
+  )
+  return { uid, role, appId: scope.appId, db, managedStoreIds }
 }
 
 export async function requireMarketplaceAdmin(
@@ -168,18 +200,14 @@ export function canManageStore(
   store: MarketplaceStore,
   current: MarketplaceMemberContext
 ) {
-  return (
-    current.role === 'admin' ||
-    store.owner_ids.includes(current.uid) ||
-    store.editor_ids.includes(current.uid)
-  )
+  return current.role === 'admin' || current.managedStoreIds.has(store.id)
 }
 
 export function assertCanManageStore(
   store: MarketplaceStore,
   current: MarketplaceMemberContext
 ) {
-  if (store.app_id !== current.appId || !canManageStore(store, current)) {
+  if (storeAppId(store) !== current.appId || !canManageStore(store, current)) {
     throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
   }
 }
@@ -189,7 +217,7 @@ export function privateRead(event: H3Event) {
   setHeader(event, 'Vary', 'Authorization')
 }
 
-export function publicRead(event: H3Event) {
+export function cacheMarketplaceDirectoryRead(event: H3Event) {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control':

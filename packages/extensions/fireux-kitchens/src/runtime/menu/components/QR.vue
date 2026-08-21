@@ -40,29 +40,21 @@
 
     <div v-else class="menu-qr__content">
       <header class="menu-qr__header">
-        <div
-          v-if="kitchenLogoImageUrl"
-          class="menu-qr__brand"
-        >
+        <div v-if="kitchenLogoImageUrl" class="menu-qr__brand">
           <img
             :src="kitchenLogoImageUrl"
             :alt="kitchenName ? `${kitchenName} logo` : 'Kitchen logo'"
-          >
+          />
         </div>
         <p class="menu-qr__eyebrow">{{ kitchenName || 'Menu' }}</p>
         <h1 id="menu-qr-title" class="menu-qr__title">
           {{ menuName }}
         </h1>
-        <p class="menu-qr__instruction">
-          Scan to explore the menu
-        </p>
+        <p class="menu-qr__instruction">Scan to explore the menu</p>
       </header>
 
       <div class="menu-qr__frame">
-        <div
-          class="menu-qr__code"
-          :aria-busy="!qrReady && !qrError"
-        >
+        <div class="menu-qr__code" :aria-busy="!qrReady && !qrError">
           <div
             v-show="qrReady"
             ref="qrContainer"
@@ -76,7 +68,7 @@
             class="menu-qr__code-brand"
             aria-hidden="true"
           >
-            <img :src="kitchenLogoImageUrl" alt="">
+            <img :src="kitchenLogoImageUrl" alt="" />
           </div>
 
           <p v-if="qrError" class="menu-qr__code-state" role="alert">
@@ -94,10 +86,7 @@
         </div>
       </div>
 
-      <a
-        class="menu-qr__destination"
-        :href="menuUrl"
-      >
+      <a class="menu-qr__destination" :href="menuUrl">
         {{ menuUrl }}
       </a>
 
@@ -134,14 +123,7 @@
 import { setResponseStatus, useRequestURL, useSeoMeta } from '#imports'
 import type QRCodeStyling from 'qr-code-styling'
 import type { Options as QRCodeStylingOptions } from 'qr-code-styling'
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useMenu, type MenuLoadFailure } from '../composables/useMenu'
 import type { MenuRouteContext } from '../models/menu-context.model.ts'
 import type { MenuRouteScope } from '../../kitchen/utils/kitchen-menu-route'
@@ -149,13 +131,16 @@ import { menuManifestSupportsContext } from '../utils/menu-context'
 
 type QrWatchState = readonly [string, MenuLoadFailure | null, boolean]
 
-const props = withDefaults(defineProps<{
-  menuId: string
-  menuContext?: MenuRouteContext
-  menuRouteScope: MenuRouteScope
-}>(), {
-  menuContext: 'generic',
-})
+const props = withDefaults(
+  defineProps<{
+    menuId: string
+    menuContext?: MenuRouteContext
+    menuRouteScope: MenuRouteScope
+  }>(),
+  {
+    menuContext: 'generic',
+  }
+)
 
 const requestUrl = useRequestURL()
 const qrContainer = ref<HTMLElement | null>(null)
@@ -188,20 +173,22 @@ const menuUrl = computed(() =>
 
 await ready
 
-const menuName = computed(() =>
-  manifestMenu.value?.content.name || documentMenu.value?.name || 'Menu'
+const menuName = computed(
+  () => manifestMenu.value?.content.name || documentMenu.value?.name || 'Menu'
 )
-const kitchenName = computed(() =>
-  manifestMenu.value?.presentation.kitchenName ||
-  documentMenu.value?.kitchenName ||
-  ''
+const kitchenName = computed(
+  () =>
+    manifestMenu.value?.presentation.kitchenName ||
+    documentMenu.value?.kitchenName ||
+    ''
 )
 const kitchenLogoImageUrl = computed(() =>
   String(
     manifestMenu.value?.presentation.kitchenLogoImageUrl ||
-    (documentMenu.value as Record<string, unknown> | null)?.kitchenLogoImageUrl ||
-    (documentMenu.value as Record<string, unknown> | null)?.logo_image_url ||
-    ''
+      (documentMenu.value as Record<string, unknown> | null)
+        ?.kitchenLogoImageUrl ||
+      (documentMenu.value as Record<string, unknown> | null)?.logo_image_url ||
+      ''
   ).trim()
 )
 const contextAvailable = computed(() => {
@@ -223,8 +210,8 @@ const qrFailure = computed<MenuLoadFailure | null>(() => {
     description: 'This menu is not available for the requested entry context.',
   }
 })
-const hasMenu = computed(() =>
-  renderKind.value !== 'unavailable' && !qrFailure.value
+const hasMenu = computed(
+  () => renderKind.value !== 'unavailable' && !qrFailure.value
 )
 
 if (import.meta.server && qrFailure.value) {
@@ -324,11 +311,11 @@ useSeoMeta({
   title: computed(() =>
     qrFailure.value ? qrFailure.value.title : `${menuName.value} QR`
   ),
-  description: computed(() =>
-    qrFailure.value?.description || `Printable QR for ${menuName.value}`
+  description: computed(
+    () => qrFailure.value?.description || `Printable QR for ${menuName.value}`
   ),
   robots: 'noindex, nofollow',
 })
 </script>
 
-<style scoped src="../assets/styles/menu-qr.css"></style>
+<style scoped src="./styles/menu-qr.css"></style>

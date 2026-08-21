@@ -35,7 +35,8 @@ export function useMenuOrderCollection(options: UseMenuOrderCollectionOptions) {
 
   async function submit(input: SubmitMenuOrderCollectionInput) {
     const sourceMenuId = text(input.sourceMenuId)
-    if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
+    if (!sourceMenuId || !input.lines.length)
+      throw new Error('The basket is empty.')
     const name = text(input.name)
     const phone = text(input.phone)
     const email = text(input.email)

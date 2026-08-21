@@ -5,11 +5,11 @@ export function useIngredientComputed(
   ingredient?: Ref<Ingredient | null | undefined>
 ) {
   const hasIngredient = computed(() => Boolean(ingredient?.value?.id))
-  const hasMissingName = computed(() =>
-    !String(ingredient?.value?.name || '').trim()
+  const hasMissingName = computed(
+    () => !String(ingredient?.value?.name || '').trim()
   )
-  const hasMissingSlug = computed(() =>
-    !String(ingredient?.value?.slug || '').trim()
+  const hasMissingSlug = computed(
+    () => !String(ingredient?.value?.slug || '').trim()
   )
   const displayName = computed(() =>
     String(

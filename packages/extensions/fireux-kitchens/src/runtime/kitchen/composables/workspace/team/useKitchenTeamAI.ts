@@ -1,4 +1,5 @@
 import { computed, onMounted, ref, watch } from 'vue'
+import { useState } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { kitchenOperationAgents } from '../../../models/operation-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
@@ -25,7 +26,8 @@ export function useKitchenTeamAI() {
 
   const aiTools = useKitchenTeamAITools()
   const kitchenWorkspace = useKitchenWorkspace()
-  const { kitchenId, teamMembers, pending, readOnly } = useKitchenWorkspaceTeam()
+  const { kitchenId, teamMembers, pending, readOnly } =
+    useKitchenWorkspaceTeam()
   const promptSuggestions = ref<string[]>([])
   const suggestionCache = useState<Record<string, string[]>>(
     'kitchen-team-ai-suggestions',

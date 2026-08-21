@@ -31,9 +31,11 @@
       color="neutral"
       variant="soft"
       :title="`No ${catalogue.plural} yet`"
-      :description="readOnly
-        ? `No ${catalogue.plural} are available in this read-only source.`
-        : `Create the first ${catalogue.singular} for this kitchen.`"
+      :description="
+        readOnly
+          ? `No ${catalogue.plural} are available in this read-only source.`
+          : `Create the first ${catalogue.singular} for this kitchen.`
+      "
     />
 
     <UAlert
@@ -44,10 +46,7 @@
       description="Try another search."
     />
 
-    <div
-      v-else
-      class="flex flex-wrap gap-3"
-    >
+    <div v-else class="flex flex-wrap gap-3">
       <WorkspaceKitchenOperationsDishesCardsCell
         v-for="dish in visibleDishes"
         :id="dish.id"
@@ -56,15 +55,9 @@
         :image-url="dish.image"
         :meta="kindLabel(dish)"
         :price-label="getPriceLabelForDish(dish.id)"
-        :data-service-state="
-          isDishInService(dish.id) ? 'active' : 'inactive'
-        "
+        :data-service-state="isDishInService(dish.id) ? 'active' : 'inactive'"
         class="w-32 sm:w-36"
-        :class="
-          isDishInService(dish.id)
-            ? ''
-            : 'opacity-45 saturate-50'
-        "
+        :class="isDishInService(dish.id) ? '' : 'opacity-45 saturate-50'"
         action
         @action="openQuickLook(dish)"
       />
@@ -78,14 +71,14 @@
       @after-leave="selectedDish = null"
     />
 
-<DevDebugPanel
-  object-origin="fetched"
+    <DevDebugPanel
+      object-origin="fetched"
       launcher
       include-route
       :title="`Kitchen ${catalogue.plural} debug`"
       :context="`Kitchen ${catalogue.plural} workspace · ${catalogue.path}`"
       :objects="dishDebug"
-  :derived="{}"
+      :derived="{}"
       :default-open="false"
     />
   </section>
@@ -114,12 +107,10 @@ const selectedDish = ref<Dish | null>(null)
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const searchable = (dish: Dish) =>
-  [
-    dish.name,
-    dish.description,
-    dish.item_kind,
-    dish.is_deal ? 'deal' : '',
-  ].map(clean).join(' ').toLowerCase()
+  [dish.name, dish.description, dish.item_kind, dish.is_deal ? 'deal' : '']
+    .map(clean)
+    .join(' ')
+    .toLowerCase()
 const kindLabel = (dish: Dish) =>
   dish.is_deal ? 'Deal' : dish.item_kind === 'drink' ? 'Drink' : 'Food'
 

@@ -102,7 +102,7 @@ import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
-import type { PublicUserDto } from '../../server/utils/public-projection/public-dto.types'
+import type { UserDetail } from '../../user/models/user-directory.model.ts'
 import type { User } from '../../user/models/user.model.ts'
 import { UserDefaults } from '../../user/models/user.model.ts'
 
@@ -121,12 +121,12 @@ definePageMeta({
   description: 'Developer view for Users (collection-first).',
 })
 
-const publicUsers = useFetch<{
-  items: PublicUserDto[]
-  users?: PublicUserDto[]
-}>('/api/public/users', { key: 'dev-public-users', query: { limit: 200 } })
+const directoryUsers = useFetch<{
+  items: UserDetail[]
+  users?: UserDetail[]
+}>('/api/users', { key: 'dev-users', query: { limit: 200 } })
 const users = computed<User[]>(() => {
-  const payload = publicUsers.data.value
+  const payload = directoryUsers.data.value
   const items = Array.isArray(payload?.users)
     ? payload.users
     : (payload?.items ?? [])
@@ -141,7 +141,7 @@ const users = computed<User[]>(() => {
       }) as User
   )
 })
-const usersError = publicUsers.error
+const usersError = directoryUsers.error
 
 const { role } = useFireUXConfig()
 const userModelRuntime = UserDefaults

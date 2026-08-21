@@ -66,11 +66,11 @@ type CompletedOrderItemMix = {
 
 const menuItemById = new Map(
   deanosKitchenDemoMenu.menuSections.flatMap(({ items }) =>
-    items.map(item => [item.id, item] as const)
+    items.map((item) => [item.id, item] as const)
   )
 )
 const dishById = new Map(
-  deanosKitchenDemoMenu.dishes.map(dish => [dish.id, dish] as const)
+  deanosKitchenDemoMenu.dishes.map((dish) => [dish.id, dish] as const)
 )
 
 function catalogItem(
@@ -80,18 +80,18 @@ function catalogItem(
   const menuItem = menuItemById.get(sourceItemId)
   const dish = menuItem ? dishById.get(menuItem.dish_id) : undefined
   const priceOption = variantLabel
-    ? menuItem?.price_options.find(option => option.label === variantLabel)
+    ? menuItem?.price_options.find((option) => option.label === variantLabel)
     : undefined
   const unitPriceMinor = Math.round(
     Number(priceOption?.price ?? menuItem?.price ?? 0) * 100
   )
   if (
-    !menuItem
-    || !dish
-    || Boolean(variantLabel && !priceOption)
-    || (dish.item_kind !== 'food' && dish.item_kind !== 'drink')
-    || !Number.isSafeInteger(unitPriceMinor)
-    || unitPriceMinor <= 0
+    !menuItem ||
+    !dish ||
+    Boolean(variantLabel && !priceOption) ||
+    (dish.item_kind !== 'food' && dish.item_kind !== 'drink') ||
+    !Number.isSafeInteger(unitPriceMinor) ||
+    unitPriceMinor <= 0
   ) {
     throw new Error(
       `Deanos completed Order item ${sourceItemId} has no valid Menu source.`
@@ -140,8 +140,7 @@ const deanosServiceId = (date: string) => `deanos-service-${date}`
 export const deanosKitchenDemoOrderNumber = (
   date: string,
   serviceNumber: number
-) =>
-  `D${date.replaceAll('-', '')}-${String(serviceNumber).padStart(3, '0')}`
+) => `D${date.replaceAll('-', '')}-${String(serviceNumber).padStart(3, '0')}`
 
 const zurichOffsetForDemoDate = (date: string) =>
   date < '2026-03-29' ? '+01:00' : '+02:00'
@@ -186,10 +185,9 @@ function buildCompletedOrders(input: {
       items.push(line(deanosCompletedOrderItems.dirtyFries))
     }
     if (sequence % 4 === 1) {
-      items.push(line(
-        deanosCompletedOrderItems.onionRings,
-        sequence % 17 === 0 ? 2 : 1
-      ))
+      items.push(
+        line(deanosCompletedOrderItems.onionRings, sequence % 17 === 0 ? 2 : 1)
+      )
     }
     if (sequence % 6 === 2) {
       items.push(line(deanosCompletedOrderItems.shake))
@@ -199,9 +197,9 @@ function buildCompletedOrders(input: {
     }
 
     const completedMinute =
-      11 * 60
-      + 45
-      + Math.floor(index * 525 / Math.max(input.saleCount - 1, 1))
+      11 * 60 +
+      45 +
+      Math.floor((index * 525) / Math.max(input.saleCount - 1, 1))
     const placedMinute = completedMinute - 12
     const serviceNumber = index + 1
     const orderType = (['eat_in', 'takeaway', 'collection'] as const)[
@@ -211,10 +209,7 @@ function buildCompletedOrders(input: {
       deanosKitchenDemoTeam[
         (input.dayIndex + index) % deanosKitchenDemoTeam.length
       ]
-    const orderNumber = deanosKitchenDemoOrderNumber(
-      input.date,
-      serviceNumber
-    )
+    const orderNumber = deanosKitchenDemoOrderNumber(input.date, serviceNumber)
     const subtotalMinor = items.reduce(
       (total, item) => total + item.lineTotalMinor,
       0
@@ -255,18 +250,17 @@ function buildDeanosServices(): KitchenDemoService[] {
       .slice(0, 10)
     const weekday = new Date(`${date}T00:00:00.000Z`).getUTCDay()
     const saleCount =
-      baseSaleCountByWeekday[weekday]
-      + Math.floor(index / 45)
-      - 2
-      + (index * 7) % 9
-      - 4
-      + (index % 29 === 0 ? 9 : 0)
+      baseSaleCountByWeekday[weekday] +
+      Math.floor(index / 45) -
+      2 +
+      ((index * 7) % 9) -
+      4 +
+      (index % 29 === 0 ? 9 : 0)
     return {
       id: deanosServiceId(date),
       kitchenId: deanosKitchenDemoIdentity.kitchenId,
       date,
-      status:
-        date === DEANOS_KITCHEN_DEMO_AS_OF_DATE ? 'active' : 'completed',
+      status: date === DEANOS_KITCHEN_DEMO_AS_OF_DATE ? 'active' : 'completed',
       completedOrders: buildCompletedOrders({
         date,
         dayIndex: index,
@@ -279,7 +273,6 @@ function buildDeanosServices(): KitchenDemoService[] {
 export const deanosKitchenDemoServices = buildDeanosServices()
 
 export const deanosKitchenDemoCompletedOrders =
-  deanosKitchenDemoServices.flatMap(service => service.completedOrders)
+  deanosKitchenDemoServices.flatMap((service) => service.completedOrders)
 
-export const deanosKitchenDemoCurrentService =
-  deanosKitchenDemoServices.at(-1)!
+export const deanosKitchenDemoCurrentService = deanosKitchenDemoServices.at(-1)!

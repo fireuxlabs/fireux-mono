@@ -90,7 +90,7 @@ async function updateKitchenField(
 
 const handleName = (value: string) =>
   updateKitchenField(
-    { 'identity.name': value },
+    { 'identity.display_name': value },
     'Kitchen name updated',
     'Failed to update Kitchen name'
   )

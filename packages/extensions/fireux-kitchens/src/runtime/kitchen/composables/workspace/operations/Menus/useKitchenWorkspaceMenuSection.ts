@@ -25,7 +25,7 @@ import {
 const clean = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export type MenuSectionItemRow = {
@@ -45,22 +45,24 @@ export function useKitchenWorkspaceMenuSection() {
   const sectionId = useRouteParam('sectionId')
   const section = computed<MenuSection | null>(
     () =>
-      menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??
-      null
+      menuState.sections.value.find(
+        (item) => clean(item.id) === sectionId.value
+      ) ?? null
   )
   const demoData = useKitchenWorkspaceDemoData(menuState.isDemo)
-  const demoScenario = computed(() => findKitchenWorkspaceDemoScenario(
-    demoData.data.value,
-    menuState.kitchenId.value
-  ))
-  const demoMenu = computed(() => findKitchenWorkspaceDemoMenu(
-    demoScenario.value,
-    menuState.menuId.value
-  ))
+  const demoScenario = computed(() =>
+    findKitchenWorkspaceDemoScenario(
+      demoData.data.value,
+      menuState.kitchenId.value
+    )
+  )
+  const demoMenu = computed(() =>
+    findKitchenWorkspaceDemoMenu(demoScenario.value, menuState.menuId.value)
+  )
   const itemState = useMenuItemCollection(
     menuState.storageKitchenId,
-    computed(() => menuState.menu.value ? menuState.menuId.value : ''),
-    computed(() => section.value ? sectionId.value : ''),
+    computed(() => (menuState.menu.value ? menuState.menuId.value : '')),
+    computed(() => (section.value ? sectionId.value : '')),
     {
       kitchenCollectionPath: menuState.rootCollection,
       databaseId: menuState.databaseId,
@@ -77,16 +79,14 @@ export function useKitchenWorkspaceMenuSection() {
   const items = computed(() =>
     menuState.isDemo.value
       ? menuState.menu.value && section.value
-        ? demoMenu.value?.menuSections.find(
-            entry => clean(entry.section.id) === sectionId.value
-          )?.items ?? []
+        ? (demoMenu.value?.menuSections.find(
+            (entry) => clean(entry.section.id) === sectionId.value
+          )?.items ?? [])
         : []
       : itemState.items.value
   )
   const itemsPending = computed(() =>
-    menuState.isDemo.value
-      ? demoData.pending.value
-      : itemState.pending.value
+    menuState.isDemo.value ? demoData.pending.value : itemState.pending.value
   )
   const itemsCollectionPath = computed(() =>
     menuState.isDemo.value
@@ -121,27 +121,37 @@ export function useKitchenWorkspaceMenuSection() {
     if (!menuState.canWrite.value) throw new Error('This menu is read-only.')
   }
 
-  async function createItem(...args: Parameters<typeof itemMutations.createItem>) {
+  async function createItem(
+    ...args: Parameters<typeof itemMutations.createItem>
+  ) {
     assertCanWrite()
     return itemMutations.createItem(...args)
   }
 
-  async function updateItem(...args: Parameters<typeof itemMutations.updateItem>) {
+  async function updateItem(
+    ...args: Parameters<typeof itemMutations.updateItem>
+  ) {
     assertCanWrite()
     return itemMutations.updateItem(...args)
   }
 
-  async function archiveItem(...args: Parameters<typeof itemMutations.archiveItem>) {
+  async function archiveItem(
+    ...args: Parameters<typeof itemMutations.archiveItem>
+  ) {
     assertCanWrite()
     return itemMutations.archiveItem(...args)
   }
 
-  async function reorderItems(...args: Parameters<typeof itemMutations.reorderItems>) {
+  async function reorderItems(
+    ...args: Parameters<typeof itemMutations.reorderItems>
+  ) {
     assertCanWrite()
     return itemMutations.reorderItems(...args)
   }
 
-  async function updateDish(...args: Parameters<typeof dishMutations.updateDish>) {
+  async function updateDish(
+    ...args: Parameters<typeof dishMutations.updateDish>
+  ) {
     assertCanWrite()
     return dishMutations.updateDish(...args)
   }

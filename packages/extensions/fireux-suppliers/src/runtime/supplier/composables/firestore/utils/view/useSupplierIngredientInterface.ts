@@ -27,7 +27,9 @@ export namespace SupplierIngredientItemCard {
 }
 
 export function useSupplierIngredientInterface() {
-  function map(item: SupplierIngredientInterfaceItem): SupplierIngredientItemCard.Card {
+  function map(
+    item: SupplierIngredientInterfaceItem
+  ): SupplierIngredientItemCard.Card {
     const ingredientId = safeString(item.ingredient_id || item.id).trim()
     const title = safeString(item.label).trim()
     const path = safeString(item.path).trim()

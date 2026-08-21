@@ -26,11 +26,7 @@
               : 'border-default text-dimmed'
           "
         >
-          <UIcon
-            v-if="isDone(task)"
-            name="i-lucide-check"
-            class="size-3.5"
-          />
+          <UIcon v-if="isDone(task)" name="i-lucide-check" class="size-3.5" />
         </span>
 
         <span class="min-w-0 flex-1 space-y-1">
@@ -99,15 +95,11 @@ const isDone = (task: KitchenMiseTask) => {
   const source = task as Record<string, unknown>
   if (task.status === 'done') return true
   return Boolean(
-    source.done ||
-      source.checked ||
-      source.complete ||
-      source.completed
+    source.done || source.checked || source.complete || source.completed
   )
 }
 
-const taskTitle = (task: KitchenMiseTask) =>
-  normalizeString(task.title)
+const taskTitle = (task: KitchenMiseTask) => normalizeString(task.title)
 
 const taskDisplayTitle = (task: KitchenMiseTask) =>
   taskTitle(task) || 'Missing mise title'

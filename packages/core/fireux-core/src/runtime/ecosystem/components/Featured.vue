@@ -2,7 +2,9 @@
   <section v-if="featured.length" class="space-y-4">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div class="space-y-1">
-        <h2 class="text-2xl font-semibold text-highlighted">Featured ecosystems</h2>
+        <h2 class="text-2xl font-semibold text-highlighted">
+          Featured ecosystems
+        </h2>
         <p class="text-sm text-muted">
           Published ecosystem directory entries and their public websites.
         </p>
@@ -14,11 +16,7 @@
     </div>
 
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      <UCard
-        v-for="ecosystem in featured"
-        :key="ecosystem.id"
-        class="h-full"
-      >
+      <UCard v-for="ecosystem in featured" :key="ecosystem.id" class="h-full">
         <template #header>
           <div class="flex items-start gap-3">
             <UAvatar
@@ -46,13 +44,17 @@
 
         <div class="space-y-4">
           <p class="line-clamp-3 text-sm text-muted">
-            <span v-if="ecosystem.description">{{ ecosystem.description }}</span>
+            <span v-if="ecosystem.description">{{
+              ecosystem.description
+            }}</span>
             <span v-else class="italic">Description pending.</span>
           </p>
 
           <div class="flex flex-wrap gap-2">
             <UBadge color="neutral" variant="soft" size="xs">
-              {{ ecosystem.appCount }} app{{ ecosystem.appCount === 1 ? '' : 's' }}
+              {{ ecosystem.appCount }} app{{
+                ecosystem.appCount === 1 ? '' : 's'
+              }}
             </UBadge>
           </div>
         </div>
@@ -90,13 +92,16 @@
 import { computed } from 'vue'
 import type { EcosystemInterfaceInput } from '../composables/useEcosystemInterface'
 
-const props = withDefaults(defineProps<{
-  collection?: EcosystemInterfaceInput[]
-  featuredSlugs?: string[]
-}>(), {
-  collection: () => [],
-  featuredSlugs: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    collection?: EcosystemInterfaceInput[]
+    featuredSlugs?: string[]
+  }>(),
+  {
+    collection: () => [],
+    featuredSlugs: () => [],
+  }
+)
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const countApps = (appCount?: number) => {
@@ -108,9 +113,7 @@ const featured = computed(() =>
   props.featuredSlugs
     .map((slug) => clean(slug))
     .filter(Boolean)
-    .map((slug) =>
-      props.collection.find((entry) => clean(entry.id) === slug)
-    )
+    .map((slug) => props.collection.find((entry) => clean(entry.id) === slug))
     .filter((entry): entry is EcosystemInterfaceInput => Boolean(entry))
     .filter((entry) => clean(entry.status) === 'active')
     .map((entry) => {

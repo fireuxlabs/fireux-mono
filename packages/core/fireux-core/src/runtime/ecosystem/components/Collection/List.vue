@@ -15,10 +15,13 @@
 <script setup lang="ts">
 import type { EcosystemInterfaceCard } from '../../composables/useEcosystemInterface'
 
-withDefaults(defineProps<{
-  cards: EcosystemInterfaceCard[]
-  variant?: 'pill' | 'cell'
-}>(), {
-  variant: 'pill',
-})
+withDefaults(
+  defineProps<{
+    cards: EcosystemInterfaceCard[]
+    variant?: 'pill' | 'cell'
+  }>(),
+  {
+    variant: 'pill',
+  }
+)
 </script>

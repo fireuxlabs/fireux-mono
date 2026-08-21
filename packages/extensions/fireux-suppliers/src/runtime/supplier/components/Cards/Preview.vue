@@ -50,7 +50,13 @@ type Props = {
   showBody?: boolean
 } & Pick<
   SupplierCard.Card,
-  'avatarUrl' | 'title' | 'subtitle' | 'badges' | 'summary' | 'categoriesCsv' | 'locationsLabel'
+  | 'avatarUrl'
+  | 'title'
+  | 'subtitle'
+  | 'badges'
+  | 'summary'
+  | 'categoriesCsv'
+  | 'locationsLabel'
 >
 
 withDefaults(defineProps<Props>(), {

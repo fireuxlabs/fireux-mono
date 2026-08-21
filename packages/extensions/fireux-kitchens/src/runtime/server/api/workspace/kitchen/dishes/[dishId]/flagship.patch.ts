@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const isFlagship = body?.is_flagship === true
   const { db, uid } = await requireKitchenWriter(event, { appId, kitchenId })
   const collection = db.collection(
-    `apps/${appId}/kitchens/${kitchenId}/${DishStorage.collection}`
+    `kitchens/${kitchenId}/${DishStorage.collection}`
   )
   const target = collection.doc(dishId)
 

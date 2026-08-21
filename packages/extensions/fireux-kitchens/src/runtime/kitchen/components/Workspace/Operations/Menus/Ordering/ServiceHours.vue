@@ -4,7 +4,9 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">Menu service hours</h2>
+          <h2 class="text-base font-semibold text-highlighted">
+            Menu service hours
+          </h2>
           <p class="text-sm text-dimmed">
             The default hours inherited by Collection and other Menu surfaces.
           </p>
@@ -14,7 +16,10 @@
           <UBadge v-if="saveState" color="neutral" variant="soft">
             {{ saveState }}
           </UBadge>
-          <UBadge :color="menuServiceHours.windows.length ? 'success' : 'warning'" variant="soft">
+          <UBadge
+            :color="menuServiceHours.windows.length ? 'success' : 'warning'"
+            variant="soft"
+          >
             {{ sourceLabel }}
           </UBadge>
         </div>
@@ -33,18 +38,22 @@
         :color="kitchenOperationHours.windows.length ? 'neutral' : 'warning'"
         variant="soft"
         icon="i-lucide-clock"
-        :title="kitchenOperationHours.windows.length
-          ? 'Inherited from Kitchen operation hours'
-          : 'Kitchen operation hours are missing'"
-        :description="kitchenOperationHours.windows.length
-          ? kitchenHoursSummary
-          : 'Set Kitchen operation hours or use custom Menu hours.'"
+        :title="
+          kitchenOperationHours.windows.length
+            ? 'Inherited from Kitchen operation hours'
+            : 'Kitchen operation hours are missing'
+        "
+        :description="
+          kitchenOperationHours.windows.length
+            ? kitchenHoursSummary
+            : 'Set Kitchen operation hours or use custom Menu hours.'
+        "
       />
 
       <UFormField
         v-else
         label="Custom Menu hours"
-        help='One range per line, for example “Tuesday - Saturday 08:00 - 13:00”.'
+        help="One range per line, for example “Tuesday - Saturday 08:00 - 13:00”."
       >
         <UTextarea
           v-model="draft.hoursText"
@@ -58,7 +67,6 @@
       <p v-if="validationError" class="text-sm text-error" role="alert">
         {{ validationError }}
       </p>
-
     </div>
   </UCard>
 </template>
@@ -146,7 +154,10 @@ async function flushSave() {
   validationError.value = ''
 
   try {
-    if (draft.inheritKitchenHours && !kitchenOperationHours.value.windows.length) {
+    if (
+      draft.inheritKitchenHours &&
+      !kitchenOperationHours.value.windows.length
+    ) {
       throw new Error(
         'Kitchen operation hours are missing. Add them or use custom Menu hours.'
       )
@@ -171,9 +182,8 @@ async function flushSave() {
     saveState.value = 'Saved'
   } catch (error) {
     saveState.value = 'Save failed'
-    validationError.value = error instanceof Error
-      ? error.message
-      : 'Menu service hours are invalid.'
+    validationError.value =
+      error instanceof Error ? error.message : 'Menu service hours are invalid.'
   } finally {
     saving.value = false
     if (pendingSave) void flushSave()

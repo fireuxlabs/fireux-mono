@@ -10,7 +10,10 @@ import {
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
-export type MenuOrderKioskType = Extract<KitchenOrderType, 'eat_in' | 'takeaway'>
+export type MenuOrderKioskType = Extract<
+  KitchenOrderType,
+  'eat_in' | 'takeaway'
+>
 
 type UseMenuOrderKioskOptions = {
   kitchenId: MaybeRefOrGetter<string>
@@ -37,14 +40,18 @@ export function useMenuOrderKiosk(options: UseMenuOrderKioskOptions) {
 
   async function submit(input: SubmitMenuOrderKioskInput) {
     const sourceMenuId = text(input.sourceMenuId)
-    if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
+    if (!sourceMenuId || !input.lines.length)
+      throw new Error('The basket is empty.')
     const name = text(input.name)
     const phone = text(input.phone)
     const email = text(input.email)
 
     return lifecycle.submit({
       fulfilmentLabel: modeLabel,
-      paymentLabel: menuOrderPaymentLabel(options.orderType, input.paymentMethod),
+      paymentLabel: menuOrderPaymentLabel(
+        options.orderType,
+        input.paymentMethod
+      ),
       body: {
         channel: 'kiosk',
         order_type: options.orderType,

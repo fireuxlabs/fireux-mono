@@ -47,7 +47,7 @@ const definitions = {
   },
   team: {
     name: 'SupplierTeamAI',
-    contextProviders: [context('supplier.team', 'AppSupplier')],
+    contextProviders: [context('supplier.team', 'Supplier')],
   },
 } as const satisfies Record<
   SupplierAgentCapabilitySlug,
@@ -61,7 +61,7 @@ const definitions = {
 
 export const supplierOperationAgents = supplierAgentCapabilitySlugs.map(
   (slug) => {
-    const definition = definitions[slug]
+    const definition = definitions[slug as keyof typeof definitions]
     return defineFireuxOperationAgent({
       id: `supplier.${slug}.ai`,
       name: definition.name,

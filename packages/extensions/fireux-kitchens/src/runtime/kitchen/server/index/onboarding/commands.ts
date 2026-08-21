@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
-import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -9,7 +8,6 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -29,19 +27,15 @@ import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model.ts'
-import {
-  AppKitchenStorage,
-  KitchenStorage,
-} from '../../../models/kitchen.model.ts'
+import { KitchenStorage } from '../../../models/kitchen.model.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
   assertKitchenOnboardingManagement,
-  assertKitchenOnboardingSupportCapacity,
   kitchenOnboardingAccessDecision,
   onboardingRecord as record,
   onboardingText as text,
   readKitchenOnboardingManagement,
-  readKitchenOnboardingSupport,
+  requireOnboardingMemberRole,
 } from './onboarding-policy'
 import {
   readKitchenOnboardingActor as actor,
@@ -127,39 +121,33 @@ export async function previewKitchenOnboarding(
       current.ecosystem
     )
 
-  const [place, support] = await Promise.all([
+  const [place, teamMember] = await Promise.all([
     current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
-    current.db
-      .doc(
-        `apps/${current.appId}/${AppKitchenStorage.collection}/${locator.kitchenId}`
-      )
-      .get(),
+    current.db.doc(`kitchens/${locator.kitchenId}/team/${current.uid}`).get(),
   ])
   if (!place.exists) fail(409, 'The linked Place does not exist.')
   assertKitchenOnboardingPlaceDefaults(place.data() || {})
-  if (!locator.kitchen && support.exists) {
-    fail(409, 'Kitchen access exists without its canonical root.')
+  if (!locator.kitchen && teamMember.exists) {
+    fail(409, 'Kitchen Team membership exists without its Kitchen.')
   }
 
-  const supportData = support.exists ? support.data() || {} : null
-  const supportAuthority = readKitchenOnboardingSupport(supportData)
   const decision = kitchenOnboardingAccessDecision({
     kitchen: locator.kitchen,
-    support: supportAuthority,
+    teamMember: teamMember.exists ? teamMember.data() || {} : null,
     uid: current.uid,
     role: current.role,
     canCreate: current.canCreate,
   })
   const slug = text(locator.kitchen?.slug)
   const identity = record(locator.kitchen?.identity)
-  const displayName = text(identity.name)
+  const displayName = text(identity.display_name)
   const published = locator.kitchen?.visibility === true
   const paletteOverride = readBrandPalette(locator.kitchen?.brand_palette)
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
     existing: Boolean(locator.kitchen),
-    connected: support.exists,
+    connected: teamMember.exists,
     ...decision,
     ...(displayName ? { display_name: displayName } : {}),
     ...(locator.kitchen ? { published } : {}),
@@ -187,22 +175,21 @@ export async function completeKitchenOnboarding(
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
-  const supports = serverAppKitchensTarget(current.appId)
-  const teamMembers = serverKitchenTeamMembersTarget(
-    current.appId,
-    locator.kitchenId
-  )
+  const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, user, app, place, root, support] = await Promise.all([
+    const [membership, user, app, place, root, teamMember] = await Promise.all([
       mutations.read(memberships, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
-      mutations.read(supports, locator.kitchenId),
+      mutations.read(teamMembers, current.uid),
     ])
-    const role = memberRole(membership.exists, membership.data?.role)
+    const role = requireOnboardingMemberRole(
+      membership.exists,
+      membership.data?.role
+    )
     if (!place.exists) fail(409, 'The linked Place no longer exists.')
     assertKitchenOnboardingPlaceDefaults(place.data || {})
 
@@ -217,14 +204,12 @@ export async function completeKitchenOnboarding(
       fail(403, 'Kitchen creation is disabled for this App.')
     }
 
-    const supportData = support.exists ? support.data || {} : null
-    if (!rootData && supportData) {
-      fail(409, 'Kitchen access exists without its canonical root.')
+    if (!rootData && teamMember.exists) {
+      fail(409, 'Kitchen Team membership exists without its Kitchen.')
     }
-    const supportAuthority = readKitchenOnboardingSupport(supportData)
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
-      support: supportAuthority,
+      teamMember: teamMember.exists ? teamMember.data || {} : null,
       uid: current.uid,
       role,
       canCreate: current.canCreate,
@@ -232,12 +217,9 @@ export async function completeKitchenOnboarding(
     if (!decision.can_complete || decision.action === 'request_access') {
       fail(403, decision.message || 'Kitchen access is required.')
     }
-    if (supportAuthority && role === 'admin') {
-      assertKitchenOnboardingSupportCapacity(supportAuthority, current.uid)
-    }
 
     const createdRoot = !root.exists
-    const createdAppSupport = !support.exists
+    const createdTeamMember = !teamMember.exists
     const placeName = text(place.data?.name)
     const slug =
       text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
@@ -252,10 +234,12 @@ export async function completeKitchenOnboarding(
     const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
     const storedTheme = record(rootData?.theme)
     const existingWorkspacePalette = readWorkspacePalette(storedTheme.palette)
-    const maySeedWorkspace = createdAppSupport || role === 'admin'
+    const maySeedWorkspace = createdTeamMember || role === 'admin'
     const workspacePalette =
       existingWorkspacePalette ||
-      (appPalette && maySeedWorkspace ? workspacePaletteFromApp(appPalette) : null)
+      (appPalette && maySeedWorkspace
+        ? workspacePaletteFromApp(appPalette)
+        : null)
     const inheritedWorkspaceTheme = appPalette
       ? { palette: workspacePaletteFromApp(appPalette) }
       : null
@@ -279,7 +263,8 @@ export async function completeKitchenOnboarding(
         visibility: false,
         management: current.management,
         identity: {
-          name: displayName && displayName !== placeName ? displayName : '',
+          display_name:
+            displayName && displayName !== placeName ? displayName : '',
           tagline: '',
         },
         assets: {
@@ -302,22 +287,6 @@ export async function completeKitchenOnboarding(
       }
     }
 
-    if (createdAppSupport) {
-      mutations.create(supports, locator.kitchenId, {
-        operator_ids: [current.uid],
-        team_ids: [current.uid],
-        join_requests: [],
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
-        updated: serverAuditStamp({ by: current.uid }),
-      })
-    } else if (role === 'admin') {
-      mutations.update(supports, locator.kitchenId, {
-        operator_ids: FieldValue.arrayUnion(current.uid),
-        team_ids: FieldValue.arrayUnion(current.uid),
-        updated: serverAuditStamp({ by: current.uid }),
-      })
-    }
-
     if (
       !createdRoot &&
       inheritedWorkspaceTheme &&
@@ -329,7 +298,7 @@ export async function completeKitchenOnboarding(
       })
     }
 
-    if (createdRoot) {
+    if (createdTeamMember) {
       mutations.create(
         teamMembers,
         current.uid,
@@ -339,6 +308,7 @@ export async function completeKitchenOnboarding(
           kitchenId: locator.kitchenId,
           memberId: current.uid,
           name: creatorName,
+          role: createdRoot ? 'owner' : 'operator',
           slug: normalizeSlug(creatorName) || 'team-member',
           userId: current.uid,
         })
@@ -367,7 +337,7 @@ export async function completeKitchenOnboarding(
       place_id: locator.placeId,
       action: decision.action,
       created_root: createdRoot,
-      created_app_support: createdAppSupport,
+      created_team_member: createdTeamMember,
       ...(slug ? { slug } : {}),
       ...(createdRoot && Object.keys(paletteOverride).length
         ? { palette_override: paletteOverride }

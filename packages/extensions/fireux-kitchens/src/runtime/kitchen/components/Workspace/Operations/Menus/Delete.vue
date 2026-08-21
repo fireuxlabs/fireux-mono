@@ -2,12 +2,8 @@
   <UCard v-if="menu && canWrite">
     <template #header>
       <div>
-        <h2 class="text-base font-semibold text-highlighted">
-          Delete menu
-        </h2>
-        <p class="text-sm text-dimmed">
-          Permanently remove this Menu record.
-        </p>
+        <h2 class="text-base font-semibold text-highlighted">Delete menu</h2>
+        <p class="text-sm text-dimmed">Permanently remove this Menu record.</p>
       </div>
     </template>
 
@@ -31,14 +27,8 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenu'
 import { useMenuDelete } from '../../../../../menu/composables/firestore/mutations/useMenuDelete'
 
-const {
-  menu,
-  menuId,
-  kitchenId,
-  rootCollection,
-  databaseId,
-  canWrite,
-} = useKitchenWorkspaceMenu()
+const { menu, menuId, kitchenId, rootCollection, databaseId, canWrite } =
+  useKitchenWorkspaceMenu()
 
 const toast = useToastify()
 const { deleteMenu } = useMenuDelete({

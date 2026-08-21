@@ -1,8 +1,15 @@
 import { doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  useDocument,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { DishStorage, normalizeDish, type Dish } from '../../../../models/dish.model.ts'
+import {
+  DishStorage,
+  normalizeDish,
+  type Dish,
+} from '../../../../models/dish.model.ts'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 
@@ -26,9 +33,10 @@ export function useDishFetch(
   const resolvedKitchenId = computed(() =>
     String(unref(options.kitchenId) || selectedId.value || '').trim()
   )
-  const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      String(unref(options.kitchenCollectionPath) || '').trim() ||
+      resolveKitchenScopeCollectionPath(appId)
   )
   const collectionPath = computed(() =>
     resolvedKitchenId.value
@@ -43,7 +51,9 @@ export function useDishFetch(
 
   const { data, pending, error } = useDocument(dishRef, {
     ssrKey: computed(() =>
-      dishRef.value ? `${collectionPath.value}-${resolvedDishId.value}` : undefined
+      dishRef.value
+        ? `${collectionPath.value}-${resolvedDishId.value}`
+        : undefined
     ),
     transform: (docSnap: any) => {
       if (!docSnap?.exists?.()) return undefined

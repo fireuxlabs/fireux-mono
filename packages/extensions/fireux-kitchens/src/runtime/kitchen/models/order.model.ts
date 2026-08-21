@@ -15,7 +15,7 @@ export * from './order-lifecycle.model.ts'
 /**
  * Family: App-scoped Kitchen operation
  * Storage: scoped operational record
- * Path: apps/{appId}/kitchens/{kitchenId}/orders/{orderId}
+ * Path: kitchens/{kitchenId}/orders/{orderId}
  * Owner app scope: Kitchen within an app runtime
  *
  * Decision note:
@@ -24,7 +24,7 @@ export * from './order-lifecycle.model.ts'
  */
 export const KitchenOrderStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/orders/{orderId}',
+  path: 'kitchens/{kitchenId}/orders/{orderId}',
   collection: 'orders',
   parent: 'kitchen',
   idParam: 'orderId',

@@ -71,7 +71,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(stationModel, /export const KitchenStationDefaults\b/)
   assert.match(
     stationModel,
-    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/stations\/\{stationId\}'/
+    /path:\s*'kitchens\/\{kitchenId\}\/stations\/\{stationId\}'/
   )
   assert.match(miseModel, /export const KitchenMiseTaskRecord\s*=\s*defineFireuxEntity/)
   assert.match(miseModel, /kind:\s*'record'/)
@@ -79,7 +79,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(miseModel, /export const KitchenMiseTaskDefaults\b/)
   assert.match(
     miseModel,
-    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/mise-tasks\/\{taskId\}'/
+    /path:\s*'kitchens\/\{kitchenId\}\/mise-tasks\/\{taskId\}'/
   )
   assert.match(prepItemModel, /export const KitchenPrepItemEntity\s*=\s*defineFireuxEntity/)
   assert.match(prepItemModel, /kind:\s*'entity'/)
@@ -87,7 +87,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(prepItemModel, /export const KitchenPrepItemDefaults\b/)
   assert.match(
     prepItemModel,
-    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/prep-items\/\{prepItemId\}'/
+    /path:\s*'kitchens\/\{kitchenId\}\/prep-items\/\{prepItemId\}'/
   )
   assert.match(menuItemWriter, /Select a Dish from this Kitchen/)
   assert.match(menuItemWriter, /Menu Item identity and relationships cannot be changed/)

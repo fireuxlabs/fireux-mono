@@ -1,9 +1,6 @@
 <template>
   <div class="space-y-4">
-    <p
-      v-if="!sections.length"
-      class="text-sm text-dimmed"
-    >
+    <p v-if="!sections.length" class="text-sm text-dimmed">
       {{ emptyLabel }}
     </p>
 
@@ -28,10 +25,7 @@
               <p class="text-sm font-medium text-highlighted">
                 {{ item.name || 'Untitled item' }}
               </p>
-              <p
-                v-if="item.description"
-                class="text-xs text-dimmed"
-              >
+              <p v-if="item.description" class="text-xs text-dimmed">
                 {{ item.description }}
               </p>
               <div

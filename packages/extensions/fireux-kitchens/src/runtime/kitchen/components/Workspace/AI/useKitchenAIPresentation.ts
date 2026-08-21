@@ -43,20 +43,12 @@ export function useKitchenAIPresentation(
       () => options.agent?.operationSlug || options.operation || ''
     ),
     agentLabel: computed(
-      () =>
-        options.agentLabel ||
-        `Kitchen AI powered by ${appName}`
+      () => options.agentLabel || `Kitchen AI powered by ${appName}`
     ),
-    hasContextIcon: computed(() =>
-      Boolean(options.contextIcon)
-    ),
-    contextIcon: computed(
-      () => options.contextIcon || 'i-lucide-sparkles'
-    ),
+    hasContextIcon: computed(() => Boolean(options.contextIcon)),
+    contextIcon: computed(() => options.contextIcon || 'i-lucide-sparkles'),
     title: computed(
-      () =>
-        options.title ||
-        'How can I help your kitchen today?'
+      () => options.title || 'How can I help your kitchen today?'
     ),
     description: computed(
       () =>
@@ -64,17 +56,15 @@ export function useKitchenAIPresentation(
         'Give me your existing menu and I’ll help turn it into a working digital Menu and Kitchen Workspace.'
     ),
     placeholder: computed(() => options.placeholder || 'Ask Kitchen AI…'),
-    promptSuggestions: computed(
-      () => options.promptSuggestions || []
-    ),
-    allowFile: computed(
-      () => options.allowFile ?? true
-    ),
+    promptSuggestions: computed(() => options.promptSuggestions || []),
+    allowFile: computed(() => options.allowFile ?? true),
     starters: computed(
       () => options.starters ?? (options.agent ? [] : defaultStarters)
     ),
     commandMode: computed(
-      () => (options.mode ?? (options.agent ? 'command' : 'assistant')) === 'command'
+      () =>
+        (options.mode ?? (options.agent ? 'command' : 'assistant')) ===
+        'command'
     ),
   }
 }

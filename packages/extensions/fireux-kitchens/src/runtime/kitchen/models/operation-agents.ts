@@ -30,7 +30,7 @@ const definitions = {
     contextProviders: [
       context('kitchen.identity', 'Kitchen', true),
       context('place.identity', 'Place', true),
-      context('app-kitchen.workspace', 'AppKitchen', true),
+      context('kitchen.workspace', 'Kitchen', true),
     ],
     capabilities: identityAgentCapabilities,
   },
@@ -50,7 +50,7 @@ const definitions = {
     name: 'MenuAI',
     contextProviders: [
       context('kitchen.menus', 'Kitchen'),
-      context('menus.context', 'AppKitchen'),
+      context('menus.context', 'Kitchen'),
     ],
   },
   mise: {
@@ -73,7 +73,7 @@ const definitions = {
     name: 'TeamAI',
     instruction:
       'Help the operator understand and manage the selected Kitchen team using only the registered Team tools and authorized Team records.',
-    contextProviders: [context('kitchen.team', 'AppKitchen')],
+    contextProviders: [context('kitchen.team', 'Kitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
     toolIds: kitchenTeamAgentToolIds,
   },
@@ -83,7 +83,7 @@ const definitions = {
   },
   tables: {
     name: 'TablesAI',
-    contextProviders: [context('kitchen.tables', 'AppKitchen')],
+    contextProviders: [context('kitchen.tables', 'Kitchen')],
   },
   finance: {
     name: 'FinanceAI',

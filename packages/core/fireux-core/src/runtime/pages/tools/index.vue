@@ -32,14 +32,33 @@
               Source primitives
             </h2>
           </div>
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UCard v-for="primitive in corePrimitives" :key="primitive.name">
-              <h3 class="m-0 font-semibold text-highlighted">
-                {{ primitive.name }}
-              </h3>
-              <p class="mt-1 text-sm text-muted">{{ primitive.description }}</p>
-            </UCard>
-          </div>
+          <ul class="m-0 grid gap-4 p-0">
+            <li
+              v-for="primitive in corePrimitives"
+              :key="primitive.id"
+              class="list-none"
+            >
+              <NuxtLink
+                :to="`/tools/core#${primitive.documentation.slug}`"
+                class="group flex items-center justify-between gap-4 rounded-lg px-3 py-2 hover:bg-elevated"
+              >
+                <span>
+                  <span class="block font-semibold text-highlighted">
+                    {{ primitive.name }}
+                  </span>
+                  <span class="mt-1 block text-sm text-muted">
+                    {{ primitive.description }}
+                  </span>
+                </span>
+                <span
+                  class="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
+                >
+                  Open
+                  <UIcon name="i-lucide-arrow-right" class="size-4" />
+                </span>
+              </NuxtLink>
+            </li>
+          </ul>
         </section>
 
         <section class="grid gap-4" aria-labelledby="package-tools-title">
@@ -54,28 +73,29 @@
               Each package owns and explains the tools it provides.
             </p>
           </div>
-          <div v-if="contributions.length" class="grid gap-3 sm:grid-cols-2">
-            <UCard v-for="item in contributions" :key="item.to">
-              <div class="grid gap-3">
-                <div>
-                  <UBadge color="neutral" variant="soft">{{
-                    item.owner
-                  }}</UBadge>
-                  <h3 class="mt-2 font-semibold text-highlighted">
+          <ul v-if="contributions.length" class="m-0 grid gap-4 p-0">
+            <li v-for="item in contributions" :key="item.to" class="list-none">
+              <NuxtLink
+                :to="item.to"
+                class="group flex items-center justify-between gap-4 rounded-lg px-3 py-2 hover:bg-elevated"
+              >
+                <span>
+                  <span class="block font-semibold text-highlighted">
                     {{ item.title }}
-                  </h3>
-                  <p class="mt-1 text-sm text-muted">{{ item.description }}</p>
-                </div>
-                <UButton
-                  :to="item.to"
-                  color="neutral"
-                  variant="soft"
-                  class="w-fit"
-                  >View tools</UButton
+                  </span>
+                  <span class="mt-1 block text-sm text-muted">
+                    {{ item.description }}
+                  </span>
+                </span>
+                <span
+                  class="flex shrink-0 items-center gap-1 text-sm font-semibold text-primary"
                 >
-              </div>
-            </UCard>
-          </div>
+                  Open
+                  <UIcon name="i-lucide-arrow-right" class="size-4" />
+                </span>
+              </NuxtLink>
+            </li>
+          </ul>
           <UAlert
             v-else
             color="neutral"
@@ -92,35 +112,14 @@
 import { computed } from 'vue'
 import { useRouter } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { coreToolPrimitives } from '../../tools/catalogue'
 
 type ToolCatalogueMeta = { owner: string; title: string; description: string }
 
 const fireux = useFireUXConfig()
 const router = useRouter()
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
-const corePrimitives = [
-  {
-    name: 'Accept an upload',
-    description: 'Receive a bounded file from an authorized request.',
-  },
-  {
-    name: 'Validate a file',
-    description: 'Check its size, type, extension and required fields.',
-  },
-  {
-    name: 'Classify a document',
-    description: 'Identify an image, PDF or other document source.',
-  },
-  {
-    name: 'Store a file',
-    description:
-      'Save an authorized file with an explicit storage path and policy.',
-  },
-  {
-    name: 'Delete a stored file',
-    description: 'Remove a stored source when its lifecycle is complete.',
-  },
-] as const
+const corePrimitives = coreToolPrimitives
 
 const contributions = computed(() =>
   router

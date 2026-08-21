@@ -3,9 +3,7 @@
   <UCard class="fx-card--public-action">
     <div class="fx-public-action">
       <div class="fx-public-action__badges">
-        <UBadge color="primary" variant="soft">
-          Claim
-        </UBadge>
+        <UBadge color="primary" variant="soft"> Claim </UBadge>
       </div>
 
       <div class="fx-public-action__body">
@@ -17,15 +15,16 @@
 
         <div class="fx-public-action__content">
           <div class="fx-public-action__copy">
-            <h2 class="fx-public-action__title">
-              Place Operations
-            </h2>
+            <h2 class="fx-public-action__title">Place Operations</h2>
             <p class="fx-public-action__description">
               {{ panelCopy }}
             </p>
           </div>
 
-          <div v-if="claimState.isClaimed.value" class="fx-public-action__subject">
+          <div
+            v-if="claimState.isClaimed.value"
+            class="fx-public-action__subject"
+          >
             <span class="fx-public-action__label">Claimed by</span>
             <UserCardsPill
               v-if="claimState.claimedUserPill.value"
@@ -61,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePublicClaimPanel } from 'fireux-core/runtime/composables/public/usePublicClaimPanel'
+import { useClaimPanel } from 'fireux-core/runtime/composables/public/useClaimPanel'
 import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 import { usePlaceClaim } from '../composables/firestore/mutations/usePlaceClaim'
 import type { Place } from '../models/place.model.ts'
@@ -85,7 +84,7 @@ const editTo = computed(() =>
     ? `/places/${encodeURIComponent(publicLocator.value)}/edit`
     : '/places'
 )
-const claimState = usePublicClaimPanel({
+const claimState = useClaimPanel({
   id: computed(() => props.id),
   claimedBy,
   editTo,
@@ -102,25 +101,29 @@ const panelCopy = computed(() =>
 
 const actions = computed<PublicActionButton[]>(() => [
   ...(claimState.canClaim.value && !claimState.isClaimed.value
-    ? [{
-        label: 'Claim this place',
-        color: 'primary' as const,
-        loading: claimState.isClaiming.value,
-        disabled: claimState.isClaiming.value,
-        onClick: claimState.onClaim,
-      }]
+    ? [
+        {
+          label: 'Claim this place',
+          color: 'primary' as const,
+          loading: claimState.isClaiming.value,
+          disabled: claimState.isClaiming.value,
+          onClick: claimState.onClaim,
+        },
+      ]
     : []),
   ...(claimState.canEdit.value && claimState.editTo.value
-    ? [{
-        label: claimState.isAdminEdit.value ? 'Admin Edit' : 'Edit place',
-        to: claimState.editTo.value,
-        icon: claimState.isAdminEdit.value
-          ? 'i-lucide-shield-check'
-          : 'i-lucide-pencil',
-        color: claimState.isAdminEdit.value
-          ? 'warning' as const
-          : 'neutral' as const,
-      }]
+    ? [
+        {
+          label: claimState.isAdminEdit.value ? 'Admin Edit' : 'Edit place',
+          to: claimState.editTo.value,
+          icon: claimState.isAdminEdit.value
+            ? 'i-lucide-shield-check'
+            : 'i-lucide-pencil',
+          color: claimState.isAdminEdit.value
+            ? ('warning' as const)
+            : ('neutral' as const),
+        },
+      ]
     : []),
   ...claimState.workspaceActions.value.map((action) => ({
     label: action.label,

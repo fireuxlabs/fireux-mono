@@ -51,14 +51,14 @@
           :model="ingredientProfile"
         />
 
-<DevDebugPanel
-  object-origin="fetched"
+        <DevDebugPanel
+          object-origin="fetched"
           launcher
           include-route
           :title="'Ingredient (Doc)'"
           context="Ingredient detail page · ingredients/[id] · ingredient doc"
           :objects="ingredient"
-  :derived="{}"
+          :derived="{}"
           :default-open="false"
         />
 
@@ -70,7 +70,6 @@
       </div>
     </UPageBody>
   </UPage>
-
 </template>
 
 <script setup lang="ts">

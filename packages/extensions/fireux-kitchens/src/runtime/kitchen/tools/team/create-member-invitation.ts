@@ -20,6 +20,23 @@ export const kitchenTeamMemberInvitationCreateTool = defineKitchenTeamTool({
     required: ['memberId'],
     additionalProperties: false,
   },
+  ai: {
+    baked: {
+      purpose:
+        'Create a one-use invitation for an existing unlinked Kitchen Team member.',
+      knows: ['The selected Kitchen and selected authorized Team member.'],
+      constraints: [
+        'Do not invite a member already linked to a User.',
+        'Do not extend or reuse the seven-day, one-use invitation.',
+      ],
+      evidence: ['Return the invitation expiry and copyable invitation link.'],
+    },
+    runtime: {
+      accepted: true,
+      required: ['workspaceSelection', 'memberSelection'],
+      optional: ['userRequest'],
+    },
+  },
   surfaces: {
     human: {
       placement: 'toolbar',

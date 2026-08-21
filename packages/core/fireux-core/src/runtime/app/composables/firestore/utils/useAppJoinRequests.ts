@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: keep optimistic request removal explicitly typed in Nuxt template checks.
 import { computed, ref, watchEffect, type ComputedRef } from 'vue'
 import type {
-  AppAdminJoinRequestDto,
-  PublicUserIdentityDto,
-} from '../../../../server/utils/public-projection/public-dto.types.ts'
+  AppAdminJoinRequest,
+} from '../../../models/app-context.model.ts'
+import type { UserIdentitySummary } from '../../../../user/models/user-directory.model.ts'
 import type { UserCard } from '../../../../user/composables/useUserInterface'
 
 type JoinRequestItem = {
@@ -19,11 +19,11 @@ type JoinRequestItem = {
 type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type CardBuilder = ComputedRef<
-  (target?: PublicUserIdentityDto | null | undefined) => UserCard.Card
+  (target?: UserIdentitySummary | null | undefined) => UserCard.Card
 >
 
 type Options = {
-  requests: ComputedRef<AppAdminJoinRequestDto[]>
+  requests: ComputedRef<AppAdminJoinRequest[]>
   handleJoinRequests: HandleJoinRequests
   card: CardBuilder
   refresh: () => Promise<void>
@@ -39,7 +39,7 @@ export function useAppJoinRequests(options: Options): {
   const hidden = new Set<string>()
   const itemsRef = ref<JoinRequestItem[]>([])
 
-  const buildItem = (request: AppAdminJoinRequestDto): JoinRequestItem => {
+  const buildItem = (request: AppAdminJoinRequest): JoinRequestItem => {
     const profile = request.user
     if (!profile) {
       return {

@@ -7,8 +7,9 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicIngredientCollectionResponse } from '../../../ingredient/models/ingredient-public.model.ts'
-import { projectPublicIngredient } from '../../../ingredient/server/public-projection.ts'
+import type { IngredientDirectoryPage } from '../../../ingredient/models/ingredient-directory.model.ts'
+import type { Ingredient } from '../../../ingredient/models/ingredient.model.ts'
+import { normalizeIngredient } from '../../../ingredient/server/normalize.ts'
 
 const MAX_LIBRARY_SIZE = 500
 const MAX_EXACT_IDS = 100
@@ -36,7 +37,7 @@ const exactIds = (value: unknown) => {
 }
 
 export default defineEventHandler(
-  async (event): Promise<PublicIngredientCollectionResponse> => {
+  async (event): Promise<IngredientDirectoryPage> => {
     const db = getRuntimeFirestore()
     const ids = exactIds(getQuery(event).ids)
     const documents = ids.length
@@ -52,14 +53,13 @@ export default defineEventHandler(
     if (!ids.length && documents.length > MAX_LIBRARY_SIZE) {
       throw createError({
         statusCode: 503,
-        statusMessage:
-          'Ingredient library exceeds the bounded public projection.',
+        statusMessage: 'Ingredient library exceeds the bounded Directory read.',
       })
     }
 
     const items = documents
       .filter((document) => document.exists)
-      .map(projectPublicIngredient)
+      .map(normalizeIngredient)
       .filter((item) => item?.status === 'active')
       .sort((left, right) =>
         (left?.name || '').localeCompare(right?.name || '', undefined, {
@@ -73,9 +73,7 @@ export default defineEventHandler(
         'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
     })
     return {
-      items: items.filter((item): item is NonNullable<typeof item> =>
-        Boolean(item)
-      ),
+      items: items.filter((item): item is Ingredient => Boolean(item)),
     }
   }
 )

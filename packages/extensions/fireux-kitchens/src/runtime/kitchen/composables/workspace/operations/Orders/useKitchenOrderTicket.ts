@@ -1,7 +1,4 @@
-import {
-  computed,
-  ref,
-} from 'vue'
+import { computed, ref } from 'vue'
 import type { KitchenOrder } from '../../../../models/order.model.ts'
 import { kitchenOrderTicketFooterLabel } from '../../../../utils/kitchen-order-label'
 
@@ -46,13 +43,14 @@ export function useKitchenOrderTicket(
   )
   const collectionRecord = computed(() => record(orderRecord.value.collection))
   const tableRecord = computed(() => record(orderRecord.value.table))
-  const roomServiceRecord = computed(() => record(orderRecord.value.room_service))
+  const roomServiceRecord = computed(() =>
+    record(orderRecord.value.room_service)
+  )
   const orderStatus = computed(() => normalizeString(props.order.status))
   const orderId = computed(() => normalizeString(props.order.id))
   const placedMs = computed(
     () =>
-      timestampMs(props.order.created.at) ||
-      timestampMs(props.order.updated.at)
+      timestampMs(props.order.created.at) || timestampMs(props.order.updated.at)
   )
   const pickupMs = computed(() =>
     timestampMs(
@@ -67,37 +65,38 @@ export function useKitchenOrderTicket(
   const collectionMode = computed(() =>
     normalizeString(collectionRecord.value.mode)
   )
-  const isScheduledCollection = computed(() =>
-    orderType.value === 'collection' &&
-      collectionMode.value === 'scheduled'
+  const isScheduledCollection = computed(
+    () =>
+      orderType.value === 'collection' && collectionMode.value === 'scheduled'
   )
   const estimatedReadyMinutes = computed(() =>
     Number((props.order as any).estimated_ready_minutes || 0)
   )
-  const estimatedReadyMs = computed(() =>
-    timestampMs((props.order as any).estimated_ready_at) ||
-      (
-        estimatedReadyMinutes.value > 0
-          ? Date.now() + estimatedReadyMinutes.value * 60_000
-          : 0
-      )
+  const estimatedReadyMs = computed(
+    () =>
+      timestampMs((props.order as any).estimated_ready_at) ||
+      (estimatedReadyMinutes.value > 0
+        ? Date.now() + estimatedReadyMinutes.value * 60_000
+        : 0)
   )
-  const isWaitingForAcceptance = computed(() =>
-    orderStatus.value === 'pending_acceptance'
+  const isWaitingForAcceptance = computed(
+    () => orderStatus.value === 'pending_acceptance'
   )
-  const canTouchHeader = computed(() =>
-    props.interactive !== false &&
+  const canTouchHeader = computed(
+    () =>
+      props.interactive !== false &&
       Boolean(orderId.value && props.headerActionLabel)
   )
-  const canTouchBody = computed(() =>
-    props.interactive !== false &&
+  const canTouchBody = computed(
+    () =>
+      props.interactive !== false &&
       Boolean(orderId.value && props.bodyActionLabel)
   )
   const canShowStatusAction = computed(() =>
     Boolean(orderId.value && props.statusActionLabel)
   )
-  const canUseStatusAction = computed(() =>
-    props.interactive !== false && canShowStatusAction.value
+  const canUseStatusAction = computed(
+    () => props.interactive !== false && canShowStatusAction.value
   )
   const headerIcon = computed(() =>
     orderType.value === 'collection'
@@ -106,13 +105,13 @@ export function useKitchenOrderTicket(
         ? 'i-lucide-bike'
         : orderType.value === 'pre_order'
           ? 'i-lucide-calendar-clock'
-        : orderType.value === 'room_service'
-          ? 'i-lucide-concierge-bell'
-        : orderType.value === 'dine_in' || orderType.value === 'eat_in'
-          ? 'i-lucide-utensils'
-          : orderType.value === 'takeaway'
-            ? 'i-lucide-shopping-bag'
-            : 'i-lucide-clock'
+          : orderType.value === 'room_service'
+            ? 'i-lucide-concierge-bell'
+            : orderType.value === 'dine_in' || orderType.value === 'eat_in'
+              ? 'i-lucide-utensils'
+              : orderType.value === 'takeaway'
+                ? 'i-lucide-shopping-bag'
+                : 'i-lucide-clock'
   )
   const headerLabel = computed(() => {
     if (orderType.value === 'collection') {
@@ -136,7 +135,8 @@ export function useKitchenOrderTicket(
     }
 
     if (orderType.value === 'dine_in') {
-      const table = fulfilmentReference.value || normalizeString(tableRecord.value.number)
+      const table =
+        fulfilmentReference.value || normalizeString(tableRecord.value.number)
       if (!table) return 'Table service'
 
       return /^table\b/i.test(table) ? table : `Table ${table}`
@@ -156,7 +156,9 @@ export function useKitchenOrderTicket(
         : 'Take away'
     }
 
-    return placedMs.value ? `Placed ${formatTime(placedMs.value)}` : 'Time unset'
+    return placedMs.value
+      ? `Placed ${formatTime(placedMs.value)}`
+      : 'Time unset'
   })
   const statusLabel = computed(() => {
     if (orderStatus.value === 'pending_payment') return 'payment pending'
@@ -202,9 +204,7 @@ export function useKitchenOrderTicket(
   const visibleLines = computed(() =>
     linesExpanded.value ? lines.value : lines.value.slice(0, 5)
   )
-  const hiddenLineCount = computed(() =>
-    Math.max(0, lines.value.length - 5)
-  )
+  const hiddenLineCount = computed(() => Math.max(0, lines.value.length - 5))
   const canToggleLines = computed(() => lines.value.length > 5)
   const customerLines = computed(() => {
     const customer = record(orderRecord.value.customer)
@@ -219,11 +219,12 @@ export function useKitchenOrderTicket(
       online_card: 'online card',
       deposit: 'deposit',
     }
-    const paymentLine = paymentStatus && paymentStatus !== 'not_required'
-      ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
-      : paymentMethod
-        ? `Payment ${paymentMethodLabels[paymentMethod] || paymentMethod}`
-        : ''
+    const paymentLine =
+      paymentStatus && paymentStatus !== 'not_required'
+        ? `Payment ${paymentStatus}${amount ? ` · CHF ${amount.toFixed(2)}` : ''}`
+        : paymentMethod
+          ? `Payment ${paymentMethodLabels[paymentMethod] || paymentMethod}`
+          : ''
 
     return [
       normalizeString(tableRecord.value.number),
@@ -268,18 +269,24 @@ export function useKitchenOrderTicket(
   async function copyTicket() {
     if (!orderId.value || !import.meta.client || !navigator.clipboard) return
 
-    await navigator.clipboard.writeText(JSON.stringify({
-      surface: 'kitchen_workspace_order_ticket',
-      copied_at: new Date().toISOString(),
-      order_id: orderId.value,
-      label: orderLabel.value,
-      header: headerLabel.value,
-      status: statusLabel.value,
-      order_type: orderType.value,
-      lines: lines.value,
-      customer_lines: customerLines.value,
-      order: orderRecord.value,
-    }, null, 2))
+    await navigator.clipboard.writeText(
+      JSON.stringify(
+        {
+          surface: 'kitchen_workspace_order_ticket',
+          copied_at: new Date().toISOString(),
+          order_id: orderId.value,
+          label: orderLabel.value,
+          header: headerLabel.value,
+          status: statusLabel.value,
+          order_type: orderType.value,
+          lines: lines.value,
+          customer_lines: customerLines.value,
+          order: orderRecord.value,
+        },
+        null,
+        2
+      )
+    )
     copied.value = true
     window.setTimeout(() => {
       copied.value = false
@@ -320,13 +327,14 @@ function normalizeString(value: unknown) {
 
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 }
 
 function timestampMs(value: unknown, baseMs = 0) {
   if (value instanceof Date) return value.getTime()
-  if (typeof value === 'number') return value > 1_000_000_000_000 ? value : value * 1000
+  if (typeof value === 'number')
+    return value > 1_000_000_000_000 ? value : value * 1000
 
   const source = value as { seconds?: number; toMillis?: () => number } | null
   if (typeof source?.toMillis === 'function') return source.toMillis()
@@ -356,7 +364,11 @@ function formatTime(value: number) {
 
 function collectionRequestedFor(order: KitchenOrder) {
   const collection = (order as Record<string, unknown>).collection
-  if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
+  if (
+    !collection ||
+    typeof collection !== 'object' ||
+    Array.isArray(collection)
+  ) {
     return ''
   }
 

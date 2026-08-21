@@ -89,7 +89,9 @@
             class="mt-3 space-y-1.5 rounded-lg bg-elevated/70 p-2.5"
           >
             <div class="flex items-center justify-between gap-2">
-              <p class="text-xs font-semibold uppercase tracking-wide text-muted">
+              <p
+                class="text-xs font-semibold uppercase tracking-wide text-muted"
+              >
                 Checklist
               </p>
               <span class="text-xs text-dimmed">
@@ -103,11 +105,7 @@
               :class="item.done ? 'text-dimmed' : 'text-toned'"
             >
               <UIcon
-                :name="
-                  item.done
-                    ? 'i-lucide-circle-check'
-                    : 'i-lucide-circle'
-                "
+                :name="item.done ? 'i-lucide-circle-check' : 'i-lucide-circle'"
                 class="mt-0.5 size-3.5 shrink-0"
                 :class="item.done ? 'text-success' : 'text-muted'"
                 aria-hidden="true"
@@ -217,23 +215,18 @@ const workflowGroups = computed(() =>
   groupKitchenMiseTaskSummariesByWorkflow(props.tasks)
 )
 const defaultOpenStages = computed(() =>
-  workflowGroups.value.slice(0, 2).map(group => group.value)
+  workflowGroups.value.slice(0, 2).map((group) => group.value)
 )
 const statusOption = (status: KitchenMiseStatus) =>
   KITCHEN_MISE_STATUS_OPTIONS.find(
-    option => option.value === normalizeKitchenMiseStatus(status)
+    (option) => option.value === normalizeKitchenMiseStatus(status)
   ) ?? KITCHEN_MISE_STATUS_OPTIONS[0]
 const taskRoute = (taskId: string) =>
-  props.linkBase
-    ? `${props.linkBase}/${encodeURIComponent(taskId)}`
-    : undefined
+  props.linkBase ? `${props.linkBase}/${encodeURIComponent(taskId)}` : undefined
 </script>
 
 <style scoped>
 .kitchen-mise-task-grid {
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, 14rem), 1fr)
-  );
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
 }
 </style>

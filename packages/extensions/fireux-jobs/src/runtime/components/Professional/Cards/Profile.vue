@@ -8,7 +8,7 @@
     class="public-profile-detail"
     data-profile-tone="professional"
   >
-    <PublicProfileHero
+    <UserProfileHero
       kind-label="Professional"
       icon="i-lucide-briefcase-business"
       tone="primary"
@@ -52,7 +52,7 @@
       <template #actions>
         <slot name="actions" />
       </template>
-    </PublicProfileHero>
+    </UserProfileHero>
 
     <nav
       v-if="sectionLinks.length > 1"
@@ -74,7 +74,7 @@
 
     <div class="public-profile-detail__content">
       <div class="public-profile-detail__main">
-        <PublicProfileSection
+        <UserProfileSection
           v-if="aboutCopy"
           id="about"
           icon="i-lucide-user-round"
@@ -86,9 +86,9 @@
           >
             {{ aboutCopy }}
           </p>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="leadProject"
           id="featured-work"
           icon="i-lucide-sparkles"
@@ -172,9 +172,9 @@
               </p>
             </article>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="currentRelevantExperience.length"
           id="current-chapter"
           icon="i-lucide-zap"
@@ -215,9 +215,9 @@
               </p>
             </article>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="pastRelevantExperience.length"
           id="career-history"
           icon="i-lucide-route"
@@ -258,9 +258,9 @@
               </p>
             </li>
           </ol>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="sortedOtherExperience.length"
           id="additional-expertise"
           icon="i-lucide-layers-3"
@@ -301,9 +301,9 @@
               </p>
             </article>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="viewModel.volunteering.length"
           id="community"
           icon="i-lucide-heart-handshake"
@@ -337,7 +337,7 @@
               </p>
             </article>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
       </div>
 
       <ProfessionalProfileEvidence :model="viewModel" />
@@ -348,14 +348,14 @@
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalProfileViewModel } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { PublicProfessionalProfile } from '../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../models/profiles/Professional/Professional.model'
 import ProfessionalProfileEvidence from '../Profile/Evidence.vue'
 import { useProfessionalProfilePresentation } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfilePresentation'
 
 const props = defineProps<{
   model?: ProfessionalProfileViewModel | null
   card?: ProfessionalCard.Card
-  profile?: PublicProfessionalProfile | null
+  profile?: ProfessionalProfile | null
   prop?: string
 }>()
 

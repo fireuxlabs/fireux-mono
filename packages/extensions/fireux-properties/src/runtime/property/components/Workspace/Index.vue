@@ -18,7 +18,10 @@
       title="Property workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedProperty: selection.property, properties: sections.targets.collection }"
+      :objects="{
+        selectedProperty: selection.property,
+        properties: sections.targets.collection,
+      }"
       :derived="debug"
       :default-open="false"
     />
@@ -28,10 +31,5 @@
 <script setup lang="ts">
 import { usePropertyWorkspaceIndex } from '../../composables/workspace/index/usePropertyWorkspaceIndex'
 
-const {
-  selection,
-  sections,
-  actions,
-  debug,
-} = usePropertyWorkspaceIndex()
+const { selection, sections, actions, debug } = usePropertyWorkspaceIndex()
 </script>

@@ -28,15 +28,17 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  accent?: 'neutral' | 'primary' | 'success' | 'warning'
-  count: number
-  emptyLabel: string
-  label: string
-}>(), {
-  accent: 'neutral',
-})
-
+withDefaults(
+  defineProps<{
+    accent?: 'neutral' | 'primary' | 'success' | 'warning'
+    count: number
+    emptyLabel: string
+    label: string
+  }>(),
+  {
+    accent: 'neutral',
+  }
+)
 </script>
 
 <style scoped>
@@ -73,5 +75,4 @@ withDefaults(defineProps<{
   min-width: 0;
   gap: calc(var(--spacing) * 2);
 }
-
 </style>

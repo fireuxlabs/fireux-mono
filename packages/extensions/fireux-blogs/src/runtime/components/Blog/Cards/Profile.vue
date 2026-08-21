@@ -14,9 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../composables/fireux/blog/useBlogInterface';
+import type { BlogCard } from '../../../composables/fireux/blog/useBlogInterface'
 
-const { card, avatar: avatarProp, prop } = defineProps<{
+const {
+  card,
+  avatar: avatarProp,
+  prop,
+} = defineProps<{
   card: BlogCard.Card
   avatar?: string | null
   prop?: string

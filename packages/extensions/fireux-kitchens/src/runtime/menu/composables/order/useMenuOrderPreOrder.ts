@@ -36,7 +36,8 @@ export function useMenuOrderPreOrder(options: UseMenuOrderPreOrderOptions) {
   async function submit(input: SubmitMenuOrderPreOrderInput) {
     const sourceMenuId = text(input.sourceMenuId)
     const requestedFor = text(input.selection.requestedFor)
-    if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
+    if (!sourceMenuId || !input.lines.length)
+      throw new Error('The basket is empty.')
     if (!requestedFor) throw new Error('Choose a requested date and time.')
 
     const name = text(input.name)

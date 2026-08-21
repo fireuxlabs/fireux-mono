@@ -10,12 +10,12 @@ import {
 import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type {
   Driver,
-  PublicDriverDirectoryProfile,
+  DriverDirectoryProfile,
 } from '../../models/driver.model.ts'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>
-type DriverTarget = Driver | PublicDriverDirectoryProfile
+type DriverTarget = Driver | DriverDirectoryProfile
 
 export namespace DriverCard {
   export type Card = {

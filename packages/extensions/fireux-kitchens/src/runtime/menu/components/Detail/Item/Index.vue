@@ -18,15 +18,8 @@
       @keydown.enter.prevent="selectItem"
       @keydown.space.prevent="selectItem"
     >
-      <div
-        v-if="item.imageUrl"
-        class="menu-item__media"
-      >
-        <img
-          :src="item.imageUrl"
-          :alt="item.name"
-          loading="lazy"
-        >
+      <div v-if="item.imageUrl" class="menu-item__media">
+        <img :src="item.imageUrl" :alt="item.name" loading="lazy" />
       </div>
 
       <div class="menu-item__copy">
@@ -36,10 +29,7 @@
         </p>
       </div>
 
-      <div
-        v-if="item.priceLabel || orderMode"
-        class="menu-item__actions"
-      >
+      <div v-if="item.priceLabel || orderMode" class="menu-item__actions">
         <p v-if="!orderMode && item.priceLabel" class="menu-item__price">
           {{ item.priceLabel }}
         </p>
@@ -137,8 +127,8 @@ const {
   item: () => props.item,
 })
 
-const hasOptions = computed(() =>
-  variantOptions.value.length > 0 || addOnOptions.value.length > 0
+const hasOptions = computed(
+  () => variantOptions.value.length > 0 || addOnOptions.value.length > 0
 )
 
 function selectItem() {
@@ -173,16 +163,16 @@ function addItem() {
   text-align: left;
 }
 
-.menu-item__summary[role="button"] {
+.menu-item__summary[role='button'] {
   cursor: pointer;
 }
 
-.menu-item__summary[role="button"]:hover h3,
-.menu-item__summary[role="button"]:focus-visible h3 {
+.menu-item__summary[role='button']:hover h3,
+.menu-item__summary[role='button']:focus-visible h3 {
   color: var(--menu-primary);
 }
 
-.menu-item__summary[role="button"]:focus-visible {
+.menu-item__summary[role='button']:focus-visible {
   outline: 2px solid var(--menu-primary);
   outline-offset: 0.3rem;
 }

@@ -13,7 +13,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const MenuItemStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
+  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}',
   collection: 'items',
   parent: 'menu-section',
   idParam: 'itemId',
@@ -57,7 +57,8 @@ const cleanNumber = (value: unknown) => {
   return Number.isFinite(number) ? number : 0
 }
 const cleanNonNegativePrice = (value: unknown) => {
-  if (value === null || value === undefined || cleanText(value) === '') return -1
+  if (value === null || value === undefined || cleanText(value) === '')
+    return -1
   const number = Number(value)
   return Number.isFinite(number) && number >= 0 ? number : -1
 }
@@ -71,10 +72,12 @@ const quantityFromLabel = (label: string) => {
 }
 const record = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
-export function normalizeMenuItemPriceOptions(value: unknown): MenuItemPriceOption[] {
+export function normalizeMenuItemPriceOptions(
+  value: unknown
+): MenuItemPriceOption[] {
   if (!Array.isArray(value)) return []
 
   return value

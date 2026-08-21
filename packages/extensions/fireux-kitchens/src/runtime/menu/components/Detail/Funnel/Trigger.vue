@@ -37,10 +37,8 @@ const itemCountLabel = computed(() => {
   return `${quantity} ${quantity === 1 ? 'item' : 'items'}`
 })
 const summaryLabel = computed(() =>
-  [
-    props.funnel.order.actionLabel,
-    itemCountLabel.value,
-    totalLabel.value,
-  ].filter(Boolean).join(', ')
+  [props.funnel.order.actionLabel, itemCountLabel.value, totalLabel.value]
+    .filter(Boolean)
+    .join(', ')
 )
 </script>

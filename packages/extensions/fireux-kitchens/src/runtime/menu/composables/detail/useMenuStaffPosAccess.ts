@@ -1,8 +1,4 @@
-import {
-  computed,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRoute } from 'vue-router'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
@@ -31,15 +27,13 @@ export function useMenuStaffPosAccess(options: {
   })
   const auth = useAuthRedirect({
     enabled: options.enabled,
-    unauthenticatedPath:
-      `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`,
+    unauthenticatedPath: `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`,
   })
   const canUseStaffPos = computed(() =>
     targetHasOperator(kitchen.value, text(uid.value))
   )
-  const staffAccessPending = computed(() =>
-    !auth.isReady.value ||
-      (auth.isAuthenticated.value && pending.value)
+  const staffAccessPending = computed(
+    () => !auth.isReady.value || (auth.isAuthenticated.value && pending.value)
   )
 
   return {

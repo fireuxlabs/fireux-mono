@@ -1,52 +1,39 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
+// User-owned Agent profile and directory summary.
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: Identity
- * Storage: root canonical record plus app overlay
- * Root path: /agents/<userId>
- * Overlay path: /apps/<appId>/agents/<userId>
+ * Storage: User-owned profile
+ * Path: /users/<userId>/profiles/agent
  *
  * Decision note:
- * - Agent is an identity profile first, with app-scoped stored truth only where real operational state exists.
- * - The overlay is deliberately small until an app truly needs more scoped state.
- * - If this changes later, update the models README first, then this file.
+ * - Agent is a User-owned capability/profile record.
  */
 export const AgentStorage = {
-  shape: 'both',
-  root: 'agents/{userId}',
-  overlay: 'apps/{appId}/agents/{userId}',
-  rootCollection: 'agents',
-  overlayCollection: 'agents',
-  idParam: 'userId',
-} as const
-
-export const AppAgentStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/agents/{userId}',
-  collection: 'agents',
-  parent: 'app',
+  shape: 'user-owned',
+  path: 'users/{userId}/profiles/agent',
+  collection: 'profiles',
+  document: 'agent',
   idParam: 'userId',
 } as const
 
 export const AgentModel = {
   id: '' as string,
+  kind: 'agent' as const,
   title: '' as string,
   summary: '' as string,
   agent_bio: '' as string,
   agent_image: '' as string,
   agent_placement_types: [] as string[],
   agent_coverage_areas: [] as string[],
-  // Public business contacts shown on Agent directory and profile surfaces.
+  // Deliberately published business contacts shown on Agent directory and profile surfaces.
   agent_contact_email: '' as string,
   agent_contact_phone: '' as string,
   agent_website_url: '' as string,
@@ -67,10 +54,10 @@ export type Agent = {
   [K in keyof typeof AgentModel]: (typeof AgentModel)[K]
 }
 
-export type PublicAgentProfile = Omit<Agent, 'created' | 'updated'>
-export type PublicAgentProfilePayload = Omit<PublicAgentProfile, 'id'>
-export type PublicAgentDirectoryProfilePayload = Pick<
-  PublicAgentProfilePayload,
+export type AgentProfile = Omit<Agent, 'created' | 'updated'>
+export type AgentProfilePayload = Omit<AgentProfile, 'id'>
+export type AgentDirectoryProfilePayload = Pick<
+  AgentProfilePayload,
   | 'title'
   | 'summary'
   | 'agent_bio'
@@ -81,15 +68,8 @@ export type PublicAgentDirectoryProfilePayload = Pick<
   | 'agent_contact_phone'
   | 'agent_website_url'
 >
-export type PublicAgentDirectoryProfile = PublicAgentDirectoryProfilePayload &
-  Pick<PublicAgentProfile, 'id'>
-
-export const AppAgentModel = {
-  id: '' as string,
-  ...AppProfileStamps,
-} as const
-
-export type AppAgent = AppProfileBase
+export type AgentDirectoryProfile = AgentDirectoryProfilePayload &
+  Pick<AgentProfile, 'id'>
 
 export type AgentCreateInput = Omit<Agent, 'id' | 'created' | 'updated'>
 export type AgentUpdateInput = Partial<
@@ -99,6 +79,7 @@ export type AgentUpdateInput = Partial<
 export function createAgentProfileSeed(): AgentCreateInput {
   return {
     title: AgentModel.title,
+    kind: AgentModel.kind,
     summary: AgentModel.summary,
     agent_bio: AgentModel.agent_bio,
     agent_image: AgentModel.agent_image,

@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose App support path selection directly.
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
-import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import {
   workspaceEntityUsesAppScope,
   resolveWorkspaceEntityAppId,
@@ -34,9 +33,6 @@ const resolveMode = (value: unknown): WorkspaceEntityRuntimeMode => {
   return 'live'
 }
 
-const appSupportCollectionPath = (family: string, appId: string) =>
-  appId ? `${AppStorage.collection}/${appId}/${family}` : ''
-
 export function useWorkspaceEntityFirestore(
   options: UseWorkspaceEntityFirestoreOptions
 ) {
@@ -58,10 +54,8 @@ export function useWorkspaceEntityFirestore(
   const isAppScoped = computed(() =>
     workspaceEntityUsesAppScope(target.value)
   )
-  const isTenantOwned = computed(() => scopeState.value === 'tenant_app')
-  const shouldUseAppSupport = computed(
-    () => Boolean(unref(options.useAppSupport)) || isAppScoped.value
-  )
+  const isTenantOwned = computed(() => scopeState.value === 'app')
+  const shouldUseAppSupport = computed(() => false)
   const rootCollection = computed(() => {
     const testPath = text(unref(options.testCollectionPath))
     return resolveWorkspaceEntityCollectionPath({
@@ -70,20 +64,13 @@ export function useWorkspaceEntityFirestore(
       explicitPath: mode.value === 'test' ? testPath : undefined,
     })
   })
-  const appSupportCollection = computed(() => {
-    if (!active.value || mode.value !== 'live') return ''
-    return appSupportCollectionPath(family.value, appId.value)
-  })
+  const appSupportCollection = computed(() => '')
   const collectionPath = computed(() => {
     if (!active.value || mode.value === 'demo') return ''
 
     const explicitPath = text(unref(options.explicitPath))
     if (explicitPath) return explicitPath
     if (mode.value !== 'live') return rootCollection.value
-    if (shouldUseAppSupport.value && appSupportCollection.value) {
-      return appSupportCollection.value
-    }
-
     return rootCollection.value
   })
 

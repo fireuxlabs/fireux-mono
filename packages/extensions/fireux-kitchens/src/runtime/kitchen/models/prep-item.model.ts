@@ -7,7 +7,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped Entity
  * Storage: Kitchen-owned reusable production content
- * Path: apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}
+ * Path: kitchens/{kitchenId}/prep-items/{prepItemId}
  * Owner app scope: Kitchen
  *
  * A Prep Item is an authored intermediate product such as a washed garnish,
@@ -17,7 +17,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenPrepItemStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}',
+  path: 'kitchens/{kitchenId}/prep-items/{prepItemId}',
   collection: 'prep-items',
   parent: 'kitchen',
   idParam: 'prepItemId',
@@ -105,7 +105,7 @@ export type KitchenPrepItemUpdateInput = Partial<
 
 const prepItemRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const prepItemString = (value: unknown) => String(value ?? '').trim()
@@ -115,7 +115,11 @@ const prepItemQuantity = (value: unknown) => {
 }
 
 const prepItemUnits = new Set<KitchenPrepItemUnit>([
-  '', 'g', 'ml', 'each', 'portion',
+  '',
+  'g',
+  'ml',
+  'each',
+  'portion',
 ])
 
 export const normalizeKitchenPrepItemUnit = (
@@ -180,10 +184,10 @@ export function normalizeKitchenPrepItem(value: unknown): KitchenPrepItem {
       ? source.method.map(prepItemString).filter(Boolean)
       : [],
     created: Object.keys(created).length
-      ? created as unknown as KitchenPrepItem['created']
+      ? (created as unknown as KitchenPrepItem['created'])
       : KitchenPrepItemDefaults.created,
     updated: Object.keys(updated).length
-      ? updated as unknown as KitchenPrepItem['updated']
+      ? (updated as unknown as KitchenPrepItem['updated'])
       : KitchenPrepItemDefaults.updated,
   }
 }

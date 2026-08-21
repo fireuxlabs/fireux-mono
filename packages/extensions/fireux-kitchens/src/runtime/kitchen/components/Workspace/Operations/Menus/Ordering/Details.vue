@@ -3,7 +3,9 @@
   <UCard>
     <template #header>
       <div>
-        <h3 class="text-sm font-semibold text-highlighted">{{ surfaceLabel }} details</h3>
+        <h3 class="text-sm font-semibold text-highlighted">
+          {{ surfaceLabel }} details
+        </h3>
         <p class="text-sm text-dimmed">
           {{ description }}
         </p>
@@ -67,7 +69,8 @@ const contactOptions: Array<{
   {
     value: 'phone',
     label: 'Mobile number',
-    description: 'Contact the customer about timing or a problem with the order.',
+    description:
+      'Contact the customer about timing or a problem with the order.',
   },
   {
     value: 'email',
@@ -75,12 +78,12 @@ const contactOptions: Array<{
     description: 'Use an email address for order communication or receipts.',
   },
 ]
-const allowedFields = new Set(contactOptions.map(option => option.value))
+const allowedFields = new Set(contactOptions.map((option) => option.value))
 const handoffInstructions = computed(() =>
   String(props.config.fulfilment?.handoff_instructions || '')
 )
 const requiredFields = computed(() =>
-  (props.config.customer?.required_fields || []).filter(field =>
+  (props.config.customer?.required_fields || []).filter((field) =>
     allowedFields.has(field)
   )
 )
@@ -94,9 +97,8 @@ const updateHandoffInstructions = (value: string) =>
 const updateRequiredFields = (fields: string[]) =>
   props.updateFunction({
     customer: {
-      required_fields: fields.filter(
-        (field): field is MenuOrderContactField =>
-          allowedFields.has(field as MenuOrderContactField)
+      required_fields: fields.filter((field): field is MenuOrderContactField =>
+        allowedFields.has(field as MenuOrderContactField)
       ),
     },
   })

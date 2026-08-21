@@ -42,12 +42,11 @@ export function useKitchenMiseCollection(
       ? resolveMisePath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const collectionRef = firestoreFetchCollection<Record<string, unknown>>(
-    collectionPath
-  )
+  const collectionRef =
+    firestoreFetchCollection<Record<string, unknown>>(collectionPath)
 
   const miseTasks = computed<KitchenMiseTask[]>(() =>
-    (collectionRef.value ?? []).map(entry => normalizeKitchenMiseTask(entry))
+    (collectionRef.value ?? []).map((entry) => normalizeKitchenMiseTask(entry))
   )
   const count = computed(() => miseTasks.value.length)
   const pending = computed(() => collectionRef.pending.value)

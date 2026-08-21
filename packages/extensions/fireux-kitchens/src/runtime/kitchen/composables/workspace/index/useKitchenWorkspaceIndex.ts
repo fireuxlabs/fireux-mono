@@ -48,9 +48,7 @@ export function useKitchenWorkspaceIndex() {
       targetKitchens.value.length === 1 &&
       Boolean(workspaceSelection.kitchen.value)
   )
-  const showTargetChooser = computed(
-    () => true
-  )
+  const showTargetChooser = computed(() => true)
   const runtime = computed(() => ({
     appId: workspaceRuntime.appId.value,
     source: workspaceRuntime.source.value,
@@ -99,8 +97,7 @@ export function useKitchenWorkspaceIndex() {
     locked: isTenantSingleTarget.value,
     demoTargets: {
       show:
-        workspaceRuntime.allowDemo.value &&
-        index.sections.value.targets.show,
+        workspaceRuntime.allowDemo.value && index.sections.value.targets.show,
       collection: demoKitchens.value,
       outcome: demoCollection.outcome.value,
     },
@@ -110,10 +107,7 @@ export function useKitchenWorkspaceIndex() {
     clear: () => {
       if (!isTenantSingleTarget.value) index.actions.clear()
     },
-    selectTarget: (
-      id: string,
-      source: KitchenFetchSource = 'live'
-    ) => {
+    selectTarget: (id: string, source: KitchenFetchSource = 'live') => {
       workspaceActions.selectKitchen(String(id ?? '').trim(), source)
     },
   }

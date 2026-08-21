@@ -263,7 +263,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     projectModel,
-    /AppProjectStorage[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/projects\/\{projectId\}'/
+    /ProjectTeamStorage[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'projects\/\{projectId\}\/team\/\{userId\}'/
   )
   assert.match(
     projectModel,
@@ -274,15 +274,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /export interface Project[\s\S]*extends FireuxStamped,[\s\S]*ProjectIdentity,[\s\S]*ProjectPresentation/
   )
   assert.doesNotMatch(projectModel, /WidenLiteral|^  slug:/m)
-  assert.match(projectModel, /AppProjectDefaults/)
-  assert.match(projectModel, /FireuxAppAccessRecordModel/)
+  assert.match(projectModel, /ProjectTeamMemberDefaults/)
+  assert.doesNotMatch(projectModel, /AppProject|FireuxAppAccessRecordModel/)
   assert.doesNotMatch(
     projectModel,
     /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|workspace_endpoint_url|project_type|primary_project):/m
-  )
-  assert.match(
-    userModel,
-    /UserTargetsStorage[\s\S]*users\/\{userId\}\/private\/targets/
   )
   assert.match(
     userModel,
@@ -291,7 +287,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userModel, /export interface AppUser extends FireuxStamped/)
   const canonicalUserModels = userModel.slice(
     0,
-    userModel.indexOf('export interface UserTargets')
+    userModel.indexOf('export interface AppUser')
   )
   assert.doesNotMatch(
     canonicalUserModels,
@@ -325,7 +321,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     profileProvisioner,
-    /function runtimeDatabaseContext\(definition:[\s\S]*isRuntimeProfileEnabled\(fireux\?\.profiles, definition\.id\)[\s\S]*runGuardedServerTransaction/
+    /function runtimeDatabaseContext\(definition:[\s\S]*isRuntimeProfileEnabled\(fireux\?\.profiles, definition\.kind\)[\s\S]*runGuardedServerTransaction/
   )
   assert.doesNotMatch(
     profileProvisioner,
@@ -361,7 +357,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ],
   ]) {
     const source = read(repoRoot, endpoint)
-    assert.match(source, new RegExp(`id:\\s*['"]${profileId}['"]`))
+    assert.match(source, new RegExp(`kind:\\s*['"]${profileId}['"]`))
     assert.match(source, /createProfileProvisionHandler/)
     assert.doesNotMatch(source, /readBody|getQuery|getRouterParam/)
   }
@@ -370,12 +366,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase.ts'
   )
-  assert.match(profileUpdateBase, /export function useProfileRootUpdateBase/)
-  assert.match(profileUpdateBase, /export function useProfileAppUpdateBase/)
-  assert.doesNotMatch(
+  assert.match(profileUpdateBase, /export function useProfileUpdateBase/)
+  assert.match(
     profileUpdateBase,
-    /export function useProfileUpdateBase|scope\?:|scope ===/
+    /export function useProfileAppStateUpdateBase/
   )
+  assert.doesNotMatch(profileUpdateBase, /scope\?:|scope ===/)
 
   for (const rootUpdater of [
     'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/mutations/useAgentUpdate.ts',
@@ -383,8 +379,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/user/composables/firestore/profiles/Chef/mutations/useChefUpdate.ts',
   ]) {
     const source = read(repoRoot, rootUpdater)
-    assert.match(source, /useProfileRootUpdateBase/)
-    assert.doesNotMatch(source, /useProfileAppUpdateBase|updateAppProfile/)
+    assert.match(source, /useProfileUpdateBase/)
+    assert.doesNotMatch(source, /useProfileAppStateUpdateBase|updateAppState/)
   }
 
   for (const retiredProfileSurface of [
@@ -425,17 +421,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   for (const [managerPath, directoryType, storedType] of [
     [
       'packages/extensions/fireux-jobs/src/runtime/components/Agent/Collection/Manager.vue',
-      'PublicAgentDirectoryProfile',
+      'AgentDirectoryProfile',
       'Agent',
     ],
     [
       'packages/extensions/fireux-jobs/src/runtime/components/Professional/Collection/Manager.vue',
-      'PublicProfessionalDirectoryProfile',
+      'ProfessionalDirectoryProfile',
       'Professional',
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Collection/Manager.vue',
-      'PublicChefDirectoryProfile',
+      'ChefDirectoryProfile',
       'Chef',
     ],
   ]) {
@@ -453,12 +449,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /^    (commitUpdate|updateCoreProfile),$/m
   )
 
-  const publicProfileDetail = read(
+  const profileDetail = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/public/profile/usePublicProfileDetail.ts'
+    'packages/core/fireux-core/src/runtime/user/composables/profile/useProfileDetail.ts'
   )
-  assert.match(publicProfileDetail, /useAsyncData/)
-  assert.match(publicProfileDetail, /server:\s*true/)
+  assert.match(profileDetail, /useAsyncData/)
+  assert.match(profileDetail, /server:\s*true/)
   for (const [pagePath, collection, kind] of [
     [
       'packages/extensions/fireux-jobs/src/runtime/pages/agents/[handle].vue',
@@ -482,7 +478,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ],
   ]) {
     const source = read(repoRoot, pagePath)
-    assert.match(source, /await usePublicProfileDetail/)
+    assert.match(source, /await useProfileDetail/)
     assert.match(source, /useRouteParam\(['"]handle['"]\)/)
     assert.match(source, /redirectCode:\s*301/)
     assert.match(
@@ -556,13 +552,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemFetch.ts'
   )
-  const ecosystemCollection = read(
+  const ecosystemCollectionSource = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
   )
-  for (const source of [ecosystemFetch, ecosystemCollection]) {
-    assert.match(source, /readRuntimeIdentityFirestoreDatabaseId/)
-  }
+  assert.match(ecosystemFetch, /\/api\/ecosystems\//)
+  assert.doesNotMatch(ecosystemFetch, /\buseFirestore\s*\(|\bfirestoreFetch\b/)
   assert.match(appManager, /controller:\s*AppDirectoryController/)
   assert.doesNotMatch(appManager, /useAppCollection/)
   assert.match(ecosystemManager, /controller:\s*EcosystemDirectoryController/)
@@ -616,7 +611,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const ownerAppDetailApi = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/api/public/apps/[id].get.ts'
+    'packages/core/fireux-core/src/runtime/server/api/apps/[id].get.ts'
   )
   const platformAppDetailPage = read(
     repoRoot,
@@ -626,6 +621,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(ownerAppDetailApi, /ecosystem_id/)
   assert.match(platformAppDetailPage, /PlatformDirectoryResponse/)
   assert.match(platformAppDetailPage, /show-people="false"/)
+  assert.doesNotMatch(ownerAppDetailApi, /PublicApp|\/api\/public\/apps/)
 
   const appInitialization = read(
     repoRoot,
@@ -705,12 +701,30 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const ecosystemDetailApi = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/api/public/ecosystems/[id].get.ts'
+    'packages/core/fireux-core/src/runtime/server/api/ecosystems/[id].get.ts'
   )
-  assert.match(ecosystemDetail, /PublicDetailResponse<PublicEcosystemDto>/)
+  const ecosystemCollection = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/ecosystem/composables/firestore/fetch/useEcosystemCollection.ts'
+  )
+  const ecosystemReader = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/ecosystem/server/identity/read.ts'
+  )
+  assert.match(ecosystemDetail, /\{ ecosystem: Ecosystem \}/)
+  assert.match(ecosystemDetail, /\/api\/ecosystems\//)
   assert.match(ecosystemDetail, /EcosystemDetailOutcome/)
-  assert.match(ecosystemDetailApi, /ecosystemId !== ownerId/)
-  assert.match(ecosystemDetailApi, /projectPublicEcosystem/)
+  assert.match(ecosystemDetailApi, /readEcosystem/)
+  assert.match(ecosystemCollectionSource, /\/api\/ecosystems/)
+  assert.doesNotMatch(
+    ecosystemCollectionSource,
+    /\buseFirestore\s*\(|\bfirestoreFetch\b/
+  )
+  assert.match(ecosystemReader, /getRuntimeIdentityFirestore/)
+  assert.doesNotMatch(
+    [ecosystemDetail, ecosystemDetailApi, ecosystemCollectionSource].join('\n'),
+    /PublicEcosystem|\/api\/public\/ecosystems/
+  )
   for (const mutation of [
     'useProjectBootstrapCreate.ts',
     'useProjectCreate.ts',
@@ -736,7 +750,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.deepEqual(
     projectDirectoryPages.map((file) => path.basename(file)).sort(),
     ['index.vue'],
-    'Project may expose only its public collection page; public detail pages must not return.'
+    'Project may expose only its Directory page; a Project detail route is not supported.'
   )
   const projectDirectory = read(
     repoRoot,
@@ -745,19 +759,35 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(
     projectDirectory,
     /requiresAuth|roles:\s*\[/,
-    'The public Project collection must not carry an authentication or role gate.'
+    'The Project Directory must not carry an authentication or role gate.'
   )
-  assert.match(projectDirectory, /usePlatformProjectDirectory/)
+  assert.match(projectDirectory, /useProjectDirectory/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
-  const publicProjectDirectoryApi = read(
+  const projectDirectoryApi = read(
     repoRoot,
-    'projects/fireux/fireux-app/server/api/public/projects.get.ts'
+    'projects/fireux/fireux-app/server/api/projects/index.get.ts'
   )
-  assert.match(publicProjectDirectoryApi, /ProjectStorage\.collection/)
-  assert.match(publicProjectDirectoryApi, /status\) !== 'active'/)
+  const projectDirectoryReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/project/index/directory.ts'
+  )
+  const projectDirectoryModel = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/models/project-directory.model.ts'
+  )
+  assert.match(projectDirectoryApi, /readProjectDirectoryPage/)
+  assert.doesNotMatch(projectDirectoryApi, /ProjectStorage|\.collection\(/)
+  assert.match(projectDirectoryReader, /ProjectStorage\.collection/)
+  assert.match(projectDirectoryReader, /status !== 'active'/)
+  assert.match(projectDirectoryModel, /export type ProjectDirectoryEntry/)
+  assert.match(projectDirectoryModel, /export type ProjectDirectoryPage/)
   assert.doesNotMatch(
-    publicProjectDirectoryApi,
+    projectDirectoryReader,
     /operator_ids|team_ids|private\/targets|requireFirebaseBearerUser/
+  )
+  assert.doesNotMatch(
+    [projectDirectory, projectDirectoryApi, projectDirectoryReader].join('\n'),
+    /PublicProject|\/api\/public\/projects/
   )
 
   for (const retiredWorkspacePage of ['create.vue']) {
@@ -848,10 +878,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(projectControlApi, /operator_ids|team_ids/)
   assert.match(projectTeamApi, /requireFirebaseBearerUser/)
-  assert.match(projectTeamApi, /membershipData\.role\) !== 'admin'/)
-  assert.match(projectTeamApi, /project_ids/)
-  assert.match(projectTeamApi, /operator_ids/)
-  assert.match(projectTeamApi, /team_ids/)
+  assert.match(projectTeamApi, /AppUserStorage\.collection/)
+  assert.match(projectTeamApi, /membership\.data\(\)\?\.role/)
+  assert.match(projectTeamApi, /ProjectTeamStorage\.collection/)
+  assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.user_id/)
+  assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.status/)
+  assert.match(projectTeamApi, /teamRole !== 'owner'/)
+  assert.match(projectTeamApi, /teamRole !== 'operator'/)
+  assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
   assert.match(projectTeamApi, /UserStorage\.collection/)
 
   for (const method of ['get', 'post']) {
@@ -1020,7 +1054,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     jobPermissions,
     /appUser\.value\?\.profiles\.includes\(['"]agent['"]\)/
   )
-  assert.match(jobPermissions, /resolvedAgent\.value\?\.app\?\.id/)
+  assert.doesNotMatch(jobPermissions, /resolvedAgent\.value\?\.app\?\.id/)
   assert.match(jobPermissions, /authorReadiness\.value\s*===\s*['"]ready['"]/)
   assert.match(jobPublishSurface, /useJobPublish/)
   assert.match(jobPublishSurface, /Publish job/)
@@ -1285,13 +1319,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-companies/src/runtime/place/server/company/materialize.ts'
   )
-  const publicCompanyModel = read(
+  const companyDirectoryModel = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/place/models/company-public.model.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/models/company-directory.model.ts'
   )
-  const publicCompanyProjection = read(
+  const companyProjection = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/place/server/company/public-projection.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/server/company/projection.ts'
   )
   assert.match(companyModel, /kind:\s*'record'/)
   assert.match(companyModel, /parent:\s*'Place'/)
@@ -1313,26 +1347,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /canonicalCompanyRole\(id,\s*companySnapshot\.data\)/
   )
   assert.match(
-    publicCompanyModel,
-    /export type PublicCompanyProjection = Place/
+    companyDirectoryModel,
+    /export type CompanyDirectoryEntry = Place/
   )
+  assert.match(companyDirectoryModel, /export type CompanyDetail = Place/)
+  assert.match(companyProjection, /canonicalCompanyRole\(id,\s*companyValue\)/)
   assert.match(
-    publicCompanyModel,
-    /export type PublicCompanyDetailProjection = Place/
+    companyProjection,
+    /projectCompanyDetail[\s\S]*normalizePlace\(id,\s*placeValue\)/
   )
-  assert.match(
-    publicCompanyProjection,
-    /canonicalCompanyRole\(id,\s*companyValue\)/
-  )
-  assert.match(
-    publicCompanyProjection,
-    /projectPublicCompanyDetail[\s\S]*normalizePlace\(id,\s*placeValue\)/
-  )
-  assert.match(publicCompanyProjection, /return place/)
+  assert.match(companyProjection, /return place/)
   assert.doesNotMatch(
-    publicCompanyProjection,
+    companyProjection,
     /\.\.\.\(place\./,
     'Company reads must not maintain a second optional copy of the canonical Place.'
+  )
+  assert.doesNotMatch(
+    [companyDirectoryModel, companyProjection].join('\n'),
+    /PublicCompany|public-projection/
   )
 
   assert.equal(

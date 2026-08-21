@@ -1,9 +1,5 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill"
->
+  <NuxtLink v-if="link && to" :to="to" class="pill">
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
         :src="imageUrl || undefined"
@@ -19,20 +15,25 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="pill"
-  @click="onClick"
->
+  <div v-else class="pill" @click="onClick">
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
         :src="imageUrl || undefined"
@@ -48,14 +49,23 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -63,7 +73,10 @@ import { navigateTo } from '#imports'
 
 import type { ClientCard } from '../../../../../composables/workspace/operations/Clients/utils/view/useClientInterface'
 
-type PillProps = Pick<ClientCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'status'> & {
+type PillProps = Pick<
+  ClientCard.Card,
+  'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'status'
+> & {
   showSubtitle?: boolean
   showMeta?: boolean
   badges?: string[]

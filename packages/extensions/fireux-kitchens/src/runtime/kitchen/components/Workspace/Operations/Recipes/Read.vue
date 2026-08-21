@@ -12,9 +12,7 @@
         </div>
       </template>
 
-      <p v-if="pending" class="text-sm text-dimmed">
-        Loading recipes...
-      </p>
+      <p v-if="pending" class="text-sm text-dimmed">Loading recipes...</p>
 
       <UAlert
         v-else-if="error"
@@ -34,11 +32,7 @@
           :data-service-state="
             isRecipeInService(card.id) ? 'active' : 'inactive'
           "
-          :class="
-            isRecipeInService(card.id)
-              ? ''
-              : 'opacity-45 saturate-50'
-          "
+          :class="isRecipeInService(card.id) ? '' : 'opacity-45 saturate-50'"
         />
       </div>
 
@@ -62,14 +56,8 @@ import { computed } from 'vue'
 import { useRecipeInterface } from '../../../../composables/recipe/useRecipeInterface'
 import { useKitchenRecipesWorkspace } from '../../../../composables/workspace/operations/Recipes/useKitchenRecipesWorkspace'
 
-const {
-  recipes,
-  pending,
-  error,
-  outcome,
-  debug,
-  isRecipeInService,
-} = useKitchenRecipesWorkspace()
+const { recipes, pending, error, outcome, debug, isRecipeInService } =
+  useKitchenRecipesWorkspace()
 const { cell } = useRecipeInterface()
 const cards = computed(() =>
   recipes.value

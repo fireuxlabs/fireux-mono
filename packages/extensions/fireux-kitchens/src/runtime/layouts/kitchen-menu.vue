@@ -5,7 +5,9 @@
     </main>
 
     <footer class="border-t border-default bg-[var(--ui-bg)]/80">
-      <div class="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3 text-xs text-dimmed sm:px-6">
+      <div
+        class="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3 text-xs text-dimmed sm:px-6"
+      >
         <span>Misebox</span>
         <span>Kitchen Menu</span>
       </div>

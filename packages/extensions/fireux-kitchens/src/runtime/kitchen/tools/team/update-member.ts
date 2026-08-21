@@ -8,7 +8,8 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   context: {
     target: 'KitchenTeamMember',
     instruction: 'Update the name of an existing Kitchen Team member.',
-    outcome: 'Preserves member identity while updating the supported name field.',
+    outcome:
+      'Preserves member identity while updating the supported name field.',
     constraints: ['Only the name field is currently supported.'],
   },
   inputSchema: {
@@ -38,6 +39,27 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
     },
     required: ['updates'],
     additionalProperties: false,
+  },
+  ai: {
+    baked: {
+      purpose:
+        'Update the supported name field for selected Kitchen Team members.',
+      knows: [
+        'The selected Kitchen, current member identities and proposed names.',
+      ],
+      constraints: [
+        'Only the name field is currently supported.',
+        'Do not replace member identity or infer additional profile changes.',
+      ],
+      evidence: [
+        'Return which member identities were updated and their resulting names.',
+      ],
+    },
+    runtime: {
+      accepted: true,
+      required: ['workspaceSelection', 'memberUpdates'],
+      optional: ['userRequest'],
+    },
   },
   surfaces: {
     human: {

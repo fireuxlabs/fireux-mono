@@ -4,9 +4,7 @@
       <template #header>
         <div class="space-y-3">
           <div class="space-y-1">
-            <p class="fx-type-label">
-              Supplier workspace
-            </p>
+            <p class="fx-type-label">Supplier workspace</p>
             <h2 class="text-2xl font-semibold">
               {{ headerTitle }}
             </h2>
@@ -23,17 +21,16 @@
         :data-dev-note-title="developerNoteTitle"
         class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
       >
-        <p class="fireux-dev-note__label mb-1">
-          Developer Note
-        </p>
+        <p class="fireux-dev-note__label mb-1">Developer Note</p>
         <ul data-dev-note-body class="list-disc space-y-1 pl-4">
           <li>
             The supplier mutation creates
             <code>suppliers/&lt;id&gt;</code>.
           </li>
           <li>
-            Workspace mode uses the authenticated Supplier onboarding transaction
-            to create or attach the root and its same-id App support record.
+            Workspace mode uses the authenticated Supplier onboarding
+            transaction to create or attach the root and its same-id App support
+            record.
           </li>
           <li>
             The transaction also updates the current AppUser Supplier target.
@@ -45,7 +42,8 @@
           </li>
           <li>
             Success routes to
-            <code>{{ successTo }}</code>.
+            <code>{{ successTo }}</code
+            >.
           </li>
         </ul>
       </div>
@@ -87,7 +85,9 @@ defineEmits<{
 
 const { notesVisible } = useDevUi()
 
-const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'workspace')
+const resolvedMode = computed<FireuxEntityCreateMode>(
+  () => props.mode ?? 'workspace'
+)
 const create = computed(() => props.create)
 const returnTo = computed(() => String(props.returnTo || '').trim())
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
@@ -95,7 +95,9 @@ const isWorkspaceMode = computed(() => resolvedMode.value === 'workspace')
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() => 'Create Supplier')
 const headerTitle = computed(() =>
-  isWorkspaceMode.value ? 'Create your supplier workspace' : 'Create your public supplier'
+  isWorkspaceMode.value
+    ? 'Create your supplier workspace'
+    : 'Create your public supplier'
 )
 const headerDescription = computed(() =>
   isWorkspaceMode.value

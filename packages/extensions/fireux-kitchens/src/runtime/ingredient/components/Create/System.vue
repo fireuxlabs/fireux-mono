@@ -95,11 +95,7 @@ const loadImage = (file: File) =>
     image.src = objectUrl
   })
 
-const toBlob = (
-  canvas: HTMLCanvasElement,
-  type: string,
-  quality?: number
-) =>
+const toBlob = (canvas: HTMLCanvasElement, type: string, quality?: number) =>
   new Promise<Blob | null>((resolve) => {
     canvas.toBlob((blob) => resolve(blob), type, quality)
   })

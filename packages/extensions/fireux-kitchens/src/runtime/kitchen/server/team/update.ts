@@ -95,15 +95,8 @@ export async function updateKitchenTeamMembers(
 
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const kitchen = await requireKitchenMutationAuthority(
-      mutations,
-      actor,
-      kitchenId
-    )
-    const members = serverKitchenTeamMembersTarget(
-      kitchen.ownerAppId,
-      kitchenId
-    )
+    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const members = serverKitchenTeamMembersTarget(kitchenId)
     const existing = await Promise.all(
       updates.map((update) => mutations.read(members, update.memberId))
     )

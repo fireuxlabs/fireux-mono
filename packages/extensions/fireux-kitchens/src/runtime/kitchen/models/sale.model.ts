@@ -12,13 +12,13 @@ import type {
 /**
  * Family: Kitchen-owned immutable fact record
  * Storage: parent-owned record derived one-to-one from a completed Order
- * Path: apps/{appId}/kitchens/{kitchenId}/sales/{saleId}
+ * Path: kitchens/{kitchenId}/sales/{saleId}
  *
  * KitchenSale is not an entity: its id and lifecycle are derived from Order.
  */
 export const KitchenSaleStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/sales/{saleId}',
+  path: 'kitchens/{kitchenId}/sales/{saleId}',
   collection: 'sales',
   parent: 'kitchen',
   idParam: 'saleId',
@@ -83,5 +83,5 @@ export function kitchenSalePath(input: {
   kitchenId: string
   saleId: string
 }): string {
-  return `apps/${input.appId}/kitchens/${input.kitchenId}/sales/${input.saleId}`
+  return `kitchens/${input.kitchenId}/sales/${input.saleId}`
 }

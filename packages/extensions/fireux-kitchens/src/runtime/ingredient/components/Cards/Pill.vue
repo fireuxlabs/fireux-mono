@@ -1,9 +1,5 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill ingredient-card-pill"
->
+  <NuxtLink v-if="link && to" :to="to" class="pill ingredient-card-pill">
     <div class="ingredient-card-pill__layout">
       <UAvatar
         :src="imageUrl || undefined"
@@ -26,20 +22,25 @@
         >
           {{ subtitle }}
         </UBadge>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="pill ingredient-card-pill"
-  @click="onClick"
->
+  <div v-else class="pill ingredient-card-pill" @click="onClick">
     <div class="ingredient-card-pill__layout">
       <UAvatar
         :src="imageUrl || undefined"
@@ -62,14 +63,23 @@
         >
           {{ subtitle }}
         </UBadge>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -77,7 +87,10 @@ import { computed, navigateTo } from '#imports'
 
 import type { IngredientCard } from '../../composables/useIngredientInterface'
 
-type PillProps = Pick<IngredientCard.Card, 'slug' | 'to' | 'title' | 'subtitle' | 'imageUrl'> & {
+type PillProps = Pick<
+  IngredientCard.Card,
+  'slug' | 'to' | 'title' | 'subtitle' | 'imageUrl'
+> & {
   badges?: string[]
   showSubtitle?: boolean
   showBadges?: boolean

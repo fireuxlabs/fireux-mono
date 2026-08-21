@@ -1,7 +1,5 @@
 <template>
-  <UCard
-    class="receiving-order"
-  >
+  <UCard class="receiving-order">
     <template #header>
       <WorkspaceKitchenOperationsOrdersReceivingSummary
         :icon="incomingIcon"
@@ -94,7 +92,10 @@ const props = withDefaults(
   }
 )
 defineEmits<{
-  (event: 'accept', payload: { id: string; estimatedMinutes: number | null }): void
+  (
+    event: 'accept',
+    payload: { id: string; estimatedMinutes: number | null }
+  ): void
   (event: 'nudge-estimate', payload: { id: string; amount: number }): void
   (event: 'reject', payload: { id: string; note: string }): void
   (event: 'set-estimate', payload: { id: string; minutes: number }): void
@@ -103,11 +104,12 @@ defineEmits<{
 const normalize = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const timestampMs = (value: unknown) => {
   if (value instanceof Date) return value.getTime()
-  if (typeof value === 'number') return value > 1_000_000_000_000 ? value : value * 1000
+  if (typeof value === 'number')
+    return value > 1_000_000_000_000 ? value : value * 1000
 
   const source = value as { seconds?: number; toMillis?: () => number } | null
   if (typeof source?.toMillis === 'function') return source.toMillis()
@@ -134,12 +136,13 @@ const collection = computed(() => record(orderRecord.value.collection))
 const isCollectionOrder = computed(() => orderType.value === 'collection')
 const isDeliveryOrder = computed(() => orderType.value === 'delivery')
 const isPreOrder = computed(() => orderType.value === 'pre_order')
-const requestedFor = computed(() =>
-  collection.value.requested_for || orderRecord.value.requested_for
+const requestedFor = computed(
+  () => collection.value.requested_for || orderRecord.value.requested_for
 )
 const requestedForMs = computed(() => timestampMs(requestedFor.value))
-const isScheduledCollection = computed(() =>
-  isCollectionOrder.value &&
+const isScheduledCollection = computed(
+  () =>
+    isCollectionOrder.value &&
     normalize(collection.value.mode) === 'scheduled' &&
     Boolean(requestedForMs.value)
 )
@@ -157,7 +160,10 @@ const incomingTitle = computed(() => {
   return 'Order'
 })
 const scheduledOrderLabel = computed(() => {
-  if (!(isScheduledCollection.value || isPreOrder.value) || !requestedForMs.value) {
+  if (
+    !(isScheduledCollection.value || isPreOrder.value) ||
+    !requestedForMs.value
+  ) {
     return ''
   }
 
@@ -219,7 +225,6 @@ function scheduleDistanceLabel(distanceMs: number, today: boolean) {
 
   return `in ${Math.round(hours / 24)} days`
 }
-
 </script>
 
 <style scoped>

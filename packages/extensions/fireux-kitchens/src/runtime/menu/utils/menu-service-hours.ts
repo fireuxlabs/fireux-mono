@@ -8,7 +8,7 @@ const hasWindows = (value?: WeekdayTimeWindowsConfig) =>
   Boolean(value?.windows.length)
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const text = (value: unknown) => String(value ?? '').trim()
 const validTimezone = (value: string) => {
@@ -27,7 +27,8 @@ export const compactMenuServiceHoursDelta = (
   if (serviceHours.inherit_kitchen_operation_hours === true) return undefined
 
   const operationHours = record(serviceHours.operation_hours)
-  const customIntent = serviceHours.inherit_kitchen_operation_hours === false ||
+  const customIntent =
+    serviceHours.inherit_kitchen_operation_hours === false ||
     Object.hasOwn(serviceHours, 'operation_hours')
   if (!customIntent) return undefined
 
@@ -36,7 +37,9 @@ export const compactMenuServiceHoursDelta = (
     ? operationHours.windows
     : []
   if (!timezone || !validTimezone(timezone) || !windows.length) {
-    throw new Error('Custom Menu service hours require a timezone and valid ranges.')
+    throw new Error(
+      'Custom Menu service hours require a timezone and valid ranges.'
+    )
   }
 
   const normalized = readWeekdayTimeWindowsConfig({

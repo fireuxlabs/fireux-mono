@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDirectoryCard
+  <UserProfileDirectoryCard
     variant="compact"
     kind-label="Hiring profile"
     icon="i-lucide-handshake"

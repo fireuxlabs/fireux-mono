@@ -6,10 +6,7 @@
       </div>
     </template>
 
-    <form
-      class="space-y-4"
-      @submit.prevent="addRecipe"
-    >
+    <form class="space-y-4" @submit.prevent="addRecipe">
       <UFormField label="Name">
         <UInput
           v-model="name"
@@ -37,10 +34,7 @@
           Create recipe
         </UButton>
 
-        <p
-          v-if="message"
-          class="text-xs text-dimmed"
-        >
+        <p v-if="message" class="text-xs text-dimmed">
           {{ message }}
         </p>
       </div>
@@ -55,12 +49,8 @@ import { computed, ref } from 'vue'
 import { useKitchenRecipesWorkspace } from '../../../../composables/workspace/operations/Recipes/useKitchenRecipesWorkspace'
 import { useRecipeCreate } from '../../../../composables/firestore/recipe/mutations/useRecipeCreate'
 
-const {
-  kitchenId,
-  rootCollection,
-  databaseId,
-  canWrite,
-} = useKitchenRecipesWorkspace()
+const { kitchenId, rootCollection, databaseId, canWrite } =
+  useKitchenRecipesWorkspace()
 const { createRecipe } = useRecipeCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,
@@ -73,8 +63,8 @@ const saving = ref(false)
 const message = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const canCreateRecipe = computed(() =>
-  canWrite.value && Boolean(normalizeString(kitchenId.value))
+const canCreateRecipe = computed(
+  () => canWrite.value && Boolean(normalizeString(kitchenId.value))
 )
 
 const addRecipe = async () => {
@@ -114,9 +104,13 @@ const addRecipe = async () => {
     } else {
       toast.add({ title: 'Recipe created', icon: 'i-heroicons-check-circle' })
     }
-    await navigateTo(`/workspace/kitchen/recipes/${encodeURIComponent(result.id)}`)
+    await navigateTo(
+      `/workspace/kitchen/recipes/${encodeURIComponent(result.id)}`
+    )
   } catch (error) {
-    const errorMessage = String((error as any)?.message || error || 'Create recipe failed.')
+    const errorMessage = String(
+      (error as any)?.message || error || 'Create recipe failed.'
+    )
     message.value = errorMessage
     toast.add({
       title: 'Recipe create failed',

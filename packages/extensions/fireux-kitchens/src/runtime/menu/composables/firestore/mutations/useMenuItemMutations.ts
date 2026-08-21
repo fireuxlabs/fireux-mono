@@ -23,13 +23,21 @@ type Options = {
 }
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
+const optionPath = (value: Options['kitchenCollectionPath']) =>
+  clean(unref(value))
 const unique = (values: string[]) => new Set(values).size === values.length
 const optionKey = (value: unknown) => normalizeSlug(value)
 
 const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
-  const immutable = ['id', 'kitchen_id', 'menu_id', 'section_id', 'dish_id', 'created']
-  if (immutable.some(key => Object.hasOwn(patch, key))) {
+  const immutable = [
+    'id',
+    'kitchen_id',
+    'menu_id',
+    'section_id',
+    'dish_id',
+    'created',
+  ]
+  if (immutable.some((key) => Object.hasOwn(patch, key))) {
     throw new Error('Menu Item identity and relationships cannot be changed.')
   }
   if (
@@ -51,7 +59,9 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
       options.length !== input.length ||
       !unique(options.map((option) => optionKey(option.label)))
     ) {
-      throw new Error('Variants require unique labels and full prices greater than zero.')
+      throw new Error(
+        'Variants require unique labels and full prices greater than zero.'
+      )
     }
     normalized.price_options = options
   }
@@ -64,7 +74,9 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
       !unique(addOns.map((addOn) => optionKey(addOn.id))) ||
       !unique(addOns.map((addOn) => optionKey(addOn.label)))
     ) {
-      throw new Error('Add-ons require unique labels and identifiers and a non-negative price.')
+      throw new Error(
+        'Add-ons require unique labels and identifiers and a non-negative price.'
+      )
     }
     normalized.add_ons = addOns
   }
@@ -75,7 +87,9 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
 export function useMenuItemMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
 
@@ -102,13 +116,16 @@ export function useMenuItemMutations(options: Options = {}) {
     if (!collectionPath) throw new Error('Missing section')
     if (!dishId) throw new Error('Menu item requires a dish')
 
-    const kitchenCollectionPath = optionPath(options.kitchenCollectionPath) ||
+    const kitchenCollectionPath =
+      optionPath(options.kitchenCollectionPath) ||
       resolveKitchenScopeCollectionPath(appId)
-    const dishSnap = await getDoc(doc(
-      db,
-      `${kitchenCollectionPath}/${clean(input.kitchenId)}/${DishStorage.collection}`,
-      dishId
-    ))
+    const dishSnap = await getDoc(
+      doc(
+        db,
+        `${kitchenCollectionPath}/${clean(input.kitchenId)}/${DishStorage.collection}`,
+        dishId
+      )
+    )
     if (!dishSnap.exists()) throw new Error('Select a Dish from this Kitchen.')
 
     return create(
@@ -140,7 +157,11 @@ export function useMenuItemMutations(options: Options = {}) {
     const collectionPath = path(kitchenId, menuId, sectionId)
     const id = clean(itemId)
     if (!collectionPath || !id) throw new Error('Missing menu item')
-    await updateDocument<MenuItem>(collectionPath, id, normalizeItemPatch(patch))
+    await updateDocument<MenuItem>(
+      collectionPath,
+      id,
+      normalizeItemPatch(patch)
+    )
   }
 
   const reorderItems = async (
@@ -167,7 +188,8 @@ export function useMenuItemMutations(options: Options = {}) {
       menuId: string,
       sectionId: string,
       itemId: string
-    ) => updateItem(kitchenId, menuId, sectionId, itemId, { status: 'archived' }),
+    ) =>
+      updateItem(kitchenId, menuId, sectionId, itemId, { status: 'archived' }),
     reorderItems,
   }
 }

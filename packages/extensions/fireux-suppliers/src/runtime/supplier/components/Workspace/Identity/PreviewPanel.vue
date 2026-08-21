@@ -68,5 +68,4 @@ const toggleView = () => {
   if (!canToggle.value) return
   showCellView.value = !showCellView.value
 }
-
 </script>

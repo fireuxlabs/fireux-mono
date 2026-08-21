@@ -29,9 +29,7 @@ export default defineEventHandler(async (event: H3Event) => {
   await requireKitchenOperator(event, { appId, kitchenId })
 
   const db = getRuntimeFirestore()
-  const menuSnap = await db
-    .doc(`apps/${appId}/kitchens/${kitchenId}/menus/${menuId}`)
-    .get()
+  const menuSnap = await db.doc(`kitchens/${kitchenId}/menus/${menuId}`).get()
   if (!menuSnap.exists) {
     throw createError({
       statusCode: 404,

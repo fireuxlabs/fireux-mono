@@ -94,9 +94,10 @@ export function useRecipeCreate(
   const { selectedId } = useKitchenWorkspaceSelection()
   const { seedTranslations } = useTranslationSeed()
 
-  const kitchenCollectionPath = computed(() =>
-    normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      normalizeString(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const createRecipe = async (

@@ -53,8 +53,6 @@ export type MenuKitchenScope = {
   specialsMenuId?: string
   page_style?: Record<string, unknown>
   kitchen_theme?: WorkspaceTheme
-  placeLogoImageUrl: string
-  placeWordmarkImageUrl: string
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
   sproochli?: SproochliAttachmentConfig
@@ -66,7 +64,7 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
-  readRecordString(record(value.identity), 'name')
+  readRecordString(record(value.identity), 'display_name')
 
 export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
   readKitchenManagementTarget(
@@ -74,11 +72,11 @@ export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
     String(useRuntimeConfig().public?.fireux?.ecosystem ?? '').trim()
   ).appId
 
-export async function readAppMenuKitchenData(appId: string, kitchenId: string) {
-  if (!appId || !kitchenId) return {}
+export async function readMenuKitchenData(kitchenId: string) {
+  if (!kitchenId) return {}
 
   const snap = await getRuntimeFirestore()
-    .collection(`apps/${appId}/kitchens`)
+    .collection('kitchens')
     .doc(kitchenId)
     .get()
 
@@ -97,8 +95,7 @@ export async function readMenuKitchenPlaceData(kitchenId: string) {
 }
 
 export function menuKitchenIdentity(
-  rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {},
+  kitchenData: Record<string, unknown>,
   placeData: Record<string, unknown> = {}
 ): {
   name: string
@@ -112,12 +109,14 @@ export function menuKitchenIdentity(
   showCurrency: boolean
   page_style?: Record<string, unknown>
   kitchen_theme?: WorkspaceTheme
+  placeLogoImageUrl: string
+  placeWordmarkImageUrl: string
 } {
-  const rootIdentity = readKitchenIdentity(rootData)
+  const rootIdentity = readKitchenIdentity(kitchenData)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
-  const menuDisplay = readKitchenMenusConfig(appData)
-  const workspacePalette = readKitchenWorkspacePalette(appData)
+  const menuDisplay = readKitchenMenusConfig(kitchenData)
+  const workspacePalette = readKitchenWorkspacePalette(kitchenData)
   const placePalette = record(placeData.brand_palette)
   const placeStyle =
     place.mediaBackdropColor && !readRecordString(placePalette, 'primary_color')
@@ -139,13 +138,13 @@ export function menuKitchenIdentity(
     : {}
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeStyle },
-    { source: 'root-kitchen', style: rootData.brand_palette },
+    { source: 'root-kitchen', style: kitchenData.brand_palette },
     { source: 'workspace-theme', style: workspaceStyle },
-    { source: 'app-kitchen', style: readKitchenMenuStyle(appData) }
+    { source: 'kitchen-menu', style: readKitchenMenuStyle(kitchenData) }
   )
 
   return {
-    name: explicitKitchenDisplayName(rootData) || place.name,
+    name: explicitKitchenDisplayName(kitchenData) || place.name,
     tagline: rootIdentity.tagline || place.brandTagline,
     imageUrl: place.coverImage || place.imageUrl,
     imageShade: place.imageShade as KitchenImageShade,
@@ -158,23 +157,21 @@ export function menuKitchenIdentity(
     currencyFormat: menuDisplay.currencyFormat,
     showCurrency: menuDisplay.showCurrency,
     ...(Object.keys(pageStyle).length ? { page_style: pageStyle } : {}),
-    ...(workspacePalette ? { kitchen_theme: { palette: workspacePalette } } : {}),
+    ...(workspacePalette
+      ? { kitchen_theme: { palette: workspacePalette } }
+      : {}),
   }
 }
 
-export function menuKitchenFulfilment(
-  _rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {}
-) {
-  return readKitchenFulfilmentConfig(appData)
+export function menuKitchenFulfilment(kitchenData: Record<string, unknown>) {
+  return readKitchenFulfilmentConfig(kitchenData)
 }
 
 export function menuKitchenOperationHours(
-  _rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {},
+  kitchenData: Record<string, unknown>,
   placeData: Record<string, unknown> = {}
 ) {
-  return resolveKitchenOperationHours(appData, placeData)
+  return resolveKitchenOperationHours(kitchenData, placeData)
 }
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
@@ -210,20 +207,16 @@ export async function readRootMenuKitchenScope(
   const resolvedKitchenSlug =
     readRecordString(kitchenData, 'slug') || kitchenSlug
   const kitchenAppId = source.app_id || resolveSourceAppId(kitchenData)
-  const [appKitchenData, placeData] = await Promise.all([
-    readAppMenuKitchenData(kitchenAppId, resolvedKitchenId),
-    readMenuKitchenPlaceData(resolvedKitchenId),
-  ])
-  const identity = menuKitchenIdentity(kitchenData, appKitchenData, placeData)
+  const placeData = await readMenuKitchenPlaceData(resolvedKitchenId)
+  const identity = menuKitchenIdentity(kitchenData, placeData)
   const placeId = resolvedKitchenId
-  const fulfilment = menuKitchenFulfilment(kitchenData, appKitchenData)
+  const fulfilment = menuKitchenFulfilment(kitchenData)
   const kitchenOperationHours = menuKitchenOperationHours(
     kitchenData,
-    appKitchenData,
     placeData
   )
-  const sproochli = readKitchenSproochliConfig(appKitchenData)
-  const menus = readKitchenMenusConfig(appKitchenData)
+  const sproochli = readKitchenSproochliConfig(kitchenData)
+  const menus = readKitchenMenusConfig(kitchenData)
 
   return {
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),

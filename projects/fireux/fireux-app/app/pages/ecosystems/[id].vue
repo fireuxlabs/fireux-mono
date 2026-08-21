@@ -111,7 +111,7 @@ const detail = useEcosystemDetail(routeId)
 await detail.ready
 const { data: directory } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
-  () => $fetch('/api/public/directory'),
+  () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
 const { profile: makeProfile } = useEcosystemInterface()

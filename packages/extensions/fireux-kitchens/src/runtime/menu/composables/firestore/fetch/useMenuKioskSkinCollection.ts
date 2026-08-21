@@ -44,8 +44,8 @@ export function useMenuKioskSkinCollection(
         .filter((skin): skin is MenuKioskSkin => Boolean(skin))
     )
   )
-  const pending = computed(() =>
-    Boolean(collectionPath.value) && source.value === undefined
+  const pending = computed(
+    () => Boolean(collectionPath.value) && source.value === undefined
   )
 
   return {

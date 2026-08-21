@@ -187,9 +187,7 @@ export function useKitchenWorkspaceIngredients() {
     })
   })
   const ingredients = computed<KitchenWorkspaceIngredientItem[]>(() =>
-    runtime.isDemo.value
-      ? demoIngredients.value
-      : fetchedIngredients.value
+    runtime.isDemo.value ? demoIngredients.value : fetchedIngredients.value
   )
   const ingredientsPending = computed(() =>
     runtime.isDemo.value
@@ -227,7 +225,7 @@ export function useKitchenWorkspaceIngredients() {
   )
   const scenarioIngredientIds = computed(() =>
     (supply.scenario.value?.kitchenIngredients ?? [])
-      .map(ingredient => String(ingredient.ingredient_id || '').trim())
+      .map((ingredient) => String(ingredient.ingredient_id || '').trim())
       .filter(Boolean)
   )
   const hasDemoProductionGraph = runtime.isDemo
@@ -262,26 +260,24 @@ export function useKitchenWorkspaceIngredients() {
           : usedByMenuProductionCount.value === count.value,
     },
     dataSource: {
-      kind:
-        runtime.isDemo.value
-          ? 'demo-usage+canonical-ingredient-roots'
-          : runtime.dataType.value,
+      kind: runtime.isDemo.value
+        ? 'demo-usage+canonical-ingredient-roots'
+        : runtime.dataType.value,
       usage: {
         path: collectionPath.value,
         firestore: !runtime.isDemo.value,
       },
-      ingredientRoots:
-        runtime.isDemo.value
-          ? {
-              authority: '/ingredients/{ingredientId}',
-              projection: '/api/ingredients?ids={ingredientIds}',
-              requestedIds: scenarioIngredientIds.value,
-              resolvedCount: supply.ingredientRoots.value.length,
-            }
-          : {
-              authority: '/ingredients/{ingredientId}',
-              projection: '/api/ingredients?ids={ingredientIds}',
-            },
+      ingredientRoots: runtime.isDemo.value
+        ? {
+            authority: '/ingredients/{ingredientId}',
+            projection: '/api/ingredients?ids={ingredientIds}',
+            requestedIds: scenarioIngredientIds.value,
+            resolvedCount: supply.ingredientRoots.value.length,
+          }
+        : {
+            authority: '/ingredients/{ingredientId}',
+            projection: '/api/ingredients?ids={ingredientIds}',
+          },
       ingredientImages: {
         firestoreField: '/ingredients/{ingredientId}.image_url',
         canonicalStorageObject: 'ingredients/{ingredientId}/image_url',
@@ -321,8 +317,8 @@ export function useKitchenWorkspaceIngredients() {
     pending,
     loadError,
     isIngredientInService: (ingredientId: string) =>
-      !runtime.isDemo.value
-      || demoMenuService.isEntityInService('ingredients', ingredientId),
+      !runtime.isDemo.value ||
+      demoMenuService.isEntityInService('ingredients', ingredientId),
     debug,
   }
 }

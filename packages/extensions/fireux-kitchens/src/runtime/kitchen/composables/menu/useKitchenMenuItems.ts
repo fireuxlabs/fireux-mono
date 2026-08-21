@@ -49,7 +49,10 @@ export function useKitchenMenuItems(
         const snapshots = await Promise.all(
           ids.map((sectionId: string) =>
             getDocs(
-              collection(resolveDb(), `${sectionCollectionPath}/${sectionId}/items`)
+              collection(
+                resolveDb(),
+                `${sectionCollectionPath}/${sectionId}/items`
+              )
             )
           )
         )

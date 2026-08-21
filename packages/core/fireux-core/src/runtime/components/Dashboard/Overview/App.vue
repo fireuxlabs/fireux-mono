@@ -161,7 +161,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AppCard } from '../../../app/composables/useAppInterface'
-import type { CurrentAppMembershipDto } from '../../../server/utils/public-projection/public-dto.types'
+import type { CurrentAppMembership } from '../../../app/models/app-context.model.ts'
 import type {
   DashboardOverviewOutcome,
   DashboardOverviewProfileEntry,
@@ -172,7 +172,7 @@ const props = defineProps<{
   appShortName: string
   appCard: AppCard.Card | null
   appOutcome: DashboardOverviewOutcome
-  membership: CurrentAppMembershipDto | null
+  membership: CurrentAppMembership | null
   membershipOutcome: DashboardOverviewOutcome
   profileEntries: DashboardOverviewProfileEntry[]
   canOpenWorkspace: boolean

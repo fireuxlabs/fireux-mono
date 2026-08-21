@@ -1,20 +1,16 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: expose fixed reads and identity writes without unsafe lifecycle deletes.
 import type { Ref } from 'vue'
-import type { AppSupplier, Supplier } from '../../models/Supplier.model.ts'
+import type { Supplier } from '../../models/Supplier.model.ts'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
 import { useSupplierCollection } from './fetch/useSupplierCollection'
-import { useAppSupplierFetch, useSupplierFetch } from './fetch/useSupplierFetch'
+import { useSupplierFetch } from './fetch/useSupplierFetch'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
 import { useSupplierSeo } from '../useSupplierSeo'
 import { useSupplierComputed } from './utils/view/useSupplierComputed'
 
-export type {
-  SupplierCard,
-  Supplier as SupplierEntity,
-  AppSupplier as SupplierWorkspace,
-}
+export type { SupplierCard, Supplier as SupplierEntity }
 export type {
   SupplierCollectionFilter,
   SupplierCollectionSource,
@@ -22,7 +18,6 @@ export type {
 export {
   useSupplierCollection,
   useSupplierFetch,
-  useAppSupplierFetch,
   useSupplierCreate,
   useSupplierUpdate,
   useSupplierSeo,

@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-delivery-zone">
-    <h2 class="menu-order-screen-title">
-      Delivery area
-    </h2>
+    <h2 class="menu-order-screen-title">Delivery area</h2>
 
     <ClientOnly>
       <KitchenDetailDeliveryZonesMap
@@ -45,7 +43,10 @@
         @click="selectAddress(prediction)"
       >
         <strong>
-          {{ prediction.structured_formatting?.main_text || prediction.description }}
+          {{
+            prediction.structured_formatting?.main_text ||
+            prediction.description
+          }}
         </strong>
         <span v-if="prediction.structured_formatting?.secondary_text">
           {{ prediction.structured_formatting.secondary_text }}
@@ -55,7 +56,9 @@
 
     <p
       class="menu-order-placeholder"
-      :class="{ 'menu-order-placeholder--good': result?.deliverable && minimumMet }"
+      :class="{
+        'menu-order-placeholder--good': result?.deliverable && minimumMet,
+      }"
     >
       {{ status }}
     </p>
@@ -105,11 +108,9 @@ const {
   zones,
 } = useDeliveryFunnel(() => props.order)
 
-watch(
-  ready,
-  (value: boolean) => emit('update:ready', value),
-  { immediate: true }
-)
+watch(ready, (value: boolean) => emit('update:ready', value), {
+  immediate: true,
+})
 
 watch(
   [ready, result],

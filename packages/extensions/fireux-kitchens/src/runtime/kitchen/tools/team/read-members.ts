@@ -15,6 +15,24 @@ export const kitchenTeamMembersReadTool = defineKitchenTeamTool({
     properties: {},
     additionalProperties: false,
   },
+  ai: {
+    baked: {
+      purpose:
+        'Read the authorized member collection for the selected Kitchen Team.',
+      knows: ['Only the selected Kitchen and its authorized Team member rows.'],
+      constraints: [
+        'Do not infer unrecorded skills, availability, access or employment facts.',
+      ],
+      evidence: [
+        'Return the bounded Team member collection used by later deductions.',
+      ],
+    },
+    runtime: {
+      accepted: true,
+      required: ['workspaceSelection'],
+      optional: ['memberSelection', 'userRequest'],
+    },
+  },
   surfaces: {
     human: false,
     agent: { callable: true },

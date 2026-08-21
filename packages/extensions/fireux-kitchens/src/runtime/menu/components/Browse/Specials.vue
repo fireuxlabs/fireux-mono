@@ -26,16 +26,19 @@ import type { CurrencyDisplayFormat } from '../../../models/shared/currency-disp
 import type { MenuManifestContent } from '../../models/menu-detail.model.ts'
 import type { MenuBrowseSurfaceCopy } from '../../utils/menu-surface-copy'
 
-withDefaults(defineProps<{
-  currencyCode: string
-  currencyFormat?: CurrencyDisplayFormat
-  copy: MenuBrowseSurfaceCopy
-  showCurrency?: boolean
-  specials: MenuManifestContent
-}>(), {
-  currencyFormat: 'dash',
-  showCurrency: true,
-})
+withDefaults(
+  defineProps<{
+    currencyCode: string
+    currencyFormat?: CurrencyDisplayFormat
+    copy: MenuBrowseSurfaceCopy
+    showCurrency?: boolean
+    specials: MenuManifestContent
+  }>(),
+  {
+    currencyFormat: 'dash',
+    showCurrency: true,
+  }
+)
 </script>
 
 <style scoped>

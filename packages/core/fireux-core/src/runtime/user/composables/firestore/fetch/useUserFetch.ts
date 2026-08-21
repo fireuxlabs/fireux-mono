@@ -12,10 +12,10 @@ import {
   UserAccountModel,
 } from '../../../models/user-account.model.ts'
 import { resolveUserAvatarSource } from '../../../utils/user-avatar'
-import type { CurrentAppMembershipDto } from '../../../../server/utils/public-projection/public-dto.types.ts'
+import type { CurrentAppMembership } from '../../../../app/models/app-context.model.ts'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
-import { usePublicUserIdentity } from '../../usePublicUserIdentity'
+import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
 
 export type UserFetchOutcome =
@@ -76,7 +76,7 @@ function normalizeUserAccount(
 }
 
 /**
- * Arbitrary User reads are public-only. The optional App scope resolves only
+ * Arbitrary User reads use the canonical identity summary. The optional App scope resolves only
  * the signed-in user's bounded membership projection.
  */
 export function useUserFetch(
@@ -93,7 +93,7 @@ export function useUserFetch(
   // Avoid VueFire SSR warnings by only binding Firestore sources on the client.
   if (import.meta.server) {
     const coreUser = computed<User | null | undefined>(() => null)
-    const appUser = computed<CurrentAppMembershipDto | null | undefined>(
+    const appUser = computed<CurrentAppMembership | null | undefined>(
       () => null
     )
     const privateUser = computed<UserAccount | null | undefined>(() => null)
@@ -128,10 +128,10 @@ export function useUserFetch(
     Boolean(uid.value && includePrivate)
   )
 
-  // Canonical User identity is public data, but active-user surfaces should
+  // Active-user surfaces consume the same bounded identity summary as other User surfaces.
   // consume the same bounded server projection as every other User surface.
   // This avoids coupling dashboard/header availability to raw client Rules.
-  const coreState = usePublicUserIdentity(uid)
+  const coreState = useUserIdentitySummary(uid)
   const privateState = includePrivate ? useCurrentUserAccount() : null
   const coreUserRef = coreState.user
   const corePending = coreState.pending
@@ -141,18 +141,14 @@ export function useUserFetch(
     privateScopeRequested.value ? Boolean(privateState?.pending.value) : false
   )
   const privateError = computed<unknown>(() =>
-    privateScopeRequested.value ? privateState?.error.value ?? null : null
+    privateScopeRequested.value ? (privateState?.error.value ?? null) : null
   )
   const appContext = includeApp ? useCurrentAppContext() : null
   const appScopeRequested = computed(() =>
     Boolean(includeApp && uid.value && appId)
   )
   const appIdentityError = computed<Error | null>(() => {
-    if (
-      !appScopeRequested.value ||
-      !appContext ||
-      appContext.pending.value
-    ) {
+    if (!appScopeRequested.value || !appContext || appContext.pending.value) {
       return null
     }
 
@@ -182,7 +178,7 @@ export function useUserFetch(
     return normalizeCoreUser(raw as User, fallbackId)
   })
 
-  const appUser = computed<CurrentAppMembershipDto | null | undefined>(() => {
+  const appUser = computed<CurrentAppMembership | null | undefined>(() => {
     if (!appScopeRequested.value) return null
     if (appPending.value) return undefined
     if (appError.value) return undefined

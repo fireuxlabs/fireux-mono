@@ -40,8 +40,8 @@ export function useKitchenWorkspaceTables() {
     collectionPath,
   })
   const activeTabs = computed(() =>
-    page.collection.value.items.filter((tab) =>
-      !terminalStatuses.has(String(tab.status || '').trim())
+    page.collection.value.items.filter(
+      (tab) => !terminalStatuses.has(String(tab.status || '').trim())
     )
   )
   const stagingTabs = computed(() =>
@@ -52,7 +52,9 @@ export function useKitchenWorkspaceTables() {
       ['bill_requested', 'payment_pending'].includes(tab.status)
     )
   )
-  const tableCount = computed(() => readKitchenTableCount(selectedKitchen.value))
+  const tableCount = computed(() =>
+    readKitchenTableCount(selectedKitchen.value)
+  )
   const debug = computed(() => ({
     ...page.debug.value,
     activeCount: activeTabs.value.length,

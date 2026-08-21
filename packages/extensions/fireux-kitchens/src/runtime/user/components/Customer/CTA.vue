@@ -17,11 +17,7 @@
       variant="soft"
       orientation="horizontal"
     >
-      <UButton
-        color="primary"
-        :loading="creating"
-        @click="create"
-      >
+      <UButton color="primary" :loading="creating" @click="create">
         Create customer profile
       </UButton>
     </UPageCTA>
@@ -38,20 +34,22 @@ import { useCustomerCreate } from '../../composables/firestore/profiles/Customer
 
 const { appName } = useFireUXConfig()
 const { currentUser } = useUser()
-const { appProfile } = useCustomer()
+const { customerProfile } = useCustomer()
 const { createCustomerProfile } = useCustomerCreate()
 const { cell } = useCustomerInterface()
 const creating = ref(false)
 
 const profileCard = computed(() =>
   cell(
-    appProfile.value
-      ? { ...appProfile.value, user: currentUser.value ?? null }
+    customerProfile.value
+      ? { ...customerProfile.value, user: currentUser.value ?? null }
       : null
   )
 )
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
-const userName = computed(() => String(currentUser.value?.display_name || '').trim())
+const userName = computed(() =>
+  String(currentUser.value?.display_name || '').trim()
+)
 const createTitle = computed(() =>
   userName.value
     ? `Hi ${userName.value}, create your customer profile`

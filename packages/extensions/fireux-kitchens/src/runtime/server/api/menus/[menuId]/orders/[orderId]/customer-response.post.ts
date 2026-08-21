@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
   }
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
-  const orders = serverKitchenOrdersTarget(context.appId, context.kitchenId)
+  const orders = serverKitchenOrdersTarget(context.kitchenId)
   const result = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {

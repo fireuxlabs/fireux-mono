@@ -32,26 +32,28 @@ export function formatKitchenOrderRequestedTime(
     (startOfDay(requested).getTime() - startOfDay(new Date(nowMs)).getTime()) /
       86_400_000
   )
-  const day = dayDifference === 0
-    ? 'Today'
-    : dayDifference === 1
-      ? 'Tomorrow'
-      : new Intl.DateTimeFormat('en-GB', {
-          weekday: 'short',
-          day: '2-digit',
-          month: 'short',
-        }).format(requested)
+  const day =
+    dayDifference === 0
+      ? 'Today'
+      : dayDifference === 1
+        ? 'Tomorrow'
+        : new Intl.DateTimeFormat('en-GB', {
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+          }).format(requested)
   const time = new Intl.DateTimeFormat('en-GB', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
   }).format(requested)
   const minutes = Math.round((requestedMs - nowMs) / 60_000)
-  const distance = minutes < 0
-    ? `${Math.abs(minutes)} min late`
-    : minutes === 0
-      ? 'Now'
-      : `In ${minutes} min`
+  const distance =
+    minutes < 0
+      ? `${Math.abs(minutes)} min late`
+      : minutes === 0
+        ? 'Now'
+        : `In ${minutes} min`
 
   return {
     dateTime: `${day}, ${time}`,

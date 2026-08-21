@@ -1,12 +1,8 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Kitchen
-    </h2>
+    <h2 class="menu-order-screen-title">Kitchen</h2>
 
-    <p class="menu-order-step-label">
-      Kitchen confirmation required
-    </p>
+    <p class="menu-order-step-label">Kitchen confirmation required</p>
 
     <section class="menu-order-dispatch__section">
       <UIcon
@@ -30,7 +26,7 @@
         inputmode="email"
         placeholder="you@example.com"
         type="email"
-      >
+      />
     </label>
 
     <div class="menu-order-dispatch__divider" />
@@ -62,10 +58,9 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const {
-  kitchenStatus,
-  timingStatus,
-} = usePreOrderFunnel(() => props.funnel.order)
+const { kitchenStatus, timingStatus } = usePreOrderFunnel(
+  () => props.funnel.order
+)
 const email = ref(String(props.funnel.incoming.customer?.email ?? '').trim())
 const emailReady = computed(() =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())

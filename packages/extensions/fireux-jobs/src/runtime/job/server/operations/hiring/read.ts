@@ -1,6 +1,9 @@
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { JobApplicationStorage } from '../../../models/job-application.model.ts'
 import type {
   JobApplicationListResponse,
@@ -9,16 +12,13 @@ import type {
 import { readJobServerScope } from '../../core/runtime.ts'
 import {
   APPLICATION_LIMIT,
-  appAgentRef,
-  appProfessionalRef,
-  appRef,
   assertCurrentAppMembership,
   canonicalApplication,
   fail,
   hasProfile,
   markPrivateRead,
-  membershipRef,
   stampMillis,
+  userProfileRef,
 } from './records.ts'
 import { hydrateViews } from './views.ts'
 
@@ -32,15 +32,16 @@ export async function listJobApplications(
   const listScope: JobApplicationListScope =
     rawScope === 'employer' ? 'employer' : 'candidate'
   const db = getRuntimeFirestore(scope.databaseId)
+  const identityDb = getRuntimeIdentityFirestore(scope.identityDatabaseId)
   const profileRef =
     listScope === 'employer'
-      ? appAgentRef(db, scope.appId, uid)
-      : appProfessionalRef(db, scope.appId, uid)
-  const [appSnapshot, membershipSnapshot, profileSnapshot] = await db.getAll(
-    appRef(db, scope.appId),
-    membershipRef(db, scope.appId, uid),
-    profileRef
-  )
+      ? userProfileRef(identityDb, uid, 'agent')
+      : userProfileRef(identityDb, uid, 'professional')
+  const [appSnapshot, membershipSnapshot, profileSnapshot] = await Promise.all([
+    db.doc(`apps/${scope.appId}`).get(),
+    db.doc(`apps/${scope.appId}/users/${uid}`).get(),
+    profileRef.get(),
+  ])
   assertCurrentAppMembership(appSnapshot, membershipSnapshot)
   if (listScope === 'employer' && !hasProfile(profileSnapshot)) {
     fail(403, 'An active Agent profile is required.')

@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDetailSurface
+  <UserProfileDetailSurface
     entity-label="Driver"
     plural-label="Drivers"
     back-to="/drivers"
@@ -22,29 +22,29 @@
         </template>
       </DriverCardsProfile>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Driver (Public DTO)"
         context="Driver detail · drivers/[handle] · endpoint-first SSR"
         :objects="devPayload"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
       />
     </div>
-  </PublicProfileDetailSurface>
+  </UserProfileDetailSurface>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, setResponseStatus } from '#imports'
-import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
+import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useDriverSeo } from '../../user/composables/driver/useDriverSeo'
 import { useDriverInterface } from '../../user/composables/driver/useDriverInterface'
-import type { PublicDriverProfilePayload } from '../../user/models/driver.model.ts'
+import type { DriverProfilePayload } from '../../user/models/driver.model.ts'
 
 definePageMeta({
   visibility: { profiles: ['driver'] },
@@ -61,7 +61,7 @@ const {
   missing,
   failed,
   outcome,
-} = await usePublicProfileDetail<PublicDriverProfilePayload>(
+} = await useProfileDetail<DriverProfilePayload>(
   { collection: 'drivers', kind: 'driver' },
   requestedIdentifier
 )

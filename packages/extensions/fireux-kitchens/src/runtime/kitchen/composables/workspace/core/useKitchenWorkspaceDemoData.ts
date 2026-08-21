@@ -1,9 +1,7 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazily adapt owner-local Kitchen fixtures for workspace use.
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: expose one coherent typed Kitchen world to read-only Workspace adapters.
 import type { MaybeRefOrGetter } from 'vue'
-import {
-  useWorkspaceDemoData,
-} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDemoData'
+import { useWorkspaceDemoData } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDemoData'
 import {
   useKitchenInterface,
   type KitchenSurface,
@@ -24,121 +22,117 @@ export type KitchenWorkspaceDemoData = {
   scenarios: KitchenWorkspaceDemoScenario[]
 }
 
-export function useKitchenWorkspaceDemoData(
-  active: MaybeRefOrGetter<boolean>
-) {
+export function useKitchenWorkspaceDemoData(active: MaybeRefOrGetter<boolean>) {
   const { surface } = useKitchenInterface()
 
   return useWorkspaceDemoData<KitchenWorkspaceDemoData>({
     active,
     loader: async () => {
-      const [
-        { kitchenDemoScenarios },
-        { kitchenDemoDishRecordsByKitchenId },
-      ] = await Promise.all([
-        import('../../../demo/scenarios'),
-        import('../../../demo/operations/Dishes'),
-      ])
-      const scenarios = kitchenDemoScenarios.reduce<KitchenWorkspaceDemoScenario[]>(
-        (items, scenario) => {
-          const kitchen = surface({
-            kitchen: scenario.kitchen,
-            place: scenario.place,
-            scope: scenario.appSupport,
-            routeScope: 'demo',
-          })
-          if (!kitchen) return items
+      const [{ kitchenDemoScenarios }, { kitchenDemoDishRecordsByKitchenId }] =
+        await Promise.all([
+          import('../../../demo/scenarios'),
+          import('../../../demo/operations/Dishes'),
+        ])
+      const scenarios = kitchenDemoScenarios.reduce<
+        KitchenWorkspaceDemoScenario[]
+      >((items, scenario) => {
+        const kitchen = surface({
+          kitchen: scenario.kitchen,
+          place: scenario.place,
+          routeScope: 'demo',
+        })
+        if (!kitchen) return items
 
-          const menus = scenario.menus.map(menu => ({
-            ...menu,
-            dishes: [...menu.dishes],
-            menuSections: menu.menuSections.map(section => ({
-              section: section.section,
-              items: [...section.items],
-            })),
-          }))
-          const {
-            services: _services,
-            completedOrders: _completedOrders,
-            ...workspaceScenario
-          } = scenario
+        const menus = scenario.menus.map((menu) => ({
+          ...menu,
+          dishes: [...menu.dishes],
+          menuSections: menu.menuSections.map((section) => ({
+            section: section.section,
+            items: [...section.items],
+          })),
+        }))
+        const {
+          services: _services,
+          completedOrders: _completedOrders,
+          ...workspaceScenario
+        } = scenario
 
-          items.push({
-            ...workspaceScenario,
-            kitchen,
-            menus,
-            dishes: [...scenario.dishes],
-            kitchenIngredients: scenario.kitchenIngredients.map(ingredient => ({
-              ...ingredient,
-            })),
-            supplierIngredientLinks: scenario.supplierIngredientLinks.map(link => ({
+        items.push({
+          ...workspaceScenario,
+          kitchen,
+          menus,
+          dishes: [...scenario.dishes],
+          kitchenIngredients: scenario.kitchenIngredients.map((ingredient) => ({
+            ...ingredient,
+          })),
+          supplierIngredientLinks: scenario.supplierIngredientLinks.map(
+            (link) => ({
               ...link,
+            })
+          ),
+          dishSpecs: scenario.dishSpecs.map((spec) => ({
+            ...spec,
+            assembly: [...spec.assembly],
+            components: spec.components.map((component) => ({
+              ...component,
             })),
-            dishSpecs: scenario.dishSpecs.map(spec => ({
-              ...spec,
-              assembly: [...spec.assembly],
-              components: spec.components.map(component => ({
+          })),
+          finance: scenario.finance
+            ? {
+                asOfDate: scenario.finance.asOfDate,
+                currencyCode: scenario.finance.currencyCode,
+                timezone: scenario.finance.timezone,
+                dailyGrossSales: scenario.finance.dailyGrossSales.map(
+                  (day) => ({
+                    ...day,
+                    items: day.items.map((item) => ({ ...item })),
+                    transactions: day.transactions.map((transaction) => ({
+                      ...transaction,
+                      items: transaction.items.map((item) => ({ ...item })),
+                    })),
+                  })
+                ),
+              }
+            : null,
+          team: scenario.team.map((member) => ({ ...member })),
+          menuItemComponentDeltas: scenario.menuItemComponentDeltas.map(
+            (delta) => ({
+              ...delta,
+              choice: { ...delta.choice },
+              components: delta.components.map((component) => ({
                 ...component,
               })),
+            })
+          ),
+          menuSections: scenario.menuSections.map((section) => ({
+            section: section.section,
+            items: [...section.items],
+          })),
+          miseRequirements: scenario.miseRequirements.map((requirement) => ({
+            ...requirement,
+            amount: { ...requirement.amount },
+            source: { ...requirement.source },
+          })),
+          miseTasks: [...scenario.miseTasks],
+          orders: [...scenario.orders],
+          prepItems: scenario.prepItems.map((prepItem) => ({
+            ...prepItem,
+            input: { ...prepItem.input },
+            yield: { ...prepItem.yield },
+            method: [...prepItem.method],
+          })),
+          recipes: scenario.recipes.map((recipe) => ({
+            ...recipe,
+            yield: { ...recipe.yield },
+            ingredients: recipe.ingredients.map((ingredient) => ({
+              ...ingredient,
             })),
-            finance: scenario.finance
-              ? {
-                  asOfDate: scenario.finance.asOfDate,
-                  currencyCode: scenario.finance.currencyCode,
-                  timezone: scenario.finance.timezone,
-                  dailyGrossSales: scenario.finance.dailyGrossSales.map(
-                    day => ({
-                      ...day,
-                      items: day.items.map(item => ({ ...item })),
-                      transactions: day.transactions.map(transaction => ({
-                        ...transaction,
-                        items: transaction.items.map(item => ({ ...item })),
-                      })),
-                    })
-                  ),
-                }
-              : null,
-            team: scenario.team.map(member => ({ ...member })),
-            menuItemComponentDeltas: scenario.menuItemComponentDeltas.map(
-              delta => ({
-                ...delta,
-                choice: { ...delta.choice },
-                components: delta.components.map(component => ({
-                  ...component,
-                })),
-              })
-            ),
-            menuSections: scenario.menuSections.map(section => ({
-              section: section.section,
-              items: [...section.items],
-            })),
-            miseRequirements: scenario.miseRequirements.map(requirement => ({
-              ...requirement,
-              amount: { ...requirement.amount },
-              source: { ...requirement.source },
-            })),
-            miseTasks: [...scenario.miseTasks],
-            orders: [...scenario.orders],
-            prepItems: scenario.prepItems.map(prepItem => ({
-              ...prepItem,
-              input: { ...prepItem.input },
-              yield: { ...prepItem.yield },
-              method: [...prepItem.method],
-            })),
-            recipes: scenario.recipes.map(recipe => ({
-              ...recipe,
-              yield: { ...recipe.yield },
-              ingredients: recipe.ingredients.map(ingredient => ({
-                ...ingredient,
-              })),
-              method: [...recipe.method],
-            })),
-            stations: [...scenario.stations],
-          })
-          return items
-        },
-        []
-      )
+            method: [...recipe.method],
+          })),
+          stations: [...scenario.stations],
+        })
+        return items
+      }, [])
 
       return {
         dishRecordsByKitchenId: kitchenDemoDishRecordsByKitchenId,
@@ -177,7 +171,9 @@ export function findKitchenWorkspaceDemoMenu(
   const id = String(menuId ?? '').trim()
   if (!id) return null
 
-  return scenario?.menus.find(
-    menu => String(menu.kitchenMenu.id ?? '').trim() === id
-  ) ?? null
+  return (
+    scenario?.menus.find(
+      (menu) => String(menu.kitchenMenu.id ?? '').trim() === id
+    ) ?? null
+  )
 }

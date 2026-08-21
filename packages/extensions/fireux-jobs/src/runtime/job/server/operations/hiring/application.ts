@@ -24,8 +24,6 @@ import { readJobServerScope } from '../../core/runtime.ts'
 import {
   applicationAction,
   applicationDocumentId,
-  appAgentRef,
-  appProfessionalRef,
   appRef,
   assertCurrentAppMembership,
   canonicalApplication,
@@ -41,6 +39,7 @@ import {
   PREMIUM_TEMPORARY_CAPACITY_LIMIT,
   record,
   text,
+  userProfileRef,
 } from './records.ts'
 import { viewResponse } from './views.ts'
 
@@ -59,8 +58,7 @@ export async function createJobApplication(
   const db = getRuntimeFirestore(scope.databaseId)
   const identityDb = getRuntimeIdentityFirestore(scope.identityDatabaseId)
   const rootProfessional = await identityDb
-    .collection(ProfessionalStorage.rootCollection)
-    .doc(uid)
+    .doc(`users/${uid}/profiles/${ProfessionalStorage.document}`)
     .get()
   if (!rootProfessional.exists) {
     fail(403, 'Complete your Professional profile before applying.')
@@ -70,29 +68,20 @@ export async function createJobApplication(
   const jobRef = db.collection(JobStorage.collection).doc(jobId)
   const currentAppRef = appRef(db, scope.appId)
   const currentMembershipRef = membershipRef(db, scope.appId, uid)
-  const currentProfessionalRef = appProfessionalRef(db, scope.appId, uid)
 
   await db.runTransaction(async (transaction) => {
     const [
       appSnapshot,
       membershipSnapshot,
-      appProfessionalSnapshot,
       jobSnapshot,
       existingApplication,
     ] = await transaction.getAll(
       currentAppRef,
       currentMembershipRef,
-      currentProfessionalRef,
       jobRef,
       applicationRef
     )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    if (
-      !hasProfile(appProfessionalSnapshot) ||
-      !appProfessionalSnapshot.exists
-    ) {
-      fail(403, 'Complete your Professional profile before applying.')
-    }
     if (existingApplication.exists) {
       fail(409, 'You have already applied for this job.')
     }
@@ -142,6 +131,13 @@ export async function mutateJobApplication(
   )
   const requested = applicationAction(input)
   const db = getRuntimeFirestore(scope.databaseId)
+  if (requested.action === 'offer' || requested.action === 'reject') {
+    const identityDb = getRuntimeIdentityFirestore(scope.identityDatabaseId)
+    const agentProfile = await userProfileRef(identityDb, uid, 'agent').get()
+    if (!hasProfile(agentProfile)) {
+      fail(403, 'An active Agent profile is required.')
+    }
+  }
   const applicationRef = db
     .collection(JobApplicationStorage.collection)
     .doc(applicationId)
@@ -164,17 +160,13 @@ export async function mutateJobApplication(
       const jobRef = db
         .collection(JobStorage.collection)
         .doc(application.job_id)
-      const [appSnapshot, membershipSnapshot, agentSnapshot, jobSnapshot] =
+      const [appSnapshot, membershipSnapshot, jobSnapshot] =
         await transaction.getAll(
           appRef(db, scope.appId),
           membershipRef(db, scope.appId, uid),
-          appAgentRef(db, scope.appId, uid),
           jobRef
         )
       assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-      if (!hasProfile(agentSnapshot)) {
-        fail(403, 'An active Agent profile is required.')
-      }
       const nextStatus = nextApplicationStatus(
         application.status,
         requested.action,

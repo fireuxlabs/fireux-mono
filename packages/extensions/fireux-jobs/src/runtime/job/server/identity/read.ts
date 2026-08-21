@@ -12,7 +12,7 @@ import {
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
-import { projectPublicCompany } from 'fireux-companies/runtime/place/server/company/public-projection'
+import { projectCompanyDirectoryEntry } from 'fireux-companies/runtime/place/server/company/projection'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
@@ -143,13 +143,13 @@ export function projectJobDirectoryEntry(
     scope,
     linked.sourceApp
   )
-  const company = projectPublicCompany(
+  const company = projectCompanyDirectoryEntry(
     job.company_id,
     linked.company,
     linked.companyPlace
   )
   const place = normalizePlace(job.place_id, linked.place)
-  if (!company) {
+  if (!company || !place) {
     throw new Error(
       'Canonical Job has an invalid Company or Place relationship.'
     )
@@ -261,7 +261,7 @@ export async function readJobDetail(
     companyPlaceSnapshot.data() || {}
   )
   const place = normalizePlace(placeSnapshot.id, placeSnapshot.data() || {})
-  if (!company) {
+  if (!company || !companyPlace || !place) {
     throw createError({
       statusCode: 503,
       statusMessage: 'The published Job has invalid relationships.',

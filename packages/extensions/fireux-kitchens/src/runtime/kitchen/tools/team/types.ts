@@ -4,6 +4,7 @@ export type KitchenTeamToolConfirmation = 'none' | 'required'
 
 export type KitchenTeamToolDefinition = {
   id: `kitchen.team.${string}`
+  primitive?: 'workspace.team.create-member'
   mode: KitchenTeamToolMode
   risk: KitchenTeamToolRisk
   confirmation: KitchenTeamToolConfirmation
@@ -14,6 +15,7 @@ export type KitchenTeamToolDefinition = {
     constraints?: readonly string[]
   }
   inputSchema: Record<string, unknown>
+  ai: FireuxToolAiContext
   surfaces: {
     human:
       | false
@@ -40,3 +42,4 @@ export function defineKitchenTeamTool<
 >(tool: Tool): Tool {
   return tool
 }
+import type { FireuxToolAiContext } from 'fireux-core/runtime/tools/types'

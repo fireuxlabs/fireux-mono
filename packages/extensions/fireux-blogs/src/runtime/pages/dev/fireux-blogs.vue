@@ -10,19 +10,12 @@
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-sm font-semibold">Model</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('model')"
-            >
+            <UButton variant="ghost" size="xs" @click="toggleSection('model')">
               {{ openSections.model ? 'Hide' : 'Show' }}
             </UButton>
           </div>
           <div v-show="openSections.model" class="mt-4">
-            <DevModel
-              :title="'Blogs · Model'"
-              :model="blogPostModelRuntime"
-            />
+            <DevModel :title="'Blogs · Model'" :model="blogPostModelRuntime" />
           </div>
         </UCard>
 
@@ -45,7 +38,8 @@
                     Blogs collection
                   </p>
                   <p class="text-xs text-muted">
-                    Inspect model drift separately from the public blog collection manager.
+                    Inspect model drift separately from the Blog directory
+                    manager.
                   </p>
                   <DevDriftToolbar
                     :drift-kind="blogsDriftKind"
@@ -118,7 +112,10 @@ const {
 
 const filteredBlogsDriftPayload = computed(() =>
   filteredBlogs.value.map((post) => {
-    const drift = blogsDriftById.value.get(post.id) ?? { missing: [], extra: [] }
+    const drift = blogsDriftById.value.get(post.id) ?? {
+      missing: [],
+      extra: [],
+    }
     return {
       id: post.id,
       title: post.title,
@@ -128,7 +125,8 @@ const filteredBlogsDriftPayload = computed(() =>
 )
 
 const blogsDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
+  modelPath:
+    'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
   totalBlogs: filteredBlogs.value.length,

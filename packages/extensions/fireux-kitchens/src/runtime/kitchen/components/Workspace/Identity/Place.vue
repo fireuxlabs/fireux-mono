@@ -38,7 +38,8 @@
 import { computed } from 'vue'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 
-const { appId, kitchenId, placeId, canWrite, place, pending } = useKitchenWorkspacePlace()
+const { appId, kitchenId, placeId, canWrite, place, pending } =
+  useKitchenWorkspacePlace()
 const mutationAuthority = computed(() => ({
   appId: appId.value,
   kitchenId: kitchenId.value,

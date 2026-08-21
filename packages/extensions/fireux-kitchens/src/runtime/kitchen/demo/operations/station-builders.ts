@@ -2,10 +2,7 @@ import {
   KitchenStationDefaults,
   type KitchenStation,
 } from '../../models/station.model.ts'
-import {
-  kitchenDemoCreated,
-  kitchenDemoUpdated,
-} from '../core/fixtures'
+import { kitchenDemoCreated, kitchenDemoUpdated } from '../core/fixtures'
 import type { KitchenDemoIdentity } from '../core/types'
 
 export const station = (

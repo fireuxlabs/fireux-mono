@@ -9,7 +9,7 @@ export function resolveKitchenDetailPresentation(
   kitchen: Kitchen,
   place: Place
 ): KitchenDetailPresentation {
-  const name = text(kitchen.identity.name) || place.name
+  const name = text(kitchen.identity.display_name) || place.name
   const tagline = text(kitchen.identity.tagline) || text(place.brand_tagline)
   const image =
     text(kitchen.assets.image) || text(place.cover_image || place.image_url)

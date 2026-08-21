@@ -2,7 +2,8 @@
   <article
     class="kiosk-item"
     :class="{
-      'kiosk-item--with-options': variantOptions.length > 1 || addOnOptions.length,
+      'kiosk-item--with-options':
+        variantOptions.length > 1 || addOnOptions.length,
     }"
   >
     <h3>{{ item.name }}</h3>
@@ -13,7 +14,7 @@
         :src="item.imageUrl"
         :alt="item.name"
         loading="lazy"
-      >
+      />
       <UIcon v-else name="i-lucide-utensils" aria-hidden="true" />
     </div>
 

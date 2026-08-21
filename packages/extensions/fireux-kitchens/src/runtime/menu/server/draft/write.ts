@@ -193,8 +193,8 @@ export async function writeKitchenMenuDraft(input: {
       items,
     }
   })
-  const menus = serverKitchenMenusTarget(input.appId, input.kitchenId)
-  const dishes = serverKitchenDishesTarget(input.appId, input.kitchenId)
+  const menus = serverKitchenMenusTarget(input.kitchenId)
+  const dishes = serverKitchenDishesTarget(input.kitchenId)
   const write = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {
@@ -228,7 +228,6 @@ export async function writeKitchenMenuDraft(input: {
       for (const oldSection of oldSectionsSnap.docs) {
         if (plannedSectionIds.has(oldSection.id)) continue
         const items = serverKitchenMenuItemsTarget(
-          input.appId,
           input.kitchenId,
           input.menuId,
           oldSection.id
@@ -237,11 +236,7 @@ export async function writeKitchenMenuDraft(input: {
           mutations.delete(items, itemId)
         }
         mutations.delete(
-          serverKitchenMenuSectionsTarget(
-            input.appId,
-            input.kitchenId,
-            input.menuId
-          ),
+          serverKitchenMenuSectionsTarget(input.kitchenId, input.menuId),
           oldSection.id
         )
       }
@@ -249,12 +244,10 @@ export async function writeKitchenMenuDraft(input: {
       const oldSectionIds = new Set(oldSectionsSnap.docs.map((row) => row.id))
       plannedSections.forEach((section) => {
         const sections = serverKitchenMenuSectionsTarget(
-          input.appId,
           input.kitchenId,
           input.menuId
         )
         const items = serverKitchenMenuItemsTarget(
-          input.appId,
           input.kitchenId,
           input.menuId,
           section.sectionId

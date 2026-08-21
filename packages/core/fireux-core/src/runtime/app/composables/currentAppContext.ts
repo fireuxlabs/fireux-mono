@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth'
-import type { CurrentAppContextResponse } from '../../server/utils/public-projection/public-dto.types.ts'
+import type { CurrentAppContextResponse } from '../models/app-context.model.ts'
 
 export const CURRENT_APP_CONTEXT_ASYNC_DATA_KEY = 'current-app-context'
 

@@ -1,14 +1,15 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: adopt authoritative target outcomes.
 import { computed } from 'vue'
 import { normalizeString } from '../../../../utils/string'
-import { useWorkspace, type WorkspaceSource } from '../../../../composables/fireux/workspace/useWorkspace'
+import {
+  useWorkspace,
+  type WorkspaceSource,
+} from '../../../../composables/fireux/workspace/useWorkspace'
 import { workspaceData } from '../../../../composables/fireux/workspace/useWorkspaceData'
 import { useWorkspaceEntityRuntime } from '../../../../composables/fireux/workspace/useWorkspaceEntityRuntime'
 import { useWorkspaceFamilyRuntime } from '../../../../composables/fireux/workspace/useWorkspaceFamilyRuntime'
 import { useWorkspaceTargets } from '../../../../composables/fireux/workspace/useWorkspaceTargets'
-import {
-  useProjectCollection,
-} from '../../useProjectCollection'
+import { useProjectCollection } from '../../useProjectCollection'
 import type { ProjectSurface } from '../../useProjectInterface'
 import { ProjectStorage } from '../../../models/project.model.ts'
 import { useProjectWorkspaceDemoTargets } from './useProjectWorkspaceDemoTargets'
@@ -19,11 +20,10 @@ type ProjectWorkspaceEntity = ProjectSurface
  * FireUX stack family: Workspace-backed root entity.
  * Entity: Project.
  *
- * This file adapts FireUX control-plane Project records into the private
+ * This file adapts FireUX control-plane Project records into the
  * /workspace/project selected runtime.
  * Access requires the current FireUX App membership at the route boundary and
- * a same-id AppProject support record linking the current User as an operator
- * or team member.
+ * exact membership in the root Project's Team.
  * Project workspace can inspect related App and Ecosystem surfaces without redefining their stored identity.
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
@@ -68,7 +68,8 @@ function createProjectWorkspace() {
       ? demoTargets.outcome.value
       : liveCollection.outcome.value
   )
-  const liveTargetsOutcome = workspaceTargets.resolveOutcome(sourceTargetsOutcome)
+  const liveTargetsOutcome =
+    workspaceTargets.resolveOutcome(sourceTargetsOutcome)
   const targetsOutcome = computed(() =>
     workspaceRoot.source.value === 'demo'
       ? sourceTargetsOutcome.value

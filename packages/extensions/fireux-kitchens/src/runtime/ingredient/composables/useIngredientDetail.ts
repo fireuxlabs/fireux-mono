@@ -1,10 +1,8 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type {
-  PublicIngredient,
-  PublicIngredientDetailResponse,
-} from '../models/ingredient-public.model.ts'
+import type { IngredientDetailResponse } from '../models/ingredient-directory.model.ts'
+import type { Ingredient } from '../models/ingredient.model.ts'
 
 export type IngredientDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -14,7 +12,7 @@ type IngredientDetailControls = Pick<
 >
 
 export type UseIngredientDetailReturn = IngredientDetailControls & {
-  ingredient: ComputedRef<PublicIngredient | null>
+  ingredient: ComputedRef<Ingredient | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -38,18 +36,18 @@ export function useIngredientDetail(
   ingredientId: MaybeRef<string | null | undefined>
 ): UseIngredientDetailReturn {
   const id = computed(() => String(unref(ingredientId) ?? '').trim())
-  const state = useAsyncData<PublicIngredientDetailResponse | null>(
+  const state = useAsyncData<IngredientDetailResponse | null>(
     () => `ingredient-detail|${id.value || 'none'}`,
     async () => {
       if (!id.value) return null
-      return $fetch<PublicIngredientDetailResponse>(
+      return $fetch<IngredientDetailResponse>(
         `/api/ingredients/${encodeURIComponent(id.value)}`
       )
     },
     { server: true, watch: [id] }
   )
-  const ingredient = computed<PublicIngredient | null>(() => {
-    const item = state.data.value?.item
+  const ingredient = computed<Ingredient | null>(() => {
+    const item = state.data.value?.ingredient
     return item && item.id === id.value && !state.pending.value ? item : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))

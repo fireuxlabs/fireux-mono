@@ -2,9 +2,7 @@
   <div class="grid gap-4">
     <div class="grid gap-3">
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm font-medium text-highlighted">
-          Variant prices
-        </p>
+        <p class="text-sm font-medium text-highlighted">Variant prices</p>
         <UBadge color="neutral" variant="soft">
           {{ row.priceOptions.length }}
         </UBadge>
@@ -88,9 +86,7 @@
 
     <div class="grid gap-3">
       <div class="flex items-center justify-between gap-3">
-        <p class="text-sm font-medium text-highlighted">
-          Add-ons
-        </p>
+        <p class="text-sm font-medium text-highlighted">Add-ons</p>
         <UBadge color="neutral" variant="soft">
           {{ row.addOns.length }}
         </UBadge>
@@ -193,7 +189,10 @@ const props = defineProps<{
   updateAddOns: (addOns: AddOns, title: string) => Promise<void>
 }>()
 
-const variantDraft = reactive<OptionDraft>({ label: '', price: props.row.price })
+const variantDraft = reactive<OptionDraft>({
+  label: '',
+  price: props.row.price,
+})
 const addOnDraft = reactive<OptionDraft>({ label: '', price: 0 })
 const text = (value: unknown) => String(value ?? '').trim()
 const money = (value: unknown) => {
@@ -223,8 +222,8 @@ const canAddVariant = () => {
 
   return Boolean(
     key &&
-    variantDraft.price > 0 &&
-    !props.row.priceOptions.some((option) => optionKey(option.label) === key)
+      variantDraft.price > 0 &&
+      !props.row.priceOptions.some((option) => optionKey(option.label) === key)
   )
 }
 const canAddAddOn = () => {
@@ -232,9 +231,9 @@ const canAddAddOn = () => {
 
   return Boolean(
     key &&
-    !props.row.addOns.some((addOn) =>
-      optionKey(addOn.id) === key || optionKey(addOn.label) === key
-    )
+      !props.row.addOns.some(
+        (addOn) => optionKey(addOn.id) === key || optionKey(addOn.label) === key
+      )
   )
 }
 
@@ -273,15 +272,18 @@ const saveAddOnPrice = (index: number, value: string) =>
 async function addPriceOption() {
   if (!canAddVariant()) return
 
-  await props.updatePriceOptions([
-    ...props.row.priceOptions,
-    {
-      label: text(variantDraft.label),
-      quantity: 0,
-      unit: '',
-      price: variantDraft.price,
-    },
-  ], 'Variant added')
+  await props.updatePriceOptions(
+    [
+      ...props.row.priceOptions,
+      {
+        label: text(variantDraft.label),
+        quantity: 0,
+        unit: '',
+        price: variantDraft.price,
+      },
+    ],
+    'Variant added'
+  )
   Object.assign(variantDraft, { label: '', price: props.row.price })
 }
 
@@ -295,14 +297,17 @@ async function addAddOn() {
   if (!canAddAddOn()) return
 
   const label = text(addOnDraft.label)
-  await props.updateAddOns([
-    ...props.row.addOns,
-    {
-      id: optionKey(label),
-      label,
-      price: addOnDraft.price,
-    },
-  ], 'Add-on added')
+  await props.updateAddOns(
+    [
+      ...props.row.addOns,
+      {
+        id: optionKey(label),
+        label,
+        price: addOnDraft.price,
+      },
+    ],
+    'Add-on added'
+  )
   Object.assign(addOnDraft, { label: '', price: 0 })
 }
 

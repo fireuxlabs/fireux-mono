@@ -18,7 +18,7 @@ export async function readCustomerOrders(
   const { uid } = await requireFirebaseBearerUser(event)
   const db = getRuntimeFirestore()
   const { appId } = useFireUXConfig()
-  const links = db.collection(`apps/${appId}/customers/${uid}/orders`)
+  const links = db.collection(`users/${uid}/orders`)
   const cursor = text(getQuery(event).cursor)
   let query = links.orderBy('created_at', 'desc').limit(PAGE_SIZE)
 

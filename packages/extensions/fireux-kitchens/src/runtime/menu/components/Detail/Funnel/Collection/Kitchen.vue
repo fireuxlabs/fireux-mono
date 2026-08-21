@@ -1,15 +1,10 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Kitchen
-    </h2>
+    <h2 class="menu-order-screen-title">Kitchen</h2>
 
     <section class="menu-order-dispatch__section">
       <span class="menu-order-kitchen-ping" aria-hidden="true">
-        <UIcon
-          name="i-lucide-chef-hat"
-          class="menu-order-dispatch__icon"
-        />
+        <UIcon name="i-lucide-chef-hat" class="menu-order-dispatch__icon" />
       </span>
 
       <div class="menu-order-dispatch__copy">
@@ -18,11 +13,7 @@
           {{ manifestLabel }}
         </span>
 
-        <button
-          type="button"
-          class="menu-order-copy"
-          @click="copyRequest"
-        >
+        <button type="button" class="menu-order-copy" @click="copyRequest">
           <UIcon
             :name="copied ? 'i-lucide-check' : 'i-lucide-copy'"
             aria-hidden="true"
@@ -35,10 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-} from 'vue'
+import { computed, ref } from 'vue'
 import type { MenuOrderingFunnelController } from '../../../../models/menu-ordering.model.ts'
 
 const props = defineProps<{
@@ -64,8 +52,7 @@ const requestBasket = computed(() =>
 )
 const requestTotal = computed(() =>
   props.funnel.incoming.basket.reduce(
-    (total, item) =>
-      total + item.quantity * Number(item.unit_price_chf || 0),
+    (total, item) => total + item.quantity * Number(item.unit_price_chf || 0),
     0
   )
 )
@@ -92,7 +79,9 @@ const requestPayload = computed(() => ({
 async function copyRequest() {
   if (!import.meta.client || !navigator.clipboard) return
 
-  await navigator.clipboard.writeText(JSON.stringify(requestPayload.value, null, 2))
+  await navigator.clipboard.writeText(
+    JSON.stringify(requestPayload.value, null, 2)
+  )
   copied.value = true
   window.setTimeout(() => {
     copied.value = false
@@ -142,7 +131,7 @@ async function copyRequest() {
   border: 1px solid currentcolor;
   border-radius: 9999px;
   color: var(--menu-primary);
-  content: "";
+  content: '';
   opacity: 0;
   animation: menu-kitchen-ping 1.8s ease-out infinite;
 }
@@ -153,7 +142,7 @@ async function copyRequest() {
   border: 1px solid currentcolor;
   border-radius: 9999px;
   color: var(--menu-primary);
-  content: "";
+  content: '';
   opacity: 0;
   animation: menu-kitchen-ping 1.8s ease-out 0.45s infinite;
 }

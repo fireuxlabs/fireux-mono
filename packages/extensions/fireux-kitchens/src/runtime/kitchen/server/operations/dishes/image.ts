@@ -130,7 +130,6 @@ export async function normalizeAndSaveDishImage(
   const uploadId = randomUUID()
   const downloadToken = randomUUID()
   const objectPath = dishImageStoragePath(
-    input.appId,
     input.kitchenId,
     input.dishId,
     uploadId

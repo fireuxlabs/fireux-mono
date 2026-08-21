@@ -7,9 +7,7 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
+        <div class="collection-manager__controls">
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -84,14 +82,14 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Blog (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -136,7 +134,8 @@ const props = withDefaults(
 const fetched = useBlogCollection()
 const collection = computed<BlogPost[]>(() => fetched.collection.value)
 const outcome = computed(() => fetched.outcome.value)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Blog'))
 const description = computed(() =>
   String(props.description || 'Browse published blog posts for this runtime.')

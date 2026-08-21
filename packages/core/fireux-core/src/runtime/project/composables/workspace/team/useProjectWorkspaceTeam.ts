@@ -1,7 +1,7 @@
 import { useAsyncData } from '#imports'
 import { computed, type ComputedRef, type Ref } from 'vue'
-import { useAuth } from '../../../../firebase/useAuth'
-import { useProjectWorkspace } from '../../core/useProjectWorkspace'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export type ProjectTeamMember = {
   id: string

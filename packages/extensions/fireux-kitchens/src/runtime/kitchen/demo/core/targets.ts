@@ -261,7 +261,7 @@ const targetIds = new Set<string>()
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
-  const logoImageUrl = String(item.kitchen.identity.logo_image_url ?? '').trim()
+  const logoImageUrl = String(item.kitchen.assets.logo ?? '').trim()
   const placeMedia = [
     item.place.image_url,
     item.place.cover_image,
@@ -269,8 +269,8 @@ for (const item of kitchenDemoTargets) {
   ]
     .map((value) => String(value ?? '').trim())
     .filter(Boolean)
-  const teamIds = item.appSupport.team_ids
-  const operatorIds = item.appSupport.operator_ids
+  const teamIds = item.access.teamIds
+  const operatorIds = item.access.operatorIds
   if (
     !kitchenId ||
     !placeId ||
@@ -281,10 +281,9 @@ for (const item of kitchenDemoTargets) {
     String(item.place.name ?? '').trim() !==
       String(item.kitchen.identity.display_name ?? '').trim() ||
     item.appId !== item.identity.appId ||
-    item.appSupport.id !== kitchenId ||
+    item.access.kitchenId !== kitchenId ||
     !logoImageUrl ||
     placeMedia.includes(logoImageUrl) ||
-    item.appSupport.join_requests.length !== 0 ||
     new Set(teamIds).size !== teamIds.length ||
     new Set(operatorIds).size !== operatorIds.length ||
     operatorIds.some((id) => !teamIds.includes(id))

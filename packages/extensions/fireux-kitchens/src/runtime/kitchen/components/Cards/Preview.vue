@@ -21,13 +21,22 @@
                 {{ name }}
               </h2>
 
-              <div v-if="primaryAddress" class="flex items-start gap-2 text-sm text-toned">
-                <UIcon name="i-lucide-map-pin" class="mt-0.5 size-4 shrink-0 text-muted" />
+              <div
+                v-if="primaryAddress"
+                class="flex items-start gap-2 text-sm text-toned"
+              >
+                <UIcon
+                  name="i-lucide-map-pin"
+                  class="mt-0.5 size-4 shrink-0 text-muted"
+                />
                 <span>{{ primaryAddress }}</span>
               </div>
             </div>
 
-            <div v-if="visibleBadges.length" class="flex shrink-0 flex-wrap justify-end gap-1">
+            <div
+              v-if="visibleBadges.length"
+              class="flex shrink-0 flex-wrap justify-end gap-1"
+            >
               <UBadge
                 v-for="badge in visibleBadges"
                 :key="badge"
@@ -59,7 +68,10 @@
             </div>
           </div>
 
-          <div v-if="to || mapUrl || website || $slots.actions" class="flex flex-wrap gap-2 pt-1">
+          <div
+            v-if="to || mapUrl || website || $slots.actions"
+            class="flex flex-wrap gap-2 pt-1"
+          >
             <UButton
               v-if="to"
               size="sm"
@@ -137,7 +149,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
-const primaryAddress = computed(() => props.shortAddress || props.formattedAddress)
+const primaryAddress = computed(
+  () => props.shortAddress || props.formattedAddress
+)
 
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade

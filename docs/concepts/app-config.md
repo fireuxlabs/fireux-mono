@@ -1,7 +1,7 @@
 # App config spine map
 
-Updated: 2026-08-18
-Ref: 9412d8b2c
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -128,9 +128,9 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
 ## Mode differences
 
 - Global apps can expose multiple domains and workspaces.
-- Apps declare Workspace capabilities. Each entity family's persisted same-id
-  App-support records own target relationships and operator/team access;
-  AppUser owns only App membership, capability, and lifecycle.
+- Apps declare Workspace capabilities. Each root Entity owns target authority
+  through `team/{uid}`; AppUser owns only App membership, capability, and
+  lifecycle.
 - Standalone is a FireUX-owned mode.
 
 ## Working rule
@@ -184,8 +184,8 @@ initialized App awaiting media publication is not an uninitialized App.
 | Direct Project Apps may omit `ecosystemId`                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                  |
 | Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer   |
 | Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it          |
-| A tenant App pins Workspace target IDs in Nuxt config                 | `drift`    | Persist bounded targets and operator/team access in that entity family's same-id App-support records               |
-| Apps present inherited public navigation differently                | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority            |
+| A tenant App pins Workspace target IDs in Nuxt config                 | `drift`    | Derive bounded targets from root management, Team, and AppUser authority                                             |
+| Apps present inherited directory navigation differently             | `accepted` | `navOverrides` changes App-level discovery only; the owning route keeps its canonical key and authority             |
 | App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                  |
 | A main App explicitly selects the Core Sci-Fire design pack         | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS |
 | Tenant or white-label styling inferred from ecosystem or role       | `drift`    | Design-pack adoption is explicit; product role and visual theme are separate contracts                             |

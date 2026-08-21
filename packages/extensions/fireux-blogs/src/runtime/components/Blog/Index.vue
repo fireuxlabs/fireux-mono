@@ -63,11 +63,7 @@ const breadcrumbItems = [
 <style scoped>
 .blog-index {
   display: grid;
-  gap: clamp(
-    calc(var(--spacing) * 12),
-    7vw,
-    calc(var(--spacing) * 24)
-  );
+  gap: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 24));
   padding-bottom: clamp(
     calc(var(--spacing) * 16),
     8vw,
@@ -90,11 +86,7 @@ const breadcrumbItems = [
   border: 1px solid color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 6);
   overflow: hidden;
-  padding: clamp(
-    calc(var(--spacing) * 6),
-    6vw,
-    calc(var(--spacing) * 18)
-  );
+  padding: clamp(calc(var(--spacing) * 6), 6vw, calc(var(--spacing) * 18));
   position: relative;
 }
 
@@ -135,11 +127,7 @@ const breadcrumbItems = [
 
 .blog-index__copy h1 {
   color: var(--ui-text-highlighted);
-  font-size: clamp(
-    var(--text-4xl),
-    10vw,
-    calc(var(--text-5xl) * 1.45)
-  );
+  font-size: clamp(var(--text-4xl), 10vw, calc(var(--text-5xl) * 1.45));
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tighter);
   line-height: 1;

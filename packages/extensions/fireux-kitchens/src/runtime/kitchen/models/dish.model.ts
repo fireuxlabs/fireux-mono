@@ -8,7 +8,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped Entity
  * Storage: Kitchen-owned reusable food identity
- * Path: apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}
+ * Path: kitchens/{kitchenId}/dishes/{dishId}
  * Owner app scope: Kitchen within an app runtime
  *
  * Dish owns guest-facing food copy and an optional image. Menus decide where
@@ -18,7 +18,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const DishStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}',
+  path: 'kitchens/{kitchenId}/dishes/{dishId}',
   collection: 'dishes',
   parent: 'kitchen',
   idParam: 'dishId',
@@ -39,7 +39,10 @@ export const DishEntity = defineFireuxEntity({
 export type DishItemKind = 'food' | 'drink'
 
 export const readDishItemKind = (value: unknown): DishItemKind | '' => {
-  const kind = String(value ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_')
+  const kind = String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_')
 
   if (kind === 'food' || kind === 'drink') return kind
   if (kind === 'drinks') return 'drink'
@@ -52,7 +55,11 @@ export const normalizeDishItemKind = (value: unknown): DishItemKind =>
 
 export const normalizeDishDealFlag = (value: unknown) =>
   value === true ||
-  ['true', 'yes', '1'].includes(String(value ?? '').trim().toLowerCase())
+  ['true', 'yes', '1'].includes(
+    String(value ?? '')
+      .trim()
+      .toLowerCase()
+  )
 
 export const normalizeDishFlagshipFlag = (value: unknown) => value === true
 
@@ -91,13 +98,16 @@ export type DishUpdateInput = Partial<
 const pickString = (value: unknown) => String(value ?? '').trim()
 
 export function normalizeDish(value: unknown): Dish {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  const created = source.created && typeof source.created === 'object'
-    ? (source.created as Dish['created'])
-    : DishDefaults.created
-  const updated = source.updated && typeof source.updated === 'object'
-    ? (source.updated as Dish['updated'])
-    : DishDefaults.updated
+  const source =
+    value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const created =
+    source.created && typeof source.created === 'object'
+      ? (source.created as Dish['created'])
+      : DishDefaults.created
+  const updated =
+    source.updated && typeof source.updated === 'object'
+      ? (source.updated as Dish['updated'])
+      : DishDefaults.updated
 
   return {
     ...DishDefaults,

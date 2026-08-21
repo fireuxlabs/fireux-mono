@@ -32,10 +32,7 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <CustomerCardsCell
-        v-if="customerCard"
-        v-bind="customerCard"
-      />
+      <CustomerCardsCell v-if="customerCard" v-bind="customerCard" />
     </ClientOnly>
   </section>
 </template>
@@ -49,7 +46,7 @@ import { useCustomerInterface } from '../../composables/customer/useCustomerInte
 import { useCustomerCreate } from '../../composables/firestore/profiles/Customer/mutations/useCustomerCreate'
 
 const { coreUser } = useUser()
-const { appProfile, pending } = useCustomer()
+const { customerProfile, pending } = useCustomer()
 const { createCustomerProfile } = useCustomerCreate()
 const { cell: customerCardFromProfile } = useCustomerInterface()
 
@@ -57,7 +54,7 @@ const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
 const isProfileLoading = computed(() => pending.value)
-const resolvedProfile = computed(() => appProfile.value ?? null)
+const resolvedProfile = computed(() => customerProfile.value ?? null)
 const customerCard = computed(() =>
   resolvedProfile.value
     ? customerCardFromProfile({

@@ -14,11 +14,6 @@ import {
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority.ts'
 
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
-
 function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
 }

@@ -45,7 +45,10 @@ const props = withDefaults(
   }
 )
 const emit = defineEmits<{
-  (event: 'accept', payload: { id: string; estimatedMinutes: number | null }): void
+  (
+    event: 'accept',
+    payload: { id: string; estimatedMinutes: number | null }
+  ): void
   (event: 'nudge-estimate', payload: { id: string; amount: number }): void
   (event: 'set-estimate', payload: { id: string; minutes: number }): void
 }>()
@@ -53,13 +56,13 @@ const emit = defineEmits<{
 const normalize = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const collection = computed(() =>
   record((props.order as Record<string, unknown>).collection)
 )
-const isScheduledMode = computed(() =>
-  normalize(collection.value.mode) === 'scheduled'
+const isScheduledMode = computed(
+  () => normalize(collection.value.mode) === 'scheduled'
 )
 const requestedFor = computed(() => collection.value.requested_for)
 const requestedTime = computed(() =>
@@ -67,10 +70,10 @@ const requestedTime = computed(() =>
 )
 const requestedDateTimeLabel = computed(() => requestedTime.value.dateTime)
 const requestedDistanceLabel = computed(() => requestedTime.value.distance)
-const canAcceptRequested = computed(() =>
-  props.canInteract && Boolean(
-    props.orderId && kitchenOrderTimestampMs(requestedFor.value)
-  )
+const canAcceptRequested = computed(
+  () =>
+    props.canInteract &&
+    Boolean(props.orderId && kitchenOrderTimestampMs(requestedFor.value))
 )
 
 function acceptRequested() {

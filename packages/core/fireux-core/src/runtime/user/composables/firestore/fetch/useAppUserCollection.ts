@@ -4,11 +4,11 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import type {
-  AppAdminJoinRequestDto,
-  AppAdminMemberDto,
+  AppAdminJoinRequest,
+  AppAdminMember,
   AppAdminPeopleResponse,
-  PublicUserIdentityDto,
-} from '../../../../server/utils/public-projection/public-dto.types.ts'
+} from '../../../../app/models/app-context.model.ts'
+import type { UserIdentitySummary } from '../../../models/user-directory.model.ts'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
@@ -22,19 +22,21 @@ type AppUserCollectionControls = Pick<
   'pending' | 'error'
 >
 
-export type EnrichedAppUser = PublicUserIdentityDto & {
-  appUser: AppAdminMemberDto
-  coreUser: PublicUserIdentityDto
+export type EnrichedAppUser = UserIdentitySummary & {
+  appUser: AppAdminMember
+  coreUser: UserIdentitySummary
 }
 
 export type UseAppUserCollectionReturn = AppUserCollectionControls & {
   appId: ComputedRef<string>
-  memberships: ComputedRef<AppAdminMemberDto[]>
+  memberships: ComputedRef<AppAdminMember[]>
   users: ComputedRef<EnrichedAppUser[]>
   fulfilled: ComputedRef<EnrichedAppUser[]>
-  usersById: ComputedRef<Map<string, PublicUserIdentityDto>>
-  userById: (id: string | null | undefined) => PublicUserIdentityDto | undefined
-  joinRequests: ComputedRef<AppAdminJoinRequestDto[]>
+  usersById: ComputedRef<Map<string, UserIdentitySummary>>
+  userById: (id: string | null | undefined) =>
+    | UserIdentitySummary
+    | undefined
+  joinRequests: ComputedRef<AppAdminJoinRequest[]>
   count: ComputedRef<number>
   outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
   truncated: ComputedRef<boolean>

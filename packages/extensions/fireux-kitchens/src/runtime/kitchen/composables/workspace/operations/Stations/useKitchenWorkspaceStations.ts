@@ -13,23 +13,17 @@ import {
 import { useKitchenStationCollection } from './fetch/useKitchenStationCollection'
 
 export function useKitchenWorkspaceStations() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
+  const demoScenario = computed(() =>
+    findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
   )
-  const demoScenario = computed(() => findKitchenWorkspaceDemoScenario(
-    demoData.data.value,
-    kitchenId.value
-  ))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -37,22 +31,17 @@ export function useKitchenWorkspaceStations() {
     kitchenStations: fetchedStations,
     pending: stationsPending,
     collectionPath: fetchedCollectionPath,
-  } = useKitchenStationCollection(
-    fetchKitchenId,
-    {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-    }
-  )
+  } = useKitchenStationCollection(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
   const workspaceStations = computed(() =>
     runtime.isDemo.value
-      ? demoScenario.value?.stations ?? []
+      ? (demoScenario.value?.stations ?? [])
       : fetchedStations.value
   )
   const pending = computed(() =>
-    runtime.isDemo.value
-      ? demoData.pending.value
-      : stationsPending.value
+    runtime.isDemo.value ? demoData.pending.value : stationsPending.value
   )
   const collectionPath = computed(() =>
     runtime.isDemo.value

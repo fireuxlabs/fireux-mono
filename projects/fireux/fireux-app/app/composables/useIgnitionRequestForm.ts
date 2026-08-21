@@ -2,8 +2,6 @@ import { computed, reactive, ref } from 'vue'
 import { useRoute } from '#imports'
 import { fireuxOffer } from '../meta'
 
-
-
 export function useIgnitionRequestForm() {
   type IgnitionResponse = {
     ok: true
@@ -57,7 +55,9 @@ export function useIgnitionRequestForm() {
 
   function queryValue(value: unknown) {
     const candidate = Array.isArray(value) ? value[0] : value
-    return String(candidate ?? '').trim().toLowerCase()
+    return String(candidate ?? '')
+      .trim()
+      .toLowerCase()
   }
 
   function safeOriginRef(value: unknown) {
@@ -124,9 +124,11 @@ export function useIgnitionRequestForm() {
     if (!form.branding) errors.branding = 'Choose a branding option.'
     if (!form.pages.length) errors.pages = 'Choose at least one page.'
     if (form.app_job.trim().length < 10) {
-      errors.app_job = 'Describe what the App needs to do in a little more detail.'
+      errors.app_job =
+        'Describe what the App needs to do in a little more detail.'
     }
-    if (form.access.trim().length < 3) errors.access = 'Tell us who needs access.'
+    if (form.access.trim().length < 3)
+      errors.access = 'Tell us who needs access.'
     if (!form.privacy_acknowledged) {
       errors.privacy_acknowledged = 'Confirm that FireUX may reply.'
     }
@@ -154,9 +156,10 @@ export function useIgnitionRequestForm() {
 
     submitting.value = true
     try {
-      const response = await $fetch<IgnitionResponse>('/api/public/ignition', {
+      const response = await $fetch<IgnitionResponse>('/api/conversations', {
         method: 'POST',
         body: {
+          kind: 'ignition',
           ...form,
           ...(origin.value ? { origin: origin.value } : {}),
         },

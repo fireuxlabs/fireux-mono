@@ -46,7 +46,7 @@
         </template>
 
         <p class="text-sm text-muted">
-          Uses <code>/api/public/directory</code>. The legacy Firestore registry
+          Uses <code>/api/directory</code>. The legacy Firestore registry
           API is retired because it mixed package metadata with entity copies.
           For the authority notes, visit
           <NuxtLink
@@ -120,7 +120,7 @@ type DirectoryResponse = {
 }
 
 const { data, pending, error, refresh } = await useFetch<DirectoryResponse>(
-  '/api/public/directory',
+  '/api/directory',
   {
   server: true,
   default: () => ({

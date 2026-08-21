@@ -20,7 +20,8 @@ type ResolvedPostalCode = {
 
 export function hasPostalCodeZones(zones: DeliveryCoverageZone[]) {
   return zones.some(
-    (zone) => Boolean(zone.place_ids?.length) || Boolean(zone.postal_codes?.length)
+    (zone) =>
+      Boolean(zone.place_ids?.length) || Boolean(zone.postal_codes?.length)
   )
 }
 
@@ -37,10 +38,10 @@ export async function resolveDeliveryZonePlaceIds(
     const placeIds: ResolvedPostalCode[] = zone.place_ids?.length
       ? zone.place_ids.map((placeId) => ({ placeId }))
       : await Promise.all(
-        (zone.postal_codes || []).map((postalCode) =>
-          resolvePostalCode(google, postalCode)
+          (zone.postal_codes || []).map((postalCode) =>
+            resolvePostalCode(google, postalCode)
+          )
         )
-      )
 
     placeIds
       .filter((entry) => Boolean(entry.placeId))
@@ -193,8 +194,8 @@ function extendBoundsWithRadius(
   radiusM: number
 ) {
   const latDelta = radiusM / 111320
-  const lngDelta = radiusM /
-    (111320 * Math.max(Math.cos(center.lat * Math.PI / 180), 0.12))
+  const lngDelta =
+    radiusM / (111320 * Math.max(Math.cos((center.lat * Math.PI) / 180), 0.12))
 
   bounds.extend({ lat: center.lat + latDelta, lng: center.lng + lngDelta })
   bounds.extend({ lat: center.lat + latDelta, lng: center.lng - lngDelta })
@@ -244,9 +245,11 @@ function resolvePostalCode(google: any, postalCode: string) {
           return
         }
 
-        const result = results.find((entry) =>
-          Array.isArray(entry.types) && entry.types.includes('postal_code')
-        ) || results[0]
+        const result =
+          results.find(
+            (entry) =>
+              Array.isArray(entry.types) && entry.types.includes('postal_code')
+          ) || results[0]
 
         resolve({
           placeId: String(result?.place_id || '').trim(),

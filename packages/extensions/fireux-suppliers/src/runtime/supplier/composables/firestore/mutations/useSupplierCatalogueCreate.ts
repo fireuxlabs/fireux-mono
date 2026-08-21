@@ -9,9 +9,11 @@ import { resolveSupplierCatalogueCollectionPath } from '../fetch/useSupplierCata
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierCatalogueCreate(options: {
-  supplierCollectionPath?: string
-} = {}) {
+export function useSupplierCatalogueCreate(
+  options: {
+    supplierCollectionPath?: string
+  } = {}
+) {
   const create = useFirestoreClientCreate()
 
   async function createSupplierCatalogue(

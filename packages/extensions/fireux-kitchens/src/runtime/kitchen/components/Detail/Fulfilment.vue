@@ -32,17 +32,16 @@ const props = defineProps<{
   fulfilment?: KitchenFulfilmentConfig | null
 }>()
 
-const deliveryZones = computed(() =>
-  props.fulfilment?.delivery_zones ||
-  readKitchenFulfilmentConfig(props.kitchen).delivery_zones
+const deliveryZones = computed(
+  () =>
+    props.fulfilment?.delivery_zones ||
+    readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
 const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
 const deliveryCenter = computed(() => {
   const lat = Number(props.kitchen?.lat)
   const lng = Number(props.kitchen?.lng)
 
-  return Number.isFinite(lat) && Number.isFinite(lng)
-    ? { lat, lng }
-    : undefined
+  return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : undefined
 })
 </script>

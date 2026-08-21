@@ -38,8 +38,8 @@ export function useOrderDraft(
 ) {
   const key = computed(() => text(toValue(options.storageKey)))
   const canOrder = computed(() => toValue(options.canOrder) === true)
-  const orderType = computed<KitchenOrderType>(() =>
-    toValue(options.orderType) || 'dine_in'
+  const orderType = computed<KitchenOrderType>(
+    () => toValue(options.orderType) || 'dine_in'
   )
   const sourceMenuId = computed(() => text(toValue(options.sourceMenuId)))
   const draft = ref<Record<string, MenuOrderDraftItem>>({})
@@ -64,17 +64,15 @@ export function useOrderDraft(
   } = useOrderCreate(menuId, {
     kitchenSlug: options.kitchenSlug,
   })
-  const {
-    error: trackedOrderStatusError,
-    status: trackedOrderStatus,
-  } = useOrderStatus(
-    menuId,
-    computed(() => trackedOrder.value?.id || ''),
-    {
-      kitchenSlug: options.kitchenSlug,
-      enabled: computed(() => trackingOrderStatus.value),
-    }
-  )
+  const { error: trackedOrderStatusError, status: trackedOrderStatus } =
+    useOrderStatus(
+      menuId,
+      computed(() => trackedOrder.value?.id || ''),
+      {
+        kitchenSlug: options.kitchenSlug,
+        enabled: computed(() => trackingOrderStatus.value),
+      }
+    )
   const awaitingMessage = computed(() => {
     const status = trackedOrderStatus.value
     if (!trackedOrder.value) return ''
@@ -92,7 +90,8 @@ export function useOrderDraft(
     if (currentStatus === 'cancelled') {
       return 'The kitchen could not accept this order.'
     }
-    if (currentStatus === 'trashed') return 'Order status is no longer available.'
+    if (currentStatus === 'trashed')
+      return 'Order status is no longer available.'
 
     const minutes = Number(status?.estimated_ready_minutes || 0)
     if (currentStatus === 'accepted') {
@@ -157,21 +156,28 @@ export function useOrderDraft(
     restoreDraft(nextKey)
   })
 
-  watch(draft, (nextDraft: Record<string, MenuOrderDraftItem>) => {
-    if (!import.meta.client || !key.value) return
+  watch(
+    draft,
+    (nextDraft: Record<string, MenuOrderDraftItem>) => {
+      if (!import.meta.client || !key.value) return
 
-    if (!Object.keys(nextDraft).length) {
-      window.localStorage.removeItem(key.value)
+      if (!Object.keys(nextDraft).length) {
+        window.localStorage.removeItem(key.value)
+        notifyOrderSessionChanged()
+        return
+      }
+
+      window.localStorage.setItem(
+        key.value,
+        JSON.stringify({
+          expiresAt: new Date(Date.now() + DRAFT_MAX_AGE_MS).toISOString(),
+          items: nextDraft,
+        })
+      )
       notifyOrderSessionChanged()
-      return
-    }
-
-    window.localStorage.setItem(key.value, JSON.stringify({
-      expiresAt: new Date(Date.now() + DRAFT_MAX_AGE_MS).toISOString(),
-      items: nextDraft,
-    }))
-    notifyOrderSessionChanged()
-  }, { deep: true })
+    },
+    { deep: true }
+  )
 
   function add(item: MenuOrderItem) {
     if (!canOrder.value) return
@@ -198,7 +204,9 @@ export function useOrderDraft(
     const suffix = [
       variant?.label,
       addOns.length ? `+ ${addOns.map((addOn) => addOn.label).join(', ')}` : '',
-    ].filter(Boolean).join(' · ')
+    ]
+      .filter(Boolean)
+      .join(' · ')
     draft.value = {
       ...draft.value,
       [lineId]: {
@@ -258,7 +266,9 @@ export function useOrderDraft(
 
     trackedOrder.value = created
     awaitingAcceptance.value = created.status === 'pending_acceptance'
-    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(created.status)
+    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(
+      created.status
+    )
     trackingOrderStatus.value = !isTerminalOrderStatus(created.status)
 
     return created
@@ -273,7 +283,9 @@ export function useOrderDraft(
     if (!status || !trackedOrder.value) return
 
     awaitingAcceptance.value = status.status === 'pending_acceptance'
-    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(status.status)
+    acceptedOrder.value = ['accepted', 'ready', 'completed'].includes(
+      status.status
+    )
     if (isTerminalOrderStatus(status.status)) trackingOrderStatus.value = false
   })
 

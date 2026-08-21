@@ -1,24 +1,24 @@
 import { useRuntimeConfig } from '#imports'
-import { createError, defineEventHandler } from 'h3'
+import { defineEventHandler } from 'h3'
 import type { ProfileProvisionResult } from '../../../models/operations/profile-provisioning'
 import { isRuntimeProfileEnabled } from '../../../utils/profile-index'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppProfileTarget,
   serverAppUsersTarget,
-  serverRootProfileTarget,
+  serverUserProfileAppStateTarget,
+  serverUserProfileTarget,
 } from '../../../utils/firestore-mutations/targets'
 import { requireFirebaseBearerUser } from '../auth/bearer'
 import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import {
-  buildAppProfileProvisionData as appProfileData,
   assertProfileProvisionDefinition as assertDefinition,
   assertProfileProvisionSeed as assertSeed,
-  requireProfileProvisionSegment as configuredSegment,
+  buildProfileAppStateProvisionData as appStateData,
+  buildProfileProvisionData as profileData,
   failProfileProvision as fail,
   requireProfileProvisionAppMembership as requireAppMembership,
   requireProfileProvisionCanonicalUser as requireCanonicalUser,
-  buildRootProfileProvisionData as rootProfileData,
+  requireProfileProvisionSegment as configuredSegment,
   type ProfileProvisionContractDefinition as ProfileProvisionDefinition,
   type ProfileProvisionContractSeed as ProfileProvisionSeed,
   type ProfileProvisionTransactionOutcome as ProfileTransactionOutcome,
@@ -29,9 +29,6 @@ export type {
   ProfileProvisionContractSeed as ProfileProvisionSeed,
 } from './profile-provision-contract'
 
-type RootProfileId = 'agent' | 'chef' | 'driver' | 'professional'
-type AppProfileId = RootProfileId | 'customer'
-
 function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
   const runtime = useRuntimeConfig()
   const fireux = runtime.public?.fireux as Record<string, unknown> | undefined
@@ -40,104 +37,88 @@ function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
     | undefined
   const appId = configuredSegment(fireux?.id, 'Runtime App id')
 
-  if (!isRuntimeProfileEnabled(fireux?.profiles, definition.id)) {
+  if (!isRuntimeProfileEnabled(fireux?.profiles, definition.kind)) {
     fail(404, `${definition.label} profiles are not enabled for this App.`)
   }
 
-  const appDatabaseId = String(firebase?.databaseId ?? '').trim()
+  const runtimeDatabaseId = String(firebase?.databaseId ?? '').trim()
   const identityDatabaseId =
-    String(firebase?.identityDatabaseId ?? '').trim() || appDatabaseId
+    String(firebase?.identityDatabaseId ?? '').trim() || runtimeDatabaseId
   const canonical = (value: string) => (value === '(default)' ? '' : value)
   return {
     appId,
-    sameDatabase: canonical(appDatabaseId) === canonical(identityDatabaseId),
+    sameDatabase:
+      canonical(runtimeDatabaseId) === canonical(identityDatabaseId),
   }
 }
 
-function ids(definition: ProfileProvisionDefinition) {
-  return {
-    app: definition.id as AppProfileId,
-    root: definition.root ? (definition.id as RootProfileId) : null,
-  }
+async function requireRuntimeMembership(uid: string, appId: string) {
+  const memberships = serverAppUsersTarget(appId)
+  await runGuardedServerTransaction(
+    memberships.database,
+    async (mutations) => {
+      const membership = await mutations.read(memberships, uid)
+      requireAppMembership(membership)
+    }
+  )
 }
 
-async function provisionSingleDatabase(
+async function provisionUserProfile(
   definition: ProfileProvisionDefinition,
   uid: string,
   appId: string,
-  rootSeed: ProfileProvisionSeed | null,
-  appSeed: ProfileProvisionSeed
+  profileSeed: ProfileProvisionSeed,
+  appStateSeed: ProfileProvisionSeed | null,
+  placement: 'runtime' | 'identity',
+  includeMembership: boolean
 ): Promise<ProfileTransactionOutcome> {
-  const profileIds = ids(definition)
-  const users = FIRESTORE_MUTATION_TARGETS.runtimeUsers
-  const memberships = serverAppUsersTarget(appId)
-  const appProfiles = serverAppProfileTarget(appId, profileIds.app)
-  const rootProfiles = profileIds.root
-    ? serverRootProfileTarget(profileIds.root, 'runtime')
+  const users =
+    placement === 'runtime'
+      ? FIRESTORE_MUTATION_TARGETS.runtimeUsers
+      : FIRESTORE_MUTATION_TARGETS.users
+  const memberships = includeMembership ? serverAppUsersTarget(appId) : null
+  const profiles = serverUserProfileTarget(uid, definition.kind, placement)
+  const appStates = definition.appState
+    ? serverUserProfileAppStateTarget(
+        uid,
+        definition.kind,
+        appId,
+        placement
+      )
     : null
 
   return runGuardedServerTransaction(users.database, async (mutations) => {
-    const [user, membership, root, app] = await Promise.all([
+    const [user, membership, profile, appState] = await Promise.all([
       mutations.read(users, uid),
-      mutations.read(memberships, uid),
-      rootProfiles ? mutations.read(rootProfiles, uid) : Promise.resolve(null),
-      mutations.read(appProfiles, uid),
+      memberships
+        ? mutations.read(memberships, uid)
+        : Promise.resolve(null),
+      mutations.read(profiles, definition.kind),
+      appStates
+        ? mutations.read(appStates, appId)
+        : Promise.resolve(null),
     ])
     requireCanonicalUser(user)
-    requireAppMembership(membership)
-    const createdCore = Boolean(rootProfiles && root && !root.exists)
-    const createdApp = !app.exists
-    if (rootProfiles && root && !root.exists) {
-      mutations.create(rootProfiles, uid, rootProfileData(rootSeed ?? {}, uid))
-    }
-    if (createdApp) {
-      mutations.create(appProfiles, uid, appProfileData(appSeed, uid, appId))
-    }
-    return { createdCore, createdApp }
-  })
-}
+    if (membership) requireAppMembership(membership)
 
-async function provisionIdentityPhase(
-  profileId: RootProfileId,
-  uid: string,
-  rootSeed: ProfileProvisionSeed
-) {
-  const users = FIRESTORE_MUTATION_TARGETS.users
-  const roots = serverRootProfileTarget(profileId, 'identity')
-  return runGuardedServerTransaction(users.database, async (mutations) => {
-    const [user, root] = await Promise.all([
-      mutations.read(users, uid),
-      mutations.read(roots, uid),
-    ])
-    requireCanonicalUser(user)
-    if (!root.exists)
-      mutations.create(roots, uid, rootProfileData(rootSeed, uid))
-    return !root.exists
-  })
-}
-
-async function provisionAppPhase(
-  profileId: AppProfileId,
-  uid: string,
-  appId: string,
-  appSeed: ProfileProvisionSeed
-) {
-  const memberships = serverAppUsersTarget(appId)
-  const profiles = serverAppProfileTarget(appId, profileId)
-  return runGuardedServerTransaction(
-    memberships.database,
-    async (mutations) => {
-      const [membership, profile] = await Promise.all([
-        mutations.read(memberships, uid),
-        mutations.read(profiles, uid),
-      ])
-      requireAppMembership(membership)
-      if (!profile.exists) {
-        mutations.create(profiles, uid, appProfileData(appSeed, uid, appId))
-      }
-      return !profile.exists
+    const createdProfile = !profile.exists
+    const createdAppState = Boolean(appStates && appState && !appState.exists)
+    if (createdProfile) {
+      mutations.create(
+        profiles,
+        definition.kind,
+        profileData(profileSeed, uid, definition.kind)
+      )
     }
-  )
+    if (appStates && appState && !appState.exists && appStateSeed) {
+      mutations.create(
+        appStates,
+        appId,
+        appStateData(appStateSeed, uid, appId, definition.kind)
+      )
+    }
+    return { createdProfile, createdAppState }
+  })
 }
 
 export async function provisionRuntimeProfile(
@@ -147,70 +128,45 @@ export async function provisionRuntimeProfile(
   assertDefinition(definition)
   const uid = configuredSegment(actorUid, 'Authenticated User id')
   const context = runtimeDatabaseContext(definition)
-  const profileIds = ids(definition)
-  const rootSeed = definition.root
-    ? assertSeed(definition.root.seed(), `${definition.label} root seed`)
-    : null
-  const appSeed = assertSeed(
-    definition.app.seed(),
-    `${definition.label} App seed`
+  const profileSeed = assertSeed(
+    definition.profile.seed(),
+    `${definition.label} profile seed`
   )
+  const appStateSeed = definition.appState
+    ? assertSeed(
+        definition.appState.seed(),
+        `${definition.label} App-state seed`
+      )
+    : null
 
-  if (context.sameDatabase) {
-    const outcome = await provisionSingleDatabase(
-      definition,
-      uid,
-      context.appId,
-      rootSeed,
-      appSeed
-    )
-    return {
-      ok: true,
-      userId: uid,
-      profileId: definition.id,
-      ...outcome,
-      atomicity: 'single-database-atomic',
-    }
-  }
-
-  let createdCore = false
-  if (profileIds.root && rootSeed) {
-    createdCore = await provisionIdentityPhase(profileIds.root, uid, rootSeed)
-  }
-
-  let createdApp: boolean
-  try {
-    createdApp = await provisionAppPhase(
-      profileIds.app,
-      uid,
-      context.appId,
-      appSeed
-    )
-  } catch (cause) {
-    if (!definition.root) throw cause
-    throw createError({
-      statusCode: 409,
-      statusMessage:
-        `${definition.label} identity is ready, but its current App attachment ` +
-        'did not complete. Restore App membership if needed, then retry.',
-      data: {
-        code: 'PROFILE_APP_PHASE_INCOMPLETE',
-        retryable: true,
-        userId: uid,
-        profileId: definition.id,
-        createdCore,
-      },
-      cause,
-    })
-  }
+  const outcome = context.sameDatabase
+    ? await provisionUserProfile(
+        definition,
+        uid,
+        context.appId,
+        profileSeed,
+        appStateSeed,
+        'runtime',
+        true
+      )
+    : await (async () => {
+        await requireRuntimeMembership(uid, context.appId)
+        return provisionUserProfile(
+          definition,
+          uid,
+          context.appId,
+          profileSeed,
+          appStateSeed,
+          'identity',
+          false
+        )
+      })()
 
   return {
     ok: true,
     userId: uid,
-    profileId: definition.id,
-    createdCore,
-    createdApp,
-    atomicity: 'cross-database-two-phase',
+    profileKind: definition.kind,
+    ...outcome,
   }
 }
 

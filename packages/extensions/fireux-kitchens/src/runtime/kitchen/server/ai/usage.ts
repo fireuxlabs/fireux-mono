@@ -19,7 +19,7 @@ export async function writeKitchenAgentUsage(input: {
 }) {
   const actual = actualMenuAiCost([{ model: input.model, usage: input.usage }])
   const id = randomUUID()
-  const target = serverKitchenAiUsageTarget(input.appId, input.kitchenId)
+  const target = serverKitchenAiUsageTarget(input.kitchenId)
 
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     mutations.create(target, id, {

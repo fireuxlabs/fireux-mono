@@ -7,9 +7,7 @@
     <MenuClose
       v-if="!isKioskMenu"
       class="menu-close--layout"
-      :class="isKioskMenu
-        ? 'menu-close--bottom-left'
-        : 'menu-close--top-right'"
+      :class="isKioskMenu ? 'menu-close--bottom-left' : 'menu-close--top-right'"
       :aria-label="exitLabel"
       :kind="exitKind"
       :to="exitPath"
@@ -22,13 +20,7 @@
 <script setup lang="ts">
 import { useMenuExit } from '../menu/composables/useMenuExit'
 
-const {
-  exitKind,
-  exitLabel,
-  exitPath,
-  isKioskMenu,
-  routeScope,
-} = useMenuExit()
+const { exitKind, exitLabel, exitPath, isKioskMenu, routeScope } = useMenuExit()
 </script>
 
 <style scoped>
@@ -53,5 +45,4 @@ const {
     --menu-close-icon-size: 2.5rem;
   }
 }
-
 </style>

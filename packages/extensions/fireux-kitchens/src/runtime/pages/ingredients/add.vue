@@ -1,6 +1,9 @@
 <template>
   <UPage>
-    <UPageHeader title="Add Ingredient" description="Create a global ingredient record.">
+    <UPageHeader
+      title="Add Ingredient"
+      description="Create a global ingredient record."
+    >
       <template #ctas>
         <UButton
           size="xs"

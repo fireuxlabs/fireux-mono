@@ -84,19 +84,22 @@ type EcosystemProfileItem = {
   websiteUrl?: string
 }
 
-const props = withDefaults(defineProps<{
-  item?: EcosystemProfileItem
-}>(), {
-  item: () => ({
-    id: '',
-    name: '',
-    description: '',
-    status: '',
-    appCount: 0,
-    imageUrl: '',
-    websiteUrl: '',
-  }),
-})
+const props = withDefaults(
+  defineProps<{
+    item?: EcosystemProfileItem
+  }>(),
+  {
+    item: () => ({
+      id: '',
+      name: '',
+      description: '',
+      status: '',
+      appCount: 0,
+      imageUrl: '',
+      websiteUrl: '',
+    }),
+  }
+)
 
 const item = computed(() => ({
   id: props.item?.id || '',

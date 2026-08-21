@@ -47,14 +47,18 @@ const emit = defineEmits<{
 }>()
 const label = computed(() => String(props.label || 'Basket').trim())
 
-const quantityLabel = computed(() =>
-  `${props.quantity} ${props.quantity === 1 ? 'item' : 'items'}`
+const quantityLabel = computed(
+  () => `${props.quantity} ${props.quantity === 1 ? 'item' : 'items'}`
 )
 const totalMarker = computed(() =>
   Math.max(0, Number(props.total || 0)).toFixed(2)
 )
 const summaryLabel = computed(() =>
-  [label.value, quantityLabel.value, props.totalLabel || `0 ${props.currencyCode}`]
+  [
+    label.value,
+    quantityLabel.value,
+    props.totalLabel || `0 ${props.currencyCode}`,
+  ]
     .filter(Boolean)
     .join(', ')
 )

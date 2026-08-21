@@ -26,7 +26,7 @@
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/public/directory</p>
+            <p class="font-mono">GET /api/directory</p>
             <p class="text-dimmed">Read the shared FireUX App and Ecosystem directory projections.</p>
           </div>
           <div class="fx-inset-panel">

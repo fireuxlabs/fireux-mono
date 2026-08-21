@@ -3,7 +3,9 @@
     <template #header>
       <div>
         <h2 class="text-base font-semibold text-highlighted">Add dish item</h2>
-        <p class="text-sm text-dimmed">Menu items must point at an existing kitchen dish.</p>
+        <p class="text-sm text-dimmed">
+          Menu items must point at an existing kitchen dish.
+        </p>
       </div>
     </template>
 
@@ -22,7 +24,13 @@
       </UFormField>
 
       <UFormField label="Price">
-        <UInput v-model="price" type="number" min="0" step="0.5" :disabled="saving || !canWrite" />
+        <UInput
+          v-model="price"
+          type="number"
+          min="0"
+          step="0.5"
+          :disabled="saving || !canWrite"
+        />
       </UFormField>
 
       <div class="flex items-end">
@@ -60,7 +68,12 @@ const price = ref(0)
 const saving = ref(false)
 
 const canAdd = computed(
-  () => canWrite.value && Boolean(kitchenId.value && menuId.value && sectionId.value && dishId.value) && !saving.value
+  () =>
+    canWrite.value &&
+    Boolean(
+      kitchenId.value && menuId.value && sectionId.value && dishId.value
+    ) &&
+    !saving.value
 )
 
 async function add() {
@@ -77,7 +90,11 @@ async function add() {
     })
     dishId.value = ''
     price.value = 0
-    toast.add({ title: 'Dish added to menu', color: 'success', icon: 'i-lucide-check' })
+    toast.add({
+      title: 'Dish added to menu',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
   } catch (error) {
     toast.add({
       title: 'Could not add item',

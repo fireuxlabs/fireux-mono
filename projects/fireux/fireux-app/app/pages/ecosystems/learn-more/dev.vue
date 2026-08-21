@@ -26,7 +26,7 @@
 
         <div class="space-y-2 text-sm">
           <div class="fx-inset-panel">
-            <p class="font-mono">GET /api/public/directory</p>
+            <p class="font-mono">GET /api/directory</p>
             <p class="text-dimmed">
               Shared platform projection for the landing page and
               <code>/ecosystems</code>.

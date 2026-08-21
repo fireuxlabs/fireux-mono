@@ -83,9 +83,7 @@ export default defineEventHandler(async (event) => {
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
   const db = getRuntimeFirestore()
-  const orderRef = db.doc(
-    `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`
-  )
+  const orderRef = db.doc(`kitchens/${context.kitchenId}/orders/${orderId}`)
   const orderSnap = await orderRef.get()
   if (!orderSnap.exists) {
     throw createError({
@@ -225,7 +223,7 @@ export default defineEventHandler(async (event) => {
     }
   )
 
-  const orders = serverKitchenOrdersTarget(context.appId, context.kitchenId)
+  const orders = serverKitchenOrdersTarget(context.kitchenId)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const latest = await mutations.read(orders, orderId)
     if (!latest.exists) {

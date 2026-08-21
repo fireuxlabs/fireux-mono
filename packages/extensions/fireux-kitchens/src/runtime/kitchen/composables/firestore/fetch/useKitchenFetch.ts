@@ -9,7 +9,10 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/place/models/place.model'
+import {
+  PlaceStorage,
+  type Place,
+} from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -46,16 +49,15 @@ export function useKitchenFetch(
   options: UseKitchenFetchOptions = {}
 ) {
   const { surface } = useKitchenInterface()
-  const simulationDatabaseId = computed(
-    () => requireSimulationDatabaseId()
-  )
+  const simulationDatabaseId = computed(() => requireSimulationDatabaseId())
   const resolveLiveDb = useFirestoreResolver()
   const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const liveRead = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const sourceRef = computed<KitchenFetchSource>(
-    () => (isRef(options.source) ? options.source.value : options.source) ?? 'live'
+    () =>
+      (isRef(options.source) ? options.source.value : options.source) ?? 'live'
   )
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
@@ -69,7 +71,8 @@ export function useKitchenFetch(
   const shouldHydrate = options.hydrate !== false
 
   const liveDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const collectionPath =
+      String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value !== 'live' || !docId) return null
 
@@ -80,7 +83,8 @@ export function useKitchenFetch(
     ) as Query<KitchenFetchDoc>
   })
   const testDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const collectionPath =
+      String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value !== 'test' || !docId) return null
 
@@ -113,7 +117,8 @@ export function useKitchenFetch(
   })
   const placeQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!shouldHydrate || sourceRef.value !== 'live' || !resolvedPlaceId) return null
+    if (!shouldHydrate || sourceRef.value !== 'live' || !resolvedPlaceId)
+      return null
 
     return fsq(
       collection(resolveLiveDb(), PlaceStorage.collection),
@@ -128,7 +133,8 @@ export function useKitchenFetch(
   )
   const testPlaceQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!shouldHydrate || sourceRef.value !== 'test' || !resolvedPlaceId) return null
+    if (!shouldHydrate || sourceRef.value !== 'test' || !resolvedPlaceId)
+      return null
 
     return fsq(
       collection(resolveSimulationDb(), PlaceStorage.collection),
@@ -158,8 +164,8 @@ export function useKitchenFetch(
 
     const place = shouldHydrate
       ? sourceRef.value === 'test'
-        ? testPlaceSource.value?.[0] ?? null
-        : placeSource.value?.[0] ?? null
+        ? (testPlaceSource.value?.[0] ?? null)
+        : (placeSource.value?.[0] ?? null)
       : null
 
     return surface({
@@ -177,9 +183,12 @@ export function useKitchenFetch(
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
     if (sourceRef.value === 'test') {
-      return testSource.value === undefined ||
-        (shouldHydrate && Boolean(placeId.value) &&
+      return (
+        testSource.value === undefined ||
+        (shouldHydrate &&
+          Boolean(placeId.value) &&
           testPlaceSource.value === undefined)
+      )
     }
     return liveSource.value === undefined
   })

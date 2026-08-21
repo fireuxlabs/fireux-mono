@@ -3,7 +3,7 @@
   class="public-profile-detail__sidebar"
   aria-label="Professional evidence"
 >
-  <PublicProfileSection
+  <UserProfileSection
     v-if="model.languages.length"
     compact
     icon="i-lucide-languages"
@@ -28,9 +28,9 @@
         />
       </div>
     </div>
-  </PublicProfileSection>
+  </UserProfileSection>
 
-  <PublicProfileSection
+  <UserProfileSection
     v-if="model.certifications.length"
     compact
     icon="i-lucide-award"
@@ -65,9 +65,9 @@
         </a>
       </article>
     </div>
-  </PublicProfileSection>
+  </UserProfileSection>
 
-  <PublicProfileSection
+  <UserProfileSection
     v-if="model.education.length"
     compact
     icon="i-lucide-graduation-cap"
@@ -102,7 +102,7 @@
         </a>
       </article>
     </div>
-  </PublicProfileSection>
+  </UserProfileSection>
 </aside>
 </template>
 

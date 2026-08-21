@@ -9,86 +9,94 @@
       variant="outline"
     >
       <div class="space-y-4">
-          <MoleculesFormsFirestoreSimpleField
-            label="Name"
-            :firebase-value="customerName"
-            placeholder="Your ordering name"
-            :maxlength="80"
-            :update-function="handleName"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Name"
+          :firebase-value="customerName"
+          placeholder="Your ordering name"
+          :maxlength="80"
+          :update-function="handleName"
+        />
 
-          <UFormField label="Phone">
+        <UFormField label="Phone">
+          <UInput
+            v-model="phoneDraft"
+            autocomplete="tel"
+            placeholder="Phone number for delivery updates"
+            size="xl"
+            maxlength="40"
+            :disabled="savingField === 'phone'"
+            @blur="savePhone"
+            @keydown.enter.prevent="savePhone"
+          />
+        </UFormField>
+
+        <UFormField label="Default delivery address">
+          <div class="customer-address-field">
             <UInput
-              v-model="phoneDraft"
-              autocomplete="tel"
-              placeholder="Phone number for delivery updates"
+              v-model="addressDraft"
+              autocomplete="street-address"
+              placeholder="Start typing your delivery address"
               size="xl"
-              maxlength="40"
-              :disabled="savingField === 'phone'"
-              @blur="savePhone"
-              @keydown.enter.prevent="savePhone"
+              maxlength="300"
+              :disabled="savingField === 'address'"
+              @blur="saveAddress"
+              @keydown.enter.prevent="saveAddress"
             />
-          </UFormField>
 
-          <UFormField label="Default delivery address">
-            <div class="customer-address-field">
-              <UInput
-                v-model="addressDraft"
-                autocomplete="street-address"
-                placeholder="Start typing your delivery address"
-                size="xl"
-                maxlength="300"
-                :disabled="savingField === 'address'"
-                @blur="saveAddress"
-                @keydown.enter.prevent="saveAddress"
-              />
-
-              <div
-                v-if="addressPredictions.length"
-                class="menu-order-address-options"
+            <div
+              v-if="addressPredictions.length"
+              class="menu-order-address-options"
+            >
+              <button
+                v-for="prediction in addressPredictions"
+                :key="prediction.place_id"
+                type="button"
+                @mousedown.prevent="selectAddress(prediction.description)"
               >
-                <button
-                  v-for="prediction in addressPredictions"
-                  :key="prediction.place_id"
-                  type="button"
-                  @mousedown.prevent="selectAddress(prediction.description)"
-                >
-                  <strong>
-                    {{ prediction.structured_formatting?.main_text || prediction.description }}
-                  </strong>
-                  <span v-if="prediction.structured_formatting?.secondary_text">
-                    {{ prediction.structured_formatting.secondary_text }}
-                  </span>
-                </button>
-              </div>
-
-              <p v-if="addressSuggestionsPending" class="text-xs text-dimmed">
-                Loading address suggestions...
-              </p>
-
-              <p v-if="addressSuggestionsError" class="text-xs text-dimmed">
-                {{ addressSuggestionsError }}
-              </p>
+                <strong>
+                  {{
+                    prediction.structured_formatting?.main_text ||
+                    prediction.description
+                  }}
+                </strong>
+                <span v-if="prediction.structured_formatting?.secondary_text">
+                  {{ prediction.structured_formatting.secondary_text }}
+                </span>
+              </button>
             </div>
-          </UFormField>
 
-          <p v-if="inlineState" class="text-xs text-dimmed">
-            {{ inlineState }}
-          </p>
+            <p v-if="addressSuggestionsPending" class="text-xs text-dimmed">
+              Loading address suggestions...
+            </p>
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Allergy note"
-            type="textarea"
-            :rows="3"
-            :maxlength="500"
-            :firebase-value="allergyNote"
-            placeholder="Optional allergy or intolerance note"
-            :update-function="handleAllergyNote"
-          />
+            <p v-if="addressSuggestionsError" class="text-xs text-dimmed">
+              {{ addressSuggestionsError }}
+            </p>
+          </div>
+        </UFormField>
+
+        <p v-if="inlineState" class="text-xs text-dimmed">
+          {{ inlineState }}
+        </p>
+
+        <MoleculesFormsFirestoreSimpleField
+          label="Allergy note"
+          type="textarea"
+          :rows="3"
+          :maxlength="500"
+          :firebase-value="allergyNote"
+          placeholder="Optional allergy or intolerance note"
+          :update-function="handleAllergyNote"
+        />
       </div>
     </UPageCard>
 
-    <MoleculesStateCard v-else entity="customer profile" kind="document" loading />
+    <MoleculesStateCard
+      v-else
+      entity="customer profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -99,10 +107,7 @@ import { useCustomer } from '../../../composables/customer/useCustomer'
 import { useCustomerUpdate } from '../../../composables/firestore/profiles/Customer/mutations/useCustomerUpdate'
 import { useCustomerDeliveryAddressAutocomplete } from '../../../composables/customer/useCustomerDeliveryAddressAutocomplete'
 
-const {
-  appProfile,
-  profileRefs,
-} = useCustomer()
+const { customerProfile, profileRefs } = useCustomer()
 const {
   updateCustomerName,
   updateCustomerPhone,
@@ -121,13 +126,13 @@ const {
   error: addressSuggestionsError,
 } = useCustomerDeliveryAddressAutocomplete(addressDraft)
 
-const customer = computed(() => appProfile.value ?? null)
-const customerPrivate = computed(() => customer.value?.private ?? null)
-const customerName = computed(() => customerPrivate.value?.name ?? '')
-const customerPhone = computed(() => customerPrivate.value?.phone ?? '')
-const allergyNote = computed(() => customerPrivate.value?.allergy_note ?? '')
+const customer = computed(() => customerProfile.value ?? null)
+const preferences = computed(() => customer.value?.preferences ?? null)
+const customerName = computed(() => preferences.value?.name ?? '')
+const customerPhone = computed(() => preferences.value?.phone ?? '')
+const allergyNote = computed(() => preferences.value?.allergy_note ?? '')
 const defaultDeliveryAddress = computed(
-  () => customerPrivate.value?.default_delivery_address ?? ''
+  () => preferences.value?.default_delivery_address ?? ''
 )
 
 watch(
@@ -169,11 +174,7 @@ const wrap = async (
 }
 
 const handleName = async (value: string) =>
-  wrap(
-    () => updateCustomerName(value),
-    'Name updated',
-    'Failed to update name'
-  )
+  wrap(() => updateCustomerName(value), 'Name updated', 'Failed to update name')
 
 const handleAllergyNote = async (value: string) =>
   wrap(

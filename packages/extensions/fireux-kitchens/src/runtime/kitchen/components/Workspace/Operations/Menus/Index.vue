@@ -32,7 +32,5 @@
 <script setup lang="ts">
 import { provideKitchenMenusWorkspace } from '../../../../composables/workspace/operations/Menus/useKitchenMenusWorkspace'
 
-const {
-  kitchenId,
-} = provideKitchenMenusWorkspace()
+const { kitchenId } = provideKitchenMenusWorkspace()
 </script>

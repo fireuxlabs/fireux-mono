@@ -130,7 +130,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { PublicCompanyProjection } from '../../../models/company-public.model.ts'
+import type { CompanyDirectoryEntry } from '../../../models/company-directory.model.ts'
 import { useCompanyCollection } from '../../../composables/company/useCompanyCollection'
 import { useCompanyInterface } from '../../../composables/company/useCompanyInterface'
 
@@ -157,8 +157,8 @@ const props = withDefaults(
   }
 )
 
-const fetched = useCompanyCollection<PublicCompanyProjection>()
-const collection = computed<PublicCompanyProjection[]>(
+const fetched = useCompanyCollection<CompanyDirectoryEntry>()
+const collection = computed<CompanyDirectoryEntry[]>(
   () => fetched.collection.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
@@ -193,11 +193,11 @@ const {
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    PublicCompanyProjection,
+    CompanyDirectoryEntry,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (company: PublicCompanyProjection) => makeCard(company),
+    makeCard: (company: CompanyDirectoryEntry) => makeCard(company),
     initialVariant: props.initialVariant,
   })
 

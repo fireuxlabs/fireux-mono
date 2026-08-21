@@ -55,8 +55,8 @@ defineOptions({ name: 'KitchenOrdersLayout' })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const kitchenSelection = useWorkspaceSelection('kitchen')
-const selectionBlocked = computed(() =>
-  !normalizeString(kitchenSelection.selectedId.value)
+const selectionBlocked = computed(
+  () => !normalizeString(kitchenSelection.selectedId.value)
 )
 </script>
 

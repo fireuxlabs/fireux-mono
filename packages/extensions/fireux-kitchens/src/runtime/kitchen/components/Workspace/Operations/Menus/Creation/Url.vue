@@ -2,9 +2,7 @@
   <UCard variant="subtle">
     <template #header>
       <div class="space-y-1">
-        <h3 class="text-sm font-semibold text-highlighted">
-          Create from URL
-        </h3>
+        <h3 class="text-sm font-semibold text-highlighted">Create from URL</h3>
         <p class="text-sm text-dimmed">
           Paste an existing ordering or menu page, then process it from the
           queue.
@@ -12,7 +10,10 @@
       </div>
     </template>
 
-    <form class="grid gap-3 md:grid-cols-[minmax(0,16rem)_1fr_auto]" @submit.prevent="save">
+    <form
+      class="grid gap-3 md:grid-cols-[minmax(0,16rem)_1fr_auto]"
+      @submit.prevent="save"
+    >
       <UFormField label="Menu name">
         <UInput
           v-model="menuName"
@@ -61,12 +62,8 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenWorkspaceMenus } from '../../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
 
-const {
-  activeKitchenAppId,
-  canWrite,
-  currencyCode,
-  kitchenId,
-} = useKitchenWorkspaceMenus()
+const { activeKitchenAppId, canWrite, currencyCode, kitchenId } =
+  useKitchenWorkspaceMenus()
 const { currentUser } = useAuth()
 const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
 const menuName = ref('')
@@ -90,9 +87,13 @@ const canSave = computed(() =>
   )
 )
 
-watch(currentUser, async (user: { getIdToken: () => Promise<string> } | null) => {
-  authToken.value = import.meta.client && user ? await user.getIdToken() : ''
-}, { immediate: true })
+watch(
+  currentUser,
+  async (user: { getIdToken: () => Promise<string> } | null) => {
+    authToken.value = import.meta.client && user ? await user.getIdToken() : ''
+  },
+  { immediate: true }
+)
 
 async function save() {
   if (!canSave.value) return
@@ -119,9 +120,10 @@ async function save() {
 
     message.value = `Saved ${uploadId.value}. Process it from the queue below.`
   } catch (caught) {
-    error.value = caught instanceof Error
-      ? caught.message
-      : 'Menu URL source was not saved.'
+    error.value =
+      caught instanceof Error
+        ? caught.message
+        : 'Menu URL source was not saved.'
   } finally {
     pending.value = false
   }

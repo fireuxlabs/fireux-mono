@@ -3,15 +3,17 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Supplier root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
+import {
+  FireuxWorkspaceTeamMemberModel,
+  type FireuxWorkspaceTeamMember,
+} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export type SupplierState = 'official' | 'public'
-export type SupplierCatalogueState = 'integrated' | 'public_only'
+export type SupplierState = 'official' | 'published'
+export type SupplierCatalogueState = 'integrated' | 'directory_only'
 
 export {
   SupplierItemDefaults,
@@ -23,30 +25,32 @@ export {
   type SupplierItemUpdateInput,
 } from './supplier-item.model.ts'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? WidenLiteral<U>[]
+        : T extends Record<string, unknown>
+          ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+          : T
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Domain
- * Storage: root canonical record plus app-scoped record
+ * Storage: root canonical record with root-owned Team and operations
  * Root storage path: /suppliers/<supplierId>
  * Detail route: /suppliers/<slug>
- * App path: /apps/<appId>/suppliers/<supplierId>
- * Child scope: /apps/<appId>/suppliers/<supplierId>/<childCollection>/<childId>
+ * Child scope: /suppliers/<supplierId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Supplier is a domain entity with one canonical readable root and an
- *   app-hosted access-support record, not a user profile.
+ * - Supplier is a domain entity with one canonical readable root, not a User profile.
  * - The path should read as supplier identity rather than user identity.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
- * - Supplier workspace governance belongs to the app-hosted supplier record.
+ * - Supplier Workspace governance belongs to root-owned Team records.
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
@@ -60,12 +64,12 @@ export const SupplierStorage = {
   idParam: 'supplierId',
 } as const
 
-export const AppSupplierStorage = {
+export const SupplierTeamStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/suppliers/{supplierId}',
-  collection: 'suppliers',
-  parent: 'app',
-  idParam: 'supplierId',
+  path: 'suppliers/{supplierId}/team/{userId}',
+  collection: 'team',
+  parent: 'supplier',
+  idParam: 'userId',
 } as const
 
 export const SupplierEntity = defineFireuxEntity({
@@ -73,11 +77,10 @@ export const SupplierEntity = defineFireuxEntity({
   name: 'Supplier',
   family: ['supplier', 'workspace-entity'],
   identity: 'root',
-  authority: 'owning-app-database',
-  appSupport: 'access-record',
+  authority: 'domain-database',
+  appSupport: 'none',
   workspace: true,
   root: SupplierStorage.path,
-  appSupportPath: AppSupplierStorage.path,
 })
 
 export const SupplierDefaults = {
@@ -95,8 +98,8 @@ export const SupplierDefaults = {
   supplier_image: '',
   supplier_item_categories: [] as string[],
   supplier_delivery_areas: [] as string[],
-  state: 'public' as SupplierState,
-  catalogue_state: 'public_only' as SupplierCatalogueState,
+  state: 'published' as SupplierState,
+  catalogue_state: 'directory_only' as SupplierCatalogueState,
   linked_ingredient_ids: [] as string[],
   hello: '',
 
@@ -116,36 +119,20 @@ export type Supplier = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-export const AppSupplierDefaults = {
-  ...FireuxAppAccessRecordModel,
+export const SupplierTeamMemberDefaults = {
+  ...FireuxWorkspaceTeamMemberModel,
 } as const
 
-export type AppSupplier = FireuxAppAccessRecord
+export type SupplierTeamMember = FireuxWorkspaceTeamMember
 
 export type SupplierCreateInput = Omit<
   Supplier,
-  | 'id'
-  | 'created'
-  | 'updated'
-  | 'management'
-  | 'tagline'
-  | 'slug'
+  'id' | 'created' | 'updated' | 'management' | 'tagline' | 'slug'
 > &
-  Partial<
-    Pick<
-      Supplier,
-      'tagline' | 'slug'
-    >
-  >
+  Partial<Pick<Supplier, 'tagline' | 'slug'>>
 
 export type SupplierUpdateInput = Partial<
-  Omit<
-    Supplier,
-    | 'id'
-    | 'created'
-    | 'updated'
-    | 'management'
-  >
+  Omit<Supplier, 'id' | 'created' | 'updated' | 'management'>
 >
 
 export type SupplierIngredientState =
@@ -201,7 +188,10 @@ export type SupplierIngredientCreateInput = Omit<
 >
 
 export type SupplierIngredientUpdateInput = Partial<
-  Omit<SupplierIngredient, 'id' | 'supplier_id' | 'ingredient_id' | 'created' | 'updated'>
+  Omit<
+    SupplierIngredient,
+    'id' | 'supplier_id' | 'ingredient_id' | 'created' | 'updated'
+  >
 >
 
 export type SupplierCatalogueItem = {

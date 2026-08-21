@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Where are you sitting?
-    </h2>
+    <h2 class="menu-order-screen-title">Where are you sitting?</h2>
 
     <UFormField label="Table, terrace, or bar position" required>
       <UInput

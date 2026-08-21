@@ -8,7 +8,7 @@ import type { KitchenMiseTask } from '../../models/mise.model.ts'
 import type { KitchenOrder } from '../../models/order.model.ts'
 import type { KitchenStation } from '../../models/station.model.ts'
 import type { KitchenSupplierIngredient } from '../../models/supplier-ingredient.model.ts'
-import type { AppKitchen, Kitchen } from '../../models/kitchen.model.ts'
+import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { KitchenMenu } from '../../../menu/models/kitchen-menu.model.ts'
 import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
 import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
@@ -43,6 +43,12 @@ export type KitchenDemoIdentity = {
   serviceId: string
 }
 
+export type KitchenDemoAccess = {
+  kitchenId: string
+  teamIds: string[]
+  operatorIds: string[]
+}
+
 /**
  * Authoring bundle for one coherent Demo Menu.
  *
@@ -59,7 +65,7 @@ export type KitchenDemoMenu = {
 
 export type KitchenDemoScenario = {
   appId: string
-  appSupport: AppKitchen
+  access: KitchenDemoAccess
   kitchen: Kitchen
   place: Place
   menus: KitchenDemoMenu[]

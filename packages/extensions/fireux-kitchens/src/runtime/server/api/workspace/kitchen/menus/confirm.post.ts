@@ -181,14 +181,10 @@ export default defineEventHandler(async (event: H3Event) => {
       data: fetched.buffer,
     })
     try {
-      await serverUpdate(
-        serverKitchenDishesTarget(appId, kitchenId),
-        target.dish_id,
-        {
-          image: saved.imageUrl,
-          updated: serverAuditStamp({ by: uid, appId }),
-        }
-      )
+      await serverUpdate(serverKitchenDishesTarget(kitchenId), target.dish_id, {
+        image: saved.imageUrl,
+        updated: serverAuditStamp({ by: uid, appId }),
+      })
       mediaApplied.push({ dish_id: target.dish_id, image: saved.imageUrl })
     } catch (cause) {
       await saved.deleteUploaded().catch(() => undefined)
@@ -229,28 +225,24 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   const stamp = serverAuditStamp({ by: uid, appId })
 
-  await serverUpdate(
-    serverKitchenMenuUploadsTarget(appId, kitchenId),
-    uploadId,
-    {
-      status: write.status === 'published' ? 'published' : 'draft',
-      menu_id: menuId,
-      ai_draft: {
-        ...aiDraft,
-        applied: {
-          ...write,
-          at: stamp.at,
-          by: uid,
-        },
-        cache_import: {
-          ...cacheImport,
-          at: stamp.at,
-        },
-        media_applied: mediaApplied,
+  await serverUpdate(serverKitchenMenuUploadsTarget(kitchenId), uploadId, {
+    status: write.status === 'published' ? 'published' : 'draft',
+    menu_id: menuId,
+    ai_draft: {
+      ...aiDraft,
+      applied: {
+        ...write,
+        at: stamp.at,
+        by: uid,
       },
-      updated: stamp,
-    }
-  )
+      cache_import: {
+        ...cacheImport,
+        at: stamp.at,
+      },
+      media_applied: mediaApplied,
+    },
+    updated: stamp,
+  })
 
   return {
     ok: true,

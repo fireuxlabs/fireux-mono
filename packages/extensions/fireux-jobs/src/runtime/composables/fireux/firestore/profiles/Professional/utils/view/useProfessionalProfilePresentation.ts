@@ -5,13 +5,13 @@ import type {
   ProfessionalProfileRelevantExperience,
   ProfessionalProfileViewModel,
 } from './useProfessionalProfileView'
-import type { PublicProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
 import type { ProjectItem } from '../../../../../../../models/profiles/Professional/supporting'
 
 export interface ProfessionalProfilePresentationProps {
   model?: ProfessionalProfileViewModel | null
   card?: ProfessionalCard.Card
-  profile?: PublicProfessionalProfile | null
+  profile?: ProfessionalProfile | null
   prop?: string
 }
 

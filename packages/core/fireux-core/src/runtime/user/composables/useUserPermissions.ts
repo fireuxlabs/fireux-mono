@@ -4,7 +4,7 @@ import {
   resolveAppUserAccess,
   type AppUserAccessTier,
 } from '../../app/utils/app-user-access'
-import type { CurrentAppMembershipDto } from '../../server/utils/public-projection/public-dto.types.ts'
+import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
 import { useDeveloperAccess } from './useDeveloperAccess'
 import type { UserRefs } from './firestore/fetch/useUserFetch'
 
@@ -12,7 +12,7 @@ export type UserAccessTier = AppUserAccessTier
 
 export function useUserPermissions(user: UserRefs) {
   const appUser = user.appUser as {
-    value: CurrentAppMembershipDto | null | undefined
+    value: CurrentAppMembership | null | undefined
   }
   const { isDeveloper } = useDeveloperAccess()
 

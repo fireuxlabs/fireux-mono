@@ -20,6 +20,25 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
     required: ['memberId'],
     additionalProperties: false,
   },
+  ai: {
+    baked: {
+      purpose:
+        'Permanently remove an unlinked member from the selected Kitchen Team.',
+      knows: ['The selected Kitchen, selected member and current link state.'],
+      constraints: [
+        'Do not delete a member linked to a User.',
+        'Do not proceed without explicit confirmation.',
+      ],
+      evidence: [
+        'Return the deleted member identity and invitation revocation outcome.',
+      ],
+    },
+    runtime: {
+      accepted: true,
+      required: ['workspaceSelection', 'memberSelection', 'humanConfirmation'],
+      optional: ['userRequest'],
+    },
+  },
   surfaces: {
     human: {
       placement: 'toolbar',

@@ -10,7 +10,8 @@
             There are currently no app-specific fields for the chef profile.
           </p>
           <p class="text-xs text-dimmed">
-            This section is reserved for tenant-specific overrides when they are needed.
+            This section is reserved for tenant-specific overrides when they are
+            needed.
           </p>
         </div>
       </UCard>
@@ -26,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Chef } from '../../../models/chef.model.ts';
+import type { Chef } from '../../../models/chef.model.ts'
 
 defineProps<{
   chef: Partial<Chef> | null | undefined

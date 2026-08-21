@@ -91,16 +91,20 @@ export function useMenuOrderTrackingSession<
   }
 
   function save() {
-    if (!import.meta.client || !storageKey.value || !sentOrder.value) return false
+    if (!import.meta.client || !storageKey.value || !sentOrder.value)
+      return false
 
-    const snapshot = createMenuOrderTrackingSnapshot({
-      capabilityToken: capabilityToken.value,
-      fulfilmentLabel: fulfilmentLabel.value,
-      order: sentOrder.value,
-      paymentLabel: paymentLabel.value,
-      receiptItems: receiptItems.value,
-      status: status.value,
-    }, options.orderType)
+    const snapshot = createMenuOrderTrackingSnapshot(
+      {
+        capabilityToken: capabilityToken.value,
+        fulfilmentLabel: fulfilmentLabel.value,
+        order: sentOrder.value,
+        paymentLabel: paymentLabel.value,
+        receiptItems: receiptItems.value,
+        status: status.value,
+      },
+      options.orderType
+    )
     if (!snapshot) {
       clear()
       return false

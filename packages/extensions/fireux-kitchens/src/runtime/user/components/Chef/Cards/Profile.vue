@@ -1,6 +1,6 @@
 <template>
   <article class="public-profile-detail" data-profile-tone="chef">
-    <PublicProfileHero
+    <UserProfileHero
       kind-label="Chef"
       icon="i-lucide-chef-hat"
       tone="warning"
@@ -16,22 +16,24 @@
       <template #actions>
         <slot name="actions" />
       </template>
-    </PublicProfileHero>
+    </UserProfileHero>
 
     <div class="public-profile-detail__content">
       <div class="public-profile-detail__main">
-        <PublicProfileSection
+        <UserProfileSection
           v-if="aboutCopy"
           icon="i-lucide-utensils"
           eyebrow="Culinary identity"
           title="About"
         >
-          <p class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base">
+          <p
+            class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
+          >
             {{ aboutCopy }}
           </p>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="gallery.length"
           icon="i-lucide-images"
           eyebrow="From the pass"
@@ -68,11 +70,11 @@
               </figcaption>
             </figure>
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
       </div>
 
       <aside class="public-profile-detail__sidebar">
-        <PublicProfileSection
+        <UserProfileSection
           v-if="signatureDishes.length"
           compact
           icon="i-lucide-sparkles"
@@ -88,9 +90,9 @@
               variant="soft"
             />
           </div>
-        </PublicProfileSection>
+        </UserProfileSection>
 
-        <PublicProfileSection
+        <UserProfileSection
           v-if="profile?.chef_organization_name || kitchenCount"
           compact
           icon="i-lucide-store"
@@ -108,7 +110,7 @@
             {{ kitchenCount === 1 ? 'kitchen' : 'kitchens' }} across the
             network.
           </p>
-        </PublicProfileSection>
+        </UserProfileSection>
       </aside>
     </div>
   </article>
@@ -117,12 +119,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ChefCard } from '../../../composables/chef/useChefInterface'
-import type { PublicChefProfile } from '../../../models/chef.model.ts'
+import type { ChefProfile } from '../../../models/chef.model.ts'
 
 const props = withDefaults(
   defineProps<{
     card: ChefCard.Card
-    profile?: PublicChefProfile | null
+    profile?: ChefProfile | null
     prop?: string
   }>(),
   {

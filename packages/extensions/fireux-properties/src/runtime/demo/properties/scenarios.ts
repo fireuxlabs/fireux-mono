@@ -1,15 +1,11 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
 import {
-  AppPortfolioModel,
   PortfolioModel,
-  type AppPortfolio,
   type Portfolio,
 } from '../../portfolio/models/portfolio.model.ts'
 import {
-  AppPropertyModel,
   PropertyModel,
-  type AppProperty,
   type Property,
 } from '../../property/models/property.model.ts'
 
@@ -19,13 +15,11 @@ const placeCreated = { at: stamp, by: 'demo' }
 
 export type PortfolioDemoTarget = {
   portfolio: Portfolio
-  appSupport: AppPortfolio
 }
 
 export type PropertyDemoTarget = {
   property: Property
   place: PlaceStored
-  appSupport: AppProperty
 }
 
 export type PropertiesDemoScenario = {
@@ -40,24 +34,7 @@ const createdForApp = (appId: string) => ({
   app_id: appId,
 })
 
-const appSupport = <T extends AppPortfolio | AppProperty>(
-  model: T,
-  id: string,
-  appId: string
-): T => ({
-  ...model,
-  id,
-  operator_ids: [],
-  team_ids: [],
-  join_requests: [],
-  created: createdForApp(appId),
-  updated,
-})
-
-const residentialPlace = (
-  id: string,
-  name: string
-): PlaceStored => ({
+const residentialPlace = (id: string, name: string): PlaceStored => ({
   id,
   name,
   short_name: name,
@@ -108,10 +85,7 @@ const alpineProperty: Property = {
 }
 
 const buenohostAppId = 'buenohost'
-const alpineStayPlace = residentialPlace(
-  'alpine-stay-place',
-  'Alpine Stay'
-)
+const alpineStayPlace = residentialPlace('alpine-stay-place', 'Alpine Stay')
 const alpineStay: Property = {
   ...PropertyModel,
   id: 'alpine-stay',
@@ -151,21 +125,11 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
         created: createdForApp(graniteAppId),
         updated,
       },
-      appSupport: appSupport(
-        AppPortfolioModel,
-        'alpine-portfolio',
-        graniteAppId
-      ),
     },
     properties: [
       {
         property: alpineProperty,
         place: alpineResidencePlace,
-        appSupport: appSupport(
-          AppPropertyModel,
-          alpineProperty.id,
-          graniteAppId
-        ),
       },
     ],
   },
@@ -176,65 +140,40 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
       {
         property: alpineStay,
         place: alpineStayPlace,
-        appSupport: appSupport(
-          AppPropertyModel,
-          alpineStay.id,
-          buenohostAppId
-        ),
       },
     ],
   },
 ]
 
-const supportKeys = [
-  'created',
-  'id',
-  'join_requests',
-  'operator_ids',
-  'team_ids',
-  'updated',
-] as const
-
-const validateSupport = (
+const validateRoot = (
   scenario: PropertiesDemoScenario,
-  root: Portfolio | Property,
-  support: AppPortfolio | AppProperty
+  root: Portfolio | Property
 ) => {
-  const keys = Object.keys(support).sort()
   if (
     root.management.mode !== 'workspace' ||
-    root.created.app_id !== scenario.appId ||
-    support.id !== root.id ||
-    support.created.app_id !== scenario.appId ||
-    keys.length !== supportKeys.length ||
-    keys.some((key, index) => key !== supportKeys[index]) ||
-    !Array.isArray(support.operator_ids) ||
-    !Array.isArray(support.team_ids) ||
-    !Array.isArray(support.join_requests)
+    root.created.app_id !== scenario.appId
   ) {
     throw new Error(
-      `Properties Demo ${scenario.appId}/${root.id} requires one same-App root and access-only support pair.`
+      `Properties Demo ${scenario.appId}/${root.id} requires one canonical root.`
     )
   }
 }
 
 for (const scenario of propertiesDemoScenarios) {
   if (!scenario.appId || !scenario.properties.length) {
-    throw new Error('Every Properties Demo scenario requires an App and Property.')
+    throw new Error(
+      'Every Properties Demo scenario requires an App and Property.'
+    )
   }
 
   const portfolioId = scenario.portfolio?.portfolio.id ?? ''
   if (scenario.portfolio) {
-    validateSupport(
-      scenario,
-      scenario.portfolio.portfolio,
-      scenario.portfolio.appSupport
-    )
+    validateRoot(scenario, scenario.portfolio.portfolio)
   }
 
   const propertyIds = new Set<string>()
   for (const target of scenario.properties) {
-    validateSupport(scenario, target.property, target.appSupport)
+    validateRoot(scenario, target.property)
     if (
       !target.property.place_id ||
       target.place.id !== target.property.place_id ||
@@ -254,9 +193,9 @@ for (const scenario of propertiesDemoScenarios) {
   }
 }
 
-export const portfolioDemoRecords = propertiesDemoScenarios.flatMap(
-  (value) => value.portfolio ? [value.portfolio.portfolio] : []
+export const portfolioDemoRecords = propertiesDemoScenarios.flatMap((value) =>
+  value.portfolio ? [value.portfolio.portfolio] : []
 )
-export const propertyDemoRecords = propertiesDemoScenarios.flatMap(
-  (value) => value.properties.map((target) => target.property)
+export const propertyDemoRecords = propertiesDemoScenarios.flatMap((value) =>
+  value.properties.map((target) => target.property)
 )

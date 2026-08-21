@@ -250,7 +250,4 @@ watch(timing, () => {
 })
 </script>
 
-<style
-  scoped
-  src="../../assets/styles/menu-order-collection-time.css"
-></style>
+<style scoped src="../styles/menu-order-collection-time.css"></style>

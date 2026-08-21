@@ -1,12 +1,6 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
-    class="block w-full"
-  >
-    <div
-      class="fx-card--cell"
-    >
+  <NuxtLink v-if="link && to" :to="to" class="block w-full">
+    <div class="fx-card--cell">
       <UAvatar
         v-if="avatarUrl"
         :src="avatarUrl"
@@ -27,7 +21,10 @@
             <div class="truncate text-sm font-semibold text-highlighted">
               {{ title }}
             </div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ subtitle }}
             </div>
           </div>
@@ -67,14 +64,8 @@
     </div>
   </NuxtLink>
 
-  <div
-    v-else
-    class="block w-full"
-    @click="onClick"
-  >
-    <div
-      class="fx-card--cell"
-    >
+  <div v-else class="block w-full" @click="onClick">
+    <div class="fx-card--cell">
       <UAvatar
         v-if="avatarUrl"
         :src="avatarUrl"
@@ -95,7 +86,10 @@
             <div class="truncate text-sm font-semibold text-highlighted">
               {{ title }}
             </div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ subtitle }}
             </div>
           </div>
@@ -139,10 +133,7 @@
 <script setup lang="ts">
 import type { RecipeCard } from '../../../../../composables/recipe/useRecipeInterface'
 
-type Props = Pick<
-  RecipeCard.Card,
-  'to' | 'title' | 'status' | 'badges'
-> & {
+type Props = Pick<RecipeCard.Card, 'to' | 'title' | 'status' | 'badges'> & {
   avatarUrl?: string
   subtitle?: string
   prop?: string

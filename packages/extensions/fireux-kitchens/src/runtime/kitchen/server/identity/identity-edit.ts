@@ -20,22 +20,16 @@ import {
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
+  serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
   KitchenIdentityEdit,
   KitchenIdentityEditResponse,
 } from '../../models/kitchen-detail.model.ts'
-import {
-  AppKitchenStorage,
-  KitchenStorage,
-} from '../../models/kitchen.model.ts'
+import { KitchenStorage } from '../../models/kitchen.model.ts'
 import { readKitchenIdentity } from '../../utils/kitchen-spine.ts'
-import {
-  readKitchenOnboardingManagement,
-  readKitchenOnboardingSupport,
-} from '../index/onboarding/onboarding-policy.ts'
+import { readKitchenOnboardingManagement } from '../index/onboarding/onboarding-policy.ts'
 import { readKitchenByRouteSlug } from './route-identity.ts'
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
@@ -192,9 +186,9 @@ async function assertAuthority(
   const authorityRefs = [
     db.doc(`apps/${context.runtimeAppId}/users/${context.uid}`),
     db.doc(`apps/${ownerAppId}`),
-    db.doc(`apps/${ownerAppId}/${AppKitchenStorage.collection}/${kitchenId}`),
+    db.doc(`${KitchenStorage.collection}/${kitchenId}/team/${context.uid}`),
   ] as const
-  const [runtimeMembership, ownerApp, support] = await db.getAll(
+  const [runtimeMembership, ownerApp, teamMember] = await db.getAll(
     ...authorityRefs
   )
   const isAdmin =
@@ -208,18 +202,14 @@ async function assertAuthority(
   ) {
     forbidden('This Kitchen is outside the current ecosystem.')
   }
-  try {
-    if (
-      !support.exists ||
-      !readKitchenOnboardingSupport(support.data() || {})
-    ) {
-      throw new Error('invalid')
-    }
-  } catch {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Kitchen App support is incomplete.',
-    })
+  const teamRole = text(teamMember.get('role'))
+  if (
+    !teamMember.exists ||
+    text(teamMember.get('user_id')) !== context.uid ||
+    text(teamMember.get('status')) !== 'active' ||
+    (teamRole !== 'owner' && teamRole !== 'operator')
+  ) {
+    forbidden('Kitchen owner or operator access is required.')
   }
 
   return { root, ownerAppId }
@@ -256,10 +246,10 @@ async function assertTransactionAuthority(
     forbidden('This Kitchen belongs to another App.')
   }
 
-  const [runtimeMembership, ownerApp, support] = await Promise.all([
+  const [runtimeMembership, ownerApp, teamMember] = await Promise.all([
     transaction.read(memberships, context.uid),
     transaction.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, ownerAppId),
-    transaction.read(serverAppKitchensTarget(ownerAppId), kitchenId),
+    transaction.read(serverKitchenTeamMembersTarget(kitchenId), context.uid),
   ])
   const isAdmin =
     runtimeMembership.exists && text(runtimeMembership.data?.role) === 'admin'
@@ -272,15 +262,14 @@ async function assertTransactionAuthority(
   ) {
     forbidden('This Kitchen is outside the current ecosystem.')
   }
-  try {
-    if (!support.exists || !readKitchenOnboardingSupport(support.data || {})) {
-      throw new Error('invalid')
-    }
-  } catch {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Kitchen App support is incomplete.',
-    })
+  const teamRole = text(teamMember.data?.role)
+  if (
+    !teamMember.exists ||
+    text(teamMember.data?.user_id) !== context.uid ||
+    text(teamMember.data?.status) !== 'active' ||
+    (teamRole !== 'owner' && teamRole !== 'operator')
+  ) {
+    forbidden('Kitchen owner or operator access is required.')
   }
 
   return { ownerAppId }

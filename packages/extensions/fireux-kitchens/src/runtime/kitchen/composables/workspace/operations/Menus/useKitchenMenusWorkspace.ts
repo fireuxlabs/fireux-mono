@@ -1,16 +1,11 @@
-import {
-  inject,
-  provide,
-  type InjectionKey,
-} from 'vue'
+import { inject, provide, type InjectionKey } from 'vue'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 
-export type KitchenMenusWorkspace = ReturnType<
-  typeof useKitchenWorkspaceMenus
->
+export type KitchenMenusWorkspace = ReturnType<typeof useKitchenWorkspaceMenus>
 
-const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusWorkspace> =
-  Symbol('KitchenMenusWorkspace')
+const kitchenMenusWorkspaceKey: InjectionKey<KitchenMenusWorkspace> = Symbol(
+  'KitchenMenusWorkspace'
+)
 
 export function provideKitchenMenusWorkspace() {
   const workspace = useKitchenWorkspaceMenus()

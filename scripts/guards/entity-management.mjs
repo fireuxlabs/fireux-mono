@@ -41,7 +41,7 @@ const relativeFiles = {
   kitchenSproochliEditor:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Sproochli.vue',
   miseboxRules:
-    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/app-authority.rules',
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/membership-directory.rules',
   migration: 'scripts/migrate-workspace-entity-management.mjs',
 }
 

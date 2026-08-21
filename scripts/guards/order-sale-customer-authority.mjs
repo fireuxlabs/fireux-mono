@@ -62,7 +62,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     linkModel,
-    /apps\/\{appId\}\/customers\/\{userId\}\/orders\/\{orderId\}/
+    /users\/\{userId\}\/orders\/\{orderId\}/
   )
   assert.match(transition, /runGuardedServerTransaction/)
   assert.match(transition, /buildCompletedKitchenOrderSale/)
@@ -70,15 +70,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(transition, /mutations\.create\([\s\S]*financialFacts/)
   assert.match(
     serverTargets,
-    /serverCustomerOrdersTarget = \(appId: string, customerId: string\)/
+    /serverUserOrdersTarget = \(userId: string\)/
   )
   assert.match(
     serverTargets,
-    /apps\/\$\{app\}\/customers\/\$\{customer\}\/orders/
+    /users\/\$\{user\}\/orders/
   )
   assert.match(
     customerOrders,
-    /apps\/\$\{appId\}\/customers\/\$\{uid\}\/orders/
+    /users\/\$\{uid\}\/orders/
   )
   assert.equal(
     existsSync(

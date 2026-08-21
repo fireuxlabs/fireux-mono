@@ -5,7 +5,7 @@
         v-if="store.image_url"
         :src="store.image_url"
         :alt="store.image_alt"
-      >
+      />
       <span v-else>
         <UIcon name="i-lucide-store" />
       </span>
@@ -27,14 +27,14 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import type {
-  PublicMarketplaceStore,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { MarketplaceStoreDirectoryEntry } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
-const props = defineProps<{ store: PublicMarketplaceStore }>()
+const props = defineProps<{ store: MarketplaceStoreDirectoryEntry }>()
 const { copy } = useInterlakenCopy()
 const isPublished = computed(
-  () => !props.store.publication_state || props.store.publication_state === 'published'
+  () =>
+    !props.store.publication_state ||
+    props.store.publication_state === 'published'
 )
 const target = computed(() =>
   isPublished.value
@@ -45,6 +45,8 @@ const stateLabel = computed(() =>
   isPublished.value ? copy('market_live_store') : copy('market_draft_preview')
 )
 const actionLabel = computed(() =>
-  isPublished.value ? copy('storefront_open_shop') : copy('market_admin_preview')
+  isPublished.value
+    ? copy('storefront_open_shop')
+    : copy('market_admin_preview')
 )
 </script>

@@ -46,10 +46,7 @@
         </NuxtLink>
       </nav>
 
-      <span
-        v-else-if="surfaceLabel"
-        class="menu-header-chip menu-surface-chip"
-      >
+      <span v-else-if="surfaceLabel" class="menu-header-chip menu-surface-chip">
         {{ surfaceLabel }}
       </span>
 
@@ -62,10 +59,7 @@
       />
     </div>
 
-    <section
-      v-if="showPreOrderNotice"
-      class="menu-pre-order-notice"
-    >
+    <section v-if="showPreOrderNotice" class="menu-pre-order-notice">
       <UIcon
         name="i-lucide-calendar-clock"
         class="menu-pre-order-notice__icon"
@@ -110,26 +104,32 @@ defineEmits<{
   (event: 'update:modelValue', value: MenuChoiceValue): void
 }>()
 
-const menuServiceTimes = computed(() =>
-  props.menu.behaviour.ordering.service_hours?.operation_hours
+const menuServiceTimes = computed(
+  () => props.menu.behaviour.ordering.service_hours?.operation_hours
 )
 const orderType = computed(() =>
   props.menu.behaviour.orderingEnabled
     ? props.menu.behaviour.defaultOrderType
     : undefined
 )
-const showSurfaceRail = computed(() =>
-  props.menu.behaviour.surface === 'generic' && props.surfaceOptions.length > 0
+const showSurfaceRail = computed(
+  () =>
+    props.menu.behaviour.surface === 'generic' &&
+    props.surfaceOptions.length > 0
 )
-const { menuServiceChip: derivedMenuServiceTimes } =
-  useMenuServiceComputed(menuServiceTimes, { orderType })
+const { menuServiceChip: derivedMenuServiceTimes } = useMenuServiceComputed(
+  menuServiceTimes,
+  { orderType }
+)
 const preOrderPolicy = computed(() =>
-  props.menu.behaviour.ordering.order_types.find((type) =>
-    type.type === 'pre_order'
+  props.menu.behaviour.ordering.order_types.find(
+    (type) => type.type === 'pre_order'
   )
 )
-const showPreOrderNotice = computed(() =>
-  props.menu.behaviour.context === 'pre_order' || orderType.value === 'pre_order'
+const showPreOrderNotice = computed(
+  () =>
+    props.menu.behaviour.context === 'pre_order' ||
+    orderType.value === 'pre_order'
 )
 const preOrderNoticeHours = computed(() =>
   Math.max(1, Number(preOrderPolicy.value?.notice_hours || 24))
@@ -143,8 +143,9 @@ const preOrderDepositLabel = computed(() =>
     preOrderDepositCurrency.value
   )
 )
-const preOrderNotice = computed(() =>
-  `For large groups, we appreciate a pre-order. Please send it at least ${preOrderNoticeHours.value} hours before you arrive.`
+const preOrderNotice = computed(
+  () =>
+    `For large groups, we appreciate a pre-order. Please send it at least ${preOrderNoticeHours.value} hours before you arrive.`
 )
 const preOrderDepositNotice = computed(() =>
   preOrderDepositLabel.value
@@ -209,7 +210,11 @@ const preOrderDepositNotice = computed(() =>
 }
 
 .menu-service-times-chip--unknown {
-  --menu-header-chip-bg: color-mix(in srgb, var(--menu-text) 8%, var(--menu-bg));
+  --menu-header-chip-bg: color-mix(
+    in srgb,
+    var(--menu-text) 8%,
+    var(--menu-bg)
+  );
   --menu-header-chip-color: var(--menu-muted);
 }
 
@@ -225,8 +230,16 @@ const preOrderDepositNotice = computed(() =>
 .menu-surface-chip {
   --menu-header-chip-height: 2.1rem;
   --menu-header-chip-padding: 0.42rem 0.78rem;
-  --menu-header-chip-border: color-mix(in srgb, var(--menu-primary) 28%, transparent);
-  --menu-header-chip-bg: color-mix(in srgb, var(--menu-bg) 90%, var(--menu-primary));
+  --menu-header-chip-border: color-mix(
+    in srgb,
+    var(--menu-primary) 28%,
+    transparent
+  );
+  --menu-header-chip-bg: color-mix(
+    in srgb,
+    var(--menu-bg) 90%,
+    var(--menu-primary)
+  );
   --menu-header-chip-color: var(--menu-primary);
   --menu-header-chip-size: 0.76rem;
   --menu-header-chip-weight: var(--font-weight-black);
@@ -275,7 +288,11 @@ const preOrderDepositNotice = computed(() =>
 
 .menu-pre-order-notice__status {
   --menu-header-chip-padding: 0.3rem 0.62rem;
-  --menu-header-chip-border: color-mix(in srgb, var(--menu-text) 14%, transparent);
+  --menu-header-chip-border: color-mix(
+    in srgb,
+    var(--menu-text) 14%,
+    transparent
+  );
 }
 
 .menu-pre-order-notice__status--online {

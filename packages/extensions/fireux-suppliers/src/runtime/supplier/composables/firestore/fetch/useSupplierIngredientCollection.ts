@@ -40,12 +40,13 @@ export function useSupplierIngredientCollection(
       ? options.enabled.value !== false
       : options.enabled !== false
   )
-  const supplierCollectionPath = computed(() =>
-    normalizeString(
-      isRef(options.supplierCollectionPath)
-        ? options.supplierCollectionPath.value
-        : options.supplierCollectionPath
-    ) || DEFAULT_SUPPLIER_COLLECTION_PATH
+  const supplierCollectionPath = computed(
+    () =>
+      normalizeString(
+        isRef(options.supplierCollectionPath)
+          ? options.supplierCollectionPath.value
+          : options.supplierCollectionPath
+      ) || DEFAULT_SUPPLIER_COLLECTION_PATH
   )
   const collectionPath = computed(() => {
     if (!enabled.value) return ''
@@ -57,8 +58,8 @@ export function useSupplierIngredientCollection(
   })
   const sourceRef = firestoreFetchCollection<SupplierIngredient>(collectionPath)
 
-  const supplierIngredients = computed<SupplierIngredient[]>(() =>
-    sourceRef.value ?? []
+  const supplierIngredients = computed<SupplierIngredient[]>(
+    () => sourceRef.value ?? []
   )
   const pending = computed(
     () => Boolean(collectionPath.value) && sourceRef.value === undefined

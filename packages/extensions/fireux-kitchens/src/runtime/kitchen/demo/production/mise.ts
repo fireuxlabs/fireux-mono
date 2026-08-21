@@ -1,27 +1,24 @@
 import { deanosKitchenDemoPrepItems } from './prep-items'
 import { deanosKitchenDemoRecipes } from './recipes'
-import type {
-  KitchenDemoMiseRequirement,
-  KitchenDemoStationId,
-} from './types'
+import type { KitchenDemoMiseRequirement, KitchenDemoStationId } from './types'
 
-const recipeStationId = (
-  recipeId: string
-): KitchenDemoStationId => {
-  if ([
-    'salted-caramel-sauce',
-    'cherry-vanilla-syrup',
-    'house-lemonade-cordial',
-    'strawberry-lime-cooler-base',
-    'cucumber-mint-cooler-base',
-  ].includes(recipeId)) {
+const recipeStationId = (recipeId: string): KitchenDemoStationId => {
+  if (
+    [
+      'salted-caramel-sauce',
+      'cherry-vanilla-syrup',
+      'house-lemonade-cordial',
+      'strawberry-lime-cooler-base',
+      'cucumber-mint-cooler-base',
+    ].includes(recipeId)
+  ) {
     return 'drinks'
   }
-  if ([
-    'deanos-crispy-batter',
-    'fried-camembert',
-    'fried-brie-bites',
-  ].includes(recipeId)) {
+  if (
+    ['deanos-crispy-batter', 'fried-camembert', 'fried-brie-bites'].includes(
+      recipeId
+    )
+  ) {
     return 'fryers'
   }
   if (recipeId === 'caramelised-onions') return 'grill'
@@ -54,4 +51,3 @@ export const deanosKitchenDemoMise: KitchenDemoMiseRequirement[] = [
     })
   ),
 ]
-

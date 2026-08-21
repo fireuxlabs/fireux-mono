@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Payment
-    </h2>
+    <h2 class="menu-order-screen-title">Payment</h2>
 
     <p class="menu-order-placeholder">
       {{ paymentLabel }}
@@ -18,10 +16,7 @@
       Pay now · {{ totalLabel }}
     </UButton>
 
-    <p
-      v-if="funnel.payment.error"
-      class="menu-order-placeholder"
-    >
+    <p v-if="funnel.payment.error" class="menu-order-placeholder">
       {{ funnel.payment.error }}
     </p>
   </div>
@@ -37,14 +32,20 @@ const props = defineProps<{
 
 const payment = computed(() => props.funnel.processing.order?.payment)
 const orderStatus = computed(() =>
-  String(props.funnel.processing.status || props.funnel.processing.order?.status || '').trim()
+  String(
+    props.funnel.processing.status ||
+      props.funnel.processing.order?.status ||
+      ''
+  ).trim()
 )
-const acceptedByKitchen = computed(() =>
-  props.funnel.order.accepted ||
+const acceptedByKitchen = computed(
+  () =>
+    props.funnel.order.accepted ||
     ['accepted', 'ready', 'completed'].includes(orderStatus.value)
 )
-const paymentBeforeKitchen = computed(() =>
-  orderStatus.value === 'pending_payment' &&
+const paymentBeforeKitchen = computed(
+  () =>
+    orderStatus.value === 'pending_payment' &&
     payment.value?.required === true &&
     payment.value?.status !== 'paid'
 )
@@ -62,8 +63,9 @@ const totalLabel = computed(() =>
     currency: currencyCode.value,
   }).format(paymentAmount.value)
 )
-const canStartPayment = computed(() =>
-  props.funnel.processing.exists &&
+const canStartPayment = computed(
+  () =>
+    props.funnel.processing.exists &&
     payment.value?.required === true &&
     (acceptedByKitchen.value || paymentBeforeKitchen.value) &&
     payment.value?.status !== 'paid' &&
@@ -71,8 +73,10 @@ const canStartPayment = computed(() =>
     paymentAmount.value > 0
 )
 const paymentLabel = computed(() => {
-  if (!props.funnel.processing.exists) return 'Waiting for kitchen timing first.'
-  if (orderStatus.value === 'cancelled') return 'The kitchen could not accept this order.'
+  if (!props.funnel.processing.exists)
+    return 'Waiting for kitchen timing first.'
+  if (orderStatus.value === 'cancelled')
+    return 'The kitchen could not accept this order.'
   if (payment.value?.required !== true) {
     return 'No online payment is required for this order.'
   }

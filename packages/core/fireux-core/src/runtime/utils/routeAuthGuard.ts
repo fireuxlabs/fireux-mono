@@ -1,7 +1,7 @@
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { fetchCurrentAppContext } from '../app/composables/currentAppContext'
-import type { CurrentAppMembershipDto } from '../server/utils/public-projection/public-dto.types'
+import type { CurrentAppMembership } from '../app/models/app-context.model.ts'
 
 type AuthGuardState = {
   uid: string | null
@@ -129,7 +129,7 @@ async function resolveCurrentAppMembership(
   app: FirebaseApp,
   uid: string,
   appId: string
-): Promise<CurrentAppMembershipDto | null> {
+): Promise<CurrentAppMembership | null> {
   const user = getAuth(app).currentUser
   if (!user || user.uid !== uid) return null
 

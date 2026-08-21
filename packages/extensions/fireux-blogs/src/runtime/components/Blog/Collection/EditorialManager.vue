@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import type { PublicBlogPostIndexProjection } from '../../../models/blogPost-public.model'
-import { usePublicBlogCollection } from '../../../composables/fireux/blog/public/usePublicBlogCollection'
+import type { BlogDirectoryEntry } from '../../../models/blog-directory.model'
+import { useBlogDirectory } from '../../../composables/fireux/blog/directory/useBlogDirectory'
 import {
   type BlogCard,
   useBlogInterface,
@@ -27,8 +27,8 @@ import BlogCollectionEditorial from './Editorial.vue'
 
 defineOptions({ name: 'BlogCollectionEditorialManager' })
 
-const fetched = usePublicBlogCollection()
-const collection = computed<PublicBlogPostIndexProjection[]>(
+const fetched = useBlogDirectory()
+const collection = computed<BlogDirectoryEntry[]>(
   () => fetched.collection.value
 )
 const outcome = computed(() => fetched.outcome.value)
@@ -36,15 +36,13 @@ const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
 const totalCount = computed(() => fetched.count.value)
-const showSearchInput = computed(
-  () => !hasMore.value && totalCount.value > 15
-)
+const showSearchInput = computed(() => !hasMore.value && totalCount.value > 15)
 const loadMore = () => fetched.loadMore()
 const refresh = () => fetched.refresh()
 
 const { interface: makeCard } = useBlogInterface()
 const { query, visibleItems } = useCollectionSearch<
-  PublicBlogPostIndexProjection,
+  BlogDirectoryEntry,
   BlogCard.Card
 >({
   items: collection,

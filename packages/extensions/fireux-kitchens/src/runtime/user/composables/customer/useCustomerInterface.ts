@@ -29,7 +29,10 @@ export namespace CustomerCard {
 }
 
 export function useCustomerInterface() {
-  function map(profile: Partial<Customer>, user?: UserLike | null): CustomerCard.Card {
+  function map(
+    profile: Partial<Customer>,
+    user?: UserLike | null
+  ): CustomerCard.Card {
     const id = safeString(user?.id).trim() || safeString(profile.id).trim()
     const handle = safeString(user?.handle).trim()
     const avatarUrl = safeString(user?.avatar).trim()
@@ -54,11 +57,17 @@ export function useCustomerInterface() {
     }
   }
 
-  function buildInterface(target?: CustomerTarget | null): CustomerCard.Card | null {
+  function buildInterface(
+    target?: CustomerTarget | null
+  ): CustomerCard.Card | null {
     if (!target) return null
     const mapped = map(target, target.user ?? null)
     return mapped.id && mapped.displayName ? mapped : null
   }
 
-  return { interface: buildInterface, pill: buildInterface, cell: buildInterface }
+  return {
+    interface: buildInterface,
+    pill: buildInterface,
+    cell: buildInterface,
+  }
 }

@@ -2,51 +2,52 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Portfolio root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Portfolio access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
+import {
+  FireuxWorkspaceTeamMemberModel,
+  type FireuxWorkspaceTeamMember,
+} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? WidenLiteral<U>[]
+        : T extends Record<string, unknown>
+          ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+          : T
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Domain
- * Storage: root canonical record plus app-scoped record
+ * Storage: root canonical record with root-owned Team and operations
  * Root path: /portfolios/<portfolioId>
- * App path: /apps/<appId>/portfolios/<portfolioId>
- * Child scope: /apps/<appId>/portfolios/<portfolioId>/<childCollection>/<childId>
+ * Child scope: /portfolios/<portfolioId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Portfolio is one domain entity with a canonical root and an app-hosted support record.
- * - Root does not imply public access; public presentation remains a separate read contract.
- * - The app-scoped record exists because private and operational state can differ by app.
- * - If a future operator profile appears, it should remain a prerequisite or presentation layer over the same app-scoped pattern.
- * - Portfolio-owned operational children should live beneath the app-hosted record.
- * - If that changes later, update the models README first, then this file.
+ * - Portfolio is one root domain Entity.
+ * - Team, protected support, and operations remain beneath that root.
+ * - Management may name an App host but never relocates the Portfolio.
  */
 export const PortfolioStorage = {
-  shape: 'root-and-app-support',
+  shape: 'root',
   root: 'portfolios/{portfolioId}',
-  appSupport: 'apps/{appId}/portfolios/{portfolioId}',
   rootCollection: 'portfolios',
-  appSupportCollection: 'portfolios',
   idParam: 'portfolioId',
   children: {
-    clients: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
-    compliance: 'apps/{appId}/portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
-    documents: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
-    tasks: 'apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}',
-    units: 'apps/{appId}/portfolios/{portfolioId}/units/{unitId}',
+    clients: 'portfolios/{portfolioId}/clients/{clientId}',
+    compliance:
+      'portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
+    documents: 'portfolios/{portfolioId}/documents/{documentId}',
+    tasks: 'portfolios/{portfolioId}/tasks/{taskId}',
+    units: 'portfolios/{portfolioId}/units/{unitId}',
   },
 } as const
 
@@ -55,19 +56,18 @@ export const PortfolioEntity = defineFireuxEntity({
   name: 'Portfolio',
   family: ['portfolio', 'workspace-entity'],
   identity: 'root',
-  authority: 'owning-app-database',
-  appSupport: 'access-record',
+  authority: 'domain-database',
+  appSupport: 'none',
   workspace: true,
   root: PortfolioStorage.root,
-  appSupportPath: PortfolioStorage.appSupport,
 })
 
-export const AppPortfolioStorage = {
+export const PortfolioTeamStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/portfolios/{portfolioId}',
-  collection: 'portfolios',
-  parent: 'app',
-  idParam: 'portfolioId',
+  path: 'portfolios/{portfolioId}/team/{userId}',
+  collection: 'team',
+  parent: 'portfolio',
+  idParam: 'userId',
 } as const
 
 export type PortfolioStatus = 'active' | 'archived'
@@ -101,11 +101,11 @@ export type Portfolio = Omit<
   'management'
 > & { management: FireuxEntityManagement }
 
-export const AppPortfolioModel = {
-  ...FireuxAppAccessRecordModel,
+export const PortfolioTeamMemberModel = {
+  ...FireuxWorkspaceTeamMemberModel,
 } as const
 
-export type AppPortfolio = FireuxAppAccessRecord
+export type PortfolioTeamMember = FireuxWorkspaceTeamMember
 
 export type PortfolioCreateInput = Omit<
   Portfolio,
@@ -118,22 +118,8 @@ export type PortfolioCreateInput = Omit<
   | 'status'
   | 'slug'
 > &
-  Partial<
-    Pick<
-      Portfolio,
-      | 'tagline'
-      | 'image_url'
-      | 'status'
-      | 'slug'
-    >
-  >
+  Partial<Pick<Portfolio, 'tagline' | 'image_url' | 'status' | 'slug'>>
 
 export type PortfolioUpdateInput = Partial<
-  Omit<
-    Portfolio,
-    | 'id'
-    | 'created'
-    | 'updated'
-    | 'management'
-  >
+  Omit<Portfolio, 'id' | 'created' | 'updated' | 'management'>
 >

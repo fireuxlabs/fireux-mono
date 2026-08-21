@@ -110,12 +110,14 @@ import {
   type IngredientKind,
   type IngredientStatus,
 } from '../models/ingredient-taxonomy'
-import type { IngredientUpdateInput } from '../models/ingredient.model.ts'
-import type { PublicIngredient } from '../models/ingredient-public.model.ts'
+import type {
+  Ingredient,
+  IngredientUpdateInput,
+} from '../models/ingredient.model.ts'
 
 const props = defineProps<{
   ingredientId: string
-  ingredient: PublicIngredient
+  ingredient: Ingredient
 }>()
 
 const { updateIngredient } = useIngredientUpdate()

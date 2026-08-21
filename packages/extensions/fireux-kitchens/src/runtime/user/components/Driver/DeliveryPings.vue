@@ -22,7 +22,9 @@
       >
         <template #title>
           <span>
-            {{ dispatch.item_count }} item{{ dispatch.item_count === 1 ? '' : 's' }}
+            {{ dispatch.item_count }} item{{
+              dispatch.item_count === 1 ? '' : 's'
+            }}
           </span>
         </template>
 
@@ -31,7 +33,11 @@
         </template>
 
         <KitchenCardsPill
-          :title="dispatch.kitchen.name || prettySlug(dispatch.kitchen.slug) || 'Kitchen'"
+          :title="
+            dispatch.kitchen.name ||
+            prettySlug(dispatch.kitchen.slug) ||
+            'Kitchen'
+          "
           subtitle="Delivery pickup"
           :show-badges="false"
         />
@@ -79,9 +85,7 @@
       <USkeleton class="h-32 w-full" />
     </div>
 
-    <p v-else class="text-sm text-dimmed">
-      No delivery beacons right now.
-    </p>
+    <p v-else class="text-sm text-dimmed">No delivery beacons right now.</p>
   </UCard>
 </template>
 
@@ -92,13 +96,14 @@ import { useDriverDispatches } from '../../composables/driver/useDriverDispatche
 import { useDriver } from '../../composables/driver/useDriver'
 import type { DriverDispatchBeacon } from '../../models/driver/dispatch'
 
-const { appProfile } = useDriver()
-const { dispatches, pending, error, load, watchDispatch } = useDriverDispatches()
+const { driverAppState } = useDriver()
+const { dispatches, pending, error, load, watchDispatch } =
+  useDriverDispatches()
 const toast = useToastify()
 const watchingPendingId = ref('')
 
 watch(
-  () => String(appProfile.value?.id || '').trim(),
+  () => String(driverAppState.value?.id || '').trim(),
   (driverId: string) => {
     if (driverId) void load()
   },

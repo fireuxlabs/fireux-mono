@@ -9,7 +9,9 @@
         <div class="max-w-2xl space-y-1">
           <h1 class="text-lg font-semibold text-highlighted">Pre-order</h1>
           <p class="text-sm leading-6 text-dimmed">
-            Accept advance dine-in orders for larger tables. Guests can send a request at any time and choose a dining time for the Kitchen to confirm.
+            Accept advance dine-in orders for larger tables. Guests can send a
+            request at any time and choose a dining time for the Kitchen to
+            confirm.
           </p>
         </div>
 
@@ -31,9 +33,12 @@
     <UCard v-else-if="!preOrderConfig">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="space-y-1">
-          <h2 class="text-base font-semibold text-highlighted">Pre-order is not enabled</h2>
+          <h2 class="text-base font-semibold text-highlighted">
+            Pre-order is not enabled
+          </h2>
           <p class="text-sm text-dimmed">
-            Enable it to create an independent future-order policy for this Menu.
+            Enable it to create an independent future-order policy for this
+            Menu.
           </p>
         </div>
 

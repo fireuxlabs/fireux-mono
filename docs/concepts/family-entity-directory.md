@@ -1,7 +1,7 @@
 # Entity Directory family
 
 Updated: 2026-08-19
-Ref: e23268507
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -153,7 +153,8 @@ When this family changes:
 - Place index transport pages canonical `Place[]`; it no longer maintains a
   second Place projection model.
 - Kitchen uses one bounded `KitchenDirectoryEntry` view because its cards join
-  canonical Kitchen, Place, and AppKitchen support records. The API and sitemap
+  canonical Kitchen and Place records while management surfaces authorize
+  against root-owned Team. The API and sitemap
   delegate to the same `readKitchenDirectoryPage` owner; neither introduces a
   replacement Kitchen Entity.
 - Supplier Directory reads canonical `Supplier[]` through its live root

@@ -50,13 +50,9 @@ export function useProfileCreate(config: ProfileConfig) {
     if (
       result?.ok !== true ||
       result.userId !== uid ||
-      result.profileId !== config.id ||
-      typeof result.createdCore !== 'boolean' ||
-      typeof result.createdApp !== 'boolean' ||
-      ![
-        'single-database-atomic',
-        'cross-database-two-phase',
-      ].includes(String(result.atomicity ?? ''))
+      result.profileKind !== config.kind ||
+      typeof result.createdProfile !== 'boolean' ||
+      typeof result.createdAppState !== 'boolean'
     ) {
       throw new Error(
         `[useProfileCreate] ${config.profileType} provision response was invalid.`

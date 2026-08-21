@@ -22,10 +22,7 @@ import {
   type StoredRecord,
   text,
 } from './curation-input'
-import {
-  normalizeIngredientAliases,
-  projectPublicIngredient,
-} from './public-projection.ts'
+import { normalizeIngredientAliases, normalizeIngredient } from './normalize.ts'
 
 export function canonicalStoredIngredient(
   id: string,
@@ -125,7 +122,7 @@ export async function assertUniqueActiveIngredientIdentity(
 
   for (const document of documents) {
     if (document.id === id) continue
-    const ingredient = projectPublicIngredient({
+    const ingredient = normalizeIngredient({
       id: document.id,
       data: () => document.data,
     })
@@ -152,7 +149,7 @@ export async function assertReferencedIngredients(
   const replacementId = text(payload.replaced_by_ingredient_id)
   if (replacementId) {
     const snapshot = await mutations.read(ingredients, replacementId)
-    const projected = projectPublicIngredient({
+    const projected = normalizeIngredient({
       id: replacementId,
       data: () => snapshot.data,
     })
@@ -175,7 +172,7 @@ export async function assertReferencedIngredients(
     }
     visited.add(parentId)
     const snapshot = await mutations.read(ingredients, parentId)
-    const projected = projectPublicIngredient({
+    const projected = normalizeIngredient({
       id: parentId,
       data: () => snapshot.data,
     })

@@ -21,8 +21,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && (badges?.length ?? 0)"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
@@ -36,7 +45,9 @@ import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.m
 import { computed } from 'vue'
 import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
 
-type PillProps = Partial<Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'>> & {
+type PillProps = Partial<
+  Pick<KitchenCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'>
+> & {
   badges?: KitchenCard.Card['badges']
   imageShade?: PlaceImageShade
   showSubtitle?: boolean

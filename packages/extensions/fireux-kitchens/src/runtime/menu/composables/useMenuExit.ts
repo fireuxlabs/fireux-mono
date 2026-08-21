@@ -27,13 +27,14 @@ export function useMenuExit() {
       : ''
   })
   const routeScope = computed(() => {
-    const directorySlug = kitchenCollectionRecoverySlug.value || kitchenSlug.value
+    const directorySlug =
+      kitchenCollectionRecoverySlug.value || kitchenSlug.value
     if (directorySlug) return directoryMenuRouteScope(directorySlug)
 
     return fireux.isTenant ? tenantMenuRouteScope() : rootMenuRouteScope()
   })
-  const isKioskMenu = computed(() =>
-    parseMenuRouteTarget(route.params.menuId).context === 'kiosk'
+  const isKioskMenu = computed(
+    () => parseMenuRouteTarget(route.params.menuId).context === 'kiosk'
   )
   const exitPath = computed(() => {
     if (kitchenCollectionRecoverySlug.value) {

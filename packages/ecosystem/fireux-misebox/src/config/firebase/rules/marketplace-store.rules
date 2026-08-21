@@ -1,0 +1,19 @@
+// @fireux-ecosystem-rules-fragment misebox/marketplace-store
+    match /marketplace-stores/{storeId} {
+      // Marketplace identity, Team, Offers, and Orders use trusted domain
+      // endpoints. Root ownership is explicit even while browser access stays
+      // closed.
+      allow get, list, create, update, delete: if false;
+
+      match /team/{userId} {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /offers/{offerId} {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /{nested=**} {
+        allow get, list, create, update, delete: if false;
+      }
+    }

@@ -21,7 +21,7 @@ import type {
 
 export type KitchenDemoScenarioInput = {
   identity: KitchenDemoIdentity
-  appSupport: KitchenDemoScenario['appSupport']
+  access: KitchenDemoScenario['access']
   kitchen: KitchenDemoScenario['kitchen']
   place: KitchenDemoScenario['place']
   menu: KitchenDemoMenu
@@ -47,4 +47,3 @@ export type KitchenDemoScenarioInput = {
 export type KitchenDemoScenarioAssembly = ReturnType<
   typeof import('./assembly').assembleKitchenDemoScenario
 >
-

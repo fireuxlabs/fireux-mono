@@ -1,8 +1,4 @@
-import {
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { ref, toValue, type MaybeRefOrGetter } from 'vue'
 
 type StoredOrderSubmission = {
   createdAt: string
@@ -65,8 +61,11 @@ const readStored = (storageKey: string): StoredOrderSubmission | null => {
     const createdAt = text(value?.createdAt)
     const createdAtMs = Date.parse(createdAt)
 
-    return fingerprint && key && Number.isFinite(createdAtMs) &&
-      Date.now() - createdAtMs >= 0 && Date.now() - createdAtMs <= MAX_AGE_MS
+    return fingerprint &&
+      key &&
+      Number.isFinite(createdAtMs) &&
+      Date.now() - createdAtMs >= 0 &&
+      Date.now() - createdAtMs <= MAX_AGE_MS
       ? { createdAt, fingerprint, key }
       : null
   } catch {
@@ -77,7 +76,9 @@ const readStored = (storageKey: string): StoredOrderSubmission | null => {
 export function useOrderIdempotency(
   scope: MaybeRefOrGetter<string | null | undefined>
 ) {
-  const current = ref<(StoredOrderSubmission & { storageKey: string }) | null>(null)
+  const current = ref<(StoredOrderSubmission & { storageKey: string }) | null>(
+    null
+  )
   const storageKey = () => {
     const value = text(toValue(scope))
 
@@ -107,7 +108,11 @@ export function useOrderIdempotency(
       try {
         window.localStorage.setItem(
           nextStorageKey,
-          JSON.stringify({ createdAt: current.value.createdAt, fingerprint, key })
+          JSON.stringify({
+            createdAt: current.value.createdAt,
+            fingerprint,
+            key,
+          })
         )
       } catch {
         // The in-memory key still protects retries in this mounted session.

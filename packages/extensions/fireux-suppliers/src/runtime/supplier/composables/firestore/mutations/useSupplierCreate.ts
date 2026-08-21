@@ -85,7 +85,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     return {
       id: result.supplier_id,
       createdRoot: result.created_root,
-      createdAppSupport: result.created_app_support,
+      createdTeamMember: result.created_team_member,
     }
   }
 

@@ -52,9 +52,10 @@ export function useDriverDispatches() {
       dispatches.value = (payload as DriverDispatchPage).items || []
     } catch (loadError) {
       dispatches.value = []
-      error.value = loadError instanceof Error
-        ? loadError
-        : new Error('Driver dispatches could not be loaded.')
+      error.value =
+        loadError instanceof Error
+          ? loadError
+          : new Error('Driver dispatches could not be loaded.')
     } finally {
       pending.value = false
     }

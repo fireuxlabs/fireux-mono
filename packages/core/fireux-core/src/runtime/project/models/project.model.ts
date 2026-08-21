@@ -2,8 +2,8 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../../models/utils/entity.model.ts'
 import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
 import {
-  FireuxAppAccessRecordModel,
-  type FireuxAppAccessRecord,
+  FireuxWorkspaceTeamMemberModel,
+  type FireuxWorkspaceTeamMember,
 } from '../../models/utils/workspace-entity.model.ts'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
@@ -32,7 +32,7 @@ export interface ProjectMeta
   database_id: string
 }
 
-export type AppProject = FireuxAppAccessRecord
+export type ProjectTeamMember = FireuxWorkspaceTeamMember
 
 export const ProjectStorage = {
   shape: 'root',
@@ -51,13 +51,13 @@ export const ProjectMetaStorage = {
   authority: 'canonical-project-and-source-config',
 } as const
 
-export const AppProjectStorage = {
+export const ProjectTeamStorage = {
   shape: 'scoped',
   database: 'named',
-  path: 'apps/{appId}/projects/{projectId}',
-  collection: 'projects',
-  parent: 'app',
-  idParam: 'projectId',
+  path: 'projects/{projectId}/team/{userId}',
+  collection: 'team',
+  parent: 'project',
+  idParam: 'userId',
 } as const
 
 export const ProjectEntity = defineFireuxEntity({
@@ -66,10 +66,9 @@ export const ProjectEntity = defineFireuxEntity({
   family: ['system', 'workspace-entity'],
   identity: 'root',
   authority: 'fireux-control-plane',
-  appSupport: 'access-record',
+  appSupport: 'none',
   workspace: true,
   root: ProjectStorage.path,
-  appSupportPath: AppProjectStorage.path,
 })
 
 export const ProjectIdentityDefaults: ProjectIdentity = {
@@ -107,8 +106,8 @@ export const ProjectMetaDefaults: ProjectMeta = {
   },
 }
 
-export const AppProjectDefaults: AppProject = {
-  ...FireuxAppAccessRecordModel,
+export const ProjectTeamMemberDefaults: ProjectTeamMember = {
+  ...FireuxWorkspaceTeamMemberModel,
 }
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &

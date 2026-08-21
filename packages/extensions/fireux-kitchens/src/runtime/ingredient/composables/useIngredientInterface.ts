@@ -6,10 +6,7 @@ import {
 } from '../models/ingredient-taxonomy'
 import type { KitchenIngredient } from '../../kitchen/models/ingredient.model.ts'
 
-const formatPackPrice = (
-  costMinor?: number | null,
-  currencyCode?: string
-) => {
+const formatPackPrice = (costMinor?: number | null, currencyCode?: string) => {
   const amount = Number(costMinor)
   if (!Number.isFinite(amount) || amount <= 0) return ''
 
@@ -22,7 +19,10 @@ const formatPackPrice = (
 }
 
 const joinSubtitle = (...parts: unknown[]): string =>
-  parts.map(part => safeString(part).trim()).filter(Boolean).join(' · ')
+  parts
+    .map((part) => safeString(part).trim())
+    .filter(Boolean)
+    .join(' · ')
 
 export type IngredientInterfaceItem = Partial<Ingredient> & {
   id: string
@@ -108,7 +108,10 @@ export function useIngredientInterface() {
     const categoryLabel = ingredientCategoryLabel(ingredient.category)
     const kindLabel = ingredientKindLabel(ingredient.kind)
     const aliases = Array.isArray(ingredient.aliases)
-      ? ingredient.aliases.map(safeString).map(value => value.trim()).filter(Boolean)
+      ? ingredient.aliases
+          .map(safeString)
+          .map((value) => value.trim())
+          .filter(Boolean)
       : []
     const parentIngredientId = safeString(
       ingredient.parent_ingredient_id

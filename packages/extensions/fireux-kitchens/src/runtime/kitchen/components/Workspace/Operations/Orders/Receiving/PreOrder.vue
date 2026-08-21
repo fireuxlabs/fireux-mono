@@ -31,12 +31,15 @@ const props = withDefaults(
   }
 )
 const emit = defineEmits<{
-  (event: 'accept', payload: { id: string; estimatedMinutes: number | null }): void
+  (
+    event: 'accept',
+    payload: { id: string; estimatedMinutes: number | null }
+  ): void
 }>()
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const orderRecord = computed(() => props.order as Record<string, unknown>)
 const customer = computed(() => record(orderRecord.value.customer))
@@ -48,14 +51,18 @@ const requestedTime = computed(() =>
   formatKitchenOrderRequestedTime(requestedFor.value)
 )
 const requestedDateTimeLabel = computed(() => requestedTime.value.dateTime)
-const requestedDetail = computed(() => [
-  requestedTime.value.distance,
-  partySize.value ? `${partySize.value} guests` : '',
-].filter(Boolean).join(' · '))
-const canAcceptRequested = computed(() =>
-  props.canInteract && Boolean(
-    props.orderId && kitchenOrderTimestampMs(requestedFor.value)
-  )
+const requestedDetail = computed(() =>
+  [
+    requestedTime.value.distance,
+    partySize.value ? `${partySize.value} guests` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+)
+const canAcceptRequested = computed(
+  () =>
+    props.canInteract &&
+    Boolean(props.orderId && kitchenOrderTimestampMs(requestedFor.value))
 )
 
 function acceptRequested() {

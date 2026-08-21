@@ -64,14 +64,14 @@
         No suppliers found for this source.
       </p>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Suppliers (JSON)"
         context="dev suppliers · selected source"
         :objects="suppliers"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -214,14 +214,14 @@
         source.
       </p>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="All supplier ingredients (JSON)"
         context="dev suppliers · all linked ingredient ids"
         :objects="supplierIngredientsDebug"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -277,14 +277,14 @@
         Select a supplier above to inspect its linked ingredients.
       </p>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Supplier linked ingredients (JSON)"
         context="dev suppliers · selected supplier links"
         :objects="selectedSupplierDebug"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />

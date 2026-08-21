@@ -5,11 +5,11 @@ export function usePortfolioComputed(
   portfolio?: Ref<Partial<Portfolio> | null | undefined>
 ) {
   const hasPortfolio = computed(() => Boolean(portfolio?.value?.id))
-  const hasMissingName = computed(() =>
-    !String(portfolio?.value?.name || '').trim()
+  const hasMissingName = computed(
+    () => !String(portfolio?.value?.name || '').trim()
   )
-  const hasMissingSlug = computed(() =>
-    !String(portfolio?.value?.slug || '').trim()
+  const hasMissingSlug = computed(
+    () => !String(portfolio?.value?.slug || '').trim()
   )
   const isActive = computed(() => portfolio?.value?.status === 'active')
   const isArchived = computed(() => portfolio?.value?.status === 'archived')

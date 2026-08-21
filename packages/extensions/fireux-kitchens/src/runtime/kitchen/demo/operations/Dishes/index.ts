@@ -32,4 +32,3 @@ export const kitchenDemoDishRecordsByKitchenId: Readonly<
   [pizzaTheActionKitchenDemoIdentity.kitchenId]:
     pizzaTheActionKitchenDemoMenu.dishes,
 }
-

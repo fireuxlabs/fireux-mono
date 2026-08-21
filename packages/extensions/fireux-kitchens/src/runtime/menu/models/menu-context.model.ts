@@ -10,7 +10,7 @@ export const MenuRouteContexts = [
   'room_service',
 ] as const
 
-export type MenuRouteContext = typeof MenuRouteContexts[number]
+export type MenuRouteContext = (typeof MenuRouteContexts)[number]
 
 export const MenuSurfaces = [
   'generic',
@@ -23,4 +23,4 @@ export const MenuSurfaces = [
   'staff_pos',
 ] as const
 
-export type MenuSurface = typeof MenuSurfaces[number]
+export type MenuSurface = (typeof MenuSurfaces)[number]

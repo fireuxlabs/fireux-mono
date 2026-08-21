@@ -153,16 +153,14 @@ export function kitchenDemoManifest(
       currencyCode: clean(scenario.place.default_currency_code) || 'CHF',
       currencyFormat: scenario.kitchen.menus.currency_format,
       showCurrency: scenario.kitchen.menus.show_currency,
-      kitchenImageShade: imageShade(scenario.kitchen.identity.image_shade),
+      kitchenImageShade: imageShade(scenario.place.image_shade),
       kitchenImageUrl: clean(
         scenario.place.cover_image || scenario.place.image_url
       ),
-      kitchenLogoImageUrl: clean(scenario.kitchen.identity.logo_image_url),
+      kitchenLogoImageUrl: clean(scenario.kitchen.assets.logo),
       kitchenName:
         scenario.kitchen.identity.display_name || scenario.place.name,
-      kitchenWordmarkImageUrl: clean(
-        scenario.kitchen.identity.wordmark_image_url
-      ),
+      kitchenWordmarkImageUrl: clean(scenario.kitchen.assets.wordmark),
       pageStyle: scenario.kitchen.menus.style,
       theme: demoTheme(scenario),
       themeSource: 'place-default',

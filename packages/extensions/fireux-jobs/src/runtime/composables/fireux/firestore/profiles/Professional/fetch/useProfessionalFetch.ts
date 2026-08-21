@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: expose the exact projected Professional directory source.
-import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
-import type { PublicProfessionalDirectoryProfilePayload } from '../../../../../../models/profiles/Professional/Professional.model'
+import { useProfileDirectoryCollection } from 'fireux-core/runtime/user/composables/profile/useProfileDirectoryCollection'
+import type { ProfessionalDirectoryProfilePayload } from '../../../../../../models/profiles/Professional/Professional.model'
 
 // Professional profiles for UI use. Public identity joins canonical User by profile uid.
 export function useProfessionalFetch() {
@@ -12,7 +12,7 @@ export function useProfessionalFetch() {
     pending,
     error,
     outcome,
-  } = usePublicProfileCollection<PublicProfessionalDirectoryProfilePayload>({
+  } = useProfileDirectoryCollection<ProfessionalDirectoryProfilePayload>({
     collection: 'professionals',
   })
 

@@ -51,9 +51,11 @@
 import { computed, ref } from 'vue'
 import { useChef } from '../../../composables/chef/useChef'
 
-const { coreProfile, pending, preview: chefInterface } = useChef()
+const { chefProfile, pending, preview: chefInterface } = useChef()
 
-const previewCard = computed(() => (coreProfile.value ? chefInterface(coreProfile.value) : null))
+const previewCard = computed(() =>
+  chefProfile.value ? chefInterface(chefProfile.value) : null
+)
 const isLoading = computed(() => Boolean(pending.value))
 const hasPreview = computed(() => Boolean(previewCard.value))
 
@@ -65,5 +67,4 @@ const toggleView = () => {
   if (!canToggle.value) return
   showCellView.value = !showCellView.value
 }
-
 </script>

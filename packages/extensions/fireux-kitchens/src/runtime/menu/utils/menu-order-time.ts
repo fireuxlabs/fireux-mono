@@ -34,7 +34,7 @@ const zonedDateText = (date: Date, timezone: string) => {
     day: '2-digit',
   }).formatToParts(date)
   const value = (type: string) =>
-    parts.find(part => part.type === type)?.value || ''
+    parts.find((part) => part.type === type)?.value || ''
 
   return `${value('year')}-${value('month')}-${value('day')}`
 }
@@ -82,25 +82,29 @@ const configuredSlotMinutes = (
   interval: number
 ) => {
   const day = dateDay(dateText)
-  const previousDay = weekdayTimeDays[
-    (weekdayTimeDays.indexOf(day) + weekdayTimeDays.length - 1) %
-      weekdayTimeDays.length
-  ]
+  const previousDay =
+    weekdayTimeDays[
+      (weekdayTimeDays.indexOf(day) + weekdayTimeDays.length - 1) %
+        weekdayTimeDays.length
+    ]
   const slots = new Set<number>()
 
   hours.windows.forEach((window) => {
     const open = timeMinutes(window.open)
     const close = timeMinutes(window.close)
     if (open < close && window.days.includes(day)) {
-      for (let minute = open; minute < close; minute += interval) slots.add(minute)
+      for (let minute = open; minute < close; minute += interval)
+        slots.add(minute)
       return
     }
     if (open >= close && window.days.includes(day)) {
-      for (let minute = open; minute < 24 * 60; minute += interval) slots.add(minute)
+      for (let minute = open; minute < 24 * 60; minute += interval)
+        slots.add(minute)
     }
     if (open >= close && window.days.includes(previousDay)) {
       const first = (interval - ((24 * 60 - open) % interval)) % interval
-      for (let minute = first; minute < close; minute += interval) slots.add(minute)
+      for (let minute = first; minute < close; minute += interval)
+        slots.add(minute)
     }
   })
 
@@ -118,7 +122,8 @@ export function menuOrderTimeOptions(input: {
   const now = input.now || new Date()
   const hours = readWeekdayTimeWindowsConfig(input.hours)
   const known = Boolean(hours.timezone && hours.windows.length)
-  const queueAvailable = input.asapEnabled !== false &&
+  const queueAvailable =
+    input.asapEnabled !== false &&
     known &&
     readWeekdayTimeOpenState(hours, now).open
   if (!known) {

@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const ClientStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
+  path: 'portfolios/{portfolioId}/clients/{clientId}',
   collection: 'clients',
   parent: 'portfolio',
   idParam: 'clientId',
@@ -45,7 +45,11 @@ export type ClientEntityType =
   | 'individual'
   | 'other'
 
-export type ClientRelationshipStatus = 'active' | 'prospect' | 'paused' | 'inactive'
+export type ClientRelationshipStatus =
+  | 'active'
+  | 'prospect'
+  | 'paused'
+  | 'inactive'
 export type ClientRiskLevel = 'low' | 'medium' | 'high'
 
 export type ClientContactRole =
@@ -130,4 +134,6 @@ export type Client = {
 }
 
 export type ClientCreateInput = Omit<Client, 'id' | 'created' | 'updated'>
-export type ClientUpdateInput = Partial<Omit<Client, 'id' | 'created' | 'updated'>>
+export type ClientUpdateInput = Partial<
+  Omit<Client, 'id' | 'created' | 'updated'>
+>

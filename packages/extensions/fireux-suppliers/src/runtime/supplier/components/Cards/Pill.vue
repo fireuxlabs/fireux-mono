@@ -21,8 +21,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && (badges?.length ?? 0)"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
@@ -40,7 +49,10 @@ const emit = defineEmits<{
 
 withDefaults(
   defineProps<
-    Pick<SupplierCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'> & {
+    Pick<
+      SupplierCard.Card,
+      'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'
+    > & {
       showSubtitle?: boolean
       showBadges?: boolean
       link?: boolean

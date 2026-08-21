@@ -38,5 +38,7 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const kitchenRecord = computed(() => props.kitchen as Record<string, unknown> | null)
+const kitchenRecord = computed(
+  () => props.kitchen as Record<string, unknown> | null
+)
 </script>

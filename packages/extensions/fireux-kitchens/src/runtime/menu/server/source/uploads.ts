@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: require explicit currency through concrete Place runtime imports.
 import { createError, getQuery, readMultipartFormData, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
@@ -16,10 +15,7 @@ import {
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import {
-  AppKitchenStorage,
-  KitchenStorage,
-} from '../../../kitchen/models/kitchen.model.ts'
+import { KitchenStorage } from '../../../kitchen/models/kitchen.model.ts'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../models/menu-source-upload.model.ts'
@@ -162,8 +158,11 @@ export function readKitchenMenuUploadAvailabilityRequest(event: H3Event) {
   }
 }
 
-export function kitchenMenuUploadKitchenPath(appId: string, kitchenId: string) {
-  return `${AppStorage.collection}/${appId}/${AppKitchenStorage.collection}/${kitchenId}`
+export function kitchenMenuUploadKitchenPath(
+  _appId: string,
+  kitchenId: string
+) {
+  return `${KitchenStorage.collection}/${kitchenId}`
 }
 
 export function kitchenMenuUploadPath(
@@ -174,28 +173,22 @@ export function kitchenMenuUploadPath(
   return `${kitchenMenuUploadKitchenPath(appId, kitchenId)}/${menuUploadCollection}/${uploadId}`
 }
 
-function canUploadForKitchen(
-  data: Record<string, unknown> | undefined,
-  uid: string
-) {
-  const accessIds = [
-    ...(Array.isArray(data?.operator_ids) ? data.operator_ids : []),
-    ...(Array.isArray(data?.team_ids) ? data.team_ids : []),
-  ].map((value) => text(value))
-
-  return Boolean(uid && accessIds.includes(uid))
-}
-
 export async function assertKitchenMenuUploadAccess(
-  appId: string,
+  _appId: string,
   kitchenId: string,
   uid: string
 ) {
   const snap = await getRuntimeFirestore()
-    .doc(kitchenMenuUploadKitchenPath(appId, kitchenId))
+    .doc(`${KitchenStorage.collection}/${kitchenId}/team/${uid}`)
     .get()
 
-  if (!snap.exists || !canUploadForKitchen(snap.data(), uid)) {
+  const role = text(snap.get('role'))
+  if (
+    !snap.exists ||
+    text(snap.get('user_id')) !== uid ||
+    text(snap.get('status')) !== 'active' ||
+    (role !== 'owner' && role !== 'operator')
+  ) {
     throw createError({
       statusCode: 403,
       statusMessage: 'You do not have access to this kitchen.',

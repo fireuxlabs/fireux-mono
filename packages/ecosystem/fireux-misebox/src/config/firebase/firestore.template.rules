@@ -2,7 +2,7 @@
 // @fireux-rules-project misebox-78f9c
 // @fireux-rules-databases misebox,misebox-simulation
 // @fireux-rules-artifact scripts/firebase/misebox/firestore.rules
-// @fireux-rules-fragments open,owner,text,avatar,bounded,owner-stamp,membership-path,join-validator,membership-block,overlay-validator,close
+// @fireux-rules-fragments open,owner,text,avatar,bounded,owner-stamp,membership-path,join-validator,membership-block,close
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: compose the Misebox release source from Core fragments and ecosystem policy.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: allow bounded optional biography in public User presentation.
 // Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: close immutable Kitchen Sales and raw financial facts to browser writes.
@@ -19,5 +19,9 @@
 // @fireux-ecosystem-rules app-support
 // @fireux-ecosystem-rules kitchen-operations
 // @fireux-ecosystem-rules kitchen-workflow
+// @fireux-ecosystem-rules supplier-operations
+// @fireux-ecosystem-rules marketplace-store
 // @fireux-ecosystem-rules place-identity
-// @fireux-ecosystem-rules public-profiles
+// @fireux-ecosystem-rules customer-profile
+// @fireux-ecosystem-rules driver-profile
+// @fireux-ecosystem-rules profiles

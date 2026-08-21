@@ -1,12 +1,10 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
+// User-owned Professional profile and directory summary.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Professional storage domain-only.
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
   CertificationItem,
@@ -33,21 +31,17 @@ export type {
  * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: Identity
- * Storage: root canonical record plus app overlay
- * Root path: /professionals/<userId>
- * Overlay path: /apps/<appId>/professionals/<userId>
+ * Storage: User-owned profile
+ * Path: /users/<userId>/profiles/professional
  *
  * Decision note:
- * - Professional is an identity profile first, with scoped truth added only when an app really owns operational state.
- * - Keep the overlay minimal until a real app-specific need appears.
- * - If that changes later, update the models README first, then this file.
+ * - Professional is a User-owned identity capability/profile record.
  */
 export const ProfessionalStorage = {
-  shape: 'both',
-  root: 'professionals/{userId}',
-  overlay: 'apps/{appId}/professionals/{userId}',
-  rootCollection: 'professionals',
-  overlayCollection: 'professionals',
+  shape: 'user-owned',
+  path: 'users/{userId}/profiles/professional',
+  collection: 'profiles',
+  document: 'professional',
   idParam: 'userId',
 } as const
 
@@ -68,16 +62,9 @@ export const ProfessionalConstraints = {
   yearMax: 9_999,
 } as const
 
-export const AppProfessionalStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/professionals/{userId}',
-  collection: 'professionals',
-  parent: 'app',
-  idParam: 'userId',
-} as const
-
 export const ProfessionalModel = {
   id: '' as string,
+  kind: 'professional' as const,
   title: '' as string,
   subtitle: '' as string,
   tagline: '' as string,
@@ -107,16 +94,16 @@ export type Professional = {
   [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
 }
 
-export type PublicProfessionalProfile = Omit<
+export type ProfessionalProfile = Omit<
   Professional,
   'created' | 'updated'
 >
-export type PublicProfessionalProfilePayload = Omit<
-  PublicProfessionalProfile,
+export type ProfessionalProfilePayload = Omit<
+  ProfessionalProfile,
   'id'
 >
-export type PublicProfessionalDirectoryProfilePayload = Pick<
-  PublicProfessionalProfilePayload,
+export type ProfessionalDirectoryProfilePayload = Pick<
+  ProfessionalProfilePayload,
   | 'title'
   | 'subtitle'
   | 'tagline'
@@ -126,16 +113,9 @@ export type PublicProfessionalDirectoryProfilePayload = Pick<
   | 'positions'
   | 'tags'
 >
-export type PublicProfessionalDirectoryProfile =
-  PublicProfessionalDirectoryProfilePayload &
-    Pick<PublicProfessionalProfile, 'id'>
-
-export const AppProfessionalModel = {
-  id: '',
-  ...AppProfileStamps,
-} as const
-
-export type AppProfessional = AppProfileBase
+export type ProfessionalDirectoryProfile =
+  ProfessionalDirectoryProfilePayload &
+    Pick<ProfessionalProfile, 'id'>
 
 export type ProfessionalCreateInput = Omit<
   Professional,
@@ -148,6 +128,7 @@ export type ProfessionalUpdateInput = Partial<
 export function createProfessionalProfileSeed(): ProfessionalCreateInput {
   return {
     title: ProfessionalModel.title,
+    kind: ProfessionalModel.kind,
     subtitle: ProfessionalModel.subtitle,
     tagline: ProfessionalModel.tagline,
     summary: ProfessionalModel.summary,

@@ -2,9 +2,9 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
-  PublicCompanyDetailProjection,
-  PublicCompanyDetailResponse,
-} from '../../models/company-public.model.ts'
+  CompanyDetail,
+  CompanyDetailResponse,
+} from '../../models/company-directory.model.ts'
 
 export type CompanyDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -14,7 +14,7 @@ type CompanyDetailControls = Pick<
 >
 
 export type UseCompanyDetailReturn = CompanyDetailControls & {
-  company: ComputedRef<PublicCompanyDetailProjection | null>
+  company: ComputedRef<CompanyDetail | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -41,18 +41,18 @@ export function useCompanyDetail(
   companyId: MaybeRef<string | null | undefined>
 ): UseCompanyDetailReturn {
   const id = computed(() => String(unref(companyId) ?? '').trim())
-  const state = useAsyncData<PublicCompanyDetailResponse | null>(
+  const state = useAsyncData<CompanyDetailResponse | null>(
     () => `company-detail|${id.value || 'none'}`,
     async () => {
       if (!id.value) return null
-      return $fetch<PublicCompanyDetailResponse>(
+      return $fetch<CompanyDetailResponse>(
         `/api/companies/${encodeURIComponent(id.value)}`
       )
     },
     { server: true, watch: [id] }
   )
-  const company = computed<PublicCompanyDetailProjection | null>(() => {
-    const item = state.data.value?.item
+  const company = computed<CompanyDetail | null>(() => {
+    const item = state.data.value?.company
     return item && item.id === id.value && !state.pending.value ? item : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))

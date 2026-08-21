@@ -16,7 +16,9 @@ export type MenuKioskSkin = {
   catalogueBackgroundImageUrl?: string
   sectionCardFrameImageUrl?: string
   sectionCardImageUrls?: Record<string, string>
-  backgrounds?: Partial<Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>>
+  backgrounds?: Partial<
+    Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>
+  >
   choiceCards?: MenuKioskSkinChoiceCards
   primaryColor: string
   secondaryColor: string
@@ -69,9 +71,7 @@ const clean = (value: unknown) => String(value ?? '').trim()
 const hexColor = (value: unknown) => {
   const color = clean(value)
 
-  return /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color)
-    ? color
-    : ''
+  return /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color) ? color : ''
 }
 const positiveNumber = (value: unknown, fallback: number) => {
   const number = Number(value)
@@ -104,19 +104,21 @@ export const menuKioskSkinFromDoc = (
   const backgrounds = {
     portraitLarge:
       backgroundFromDoc(backgroundDocs.portrait_large, 1080, 1920) ??
-      backgroundFromDoc(
-        { image_url: data.background_image_url },
-        1080,
-        1920
-      ),
-    portraitCompact: backgroundFromDoc(backgroundDocs.portrait_compact, 768, 1024),
+      backgroundFromDoc({ image_url: data.background_image_url }, 1080, 1920),
+    portraitCompact: backgroundFromDoc(
+      backgroundDocs.portrait_compact,
+      768,
+      1024
+    ),
     portraitPhone: backgroundFromDoc(backgroundDocs.portrait_phone, 390, 844),
-  } satisfies Partial<Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>>
+  } satisfies Partial<
+    Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>
+  >
   const resolvedBackgrounds = Object.fromEntries(
-    Object.entries(backgrounds).filter((entry): entry is [
-      MenuKioskSkinBackgroundKey,
-      MenuKioskSkinBackground,
-    ] => Boolean(entry[1]))
+    Object.entries(backgrounds).filter(
+      (entry): entry is [MenuKioskSkinBackgroundKey, MenuKioskSkinBackground] =>
+        Boolean(entry[1])
+    )
   ) as Partial<Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>>
   const backgroundImageUrl =
     clean(data.background_image_url) ||
@@ -141,19 +143,26 @@ export const menuKioskSkinFromDoc = (
       .filter(([key, value]) => Boolean(key && value))
   )
 
-  if (!resolvedId || !backgroundImageUrl || !primaryColor || !secondaryColor) return null
+  if (!resolvedId || !backgroundImageUrl || !primaryColor || !secondaryColor)
+    return null
 
   return {
     id: resolvedId,
     label,
     backgroundImageUrl,
     ...(clean(data.catalogue_background_image_url)
-      ? { catalogueBackgroundImageUrl: clean(data.catalogue_background_image_url) }
+      ? {
+          catalogueBackgroundImageUrl: clean(
+            data.catalogue_background_image_url
+          ),
+        }
       : {}),
     ...(clean(data.section_card_frame_image_url)
       ? { sectionCardFrameImageUrl: clean(data.section_card_frame_image_url) }
       : {}),
-    ...(Object.keys(sectionCardImageUrls).length ? { sectionCardImageUrls } : {}),
+    ...(Object.keys(sectionCardImageUrls).length
+      ? { sectionCardImageUrls }
+      : {}),
     ...(Object.keys(resolvedBackgrounds).length
       ? { backgrounds: resolvedBackgrounds }
       : {}),

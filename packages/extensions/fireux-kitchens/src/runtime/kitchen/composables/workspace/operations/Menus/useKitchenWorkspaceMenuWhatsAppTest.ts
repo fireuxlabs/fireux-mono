@@ -1,9 +1,5 @@
 // Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: keep authenticated provider-test state out of the editable field component.
-import {
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
@@ -69,15 +65,18 @@ export function useKitchenWorkspaceMenuWhatsAppTest(options: {
 }
 
 function testErrorMessage(error: unknown) {
-  const source = error && typeof error === 'object'
-    ? error as {
-        data?: { statusMessage?: unknown }
-        message?: unknown
-        statusMessage?: unknown
-      }
-    : {}
+  const source =
+    error && typeof error === 'object'
+      ? (error as {
+          data?: { statusMessage?: unknown }
+          message?: unknown
+          statusMessage?: unknown
+        })
+      : {}
 
-  return text(
-    source.data?.statusMessage || source.statusMessage || source.message
-  ) || 'The WhatsApp test could not be sent.'
+  return (
+    text(
+      source.data?.statusMessage || source.statusMessage || source.message
+    ) || 'The WhatsApp test could not be sent.'
+  )
 }

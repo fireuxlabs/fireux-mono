@@ -22,13 +22,9 @@ export async function readKitchenTeamMembers(
     linked: boolean
   }[] = []
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const kitchen = await requireKitchenMutationAuthority(
-      mutations,
-      actor,
-      kitchenId
-    )
+    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
     const records = await mutations.readAll<Record<string, unknown>>(
-      serverKitchenTeamMembersTarget(kitchen.ownerAppId, kitchenId),
+      serverKitchenTeamMembersTarget(kitchenId),
       200
     )
     members = records.map((record) => ({

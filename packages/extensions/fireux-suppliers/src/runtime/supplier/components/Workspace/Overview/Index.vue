@@ -22,9 +22,9 @@
       <DevDebugPanel
         title="Supplier overview"
         scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedSupplier: focus.entity, suppliers: multiple.items }"
-      :derived="debug"
+        object-origin="fetched"
+        :objects="{ selectedSupplier: focus.entity, suppliers: multiple.items }"
+        :derived="debug"
         :default-open="false"
       />
     </div>
@@ -39,7 +39,9 @@ import { useSupplierInterface } from '../../../composables/firestore/utils/view/
 
 const { focus, multiple, debug } = useSupplierWorkspaceOverview()
 const { pill } = useSupplierInterface()
-const focusCard = computed(() => pill(focus.value.entity) as WorkspaceTargetCard | null)
+const focusCard = computed(
+  () => pill(focus.value.entity) as WorkspaceTargetCard | null
+)
 const multipleCards = computed(() =>
   multiple.value.items
     .map((supplier) => pill(supplier) as WorkspaceTargetCard | null)

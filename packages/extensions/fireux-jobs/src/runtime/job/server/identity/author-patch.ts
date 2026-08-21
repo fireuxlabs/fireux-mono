@@ -9,9 +9,7 @@ import type {
 } from '../../models/job-author.model.ts'
 import { JobStorage } from '../../models/job.model.ts'
 import {
-  appAgentRef,
   appRef,
-  assertActiveAgent,
   assertAgentEnabled,
   assertAuthorJob,
   assertCanonicalReferences,
@@ -43,7 +41,6 @@ export async function patchAuthorJob(
   const jobRef = db.collection(JobStorage.collection).doc(id)
   const currentAppRef = appRef(db, scope.appId)
   const currentMembershipRef = membershipRef(db, scope.appId, uid)
-  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
 
   await db.runTransaction(async (transaction) => {
     const snapshot = await transaction.get(jobRef)
@@ -59,16 +56,13 @@ export async function patchAuthorJob(
     const [
       appSnapshot,
       membershipSnapshot,
-      appAgentSnapshot,
       ...referenceSnapshots
     ] = await transaction.getAll(
       currentAppRef,
       currentMembershipRef,
-      currentAppAgentRef,
       ...references.map((reference) => reference.ref)
     )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    assertActiveAgent(membershipSnapshot, appAgentSnapshot)
     assertCanonicalReferences(proposed, references, referenceSnapshots)
     const patch = Object.fromEntries(
       JOB_PATCH_FIELDS.filter((key) =>

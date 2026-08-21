@@ -10,16 +10,16 @@ export function useDriverCreate() {
   const { createProfile } = useProfileCreate(driverConfig)
 
   async function createDriverProfile(): Promise<{
-    createdCore: boolean
-    createdApp: boolean
+    createdProfile: boolean
+    createdAppState: boolean
     id: string
   }> {
     const user = await createUser()
     const profile = await createProfile()
 
     return {
-      createdCore: profile.createdCore,
-      createdApp: profile.createdApp,
+      createdProfile: profile.createdProfile,
+      createdAppState: profile.createdAppState,
       id: user.id,
     }
   }

@@ -117,7 +117,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const receivedAmount = Number(session?.amount_total)
   const receivedCurrency = text(session?.currency).toLowerCase()
   const paymentStatus = text(session?.payment_status).toLowerCase()
-  const orders = serverKitchenOrdersTarget(metadata.appId, metadata.kitchenId)
+  const orders = serverKitchenOrdersTarget(metadata.kitchenId)
   const outcome = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {

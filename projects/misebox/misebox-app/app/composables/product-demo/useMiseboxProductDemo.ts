@@ -1,9 +1,6 @@
-// Product Demo composable: browser data loading and stable public exports.
+// Product Demo composable: browser data loading and stable exports.
 import { useAsyncData, useRequestFetch } from '#imports'
-import type {
-  PublicIngredient,
-  PublicIngredientCollectionResponse,
-} from 'fireux-kitchens/runtime/ingredient/models/ingredient-public.model'
+import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-directory.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
 import type {
@@ -25,22 +22,19 @@ export async function useMiseboxProductDemo() {
     const pages = await Promise.all(
       Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
         const chunk = ids.slice(index * 100, (index + 1) * 100)
-        return requestFetch<PublicIngredientCollectionResponse>(
+        return requestFetch<IngredientDirectoryPage>(
           `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
         )
       })
     )
-    return pages.flatMap(
-      (page: PublicIngredientCollectionResponse) => page.items
-    )
+    return pages.flatMap((page: IngredientDirectoryPage) => page.items)
   }
   const state = await useAsyncData<MiseboxProductDemoModel>(
     'misebox-product-demo-production-v12',
     async () => {
       try {
         return await loadMiseboxProductDemo(loadIngredientRoots)
-      }
-      catch (error) {
+      } catch (error) {
         console.error(
           '[misebox-product-demo] Failed to load demo data.',
           error instanceof Error ? error.message : String(error)

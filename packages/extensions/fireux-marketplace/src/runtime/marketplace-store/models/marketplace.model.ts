@@ -1,11 +1,16 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import {
+  FireuxWorkspaceTeamMemberModel,
+  type FireuxWorkspaceTeamMember,
+} from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
 export const MarketplaceStoreStorage = {
-  shape: 'app-scoped',
-  path: 'apps/{appId}/marketplace-stores/{storeId}',
+  shape: 'root',
+  path: 'marketplace-stores/{storeId}',
   collection: 'marketplace-stores',
   idParam: 'storeId',
 } as const
@@ -13,18 +18,31 @@ export const MarketplaceStoreStorage = {
 export const MarketplaceStoreEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'MarketplaceStore',
-  family: ['commerce'],
-  identity: 'parent-scoped',
-  authority: 'parent',
+  family: ['commerce', 'workspace-entity'],
+  identity: 'root',
+  authority: 'domain-database',
   appSupport: 'none',
-  workspace: false,
-  scoped: MarketplaceStoreStorage.path,
-  parent: 'App',
+  workspace: true,
+  root: MarketplaceStoreStorage.path,
   notes: [
-    'Store identity and slug are scoped to one App.',
-    'Owner and editor ids are private authority, never public projection fields.',
+    'Store identity is root-owned even when management names an App.',
+    'Team records own Store authority.',
   ],
 })
+
+export const MarketplaceStoreTeamStorage = {
+  shape: 'scoped',
+  path: 'marketplace-stores/{storeId}/team/{userId}',
+  collection: 'team',
+  parent: 'marketplace-store',
+  idParam: 'userId',
+} as const
+
+export const MarketplaceStoreTeamMemberModel = {
+  ...FireuxWorkspaceTeamMemberModel,
+} as const
+
+export type MarketplaceStoreTeamMember = FireuxWorkspaceTeamMember
 
 export const MarketplaceOfferStorage = {
   shape: 'parent-record',
@@ -46,9 +64,9 @@ export const MarketplaceOfferRecord = defineFireuxEntity({
 })
 
 export const MarketplaceOrderStorage = {
-  shape: 'app-record',
-  path: 'apps/{appId}/marketplace-orders/{orderId}',
-  collection: 'marketplace-orders',
+  shape: 'parent-record',
+  path: `${MarketplaceStoreStorage.path}/orders/{orderId}`,
+  collection: 'orders',
   idParam: 'orderId',
 } as const
 
@@ -116,7 +134,7 @@ type MarketplaceAudit = FireuxStamped & {
 
 export type MarketplaceStore = MarketplaceAudit & {
   id: string
-  app_id: string
+  management: FireuxEntityManagement
   slug: string
   name: string
   description: string
@@ -126,8 +144,6 @@ export type MarketplaceStore = MarketplaceAudit & {
   section_ids: string[]
   fulfilment_methods: MarketplaceFulfilmentMethod[]
   publication_state: MarketplaceStoreState
-  owner_ids: string[]
-  editor_ids: string[]
   submitted_at: FirebaseTimestamp | null
   published_at: FirebaseTimestamp | null
 }
@@ -156,6 +172,7 @@ export type MarketplaceOrderLine = {
 
 export type MarketplaceOrder = MarketplaceAudit & {
   id: string
+  record_type: 'marketplace-order'
   app_id: string
   store_id: string
   store_name: string

@@ -1,19 +1,15 @@
-import {
-  computed,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelState,
 } from '../../../../../menu/models/menu-ordering.model.ts'
 
-export function useBasket(
-  order: MaybeRefOrGetter<MenuOrderingFunnelState>
-) {
+export function useBasket(order: MaybeRefOrGetter<MenuOrderingFunnelState>) {
   const items = computed(() => toValue(order).selection.items)
   const currencyCode = computed(() => {
-    const code = String(toValue(order).currencyCode || '').trim().toUpperCase()
+    const code = String(toValue(order).currencyCode || '')
+      .trim()
+      .toUpperCase()
 
     return /^[A-Z]{3}$/.test(code) ? code : 'CHF'
   })

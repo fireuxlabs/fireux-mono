@@ -2,7 +2,7 @@
 import type { Ref } from 'vue'
 import type { Portfolio } from '../../models/portfolio.model.ts'
 import { usePortfolioCollection } from './fetch/usePortfolioCollection'
-import { useAppPortfolioFetch, usePortfolioFetch } from './fetch/usePortfolioFetch'
+import { usePortfolioFetch } from './fetch/usePortfolioFetch'
 import { usePortfolioCreate } from './mutations/usePortfolioCreate'
 import { usePortfolioUpdate } from './mutations/usePortfolioUpdate'
 import { usePortfolioSeo } from '../usePortfolioSeo'
@@ -18,7 +18,6 @@ export type {
 export {
   usePortfolioCollection,
   usePortfolioFetch,
-  useAppPortfolioFetch,
   usePortfolioCreate,
   usePortfolioUpdate,
   usePortfolioSeo,

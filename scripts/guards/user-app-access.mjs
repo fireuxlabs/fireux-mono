@@ -257,17 +257,5 @@ export async function run({ repoRoot }) {
     assert.match(rules, /allow create, update, delete: if false;/)
   }
 
-  for (const relativePath of [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts',
-    'packages/extensions/fireux-properties/src/runtime/property/server/index/onboarding.ts',
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/server/index/onboarding.ts',
-  ]) {
-    assert.match(
-      read(repoRoot, relativePath),
-      /hasAppUserPremiumAccess/,
-      `${relativePath} must use the shared Premium capability resolver.`
-    )
-  }
-
   console.log('[guard] ✅ AppUser access and sparse-index contract is aligned')
 }

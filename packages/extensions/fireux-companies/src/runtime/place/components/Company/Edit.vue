@@ -26,9 +26,9 @@ import {
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { computed } from 'vue'
-import type { PublicCompanyDetailProjection } from '../../models/company-public.model.ts'
+import type { CompanyDetail } from '../../models/company-directory.model.ts'
 
-const props = defineProps<{ company: PublicCompanyDetailProjection | null }>()
+const props = defineProps<{ company: CompanyDetail | null }>()
 const company = computed(() => props.company)
 const { isAdmin } = useUser()
 const canEdit = computed(() => Boolean(isAdmin.value))

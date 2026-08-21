@@ -14,11 +14,9 @@ import {
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
-  serverAppDriversTarget,
   serverAppUsersTarget,
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { AppDriverStorage } from '../../models/driver.model.ts'
 import {
   DriverDispatchVisibleStatuses,
   isDriverDispatchVisibleStatus,
@@ -27,7 +25,6 @@ import {
   type DriverDispatchWatchInput,
   type DriverDispatchWatchResult,
 } from '../../models/driver/dispatch.ts'
-import { AppKitchenStorage } from '../../../kitchen/models/kitchen.model.ts'
 
 const MAX_ACTIVE_KITCHENS = 50
 const MAX_ORDERS_PER_KITCHEN = 20
@@ -115,18 +112,19 @@ function activeKitchenLinks(driver: DocumentData, appId: string) {
 
 async function requireDriver(context: DriverDispatchContext) {
   const db = getRuntimeFirestore(context.databaseId)
+  const identityDb = getRuntimeIdentityFirestore()
   const appRef = db.collection(AppStorage.collection).doc(context.appId)
   const membershipRef = appRef
     .collection(AppUserStorage.collection)
     .doc(context.actorUid)
-  const driverRef = appRef
-    .collection(AppDriverStorage.collection)
-    .doc(context.actorUid)
-  const [appSnapshot, membershipSnapshot, driverSnapshot] = await db.getAll(
+  const [appSnapshot, membershipSnapshot] = await db.getAll(
     appRef,
-    membershipRef,
-    driverRef
+    membershipRef
   )
+  const driverRef = identityDb.doc(
+    `users/${context.actorUid}/profiles/driver/app-state/${context.appId}`
+  )
+  const driverSnapshot = await driverRef.get()
   if (!appSnapshot.exists) fail(409, 'The runtime App record does not exist.')
   if (!membershipSnapshot.exists || !isMembership(membershipSnapshot.data())) {
     fail(403, 'App membership is required for Driver dispatches.')
@@ -134,7 +132,7 @@ async function requireDriver(context: DriverDispatchContext) {
   if (!driverSnapshot.exists) {
     fail(409, 'Create a Driver profile before viewing dispatches.')
   }
-  return { db, appRef, driverRef, driver: driverSnapshot.data() ?? {} }
+  return { db, driver: driverSnapshot.data() ?? {} }
 }
 
 function dispatchBeacon(
@@ -180,12 +178,12 @@ function dispatchBeacon(
 export async function listDriverDispatches(
   context: DriverDispatchContext
 ): Promise<DriverDispatchPage> {
-  const { appRef, driver } = await requireDriver(context)
+  const { db, driver } = await requireDriver(context)
   const kitchens = activeKitchenLinks(driver, context.appId)
   const pages = await Promise.all(
     [...kitchens.keys()].map(async (kitchenId) => {
-      const page = await appRef
-        .collection(AppKitchenStorage.collection)
+      const page = await db
+        .collection('kitchens')
         .doc(kitchenId)
         .collection('orders')
         .where('order_type', '==', 'delivery')
@@ -220,7 +218,7 @@ export async function watchDriverDispatch(
   context: DriverDispatchContext,
   input: DriverDispatchWatchInput
 ): Promise<DriverDispatchWatchResult> {
-  await requireDriver(context)
+  const { driver } = await requireDriver(context)
   const userSnapshot = await getRuntimeIdentityFirestore()
     .collection(UserStorage.collection)
     .doc(context.actorUid)
@@ -230,28 +228,23 @@ export async function watchDriverDispatch(
   }
   const user = userSnapshot.data() ?? {}
   const memberships = serverAppUsersTarget(context.appId)
-  const drivers = serverAppDriversTarget(context.appId)
-  const orders = serverKitchenOrdersTarget(context.appId, input.kitchen_id)
+  const orders = serverKitchenOrdersTarget(input.kitchen_id)
+  const links = activeKitchenLinks(driver, context.appId)
+  if (!links.has(input.kitchen_id)) {
+    fail(403, 'An active Driver Kitchen grant is required.')
+  }
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const membershipSnapshot = await mutations.read(
       memberships,
       context.actorUid
     )
-    const driverSnapshot = await mutations.read(drivers, context.actorUid)
     const orderSnapshot = await mutations.read(orders, input.order_id)
     if (!membershipSnapshot.exists || !isMembership(membershipSnapshot.data)) {
       fail(403, 'App membership is required for Driver dispatches.')
     }
-    if (!driverSnapshot.exists) fail(409, 'The Driver profile does not exist.')
     if (!orderSnapshot.exists)
       fail(404, 'The delivery dispatch does not exist.')
-
-    const driver = driverSnapshot.data ?? {}
-    const links = activeKitchenLinks(driver, context.appId)
-    if (!links.has(input.kitchen_id)) {
-      fail(403, 'An active Driver Kitchen grant is required.')
-    }
     const order = orderSnapshot.data ?? {}
     if (
       order.order_type !== 'delivery' ||

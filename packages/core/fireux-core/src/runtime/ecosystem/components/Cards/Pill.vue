@@ -1,9 +1,5 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
-    class="pill"
-  >
+  <NuxtLink v-if="link && to" :to="to" class="pill">
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
         :src="imageUrl || undefined"
@@ -20,8 +16,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
@@ -29,11 +34,7 @@
     </div>
   </NuxtLink>
 
-  <div
-    v-else
-    class="pill"
-    @click="onClick"
-  >
+  <div v-else class="pill" @click="onClick">
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
         :src="imageUrl || undefined"
@@ -50,8 +51,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>

@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Pre-order details
-    </h2>
+    <h2 class="menu-order-screen-title">Pre-order details</h2>
 
     <section class="menu-order-dispatch__section">
       <UIcon
@@ -18,7 +16,10 @@
     </section>
 
     <section class="menu-order-schedule">
-      <p v-if="serviceWindowLabel" class="menu-order-placeholder menu-order-placeholder--good">
+      <p
+        v-if="serviceWindowLabel"
+        class="menu-order-placeholder menu-order-placeholder--good"
+      >
         Served {{ serviceWindowLabel }}
       </p>
 
@@ -26,10 +27,7 @@
         <label class="menu-order-field">
           Date
           <span class="menu-order-date-control">
-            <span
-              v-if="!dateInputOpen"
-              class="menu-order-date-pill"
-            >
+            <span v-if="!dateInputOpen" class="menu-order-date-pill">
               {{ scheduledDateLabel }}
             </span>
 
@@ -39,7 +37,7 @@
               v-model="scheduledDate"
               class="menu-order-schedule__input"
               type="date"
-            >
+            />
 
             <button
               type="button"
@@ -47,10 +45,7 @@
               aria-label="Choose pre-order date"
               @click="openCalendar"
             >
-              <UIcon
-                name="i-lucide-calendar"
-                aria-hidden="true"
-              />
+              <UIcon name="i-lucide-calendar" aria-hidden="true" />
             </button>
           </span>
         </label>
@@ -61,7 +56,7 @@
             v-model="scheduledTime"
             class="menu-order-schedule__input"
             type="time"
-          >
+          />
         </label>
       </div>
 
@@ -73,7 +68,7 @@
           inputmode="numeric"
           min="1"
           type="number"
-        >
+        />
       </label>
 
       <p
@@ -88,9 +83,11 @@
         v-if="scheduleSelection.available && !noticeSelection.available"
         class="menu-order-placeholder"
       >
-        {{ noticeSelection.noticeHours > 0
-          ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
-          : 'Choose a future date and time.' }}
+        {{
+          noticeSelection.noticeHours > 0
+            ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
+            : 'Choose a future date and time.'
+        }}
       </p>
     </section>
 
@@ -129,10 +126,9 @@ const emit = defineEmits<{
   (event: 'update:ready', value: boolean): void
 }>()
 
-const {
-  depositStatus,
-  detailsStatus: preOrderStatus,
-} = usePreOrderFunnel(() => props.funnel.order)
+const { depositStatus, detailsStatus: preOrderStatus } = usePreOrderFunnel(
+  () => props.funnel.order
+)
 
 const todayDate = () => {
   const now = new Date()
@@ -152,7 +148,9 @@ const splitRequestedFor = (value: unknown) => {
     time: time.slice(0, 5),
   }
 }
-const savedRequestedFor = splitRequestedFor(props.funnel.incoming.pre_order?.requested_for)
+const savedRequestedFor = splitRequestedFor(
+  props.funnel.incoming.pre_order?.requested_for
+)
 const dateInputOpen = ref(Boolean(savedRequestedFor.date))
 const scheduledDate = ref(savedRequestedFor.date || todayDate())
 const scheduledTime = ref(savedRequestedFor.time || '17:00')
@@ -162,7 +160,9 @@ const partySize = ref(
     : ''
 )
 const dateInput = ref<HTMLInputElement | null>(null)
-const serviceHours = computed(() => props.funnel.order.serviceHours?.operation_hours)
+const serviceHours = computed(
+  () => props.funnel.order.serviceHours?.operation_hours
+)
 const serviceWindowLabel = computed(() =>
   formatWeekdayTimeText(serviceHours.value)
 )
@@ -193,8 +193,9 @@ const partySizeNumber = computed(() => {
 
   return Number.isFinite(value) && value > 0 ? value : 0
 })
-const ready = computed(() =>
-  scheduleSelection.value.available &&
+const ready = computed(
+  () =>
+    scheduleSelection.value.available &&
     noticeSelection.value.available &&
     partySizeNumber.value > 0
 )

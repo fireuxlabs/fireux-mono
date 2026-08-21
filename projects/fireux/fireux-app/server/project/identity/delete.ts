@@ -3,14 +3,13 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  fireuxAppProjectsTarget,
+  fireuxProjectTeamMembersTarget,
   serverUserTargetsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
 import {
   failProjectCommand,
-  projectAccessIds,
   requireProjectAdmin,
   resolveProjectCommandActor,
 } from '../core/command'
@@ -18,34 +17,48 @@ import {
 export async function deleteProject(event: H3Event, projectId: unknown) {
   const id = requireFirestoreDocumentId(projectId, 'Project id')
   const current = await resolveProjectCommandActor(event)
-  const supports = fireuxAppProjectsTarget(current.appId)
+  const team = fireuxProjectTeamMembersTarget(id)
   const projects = FIRESTORE_MUTATION_TARGETS.fireuxProjects
   return runGuardedServerTransaction(projects.database, async (mutations) => {
-    const [membership, root, support, apps, ecosystems] = await Promise.all([
-      mutations.read<Record<string, unknown>>(current.memberships, current.uid),
-      mutations.read<Record<string, unknown>>(projects, id),
-      mutations.read<Record<string, unknown>>(supports, id),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.fireuxApps, {
-        field: 'project_id',
-        op: '==',
-        value: id,
-        limit: 1,
-      }),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.fireuxEcosystems, {
-        field: 'project_id',
-        op: '==',
-        value: id,
-        limit: 1,
-      }),
-    ])
+    const [membership, root, currentTeamMember, teamMembers, apps, ecosystems] =
+      await Promise.all([
+        mutations.read<Record<string, unknown>>(
+          current.memberships,
+          current.uid
+        ),
+        mutations.read<Record<string, unknown>>(projects, id),
+        mutations.read<Record<string, unknown>>(team, current.uid),
+        mutations.readAll<Record<string, unknown>>(team, 150),
+        mutations.query(FIRESTORE_MUTATION_TARGETS.fireuxApps, {
+          field: 'project_id',
+          op: '==',
+          value: id,
+          limit: 1,
+        }),
+        mutations.query(FIRESTORE_MUTATION_TARGETS.fireuxEcosystems, {
+          field: 'project_id',
+          op: '==',
+          value: id,
+          limit: 1,
+        }),
+      ])
     requireProjectAdmin(membership.exists, membership.data)
     if (!root.exists) failProjectCommand(404, 'Project not found.')
+    const currentTeamRole = String(currentTeamMember.data?.role || '').trim()
+    if (
+      !currentTeamMember.exists ||
+      String(currentTeamMember.data?.user_id || '').trim() !== current.uid ||
+      String(currentTeamMember.data?.status || '').trim() !== 'active' ||
+      (currentTeamRole !== 'owner' && currentTeamRole !== 'operator')
+    ) {
+      failProjectCommand(403, 'Active Project Team authority is required.')
+    }
     if (apps.length || ecosystems.length)
       failProjectCommand(
         409,
         'Project must have no Apps or Ecosystems before deletion.'
       )
-    const userIds = projectAccessIds(support.data)
+    const userIds = teamMembers.map((member) => member.id)
     const targetRecords = await Promise.all(
       userIds.map((uid) =>
         mutations.read<Record<string, unknown>>(
@@ -61,7 +74,7 @@ export async function deleteProject(event: H3Event, projectId: unknown) {
           updated: serverAuditStamp({ by: current.uid }),
         })
     })
-    if (support.exists) mutations.delete(supports, id)
+    teamMembers.forEach((member) => mutations.delete(team, member.id))
     mutations.delete(projects, id)
     return { ok: true as const, project_id: id }
   })

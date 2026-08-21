@@ -25,10 +25,7 @@ const isWindowOpen = (
   )
 }
 
-const readWeekdayTimeOpenStateValue = (
-  value: unknown,
-  now = new Date()
-) => {
+const readWeekdayTimeOpenStateValue = (value: unknown, now = new Date()) => {
   const hours = weekdayTimeConfig.readWindowsConfig(value)
   if (!hours.timezone) {
     return {
@@ -39,15 +36,18 @@ const readWeekdayTimeOpenStateValue = (
   }
   const { day, minutes } = weekdayTimeFormat.zonedDayTime(now, hours.timezone)
   const known = Boolean(day && hours.windows.length)
-  const open = day && hours.windows.length
-    ? hours.windows.some((window) => isWindowOpen(window, day, minutes))
-    : false
+  const open =
+    day && hours.windows.length
+      ? hours.windows.some((window) => isWindowOpen(window, day, minutes))
+      : false
 
   return {
     known,
     open,
     label: known
-      ? open ? 'Serving' : 'Not serving'
+      ? open
+        ? 'Serving'
+        : 'Not serving'
       : 'Service times unavailable',
   }
 }
@@ -87,9 +87,8 @@ const readWeekdayTimeSelectionStateValue = (
     known,
     complete,
     available,
-    requested_for: available && dateText && timeText
-      ? `${dateText}T${timeText}:00`
-      : '',
+    requested_for:
+      available && dateText && timeText ? `${dateText}T${timeText}:00` : '',
     label: !complete
       ? ''
       : !known

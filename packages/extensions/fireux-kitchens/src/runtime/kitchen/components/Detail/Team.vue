@@ -10,9 +10,7 @@
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-shield-check" class="size-4 text-muted" />
-            <div class="text-sm font-semibold text-highlighted">
-              Admin
-            </div>
+            <div class="text-sm font-semibold text-highlighted">Admin</div>
           </div>
           <UBadge v-if="claimedBy" color="success" variant="soft">
             Claimed
@@ -34,9 +32,7 @@
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-key-round" class="size-4 text-muted" />
-            <div class="text-sm font-semibold text-highlighted">
-              Operators
-            </div>
+            <div class="text-sm font-semibold text-highlighted">Operators</div>
           </div>
           <UBadge color="neutral" variant="soft">
             {{ operatorIds.length }}
@@ -52,18 +48,14 @@
             :link="Boolean(card.to)"
           />
         </div>
-        <p v-else class="text-sm text-dimmed">
-          No workspace operators listed.
-        </p>
+        <p v-else class="text-sm text-dimmed">No workspace operators listed.</p>
       </div>
 
       <div class="space-y-3 rounded-lg border border-default bg-default p-3">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-users-round" class="size-4 text-muted" />
-            <div class="text-sm font-semibold text-highlighted">
-              Team
-            </div>
+            <div class="text-sm font-semibold text-highlighted">Team</div>
           </div>
           <UBadge color="neutral" variant="soft">
             {{ visibleTeamMembers.length }}
@@ -84,9 +76,7 @@
             </div>
           </div>
         </div>
-        <p v-else class="text-sm text-dimmed">
-          No kitchen team listed.
-        </p>
+        <p v-else class="text-sm text-dimmed">No kitchen team listed.</p>
       </div>
     </div>
   </UPageCard>
@@ -136,8 +126,9 @@ const { kitchen: operatorKitchen } = useKitchenFetch(kitchenId, {
   collectionPath: operatorCollectionPath,
   hydrate: false,
 })
-const operatorSource = computed(() =>
-  (operatorKitchen.value || props.kitchen || {}) as Record<string, unknown>
+const operatorSource = computed(
+  () =>
+    (operatorKitchen.value || props.kitchen || {}) as Record<string, unknown>
 )
 const operatorIds = computed(() =>
   uniqueStrings(operatorSource.value.operator_ids)
@@ -186,7 +177,9 @@ function sortOrder(member: KitchenTeamMember) {
 }
 
 function memberDisplayName(member: KitchenTeamMember) {
-  return clean(member.display_name || member.name || member.user_id) || 'Team member'
+  return (
+    clean(member.display_name || member.name || member.user_id) || 'Team member'
+  )
 }
 
 function memberRole(member: KitchenTeamMember) {

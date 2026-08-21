@@ -121,7 +121,7 @@ definePageMeta({
 const routeId = useRouteParam('id')
 const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
-  () => $fetch('/api/public/directory'),
+  () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
 const app = computed<AppDirectoryEntry | null>(

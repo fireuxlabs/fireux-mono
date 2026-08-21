@@ -6,14 +6,14 @@ import {
 
 const serverHandlers = [
   {
-    route: '/api/public/marketplace/stores',
+    route: '/api/marketplace-stores',
     method: 'get',
-    handler: './runtime/server/api/public/marketplace/stores.get',
+    handler: './runtime/server/api/marketplace-stores/index.get',
   },
   {
-    route: '/api/public/marketplace/stores/:slug',
+    route: '/api/marketplace-stores/:slug',
     method: 'get',
-    handler: './runtime/server/api/public/marketplace/stores/[slug].get',
+    handler: './runtime/server/api/marketplace-stores/[slug].get',
   },
   {
     route: '/api/marketplace/stores',

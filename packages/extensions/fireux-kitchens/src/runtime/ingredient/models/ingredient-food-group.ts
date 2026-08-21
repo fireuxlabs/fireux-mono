@@ -30,8 +30,8 @@ export type IngredientFoodGroupOption = {
   icon: string
 }
 
-export const INGREDIENT_FOOD_GROUP_OPTIONS:
-  readonly IngredientFoodGroupOption[] = [
+export const INGREDIENT_FOOD_GROUP_OPTIONS: readonly IngredientFoodGroupOption[] =
+  [
     { value: 'fruit', label: 'Fruit', icon: 'i-lucide-apple' },
     { value: 'vegetables', label: 'Vegetables', icon: 'i-lucide-carrot' },
     {
@@ -70,9 +70,7 @@ export const INGREDIENT_FOOD_GROUP_OPTIONS:
     },
   ]
 
-const ingredientCategories = new Set<IngredientCategory>(
-  INGREDIENT_CATEGORIES
-)
+const ingredientCategories = new Set<IngredientCategory>(INGREDIENT_CATEGORIES)
 const fruitIngredientIds = new Set([
   'cherries',
   'lemon',

@@ -80,7 +80,7 @@ import { useKitchenWorkspaceIngredients } from '../../../../composables/workspac
 import { useKitchenIngredientSelection } from '../../../../composables/workspace/operations/Ingredients/mutations/useKitchenIngredientSelection'
 import { useIngredientCollection } from '../../../../../ingredient/composables/firestore/fetch/useIngredientCollection'
 import { ingredientCategoryLabel } from '../../../../../ingredient/models/ingredient-taxonomy'
-import type { PublicIngredient } from '../../../../../ingredient/models/ingredient-public.model.ts'
+import type { Ingredient } from '../../../../../ingredient/models/ingredient.model.ts'
 
 const {
   kitchenId,
@@ -113,13 +113,13 @@ const selectedIds = computed(
         .filter(Boolean)
     )
 )
-const candidates = computed<PublicIngredient[]>(() => {
+const candidates = computed<Ingredient[]>(() => {
   const needle = clean(query.value).toLocaleLowerCase()
   return (library.value ?? [])
     .filter(
-      (ingredient: PublicIngredient) => !selectedIds.value.has(ingredient.id)
+      (ingredient: Ingredient) => !selectedIds.value.has(ingredient.id)
     )
-    .filter((ingredient: PublicIngredient) => {
+    .filter((ingredient: Ingredient) => {
       if (!needle) return true
       return [ingredient.name, ingredient.id, ...ingredient.aliases].some(
         (value) => clean(value).toLocaleLowerCase().includes(needle)

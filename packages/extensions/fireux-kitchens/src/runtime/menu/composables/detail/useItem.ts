@@ -1,10 +1,4 @@
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import type {
   MenuFoodAddOn,
   MenuFoodItem,
@@ -20,16 +14,17 @@ export function useItem(options: UseItemOptions) {
   const item = computed(() => toValue(options.item))
   const selectedVariantId = ref('')
   const selectedAddOnIds = ref<string[]>([])
-  const variantOptions = computed<MenuFoodPriceOption[]>(() =>
-    item.value.priceOptions || []
+  const variantOptions = computed<MenuFoodPriceOption[]>(
+    () => item.value.priceOptions || []
   )
-  const addOnOptions = computed<MenuFoodAddOn[]>(() =>
-    item.value.addOns || []
-  )
-  const selectedVariant = computed(() =>
-    variantOptions.value.find((variant) => variant.id === selectedVariantId.value) ||
-    variantOptions.value[0] ||
-    null
+  const addOnOptions = computed<MenuFoodAddOn[]>(() => item.value.addOns || [])
+  const selectedVariant = computed(
+    () =>
+      variantOptions.value.find(
+        (variant) => variant.id === selectedVariantId.value
+      ) ||
+      variantOptions.value[0] ||
+      null
   )
   const selectedAddOns = computed(() =>
     selectedAddOnIds.value
@@ -48,8 +43,8 @@ export function useItem(options: UseItemOptions) {
     ]
       .filter(Boolean)
       .join(':')
-  const displayPrice = computed(() =>
-    selectedVariant.value?.priceLabel || item.value.priceLabel
+  const displayPrice = computed(
+    () => selectedVariant.value?.priceLabel || item.value.priceLabel
   )
   const orderItem = computed<MenuFoodOrderItem>(() => ({
     ...item.value,

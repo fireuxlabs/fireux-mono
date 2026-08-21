@@ -34,7 +34,9 @@
         :to="kitchenPath"
         class="menu-order-unavailable__action"
         data-menu-action="kitchen"
-        :aria-label="kitchenName ? `Contact ${kitchenName}` : 'Contact the kitchen'"
+        :aria-label="
+          kitchenName ? `Contact ${kitchenName}` : 'Contact the kitchen'
+        "
       >
         Contact the kitchen
       </NuxtLink>
@@ -45,16 +47,19 @@
 <script setup lang="ts">
 import type { MenuLoadFailure } from '../../composables/useMenu'
 
-withDefaults(defineProps<{
-  failure: MenuLoadFailure
-  browsePath?: string
-  kitchenName?: string
-  kitchenPath?: string
-}>(), {
-  browsePath: '',
-  kitchenName: '',
-  kitchenPath: '',
-})
+withDefaults(
+  defineProps<{
+    failure: MenuLoadFailure
+    browsePath?: string
+    kitchenName?: string
+    kitchenPath?: string
+  }>(),
+  {
+    browsePath: '',
+    kitchenName: '',
+    kitchenPath: '',
+  }
+)
 </script>
 
 <style scoped>

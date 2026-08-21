@@ -14,9 +14,7 @@ import type {
   KitchenDemoDishesOperation,
   KitchenDemoDishSection,
 } from '../../../../utils/demo-dishes'
-import {
-  buildKitchenDemoDishesOperation,
-} from '../../../../utils/demo-dishes'
+import { buildKitchenDemoDishesOperation } from '../../../../utils/demo-dishes'
 import { useKitchenWorkspaceSupplyWorkspace } from '../Suppliers/useKitchenWorkspaceSupplyWorkspace'
 import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
 
@@ -25,24 +23,20 @@ const clean = (value: unknown) => String(value ?? '').trim()
 export type KitchenDishSection = KitchenDemoDishSection
 export type KitchenDishMenuUsage = KitchenDemoDishMenuUsage
 
-export function useKitchenWorkspaceDishes(_options: { resolveMenuSections?: boolean } = {}) {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+export function useKitchenWorkspaceDishes(
+  _options: { resolveMenuSections?: boolean } = {}
+) {
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
+  const demoScenario = computed(() =>
+    findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
   )
-  const demoScenario = computed(() => findKitchenWorkspaceDemoScenario(
-    demoData.data.value,
-    kitchenId.value
-  ))
   const demoMenuService = useKitchenWorkspaceDemoMenuService(demoScenario)
   const supply = useKitchenWorkspaceSupplyWorkspace()
   const demoDishOperationState = computed<{
@@ -100,19 +94,16 @@ export function useKitchenWorkspaceDishes(_options: { resolveMenuSections?: bool
     error,
     outcome,
     collectionPath,
-  } =
-    useKitchenDishCollection(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-      recordProvider: {
-        active: runtime.isDemo,
-        records: demoDishRecords,
-        pending: demoPending,
-        error: demoError,
-        collectionPath: computed(
-          () => `demo/kitchens/${kitchenId.value}/dishes`
-        ),
-      },
+  } = useKitchenDishCollection(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+    recordProvider: {
+      active: runtime.isDemo,
+      records: demoDishRecords,
+      pending: demoPending,
+      error: demoError,
+      collectionPath: computed(() => `demo/kitchens/${kitchenId.value}/dishes`),
+    },
   })
   const page = useKitchenWorkspaceReadPage<Dish>({
     collectionName: DishStorage.collection,
@@ -132,7 +123,7 @@ export function useKitchenWorkspaceDishes(_options: { resolveMenuSections?: bool
       if (!runtime.isDemo.value) return {}
 
       return Object.fromEntries(
-        (demoDishOperation.value?.items ?? []).map(item => [
+        (demoDishOperation.value?.items ?? []).map((item) => [
           clean(item.dish.id),
           item.menuUsage,
         ])
@@ -162,17 +153,18 @@ export function useKitchenWorkspaceDishes(_options: { resolveMenuSections?: bool
     getMenuUsageForDish: (dishId: string) =>
       menuUsageByDishId.value[clean(dishId)] || [],
     isDishInService: (dishId: string) =>
-      !runtime.isDemo.value
-      || demoMenuService.isEntityInService('dishes', dishId),
+      !runtime.isDemo.value ||
+      demoMenuService.isEntityInService('dishes', dishId),
     getPriceLabelForDish: (dishId: string) => {
       const entries = menuUsageByDishId.value[clean(dishId)] ?? []
       const prices = entries
-        .map(entry => Number(entry.price))
-        .filter(price => Number.isFinite(price) && price > 0)
+        .map((entry) => Number(entry.price))
+        .filter((price) => Number.isFinite(price) && price > 0)
       if (!prices.length) return ''
 
       const currencyCode =
-        entries.find(entry => clean(entry.currencyCode))?.currencyCode || 'CHF'
+        entries.find((entry) => clean(entry.currencyCode))?.currencyCode ||
+        'CHF'
       const price = Math.min(...prices)
       const label = new Intl.NumberFormat('en-CH', {
         style: 'currency',
@@ -192,12 +184,11 @@ export function useKitchenWorkspaceDishes(_options: { resolveMenuSections?: bool
       hasError: Boolean(error.value),
       readOnly: readOnly.value,
       canWrite: canWrite.value,
-      inServiceCount:
-        runtime.isDemo.value
-          ? workspaceDishes.value.filter(dish =>
-              demoMenuService.isEntityInService('dishes', dish.id)
-            ).length
-          : workspaceDishes.value.length,
+      inServiceCount: runtime.isDemo.value
+        ? workspaceDishes.value.filter((dish) =>
+            demoMenuService.isEntityInService('dishes', dish.id)
+          ).length
+        : workspaceDishes.value.length,
     })),
   }
 }

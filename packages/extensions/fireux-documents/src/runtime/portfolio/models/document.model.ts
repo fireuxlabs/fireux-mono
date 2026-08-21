@@ -16,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const DocumentStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
+  path: 'portfolios/{portfolioId}/documents/{documentId}',
   collection: 'documents',
   parent: 'portfolio',
   idParam: 'documentId',

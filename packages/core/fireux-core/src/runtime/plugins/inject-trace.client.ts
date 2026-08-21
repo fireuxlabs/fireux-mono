@@ -192,7 +192,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     __INJECT_TRACE_CONSOLE_PATCHED__?: boolean
   }
   if (!g.__INJECT_TRACE_CONSOLE_PATCHED__) {
-    const originalWorkspaceWarn = console.warn.bind(workspace)
+    const originalWorkspaceWarn = console.warn.bind(console)
     console.warn = (...args: unknown[]) => {
       try {
         const text = args.map((a) => safeToText(a)).join(' ')

@@ -1,4 +1,4 @@
-import type { DocumentSnapshot, Query } from 'firebase-admin/firestore'
+import type { Query } from 'firebase-admin/firestore'
 import { createError, getQuery, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -6,14 +6,14 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import type {
   ManagedMarketplaceStoreResponse,
   ManagedMarketplaceStoresResponse,
-  PublicMarketplaceStore,
-  PublicMarketplaceStoreListResponse,
-  PublicMarketplaceStoreResponse,
+  MarketplaceStoreDirectoryEntry,
+  MarketplaceStoreDirectoryPage,
+  MarketplaceStoreDetailResponse,
 } from '../../models/marketplace-api.model.ts'
 import {
   projectMarketplaceStoreDirectoryPreview,
   projectMarketplaceStorePreview,
-  projectPublicMarketplaceStore,
+  projectMarketplaceStoreDirectoryEntry,
 } from './projection'
 import { readMarketplaceServerScope } from '../core/runtime'
 import { marketplaceDocumentId } from '../core/validation'
@@ -21,14 +21,14 @@ import {
   STORE_LIMIT,
   assertCanManageStore,
   badRequest,
-  canManageStore,
   canonicalStore,
   privateRead,
-  publicRead,
+  cacheMarketplaceDirectoryRead,
   readStoreOffers,
   requireMarketplaceMember,
   sortRecent,
   storeRef,
+  storeAppId,
   storesRef,
 } from '../core/authority'
 
@@ -57,9 +57,9 @@ async function requireMarketplaceDirectoryPreview(
   privateRead(event)
 }
 
-export async function listPublicMarketplaceStores(
+export async function readMarketplaceStoreDirectoryPage(
   event: H3Event
-): Promise<PublicMarketplaceStoreListResponse> {
+): Promise<MarketplaceStoreDirectoryPage> {
   const scope = readMarketplaceServerScope(event)
   const db = getRuntimeFirestore(scope.databaseId)
   const visibility = text(getQuery(event).visibility)
@@ -77,9 +77,13 @@ export async function listPublicMarketplaceStores(
   } else if (includeAll) {
     privateRead(event)
   } else {
-    publicRead(event)
+    cacheMarketplaceDirectoryRead(event)
   }
-  let directoryQuery: Query = storesRef(db, scope.appId)
+  let directoryQuery: Query = storesRef(db, scope.appId).where(
+    'management.app_id',
+    '==',
+    scope.appId
+  )
   if (!includeAll) {
     directoryQuery = directoryQuery.where(
       'publication_state',
@@ -102,9 +106,9 @@ export async function listPublicMarketplaceStores(
     .map((store) =>
       includeAll
         ? projectMarketplaceStoreDirectoryPreview(store)
-        : projectPublicMarketplaceStore(store)
+        : projectMarketplaceStoreDirectoryEntry(store)
     )
-    .filter((store): store is PublicMarketplaceStore => Boolean(store))
+    .filter((store): store is MarketplaceStoreDirectoryEntry => Boolean(store))
     .sort((left, right) => left.name.localeCompare(right.name))
   return {
     items: stores,
@@ -112,10 +116,10 @@ export async function listPublicMarketplaceStores(
   }
 }
 
-export async function getPublicMarketplaceStore(
+export async function readMarketplaceStoreDetail(
   event: H3Event,
   rawSlug: unknown
-): Promise<PublicMarketplaceStoreResponse> {
+): Promise<MarketplaceStoreDetailResponse> {
   const scope = readMarketplaceServerScope(event)
   const slug = badRequest(() => marketplaceDocumentId(rawSlug, 'Store slug'))
   const db = getRuntimeFirestore(scope.databaseId)
@@ -134,7 +138,7 @@ export async function getPublicMarketplaceStore(
   } else if (includeAll) {
     privateRead(event)
   } else {
-    publicRead(event)
+    cacheMarketplaceDirectoryRead(event)
   }
   const ref = storeRef(db, scope.appId, slug)
   const snapshot = await ref.get()
@@ -143,7 +147,7 @@ export async function getPublicMarketplaceStore(
   }
   const store = canonicalStore(snapshot)
   if (
-    store.app_id !== scope.appId ||
+    storeAppId(store) !== scope.appId ||
     store.slug !== slug ||
     (!includeAll && store.publication_state !== 'published')
   ) {
@@ -151,7 +155,10 @@ export async function getPublicMarketplaceStore(
   }
   const projected = includeAll
     ? projectMarketplaceStorePreview(store, await readStoreOffers(ref))
-    : projectPublicMarketplaceStore(store, await readStoreOffers(ref, true))
+    : projectMarketplaceStoreDirectoryEntry(
+        store,
+        await readStoreOffers(ref, true)
+      )
   if (!projected) {
     throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
   }
@@ -163,28 +170,18 @@ export async function listManagedMarketplaceStores(
 ): Promise<ManagedMarketplaceStoresResponse> {
   privateRead(event)
   const current = await requireMarketplaceMember(event)
-  const [owners, editors] = await Promise.all([
-    storesRef(current.db, current.appId)
-      .where('owner_ids', 'array-contains', current.uid)
-      .limit(STORE_LIMIT + 1)
-      .get(),
-    storesRef(current.db, current.appId)
-      .where('editor_ids', 'array-contains', current.uid)
-      .limit(STORE_LIMIT + 1)
-      .get(),
-  ])
-  const truncated = owners.size > STORE_LIMIT || editors.size > STORE_LIMIT
-  const snapshots: DocumentSnapshot[] = Array.from(
-    new Map(
-      [...owners.docs, ...editors.docs]
-        .slice(0, STORE_LIMIT * 2)
-        .map((snapshot) => [snapshot.id, snapshot])
-    ).values()
-  ).slice(0, STORE_LIMIT)
+  const storeIds = [...current.managedStoreIds].slice(0, STORE_LIMIT)
+  const snapshots = storeIds.length
+    ? await current.db.getAll(
+        ...storeIds.map((storeId) =>
+          storeRef(current.db, current.appId, storeId)
+        )
+      )
+    : []
   const items = sortRecent(snapshots.map(canonicalStore)).filter(
-    (store) => store.app_id === current.appId && canManageStore(store, current)
+    (store) => storeAppId(store) === current.appId
   )
-  return { items, role: current.role, truncated }
+  return { items, role: current.role, truncated: false }
 }
 
 export async function getManagedMarketplaceStore(

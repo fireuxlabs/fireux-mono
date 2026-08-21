@@ -11,17 +11,15 @@ import { useSupplierIngredientRoots } from './fetch/useSupplierIngredientRoots'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierWorkspaceIngredients() {
-  const {
-    selection,
-    runtime,
-  } = useSupplierWorkspace()
+  const { selection, runtime } = useSupplierWorkspace()
 
   const supplierLabel = computed(() =>
     normalizeString(selection.supplier.value?.supplier_organization_name)
   )
-  const supplierIngredientsEnabled = computed(() =>
-    !runtime.isDemo.value
-    && Boolean(runtime.rootCollection.value && selection.supplierId.value)
+  const supplierIngredientsEnabled = computed(
+    () =>
+      !runtime.isDemo.value &&
+      Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath,
@@ -31,21 +29,21 @@ export function useSupplierWorkspaceIngredients() {
     enabled: supplierIngredientsEnabled,
     supplierCollectionPath: runtime.rootCollection,
   })
-  const demoData = useSupplierWorkspaceDemoData(
-    runtime.isDemo
+  const demoData = useSupplierWorkspaceDemoData(runtime.isDemo)
+  const demoScenario = computed(() =>
+    findSupplierWorkspaceDemoScenario(
+      demoData.data.value,
+      selection.supplierId.value
+    )
   )
-  const demoScenario = computed(() => findSupplierWorkspaceDemoScenario(
-    demoData.data.value,
-    selection.supplierId.value
-  ))
   const supplierIngredients = computed(() =>
     runtime.isDemo.value
-      ? demoScenario.value?.ingredients ?? []
+      ? (demoScenario.value?.ingredients ?? [])
       : supplierIngredientsFromStore.value
   )
   const linkedIngredientIds = computed(() =>
     supplierIngredients.value
-      .map(ingredient => normalizeString(ingredient.ingredient_id))
+      .map((ingredient) => normalizeString(ingredient.ingredient_id))
       .filter(Boolean)
   )
   const ingredientRoots = useSupplierIngredientRoots(linkedIngredientIds, {
@@ -78,10 +76,13 @@ export function useSupplierWorkspaceIngredients() {
     })
   )
   const ingredientsTitle = computed(() =>
-    supplierLabel.value ? `${supplierLabel.value} Ingredients` : 'Supplier Ingredients'
+    supplierLabel.value
+      ? `${supplierLabel.value} Ingredients`
+      : 'Supplier Ingredients'
   )
-  const ingredientsDescription = computed(() =>
-    `${ingredientItems.value.length} assigned ingredient${ingredientItems.value.length === 1 ? '' : 's'}`
+  const ingredientsDescription = computed(
+    () =>
+      `${ingredientItems.value.length} assigned ingredient${ingredientItems.value.length === 1 ? '' : 's'}`
   )
   const debug = computed(() => ({
     supplierId: selection.supplierId.value,
@@ -90,8 +91,8 @@ export function useSupplierWorkspaceIngredients() {
     ingredientItemsCount: ingredientItems.value.length,
     ingredientIds: linkedIngredientIds.value,
     missingRootIngredientIds: ingredientItems.value
-      .filter(item => item.missing_root_ingredient)
-      .map(item => item.ingredient_id),
+      .filter((item) => item.missing_root_ingredient)
+      .map((item) => item.ingredient_id),
     pending: pending.value,
     loadError: Boolean(loadError.value),
     readOnly: runtime.readOnly.value,

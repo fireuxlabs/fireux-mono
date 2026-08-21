@@ -33,10 +33,10 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
-const list = (value: unknown): unknown[] => Array.isArray(value) ? value : []
+const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
 
 const uniqueDays = (days: WeekdayTimeDay[]) =>
   days.filter((day, index, source) => source.indexOf(day) === index)
@@ -78,10 +78,7 @@ const timeSource = (value: unknown): WeekdayTimeWindowsSource => {
   return source === 'place' ? 'place' : 'custom'
 }
 
-const expandDayRange = (
-  start: WeekdayTimeDay,
-  end: WeekdayTimeDay
-) => {
+const expandDayRange = (start: WeekdayTimeDay, end: WeekdayTimeDay) => {
   const startIndex = weekdayTimeCoreDays.indexOf(start)
   const endIndex = weekdayTimeCoreDays.indexOf(end)
   if (startIndex < 0 || endIndex < 0) return []
@@ -96,18 +93,16 @@ const expandDayRange = (
 }
 
 const parseDays = (value: string) => {
-  const days = value
-    .split(',')
-    .flatMap((segment) => {
-      const range = segment
-        .trim()
-        .toLowerCase()
-        .split(/\s+(?:to|-)\s+|\s*-\s*/)
-        .map(dayName)
-        .filter((day): day is WeekdayTimeDay => Boolean(day))
+  const days = value.split(',').flatMap((segment) => {
+    const range = segment
+      .trim()
+      .toLowerCase()
+      .split(/\s+(?:to|-)\s+|\s*-\s*/)
+      .map(dayName)
+      .filter((day): day is WeekdayTimeDay => Boolean(day))
 
-      return range.length === 2 ? expandDayRange(range[0], range[1]) : range
-    })
+    return range.length === 2 ? expandDayRange(range[0], range[1]) : range
+  })
 
   return uniqueDays(days)
 }
@@ -120,7 +115,9 @@ const readWindow = (value: unknown): WeekdayTimeWindow | null => {
   const open = normalizeTime(row.open)
   const close = normalizeTime(row.close)
 
-  return days.length && open && close ? { days: uniqueDays(days), open, close } : null
+  return days.length && open && close
+    ? { days: uniqueDays(days), open, close }
+    : null
 }
 
 export const weekdayTimeCore = {

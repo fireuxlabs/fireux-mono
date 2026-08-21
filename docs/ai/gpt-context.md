@@ -356,11 +356,11 @@ requirement, report the exact missing seam before broad edits.
   generic `supporting`, `system`, or `operations` bucket to avoid naming an
   entity. Modules remain source-controlled package and App configuration, not
   stored entities.
-- Source organization does not hide stored-data debt. The 2026-08-05 bounded
-  migration removed duplicated User/AppUser App/profile/capability indexes
-  across current databases. Membership documents determine App access,
-  profile documents determine profile state, and server-owned Workspace target
-  ids live at `users/{uid}/private/targets`. `App.derived.user_count` and App
+- Source organization does not hide stored-data debt. Membership documents
+  determine App access, User-owned profile documents determine profile state,
+  and root-owned Team records determine Workspace access. Retire
+  `users/{uid}/private/targets` and App-nested Workspace access arrays during
+  the owner-first Firestore migration. `App.derived.user_count` and App
   build/database metadata remain migration candidates. Use
   `docs/concepts/core-models.md` as the ownership and migration map.
 - Private AI memory about a User is ecosystem-scoped operational support at
@@ -403,8 +403,10 @@ requirement, report the exact missing seam before broad edits.
   owners.
   Start at `fireux-ai/runtime/agents/operation-agent`, then the owning Entity's
   `runtime/<entity>/models/operation-agents` catalogue.
-- Operational tools are domain-owned pure definitions under
-  `runtime/<entity>/tools/<scope>`. One fully qualified id owns the tool's
+- Shared framework-neutral primitives are pure definitions under Core
+  `runtime/tools/<scope>`; low-level utilities remain in their technical
+  implementation roles. Operational tools are domain-owned pure definitions
+  under `runtime/<entity>/tools/<scope>`. One fully qualified id owns the tool's
   model-facing context, input schema, confirmation and risk policy, human and
   agent surface policy, and result contract. Human toolbar adapters,
   operation-agent tool ids, live model tool declarations, and server executor
@@ -425,7 +427,8 @@ requirement, report the exact missing seam before broad edits.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
 - Runtime seed objects are named `*Defaults`, not `*Model`. Entity files keep
-  root and App-support storage declarations separate, and entity-facing
+  root, Team, operation, and protected-support storage declarations separate,
+  and entity-facing
   `useXDetail`/`useXInterface` composables sit above Firestore adapters. The
   executable detail is maintained in `docs/concepts/firestore-entity.md` and
   the relevant authority guards.
@@ -433,8 +436,9 @@ requirement, report the exact missing seam before broad edits.
   the stable document id and the public handle is an editable field on that
   User. Do not create parallel `handles`, `user-handles`, or
   `user-handle-state` roots, compatibility reads, or duplicate writers.
-- App-support records contain only their declared access, membership, profile,
-  or operational delta. They do not copy root identity or payload.
+- AppUser contains only App membership and governance. User profiles,
+  Workspace Team, operations, and protected support live beneath their owning
+  User or Workspace Entity; they do not copy root identity into App.
 - A root Entity reader returns that canonical Entity. Transport may add paging
   metadata, named related records, or an honestly named presentation view, but
   it does not rename, filter, or replace the Entity as a privacy mechanism.
@@ -641,8 +645,8 @@ requirement, report the exact missing seam before broad edits.
   `user-app-access` resolver derives `dev > admin > premium > free` only for a
   valid membership; Dev never manufactures Admin authority, while Dev and Admin
   inherit Premium product capability. Profile documents, not User/AppUser
-  arrays, are profile authority. AppUser never duplicates Workspace entity
-  ownership or access; each entity family's App-support records are that
+  arrays, are profile authority. AppUser never duplicates Workspace Entity
+  ownership or access; each root Entity's `team/{uid}` records are that
   authority.
 - User list and detail readers return canonical User identities. On a tenant
   runtime, candidate visibility comes only from exact valid
@@ -663,20 +667,23 @@ requirement, report the exact missing seam before broad edits.
   authenticated `/api/internal/user/avatar` server Storage boundary before it
   writes the canonical User. Browser Storage Rules are not the provisioning
   path, and a local `/img/...` placeholder is never the persisted avatar.
-- Live root/App-support families query bounded entity App-support authority and
-  expose no partial pair when a root, same-id support record,
-  management host, stored authority shape, or caller access is invalid.
+- Live Workspace families derive bounded targets from canonical roots,
+  management relationships, exact AppUser membership, and root-owned Team
+  records. Missing roots, invalid management, invalid Team state, or missing
+  caller membership fail closed.
 - Production onboarding for those families is a fixed-runtime authenticated
   domain endpoint. One trusted transaction creates or attaches the canonical
-  root and completes the same-id App support record with the caller's
-  operator/team authority. Operators may mutate; team members have target/read
-  membership only; current App admins are the explicit override.
+  root and creates the caller's root-owned Team authority. Operators may
+  mutate; members have target/read membership only; current App admins are the
+  explicit override for Entities managed by that App.
 - Workspace-capable roots use the shared cumulative management contract:
   `{ mode: 'root' }`, `{ mode: 'workspace' }`, or
   `{ mode: 'app', app_id }`. `workspace` resolves through the ecosystem package's
-  conventional `<ecosystem>-app`, while only `app` stores an App id. Core must not
-  enumerate extension Workspace families or own a generic domain-root factory;
-  each domain owns validation and its trusted root/support transaction.
+  conventional `<ecosystem>-app`, while only `app` stores an App id. The
+  relationship selects the host surface; it never creates App-nested Entity
+  storage. Core must not enumerate extension Workspace families or own a
+  generic domain-root factory; each domain owns validation and its trusted
+  root/Team transaction.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
   domain deltas, not alternate target or onboarding spines.
@@ -696,9 +703,9 @@ requirement, report the exact missing seam before broad edits.
   and selected-parent operation shape.
 - Demo scenarios name their owning App and Workspace adapters filter by that App
   before projection. Fixtures use each family's current model declaration:
-  root/App-support families provide exact same-id access support, required
-  linked roots such as Place remain separate model-shaped records, and
-  no-support families such as Project do not invent support for symmetry.
+  Workspace families provide root-owned Team authority, required linked roots
+  such as Place remain separate model-shaped records, and families do not
+  invent support records for symmetry.
 - Test is not a generic fallback collection. When a family has no atomic
   canonical simulation producer, its Test source fails closed instead of
   reading or writing a default-database `test-*` alias.
@@ -824,10 +831,9 @@ requirement, report the exact missing seam before broad edits.
   An ecosystem without released browser policy retains an explicit local
   default-deny fragment; it never omits its Rules authority or uses an open
   placeholder.
-- Workspace target IDs are persisted relationship authority, not Nuxt
-  configuration. Each entity family's App-support records state both which
-  roots an App owns and which members may operate them. AppUser contains only
-  App membership and capability state; it never mirrors entity target IDs.
+- Workspace target IDs are derived from root management and Team authority,
+  not Nuxt configuration or User/App arrays. AppUser contains only App
+  membership and capability state; it never mirrors Entity target IDs.
   Route keys and relationship targets are stored data, not build-time App
   configuration. Changing one follows its owning family migration and never
   requires hard-coding the value into Nuxt config.
@@ -1055,7 +1061,7 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
 - The directory lists only Projects, Ecosystems, and Apps hosted by that
   Firebase project. A global Workspace aggregates project directories through a
   trusted server boundary; one project never stores another project's copy.
-- Directory records contain non-secret routing, status, public presentation,
+- Directory records contain non-secret routing, status, presentation,
   and asset-reference fields only. Canonical memberships, Users, domain
   entities, content, credentials, and operational state remain in the owning
   named database.
@@ -1063,11 +1069,11 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   membership and operational authority live beneath it. The matching default
   `AppMeta` record is a bounded directory projection, not competing App
   identity. `AppMeta` contains only local ownership, database routing, role,
-  status, public presentation, assets, and Workspace-family discovery. It never
+  status, presentation, assets, and Workspace-family discovery. It never
   contains memberships, User ids, counts, moderation state, repository paths,
   build state, or operational content.
 - The Firebase-project directory and FireUX platform aggregation consume these
-  AppMeta records. An ecosystem's local `/api/public/apps` collection reads
+  AppMeta records. An ecosystem's local `/api/apps` collection reads
   its canonical active Apps from the owning named database; that owner-local
   read does not make AppMeta optional during onboarding.
 - Every production `standalone` App selects a dedicated named database in each

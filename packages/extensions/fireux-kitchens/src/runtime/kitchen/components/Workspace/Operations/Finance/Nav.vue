@@ -17,8 +17,20 @@ import { useRoute } from '#imports'
 
 const route = useRoute()
 const items = [
-  { label: 'Overview', icon: 'i-lucide-layout-dashboard', to: '/workspace/kitchen/finance' },
-  { label: 'Transactions', icon: 'i-lucide-list-filter', to: '/workspace/kitchen/finance/transactions' },
-  { label: 'Reports', icon: 'i-lucide-file-chart-column', to: '/workspace/kitchen/finance/reports' },
+  {
+    label: 'Overview',
+    icon: 'i-lucide-layout-dashboard',
+    to: '/workspace/kitchen/finance',
+  },
+  {
+    label: 'Transactions',
+    icon: 'i-lucide-list-filter',
+    to: '/workspace/kitchen/finance/transactions',
+  },
+  {
+    label: 'Reports',
+    icon: 'i-lucide-file-chart-column',
+    to: '/workspace/kitchen/finance/reports',
+  },
 ]
 </script>

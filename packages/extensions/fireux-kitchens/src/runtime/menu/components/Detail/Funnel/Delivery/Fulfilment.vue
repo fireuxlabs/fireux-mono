@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Fulfilment
-    </h2>
+    <h2 class="menu-order-screen-title">Fulfilment</h2>
 
     <section class="menu-order-dispatch__section">
       <UIcon
@@ -47,10 +45,7 @@ const props = defineProps<{
   orderId?: string
 }>()
 
-const {
-  driverStatus,
-  kitchen,
-} = useDeliveryFunnel(() => props.order, {
+const { driverStatus, kitchen } = useDeliveryFunnel(() => props.order, {
   delivery: () => props.delivery,
   driverWatchingCount: () => props.driverWatchingCount,
   orderId: () => props.orderId,

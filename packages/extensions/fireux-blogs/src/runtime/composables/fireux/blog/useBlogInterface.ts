@@ -1,14 +1,11 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-  PublicBlogPostIndexProjection,
-  PublicBlogPostProjection,
-} from '../../../models/blogPost-public.model'
+  BlogDirectoryEntry,
+  BlogDetail,
+} from '../../../models/blog-directory.model'
 import type { BlogPost } from '../../../models/blogPost.model'
 
-type BlogViewPost =
-  | BlogPost
-  | PublicBlogPostIndexProjection
-  | PublicBlogPostProjection
+type BlogViewPost = BlogPost | BlogDirectoryEntry | BlogDetail
 
 export namespace BlogCard {
   export type Card = {
@@ -122,11 +119,15 @@ export function useBlogInterface() {
     return buildInterface(target)
   }
 
-  function preview(target?: BlogViewPost | null | undefined): BlogPreview | null {
+  function preview(
+    target?: BlogViewPost | null | undefined
+  ): BlogPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: BlogViewPost | null | undefined): BlogProfile | null {
+  function profile(
+    target?: BlogViewPost | null | undefined
+  ): BlogProfile | null {
     return buildInterface(target)
   }
 

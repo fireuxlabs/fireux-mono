@@ -4,7 +4,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  fireuxAppProjectsTarget,
+  fireuxProjectTeamMembersTarget,
   serverUserTargetsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { FieldValue } from 'firebase-admin/firestore'
@@ -41,32 +41,33 @@ export async function createProject(event: H3Event, input: unknown) {
     status: projectStatus(body.status, 'draft'),
   }
   const current = await resolveProjectCommandActor(event)
-  const supports = fireuxAppProjectsTarget(current.appId)
+  const team = fireuxProjectTeamMembersTarget(id)
   const targets = serverUserTargetsTarget(current.uid)
   const projects = FIRESTORE_MUTATION_TARGETS.fireuxProjects
   return runGuardedServerTransaction(projects.database, async (mutations) => {
-    const [membership, root, support, userTargets] = await Promise.all([
+    const [membership, root, teamMember, userTargets] = await Promise.all([
       mutations.read<Record<string, unknown>>(current.memberships, current.uid),
       mutations.read<Record<string, unknown>>(projects, id),
-      mutations.read<Record<string, unknown>>(supports, id),
+      mutations.read<Record<string, unknown>>(team, current.uid),
       mutations.read<Record<string, unknown>>(targets, 'targets'),
     ])
     requireProjectAdmin(membership.exists, membership.data)
     if (root.exists) failProjectCommand(409, 'Project already exists.')
-    if (support.exists)
+    if (teamMember.exists)
       failProjectCommand(
         409,
-        'Project access exists without its canonical root.'
+        'Project Team membership exists without its canonical root.'
       )
     mutations.create(projects, id, {
       ...payload,
       created: serverAuditStamp({ by: current.uid, appId: current.appId }),
       updated: serverAuditStamp({ by: current.uid }),
     })
-    mutations.create(supports, id, {
-      operator_ids: [current.uid],
-      team_ids: [current.uid],
-      join_requests: [],
+    mutations.create(team, current.uid, {
+      user_id: current.uid,
+      role: 'owner',
+      permissions: [],
+      status: 'active',
       created: serverAuditStamp({ by: current.uid, appId: current.appId }),
       updated: serverAuditStamp({ by: current.uid }),
     })

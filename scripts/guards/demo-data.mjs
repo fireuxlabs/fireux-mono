@@ -778,7 +778,7 @@ export async function run(ctx) {
       'presentation:',
       'deanosKitchenDemoTarget.kitchen',
       'deanosKitchenDemoTarget.place',
-      'input.appSupport.team_ids',
+      'input.access.teamIds',
       "order.status === 'completed'",
       'seenFinanceOrderIds',
       'transaction.closedByTeamMemberId',
@@ -867,18 +867,15 @@ export async function run(ctx) {
         'packages/extensions/fireux-suppliers/src/runtime/supplier/demo/scenario-validation.ts',
       ],
       markers: [
-        'appSupport: AppSupplier',
         "management: { mode: 'workspace' }",
         'company_id: input.companyId',
         'supplier_image: input.logoImageUrl',
         '!scenario.supplier.supplier_image',
         "'place_id' in scenario.supplier",
-        'scenario.appSupport.id !== supplierId',
-        'Object.keys(scenario.appSupport)',
         'const companyIds = supplierDemoScenarios.map',
       ],
       message:
-        'Supplier Demo must retain same-App Supplier/AppSupplier pairs, independent Company links, no direct Place edge, and owner-shaped child records.',
+        'Supplier Demo must retain root Suppliers, independent Company links, no direct Place edge, and owner-shaped child records.',
     },
     {
       code: 'properties-demo-target-pair',
@@ -886,14 +883,13 @@ export async function run(ctx) {
       markers: [
         'portfolio: PortfolioDemoTarget | null',
         'place: PlaceStored',
-        'appSupport: AppProperty',
         'target.place.id !== target.property.place_id',
         "'entity_families' in target.place",
-        'validateSupport(scenario, target.property, target.appSupport)',
+        'validateRoot(scenario, target.property)',
         "const buenohostAppId = 'buenohost'",
       ],
       message:
-        'Portfolio Demo must retain its same-App support pair without a direct Place; Property Demo must retain its support pair and linked sparse residential Place.',
+        'Portfolio Demo must retain its root relationship without a direct Place; Property Demo must retain its root and linked sparse residential Place.',
     },
     {
       code: 'reservation-demo-relationship',
@@ -1014,7 +1010,7 @@ export async function run(ctx) {
       code: 'supplier-demo-world-projection',
       file: supplierDemoWorldFile,
       message:
-        'Supplier Demo must compose Supplier/AppSupplier with the same-id canonical Company Place without copying a direct Place edge.',
+        'Supplier Demo must compose Supplier with the same-id canonical Company Place without copying a direct Place edge.',
     })
   }
   if (existsSync(familyScenarioJitiExecutable)) {
@@ -1334,7 +1330,7 @@ export async function run(ctx) {
         'for (const scenario of kitchenDemoScenarios) {',
         '  const kitchenId = String(scenario.kitchen.id || "")',
         '  const placeId = String(scenario.place.id || "")',
-        '  objectPath(scenario.kitchen.identity.logo_image_url, `kitchens/${kitchenId}/`)',
+        '  objectPath(scenario.kitchen.assets.logo, `kitchens/${kitchenId}/`)',
         '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
         '  for (const value of [scenario.place.image_url, scenario.place.cover_image, ...(scenario.place.gallery_images || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
         '}',
@@ -1401,20 +1397,20 @@ export async function run(ctx) {
         'companyPlace: scenario.companyPlace',
       ],
       message:
-        'Supplier Workspace Demo must filter by runtime App and compose Supplier/AppSupplier with the exact linked Company/Place projection.',
+        'Supplier Workspace Demo must filter by runtime App and compose Supplier with the exact linked Company/Place projection.',
     },
     {
       code: 'properties-demo-app-filter',
       file: 'packages/extensions/fireux-properties/src/runtime/composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData.ts',
       markers: [
         '.filter((scenario) => scenario.appId === currentAppId)',
-        'appSupport: scenario.portfolio.appSupport',
-        'appSupport: target.appSupport',
+        'portfolio: scenario.portfolio.portfolio',
+        'source: target.property',
         'target.place.id',
         'places,',
       ],
       message:
-        'Property and Portfolio Workspace Demo must filter by runtime App and compose root/support/Place sources.',
+        'Property and Portfolio Workspace Demo must filter by runtime App and compose root/Place sources.',
     },
     {
       code: 'blank-demo-app-filter',

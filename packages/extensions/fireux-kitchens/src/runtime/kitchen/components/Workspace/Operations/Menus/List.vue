@@ -2,7 +2,10 @@
   <section aria-label="Menus">
     <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
-    <div v-else-if="menus.length" class="divide-y divide-default overflow-hidden rounded-xl border border-default bg-default">
+    <div
+      v-else-if="menus.length"
+      class="divide-y divide-default overflow-hidden rounded-xl border border-default bg-default"
+    >
       <NuxtLink
         v-for="menu in menus"
         :key="menu.id"
@@ -58,11 +61,7 @@ import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimest
 import { useKitchenMenusWorkspace } from '../../../../composables/workspace/operations/Menus/useKitchenMenusWorkspace'
 import type { KitchenMenu as Menu } from '../../../../../menu/models/kitchen-menu.model.ts'
 
-const {
-  menus,
-  pending,
-  readOnly,
-} = useKitchenMenusWorkspace()
+const { menus, pending, readOnly } = useKitchenMenusWorkspace()
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -76,9 +75,10 @@ const statusColor = (menu: Menu) =>
     : menuStatus(menu) === 'archived'
       ? 'neutral'
       : 'warning'
-const updatedLabel = (menu: Menu) => formatFirestoreTimestamp(menu.updated?.at, {
-  format: { dateStyle: 'medium' },
-})
+const updatedLabel = (menu: Menu) =>
+  formatFirestoreTimestamp(menu.updated?.at, {
+    format: { dateStyle: 'medium' },
+  })
 const menuPath = (menu: Menu) =>
   `/workspace/kitchen/menus/${encodeURIComponent(text(menu.id))}`
 </script>

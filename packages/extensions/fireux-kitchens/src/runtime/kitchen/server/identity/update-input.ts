@@ -14,7 +14,6 @@ function fail(message: string): never {
 
 const allowed = new Set([
   'slug',
-  'identity.name',
   'identity.display_name',
   'identity.tagline',
   'identity.card_image_url',

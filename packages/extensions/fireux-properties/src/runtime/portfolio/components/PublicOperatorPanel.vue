@@ -3,9 +3,7 @@
   <UCard class="fx-card--public-action">
     <div class="fx-public-action">
       <div class="fx-public-action__badges">
-        <UBadge color="primary" variant="soft">
-          Operator
-        </UBadge>
+        <UBadge color="primary" variant="soft"> Operator </UBadge>
       </div>
 
       <div class="fx-public-action__body">
@@ -17,9 +15,7 @@
 
         <div class="fx-public-action__content">
           <div class="fx-public-action__copy">
-            <h2 class="fx-public-action__title">
-              Portfolio Operations
-            </h2>
+            <h2 class="fx-public-action__title">Portfolio Operations</h2>
             <p class="fx-public-action__description">
               {{ panelDescription }}
             </p>

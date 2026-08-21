@@ -6,22 +6,22 @@
     data-menu-action="exit"
     :data-menu-exit-kind="kind"
   >
-    <UIcon
-      aria-hidden="true"
-      name="i-lucide-x"
-    />
+    <UIcon aria-hidden="true" name="i-lucide-x" />
   </NuxtLink>
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  ariaLabel?: string
-  kind?: 'back' | 'close'
-  to: string
-}>(), {
-  ariaLabel: 'Close menu',
-  kind: 'close',
-})
+withDefaults(
+  defineProps<{
+    ariaLabel?: string
+    kind?: 'back' | 'close'
+    to: string
+  }>(),
+  {
+    ariaLabel: 'Close menu',
+    kind: 'close',
+  }
+)
 </script>
 
 <style scoped>
@@ -31,10 +31,11 @@ withDefaults(defineProps<{
   height: var(--menu-close-size, 4.5rem);
   padding: 0;
   place-items: center;
-  border: 1px solid var(
-    --menu-close-border,
-    color-mix(in srgb, var(--menu-primary, currentColor) 42%, transparent)
-  );
+  border: 1px solid
+    var(
+      --menu-close-border,
+      color-mix(in srgb, var(--menu-primary, currentColor) 42%, transparent)
+    );
   border-radius: 9999px;
   background: var(
     --menu-close-bg,
@@ -80,7 +81,8 @@ withDefaults(defineProps<{
 }
 
 .menu-close:focus-visible {
-  outline: 2px solid var(--menu-close-focus, var(--menu-secondary, currentColor));
+  outline: 2px solid
+    var(--menu-close-focus, var(--menu-secondary, currentColor));
   outline-offset: 3px;
 }
 

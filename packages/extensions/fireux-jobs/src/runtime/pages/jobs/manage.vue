@@ -81,12 +81,12 @@ definePageMeta({
 
 useHead({ title: 'Your jobs' })
 
-const { agent, coreProfile, pending, pill: agentInterface } = useAgent()
+const { agent, agentProfile, pending, pill: agentInterface } = useAgent()
 const { authorReadiness, canPostJob, isChecking } = useJobPermissions(
   agent,
   pending
 )
 const agentCard = computed(() =>
-  coreProfile.value ? agentInterface(coreProfile.value) : null
+  agentProfile.value ? agentInterface(agentProfile.value) : null
 )
 </script>

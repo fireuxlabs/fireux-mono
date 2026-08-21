@@ -3,7 +3,7 @@ import { Timestamp, type Firestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
-  serverCustomerOrdersTarget,
+  serverUserOrdersTarget,
   serverKitchenOrderIdempotencyTarget,
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
@@ -195,11 +195,8 @@ export const commitMenuOrderIdempotently = async <
   }
   const requestHash = menuOrderRequestHash(scope, input.request)
   const id = reservationId(scope, input.key)
-  const reservations = serverKitchenOrderIdempotencyTarget(
-    input.appId,
-    input.kitchenId
-  )
-  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
+  const reservations = serverKitchenOrderIdempotencyTarget(input.kitchenId)
+  const orders = serverKitchenOrdersTarget(input.kitchenId)
   const nowMs = Date.now()
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const reservationSnap = await mutations.read(reservations, id)
@@ -244,7 +241,7 @@ export const commitMenuOrderIdempotently = async <
     mutations.create(orders, input.orderId, numbered.payload)
     if (input.linkedRecord) {
       mutations.create(
-        serverCustomerOrdersTarget(input.appId, input.linkedRecord.customerUid),
+        serverUserOrdersTarget(input.linkedRecord.customerUid),
         input.linkedRecord.orderId,
         input.linkedRecord.payload
       )

@@ -112,5 +112,3 @@ export type KitchenDemoMiseRequirement = {
 export const formatKitchenDemoProductionAmount = (
   amount: KitchenDemoProductionAmount
 ) => `${amount.quantity} ${amount.unit}`
-
-

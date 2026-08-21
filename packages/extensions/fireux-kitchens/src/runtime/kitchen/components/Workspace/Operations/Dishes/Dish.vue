@@ -298,7 +298,16 @@
       title="Kitchen dish detail"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ dish, dishSpec, componentViews, prepItems, recipes, miseRequirements, menuUsage, finance }"
+      :objects="{
+        dish,
+        dishSpec,
+        componentViews,
+        prepItems,
+        recipes,
+        miseRequirements,
+        menuUsage,
+        finance,
+      }"
       :derived="fireuxDebugData"
       :default-open="false"
     />

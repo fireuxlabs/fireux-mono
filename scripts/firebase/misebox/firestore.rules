@@ -26,12 +26,9 @@ service cloud.firestore {
     //   raw reads require App membership or the fixed bootstrap developer.
     // apps/{appId}/join-requests/{uid}: owner-visible/admin-listable request.
     // apps/{appId}/users/{uid}: private membership and capability authority.
-    // apps/{appId}/customers/{uid}: app-private ordering identity and PII.
-    // drivers/{uid}: public Driver presentation/capability.
-    // agents/{uid}, chefs/{uid}, professionals/{uid}: owner-readable raw
-    //   profiles; guests consume allowlisted domain API projections.
-    // apps/{appId}/drivers/{uid}: private contact, preferences, and
-    //   server-owned kitchen grants.
+    // users/{uid}/profiles/{kind}: User-owned role profile.
+    // users/{uid}/profiles/{kind}/app-state/{appId}: App-specific profile
+    //   capability and server-owned grants where the role needs them.
     // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
     //   client reads are restricted to Kitchen operators. Granted Drivers use
     //   authenticated server-projected dispatch beacons instead.
@@ -536,46 +533,96 @@ service cloud.firestore {
         get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
     }
 
-    function isTargetMember(appId, collectionName, targetId) {
-      return isAppMember(appId) &&
+    function workspaceRootPath(collectionName, workspaceId) {
+      return /databases/$(database)/documents/$(collectionName)/$(workspaceId);
+    }
+
+    function workspaceTeamPath(collectionName, workspaceId, userId) {
+      return /databases/$(database)/documents/$(collectionName)/$(workspaceId)/team/$(userId);
+    }
+
+    function hasValidWorkspaceManagement(data) {
+      return data is map &&
+        data.keys().hasAll(['management']) &&
+        data.management is map &&
         (
-          (get(
-            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-          ).data.operator_ids is list &&
-            get(
-              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-            ).data.operator_ids.hasAny([request.auth.uid])) ||
-          (get(
-            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-          ).data.team_ids is list &&
-            get(
-              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-            ).data.team_ids.hasAny([request.auth.uid]))
+          (
+            data.management.keys().hasOnly(['mode']) &&
+            data.management.mode == 'workspace'
+          ) ||
+          (
+            data.management.keys().hasAll(['mode', 'app_id']) &&
+            data.management.keys().hasOnly(['mode', 'app_id']) &&
+            data.management.mode == 'app' &&
+            isValidFirestoreDocumentId(data.management.app_id)
+          )
         );
     }
 
-    function isTargetOperator(appId, collectionName, targetId) {
-      return isAppMember(appId) &&
-        get(
-          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-        ).data.operator_ids is list &&
-        get(
-          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
-        ).data.operator_ids.hasAny([request.auth.uid]);
+    function workspaceManagementAppId(data) {
+      return data.management.mode == 'workspace'
+        ? 'misebox-app'
+        : data.management.app_id;
     }
 
-    function isResourceTargetMember(appId) {
-      return isAppMember(appId) &&
+    function canReadWorkspace(collectionName, workspaceId) {
+      let rootPath = workspaceRootPath(collectionName, workspaceId);
+      let root = get(rootPath);
+      let appId = workspaceManagementAppId(root.data);
+      let membershipPath = appMembershipPath(appId, request.auth.uid);
+      let membership = get(membershipPath);
+      let teamPath = workspaceTeamPath(
+        collectionName,
+        workspaceId,
+        request.auth.uid
+      );
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        hasValidWorkspaceManagement(root.data) &&
+        exists(membershipPath) &&
         (
-          (resource.data.operator_ids is list &&
-            resource.data.operator_ids.hasAny([request.auth.uid])) ||
-          (resource.data.team_ids is list &&
-            resource.data.team_ids.hasAny([request.auth.uid]))
+          membership.data.role == 'admin' ||
+          (
+            membership.data.role in ['admin', 'user'] &&
+            exists(teamPath) &&
+            member.data.user_id == request.auth.uid &&
+            member.data.status == 'active' &&
+            member.data.role in ['owner', 'operator', 'member']
+          )
+        );
+    }
+
+    function canOperateWorkspace(collectionName, workspaceId) {
+      let rootPath = workspaceRootPath(collectionName, workspaceId);
+      let root = get(rootPath);
+      let appId = workspaceManagementAppId(root.data);
+      let membershipPath = appMembershipPath(appId, request.auth.uid);
+      let membership = get(membershipPath);
+      let teamPath = workspaceTeamPath(
+        collectionName,
+        workspaceId,
+        request.auth.uid
+      );
+      let member = get(teamPath);
+      return isAuthenticated() &&
+        exists(rootPath) &&
+        hasValidWorkspaceManagement(root.data) &&
+        exists(membershipPath) &&
+        (
+          membership.data.role == 'admin' ||
+          (
+            membership.data.role in ['admin', 'user'] &&
+            exists(teamPath) &&
+            member.data.user_id == request.auth.uid &&
+            member.data.status == 'active' &&
+            member.data.role in ['owner', 'operator']
+          )
         );
     }
 
     // ===============================================================
-    // Public User and owner-only private account
+    // User identity and owner-only account state
     // ===============================================================
     match /user-handles/{handle} {
       // Reservations are server-owned uniqueness locks, never a client API.
@@ -634,15 +681,9 @@ service cloud.firestore {
         );
     }
 
-    function hasValidCanonicalUserProfile(userId, profileId) {
-      return hasValidCanonicalUser(userId) &&
-        profileId == 'driver' &&
-        exists(/databases/$(database)/documents/drivers/$(userId));
-    }
-
     match /users/{userId} {
       allow get: if isOwner(userId) || isValidUser(resource.data);
-      // Public directory listing is projected by /api/public/users.
+      // Directory listing is projected by the trusted User API.
       allow list: if false;
       // The trusted handle endpoint owns consent validation, uniqueness, and
       // atomic User creation through the Admin SDK.
@@ -845,60 +886,6 @@ service cloud.firestore {
     // ===============================================================
     // Exact Kitchen identity for trusted Workspace targets
     // ===============================================================
-    match /kitchens/{kitchenId} {
-      function isCanonicalAttachedKitchen(data) {
-        return data is map &&
-          data.keys().hasAll(['management']) &&
-          !data.keys().hasAny([
-            'app_scope',
-            'app_scope_state',
-            'app_scope_app_id',
-            'app_id'
-          ]) &&
-          data.management is map &&
-          (
-            (
-              data.management.keys().hasOnly(['mode']) &&
-              data.management.mode == 'workspace'
-            ) ||
-            (
-              data.management.keys().hasAll(['mode', 'app_id']) &&
-              data.management.keys().hasOnly(['mode', 'app_id']) &&
-              data.management.mode == 'app' &&
-              isValidFirestoreDocumentId(data.management.app_id)
-            )
-          );
-      }
-
-      function kitchenManagementAppId(data) {
-        return data.management.mode == 'workspace'
-          ? 'misebox-app'
-          : data.management.app_id;
-      }
-
-      function hasSameIdAppKitchenSupport(appId) {
-        return exists(
-          /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
-        );
-      }
-
-      // Public Kitchen cards/details use bounded server projections. The raw
-      // root is exact-readable only when its canonical App scope and same-id
-      // support record prove current Workspace authority.
-      allow get: if isAuthenticated() &&
-        isCanonicalAttachedKitchen(resource.data) &&
-        hasSameIdAppKitchenSupport(kitchenManagementAppId(resource.data)) &&
-        (
-          isAppAdmin(kitchenManagementAppId(resource.data)) ||
-          isTargetMember(
-            kitchenManagementAppId(resource.data),
-            'kitchens',
-            kitchenId
-          )
-        );
-      allow list, create, update, delete: if false;
-    }
-
     // ===============================================================
     // Canonical App identity; public reads use server DTOs
     // ===============================================================
@@ -1056,8 +1043,8 @@ service cloud.firestore {
     }
 
     match /apps/{appId} {
-      // Guests use /api/public/apps and /api/public/apps/:id. Raw canonical
-      // data is available inside the App; bootstrap access is exact, not broad.
+      // App directory reads use trusted endpoints. Raw canonical data is
+      // available inside the App; bootstrap access is exact, not broad.
       allow get: if isAppMember(appId) ||
         (appId == 'misebox-app' && isBootstrapDeveloper());
       allow list: if false;
@@ -1111,7 +1098,8 @@ service cloud.firestore {
         allow get, list, create, update, delete: if false;
       }
 
-      // Administrative removal blocks are server-owned and never client-readable.
+      // AppUser is membership and App governance only. Profile and Workspace
+      // capability state live under their own owners.
       match /membership-blocks/{userId} {
         allow get, list, create, update, delete: if false;
       }
@@ -1152,211 +1140,32 @@ service cloud.firestore {
         allow create, update, delete: if false;
       }
 
-      // =============================================================
-      // App-private Customer and Driver profiles
-      // =============================================================
-      match /customers/{userId} {
-        function isValidCustomerPrivate(value) {
-          return value is map &&
-            value.keys().hasAll([
-              'name',
-              'phone',
-              'allergy_note',
-              'default_delivery_address',
-              'saved_addresses',
-              'order_history'
-            ]) &&
-            value.keys().hasOnly([
-              'name',
-              'phone',
-              'allergy_note',
-              'default_delivery_address',
-              'saved_addresses',
-              'order_history'
-            ]) &&
-            value.name is string && value.name.size() <= 120 &&
-            value.phone is string && value.phone.size() <= 40 &&
-            value.allergy_note is string && value.allergy_note.size() <= 1000 &&
-            value.default_delivery_address is string &&
-            value.default_delivery_address.size() <= 500 &&
-            value.saved_addresses is list && value.saved_addresses.size() <= 20 &&
-            value.order_history is list && value.order_history.size() <= 200;
-        }
-
-        function isValidCustomer(data) {
-          return data.keys().hasAll(['created', 'updated']) &&
-            data.keys().hasOnly(['private', 'created', 'updated']) &&
-            (!('private' in data) || isValidCustomerPrivate(data.private)) &&
-            validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
-            validUpdatedStamp(data.updated);
-        }
-
-        function validCustomerSelfChange() {
-          return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'private',
-              'updated'
-            ]) &&
-            (
-              ('private' in resource.data &&
-                request.resource.data.private.diff(resource.data.private)
-                  .affectedKeys().hasOnly([
-                    'name',
-                    'phone',
-                    'allergy_note',
-                    'default_delivery_address'
-                  ])) ||
-              (!('private' in resource.data) &&
-                request.resource.data.private.saved_addresses.size() == 0 &&
-                request.resource.data.private.order_history.size() == 0)
-            );
-        }
-
-        allow get: if (isOwner(userId) && isAppMember(appId)) ||
-          (isAppAdmin(appId) && isValidCustomer(resource.data));
-        allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidCustomer(request.resource.data) &&
-          request.resource.data.created == resource.data.created &&
-          validCustomerSelfChange() &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
+      // These App-owned records are trusted-server capabilities. Ignition is
+      // represented by a Conversation kind, not another App collection.
+      match /events/{eventId} {
+        allow get, list, create, update, delete: if false;
       }
 
-      match /drivers/{userId} {
-        function isValidAppDriver(data) {
-          return data.keys().hasAll(['created', 'updated']) &&
-            data.keys().hasOnly([
-              'driver_phone',
-              'accepts_weak_pings',
-              'accepts_delivery_tenders',
-              'active_kitchen_ids',
-              'kitchen_links',
-              'created',
-              'updated'
-            ]) &&
-            validOptionalText(data, 'driver_phone', 40) &&
-            (!('accepts_weak_pings' in data) ||
-              data.accepts_weak_pings is bool) &&
-            (!('accepts_delivery_tenders' in data) ||
-              data.accepts_delivery_tenders is bool) &&
-            validOptionalList(data, 'active_kitchen_ids', 50) &&
-            validOptionalList(data, 'kitchen_links', 50) &&
-            validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
-            validUpdatedStamp(data.updated);
-        }
-
-        allow get: if (isOwner(userId) && isAppMember(appId)) ||
-          (isAppAdmin(appId) && isValidAppDriver(resource.data));
-        allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidAppDriver(request.resource.data) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'driver_phone',
-            'accepts_weak_pings',
-            'accepts_delivery_tenders',
-            'updated'
-          ]) &&
-          request.resource.data.created == resource.data.created &&
-          request.resource.data.active_kitchen_ids == resource.data.active_kitchen_ids &&
-          request.resource.data.kitchen_links == resource.data.kitchen_links &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
-      }
-
-      // =============================================================
-      // App-scoped marketplace authority
-      // =============================================================
-      match /marketplace-stores/{storeId} {
-        // Store authority includes private owner/editor ids. Guests consume
-        // bounded public DTOs and members use trusted marketplace endpoints.
+      match /conversations/{conversationId} {
         allow get, list, create, update, delete: if false;
 
-        match /offers/{offerId} {
-          // Offer publication and price validation are server-owned.
+        match /{nested=**} {
           allow get, list, create, update, delete: if false;
         }
       }
 
       match /marketplace-orders/{orderId} {
-        // Orders contain buyer identity, fulfilment details and immutable
-        // offer/price snapshots. All access uses trusted private endpoints.
         allow get, list, create, update, delete: if false;
       }
+    }
+    match /kitchens/{kitchenId} {
+        allow get: if canReadWorkspace('kitchens', kitchenId);
+        allow list, create, update, delete: if false;
 
-      // =============================================================
-      // Minimal app overlays for public identity profiles
-      // =============================================================
-      match /{profileCollection}/{userId} {
-        function isIdentityProfileOverlay() {
-          return profileCollection in ['agents', 'chefs', 'professionals'];
+        match /team/{userId} {
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create, update, delete: if false;
         }
-
-        function isValidProfileOverlay(data) {
-          return data.keys().hasAll(['created', 'updated']) &&
-            data.keys().hasOnly(['created', 'updated']) &&
-            validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
-            validUpdatedStamp(data.updated);
-        }
-
-        allow get: if isIdentityProfileOverlay() &&
-          ((isOwner(userId) && isAppMember(appId)) ||
-            (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
-        allow list: if isIdentityProfileOverlay() &&
-          isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isIdentityProfileOverlay() &&
-          isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidProfileOverlay(request.resource.data) &&
-          request.resource.data.created == resource.data.created &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'updated'
-          ]) &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
-      }
-
-      // =============================================================
-      // Kitchen operations and Customer-order PII
-      // =============================================================
-      match /kitchens/{kitchenId} {
-        function hasBoundedKitchenAuthority() {
-          return request.resource.data.operator_ids is list &&
-            request.resource.data.operator_ids.size() <= 50 &&
-            request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100 &&
-            request.resource.data.join_requests is list &&
-            request.resource.data.join_requests.size() <= 100;
-        }
-
-        function kitchenAuthorityUnchanged() {
-          return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids &&
-            request.resource.data.join_requests == resource.data.join_requests;
-        }
-
-        allow get: if isAppAdmin(appId) ||
-          isTargetMember(appId, 'kitchens', kitchenId);
-        allow list: if isAppAdmin(appId) || isResourceTargetMember(appId);
-        allow create: if isAppAdmin(appId) &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedKitchenAuthority();
-        allow update: if request.resource.data.keys().size() <= 100 &&
-          hasBoundedKitchenAuthority() &&
-          (isAppAdmin(appId) ||
-            (isTargetOperator(appId, 'kitchens', kitchenId) &&
-              kitchenAuthorityUnchanged()));
-        allow delete: if false;
 
         match /ingredients/{ingredientId} {
           function isValidKitchenIngredient(data) {
@@ -1376,7 +1185,9 @@ service cloud.firestore {
               validCreatedStamp(data.created) &&
               data.created.keys().hasAll(['at', 'by', 'app_id']) &&
               data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
-              data.created.app_id == appId &&
+              data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
               validUpdatedStamp(data.updated) &&
               data.updated.keys().hasAll(['at', 'by']) &&
               data.updated.keys().hasOnly(['at', 'by']);
@@ -1391,18 +1202,15 @@ service cloud.firestore {
               ).data.status == 'active';
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.ingredient_id == resource.data.ingredient_id &&
@@ -1414,8 +1222,7 @@ service cloud.firestore {
             request.resource.data.updated.by == request.auth.uid;
           // Removing a stale selection remains possible after its canonical
           // root is deprecated or merged.
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;
@@ -1423,13 +1230,12 @@ service cloud.firestore {
         }
 
         match /orders/{orderId} {
-          allow get, list: if isTargetOperator(appId, 'kitchens', kitchenId);
+          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
           allow create, update, delete: if false;
         }
 
         match /sales/{saleId} {
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -1449,18 +1255,17 @@ service cloud.firestore {
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1469,8 +1274,7 @@ service cloud.firestore {
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
         }
 
         match /recipes/{recipeId} {
@@ -1488,18 +1292,17 @@ service cloud.firestore {
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1509,19 +1312,15 @@ service cloud.firestore {
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
         }
 
         match /menus/{menuId} {
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create, update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create, update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100 &&
             request.resource.data.kitchen_id == kitchenId;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
           match /sections/{sectionId} {
             function hasValidMenuSectionScope(data) {
@@ -1531,18 +1330,14 @@ service cloud.firestore {
                 data.menu_id == menuId;
             }
 
-            allow get, list: if isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId);
-            allow create: if (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            allow get, list: if canReadWorkspace('kitchens', kitchenId);
+            allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data);
-            allow update: if (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data) &&
               request.resource.data.kitchen_id == resource.data.kitchen_id &&
               request.resource.data.menu_id == resource.data.menu_id;
-            allow delete: if isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId);
+            allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
             match /items/{itemId} {
               function hasValidMenuItemScope(data) {
@@ -1553,24 +1348,20 @@ service cloud.firestore {
                   data.section_id == sectionId &&
                   isValidFirestoreDocumentId(data.dish_id) &&
                   exists(
-                    /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)/dishes/$(data.dish_id)
+                    /databases/$(database)/documents/kitchens/$(kitchenId)/dishes/$(data.dish_id)
                   );
               }
 
-              allow get, list: if isAppAdmin(appId) ||
-                isTargetMember(appId, 'kitchens', kitchenId);
-              allow create: if (isAppAdmin(appId) ||
-                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              allow get, list: if canReadWorkspace('kitchens', kitchenId);
+              allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data);
-              allow update: if (isAppAdmin(appId) ||
-                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data) &&
                 request.resource.data.kitchen_id == resource.data.kitchen_id &&
                 request.resource.data.menu_id == resource.data.menu_id &&
                 request.resource.data.section_id == resource.data.section_id &&
                 request.resource.data.dish_id == resource.data.dish_id;
-              allow delete: if isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId);
+              allow delete: if canOperateWorkspace('kitchens', kitchenId);
             }
 
             match /{nested=**} {
@@ -1595,129 +1386,54 @@ service cloud.firestore {
               'mise-tasks',
               'menus',
               'orders',
-              'sales'
+              'private',
+              'sales',
+              'team'
             ]);
           }
 
           allow get, list: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create, update: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+            (canOperateWorkspace('kitchens', kitchenId));
 
           match /{nested=**} {
             allow get, list: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetMember(appId, 'kitchens', kitchenId));
+              (canReadWorkspace('kitchens', kitchenId));
             allow create, update: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              (canOperateWorkspace('kitchens', kitchenId)) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId));
+              (canOperateWorkspace('kitchens', kitchenId));
           }
         }
       }
-
-      // Workspace targets outside Kitchen use the same operator-owned shape.
-      match /{targetCollection}/{targetId} {
-        function isWorkspaceTargetCollection() {
-          return targetCollection in [
-            'suppliers'
-          ];
-        }
-
-        function hasBoundedTargetAuthority() {
-          return request.resource.data.operator_ids is list &&
-            request.resource.data.operator_ids.size() <= 50 &&
-            request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100 &&
-            request.resource.data.join_requests is list &&
-            request.resource.data.join_requests.size() <= 100;
-        }
-
-        function targetAuthorityUnchanged() {
-          return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids &&
-            request.resource.data.join_requests == resource.data.join_requests;
-        }
-
-        allow get: if isWorkspaceTargetCollection() &&
-          (isAppAdmin(appId) ||
-            isTargetMember(appId, targetCollection, targetId));
-        allow list: if isWorkspaceTargetCollection() &&
-          (isAppAdmin(appId) || isResourceTargetMember(appId));
-        allow create: if isWorkspaceTargetCollection() &&
-          isAppAdmin(appId) &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedTargetAuthority();
-        allow update: if isWorkspaceTargetCollection() &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedTargetAuthority() &&
-          (isAppAdmin(appId) ||
-            (isTargetOperator(appId, targetCollection, targetId) &&
-              targetAuthorityUnchanged()));
-        allow delete: if false;
-
-        // Use an explicit collection/document pair before the recursive tail.
-        // In rules_version 2 a recursive wildcard matches zero segments, so a
-        // direct /{nested=**} here would also bypass the support validator.
-        match /{childCollection}/{childId} {
-          allow get, list: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, targetCollection, targetId));
-          allow create, update: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, targetCollection, targetId)) &&
-            request.resource.data.keys().size() <= 100;
-          allow delete: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, targetCollection, targetId));
-
-          match /{nested=**} {
-            allow get, list: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetMember(appId, targetCollection, targetId));
-            allow create, update: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, targetCollection, targetId)) &&
-              request.resource.data.keys().size() <= 100;
-            allow delete: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, targetCollection, targetId));
-          }
-        }
-      }
-      match /kitchens/{kitchenId} {
+    match /kitchens/{kitchenId} {
         function hasKitchenWorkflowParent() {
           return exists(
-            /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
+            /databases/$(database)/documents/kitchens/$(kitchenId)
           );
         }
 
         match /stations/{stationId} {
           allow get, list: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(stationId) &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+              get(workspaceRootPath('kitchens', kitchenId)).data
+            ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenStation(request.resource.data, kitchenId) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1727,8 +1443,7 @@ service cloud.firestore {
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+            (canOperateWorkspace('kitchens', kitchenId));
         }
 
         // Legacy prep-item documents share the old `mise` name but are not
@@ -1736,8 +1451,7 @@ service cloud.firestore {
         // until that record family is separately classified and migrated.
         match /mise/{legacyMiseId} {
           allow get, list: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create, update, delete: if false;
 
           match /{nested=**} {
@@ -1849,21 +1563,20 @@ service cloud.firestore {
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(prepItemId) &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+              get(workspaceRootPath('kitchens', kitchenId)).data
+            ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenPrepItem(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1875,8 +1588,7 @@ service cloud.firestore {
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+            (canOperateWorkspace('kitchens', kitchenId));
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;
@@ -1966,22 +1678,21 @@ service cloud.firestore {
           }
 
           allow get, list: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create: if hasKitchenWorkflowParent() &&
             isValidFirestoreDocumentId(taskId) &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             request.resource.data.keys().hasAll(['workflow_stage']) &&
             isValidKitchenMiseTask(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+              get(workspaceRootPath('kitchens', kitchenId)).data
+            ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow update: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenMiseTask(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -1995,9 +1706,64 @@ service cloud.firestore {
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
           allow delete: if hasKitchenWorkflowParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+            (canOperateWorkspace('kitchens', kitchenId));
         }
+      }
+    match /suppliers/{supplierId} {
+      allow get: if canReadWorkspace('suppliers', supplierId);
+      allow list, create, update, delete: if false;
+
+      match /team/{userId} {
+        allow get, list: if canReadWorkspace('suppliers', supplierId);
+        allow create, update, delete: if false;
+      }
+
+      // Supplier owns its Catalogue, Ingredients, and Items operations. Their
+      // concrete records remain domain-shaped while authority stays on Team.
+      match /{operationCollection}/{recordId} {
+        function isSupplierOperation() {
+          return operationCollection in [
+            'catalogue',
+            'ingredients',
+            'items'
+          ];
+        }
+
+        allow get, list: if isSupplierOperation() &&
+          (canReadWorkspace('suppliers', supplierId));
+        allow create, update: if isSupplierOperation() &&
+          (canOperateWorkspace('suppliers', supplierId)) &&
+          request.resource.data.keys().size() <= 100;
+        allow delete: if isSupplierOperation() &&
+          (canOperateWorkspace('suppliers', supplierId));
+
+        match /{nested=**} {
+          allow get, list: if isSupplierOperation() &&
+            (canReadWorkspace('suppliers', supplierId));
+          allow create, update: if isSupplierOperation() &&
+            (canOperateWorkspace('suppliers', supplierId)) &&
+            request.resource.data.keys().size() <= 100;
+          allow delete: if isSupplierOperation() &&
+            (canOperateWorkspace('suppliers', supplierId));
+        }
+      }
+    }
+    match /marketplace-stores/{storeId} {
+      // Marketplace identity, Team, Offers, and Orders use trusted domain
+      // endpoints. Root ownership is explicit even while browser access stays
+      // closed.
+      allow get, list, create, update, delete: if false;
+
+      match /team/{userId} {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /offers/{offerId} {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /{nested=**} {
+        allow get, list, create, update, delete: if false;
       }
     }
     // Place detail subscriptions exact-read known canonical Place ids. Index
@@ -2006,11 +1772,77 @@ service cloud.firestore {
       allow get: if resource != null;
       allow list, create, update, delete: if false;
     }
+    match /users/{userId}/profiles/customer {
+      function isValidCustomerPrivate(value) {
+        return value is map &&
+          value.keys().hasAll([
+            'name',
+            'phone',
+            'allergy_note',
+            'default_delivery_address',
+            'saved_addresses',
+            'order_history'
+          ]) &&
+          value.keys().hasOnly([
+            'name',
+            'phone',
+            'allergy_note',
+            'default_delivery_address',
+            'saved_addresses',
+            'order_history'
+          ]) &&
+          value.name is string && value.name.size() <= 120 &&
+          value.phone is string && value.phone.size() <= 40 &&
+          value.allergy_note is string && value.allergy_note.size() <= 1000 &&
+          value.default_delivery_address is string &&
+          value.default_delivery_address.size() <= 500 &&
+          value.saved_addresses is list && value.saved_addresses.size() <= 20 &&
+          value.order_history is list && value.order_history.size() <= 200;
+      }
+
+      function isValidCustomerProfile(data) {
+        return data.keys().hasAll(['kind', 'created', 'updated']) &&
+          data.keys().hasOnly(['kind', 'private', 'created', 'updated']) &&
+          data.kind == 'customer' &&
+          (!('private' in data) || isValidCustomerPrivate(data.private)) &&
+          validCreatedStamp(data.created) &&
+          validUpdatedStamp(data.updated);
+      }
+
+      function validCustomerSelfChange() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'private',
+            'updated'
+          ]) &&
+          (
+            ('private' in resource.data &&
+              request.resource.data.private.diff(resource.data.private)
+                .affectedKeys().hasOnly([
+                  'name',
+                  'phone',
+                  'allergy_note',
+                  'default_delivery_address'
+                ])) ||
+            (!('private' in resource.data) &&
+              request.resource.data.private.saved_addresses.size() == 0 &&
+              request.resource.data.private.order_history.size() == 0)
+          );
+      }
+
+      allow get: if isOwner(userId) && isValidCustomerProfile(resource.data);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidCustomerProfile(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        validCustomerSelfChange() &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }
     // ===============================================================
-    // Public Driver capability
+    // Driver capability
     // ===============================================================
-    function isValidPublicDriver(data) {
+    function isValidDriverProfile(data) {
       return data.keys().hasAll([
+          'kind',
           'title',
           'subtitle',
           'tagline',
@@ -2020,6 +1852,7 @@ service cloud.firestore {
           'updated'
         ]) &&
         data.keys().hasOnly([
+          'kind',
           'title',
           'subtitle',
           'tagline',
@@ -2028,6 +1861,7 @@ service cloud.firestore {
           'created',
           'updated'
         ]) &&
+        data.kind == 'driver' &&
         data.title is string && data.title.size() <= 120 &&
         data.subtitle is string && data.subtitle.size() <= 240 &&
         data.tagline is string && data.tagline.size() <= 240 &&
@@ -2051,16 +1885,16 @@ service cloud.firestore {
         validUpdatedStamp(data.updated);
     }
 
-    match /drivers/{userId} {
+    match /users/{userId}/profiles/driver {
       allow get: if isOwner(userId) ||
-        (isValidPublicDriver(resource.data) &&
-          hasValidCanonicalUserProfile(userId, 'driver'));
-      // Public Driver listing is projected by /api/public/drivers.
+        (isValidDriverProfile(resource.data) &&
+          hasValidCanonicalUser(userId));
+      // Driver directory listing is projected by the trusted Driver API.
       allow list: if false;
       // Trusted profile provisioning creates the root profile document.
       allow create: if false;
       allow update: if isOwner(userId) &&
-        isValidPublicDriver(request.resource.data) &&
+        isValidDriverProfile(request.resource.data) &&
         request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'title',
@@ -2075,15 +1909,53 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Root Customer records and their order-link children are server-only.
-    match /customers/{document=**} {
-      allow get, list, create, update, delete: if false;
-    }
+    match /users/{userId}/profiles/driver/app-state/{appId} {
+      function isValidDriverAppState(data) {
+        return data.keys().hasAll([
+            'profile_kind', 'app_id', 'driver_phone',
+            'accepts_weak_pings', 'accepts_delivery_tenders',
+            'active_kitchen_ids', 'kitchen_links', 'created', 'updated'
+          ]) &&
+          data.keys().hasOnly([
+            'profile_kind', 'app_id', 'driver_phone',
+            'accepts_weak_pings', 'accepts_delivery_tenders',
+            'active_kitchen_ids', 'kitchen_links', 'created', 'updated'
+          ]) &&
+          data.profile_kind == 'driver' &&
+          data.app_id == appId &&
+          validOptionalText(data, 'driver_phone', 40) &&
+          data.accepts_weak_pings is bool &&
+          data.accepts_delivery_tenders is bool &&
+          validOptionalList(data, 'active_kitchen_ids', 50) &&
+          validOptionalList(data, 'kitchen_links', 50) &&
+          validCreatedStamp(data.created) &&
+          data.created.app_id == appId &&
+          validUpdatedStamp(data.updated);
+      }
 
+      allow get: if isOwner(userId) && isAppMember(appId) &&
+        isValidDriverAppState(resource.data);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isAppMember(appId) &&
+        isValidDriverAppState(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.profile_kind == resource.data.profile_kind &&
+        request.resource.data.app_id == resource.data.app_id &&
+        request.resource.data.active_kitchen_ids == resource.data.active_kitchen_ids &&
+        request.resource.data.kitchen_links == resource.data.kitchen_links &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'driver_phone',
+          'accepts_weak_pings',
+          'accepts_delivery_tenders',
+          'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }
     // ===============================================================
-    // Other public identity profiles
+    // Other identity profiles
     // ===============================================================
-    function validPublicProfileStamp(data) {
+    function validProfileStamp(data) {
       return validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }
@@ -2097,8 +1969,9 @@ service cloud.firestore {
     }
 
     function isValidChef(data) {
-      return data.keys().size() == 10 &&
+      return data.keys().size() == 11 &&
         data.keys().hasAll([
+          'kind',
           'title',
           'summary',
           'chef_bio',
@@ -2110,6 +1983,7 @@ service cloud.firestore {
           'created',
           'updated'
         ]) &&
+        data.kind == 'chef' &&
         isValidBoundedString(data.title, 120) &&
         isValidBoundedString(data.summary, 1000) &&
         isValidBoundedString(data.chef_bio, 4000) &&
@@ -2123,8 +1997,9 @@ service cloud.firestore {
     }
 
     function isValidAgent(data) {
-      return data.keys().size() == 14 &&
+      return data.keys().size() == 15 &&
         data.keys().hasAll([
+          'kind',
           'title',
           'summary',
           'agent_bio',
@@ -2140,6 +2015,7 @@ service cloud.firestore {
           'created',
           'updated'
         ]) &&
+        data.kind == 'agent' &&
         isValidBoundedString(data.title, 120) &&
         isValidBoundedString(data.summary, 1000) &&
         isValidBoundedString(data.agent_bio, 4000) &&
@@ -2157,8 +2033,9 @@ service cloud.firestore {
     }
 
     function isValidProfessional(data) {
-      return data.keys().size() == 17 &&
+      return data.keys().size() == 18 &&
         data.keys().hasOnly([
+          'kind',
           'title',
           'subtitle',
           'tagline',
@@ -2177,6 +2054,7 @@ service cloud.firestore {
           'created',
           'updated'
         ]) &&
+        data.kind == 'professional' &&
         isValidBoundedString(data.title, 120) &&
         isValidBoundedString(data.subtitle, 240) &&
         isValidBoundedString(data.tagline, 240) &&
@@ -2208,7 +2086,7 @@ service cloud.firestore {
           data.education.size() +
           data.volunteering.size() +
           data.projects.size() <= 24 &&
-        validPublicProfileStamp(data);
+        validProfileStamp(data);
     }
 
     function changesAtMostOneProfessionalStructuredFamily(changed) {
@@ -2292,8 +2170,8 @@ service cloud.firestore {
         validProfileOwnerWrite(data, userId);
     }
 
-    match /chefs/{userId} {
-      // Public Chef list/detail reads use /api/public/chefs projections.
+    match /users/{userId}/profiles/chef {
+      // Chef directory and detail reads use trusted Entity APIs.
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates
@@ -2306,8 +2184,8 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    match /agents/{userId} {
-      // Public Agent list/detail reads use /api/public/agents projections.
+    match /users/{userId}/profiles/agent {
+      // Agent directory and detail reads use trusted Entity APIs.
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates
@@ -2320,8 +2198,8 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    match /professionals/{userId} {
-      // Public Professional list/detail reads use API projections.
+    match /users/{userId}/profiles/professional {
+      // Professional directory and detail reads use trusted Entity APIs.
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates

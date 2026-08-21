@@ -21,8 +21,6 @@ import {
   type JobContractType,
   type JobManagementMode,
 } from '../../../models/job.model.ts'
-import { AppProfessionalStorage } from '../../../../models/profiles/Professional/Professional.model.ts'
-import { AppAgentStorage } from '../../../../models/profiles/Agent/Agent.model.ts'
 import { canonicalJobRoot } from '../../core/validation.ts'
 
 export const APPLICATION_LIMIT = 100
@@ -73,20 +71,12 @@ export function appRef(db: FirebaseFirestore.Firestore, appId: string) {
   return db.doc(`apps/${appId}`)
 }
 
-export function appProfessionalRef(
+export function userProfileRef(
   db: FirebaseFirestore.Firestore,
-  appId: string,
-  uid: string
+  uid: string,
+  kind: 'agent' | 'professional'
 ) {
-  return db.doc(`apps/${appId}/${AppProfessionalStorage.collection}/${uid}`)
-}
-
-export function appAgentRef(
-  db: FirebaseFirestore.Firestore,
-  appId: string,
-  uid: string
-) {
-  return db.doc(`apps/${appId}/${AppAgentStorage.collection}/${uid}`)
+  return db.doc(`users/${uid}/profiles/${kind}`)
 }
 
 export function isCurrentMembership(snapshot: DocumentSnapshot): boolean {

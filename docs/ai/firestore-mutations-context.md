@@ -1,7 +1,7 @@
 # Firestore mutation GPT context
 
-Updated: 2026-08-18
-Ref: 1fca9417e
+Updated: 2026-08-21
+Ref: d1a7d5eec
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
 
@@ -20,10 +20,10 @@ upsert, write, arbitrary collection strings, and caller-selected database ids
 are not consumer APIs. Domain transactions use the guarded Server transaction
 interface.
 
-Customer Order links follow their Customer profile scope at
-`apps/{appId}/customers/{userId}/orders/{orderId}`. Their Server target derives
-the App and User ids explicitly; a root `customers/{userId}/orders` bucket is
-not another supported write target.
+Registered-customer Order links are User-owned records at
+`users/{userId}/orders/{orderId}`. Their Server target derives the User id and
+the canonical App/Kitchen Order explicitly. Guest customer details remain on
+the Order and never create another Customer identity.
 
 Typed mutation targets own database placement, collection path, allowed verbs,
 and access lane. `(default)` contains only the bounded metadata projections
@@ -51,6 +51,12 @@ media synchronization, or App-admin presentation edits. `(default)` remains
 closed to Client writes. The Server path derives its fixed App id, database,
 Project, Ecosystem, and role from runtime configuration and the canonical App;
 the browser never selects those targets.
+
+Workspace mutation targets are owner-first. Project, Kitchen, Supplier,
+Portfolio, Property, and Marketplace Store own their Team, Team requests,
+operations, and protected support beneath their root record. App-nested
+Workspace records and `users/{uid}/private/targets` are migration sources only;
+they are not additional target authorities or supported destinations.
 
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
@@ -80,6 +86,21 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `scripts/align-user-app-onboarding.mjs`; its `project` family aligns existing
   canonical Projects with their local ProjectMeta records through a dry-run
   plan, confirmation hash, protected pre-image, and post-write verification.
+- Entity storage cutover:
+  `scripts/migrate-firestore-entity-canon.mjs` plans the root Workspace,
+  User-owned Profile, Marketplace Store, and legacy FireUX Product moves one
+  ecosystem at a time. Copy and retirement are separate confirmed phases and
+  both require the retained managed-export URI plus a protected local plan
+  artifact. Its protected read-only evidence binds a current zero-copy plan to
+  the retained export without creating a migration-marker collection.
+  Retirement is disabled until every canonical target verifies and the
+  matching runtime has been released.
+- Small-ecosystem Rules release:
+  `scripts/deploy-workspace-firestore-rules.mjs` compiles and compares the
+  FireUX, Granite, and BuenoHost named-database Rules. Promotion accepts only
+  fresh Entity evidence, exact source confirmation, and a protected release
+  preimage. Misebox and Werkbox retain their ecosystem-specific adversarial
+  release tools.
 - Executable enforcement and the frozen pre-spine debt inventory:
   `scripts/guards/firestore-mutations.mjs`
 

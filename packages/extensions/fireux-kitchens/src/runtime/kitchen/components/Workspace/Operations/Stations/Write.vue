@@ -40,12 +40,8 @@ import { computed, ref } from 'vue'
 import { useKitchenWorkspaceStations } from '../../../../composables/workspace/operations/Stations/useKitchenWorkspaceStations'
 import { useKitchenStationCreate } from '../../../../composables/workspace/operations/Stations/mutations/useKitchenStationCreate'
 
-const {
-  kitchenId,
-  rootCollection,
-  canWrite,
-  stations,
-} = useKitchenWorkspaceStations()
+const { kitchenId, rootCollection, canWrite, stations } =
+  useKitchenWorkspaceStations()
 const { createKitchenStation } = useKitchenStationCreate()
 
 const name = ref('')
@@ -77,7 +73,9 @@ const addStation = async () => {
     name.value = ''
     message.value = `Added ${stationId}.`
   } catch (error) {
-    message.value = String((error as any)?.message || error || 'Add station failed.')
+    message.value = String(
+      (error as any)?.message || error || 'Add station failed.'
+    )
   } finally {
     saving.value = false
   }

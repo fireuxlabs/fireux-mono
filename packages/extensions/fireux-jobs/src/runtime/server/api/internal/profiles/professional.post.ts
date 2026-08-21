@@ -2,20 +2,13 @@
 
 import { createProfileProvisionHandler } from 'fireux-core/runtime/server/utils/profile/provision'
 import {
-  AppProfessionalStorage,
   createProfessionalProfileSeed,
-  ProfessionalStorage,
 } from '../../../../models/profiles/Professional/Professional.model.ts'
 
 export default createProfileProvisionHandler({
-  id: 'professional',
+  kind: 'professional',
   label: 'Professional',
-  root: {
-    collection: ProfessionalStorage.rootCollection,
+  profile: {
     seed: createProfessionalProfileSeed,
-  },
-  app: {
-    collection: AppProfessionalStorage.collection,
-    seed: () => ({}),
   },
 })

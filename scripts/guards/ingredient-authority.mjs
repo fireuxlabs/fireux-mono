@@ -68,9 +68,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${ingredientBase}models/ingredient-food-group.ts`
   )
-  const publicProjection = read(
+  const ingredientNormalizer = read(
     repoRoot,
-    `${ingredientBase}server/public-projection.ts`
+    `${ingredientBase}server/normalize.ts`
   )
   const curation = [
     'curation.ts',
@@ -88,11 +88,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${runtimeBase}server/api/internal/ingredients/index.get.ts`
   )
-  const publicIndex = read(
+  const directoryApi = read(
     repoRoot,
     `${runtimeBase}server/api/ingredients/index.get.ts`
   )
-  const publicDetail = read(
+  const detailApi = read(
     repoRoot,
     `${runtimeBase}server/api/ingredients/[id].get.ts`
   )
@@ -172,7 +172,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   for (const [label, source] of [
     ['Ingredient model', model],
-    ['Ingredient public projection', publicProjection],
+    ['Ingredient normalizer', ingredientNormalizer],
     ['Ingredient curator', curation],
   ]) {
     assert.doesNotMatch(
@@ -206,18 +206,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     update,
     /\$fetch(?:<[^>]+>)?\(\s*`\/api\/internal\/ingredients\/\$\{encodeURIComponent\(/
   )
-  assert.match(publicIndex, /\bgetRuntimeFirestore\s*\(/)
-  assert.match(publicIndex, /\bprojectPublicIngredient\b/)
-  assert.match(publicIndex, /item\?\.status === 'active'/)
-  assert.match(publicIndex, /MAX_EXACT_IDS\s*=\s*100/)
-  assert.match(publicDetail, /\bgetRuntimeFirestore\s*\(/)
-  assert.match(publicDetail, /\bprojectPublicIngredient\b/)
+  assert.match(directoryApi, /\bgetRuntimeFirestore\s*\(/)
+  assert.match(directoryApi, /\bnormalizeIngredient\b/)
+  assert.match(directoryApi, /item\?\.status === 'active'/)
+  assert.match(directoryApi, /MAX_EXACT_IDS\s*=\s*100/)
+  assert.match(detailApi, /\bgetRuntimeFirestore\s*\(/)
+  assert.match(detailApi, /\bnormalizeIngredient\b/)
   assert.doesNotMatch(
-    `${publicIndex}\n${publicDetail}`,
+    `${directoryApi}\n${detailApi}`,
     /firebase\/firestore/,
-    'Ingredient public APIs must use the trusted Admin boundary.'
+    'Ingredient APIs must use the trusted Admin boundary.'
   )
-  assert.match(publicProjection, /schema_version:\s*2/)
+  assert.match(ingredientNormalizer, /schema_version:\s*2/)
+  assert.doesNotMatch(
+    `${ingredientNormalizer}\n${directoryApi}\n${detailApi}\n${collection}\n${detail}`,
+    /PublicIngredient|ingredient-public|public-projection|public-ingredient/
+  )
   assert.match(curation, /return\s*{\s*id,\s*schema_version:\s*2/)
   assert.match(curation, /assertUniqueActiveIngredientIdentity/)
   assert.match(curation, /candidateTerms/)
@@ -346,9 +350,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(rootIngredient, /match \/\{nested=\*\*\}/)
 
-  const appKitchen = balancedBlock(rules, 'match /kitchens/{kitchenId}', 1)
+  const rootKitchen = balancedBlock(rules, 'match /kitchens/{kitchenId}')
   const scopedIngredient = balancedBlock(
-    appKitchen,
+    rootKitchen,
     'match /ingredients/{ingredientId}'
   )
   for (const token of [
@@ -356,7 +360,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     "data.keys().hasOnly([\n                'ingredient_id',\n                'created',\n                'updated'",
     'data.ingredient_id == ingredientId',
     "data.created.keys().hasAll(['at', 'by', 'app_id'])",
-    'data.created.app_id == appId',
+    'data.created.app_id == workspaceManagementAppId(',
+    "workspaceRootPath('kitchens', kitchenId)",
     "data.updated.keys().hasAll(['at', 'by'])",
     '/documents/ingredients/$(ingredientId)',
     ".data.status == 'active'",
@@ -374,11 +379,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   assert.match(
     scopedIngredient,
-    /allow create: if \(isAppAdmin\(appId\) \|\|[\s\S]*isTargetOperator\(appId, 'kitchens', kitchenId\)\)[\s\S]*hasActiveCanonicalIngredient\(\)/
+    /allow create: if \(canOperateWorkspace\('kitchens', kitchenId\)\)[\s\S]*hasActiveCanonicalIngredient\(\)/
   )
   assert.match(
     scopedIngredient,
-    /allow delete: if isAppAdmin\(appId\) \|\|[\s\S]*isTargetOperator\(appId, 'kitchens', kitchenId\);/
+    /allow delete: if canOperateWorkspace\('kitchens', kitchenId\);/
   )
   const scopedNested = balancedBlock(scopedIngredient, 'match /{nested=**}')
   assert.match(
@@ -387,7 +392,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   const genericChild = balancedBlock(
-    appKitchen,
+    rootKitchen,
     'match /{childCollection}/{childId}'
   )
   const genericNestedIndex = genericChild.indexOf('match /{nested=**}')

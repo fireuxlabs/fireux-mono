@@ -13,13 +13,12 @@ import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type { Ref } from 'vue'
 import type {
   Professional,
-  PublicProfessionalDirectoryProfile,
+  ProfessionalDirectoryProfile,
 } from '../../../../../../../models/profiles/Professional/Professional.model'
-import { professionalConfig } from '../../config/professionalConfig'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>
-type ProfessionalTarget = PublicProfessionalDirectoryProfile
+type ProfessionalTarget = ProfessionalDirectoryProfile
 
 export namespace ProfessionalCard {
   export type Card = {
@@ -67,7 +66,7 @@ export function useProfessionalInterface(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
   ): ProfessionalCard.Card | null {
-    const p = target ?? profileRefs?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.profile?.value ?? null
     if (!p) return null
 
     const user = userOverride ?? userRef?.value ?? null
@@ -93,7 +92,7 @@ export function useProfessionalInterface(
       id,
       to:
         explicitTo ||
-        `/${professionalConfig.collectionName}/${encodeURIComponent(routeKey)}`,
+        `/professionals/${encodeURIComponent(routeKey)}`,
       imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,

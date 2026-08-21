@@ -1,32 +1,12 @@
 // @fireux-ecosystem-rules-fragment misebox/kitchen-operations
-      match /kitchens/{kitchenId} {
-        function hasBoundedKitchenAuthority() {
-          return request.resource.data.operator_ids is list &&
-            request.resource.data.operator_ids.size() <= 50 &&
-            request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100 &&
-            request.resource.data.join_requests is list &&
-            request.resource.data.join_requests.size() <= 100;
-        }
+    match /kitchens/{kitchenId} {
+        allow get: if canReadWorkspace('kitchens', kitchenId);
+        allow list, create, update, delete: if false;
 
-        function kitchenAuthorityUnchanged() {
-          return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids &&
-            request.resource.data.join_requests == resource.data.join_requests;
+        match /team/{userId} {
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create, update, delete: if false;
         }
-
-        allow get: if isAppAdmin(appId) ||
-          isTargetMember(appId, 'kitchens', kitchenId);
-        allow list: if isAppAdmin(appId) || isResourceTargetMember(appId);
-        allow create: if isAppAdmin(appId) &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedKitchenAuthority();
-        allow update: if request.resource.data.keys().size() <= 100 &&
-          hasBoundedKitchenAuthority() &&
-          (isAppAdmin(appId) ||
-            (isTargetOperator(appId, 'kitchens', kitchenId) &&
-              kitchenAuthorityUnchanged()));
-        allow delete: if false;
 
         match /ingredients/{ingredientId} {
           function isValidKitchenIngredient(data) {
@@ -46,7 +26,9 @@
               validCreatedStamp(data.created) &&
               data.created.keys().hasAll(['at', 'by', 'app_id']) &&
               data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
-              data.created.app_id == appId &&
+              data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
               validUpdatedStamp(data.updated) &&
               data.updated.keys().hasAll(['at', 'by']) &&
               data.updated.keys().hasOnly(['at', 'by']);
@@ -61,18 +43,15 @@
               ).data.status == 'active';
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidKitchenIngredient(request.resource.data) &&
             hasActiveCanonicalIngredient() &&
             request.resource.data.ingredient_id == resource.data.ingredient_id &&
@@ -84,8 +63,7 @@
             request.resource.data.updated.by == request.auth.uid;
           // Removing a stale selection remains possible after its canonical
           // root is deprecated or merged.
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
           match /{nested=**} {
             allow get, list, create, update, delete: if false;
@@ -93,13 +71,12 @@
         }
 
         match /orders/{orderId} {
-          allow get, list: if isTargetOperator(appId, 'kitchens', kitchenId);
+          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
           allow create, update, delete: if false;
         }
 
         match /sales/{saleId} {
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow get, list: if canOperateWorkspace('kitchens', kitchenId);
           allow create, update, delete: if false;
         }
 
@@ -119,18 +96,17 @@
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidDish(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -139,8 +115,7 @@
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
         }
 
         match /recipes/{recipeId} {
@@ -158,18 +133,17 @@
               validUpdatedStamp(data.updated);
           }
 
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.created.at == request.time &&
             request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+                get(workspaceRootPath('kitchens', kitchenId)).data
+              ) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             isValidRecipe(request.resource.data) &&
             request.resource.data.kitchen_id == resource.data.kitchen_id &&
             request.resource.data.created == resource.data.created &&
@@ -179,19 +153,15 @@
             ]) &&
             request.resource.data.updated.at == request.time &&
             request.resource.data.updated.by == request.auth.uid;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
         }
 
         match /menus/{menuId} {
-          allow get, list: if isAppAdmin(appId) ||
-            isTargetMember(appId, 'kitchens', kitchenId);
-          allow create, update: if (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+          allow get, list: if canReadWorkspace('kitchens', kitchenId);
+          allow create, update: if (canOperateWorkspace('kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100 &&
             request.resource.data.kitchen_id == kitchenId;
-          allow delete: if isAppAdmin(appId) ||
-            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
           match /sections/{sectionId} {
             function hasValidMenuSectionScope(data) {
@@ -201,18 +171,14 @@
                 data.menu_id == menuId;
             }
 
-            allow get, list: if isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId);
-            allow create: if (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            allow get, list: if canReadWorkspace('kitchens', kitchenId);
+            allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data);
-            allow update: if (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
               hasValidMenuSectionScope(request.resource.data) &&
               request.resource.data.kitchen_id == resource.data.kitchen_id &&
               request.resource.data.menu_id == resource.data.menu_id;
-            allow delete: if isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId);
+            allow delete: if canOperateWorkspace('kitchens', kitchenId);
 
             match /items/{itemId} {
               function hasValidMenuItemScope(data) {
@@ -223,24 +189,20 @@
                   data.section_id == sectionId &&
                   isValidFirestoreDocumentId(data.dish_id) &&
                   exists(
-                    /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)/dishes/$(data.dish_id)
+                    /databases/$(database)/documents/kitchens/$(kitchenId)/dishes/$(data.dish_id)
                   );
               }
 
-              allow get, list: if isAppAdmin(appId) ||
-                isTargetMember(appId, 'kitchens', kitchenId);
-              allow create: if (isAppAdmin(appId) ||
-                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              allow get, list: if canReadWorkspace('kitchens', kitchenId);
+              allow create: if (canOperateWorkspace('kitchens', kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data);
-              allow update: if (isAppAdmin(appId) ||
-                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              allow update: if (canOperateWorkspace('kitchens', kitchenId)) &&
                 hasValidMenuItemScope(request.resource.data) &&
                 request.resource.data.kitchen_id == resource.data.kitchen_id &&
                 request.resource.data.menu_id == resource.data.menu_id &&
                 request.resource.data.section_id == resource.data.section_id &&
                 request.resource.data.dish_id == resource.data.dish_id;
-              allow delete: if isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId);
+              allow delete: if canOperateWorkspace('kitchens', kitchenId);
             }
 
             match /{nested=**} {
@@ -265,102 +227,28 @@
               'mise-tasks',
               'menus',
               'orders',
-              'sales'
+              'private',
+              'sales',
+              'team'
             ]);
           }
 
           allow get, list: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
+            (canReadWorkspace('kitchens', kitchenId));
           allow create, update: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            (canOperateWorkspace('kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if isGenericKitchenChildCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+            (canOperateWorkspace('kitchens', kitchenId));
 
           match /{nested=**} {
             allow get, list: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetMember(appId, 'kitchens', kitchenId));
+              (canReadWorkspace('kitchens', kitchenId));
             allow create, update: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              (canOperateWorkspace('kitchens', kitchenId)) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if isGenericKitchenChildCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId));
-          }
-        }
-      }
-
-      // Workspace targets outside Kitchen use the same operator-owned shape.
-      match /{targetCollection}/{targetId} {
-        function isWorkspaceTargetCollection() {
-          return targetCollection in [
-            'suppliers'
-          ];
-        }
-
-        function hasBoundedTargetAuthority() {
-          return request.resource.data.operator_ids is list &&
-            request.resource.data.operator_ids.size() <= 50 &&
-            request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100 &&
-            request.resource.data.join_requests is list &&
-            request.resource.data.join_requests.size() <= 100;
-        }
-
-        function targetAuthorityUnchanged() {
-          return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids &&
-            request.resource.data.join_requests == resource.data.join_requests;
-        }
-
-        allow get: if isWorkspaceTargetCollection() &&
-          (isAppAdmin(appId) ||
-            isTargetMember(appId, targetCollection, targetId));
-        allow list: if isWorkspaceTargetCollection() &&
-          (isAppAdmin(appId) || isResourceTargetMember(appId));
-        allow create: if isWorkspaceTargetCollection() &&
-          isAppAdmin(appId) &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedTargetAuthority();
-        allow update: if isWorkspaceTargetCollection() &&
-          request.resource.data.keys().size() <= 100 &&
-          hasBoundedTargetAuthority() &&
-          (isAppAdmin(appId) ||
-            (isTargetOperator(appId, targetCollection, targetId) &&
-              targetAuthorityUnchanged()));
-        allow delete: if false;
-
-        // Use an explicit collection/document pair before the recursive tail.
-        // In rules_version 2 a recursive wildcard matches zero segments, so a
-        // direct /{nested=**} here would also bypass the support validator.
-        match /{childCollection}/{childId} {
-          allow get, list: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, targetCollection, targetId));
-          allow create, update: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, targetCollection, targetId)) &&
-            request.resource.data.keys().size() <= 100;
-          allow delete: if isWorkspaceTargetCollection() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, targetCollection, targetId));
-
-          match /{nested=**} {
-            allow get, list: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetMember(appId, targetCollection, targetId));
-            allow create, update: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, targetCollection, targetId)) &&
-              request.resource.data.keys().size() <= 100;
-            allow delete: if isWorkspaceTargetCollection() &&
-              (isAppAdmin(appId) ||
-                isTargetOperator(appId, targetCollection, targetId));
+              (canOperateWorkspace('kitchens', kitchenId));
           }
         }
       }

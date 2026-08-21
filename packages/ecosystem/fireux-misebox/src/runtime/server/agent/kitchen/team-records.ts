@@ -7,7 +7,7 @@ export async function readKitchenTeamToolMembers(
   request: Pick<KitchenAgentRequest, 'appId' | 'kitchenId'>
 ): Promise<KitchenTeamToolMember[]> {
   const snapshot = await access.db
-    .collection(`apps/${request.appId}/kitchens/${request.kitchenId}/team`)
+    .collection(`kitchens/${request.kitchenId}/team`)
     .limit(200)
     .get()
   return snapshot.docs.map((document) => ({

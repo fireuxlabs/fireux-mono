@@ -6,7 +6,9 @@
         <UButton
           :color="collectionSelected ? 'primary' : 'neutral'"
           :variant="collectionSelected ? 'solid' : 'outline'"
-          :icon="collectionSelected ? 'i-lucide-square-check-big' : 'i-lucide-square'"
+          :icon="
+            collectionSelected ? 'i-lucide-square-check-big' : 'i-lucide-square'
+          "
           :label="`Collection ${collectionCount}`"
           :disabled="!collectionCount"
           @click="$emit('toggle-collection')"
@@ -14,7 +16,9 @@
         <UButton
           :color="scheduledSelected ? 'primary' : 'neutral'"
           :variant="scheduledSelected ? 'solid' : 'outline'"
-          :icon="scheduledSelected ? 'i-lucide-square-check-big' : 'i-lucide-square'"
+          :icon="
+            scheduledSelected ? 'i-lucide-square-check-big' : 'i-lucide-square'
+          "
           :label="`Scheduled ${scheduledCount}`"
           :disabled="!scheduledCount"
           @click="$emit('toggle-scheduled')"

@@ -20,7 +20,7 @@ export function useKitchenStationCollection(
     options
   )
   const kitchenStations = computed(() =>
-    state.items.value.map(item => normalizeKitchenStation(item))
+    state.items.value.map((item) => normalizeKitchenStation(item))
   )
   const { byId: kitchenStation } = useCollectionById(kitchenStations)
 

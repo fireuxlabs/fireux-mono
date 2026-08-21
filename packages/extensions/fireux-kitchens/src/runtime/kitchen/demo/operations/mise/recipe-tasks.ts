@@ -3,10 +3,7 @@ import {
   deanosPartyMenuDemoIdentity,
   deanosXmasMenuDemoIdentity,
 } from '../../core/fixtures'
-import {
-  recipeMiseTask,
-  type DemoRecipeMiseTaskInput,
-} from './builders'
+import { recipeMiseTask, type DemoRecipeMiseTaskInput } from './builders'
 
 const deanosKitchenDemoRecipeTaskDefinitions: DemoRecipeMiseTaskInput[] = [
   {

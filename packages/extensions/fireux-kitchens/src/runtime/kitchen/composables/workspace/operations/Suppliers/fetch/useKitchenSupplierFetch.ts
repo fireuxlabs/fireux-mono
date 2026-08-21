@@ -66,16 +66,24 @@ export function useKitchenSupplierFetch(
 
   const collectionPath = computed(() =>
     isEnabled.value && resolvedKitchenId.value
-      ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
+      ? resolveKitchenCollectionPath(
+          kitchenCollectionPath.value,
+          resolvedKitchenId.value
+        )
       : ''
   )
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const supplierNetwork = useFetch<{ suppliers: Supplier[] }>('/api/supply/suppliers', {
-    key: 'bringli-suppliers',
-    immediate: isEnabled.value,
-  })
+  const supplierNetwork = useFetch<{ suppliers: Supplier[] }>(
+    '/api/supply/suppliers',
+    {
+      key: 'bringli-suppliers',
+      immediate: isEnabled.value,
+    }
+  )
 
-  const supplierLinks = computed<SupplierDoc[]>(() => supplierLinksRef.value ?? [])
+  const supplierLinks = computed<SupplierDoc[]>(
+    () => supplierLinksRef.value ?? []
+  )
   const networkSuppliers = computed<SupplierDoc[]>(
     () => (supplierNetwork.data.value?.suppliers ?? []) as SupplierDoc[]
   )
@@ -104,13 +112,18 @@ export function useKitchenSupplierFetch(
       const overlay = entry as SupplierDoc
       const overlayId = normalizeString((overlay as any).id)
       const supplierRefId = resolveSupplierReferenceId(overlay)
-      const canonical = supplierRefId ? canonicalSupplierById.value.get(supplierRefId) ?? null : null
+      const canonical = supplierRefId
+        ? (canonicalSupplierById.value.get(supplierRefId) ?? null)
+        : null
 
       const merged: SupplierDoc = {
         ...(canonical ?? {}),
         ...overlay,
         id: overlayId || supplierRefId,
-        kitchen_id: firstNonEmpty((overlay as any).kitchen_id, resolvedKitchenId.value),
+        kitchen_id: firstNonEmpty(
+          (overlay as any).kitchen_id,
+          resolvedKitchenId.value
+        ),
       }
 
       if (supplierRefId) {
@@ -138,9 +151,7 @@ export function useKitchenSupplierFetch(
   const pending = computed(() => {
     if (!isEnabled.value || !resolvedKitchenId.value) return false
 
-    return (
-      supplierLinksRef.value === undefined || supplierNetwork.pending.value
-    )
+    return supplierLinksRef.value === undefined || supplierNetwork.pending.value
   })
 
   return {

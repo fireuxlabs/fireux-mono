@@ -12,7 +12,7 @@ export function recoveredMenuOrderBasketLines(
   order: CustomerOrderSummary
 ): MenuOrderBasketLine[] {
   return order.items.map((item, index) => {
-    const addOns = item.add_ons.map(addOn => ({ ...addOn, priceLabel: '' }))
+    const addOns = item.add_ons.map((addOn) => ({ ...addOn, priceLabel: '' }))
     const addOnTotal = addOns.reduce((sum, addOn) => sum + addOn.price, 0)
     const variant = item.variant
       ? {
@@ -25,7 +25,7 @@ export function recoveredMenuOrderBasketLines(
       item.menu_id,
       item.id,
       variant?.id || 'base',
-      ...addOns.map(addOn => addOn.id),
+      ...addOns.map((addOn) => addOn.id),
     ])
 
     return {
@@ -46,7 +46,7 @@ export function createdMenuOrderBasketLines(
 ): MenuOrderBasketLine[] {
   return items.flatMap((item, index) => {
     const name = receiptItemName(item)
-    const addOns = (item.add_ons || []).map(addOn => ({
+    const addOns = (item.add_ons || []).map((addOn) => ({
       id: addOn.id,
       label: addOn.label,
       price: Number(addOn.price) || 0,
@@ -70,19 +70,21 @@ export function createdMenuOrderBasketLines(
       text(item.menu_id),
       itemId,
       variant?.id || 'base',
-      ...addOns.map(addOn => addOn.id),
+      ...addOns.map((addOn) => addOn.id),
     ])
 
-    return [{
-      id: `${configurationKey}:${index + 1}`,
-      configurationKey,
-      itemId,
-      name,
-      quantity: item.quantity,
-      unitPrice: item.unit_price_chf,
-      variant,
-      addOns,
-    }]
+    return [
+      {
+        id: `${configurationKey}:${index + 1}`,
+        configurationKey,
+        itemId,
+        name,
+        quantity: item.quantity,
+        unitPrice: item.unit_price_chf,
+        variant,
+        addOns,
+      },
+    ]
   })
 }
 
@@ -94,7 +96,8 @@ export function menuOrderWaitingFor(status: KitchenOrderStatus | undefined) {
     status === 'ready' ||
     status === 'cancelled' ||
     status === 'completed'
-  ) return 'customer'
+  )
+    return 'customer'
 
   return ''
 }
@@ -107,10 +110,12 @@ export function customerOrderRequestError(caught: unknown, fallback: string) {
       statusMessage?: unknown
     }
 
-    return text(source.data?.statusMessage) ||
+    return (
+      text(source.data?.statusMessage) ||
       text(source.statusMessage) ||
       text(source.message) ||
       fallback
+    )
   }
 
   return fallback
@@ -141,13 +146,19 @@ export const isTerminalMenuOrderStatus = (status: KitchenOrderStatus) =>
   status === 'completed' || status === 'cancelled' || status === 'trashed'
 
 export function isTransientCustomerOrderRequestFailure(caught: unknown) {
-  const source = caught && typeof caught === 'object'
-    ? caught as { status?: unknown, statusCode?: unknown }
-    : {}
+  const source =
+    caught && typeof caught === 'object'
+      ? (caught as { status?: unknown; statusCode?: unknown })
+      : {}
   const status = Number(source.statusCode || source.status)
 
-  return !Number.isFinite(status) || status === 0 || status === 408 ||
-    status === 429 || status >= 500
+  return (
+    !Number.isFinite(status) ||
+    status === 0 ||
+    status === 408 ||
+    status === 429 ||
+    status >= 500
+  )
 }
 
 const text = (value: unknown) => String(value ?? '').trim()

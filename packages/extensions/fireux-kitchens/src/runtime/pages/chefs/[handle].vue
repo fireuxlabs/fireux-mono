@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDetailSurface
+  <UserProfileDetailSurface
     entity-label="Chef"
     plural-label="Chefs"
     back-to="/chefs"
@@ -22,29 +22,29 @@
         </template>
       </ChefCardsProfile>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Chef (Public DTO)"
         context="Chef detail · chefs/[handle] · endpoint-first SSR"
         :objects="devPayload"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
       />
     </div>
-  </PublicProfileDetailSurface>
+  </UserProfileDetailSurface>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, setResponseStatus } from '#imports'
-import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
+import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useChefSeo } from '../../user/composables/chef/useChefSeo'
 import { useChefInterface } from '../../user/composables/chef/useChefInterface'
-import type { PublicChefProfilePayload } from '../../user/models/chef.model.ts'
+import type { ChefProfilePayload } from '../../user/models/chef.model.ts'
 
 definePageMeta({
   visibility: { profiles: ['chef'] },
@@ -61,7 +61,7 @@ const {
   missing,
   failed,
   outcome,
-} = await usePublicProfileDetail<PublicChefProfilePayload>(
+} = await useProfileDetail<ChefProfilePayload>(
   { collection: 'chefs', kind: 'chef' },
   requestedIdentifier
 )

@@ -48,7 +48,7 @@ export async function readKitchenFlagshipDish(
   }
 
   const collection = getRuntimeFirestore().collection(
-    `apps/${app}/kitchens/${kitchen}/${DishStorage.collection}`
+    `kitchens/${kitchen}/${DishStorage.collection}`
   )
   const [snapshot, dishesSnapshot] = await Promise.all([
     collection.where('is_flagship', '==', true).limit(2).get(),

@@ -65,12 +65,14 @@ const confirmResult = ref<Record<string, unknown> | null>(null)
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const records = (value: unknown) =>
   Array.isArray(value) ? value.map(record) : []
 const sourceDraft = computed(() => record(record(props.source).ai_draft))
-const uploadId = computed(() => text(record(props.source).id) || text(props.menuId))
+const uploadId = computed(
+  () => text(record(props.source).id) || text(props.menuId)
+)
 const resultDraft = computed(() => {
   const normalized = records(record(props.result?.normalized).sections)
   return normalized.length
@@ -106,8 +108,9 @@ const canConfirm = computed(() =>
       !pending.value
   )
 )
-const message = computed(() =>
-  text(confirmResult.value?.message) ||
+const message = computed(
+  () =>
+    text(confirmResult.value?.message) ||
     (alreadyApplied.value ? 'This menu draft has already been applied.' : '')
 )
 
@@ -154,9 +157,8 @@ async function confirmDraft() {
     confirmResult.value = payload as Record<string, unknown>
     emit('confirmed', confirmResult.value)
   } catch (cause) {
-    error.value = cause instanceof Error
-      ? cause.message
-      : 'Menu confirmation failed.'
+    error.value =
+      cause instanceof Error ? cause.message : 'Menu confirmation failed.'
   } finally {
     pending.value = false
   }

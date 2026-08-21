@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="useHomeSelector"
-    class="menu-choice-stack"
-  >
+  <div v-if="useHomeSelector" class="menu-choice-stack">
     <USelect
       class="menu-method-select"
       :model-value="modelValue"
@@ -15,18 +12,13 @@
   </div>
 
   <div
-    v-else-if="useCampSelector || useDineInOnlySelector || useTakeAwayOnlySelector"
+    v-else-if="
+      useCampSelector || useDineInOnlySelector || useTakeAwayOnlySelector
+    "
     class="menu-choice-stack"
   >
-    <div
-      v-if="useCampSelector"
-      class="menu-choice-row"
-      aria-label="Menu mode"
-    >
-      <template
-        v-for="camp in campOptions"
-        :key="camp.value"
-      >
+    <div v-if="useCampSelector" class="menu-choice-row" aria-label="Menu mode">
+      <template v-for="camp in campOptions" :key="camp.value">
         <UButton
           v-if="camp.option.to"
           :to="camp.option.to"
@@ -56,10 +48,7 @@
       role="radiogroup"
       :aria-label="methodSelectorLabel"
     >
-      <template
-        v-for="option in methodOptions"
-        :key="option.value"
-      >
+      <template v-for="option in methodOptions" :key="option.value">
         <UButton
           v-if="option.to"
           :to="option.to"
@@ -86,14 +75,8 @@
     </div>
   </div>
 
-  <div
-    v-else-if="options.length > 1"
-    class="menu-choice-row"
-  >
-    <template
-      v-for="option in options"
-      :key="option.value"
-    >
+  <div v-else-if="options.length > 1" class="menu-choice-row">
+    <template v-for="option in options" :key="option.value">
       <UButton
         v-if="option.to"
         :to="option.to"
@@ -151,25 +134,28 @@ type CampOption = {
 }
 
 const dineInOrderTypes = ['dine_in', 'pre_order', 'room_service'] as const
-const takeAwayOrderTypes = ['eat_in', 'takeaway', 'collection', 'delivery'] as const
+const takeAwayOrderTypes = [
+  'eat_in',
+  'takeaway',
+  'collection',
+  'delivery',
+] as const
 const homeOrderTypes = ['delivery', 'collection'] as const
 const isTakeAwayOption = (option: MenuChoiceOption) =>
-  takeAwayOrderTypes.includes(option.orderType as typeof takeAwayOrderTypes[number])
+  takeAwayOrderTypes.includes(
+    option.orderType as (typeof takeAwayOrderTypes)[number]
+  )
 const isDineInOption = (option: MenuChoiceOption) =>
   !option.orderType ||
-    dineInOrderTypes.includes(option.orderType as typeof dineInOrderTypes[number])
+  dineInOrderTypes.includes(
+    option.orderType as (typeof dineInOrderTypes)[number]
+  )
 const isHomeOption = (option: MenuChoiceOption) =>
-  homeOrderTypes.includes(option.orderType as typeof homeOrderTypes[number])
+  homeOrderTypes.includes(option.orderType as (typeof homeOrderTypes)[number])
 
-const dineInOptions = computed(() =>
-  props.options.filter(isDineInOption)
-)
-const takeAwayOptions = computed(() =>
-  props.options.filter(isTakeAwayOption)
-)
-const homeOptions = computed(() =>
-  props.options.filter(isHomeOption)
-)
+const dineInOptions = computed(() => props.options.filter(isDineInOption))
+const takeAwayOptions = computed(() => props.options.filter(isTakeAwayOption))
+const homeOptions = computed(() => props.options.filter(isHomeOption))
 const homeSelectOptions = computed(() =>
   homeOptions.value.map((option) => ({
     label: methodOptionLabel(option),
@@ -177,8 +163,9 @@ const homeSelectOptions = computed(() =>
     to: option.to,
   }))
 )
-const useHomeSelector = computed(() =>
-  homeOptions.value.length > 1 &&
+const useHomeSelector = computed(
+  () =>
+    homeOptions.value.length > 1 &&
     homeOptions.value.length === props.options.length
 )
 const currentOption = computed(() =>
@@ -190,26 +177,30 @@ const currentTakeAwayOption = computed(() =>
 const currentDineInOption = computed(() =>
   dineInOptions.value.find((option) => option.value === props.modelValue)
 )
-const selectedDineInOption = computed(() =>
-  currentDineInOption.value ||
+const selectedDineInOption = computed(
+  () =>
+    currentDineInOption.value ||
     dineInOptions.value.find((option) => !option.to) ||
     dineInOptions.value[0]
 )
-const selectedTakeAwayOption = computed(() =>
-  currentTakeAwayOption.value ||
+const selectedTakeAwayOption = computed(
+  () =>
+    currentTakeAwayOption.value ||
     takeAwayOptions.value.find((option) => !option.to) ||
     takeAwayOptions.value[0]
 )
 const useCampSelector = computed(() =>
   Boolean(selectedDineInOption.value && selectedTakeAwayOption.value)
 )
-const useDineInOnlySelector = computed(() =>
-  !useCampSelector.value &&
+const useDineInOnlySelector = computed(
+  () =>
+    !useCampSelector.value &&
     dineInOptions.value.length > 1 &&
     dineInOptions.value.length === props.options.length
 )
-const useTakeAwayOnlySelector = computed(() =>
-  !useCampSelector.value &&
+const useTakeAwayOnlySelector = computed(
+  () =>
+    !useCampSelector.value &&
     takeAwayOptions.value.length > 1 &&
     takeAwayOptions.value.length === props.options.length
 )
@@ -233,7 +224,9 @@ const campOptions = computed<CampOption[]>(() => {
       value: 'dine_in',
       label: dineInOptions.value.some((option) =>
         ['pre_order', 'room_service'].includes(String(option.orderType || ''))
-      ) ? 'Dining / room' : 'Table service',
+      )
+        ? 'Dining / room'
+        : 'Table service',
       option: selectedDineInOption.value,
     })
   }
@@ -242,33 +235,36 @@ const campOptions = computed<CampOption[]>(() => {
       value: 'takeaway',
       label: takeAwayOptions.value.some((option) =>
         ['collection', 'delivery'].includes(String(option.orderType || ''))
-      ) ? 'Collection / delivery' : 'Counter order',
+      )
+        ? 'Collection / delivery'
+        : 'Counter order',
       option: selectedTakeAwayOption.value,
     })
   }
 
   return options
 })
-const showTakeAwaySelector = computed(() =>
-  takeAwayOptions.value.length > 1 &&
+const showTakeAwaySelector = computed(
+  () =>
+    takeAwayOptions.value.length > 1 &&
     (activeCamp.value === 'takeaway' || useTakeAwayOnlySelector.value)
 )
-const showDineInSelector = computed(() =>
-  dineInOptions.value.length > 1 &&
+const showDineInSelector = computed(
+  () =>
+    dineInOptions.value.length > 1 &&
     (activeCamp.value === 'dine_in' || useDineInOnlySelector.value)
 )
 const methodOptions = computed(() =>
-  activeCamp.value === 'takeaway'
-    ? takeAwayOptions.value
-    : dineInOptions.value
+  activeCamp.value === 'takeaway' ? takeAwayOptions.value : dineInOptions.value
 )
 const showMethodSelector = computed(() =>
   activeCamp.value === 'takeaway'
     ? showTakeAwaySelector.value
     : showDineInSelector.value
 )
-const hasKioskModes = computed(() =>
-  methodOptions.value.some((option) => option.orderType === 'eat_in') ||
+const hasKioskModes = computed(
+  () =>
+    methodOptions.value.some((option) => option.orderType === 'eat_in') ||
     methodOptions.value.some((option) => option.orderType === 'takeaway')
 )
 const methodSelectorLabel = computed(() => {

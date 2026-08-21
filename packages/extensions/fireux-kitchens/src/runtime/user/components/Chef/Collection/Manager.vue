@@ -78,14 +78,14 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Chefs (JSON)'"
         context="collection manager · chefs"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -104,9 +104,9 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/chef/useChefInterface'
-import type { PublicChefDirectoryProfile } from '../../../models/chef.model.ts'
+import type { ChefDirectoryProfile } from '../../../models/chef.model.ts'
 
-type ChefEntry = PublicChefDirectoryProfile
+type ChefEntry = ChefDirectoryProfile
 
 const props = withDefaults(
   defineProps<{

@@ -36,7 +36,9 @@
             <span v-else class="italic">missing</span>
           </div>
           <div v-if="item.id" class="preview__meta">
-            <span class="break-all font-mono text-xs text-dimmed">{{ item.id }}</span>
+            <span class="break-all font-mono text-xs text-dimmed">{{
+              item.id
+            }}</span>
           </div>
         </div>
       </div>
@@ -56,18 +58,21 @@ type EcosystemPreviewItem = {
   imageUrl?: string
 }
 
-const props = withDefaults(defineProps<{
-  item?: EcosystemPreviewItem
-}>(), {
-  item: () => ({
-    id: '',
-    name: '',
-    description: '',
-    status: '',
-    appCount: 0,
-    imageUrl: '',
-  }),
-})
+const props = withDefaults(
+  defineProps<{
+    item?: EcosystemPreviewItem
+  }>(),
+  {
+    item: () => ({
+      id: '',
+      name: '',
+      description: '',
+      status: '',
+      appCount: 0,
+      imageUrl: '',
+    }),
+  }
+)
 
 const item = computed(() => ({
   id: props.item?.id || '',

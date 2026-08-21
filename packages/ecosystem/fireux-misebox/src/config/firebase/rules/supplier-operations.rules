@@ -1,0 +1,40 @@
+// @fireux-ecosystem-rules-fragment misebox/supplier-operations
+    match /suppliers/{supplierId} {
+      allow get: if canReadWorkspace('suppliers', supplierId);
+      allow list, create, update, delete: if false;
+
+      match /team/{userId} {
+        allow get, list: if canReadWorkspace('suppliers', supplierId);
+        allow create, update, delete: if false;
+      }
+
+      // Supplier owns its Catalogue, Ingredients, and Items operations. Their
+      // concrete records remain domain-shaped while authority stays on Team.
+      match /{operationCollection}/{recordId} {
+        function isSupplierOperation() {
+          return operationCollection in [
+            'catalogue',
+            'ingredients',
+            'items'
+          ];
+        }
+
+        allow get, list: if isSupplierOperation() &&
+          (canReadWorkspace('suppliers', supplierId));
+        allow create, update: if isSupplierOperation() &&
+          (canOperateWorkspace('suppliers', supplierId)) &&
+          request.resource.data.keys().size() <= 100;
+        allow delete: if isSupplierOperation() &&
+          (canOperateWorkspace('suppliers', supplierId));
+
+        match /{nested=**} {
+          allow get, list: if isSupplierOperation() &&
+            (canReadWorkspace('suppliers', supplierId));
+          allow create, update: if isSupplierOperation() &&
+            (canOperateWorkspace('suppliers', supplierId)) &&
+            request.resource.data.keys().size() <= 100;
+          allow delete: if isSupplierOperation() &&
+            (canOperateWorkspace('suppliers', supplierId));
+        }
+      }
+    }

@@ -1,12 +1,10 @@
-// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: expose separate root and App profile mutation authorities.
 import { useFireUXConfig } from '../../../../../../app/composables/config/FireUXConfig'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type { ProfileRefs } from '../fetch/useProfileFetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
-import { AppStorage } from '../../../../../../app/models/app.model.ts'
 import type {
-  AppProfileBase,
+  ProfileAppStateBase,
   ProfileRecord,
 } from '../../../../../../models/utils/profile.model'
 
@@ -14,9 +12,8 @@ function useProfileMutationIdentity<
   TCore extends ProfileRecord,
   TApp extends ProfileRecord,
 >(profile?: ProfileRefs<TCore, TApp> | null) {
-  const { appId, role } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const hasAppScope = Boolean(appId)
-  const isTenant = role === 'tenant' && Boolean(appId)
 
   const pruneUndefined = <T extends Record<string, any>>(
     payload: Partial<T>
@@ -42,22 +39,21 @@ function useProfileMutationIdentity<
     )
 
   const resolveUid = async (
-    collectionName: string,
+    kind: string,
     explicit?: string | null
   ): Promise<string> => {
     const trimmed = explicit?.trim()
-    const fromRefs =
-      profile?.coreProfile?.value?.id ?? profile?.appProfile?.value?.id ?? null
+    const fromRefs = profile?.profile?.value?.id ?? null
     const user = await useRequireUser()
     if (!user?.uid) {
       throw new Error(
-        `[useProfileUpdateBase] Unable to resolve id for collection "${collectionName}"`
+        `[useProfileUpdateBase] Unable to resolve User id for profile "${kind}".`
       )
     }
     const resolved = trimmed || fromRefs?.trim() || user.uid
     if (resolved !== user.uid) {
       throw new Error(
-        `[useProfileUpdateBase] Client updates to ${collectionName} must target the signed-in user.`
+        `[useProfileUpdateBase] Client updates to ${kind} must target the signed-in User.`
       )
     }
     return resolved
@@ -65,9 +61,7 @@ function useProfileMutationIdentity<
 
   return {
     appId,
-    role,
     hasAppScope,
-    isTenant,
     pruneUndefined,
     cleanString,
     toStringArray,
@@ -75,60 +69,62 @@ function useProfileMutationIdentity<
   }
 }
 
-export function useProfileRootUpdateBase<
-  TCore extends ProfileRecord,
-  TApp extends ProfileRecord = AppProfileBase,
->(collectionName: string, profile?: ProfileRefs<TCore, TApp> | null) {
+export function useProfileUpdateBase<
+  TProfile extends ProfileRecord,
+  TAppState extends ProfileRecord = ProfileAppStateBase,
+>(kind: string, profile?: ProfileRefs<TProfile, TAppState> | null) {
   const identityUpdate = useFirestoreUpdate({
     databaseId: readRuntimeIdentityFirestoreDatabaseId(),
   })
   const base = useProfileMutationIdentity(profile)
 
-  const updateCoreProfile = async (
-    patch: Partial<TCore>,
+  const updateProfile = async (
+    patch: Partial<TProfile>,
     options: { id?: string | null } = {}
   ): Promise<void> => {
-    const uid = await base.resolveUid(collectionName, options.id)
-    await identityUpdate.updateDocument<TCore>(
-      collectionName,
-      uid,
+    const uid = await base.resolveUid(kind, options.id)
+    await identityUpdate.updateDocument<TProfile>(
+      `users/${uid}/profiles`,
+      kind,
       base.pruneUndefined(patch)
     )
   }
 
   return {
     ...base,
-    updateCoreProfile,
+    updateProfile,
   }
 }
 
-export function useProfileAppUpdateBase<
-  TCore extends ProfileRecord,
-  TApp extends ProfileRecord,
->(collectionName: string, profile?: ProfileRefs<TCore, TApp> | null) {
-  const appUpdate = useFirestoreUpdate()
+export function useProfileAppStateUpdateBase<
+  TProfile extends ProfileRecord,
+  TAppState extends ProfileRecord,
+>(kind: string, profile?: ProfileRefs<TProfile, TAppState> | null) {
+  const identityUpdate = useFirestoreUpdate({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
   const base = useProfileMutationIdentity(profile)
 
-  const updateAppProfile = async (
-    patch: Partial<TApp>,
+  const updateAppState = async (
+    patch: Partial<TAppState>,
     options: { id?: string | null } = {}
   ): Promise<void> => {
     if (!base.hasAppScope || !base.appId) {
       throw new Error(
-        `[useProfileUpdateBase] App context required for app updates (${collectionName})`
+        `[useProfileUpdateBase] App context required for ${kind} App state.`
       )
     }
 
-    const uid = await base.resolveUid(collectionName, options.id)
-    await appUpdate.updateDocument<TApp>(
-      `${AppStorage.collection}/${base.appId}/${collectionName}`,
-      uid,
+    const uid = await base.resolveUid(kind, options.id)
+    await identityUpdate.updateDocument<TAppState>(
+      `users/${uid}/profiles/${kind}/app-state`,
+      base.appId,
       base.pruneUndefined(patch)
     )
   }
 
   return {
     ...base,
-    updateAppProfile,
+    updateAppState,
   }
 }

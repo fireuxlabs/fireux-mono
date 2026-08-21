@@ -1,7 +1,7 @@
 # Create spine map
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -124,8 +124,8 @@ entity may be created as a root or attached to a Workspace.
 - Root or Workspace create page mounts `XCreateSystem`.
 - `XCreateSystem` calls `useXCreate`.
 - `useXCreate` delegates to its domain-owned trusted transaction.
-- The transaction creates or reuses the root and writes same-id App support
-  only when management is `workspace` or `app`.
+- The transaction creates or reuses the root and writes the caller's exact
+  `team/{uid}` authority beneath that root.
 - `workspace` resolves conventionally to `<ecosystem>-app`; only `app` stores an
   `app_id`.
 
@@ -188,7 +188,7 @@ independently valid and does not receive App colours.
 
 - `MenuCTA` uses `ProviderGoQrTools`.
 - The tool posts to `/api/menus/create`.
-- `/api/menus/create` stores the source file and creates a root public menu
+- `/api/menus/create` stores the source file and creates a root Menu
   doorway record.
 - This should not be replaced by `useMenuCreate`, because `useMenuCreate`
   creates kitchen-scoped menu entity records, not upload transactions.
@@ -261,13 +261,14 @@ the final mutation, and completion routing.
 
 #### Kitchen reference
 
-- Public and Workspace create routes compose the same Kitchen create system;
+- Directory and Workspace create routes compose the same Kitchen create system;
   route mode changes chrome and destination, not entity truth.
 - Kitchen onboarding reuses canonical Place identity, then owns only Kitchen
-  draft decisions and the trusted root/App-support/AppUser transaction.
+  draft decisions and the trusted root/Team transaction. AppUser membership is
+  verified when the management relationship names an App.
 - New Kitchen roots stay sparse and unpublished. Place fields, Menu content,
   ordering, payment, profiles, and publication are not create side effects.
-- Tenant onboarding is bounded by persisted App support and membership authority, and route query state
+- Tenant onboarding is bounded by root management, Team, and AppUser authority, and route query state
   never mutates an existing Kitchen automatically.
 
 ## Current create plan primitive
@@ -276,7 +277,7 @@ the final mutation, and completion routing.
 
 - `family`: `idempotent` or `with_provision`
 - `transport`: `client` or `server`
-- `location`: `root`, `scoped`, or `app-support`
+- `location`: `root`, `scoped`, or `user-owned`
 - `id`: `generated` or `known`
 - `steps`: `single` or `multi`
 
@@ -299,7 +300,7 @@ markers, not a complete registry.
 - Scoped Kitchen Menu mutation:
   `packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuCreate.ts`
 
-The Menu split is settled: root `Menu` is a public doorway/upload entity while
+The Menu split is settled: root `Menu` is a directory doorway/upload entity while
 `KitchenMenu` is scoped Kitchen content. See `family-menu.md`; do not reopen
 that distinction inside the create family.
 
@@ -336,7 +337,7 @@ that distinction inside the create family.
 | Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                             |
 | -------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                      |
-| Workspace-target create may write root identity plus App support                                     | `accepted`   | The domain transaction writes its root management relationship and same-id App support; Core supplies only generic management vocabulary and resolution |
+| Workspace-target create writes root identity plus Team                                              | `accepted`   | The domain transaction writes its root management relationship and caller Team record; Core supplies only generic management vocabulary and resolution  |
 | Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                                                    |
 | `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                              |
 | Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                               |

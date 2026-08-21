@@ -6,27 +6,18 @@
         <p class="truncate text-xs text-dimmed">{{ menuSummary }}</p>
       </div>
 
-      <UAvatarGroup
-        v-if="menuAvatarItems.length"
-        :max="2"
-        size="sm"
-      >
+      <UAvatarGroup v-if="menuAvatarItems.length" :max="2" size="sm">
         <UTooltip
           v-for="item in menuAvatarItems"
           :key="item.id"
           :text="item.name"
         >
-          <UAvatar
-            :src="item.imageUrl || undefined"
-            :alt="item.name"
-          />
+          <UAvatar :src="item.imageUrl || undefined" :alt="item.name" />
         </UTooltip>
       </UAvatarGroup>
     </div>
 
-    <div v-if="pending" class="text-sm text-dimmed">
-      Loading menus...
-    </div>
+    <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
     <UAlert
       v-else-if="!menus.length"

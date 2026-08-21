@@ -4,7 +4,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Family: App-scoped Kitchen operation
  * Storage: scoped operational record
- * Path: apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}
+ * Path: kitchens/{kitchenId}/ingredients/{kitchenIngredientId}
  * Owner app scope: Kitchen within an app runtime
  *
  * Decision note:
@@ -13,7 +13,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenIngredientStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
+  path: 'kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
   collection: 'ingredients',
   parent: 'kitchen',
   idParam: 'kitchenIngredientId',

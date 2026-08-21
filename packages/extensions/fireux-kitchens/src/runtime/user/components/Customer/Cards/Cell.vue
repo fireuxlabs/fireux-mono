@@ -3,9 +3,18 @@
     <div class="card__media">
       <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
         <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
-        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
+        <UAvatar
+          :src="secondaryAvatarUrl || undefined"
+          :alt="displayName"
+          size="2xs"
+        />
       </UAvatarGroup>
-      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar
+        v-else
+        :src="avatarUrl || undefined"
+        :alt="displayName"
+        size="sm"
+      />
 
       <div class="card__content card__stack">
         <div class="card__header">

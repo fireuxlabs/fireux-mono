@@ -18,15 +18,15 @@ import {
 import { normalizeMenuRouteContext } from '../../../menu/utils/menu-context.ts'
 import { parseMenuRouteTarget } from '../../../kitchen/utils/kitchen-menu-route.ts'
 import {
-  resolvePublicMenuTarget,
-  type RootPublicMenuTarget,
-  type ScopedPublicMenuTarget,
-} from '../../../menu/server/ownership/public-target.ts'
+  resolveMenuTarget,
+  type RootMenuTarget,
+  type ScopedMenuTarget,
+} from '../../../menu/server/ownership/target.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 async function readSpecialsContent(
-  target: ScopedPublicMenuTarget | RootPublicMenuTarget
+  target: ScopedMenuTarget | RootMenuTarget
 ) {
   const primaryMenuId = text(target.scope.primaryMenuId)
   const specialsMenuId = text(target.scope.specialsMenuId)
@@ -41,9 +41,7 @@ async function readSpecialsContent(
     return undefined
 
   const data = await getRuntimeFirestore()
-    .doc(
-      `apps/${target.appId}/kitchens/${target.kitchenId}/menus/${specialsMenuId}`
-    )
+    .doc(`kitchens/${target.kitchenId}/menus/${specialsMenuId}`)
     .get()
   if (
     !data.exists ||
@@ -89,7 +87,7 @@ function menuRequestStatusCode(value: unknown) {
     : 500
 }
 
-function safePublicMenuError(value: unknown) {
+function safeMenuError(value: unknown) {
   const statusCode = menuRequestStatusCode(value)
   const statusMessage =
     statusCode === 404
@@ -102,7 +100,7 @@ function safePublicMenuError(value: unknown) {
 }
 
 async function readKitchenMenu(
-  target: ScopedPublicMenuTarget,
+  target: ScopedMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode
 ) {
@@ -137,7 +135,7 @@ async function readKitchenMenu(
 }
 
 async function readRootMenuDetail(
-  target: RootPublicMenuTarget,
+  target: RootMenuTarget,
   menuContext: ReturnType<typeof normalizeMenuRouteContext>,
   sproochliLanguage: SproochliLanguageCode
 ) {
@@ -186,13 +184,13 @@ export default defineEventHandler(async (event) => {
   })
 
   try {
-    const target = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
+    const routeTarget = parseMenuRouteTarget(getRouterParam(event, 'menuId'))
     const query = getQuery(event)
-    const menuId = target.menuId
+    const menuId = routeTarget.menuId
     const kitchenSlug = text(query.kitchenSlug)
     const menuContext = Object.hasOwn(query, 'context')
       ? normalizeMenuRouteContext(query.context)
-      : target.context
+      : routeTarget.context
     const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
 
     if (!menuId) {
@@ -202,17 +200,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
-    if (publicTarget.kind !== 'root-doorway') {
-      return await readKitchenMenu(publicTarget, menuContext, sproochliLanguage)
+    const target = await resolveMenuTarget(menuId, kitchenSlug)
+    if (target.kind !== 'root-doorway') {
+      return await readKitchenMenu(target, menuContext, sproochliLanguage)
     }
 
-    return await readRootMenuDetail(
-      publicTarget,
-      menuContext,
-      sproochliLanguage
-    )
+    return await readRootMenuDetail(target, menuContext, sproochliLanguage)
   } catch (error) {
-    throw safePublicMenuError(error)
+    throw safeMenuError(error)
   }
 })

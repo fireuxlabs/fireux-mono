@@ -25,9 +25,12 @@
         <div>
           <p class="text-sm font-medium text-highlighted">Primary image</p>
           <p class="text-xs text-dimmed">
-            Recommended: 1200 × 1200 px. Leave blank to inherit the linked Place image.
+            Recommended: 1200 × 1200 px. Leave blank to inherit the linked Place
+            image.
           </p>
-          <p v-if="pending" class="mt-2 text-xs text-dimmed">Uploading image…</p>
+          <p v-if="pending" class="mt-2 text-xs text-dimmed">
+            Uploading image…
+          </p>
         </div>
       </div>
     </UCard>

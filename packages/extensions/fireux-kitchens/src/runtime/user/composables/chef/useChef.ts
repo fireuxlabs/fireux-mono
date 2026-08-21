@@ -23,14 +23,14 @@ export type { ChefCard, Chef }
  * operator/membership seams.
  *
  * - Exposes:
- *   - raw refs: profileRefs, coreProfile, appProfile, pending
+ *   - raw refs: profileRefs, profile, pending
  *   - computed helpers
  *   - UI helpers (pill, cell, profile)
  *   - update helpers
  */
 export function useChef() {
   const { profile: refs, pending } = useProfile<Chef>(chefConfig)
-  const { coreProfile, appProfile } = refs
+  const { profile: chefProfile } = refs
   const { coreUser } = useUser()
 
   const computed = useChefComputed(refs, pending)
@@ -40,8 +40,7 @@ export function useChef() {
 
   return {
     profileRefs: refs,
-    coreProfile,
-    appProfile,
+    chefProfile,
     pending,
 
     ...computed,

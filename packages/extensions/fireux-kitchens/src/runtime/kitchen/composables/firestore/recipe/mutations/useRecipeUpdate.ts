@@ -13,7 +13,8 @@ import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchen
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined
-const normalizeLanguageCode = (value: unknown) => optional(value)?.replace(/_/g, '-')
+const normalizeLanguageCode = (value: unknown) =>
+  optional(value)?.replace(/_/g, '-')
 
 export function useRecipeUpdate(
   options: {
@@ -22,13 +23,16 @@ export function useRecipeUpdate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
 
-  const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      trim(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const updateRecipe = async (

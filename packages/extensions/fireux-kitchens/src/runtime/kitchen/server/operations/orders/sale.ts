@@ -180,7 +180,7 @@ export function buildCompletedKitchenOrderSale<TTimestamp>(input: {
       kitchen_id: kitchenId,
       menu_id: requiredId(input.order.menu_id, 'Sale Menu id'),
       order_id: orderId,
-      order_path: `apps/${appId}/kitchens/${kitchenId}/orders/${orderId}`,
+      order_path: `kitchens/${kitchenId}/orders/${orderId}`,
       order_number: requiredText(
         input.order.order_number,
         'Sale Order number',

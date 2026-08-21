@@ -56,7 +56,7 @@ defineEmits<{
 }
 
 .menu-section h2::after {
-  content: "";
+  content: '';
   display: block;
   height: 2px;
   background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);

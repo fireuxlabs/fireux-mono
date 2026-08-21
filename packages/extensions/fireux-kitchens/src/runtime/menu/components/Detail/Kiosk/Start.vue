@@ -1,22 +1,15 @@
 <template>
-  <section
-    class="kiosk-start"
-    aria-label="Kiosk choices"
-  >
+  <section class="kiosk-start" aria-label="Kiosk choices">
     <div class="kiosk-start__actions">
       <img
         v-if="wordmarkImageUrl"
         class="kiosk-start__wordmark"
         :src="wordmarkImageUrl"
         :alt="kitchenName || ''"
-      >
+      />
 
       <template v-for="mode in modes" :key="mode.mode">
-        <NuxtLink
-          v-if="mode.to"
-          :to="mode.to"
-          class="kiosk-start__button"
-        >
+        <NuxtLink v-if="mode.to" :to="mode.to" class="kiosk-start__button">
           {{ mode.label }}
         </NuxtLink>
 

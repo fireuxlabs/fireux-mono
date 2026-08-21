@@ -37,6 +37,7 @@ src/runtime/
 ├── models/           # shared across entities
 ├── content/          # shared cross-entity product content
 ├── demo/             # shared cross-entity Demo composition
+├── tools/            # shared capability and primitive definitions
 ├── types/            # shared runtime coordination contracts
 ├── utils/            # shared runtime behaviour
 ├── server/           # Nuxt server boundaries and shared server primitives
@@ -70,8 +71,8 @@ and the optional `demo` and `tools` roles. Entity roots use the repository's
 canonical entity name and do not become generic domain, feature, capability,
 content, AI, asset, or type buckets.
 
-The package root may still contain shared roles such as `content`, `types`,
-and `assets` when they genuinely serve several entities or Nuxt registration.
+The package root may still contain shared roles such as `content`, `tools`,
+`types`, and `assets` when they genuinely serve several entities or Nuxt registration.
 Inside an Entity, typed catalogues and contracts belong in `models`, runtime
 copy resolution and stateless helpers belong in `utils`, component-owned
 styles belong with `components`, AI orchestration belongs in `composables` or

@@ -1,6 +1,6 @@
 <template>
   <section class="public-profile-hub" data-public-profile="user">
-    <PublicProfileHero
+    <UserProfileHero
       kind-label="User"
       icon="i-lucide-user-round"
       tone="primary"
@@ -39,7 +39,7 @@
           />
         </div>
       </template>
-    </PublicProfileHero>
+    </UserProfileHero>
 
     <UPageCard
       as="section"
@@ -75,11 +75,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserAccessTier } from '../composables/useUserPermissions'
-import type { PublicUserDto } from '../../server/utils/public-projection/public-dto.types.ts'
+import type { UserDetail } from '../models/user-directory.model.ts'
 
 const props = withDefaults(
   defineProps<{
-    user: PublicUserDto
+    user: UserDetail
     isOwnProfile?: boolean
     canEdit?: boolean
     accessTier?: UserAccessTier | null

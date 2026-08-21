@@ -27,7 +27,10 @@
   --menu-space-sm: calc(var(--spacing) * 3);
   --menu-space-md: calc(var(--spacing) * 4);
   --menu-space-lg: calc(var(--spacing) * 8);
-  --menu-section-nav-top: max(calc(var(--spacing) * 2), env(safe-area-inset-top));
+  --menu-section-nav-top: max(
+    calc(var(--spacing) * 2),
+    env(safe-area-inset-top)
+  );
 
   display: grid;
   gap: clamp(var(--menu-space-md), 3vw, var(--menu-space-lg));
@@ -53,7 +56,11 @@
   --menu-bg: var(--menu-bg-dark);
   --menu-text: var(--menu-text-dark);
   --menu-title: var(--menu-title-dark);
-  --menu-primary: color-mix(in srgb, var(--menu-primary-source) 58%, var(--menu-text));
+  --menu-primary: color-mix(
+    in srgb,
+    var(--menu-primary-source) 58%,
+    var(--menu-text)
+  );
 }
 
 .fireux-menu-detail.menu-detail--kiosk,
@@ -84,7 +91,9 @@
 
 .menu-catalogue-section {
   gap: calc(var(--spacing) * 4);
-  scroll-margin-block-start: calc(var(--menu-section-nav-top) + calc(var(--spacing) * 17));
+  scroll-margin-block-start: calc(
+    var(--menu-section-nav-top) + calc(var(--spacing) * 17)
+  );
 }
 
 .menu-catalogue-section__heading {
@@ -102,7 +111,7 @@
 }
 
 .menu-catalogue-section__heading::after {
-  content: "";
+  content: '';
   display: block;
   height: 2px;
   background: color-mix(in srgb, var(--menu-secondary) 48%, transparent);
@@ -123,7 +132,11 @@
 
   .menu-catalogue-section {
     break-inside: avoid;
-    margin-bottom: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 20));
+    margin-bottom: clamp(
+      calc(var(--spacing) * 12),
+      7vw,
+      calc(var(--spacing) * 20)
+    );
   }
 }
 

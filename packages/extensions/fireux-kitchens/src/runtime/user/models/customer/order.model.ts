@@ -10,9 +10,9 @@ import type {
 
 export const CustomerOrderLinkStorage = {
   shape: 'child',
-  path: 'apps/{appId}/customers/{userId}/orders/{orderId}',
+  path: 'users/{userId}/orders/{orderId}',
   collection: 'orders',
-  parent: 'customer',
+  parent: 'user',
   idParam: 'orderId',
 } as const
 
@@ -27,7 +27,7 @@ export const CustomerOrderLinkRecord = defineFireuxEntity({
   parent: 'User',
   scoped: CustomerOrderLinkStorage.path,
   notes: [
-    'CustomerOrderLink points from one User to a KitchenOrder in the same App.',
+    'CustomerOrderLink points from one User to a canonical App/Kitchen Order.',
     'It does not require the optional CustomerProfile preferences record.',
     'It stores discovery metadata but never copies mutable Order lifecycle state.',
   ],

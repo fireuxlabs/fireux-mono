@@ -23,8 +23,8 @@ const propertyBelongsToApp = (
   const management = readFireuxEntityManagement(property.management)
   return Boolean(
     management &&
-    management.mode !== 'root' &&
-    resolveFireuxEntityManagementAppId(management, ecosystem) === appId
+      management.mode !== 'root' &&
+      resolveFireuxEntityManagementAppId(management, ecosystem) === appId
   )
 }
 
@@ -91,7 +91,8 @@ export function usePortfolioPropertyCollection(
   const invalidScopeIds = computed(() =>
     (source.value ?? []).reduce<string[]>((ids, property) => {
       const root = canonicalPropertyRoot(property)
-      if (!root || propertyBelongsToApp(root, appId.value, ecosystem.value)) return ids
+      if (!root || propertyBelongsToApp(root, appId.value, ecosystem.value))
+        return ids
       ids.push(root.id)
       return ids
     }, [])

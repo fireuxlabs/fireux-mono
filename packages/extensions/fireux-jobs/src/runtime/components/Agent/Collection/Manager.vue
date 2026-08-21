@@ -104,9 +104,9 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { PublicAgentDirectoryProfile } from '../../../models/profiles/Agent/Agent.model'
+import type { AgentDirectoryProfile } from '../../../models/profiles/Agent/Agent.model'
 
-type AgentEntry = PublicAgentDirectoryProfile
+type AgentEntry = AgentDirectoryProfile
 
 const props = withDefaults(
   defineProps<{

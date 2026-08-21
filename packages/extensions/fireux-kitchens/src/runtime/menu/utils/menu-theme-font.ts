@@ -73,7 +73,7 @@ const systemFont = menuThemeFontOptions[0]!
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function menuThemeFontFromId(id: string) {
-  return menuThemeFontOptions.find(option => option.id === id) || systemFont
+  return menuThemeFontOptions.find((option) => option.id === id) || systemFont
 }
 
 export function isSupportedMenuThemeFontToken(
@@ -83,7 +83,7 @@ export function isSupportedMenuThemeFontToken(
   const source = text(sourceValue)
   const family = text(familyValue)
   return menuThemeFontOptions.some(
-    option => option.source === source && option.family === family
+    (option) => option.source === source && option.family === family
   )
 }
 
@@ -93,9 +93,10 @@ export function resolveMenuThemeFontToken(
 ) {
   const source = text(sourceValue)
   const family = text(familyValue)
-  const option = menuThemeFontOptions.find(
-    font => font.source === source && font.family === family
-  ) || systemFont
+  const option =
+    menuThemeFontOptions.find(
+      (font) => font.source === source && font.family === family
+    ) || systemFont
   const cssFamily = option.family
     ? `"${option.family}", ${option.fallback}`
     : option.fallback

@@ -131,7 +131,7 @@ const platformSlugs = new Set([
 ])
 
 const { data } = await useAsyncData('public-app-solutions', () =>
-  $fetch<SolutionsResponse>('/api/public/app/solutions')
+  $fetch<SolutionsResponse>('/api/app/solutions')
 )
 
 const fireuxSolutions = computed(() =>

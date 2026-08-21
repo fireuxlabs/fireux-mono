@@ -1,5 +1,5 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { AppSupplier, Supplier } from '../models/Supplier.model.ts'
+import type { Supplier } from '../models/Supplier.model.ts'
 import {
   useSupplierInterface,
   type SupplierSurface,
@@ -17,7 +17,6 @@ type SupplierCompanyDemoTargetLike = {
 
 type SupplierDemoScenarioLike = {
   supplier: Supplier
-  appSupport: AppSupplier
 }
 
 export type ProjectedSupplierDemoScenario<
@@ -72,7 +71,6 @@ export function projectSupplierDemoWorld<
 
     const supplier = surface({
       supplier: scenario.supplier,
-      appSupport: scenario.appSupport,
       companyPlace: companyTarget.resolvedPlace,
     })
     if (!supplier) {

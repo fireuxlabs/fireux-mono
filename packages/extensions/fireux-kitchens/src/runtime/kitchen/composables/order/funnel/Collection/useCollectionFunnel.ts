@@ -58,7 +58,9 @@ export function useCollectionFunnel(
   incoming: MaybeRefOrGetter<MenuOrderingIncoming>
 ) {
   const savedCollection = computed(() => toValue(incoming).collection)
-  const savedRequestedFor = splitRequestedFor(savedCollection.value?.requested_for)
+  const savedRequestedFor = splitRequestedFor(
+    savedCollection.value?.requested_for
+  )
   const mode = ref<CollectionMode>(
     savedCollection.value?.mode === 'scheduled' ? 'scheduled' : 'queue'
   )
@@ -70,10 +72,9 @@ export function useCollectionFunnel(
 
     return current.serviceHours?.operation_hours
   })
-  const { menuServiceChip: serviceTimes } =
-    useMenuServiceComputed(serviceHours)
-  const canJoinQueue = computed(() =>
-    !serviceTimes.value.known || serviceTimes.value.open
+  const { menuServiceChip: serviceTimes } = useMenuServiceComputed(serviceHours)
+  const canJoinQueue = computed(
+    () => !serviceTimes.value.known || serviceTimes.value.open
   )
   const scheduleSelection = computed(() => {
     const current = toValue(order)
@@ -93,8 +94,8 @@ export function useCollectionFunnel(
   )
   const requestedFor = computed(() =>
     mode.value === 'scheduled' &&
-      scheduleSelection.value.available &&
-      noticeSelection.value.available
+    scheduleSelection.value.available &&
+    noticeSelection.value.available
       ? scheduleSelection.value.requested_for
       : ''
   )
@@ -102,8 +103,9 @@ export function useCollectionFunnel(
     mode: mode.value,
     ...(requestedFor.value ? { requested_for: requestedFor.value } : {}),
   }))
-  const requestReady = computed(() =>
-    mode.value === 'queue' ||
+  const requestReady = computed(
+    () =>
+      mode.value === 'queue' ||
       (scheduleSelection.value.available && noticeSelection.value.available)
   )
   const ready = computed(() => canContinue(Number(toValue(step)) || 1))
@@ -124,9 +126,12 @@ export function useCollectionFunnel(
   }
 
   function reset() {
-    const nextRequestedFor = splitRequestedFor(savedCollection.value?.requested_for)
+    const nextRequestedFor = splitRequestedFor(
+      savedCollection.value?.requested_for
+    )
 
-    mode.value = savedCollection.value?.mode === 'scheduled' ? 'scheduled' : 'queue'
+    mode.value =
+      savedCollection.value?.mode === 'scheduled' ? 'scheduled' : 'queue'
     scheduledDate.value = nextRequestedFor.date || todayDate()
     scheduledTime.value = nextRequestedFor.time
     dateInputOpen.value = Boolean(nextRequestedFor.date)
@@ -136,31 +141,42 @@ export function useCollectionFunnel(
     dateInputOpen.value = true
   }
 
-  watch(() => toValue(order).quantity, (quantity: number) => {
-    if (quantity) return
+  watch(
+    () => toValue(order).quantity,
+    (quantity: number) => {
+      if (quantity) return
 
-    reset()
-  })
-
-  watch(() => toValue(order).orderType, () => {
-    reset()
-  })
-
-  watch(savedCollection, (
-    nextCollection: MenuOrderingCollectionState | undefined
-  ) => {
-    if (!nextCollection) return
-    if (nextCollection.mode === 'queue' || nextCollection.mode === 'scheduled') {
-      mode.value = nextCollection.mode
+      reset()
     }
+  )
 
-    const nextRequestedFor = splitRequestedFor(nextCollection.requested_for)
-    if (!nextRequestedFor.date) return
+  watch(
+    () => toValue(order).orderType,
+    () => {
+      reset()
+    }
+  )
 
-    scheduledDate.value = nextRequestedFor.date
-    scheduledTime.value = nextRequestedFor.time
-    dateInputOpen.value = true
-  }, { deep: true })
+  watch(
+    savedCollection,
+    (nextCollection: MenuOrderingCollectionState | undefined) => {
+      if (!nextCollection) return
+      if (
+        nextCollection.mode === 'queue' ||
+        nextCollection.mode === 'scheduled'
+      ) {
+        mode.value = nextCollection.mode
+      }
+
+      const nextRequestedFor = splitRequestedFor(nextCollection.requested_for)
+      if (!nextRequestedFor.date) return
+
+      scheduledDate.value = nextRequestedFor.date
+      scheduledTime.value = nextRequestedFor.time
+      dateInputOpen.value = true
+    },
+    { deep: true }
+  )
 
   watchEffect(() => {
     if (canJoinQueue.value || mode.value !== 'queue') return
@@ -187,4 +203,6 @@ export function useCollectionFunnel(
   }
 }
 
-export type MenuOrderingCollectionFunnel = ReturnType<typeof useCollectionFunnel>
+export type MenuOrderingCollectionFunnel = ReturnType<
+  typeof useCollectionFunnel
+>

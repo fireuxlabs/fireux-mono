@@ -11,7 +11,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const MenuSectionStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
+  path: 'kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}',
   collection: 'sections',
   parent: 'menu',
   idParam: 'sectionId',

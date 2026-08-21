@@ -1,8 +1,4 @@
-import {
-  inject,
-  provide,
-  type InjectionKey,
-} from 'vue'
+import { inject, provide, type InjectionKey } from 'vue'
 import { useKitchenWorkspaceMiseTask } from './useKitchenWorkspaceMiseTask'
 
 export type KitchenMiseTaskWorkspace = ReturnType<

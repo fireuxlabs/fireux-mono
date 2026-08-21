@@ -36,7 +36,8 @@ export function useKitchenStationCreate() {
     if (!kitchenId) throw new Error('Kitchen id is required')
     if (!rootCollection) throw new Error('Kitchen collection path is required')
     if (!name) throw new Error('Station name is required')
-    if (!stationId) throw new Error('Station id could not be generated from name')
+    if (!stationId)
+      throw new Error('Station id could not be generated from name')
 
     const sortOrder = Number(input.sortOrder)
     const payload: KitchenStation = {
@@ -47,8 +48,7 @@ export function useKitchenStationCreate() {
       sort_order: Number.isFinite(sortOrder) ? sortOrder : 0,
     }
 
-    const collectionPath =
-      `${rootCollection}/${kitchenId}/${KitchenStationStorage.collection}`
+    const collectionPath = `${rootCollection}/${kitchenId}/${KitchenStationStorage.collection}`
     await create(
       defineRuntimeClientCreateTarget(
         'project.kitchen-stations',

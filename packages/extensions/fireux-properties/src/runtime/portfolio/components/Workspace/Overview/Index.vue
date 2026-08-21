@@ -22,9 +22,12 @@
       <DevDebugPanel
         title="Portfolio overview"
         scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedPortfolio: focus.entity, portfolios: multiple.items }"
-      :derived="debug"
+        object-origin="fetched"
+        :objects="{
+          selectedPortfolio: focus.entity,
+          portfolios: multiple.items,
+        }"
+        :derived="debug"
         :default-open="false"
       />
     </div>
@@ -39,7 +42,9 @@ import { usePortfolioInterface } from '../../../composables/firestore/utils/view
 
 const { focus, multiple, debug } = usePortfolioWorkspaceOverview()
 const { pill } = usePortfolioInterface()
-const focusCard = computed(() => pill(focus.value.entity) as WorkspaceTargetCard | null)
+const focusCard = computed(
+  () => pill(focus.value.entity) as WorkspaceTargetCard | null
+)
 const multipleCards = computed(() =>
   multiple.value.items
     .map((portfolio) => pill(portfolio) as WorkspaceTargetCard | null)

@@ -19,7 +19,9 @@ export type KitchenIdentityRequirement = {
 
 const completionPercent = (requirements: KitchenIdentityRequirement[]) => {
   if (!requirements.length) return 0
-  const complete = requirements.filter(requirement => requirement.complete).length
+  const complete = requirements.filter(
+    (requirement) => requirement.complete
+  ).length
   return Math.round((complete / requirements.length) * 100)
 }
 
@@ -37,14 +39,16 @@ export function useKitchenIdentityProgression() {
   const identity = computed(() => readKitchenIdentity(kitchen.value))
   const place = placeState.place
   const placePresentation = computed(() => readPlacePresentation(place.value))
-  const resolvedName = computed(() =>
-    normalizeString(identity.value.displayName) ||
-    normalizeString(place.value?.name) ||
-    normalizeString(place.value?.short_name)
+  const resolvedName = computed(
+    () =>
+      normalizeString(identity.value.displayName) ||
+      normalizeString(place.value?.name) ||
+      normalizeString(place.value?.short_name)
   )
-  const resolvedTagline = computed(() =>
-    normalizeString(identity.value.tagline) ||
-    normalizeString(place.value?.brand_tagline)
+  const resolvedTagline = computed(
+    () =>
+      normalizeString(identity.value.tagline) ||
+      normalizeString(place.value?.brand_tagline)
   )
   const placeRequirements = computed<KitchenIdentityRequirement[]>(() => [
     {
@@ -66,7 +70,9 @@ export function useKitchenIdentityProgression() {
       complete: Boolean(placePresentation.value.mediaBackdropColor),
     },
   ])
-  const placePercent = computed(() => completionPercent(placeRequirements.value))
+  const placePercent = computed(() =>
+    completionPercent(placeRequirements.value)
+  )
   const placeComplete = computed(() => placePercent.value === 100)
 
   const rootRequirements = computed<KitchenIdentityRequirement[]>(() => [
@@ -108,13 +114,14 @@ export function useKitchenIdentityProgression() {
   const rootPercent = computed(() =>
     placeComplete.value ? completionPercent(rootRequirements.value) : 0
   )
-  const rootComplete = computed(() =>
-    placeComplete.value && rootPercent.value === 100
+  const rootComplete = computed(
+    () => placeComplete.value && rootPercent.value === 100
   )
 
   const storedWorkspacePalette = computed(() =>
     readWorkspacePalette(
-      (kitchen.value?.workspace_theme as Record<string, unknown> | undefined)?.palette
+      (kitchen.value?.workspace_theme as Record<string, unknown> | undefined)
+        ?.palette
     )
   )
   const workspaceRequirements = computed<KitchenIdentityRequirement[]>(() => [

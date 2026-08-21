@@ -7,17 +7,16 @@ import {
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import {
   KitchenDefaults,
-  type AppKitchen,
   type Kitchen,
   type KitchenFulfilmentPaymentPolicy,
   type KitchenOrdersConfig,
 } from '../../models/kitchen.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
-import type { KitchenDemoIdentity } from './types'
+import type { KitchenDemoAccess, KitchenDemoIdentity } from './types'
 
 export type KitchenDemoTarget = {
   appId: string
-  appSupport: AppKitchen
+  access: KitchenDemoAccess
   identity: KitchenDemoIdentity
   kitchen: Kitchen
   place: Place
@@ -64,10 +63,12 @@ export const kitchen = (input: DemoKitchenInput): Kitchen => ({
   identity: {
     display_name: input.name,
     tagline: input.tagline,
-    logo_image_url: input.logoImageUrl,
-    image_shade: 'none',
-    wordmark_no_logo_image_url: '',
-    wordmark_image_url: '',
+  },
+  assets: {
+    image: '',
+    logo: input.logoImageUrl,
+    wordmark: '',
+    backdrop_color: input.palette.primary_color || '',
   },
   menus: {
     currency_format: 'dash',
@@ -166,13 +167,10 @@ export const target = (
 
   return {
     appId: identity.appId,
-    appSupport: {
-      id: identity.kitchenId,
-      team_ids: [...(access.teamIds ?? [])],
-      operator_ids: [...(access.operatorIds ?? [])],
-      join_requests: [],
-      created: kitchenDemoCreated(identity),
-      updated: kitchenDemoUpdated(),
+    access: {
+      kitchenId: identity.kitchenId,
+      teamIds: [...(access.teamIds ?? [])],
+      operatorIds: [...(access.operatorIds ?? [])],
     },
     identity,
     kitchen: targetKitchen,

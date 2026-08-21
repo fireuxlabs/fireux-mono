@@ -46,7 +46,7 @@ type PortfolioOnboardingCompleteResult = {
   ok: true
   portfolio_id: string
   created_root: boolean
-  created_app_support: boolean
+  created_team_member: boolean
 }
 
 export const PortfolioCreatePlan = defineFireuxCreatePlan({
@@ -70,7 +70,9 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
   }
 
-  async function createPortfolioRoot(input: PortfolioCreateInput): Promise<string> {
+  async function createPortfolioRoot(
+    input: PortfolioCreateInput
+  ): Promise<string> {
     requireCanonicalWriteSource()
     const requestedName = normalizeString(input?.name)
     const name = requestedName
@@ -128,7 +130,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     const requestedRootId = normalizeString(createOptions.existingRootId)
     const requestedName = normalizeString(input?.name)
     const name = requestedName
-    const slug = requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
+    const slug =
+      requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
 
     if (!name) {
       throw new Error('Portfolio name is required')
@@ -184,7 +187,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return {
       id: root.id,
       createdRoot: root.created,
-      createdAppSupport: false,
+      createdTeamMember: false,
     }
   }
 
@@ -226,7 +229,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return {
       id: result.portfolio_id,
       createdRoot: result.created_root,
-      createdAppSupport: result.created_app_support,
+      createdTeamMember: result.created_team_member,
     }
   }
 

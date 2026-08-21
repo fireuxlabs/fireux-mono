@@ -18,8 +18,8 @@ export default defineNuxtPlugin(() => {
 
   console.info('[InjectTrace:server] running')
 
-  const origWarn = console.warn.bind(workspace)
-  const origError = console.error.bind(workspace)
+  const origWarn = console.warn.bind(console)
+  const origError = console.error.bind(console)
 
   const handle = (_level: 'warn' | 'error', args: unknown[]) => {
     try {

@@ -1,4 +1,7 @@
-import type { KitchenOrderCustomer, KitchenOrderType } from '../../kitchen/models/order.model.ts'
+import type {
+  KitchenOrderCustomer,
+  KitchenOrderType,
+} from '../../kitchen/models/order.model.ts'
 import type { MenuOrderDepositPolicy } from '../models/menu.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -7,12 +10,18 @@ export const menuOrderDepositLabel = (
   policy: MenuOrderDepositPolicy | null | undefined,
   fallbackCurrencyCode: string
 ) => {
-  if (!policy || !Number.isFinite(Number(policy.amount)) || Number(policy.amount) <= 0) {
+  if (
+    !policy ||
+    !Number.isFinite(Number(policy.amount)) ||
+    Number(policy.amount) <= 0
+  ) {
     return ''
   }
   if (policy.type === 'percent') return `${Number(policy.amount)}% deposit`
 
-  const currencyCode = text(policy.currency_code || fallbackCurrencyCode).toUpperCase()
+  const currencyCode = text(
+    policy.currency_code || fallbackCurrencyCode
+  ).toUpperCase()
   if (!currencyCode) return ''
   const amount = new Intl.NumberFormat('de-CH', {
     style: 'currency',

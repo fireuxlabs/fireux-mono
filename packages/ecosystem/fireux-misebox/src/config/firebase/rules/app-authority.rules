@@ -1,58 +1,4 @@
 // @fireux-ecosystem-rules-fragment misebox/app-authority
-    match /kitchens/{kitchenId} {
-      function isCanonicalAttachedKitchen(data) {
-        return data is map &&
-          data.keys().hasAll(['management']) &&
-          !data.keys().hasAny([
-            'app_scope',
-            'app_scope_state',
-            'app_scope_app_id',
-            'app_id'
-          ]) &&
-          data.management is map &&
-          (
-            (
-              data.management.keys().hasOnly(['mode']) &&
-              data.management.mode == 'workspace'
-            ) ||
-            (
-              data.management.keys().hasAll(['mode', 'app_id']) &&
-              data.management.keys().hasOnly(['mode', 'app_id']) &&
-              data.management.mode == 'app' &&
-              isValidFirestoreDocumentId(data.management.app_id)
-            )
-          );
-      }
-
-      function kitchenManagementAppId(data) {
-        return data.management.mode == 'workspace'
-          ? 'misebox-app'
-          : data.management.app_id;
-      }
-
-      function hasSameIdAppKitchenSupport(appId) {
-        return exists(
-          /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
-        );
-      }
-
-      // Public Kitchen cards/details use bounded server projections. The raw
-      // root is exact-readable only when its canonical App scope and same-id
-      // support record prove current Workspace authority.
-      allow get: if isAuthenticated() &&
-        isCanonicalAttachedKitchen(resource.data) &&
-        hasSameIdAppKitchenSupport(kitchenManagementAppId(resource.data)) &&
-        (
-          isAppAdmin(kitchenManagementAppId(resource.data)) ||
-          isTargetMember(
-            kitchenManagementAppId(resource.data),
-            'kitchens',
-            kitchenId
-          )
-        );
-      allow list, create, update, delete: if false;
-    }
-
     // ===============================================================
     // Canonical App identity; public reads use server DTOs
     // ===============================================================
@@ -210,8 +156,8 @@
     }
 
     match /apps/{appId} {
-      // Guests use /api/public/apps and /api/public/apps/:id. Raw canonical
-      // data is available inside the App; bootstrap access is exact, not broad.
+      // App directory reads use trusted endpoints. Raw canonical data is
+      // available inside the App; bootstrap access is exact, not broad.
       allow get: if isAppMember(appId) ||
         (appId == 'misebox-app' && isBootstrapDeveloper());
       allow list: if false;

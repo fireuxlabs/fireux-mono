@@ -12,9 +12,7 @@
             <UIcon name="i-lucide-sparkles" />
           </span>
           <div class="min-w-0">
-            <h2 class="finance-roundup__title">
-              Period roundup
-            </h2>
+            <h2 class="finance-roundup__title">Period roundup</h2>
             <p class="finance-roundup__subtitle">
               The service signals worth a closer look.
             </p>
@@ -111,12 +109,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money'
-import type {
-  KitchenFinanceItemSummary,
-} from '../models/finance-report.model.ts'
+import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
+import type { KitchenFinanceItemSummary } from '../models/finance-report.model.ts'
 
 type KitchenFinanceDayHighlight = {
   date: string
@@ -124,40 +118,44 @@ type KitchenFinanceDayHighlight = {
   grossSalesMinor: number
 }
 
-const props = withDefaults(defineProps<{
-  bestDay: KitchenFinanceDayHighlight | null
-  currencyCode: string
-  locale?: string
-  periodLabel: string
-  quietestDay: KitchenFinanceDayHighlight | null
-  strongestWeekday?: {
-    label: string
-    averageDailyGrossSalesMinor: number
-  } | null
-  timezone: string
-  topItem: KitchenFinanceItemSummary | null
-}>(), {
-  locale: 'en-GB',
-  strongestWeekday: null,
-})
+const props = withDefaults(
+  defineProps<{
+    bestDay: KitchenFinanceDayHighlight | null
+    currencyCode: string
+    locale?: string
+    periodLabel: string
+    quietestDay: KitchenFinanceDayHighlight | null
+    strongestWeekday?: {
+      label: string
+      averageDailyGrossSalesMinor: number
+    } | null
+    timezone: string
+    topItem: KitchenFinanceItemSummary | null
+  }>(),
+  {
+    locale: 'en-GB',
+    strongestWeekday: null,
+  }
+)
 
 const hasInsights = computed(() =>
   Boolean(
-    props.bestDay
-    || props.quietestDay
-    || props.topItem
-    || props.strongestWeekday
+    props.bestDay ||
+      props.quietestDay ||
+      props.topItem ||
+      props.strongestWeekday
   )
 )
 
-const dateFormatter = computed(() =>
-  new Intl.DateTimeFormat(props.locale, {
-    day: 'numeric',
-    month: 'short',
-    weekday: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  })
+const dateFormatter = computed(
+  () =>
+    new Intl.DateTimeFormat(props.locale, {
+      day: 'numeric',
+      month: 'short',
+      weekday: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
 )
 
 const topItemName = computed(() => {
@@ -262,8 +260,16 @@ function itemQuantity(count: number) {
   border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 3);
   background:
-    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--ui-primary) 22%, transparent), transparent 40%),
-    linear-gradient(145deg, color-mix(in srgb, var(--ui-primary) 8%, var(--ui-bg-elevated)), var(--ui-bg-elevated) 65%);
+    radial-gradient(
+      circle at 92% 8%,
+      color-mix(in srgb, var(--ui-primary) 22%, transparent),
+      transparent 40%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--ui-primary) 8%, var(--ui-bg-elevated)),
+      var(--ui-bg-elevated) 65%
+    );
 }
 
 .finance-roundup__eyebrow {

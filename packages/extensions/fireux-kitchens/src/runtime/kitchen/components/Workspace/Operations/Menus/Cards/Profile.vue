@@ -2,21 +2,14 @@
   <UCard v-if="menu">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="flex min-w-0 items-start gap-3">
-        <UAvatar
-          icon="i-lucide-book-open"
-          size="lg"
-          class="shrink-0"
-        />
+        <UAvatar icon="i-lucide-book-open" size="lg" class="shrink-0" />
 
         <div class="min-w-0 space-y-2">
           <h2 class="text-2xl font-semibold text-highlighted">
             {{ menuName }}
           </h2>
 
-          <p
-            v-if="menuDescription"
-            class="max-w-2xl text-sm text-dimmed"
-          >
+          <p v-if="menuDescription" class="max-w-2xl text-sm text-dimmed">
             {{ menuDescription }}
           </p>
 
@@ -27,7 +20,10 @@
             <UBadge color="neutral" variant="soft">
               {{ sectionLabel }}
             </UBadge>
-            <UBadge :color="orderingEnabled ? 'success' : 'neutral'" variant="soft">
+            <UBadge
+              :color="orderingEnabled ? 'success' : 'neutral'"
+              variant="soft"
+            >
               {{ orderingLabel }}
             </UBadge>
           </div>
@@ -73,15 +69,16 @@ const statusColor = computed(() =>
       ? 'neutral'
       : 'warning'
 )
-const orderingEnabled = computed(() =>
-  props.menu?.ordering?.enabled === true &&
-  Array.isArray(props.menu?.ordering?.order_types) &&
-  props.menu.ordering.order_types.length > 0
+const orderingEnabled = computed(
+  () =>
+    props.menu?.ordering?.enabled === true &&
+    Array.isArray(props.menu?.ordering?.order_types) &&
+    props.menu.ordering.order_types.length > 0
 )
 const orderingLabel = computed(() =>
   orderingEnabled.value ? 'Ordering enabled' : 'Browse only'
 )
-const sectionLabel = computed(() =>
-  `${props.sectionsCount} section${props.sectionsCount === 1 ? '' : 's'}`
+const sectionLabel = computed(
+  () => `${props.sectionsCount} section${props.sectionsCount === 1 ? '' : 's'}`
 )
 </script>

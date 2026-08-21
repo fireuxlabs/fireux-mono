@@ -21,8 +21,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badges.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
@@ -34,7 +43,10 @@
 <script setup lang="ts">
 import type { PropertyCard } from '../../composables/firestore/utils/view/usePropertyInterface'
 
-type PillProps = Pick<PropertyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta'> & {
+type PillProps = Pick<
+  PropertyCard.Card,
+  'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta'
+> & {
   showSubtitle?: boolean
   showMeta?: boolean
   badges?: string[]

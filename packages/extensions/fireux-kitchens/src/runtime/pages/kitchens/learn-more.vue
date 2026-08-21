@@ -13,9 +13,17 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Kitchens are the runtime records used to manage service operations.</li>
-          <li>They stay linked to place identity while carrying kitchen-specific operational state.</li>
-          <li>The kitchen workspace is where menus, recipes, mise, orders, and team surfaces come together.</li>
+          <li>
+            Kitchens are the runtime records used to manage service operations.
+          </li>
+          <li>
+            They stay linked to place identity while carrying kitchen-specific
+            operational state.
+          </li>
+          <li>
+            The kitchen workspace is where menus, recipes, mise, orders, and
+            team surfaces come together.
+          </li>
         </ul>
       </UCard>
 
@@ -26,16 +34,42 @@
 
         <ol class="list-decimal fx-list-stack text-sm">
           <li>Create or claim a kitchen record inside the active runtime.</li>
-          <li>Use the kitchen workspace to move from overview into menus, ingredients, dishes, and service workflows.</li>
-          <li>Keep public identity and private operational flow aligned through the same kitchen record.</li>
+          <li>
+            Use the kitchen workspace to move from overview into menus,
+            ingredients, dishes, and service workflows.
+          </li>
+          <li>
+            Keep public identity and private operational flow aligned through
+            the same kitchen record.
+          </li>
         </ol>
       </UCard>
 
       <div class="flex flex-wrap gap-2">
-        <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat">Open kitchens</UButton>
-        <UButton to="/kitchens/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">Dev details</UButton>
-        <UButton to="/workspace/kitchen" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Kitchen Workspace</UButton>
-        <UButton to="/kitchens/create" color="neutral" variant="ghost" icon="i-lucide-plus">Create kitchen</UButton>
+        <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat"
+          >Open kitchens</UButton
+        >
+        <UButton
+          to="/kitchens/learn-more/dev"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-code-2"
+          >Dev details</UButton
+        >
+        <UButton
+          to="/workspace/kitchen"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-layout-dashboard"
+          >Enter Kitchen Workspace</UButton
+        >
+        <UButton
+          to="/kitchens/create"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-plus"
+          >Create kitchen</UButton
+        >
       </div>
     </UPageBody>
   </UPage>
@@ -55,6 +89,7 @@ useHead({ title: `${appName} | Kitchens · Learn more` })
 
 useSeoMeta({
   title: `${appName} | Kitchens · Learn more`,
-  description: 'How kitchen records connect runtime operations, place identity, and service execution.',
+  description:
+    'How kitchen records connect runtime operations, place identity, and service execution.',
 })
 </script>

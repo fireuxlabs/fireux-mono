@@ -18,9 +18,7 @@
       </div>
     </div>
 
-    <p v-if="pending" class="text-sm text-dimmed">
-      Loading mise tasks...
-    </p>
+    <p v-if="pending" class="text-sm text-dimmed">Loading mise tasks...</p>
 
     <UAlert
       v-else-if="error"
@@ -74,7 +72,7 @@ const props = withDefaults(
 )
 
 const activeTaskCount = computed(
-  () => props.tasks.filter(task => task.status !== 'done').length
+  () => props.tasks.filter((task) => task.status !== 'done').length
 )
 const collectionDescription = computed(() => {
   const kitchenName = cleanKitchenMiseText(props.kitchenName)

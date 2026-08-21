@@ -60,16 +60,10 @@ function draftFrom(
 
 async function authorizeDossier(event: H3Event, kitchenId: string) {
   const actor = await readKitchenMutationActor(event)
-  let ownerAppId = ''
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const kitchen = await requireKitchenMutationAuthority(
-      mutations,
-      actor,
-      kitchenId
-    )
-    ownerAppId = kitchen.ownerAppId
+    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
   })
-  return { actor, ownerAppId }
+  return actor
 }
 
 export async function extractKitchenTeamDossier(
@@ -77,7 +71,7 @@ export async function extractKitchenTeamDossier(
   input: { kitchenId: string }
 ) {
   const kitchenId = requireFirestoreDocumentId(input.kitchenId, 'Kitchen id')
-  const { actor, ownerAppId } = await authorizeDossier(event, kitchenId)
+  const actor = await authorizeDossier(event, kitchenId)
   const parts = await readMultipartFormData(event)
   const file = readUploadedMultipartFile(parts, {
     label: 'Team member dossier',
@@ -94,7 +88,7 @@ export async function extractKitchenTeamDossier(
     invalidTypeMessage: 'Upload a PDF or image dossier.',
   })
   const intakeId = randomUUID()
-  const objectPath = `apps/${ownerAppId}/kitchens/${kitchenId}/team-dossier-intake/${intakeId}/${file.fileName}`
+  const objectPath = `kitchens/${kitchenId}/team-dossier-intake/${intakeId}/${file.fileName}`
   const saved = await saveStorageFileWithDownloadToken({
     objectPath,
     data: file.data,

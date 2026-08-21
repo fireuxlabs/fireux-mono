@@ -1,24 +1,29 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
-    <div
-      class="fx-card--cell"
-    >
-      <UAvatar :src="imageUrl || undefined" :alt="title" size="md" class="shrink-0" />
+  <NuxtLink v-if="link && to" :to="to" class="block w-full">
+    <div class="fx-card--cell">
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="title"
+        size="md"
+        class="shrink-0"
+      />
 
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && author" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && author"
+              class="truncate text-xs text-dimmed"
+            >
               {{ author }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div
+            v-if="showBadges && badges.length"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+          >
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -37,28 +42,33 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
-    <div
-      class="fx-card--cell"
-    >
-      <UAvatar :src="imageUrl || undefined" :alt="title" size="md" class="shrink-0" />
+  <div v-else class="block w-full" @click="onClick">
+    <div class="fx-card--cell">
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="title"
+        size="md"
+        class="shrink-0"
+      />
 
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && author" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && author"
+              class="truncate text-xs text-dimmed"
+            >
               {{ author }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div
+            v-if="showBadges && badges.length"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+          >
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -77,7 +87,7 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">

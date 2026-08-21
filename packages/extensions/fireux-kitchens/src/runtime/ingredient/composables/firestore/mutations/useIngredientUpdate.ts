@@ -1,7 +1,7 @@
 import { refreshNuxtData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { IngredientUpdateInput } from '../../../models/ingredient.model.ts'
-import type { PublicIngredientDetailResponse } from '../../../models/ingredient-public.model.ts'
+import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 
 export function useIngredientUpdate() {
   const { currentUser } = useAuth()
@@ -16,7 +16,7 @@ export function useIngredientUpdate() {
     const user = currentUser.value
     if (!user) throw new Error('Sign in to curate Ingredients')
     const token = await user.getIdToken()
-    const response = await $fetch<PublicIngredientDetailResponse>(
+    const response = await $fetch<IngredientDetailResponse>(
       `/api/internal/ingredients/${encodeURIComponent(resolvedIngredientId)}`,
       {
         method: 'PATCH',
@@ -25,11 +25,11 @@ export function useIngredientUpdate() {
       }
     )
     await refreshNuxtData([
-      `public-ingredient-${resolvedIngredientId}`,
-      'public-ingredient-library-v2',
+      `ingredient-${resolvedIngredientId}`,
+      'ingredient-directory-v2',
       'curator-ingredient-library-v2',
     ])
-    return response.item
+    return response.ingredient
   }
 
   return { updateIngredient }

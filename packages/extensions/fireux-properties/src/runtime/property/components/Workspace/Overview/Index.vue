@@ -22,9 +22,12 @@
       <DevDebugPanel
         title="Property overview"
         scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedProperty: focus.entity, properties: multiple.items }"
-      :derived="debug"
+        object-origin="fetched"
+        :objects="{
+          selectedProperty: focus.entity,
+          properties: multiple.items,
+        }"
+        :derived="debug"
         :default-open="false"
       />
     </div>
@@ -39,7 +42,9 @@ import { usePropertyInterface } from '../../../composables/firestore/utils/view/
 
 const { focus, multiple, debug } = usePropertyWorkspaceOverview()
 const { pill } = usePropertyInterface()
-const focusCard = computed(() => pill(focus.value.entity) as WorkspaceTargetCard | null)
+const focusCard = computed(
+  () => pill(focus.value.entity) as WorkspaceTargetCard | null
+)
 const multipleCards = computed(() =>
   multiple.value.items
     .map((property) => pill(property) as WorkspaceTargetCard | null)

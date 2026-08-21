@@ -12,8 +12,8 @@ import type {
   MarketplaceStoreMemberIntent,
   MarketplaceStoreModerationIntent,
   MarketplaceStorePatchIntent,
-  PublicMarketplaceStoreListResponse,
-  PublicMarketplaceStoreResponse,
+  MarketplaceStoreDetailResponse,
+  MarketplaceStoreDirectoryPage,
 } from '../models/marketplace-api.model.ts'
 import type {
   MarketplaceOffer,
@@ -30,19 +30,17 @@ async function marketplaceAuthorization() {
 }
 
 export function useMarketplaceClient() {
-  const publicStores = () =>
-    $fetch<PublicMarketplaceStoreListResponse>(
-      '/api/public/marketplace/stores'
-    )
+  const directoryStores = () =>
+    $fetch<MarketplaceStoreDirectoryPage>('/api/marketplace-stores')
 
-  const publicStore = (slug: string) =>
-    $fetch<PublicMarketplaceStoreResponse>(
-      `/api/public/marketplace/stores/${encodeURIComponent(slug)}`
+  const storeDetail = (slug: string) =>
+    $fetch<MarketplaceStoreDetailResponse>(
+      `/api/marketplace-stores/${encodeURIComponent(slug)}`
     )
 
   const previewStore = async (slug: string) =>
-    $fetch<PublicMarketplaceStoreResponse>(
-      `/api/public/marketplace/stores/${encodeURIComponent(slug)}`,
+    $fetch<MarketplaceStoreDetailResponse>(
+      `/api/marketplace-stores/${encodeURIComponent(slug)}`,
       import.meta.dev
         ? undefined
         : {
@@ -135,10 +133,7 @@ export function useMarketplaceClient() {
       }
     )
 
-  const orders = async (
-    view: 'buyer' | 'seller',
-    storeId = ''
-  ) =>
+  const orders = async (view: 'buyer' | 'seller', storeId = '') =>
     $fetch<MarketplaceOrdersResponse>('/api/marketplace/orders', {
       headers: await marketplaceAuthorization(),
       query: { view, ...(storeId ? { storeId } : {}) },
@@ -199,8 +194,8 @@ export function useMarketplaceClient() {
     )
 
   return {
-    publicStores,
-    publicStore,
+    directoryStores,
+    storeDetail,
     previewStore,
     managedStores,
     managedStore,

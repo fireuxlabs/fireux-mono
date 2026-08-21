@@ -29,7 +29,9 @@ export function useMenuSectionCollection(
     options
   )
   const sections = computed(() =>
-    sortSections(state.items.value).filter((section) => section.status !== 'archived')
+    sortSections(state.items.value).filter(
+      (section) => section.status !== 'archived'
+    )
   )
 
   return {

@@ -3,14 +3,13 @@
   <UCard>
     <template #header>
       <div class="workspace-card-header">
-        <div class="workspace-card-header__title">Create {{ catalogue.singular }}</div>
+        <div class="workspace-card-header__title">
+          Create {{ catalogue.singular }}
+        </div>
       </div>
     </template>
 
-    <form
-      class="space-y-4"
-      @submit.prevent="addDish"
-    >
+    <form class="space-y-4" @submit.prevent="addDish">
       <UFormField label="Image">
         <div class="flex flex-col items-start gap-2">
           <MoleculesFormsFirestoreImagePicker
@@ -22,7 +21,8 @@
             :update-function="stageImage"
           />
           <p class="text-xs text-dimmed">
-            Use a transparent-background source. It will be stored as a 1200 × 1200 WebP when the Dish is created.
+            Use a transparent-background source. It will be stored as a 1200 ×
+            1200 WebP when the Dish is created.
           </p>
         </div>
       </UFormField>
@@ -56,10 +56,7 @@
           Create {{ catalogue.singular }}
         </UButton>
 
-        <p
-          v-if="message"
-          class="text-xs text-dimmed"
-        >
+        <p v-if="message" class="text-xs text-dimmed">
           {{ message }}
         </p>
       </div>
@@ -74,13 +71,8 @@ import { useKitchenDishesWorkspace } from '../../../../composables/workspace/ope
 import { useDishCreate } from '../../../../composables/firestore/dish/mutations/useDishCreate'
 import { useDishImageUpload } from '../../../../composables/firestore/dish/mutations/useDishImageUpload'
 
-const {
-  kitchenId,
-  rootCollection,
-  databaseId,
-  canWrite,
-  catalogue,
-} = useKitchenDishesWorkspace()
+const { kitchenId, rootCollection, databaseId, canWrite, catalogue } =
+  useKitchenDishesWorkspace()
 const { createDish } = useDishCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,
@@ -96,8 +88,8 @@ const imageFile = ref<File | null>(null)
 const imagePreviewUrl = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const canCreateDish = computed(() =>
-  canWrite.value && Boolean(normalizeString(kitchenId.value))
+const canCreateDish = computed(
+  () => canWrite.value && Boolean(normalizeString(kitchenId.value))
 )
 const imageInitials = computed(() => {
   const parts = normalizeString(name.value).split(/\s+/).filter(Boolean)
@@ -157,10 +149,10 @@ const addDish = async () => {
       } catch (error) {
         const imageError = String(
           (error as any)?.data?.statusMessage ||
-          (error as any)?.statusMessage ||
-          (error as any)?.message ||
-          error ||
-          'Image upload failed.'
+            (error as any)?.statusMessage ||
+            (error as any)?.message ||
+            error ||
+            'Image upload failed.'
         )
         message.value = `Created ${dishName}, but its image was not saved: ${imageError}`
         toast.add({
@@ -182,7 +174,9 @@ const addDish = async () => {
     message.value = `Created ${dishName}.`
     toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
   } catch (error) {
-    const errorMessage = String((error as any)?.message || error || 'Create dish failed.')
+    const errorMessage = String(
+      (error as any)?.message || error || 'Create dish failed.'
+    )
     message.value = errorMessage
     toast.add({
       title: 'Dish create failed',

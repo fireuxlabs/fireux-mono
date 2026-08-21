@@ -84,12 +84,11 @@ export function projectDay(
     itemQuantity: day.itemQuantity,
     itemSalesMinor: day.itemSalesMinor,
     deliveryFeesMinor: day.deliveryFeesMinor,
-    items: day.items.map(item => ({
+    items: day.items.map((item) => ({
       id: itemKey(item),
       ...item,
-      sharePercent: Math.round(
-        item.lineGrossMinor / day.itemSalesMinor * 1_000
-      ) / 10,
+      sharePercent:
+        Math.round((item.lineGrossMinor / day.itemSalesMinor) * 1_000) / 10,
     })),
   }
 }
@@ -110,8 +109,8 @@ export function groupWeekdays(
   days: readonly KitchenDemoFinanceSource['dailyGrossSales'][number][]
 ): KitchenDemoFinanceWeekday[] {
   return WEEKDAY_ORDER.map((weekday) => {
-    const matching = days.filter(day =>
-      new Date(`${day.date}T00:00:00.000Z`).getUTCDay() === weekday
+    const matching = days.filter(
+      (day) => new Date(`${day.date}T00:00:00.000Z`).getUTCDay() === weekday
     )
     const summary = sumDays(matching)
     return {

@@ -6,13 +6,12 @@ import {
 } from './components'
 import type { KitchenDemoMenuItemComponentDelta } from './types'
 
-const deanosPartyMenuItemComponentMultipliers:
-  KitchenDemoMenuItemComponentDelta[] =
+const deanosPartyMenuItemComponentMultipliers: KitchenDemoMenuItemComponentDelta[] =
   deanosPartyDemoMenu.menuSections.flatMap(({ section, items }) =>
     items.flatMap((item) => {
       const baseOption = item.price_options[0]
       if (!baseOption || baseOption.quantity <= 0) return []
-      return item.price_options.slice(1).map(option => ({
+      return item.price_options.slice(1).map((option) => ({
         id: `${item.id}-${option.label
           .toLowerCase()
           .replaceAll(/[^a-z0-9]+/g, '-')}`,
@@ -140,4 +139,3 @@ export const deanosKitchenDemoMenuItemComponentDeltas: KitchenDemoMenuItemCompon
       ],
     },
   ]
-

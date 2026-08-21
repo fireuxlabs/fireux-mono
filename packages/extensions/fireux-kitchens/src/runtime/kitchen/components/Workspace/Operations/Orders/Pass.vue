@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="passOrders.length"
-    class="orders-pass"
-    data-order-rail="pass"
-  >
+  <div v-if="passOrders.length" class="orders-pass" data-order-rail="pass">
     <WorkspaceKitchenOperationsOrdersTicket
       v-for="ticket in passOrders"
       :key="ticket.id"
@@ -22,12 +18,8 @@ import { useKitchenOrdersWorkspace } from '../../../../composables/workspace/ope
 
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersPass' })
 
-const {
-  passOrders,
-  pass,
-  canInteract,
-  returnPassOrder,
-} = useKitchenOrdersWorkspace()
+const { passOrders, pass, canInteract, returnPassOrder } =
+  useKitchenOrdersWorkspace()
 </script>
 
 <style scoped>

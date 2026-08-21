@@ -12,12 +12,8 @@ import { useWorkspaceEntityRuntime } from 'fireux-core/runtime/composables/fireu
 import { useWorkspaceFamilyRuntime } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceFamilyRuntime'
 import { useWorkspaceTargets } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  PropertyStorage,
-} from '../../../models/property.model.ts'
-import {
-  usePropertyCollection,
-} from '../../firestore/fetch/usePropertyCollection'
+import { PropertyStorage } from '../../../models/property.model.ts'
+import { usePropertyCollection } from '../../firestore/fetch/usePropertyCollection'
 import type { PropertySurface } from '../../firestore/utils/view/usePropertyInterface'
 import { usePropertyWorkspaceDemoData } from './usePropertyWorkspaceDemoData'
 
@@ -46,7 +42,6 @@ function createPropertyWorkspace() {
   })
   const liveCollection = usePropertyCollection({
     source: workspaceRoot.source,
-    shape: 'root-with-app-support',
     filter: targetFilter,
   })
   const demoData = usePropertyWorkspaceDemoData(
@@ -64,7 +59,9 @@ function createPropertyWorkspace() {
         : workspaceRoot.source.value === 'test'
           ? 'test'
           : 'live'
-    return targetProperties.value.map(property => workspaceData(type, property))
+    return targetProperties.value.map((property) =>
+      workspaceData(type, property)
+    )
   })
   const targetsPending = computed(() =>
     workspaceRoot.source.value === 'demo'

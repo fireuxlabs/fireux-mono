@@ -10,9 +10,7 @@
 
       <div class="min-w-0 flex-1 space-y-3">
         <div class="space-y-1">
-          <div class="fx-type-label">
-            Portfolio
-          </div>
+          <div class="fx-type-label">Portfolio</div>
           <h2 class="text-2xl font-semibold text-highlighted">
             {{ card.title }}
           </h2>
@@ -22,11 +20,7 @@
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <UBadge
-            v-if="card.status"
-            color="neutral"
-            variant="soft"
-          >
+          <UBadge v-if="card.status" color="neutral" variant="soft">
             {{ card.status }}
           </UBadge>
           <UBadge

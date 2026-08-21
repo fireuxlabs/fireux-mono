@@ -66,11 +66,7 @@
 import { computed } from 'vue'
 import { useKitchenWorkspaceMenu } from '../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenu'
 
-const {
-  menu,
-  menuId,
-  source,
-} = useKitchenWorkspaceMenu()
+const { menu, menuId, source } = useKitchenWorkspaceMenu()
 const sourceLabel = computed(() =>
   String(source.value?.source_url ? 'menu URL' : 'menu source')
 )

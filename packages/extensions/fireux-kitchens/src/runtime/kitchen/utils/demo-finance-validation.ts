@@ -3,7 +3,11 @@ import {
   requireFinancialMinorAmount,
 } from 'fireux-finance/runtime/utils/money'
 import type { KitchenDemoFinanceSource } from './demo-finance.types.ts'
-import { addIsoDays, ISO_DATE_PATTERN, validTimezone } from './demo-finance-date'
+import {
+  addIsoDays,
+  ISO_DATE_PATTERN,
+  validTimezone,
+} from './demo-finance-date'
 import { itemKey, MAX_DAILY_ITEM_GROUPS } from './demo-finance-items'
 
 const isArrayValue = (value: unknown): boolean => Array.isArray(value)
@@ -13,12 +17,12 @@ export function requireKitchenDemoFinanceDays(
   minimumDays: number
 ) {
   if (
-    !ISO_DATE_PATTERN.test(finance.asOfDate)
-    || !/^[A-Z]{3}$/.test(finance.currencyCode)
-    || !validTimezone(finance.timezone)
-    || !isArrayValue(finance.dailyGrossSales)
-    || finance.dailyGrossSales.length < minimumDays
-    || finance.dailyGrossSales.length > 366
+    !ISO_DATE_PATTERN.test(finance.asOfDate) ||
+    !/^[A-Z]{3}$/.test(finance.currencyCode) ||
+    !validTimezone(finance.timezone) ||
+    !isArrayValue(finance.dailyGrossSales) ||
+    finance.dailyGrossSales.length < minimumDays ||
+    finance.dailyGrossSales.length > 366
   ) {
     throw new Error('Kitchen Demo Finance source is incomplete.')
   }
@@ -28,10 +32,10 @@ export function requireKitchenDemoFinanceDays(
   const seenOrderIds = new Set<string>()
   const daily = finance.dailyGrossSales.map((day, index) => {
     if (
-      !ISO_DATE_PATTERN.test(day.date)
-      || seenDates.has(day.date)
-      || !Number.isSafeInteger(day.saleCount)
-      || day.saleCount <= 0
+      !ISO_DATE_PATTERN.test(day.date) ||
+      seenDates.has(day.date) ||
+      !Number.isSafeInteger(day.saleCount) ||
+      day.saleCount <= 0
     ) {
       throw new Error(`Kitchen Demo Finance day ${index + 1} is invalid.`)
     }
@@ -50,13 +54,13 @@ export function requireKitchenDemoFinanceDays(
       label: `Kitchen Demo delivery fees for ${day.date}`,
     })
     if (
-      !Number.isSafeInteger(day.itemQuantity)
-      || day.itemQuantity <= 0
-      || !isArrayValue(day.items)
-      || day.items.length === 0
-      || day.items.length > MAX_DAILY_ITEM_GROUPS
-      || !isArrayValue(day.transactions)
-      || day.transactions.length !== day.saleCount
+      !Number.isSafeInteger(day.itemQuantity) ||
+      day.itemQuantity <= 0 ||
+      !isArrayValue(day.items) ||
+      day.items.length === 0 ||
+      day.items.length > MAX_DAILY_ITEM_GROUPS ||
+      !isArrayValue(day.transactions) ||
+      day.transactions.length !== day.saleCount
     ) {
       throw new Error(`Kitchen Demo Finance items for ${day.date} are invalid.`)
     }
@@ -66,14 +70,14 @@ export function requireKitchenDemoFinanceDays(
       (summary, item, itemIndex) => {
         const key = itemKey(item)
         if (
-          !key
-          || itemKeys.has(key)
-          || !Number.isSafeInteger(item.quantity)
-          || item.quantity <= 0
-          || !Number.isSafeInteger(item.saleCount)
-          || item.saleCount <= 0
-          || item.saleCount > item.quantity
-          || item.saleCount > day.saleCount
+          !key ||
+          itemKeys.has(key) ||
+          !Number.isSafeInteger(item.quantity) ||
+          item.quantity <= 0 ||
+          !Number.isSafeInteger(item.saleCount) ||
+          item.saleCount <= 0 ||
+          item.saleCount > item.quantity ||
+          item.saleCount > day.saleCount
         ) {
           throw new Error(
             `Kitchen Demo Finance item ${itemIndex + 1} for ${day.date} is invalid.`
@@ -99,10 +103,10 @@ export function requireKitchenDemoFinanceDays(
       { quantity: 0, lineGrossMinor: 0 }
     )
     if (
-      itemSummary.quantity !== day.itemQuantity
-      || itemSummary.quantity < day.saleCount
-      || itemSummary.lineGrossMinor !== day.itemSalesMinor
-      || day.itemSalesMinor + day.deliveryFeesMinor !== day.grossSalesMinor
+      itemSummary.quantity !== day.itemQuantity ||
+      itemSummary.quantity < day.saleCount ||
+      itemSummary.lineGrossMinor !== day.itemSalesMinor ||
+      day.itemSalesMinor + day.deliveryFeesMinor !== day.grossSalesMinor
     ) {
       throw new Error(
         `Kitchen Demo Finance totals for ${day.date} do not reconcile.`
@@ -111,31 +115,34 @@ export function requireKitchenDemoFinanceDays(
     const transactionSummary = day.transactions.reduce(
       (summary, transaction, transactionIndex) => {
         if (
-          !transaction.orderNumber
-          || !transaction.orderId
-          || seenOrderIds.has(transaction.orderId)
-          || !transaction.serviceId
-          || transaction.source.kind !== 'completed_order'
-          || transaction.source.id !== transaction.orderId
-          || transaction.source.serviceId !== transaction.serviceId
-          || transaction.source.serviceNumber !== transaction.serviceNumber
-          || !Number.isSafeInteger(transaction.serviceNumber)
-          || transaction.serviceNumber <= 0
-          || !Number.isFinite(Date.parse(transaction.placedAt))
-          || !Number.isFinite(Date.parse(transaction.occurredAt))
-          || Date.parse(transaction.placedAt) >= Date.parse(transaction.occurredAt)
-          || !transaction.occurredAt.startsWith(day.date)
-          || !['eat_in', 'takeaway', 'collection'].includes(transaction.orderType)
-          || !['kiosk', 'menu'].includes(transaction.channel)
-          || transaction.status !== 'completed'
-          || !transaction.closedByTeamMemberId
-          || !transaction.closedBy
-          || !transaction.counterparty
-          || !transaction.summary
-          || !Number.isSafeInteger(transaction.itemQuantity)
-          || transaction.itemQuantity <= 0
-          || !isArrayValue(transaction.items)
-          || transaction.items.length === 0
+          !transaction.orderNumber ||
+          !transaction.orderId ||
+          seenOrderIds.has(transaction.orderId) ||
+          !transaction.serviceId ||
+          transaction.source.kind !== 'completed_order' ||
+          transaction.source.id !== transaction.orderId ||
+          transaction.source.serviceId !== transaction.serviceId ||
+          transaction.source.serviceNumber !== transaction.serviceNumber ||
+          !Number.isSafeInteger(transaction.serviceNumber) ||
+          transaction.serviceNumber <= 0 ||
+          !Number.isFinite(Date.parse(transaction.placedAt)) ||
+          !Number.isFinite(Date.parse(transaction.occurredAt)) ||
+          Date.parse(transaction.placedAt) >=
+            Date.parse(transaction.occurredAt) ||
+          !transaction.occurredAt.startsWith(day.date) ||
+          !['eat_in', 'takeaway', 'collection'].includes(
+            transaction.orderType
+          ) ||
+          !['kiosk', 'menu'].includes(transaction.channel) ||
+          transaction.status !== 'completed' ||
+          !transaction.closedByTeamMemberId ||
+          !transaction.closedBy ||
+          !transaction.counterparty ||
+          !transaction.summary ||
+          !Number.isSafeInteger(transaction.itemQuantity) ||
+          transaction.itemQuantity <= 0 ||
+          !isArrayValue(transaction.items) ||
+          transaction.items.length === 0
         ) {
           throw new Error(
             `Kitchen Demo Finance transaction ${transactionIndex + 1} for ${day.date} is invalid.`
@@ -160,12 +167,12 @@ export function requireKitchenDemoFinanceDays(
         const transactionItems = transaction.items.reduce(
           (itemSummary, item) => {
             if (
-              !item.label
-              || !Number.isSafeInteger(item.unitPriceMinor)
-              || item.unitPriceMinor <= 0
-              || !Number.isSafeInteger(item.quantity)
-              || item.quantity <= 0
-              || item.unitPriceMinor * item.quantity !== item.lineGrossMinor
+              !item.label ||
+              !Number.isSafeInteger(item.unitPriceMinor) ||
+              item.unitPriceMinor <= 0 ||
+              !Number.isSafeInteger(item.quantity) ||
+              item.quantity <= 0 ||
+              item.unitPriceMinor * item.quantity !== item.lineGrossMinor
             ) {
               throw new Error(
                 `Kitchen Demo Finance transaction items for ${day.date} are invalid.`
@@ -185,8 +192,8 @@ export function requireKitchenDemoFinanceDays(
           { quantity: 0, grossSalesMinor: 0 }
         )
         if (
-          transactionItems.quantity !== transaction.itemQuantity
-          || transactionItems.grossSalesMinor !== transaction.grossSalesMinor
+          transactionItems.quantity !== transaction.itemQuantity ||
+          transactionItems.grossSalesMinor !== transaction.grossSalesMinor
         ) {
           throw new Error(
             `Kitchen Demo Finance transaction items for ${day.date} do not reconcile.`
@@ -194,14 +201,15 @@ export function requireKitchenDemoFinanceDays(
         }
         return {
           itemQuantity: summary.itemQuantity + transaction.itemQuantity,
-          grossSalesMinor: summary.grossSalesMinor + transaction.grossSalesMinor,
+          grossSalesMinor:
+            summary.grossSalesMinor + transaction.grossSalesMinor,
         }
       },
       { itemQuantity: 0, grossSalesMinor: 0 }
     )
     if (
-      transactionSummary.itemQuantity !== day.itemQuantity
-      || transactionSummary.grossSalesMinor !== day.grossSalesMinor
+      transactionSummary.itemQuantity !== day.itemQuantity ||
+      transactionSummary.grossSalesMinor !== day.grossSalesMinor
     ) {
       throw new Error(
         `Kitchen Demo Finance transactions for ${day.date} do not reconcile.`
@@ -210,17 +218,17 @@ export function requireKitchenDemoFinanceDays(
     seenDates.add(day.date)
 
     if (
-      index > 0
-      && day.date !== addIsoDays(finance.dailyGrossSales[index - 1].date, 1)
+      index > 0 &&
+      day.date !== addIsoDays(finance.dailyGrossSales[index - 1].date, 1)
     ) {
       throw new Error('Kitchen Demo Finance days must be contiguous.')
     }
     return {
       ...day,
-      items: day.items.map(item => ({ ...item })),
-      transactions: day.transactions.map(transaction => ({
+      items: day.items.map((item) => ({ ...item })),
+      transactions: day.transactions.map((transaction) => ({
         ...transaction,
-        items: transaction.items.map(item => ({ ...item })),
+        items: transaction.items.map((item) => ({ ...item })),
       })),
     }
   })

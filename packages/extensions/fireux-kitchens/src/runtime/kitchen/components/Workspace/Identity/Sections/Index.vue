@@ -116,12 +116,12 @@ const {
   refreshTargets,
 } = useKitchenIdentityProgression()
 const { preview, surface } = useKitchenInterface()
-const kitchen = computed(
-  () => selectedKitchen.value as KitchenSurface | null
+const kitchen = computed(() => selectedKitchen.value as KitchenSurface | null)
+const resolvedKitchen = computed(() =>
+  surface({
+    kitchen: kitchen.value,
+    place: place.value,
+  })
 )
-const resolvedKitchen = computed(() => surface({
-  kitchen: kitchen.value,
-  place: place.value,
-}))
 const previewModel = computed(() => preview(resolvedKitchen.value))
 </script>

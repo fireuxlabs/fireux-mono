@@ -24,10 +24,7 @@
         </div>
       </div>
 
-      <div
-        v-else-if="selectedMember && confirmingDelete"
-        class="space-y-5"
-      >
+      <div v-else-if="selectedMember && confirmingDelete" class="space-y-5">
         <SelectedMember :member="selectedMember" @change="clearSelection" />
         <UAlert
           color="error"
@@ -176,7 +173,7 @@ const emptyDescription = computed(() =>
     ? 'Every current member is linked to an account.'
     : props.mode === 'delete'
       ? 'There are no unlinked members to delete.'
-    : 'Add a member before using this tool.'
+      : 'Add a member before using this tool.'
 )
 const memberName = (member: KitchenTeamMember) =>
   String(member.display_name || member.name || 'Team member').trim()

@@ -42,33 +42,29 @@ const ADAPTERS = [
     owner: 'app/server/media/sync',
   },
   {
-    route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/admins.get.ts',
+    route: 'packages/core/fireux-core/src/runtime/server/api/app/admins.get.ts',
     owner: 'app/server/index/admins',
   },
   {
-    route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/info.get.ts',
+    route: 'packages/core/fireux-core/src/runtime/server/api/app/info.get.ts',
     owner: 'app/server/index/info',
   },
   {
-    route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/meta.get.ts',
+    route: 'packages/core/fireux-core/src/runtime/server/api/app/meta.get.ts',
     owner: 'app/server/index/meta',
   },
   {
     route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/operations.get.ts',
+      'packages/core/fireux-core/src/runtime/server/api/app/operations.get.ts',
     owner: 'app/server/index/operations',
   },
   {
     route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/solutions.get.ts',
+      'packages/core/fireux-core/src/runtime/server/api/app/solutions.get.ts',
     owner: 'app/server/index/solutions',
   },
   {
-    route:
-      'packages/core/fireux-core/src/runtime/server/api/public/app/status.get.ts',
+    route: 'packages/core/fireux-core/src/runtime/server/api/app/status.get.ts',
     owner: 'app/server/index/status',
   },
   {
@@ -79,7 +75,7 @@ const ADAPTERS = [
   {
     route:
       'packages/extensions/fireux-properties/src/runtime/server/api/properties/index.get.ts',
-    owner: 'property/server/index/public-index',
+    owner: 'property/server/index/read',
   },
   {
     route:

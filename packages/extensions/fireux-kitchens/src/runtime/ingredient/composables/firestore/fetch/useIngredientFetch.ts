@@ -1,12 +1,10 @@
 import { useAsyncData } from '#imports'
 import { computed, type ComputedRef } from 'vue'
-import type {
-  PublicIngredient,
-  PublicIngredientDetailResponse,
-} from '../../../models/ingredient-public.model.ts'
+import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
+import type { Ingredient } from '../../../models/ingredient.model.ts'
 
 export type IngredientFetchState = {
-  ingredient: ComputedRef<PublicIngredient | null | undefined>
+  ingredient: ComputedRef<Ingredient | null | undefined>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   refresh: () => Promise<void>
@@ -21,14 +19,14 @@ export function useIngredientFetch(): UseIngredientFetchResult {
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
-    const state = useAsyncData<PublicIngredient | null>(
-      `public-ingredient-${resolvedIngredientId}`,
+    const state = useAsyncData<Ingredient | null>(
+      `ingredient-${resolvedIngredientId}`,
       async () => {
         try {
-          const response = await $fetch<PublicIngredientDetailResponse>(
+          const response = await $fetch<IngredientDetailResponse>(
             `/api/ingredients/${encodeURIComponent(resolvedIngredientId)}`
           )
-          return response.item
+          return response.ingredient
         } catch (error: any) {
           if (Number(error?.statusCode || error?.status) === 404) return null
           throw error

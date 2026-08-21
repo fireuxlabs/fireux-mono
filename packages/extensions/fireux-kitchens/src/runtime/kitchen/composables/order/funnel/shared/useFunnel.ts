@@ -1,11 +1,4 @@
-import {
-  computed,
-  proxyRefs,
-  ref,
-  shallowRef,
-  toValue,
-  watch,
-} from 'vue'
+import { computed, proxyRefs, ref, shallowRef, toValue, watch } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { menuOrderBasketActionLabel } from '../../../../../menu/utils/menu-ordering-ui'
 import { readWeekdayTimeOpenState } from '../../../../../utils/weekday-time'
@@ -23,10 +16,7 @@ import {
 } from './useOrderSession'
 import { useMenuChoiceState } from './useMenuChoiceState'
 import { useOrderDraft } from './useOrderDraft'
-import {
-  customerFromDelivery,
-  text,
-} from './order-input'
+import { customerFromDelivery, text } from './order-input'
 import type {
   MenuDetailView,
   PanelState,
@@ -47,9 +37,10 @@ const panelStates = ['closed', 'open'] as const satisfies readonly PanelState[]
 // Order funnel spine: keep this file as the small public controller assembly.
 export function useFunnel(options: UseKitchenOrderFunnelOptions) {
   const choice = useMenuChoiceState(options)
-  const orderChoiceActive = computed(() =>
-    choice.canOrder.value &&
-    Boolean(choice.selectedChoiceOption.value.orderType)
+  const orderChoiceActive = computed(
+    () =>
+      choice.canOrder.value &&
+      Boolean(choice.selectedChoiceOption.value.orderType)
   )
   const sessionGuard = useOrderSessionConflict({
     enabled: orderChoiceActive,
@@ -60,7 +51,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     orderType: choice.selectedOrderType,
   })
   const immediateServiceAvailable = computed(() => {
-    if (['collection', 'pre_order'].includes(choice.selectedOrderType.value)) return true
+    if (['collection', 'pre_order'].includes(choice.selectedOrderType.value))
+      return true
 
     const state = readWeekdayTimeOpenState(
       choice.behaviour.value?.ordering.service_hours?.operation_hours
@@ -68,14 +60,16 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
 
     return !state.known || state.open
   })
-  const canAddToSession = computed(() =>
-    choice.canOrder.value &&
-    immediateServiceAvailable.value &&
-    !sessionGuard.hasConflict.value
+  const canAddToSession = computed(
+    () =>
+      choice.canOrder.value &&
+      immediateServiceAvailable.value &&
+      !sessionGuard.hasConflict.value
   )
-  const isOrderMode = computed(() =>
-    canAddToSession.value &&
-    Boolean(choice.selectedChoiceOption.value.orderType)
+  const isOrderMode = computed(
+    () =>
+      canAddToSession.value &&
+      Boolean(choice.selectedChoiceOption.value.orderType)
   )
   const { selected: panelState } = useStoredChoice<PanelState>({
     key: computed(() =>
@@ -84,7 +78,9 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
         choice.menuStorageScope.value,
         'funnel',
         choice.selectedOrderType.value,
-      ].filter(Boolean).join(':')
+      ]
+        .filter(Boolean)
+        .join(':')
     ),
     choices: panelStates,
     fallback: 'closed',
@@ -119,7 +115,8 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     if (!choice.menuId.value) return ''
 
     const query = new URLSearchParams()
-    if (choice.kitchenSlug.value) query.set('kitchenSlug', choice.kitchenSlug.value)
+    if (choice.kitchenSlug.value)
+      query.set('kitchenSlug', choice.kitchenSlug.value)
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(choice.menuId.value)}/orders${qs ? `?${qs}` : ''}`
@@ -144,7 +141,9 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
     basket: draft.items.value.map((item) => ({
       item_id: item.id,
       ...(item.menuId ? { menu_id: item.menuId } : {}),
-      ...(item.lineId && item.lineId !== item.id ? { line_id: item.lineId } : {}),
+      ...(item.lineId && item.lineId !== item.id
+        ? { line_id: item.lineId }
+        : {}),
       name: item.name,
       quantity: item.quantity,
       ...(item.unitPrice ? { unit_price_chf: item.unitPrice } : {}),
@@ -165,9 +164,11 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       status: draft.trackedStatus.value?.status || order?.status || '',
       items: order?.receipt?.items || draft.items.value,
       total_chf: order?.receipt?.total_chf || total,
-      estimated_ready_minutes: draft.trackedStatus.value?.estimated_ready_minutes || 0,
+      estimated_ready_minutes:
+        draft.trackedStatus.value?.estimated_ready_minutes || 0,
       estimated_ready_at: draft.trackedStatus.value?.estimated_ready_at || '',
-      driver_watching_count: draft.trackedStatus.value?.driver_watching_count || 0,
+      driver_watching_count:
+        draft.trackedStatus.value?.driver_watching_count || 0,
       order: order || null,
     }
   })
@@ -203,11 +204,21 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
             }
           : {}),
       })),
-      ...(collectedIncoming.value.collection ? { collection: collectedIncoming.value.collection } : {}),
-      ...(collectedIncoming.value.payment_method ? { payment_method: collectedIncoming.value.payment_method } : {}),
-      ...(Object.keys(deliveryCustomer.value).length ? { customer: deliveryCustomer.value } : {}),
-      ...(collectedIncoming.value.table ? { table: collectedIncoming.value.table } : {}),
-      ...(collectedIncoming.value.room_service ? { room_service: collectedIncoming.value.room_service } : {}),
+      ...(collectedIncoming.value.collection
+        ? { collection: collectedIncoming.value.collection }
+        : {}),
+      ...(collectedIncoming.value.payment_method
+        ? { payment_method: collectedIncoming.value.payment_method }
+        : {}),
+      ...(Object.keys(deliveryCustomer.value).length
+        ? { customer: deliveryCustomer.value }
+        : {}),
+      ...(collectedIncoming.value.table
+        ? { table: collectedIncoming.value.table }
+        : {}),
+      ...(collectedIncoming.value.room_service
+        ? { room_service: collectedIncoming.value.room_service }
+        : {}),
     },
     pending: draft.creatingItemId.value === 'order',
     ...(draft.message.value ? { message: draft.message.value } : {}),
@@ -226,12 +237,15 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       channel: choice.orderChannel.value,
       panelOpen: panelOpen.value,
       items: draft.items.value,
-      message: draft.error.value || draft.awaitingMessage.value || draft.message.value,
+      message:
+        draft.error.value || draft.awaitingMessage.value || draft.message.value,
       menuId: choice.menuId.value,
       kitchenSlug: choice.kitchenSlug.value,
       orderType: choice.selectedOrderType.value,
       pending: draft.creatingItemId.value === 'order',
-      ...(choice.selectedOrderTypeConfig.value ? { policy: choice.selectedOrderTypeConfig.value } : {}),
+      ...(choice.selectedOrderTypeConfig.value
+        ? { policy: choice.selectedOrderTypeConfig.value }
+        : {}),
       quantity: draft.quantity.value,
       ...(serviceHours ? { serviceHours } : {}),
       selection: {
@@ -241,9 +255,10 @@ export function useFunnel(options: UseKitchenOrderFunnelOptions) {
       sentOrder: draft.sentOrder.value,
     }
   })
-  const showFunnel = computed(() =>
-    isOrderMode.value &&
-    (draft.quantity.value > 0 || Boolean(draft.sentOrder.value))
+  const showFunnel = computed(
+    () =>
+      isOrderMode.value &&
+      (draft.quantity.value > 0 || Boolean(draft.sentOrder.value))
   )
 
   function selectItem(item: MenuFoodItem) {

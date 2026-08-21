@@ -9,11 +9,15 @@
               Ordering surfaces
             </h2>
             <p class="text-sm text-dimmed">
-              Enable each customer doorway, then open its focused settings when available.
+              Enable each customer doorway, then open its focused settings when
+              available.
             </p>
           </div>
 
-          <UBadge :color="orderingEnabled ? 'success' : 'neutral'" variant="soft">
+          <UBadge
+            :color="orderingEnabled ? 'success' : 'neutral'"
+            variant="soft"
+          >
             {{ orderingEnabled ? 'Ordering on' : 'Ordering off' }}
           </UBadge>
         </div>
@@ -75,6 +79,6 @@ const {
   setOrderType,
 } = useKitchenWorkspaceMenuOrdering()
 const enabledTypes = computed(() =>
-  orderTypeConfigs.value.map(config => config.type)
+  orderTypeConfigs.value.map((config) => config.type)
 )
 </script>

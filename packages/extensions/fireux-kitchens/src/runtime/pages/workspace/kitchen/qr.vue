@@ -16,7 +16,8 @@
             </template>
 
             <p class="text-sm text-dimmed">
-              Kitchen and app QR surfaces will live here. Menu entry QR codes are below.
+              Kitchen and app QR surfaces will live here. Menu entry QR codes
+              are below.
             </p>
           </UCard>
 

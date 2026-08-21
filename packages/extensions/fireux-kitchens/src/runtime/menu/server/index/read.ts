@@ -10,9 +10,9 @@ import {
   type MenuDirectoryScope,
 } from '../../models/menu-directory.model.ts'
 import {
-  resolveDirectoryPublicMenuScope,
-  resolveTenantPublicMenuScope,
-} from '../ownership/public-target'
+  resolveDirectoryMenuScope,
+  resolveTenantMenuScope,
+} from '../ownership/target'
 import {
   readMenuDirectoryContext,
   readScopedMenuDirectoryContext,
@@ -32,14 +32,14 @@ export async function readMenuDirectoryPage(
   input: ReadMenuDirectoryPageInput = {}
 ): Promise<MenuDirectoryPage> {
   const db = getRuntimeFirestore()
-  const tenantScope = await resolveTenantPublicMenuScope()
+  const tenantScope = await resolveTenantMenuScope()
   const kitchenSlug = text(input.kitchenSlug)
   if (tenantScope && kitchenSlug) {
     throw createError({ statusCode: 404, statusMessage: 'Menus not found.' })
   }
   const directoryScope =
     !tenantScope && kitchenSlug
-      ? await resolveDirectoryPublicMenuScope(kitchenSlug)
+      ? await resolveDirectoryMenuScope(kitchenSlug)
       : null
   const scopedKitchen = tenantScope || directoryScope
   const scope: MenuDirectoryScope = tenantScope
@@ -48,7 +48,7 @@ export async function readMenuDirectoryPage(
       ? { kind: 'directory', kitchenSlug: directoryScope.kitchenSlug }
       : { kind: 'root' }
   const collectionPath = scopedKitchen
-    ? `apps/${scopedKitchen.appId}/kitchens/${scopedKitchen.kitchenId}/${KitchenMenuStorage.collection}`
+    ? `kitchens/${scopedKitchen.kitchenId}/${KitchenMenuStorage.collection}`
     : MenuStorage.rootCollection
   const limit = pageSize(input.limit)
   const requestedCursor = text(input.cursor)

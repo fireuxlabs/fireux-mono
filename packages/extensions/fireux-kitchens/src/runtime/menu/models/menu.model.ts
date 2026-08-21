@@ -20,7 +20,7 @@ export const MenuEntity = defineFireuxEntity({
   name: 'Menu',
   family: ['menu'],
   identity: 'root',
-  authority: 'owning-app-database',
+  authority: 'domain-database',
   appSupport: 'none',
   root: MenuStorage.root,
   notes: [

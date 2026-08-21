@@ -27,11 +27,6 @@ const normalizePathPart = (value: unknown) =>
   String(value ?? '')
     .trim()
     .replace(/^\/+|\/+$/g, '')
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-
 const resolveTestCollectionPath = (family: string) =>
   family.startsWith('test-') ? family : `test-${family}`
 

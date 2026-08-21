@@ -6,12 +6,7 @@ import type { Property } from '../../../models/property.model.ts'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
 
 export function usePropertyWorkspaceOverview() {
-  const {
-    properties,
-    selection,
-    runtime,
-    actions,
-  } = usePropertyWorkspace()
+  const { properties, selection, runtime, actions } = usePropertyWorkspace()
 
   const overview = useWorkspaceOverview<Property>({
     selectedEntity: selection.property,
@@ -28,7 +23,9 @@ export function usePropertyWorkspaceOverview() {
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
-      ids: overview.multiple.value.items.map((item) => normalizeString(item?.id)),
+      ids: overview.multiple.value.items.map((item) =>
+        normalizeString(item?.id)
+      ),
     },
   }))
 

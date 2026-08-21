@@ -1,12 +1,11 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: hydrate canonical User identity for Driver rows.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: replace raw Driver/User collection reads with the bounded API.
-import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
+import { useProfileDirectoryCollection } from 'fireux-core/runtime/user/composables/profile/useProfileDirectoryCollection'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
-  DriverStorage,
-  type PublicDriverDirectoryProfile,
-  type PublicDriverProfilePayload,
+  type DriverDirectoryProfile,
+  type DriverProfilePayload,
 } from '../../../../../models/driver.model.ts'
 
 // Public Driver directory source. App-scoped operational rows never enter this read.
@@ -19,11 +18,10 @@ export function useDriverFetch() {
     pending,
     error,
     outcome,
-  } = usePublicProfileCollection<PublicDriverProfilePayload>({
-    collection: DriverStorage.rootCollection,
+  } = useProfileDirectoryCollection<DriverProfilePayload>({
+    collection: 'drivers',
   })
-  const { byId: driver } =
-    useCollectionById<PublicDriverDirectoryProfile>(drivers)
+  const { byId: driver } = useCollectionById<DriverDirectoryProfile>(drivers)
 
   return {
     drivers,

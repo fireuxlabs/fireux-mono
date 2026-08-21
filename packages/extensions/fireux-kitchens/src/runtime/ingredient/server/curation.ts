@@ -10,10 +10,10 @@ import {
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
+  Ingredient,
   IngredientCreateInput,
   IngredientUpdateInput,
 } from '../models/ingredient.model.ts'
-import type { PublicIngredient } from '../models/ingredient-public.model.ts'
 import { assertCurator, curatorContext } from './curation-authority'
 import {
   CREATE_FIELDS,
@@ -30,12 +30,12 @@ import {
   assertUniqueActiveIngredientIdentity,
   canonicalStoredIngredient,
 } from './curation-storage'
-import { projectPublicIngredient } from './public-projection.ts'
+import { normalizeIngredient } from './normalize.ts'
 
 export async function createIngredient(
   event: H3Event,
   input: Partial<IngredientCreateInput> | unknown
-): Promise<PublicIngredient> {
+): Promise<Ingredient> {
   const source = validateObject(input, CREATE_FIELDS, 'Ingredient')
   const name = requiredName(source.name)
   const id = normalizeSlug(name, { maxLength: 120 })
@@ -81,16 +81,16 @@ export async function createIngredient(
     }
   )
 
-  const projected = projectPublicIngredient({ id, data: () => result })
-  if (!projected) throw new Error('Created Ingredient projection is invalid.')
-  return projected
+  const ingredient = normalizeIngredient({ id, data: () => result })
+  if (!ingredient) throw new Error('Created Ingredient is invalid.')
+  return ingredient
 }
 
 export async function updateIngredient(
   event: H3Event,
   ingredientId: string,
   input: Partial<IngredientUpdateInput> | unknown
-): Promise<PublicIngredient> {
+): Promise<Ingredient> {
   const id = text(ingredientId)
   if (!isFirestoreDocumentId(id)) badRequest('Ingredient id is invalid.')
   const patch = validateObject(input, UPDATE_FIELDS, 'Ingredient patch')
@@ -138,14 +138,14 @@ export async function updateIngredient(
     }
   )
 
-  const projected = projectPublicIngredient({ id, data: () => result })
-  if (!projected) throw new Error('Updated Ingredient projection is invalid.')
-  return projected
+  const ingredient = normalizeIngredient({ id, data: () => result })
+  if (!ingredient) throw new Error('Updated Ingredient is invalid.')
+  return ingredient
 }
 
 export async function listIngredientsForCurator(
   event: H3Event
-): Promise<PublicIngredient[]> {
+): Promise<Ingredient[]> {
   const context = await curatorContext(event)
   const db = getRuntimeFirestore()
   const membership = await db
@@ -165,8 +165,8 @@ export async function listIngredientsForCurator(
   }
 
   return snapshot.docs
-    .map(projectPublicIngredient)
-    .filter((item): item is PublicIngredient => Boolean(item))
+    .map(normalizeIngredient)
+    .filter((item): item is Ingredient => Boolean(item))
     .sort((left, right) =>
       left.name.localeCompare(right.name, undefined, {
         sensitivity: 'base',

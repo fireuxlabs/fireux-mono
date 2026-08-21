@@ -25,7 +25,10 @@
       title="Kitchen workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedKitchen: selection.kitchen, kitchens: sections.targets.collection }"
+      :objects="{
+        selectedKitchen: selection.kitchen,
+        kitchens: sections.targets.collection,
+      }"
       :derived="debug"
       :default-open="false"
     />

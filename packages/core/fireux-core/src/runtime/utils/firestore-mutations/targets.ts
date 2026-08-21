@@ -168,11 +168,4 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'runtime' },
     collectionPath: 'jobs',
   }),
-  identityProfessionals: defineFirestoreMutationTarget({
-    key: 'project.identity.professionals',
-    lane: 'server',
-    verbs: allVerbs,
-    database: { kind: 'identity' },
-    collectionPath: 'professionals',
-  }),
 })

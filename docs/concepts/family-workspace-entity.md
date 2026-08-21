@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -17,7 +17,7 @@ still needed to remove unexplained drift.
   `firestore-entity.md`, `runtime-filesystem.md`
 - Executable reference: `scripts/guards/workspace-indexes.mjs`
 - Server-shape reference: `scripts/guards/workspace-entity-server.mjs`
-- Authority reference: `scripts/guards/root-app-support-authority.mjs`
+- Authority reference: `scripts/guards/workspace-entity-authority.mjs`
 
 ## Members and current surface
 
@@ -26,12 +26,13 @@ map in `workspace.md`. The family deltas are:
 
 | Member    | Status and reason                                                                                                                                         |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank     | `accepted`: app-local minimal harness; it proves the complete baked-in Workspace baseline with factual read-only Team authority and no Operations           |
-| Kitchen   | `accepted`: Place-backed identity, dual Live/Demo targets, real Kitchen people records, and a large operational domain                                    |
-| Supplier  | `accepted`: root + App support target with authority-backed Team today and Supplier-owned Catalogue, Ingredient, and Item operations                      |
-| Portfolio | `accepted`: root + App support target with authority-backed Team and a private-heavy Property, document, task, compliance, and Finance domain             |
-| Property  | `accepted`: root + App support target with Identity and Team plus Reservation and Calendar operations                                                     |
-| Project   | `accepted`: private, root-only FireUX control-plane entity; Team uses Project authority without inventing an App-support record or production Create flow |
+| Blank     | `accepted`: App-local minimal harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations                  |
+| Kitchen   | `accepted`: Place-backed root, dual Live/Demo targets, root-owned Team, and a large operational domain                                                  |
+| Supplier  | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                               |
+| Portfolio | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                  |
+| Property  | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                       |
+| Project   | `accepted`: FireUX control-plane root with Team authority and no production Create flow                                                                    |
+| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Console surface remains future product work                                               |
 
 ## Shared spine
 
@@ -54,7 +55,7 @@ Every Workspace Entity must share these rules:
   the Workspace capability that owns it. HTTP adapters remain under
   `runtime/server/api` and call these entity-owned capabilities.
 - Core owns only server primitives proven across entity families. Shared App
-  runtime policy, membership validation, bounded support-authority parsing,
+  runtime policy, membership validation, bounded Team-authority parsing,
   and capacity enforcement live in
   `packages/core/fireux-core/src/runtime/server/utils/workspace-entity/onboarding-authority.ts`.
   Entity-specific management validation, projections, messages, and
@@ -86,14 +87,15 @@ Every Workspace Entity must share these rules:
   `WorkspaceTargetCollection`.
 - Persisted selection is invalidated only after a successful target read proves
   it invalid. Pending or failed reads do not clear it.
-- Tenant and global Apps query bounded entity App-support authority. Neither
-  mode authorizes a full-root client scan followed by local filtering.
-- `operator_ids` grants mutation authority. `team_ids` grants target/read
-  membership only. Current App admins are the explicit override.
+- Tenant and global Apps query bounded root management and Team authority.
+  Neither mode authorizes a full-root client scan followed by local filtering.
+- `team/{uid}` grants Workspace membership and names its roles and permissions.
+  Current App admins are the explicit override only for roots managed by that
+  App.
 - Visible `canWrite` state never replaces server or Rules enforcement.
-- Root + App-support onboarding uses a fixed-runtime authenticated family
-  endpoint and one trusted transaction for root, same-id App support, and the
-  caller's operator/team authority.
+- Workspace onboarding uses a fixed-runtime authenticated family endpoint and
+  one trusted transaction for root, the caller's Team authority, and any
+  required parent records.
 - Workspace-capable roots share one management ladder: `root`, `workspace`, or
   `app`. `workspace` resolves by convention to the ecosystem App
   (`<ecosystem>-app`); no configurable Workspace App id is stored. `app` alone
@@ -109,10 +111,10 @@ Every Workspace Entity must share these rules:
 | Delta                                                               | State      | Why it exists                                                                                                                         | Evidence or owner                                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Kitchen renders Live and Demo target sources                        | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/workspace-indexes.mjs` and `scripts/guards/demo-data.mjs`                              |
-| Kitchen Team adds members and join requests beyond target authority | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
-| Supplier, Portfolio, and Property Team are authority-backed only    | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
+| Kitchen Team adds operational roles to shared Team authority       | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list          | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
+| Supplier, Portfolio, and Property Team are minimal today           | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                     | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
 | Blank has no child Operations                                       | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools          | `projects/fireux/fireux-blank`                                                                                         |
-| Project has no App support or Create                                | `accepted` | Project Team and Operations use private FireUX control-plane authority rather than an App-support onboarding lifecycle                | Project entity declaration and internal control-plane APIs                                                             |
+| Project has no Create                                               | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                      | Project entity declaration and internal control-plane APIs                                                             |
 | Operation folders differ by domain                                  | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | current source uses each owner's `components/Workspace/Operations` and `composables/workspace/operations` capability paths |
 
 Accepted deltas change domain content or authority. They do not change the
@@ -157,15 +159,16 @@ composition delta, not permission to fork the Workspace Index spine.
 
 - Preserve the guard-backed six-family Index parity.
 - Keep one family-owned target outcome and one outcome-bound selection.
-- Keep Team as a Workspace peer and keep Kitchen people records explicitly
-  separate from target and mutation authority.
+- Keep Team as a Workspace peer and the single Workspace membership authority.
+  Kitchen-specific operational roles may extend that record without creating
+  another access list.
 
 ### Next
 
-- Keep Kitchen root + required Place + access-only AppKitchen composition
-  guarded across Live, Demo, and Test sources.
+- Keep Kitchen root + required Place + root-owned Team composition guarded
+  across Live, Demo, and Test sources.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
-  AppKitchen access support payload-free.
+  root identity and Team creation atomic.
 - Preserve canonical Supplier and related Place records in Workspace readers;
   Portfolio remains its canonical readable root with scoped and private work
   owned separately.

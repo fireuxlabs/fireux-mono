@@ -31,8 +31,8 @@ export async function writeKitchenMenuAiUsage(input: {
   write: Record<string, unknown>
   stamp: Record<string, unknown>
 }) {
-  const uploads = serverKitchenMenuUploadsTarget(input.appId, input.kitchenId)
-  const usage = serverKitchenAiUsageTarget(input.appId, input.kitchenId)
+  const uploads = serverKitchenMenuUploadsTarget(input.kitchenId)
+  const usage = serverKitchenAiUsageTarget(input.kitchenId)
   const usageId = randomUUID()
   const amountLabel = `$${(input.amountMinor / 100).toFixed(2)}`
 

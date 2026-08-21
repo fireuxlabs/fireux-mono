@@ -21,8 +21,12 @@ export function useMenuItemCollection(
   options: Options = {}
 ) {
   const collectionName = computed(() => {
-    const mid = String(typeof menuId === 'string' ? menuId : menuId.value).trim()
-    const sid = String(typeof sectionId === 'string' ? sectionId : sectionId.value).trim()
+    const mid = String(
+      typeof menuId === 'string' ? menuId : menuId.value
+    ).trim()
+    const sid = String(
+      typeof sectionId === 'string' ? sectionId : sectionId.value
+    ).trim()
     return mid && sid ? `menus/${mid}/sections/${sid}/items` : ''
   })
   const state = useKitchenChildCollection<MenuItem>(

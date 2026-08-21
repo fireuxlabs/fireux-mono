@@ -7,7 +7,7 @@
         :src="identityImageUrl"
         :alt="kitchenName || menuName"
         class="menu-order-kiosk-start__wordmark"
-      >
+      />
       <h1
         :class="{
           'menu-order-kiosk-start__title--visually-hidden': identityImageUrl,
@@ -25,14 +25,20 @@
     <div
       v-if="options.length"
       class="menu-order-kiosk-start__options"
-      :class="{ 'menu-order-kiosk-start__options--portrait-cards': hasChoiceArtwork }"
+      :class="{
+        'menu-order-kiosk-start__options--portrait-cards': hasChoiceArtwork,
+      }"
     >
       <button
         v-for="option in options"
         :key="option.type"
         type="button"
         class="menu-order-kiosk-start__option"
-        :class="{ 'menu-order-kiosk-start__option--artwork': optionArtworkUrl(option.type) }"
+        :class="{
+          'menu-order-kiosk-start__option--artwork': optionArtworkUrl(
+            option.type
+          ),
+        }"
         data-menu-action="select-kiosk-mode"
         :data-menu-kiosk-mode="option.type"
         :disabled="option.paused"
@@ -43,7 +49,7 @@
           :src="optionArtworkUrl(option.type)"
           :alt="`${option.label}. ${option.description}`"
           class="menu-order-kiosk-start__option-artwork"
-        >
+        />
         <template v-else>
           <span class="menu-order-kiosk-start__option-icon" aria-hidden="true">
             <UIcon :name="option.icon" />
@@ -101,9 +107,17 @@ defineEmits<{
 const identityImageUrl = computed(() =>
   String(props.logoImageUrl || props.wordmarkImageUrl || '').trim()
 )
-const hasChoiceArtwork = computed(() => Boolean(String(props.eatInCardImageUrl || props.takeawayCardImageUrl || '').trim()))
+const hasChoiceArtwork = computed(() =>
+  Boolean(
+    String(props.eatInCardImageUrl || props.takeawayCardImageUrl || '').trim()
+  )
+)
 const optionArtworkUrl = (type: MenuOrderKioskType) =>
-  String((type === 'eat_in' ? props.eatInCardImageUrl : props.takeawayCardImageUrl) || '').trim()
+  String(
+    (type === 'eat_in'
+      ? props.eatInCardImageUrl
+      : props.takeawayCardImageUrl) || ''
+  ).trim()
 const backgroundStyle = computed(() => {
   const imageUrl = String(props.backdropImageUrl || '').trim()
 
@@ -121,11 +135,7 @@ const backgroundStyle = computed(() => {
   width: 100%;
   min-height: 100%;
   align-content: center;
-  gap: clamp(
-    calc(var(--spacing) * 10),
-    7vh,
-    calc(var(--spacing) * 20)
-  );
+  gap: clamp(calc(var(--spacing) * 10), 7vh, calc(var(--spacing) * 20));
   overflow: hidden;
   background-color: #f4efe4;
   background-image: var(--menu-kiosk-start-image);
@@ -133,8 +143,7 @@ const backgroundStyle = computed(() => {
   background-repeat: no-repeat;
   background-size: cover;
   color: #033723;
-  padding:
-    max(calc(var(--spacing) * 8), env(safe-area-inset-top))
+  padding: max(calc(var(--spacing) * 8), env(safe-area-inset-top))
     clamp(calc(var(--spacing) * 5), 5vw, calc(var(--spacing) * 20))
     max(calc(var(--spacing) * 8), env(safe-area-inset-bottom));
 }
@@ -180,10 +189,13 @@ const backgroundStyle = computed(() => {
 }
 
 @keyframes kiosk-option-invite {
-  0%, 12%, 100% {
+  0%,
+  12%,
+  100% {
     transform: translateY(0);
   }
-  4%, 8% {
+  4%,
+  8% {
     transform: translateY(-0.16rem);
   }
 }
@@ -245,31 +257,34 @@ const backgroundStyle = computed(() => {
 .menu-order-kiosk-start__options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(
-    calc(var(--spacing) * 4),
-    2vw,
-    calc(var(--spacing) * 6)
-  );
+  gap: clamp(calc(var(--spacing) * 4), 2vw, calc(var(--spacing) * 6));
 }
 
 .menu-order-kiosk-start__options--portrait-cards {
   width: min(68%, 48rem);
 }
 
-.menu-order-kiosk-start__options--portrait-cards .menu-order-kiosk-start__option {
+.menu-order-kiosk-start__options--portrait-cards
+  .menu-order-kiosk-start__option {
   aspect-ratio: 704 / 974;
   min-height: 0;
 }
 
 .menu-order-kiosk-start__option.menu-order-kiosk-start__option--artwork[data-menu-kiosk-mode] {
-  overflow: visible; padding: 0;
-  border: 0; border-radius: 0;
-  background: transparent; box-shadow: none;
+  overflow: visible;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 .menu-order-kiosk-start__option-artwork {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 1.15rem 1.35rem color-mix(in srgb, var(--menu-text) 22%, transparent));
+  filter: drop-shadow(
+    0 1.15rem 1.35rem color-mix(in srgb, var(--menu-text) 22%, transparent)
+  );
 }
 .menu-order-kiosk-start__option {
   display: grid;
@@ -278,11 +293,7 @@ const backgroundStyle = computed(() => {
   align-items: center;
   justify-items: center;
   min-height: clamp(11rem, 16vh, 16rem);
-  padding: clamp(
-    calc(var(--spacing) * 5),
-    2.8vw,
-    calc(var(--spacing) * 8)
-  );
+  padding: clamp(calc(var(--spacing) * 5), 2.8vw, calc(var(--spacing) * 8));
   border: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
   border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-bg) 89%, var(--menu-primary));
@@ -291,7 +302,10 @@ const backgroundStyle = computed(() => {
   font: inherit;
   text-align: center;
   box-shadow: 0 1.2rem 3rem color-mix(in srgb, var(--menu-text) 8%, transparent);
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
 }
 
 .menu-order-kiosk-start__option:hover,
@@ -302,7 +316,10 @@ const backgroundStyle = computed(() => {
   transform: translateY(-0.16rem);
 }
 
-.menu-order-kiosk-start__option--artwork[data-menu-kiosk-mode]:is(:hover, :focus-visible) {
+.menu-order-kiosk-start__option--artwork[data-menu-kiosk-mode]:is(
+    :hover,
+    :focus-visible
+  ) {
   border-color: transparent;
   background: transparent;
 }

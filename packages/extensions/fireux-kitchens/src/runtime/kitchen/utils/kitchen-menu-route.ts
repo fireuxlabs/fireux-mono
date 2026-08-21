@@ -8,7 +8,7 @@ import {
 export type MenuRouteScope =
   | { kind: 'root' }
   | { kind: 'tenant' }
-  | { kind: 'directory', kitchenSlug: string }
+  | { kind: 'directory'; kitchenSlug: string }
 
 export type MenuRouteTarget = {
   menuId: string
@@ -72,11 +72,7 @@ export function menuCanonicalPath(options: {
   const sourceKitchenSlug = text(options.sourceKitchenSlug)
   const sourceMenuId = text(options.sourceMenuId)
 
-  if (
-    options.scope.kind !== 'tenant' &&
-    sourceKitchenSlug &&
-    sourceMenuId
-  ) {
+  if (options.scope.kind !== 'tenant' && sourceKitchenSlug && sourceMenuId) {
     return menuRoutePath({
       scope: directoryMenuRouteScope(sourceKitchenSlug),
       menuId: sourceMenuId,
@@ -109,16 +105,15 @@ export function menuRouteProjection(
     context === 'collection' ||
     context === 'kiosk' ||
     context === 'pre_order'
-  ) return 'order'
+  )
+    return 'order'
 
   return 'diagnostic'
 }
 
 export function parseMenuRouteTarget(value: unknown): MenuRouteTarget {
   const rawMenuId = text(value)
-  const [contextCandidate, ...menuParts] = rawMenuId
-    .split('.')
-    .reverse()
+  const [contextCandidate, ...menuParts] = rawMenuId.split('.').reverse()
   const hasContextSuffix =
     contextSet.has(text(contextCandidate)) && menuParts.length > 0
 

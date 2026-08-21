@@ -21,8 +21,17 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badgeItems.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badgeItems" :key="badge" variant="soft" color="neutral" size="xs">
+        <div
+          v-if="showBadges && badgeItems.length"
+          class="flex flex-wrap items-center gap-1"
+        >
+          <UBadge
+            v-for="badge in badgeItems"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
             {{ badge }}
           </UBadge>
         </div>
@@ -59,5 +68,7 @@ const props = withDefaults(defineProps<PillProps>(), {
   disabled: false,
 })
 
-const badgeItems = computed(() => [...(props.badges ?? []), props.status].filter(Boolean))
+const badgeItems = computed(() =>
+  [...(props.badges ?? []), props.status].filter(Boolean)
+)
 </script>

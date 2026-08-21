@@ -6,14 +6,14 @@ import {
 
 const serverHandlers = [
   {
-    route: '/api/public/blogs',
+    route: '/api/blogs',
     method: 'get',
-    handler: './runtime/server/api/public/blogs.get',
+    handler: './runtime/server/api/blogs/index.get',
   },
   {
-    route: '/api/public/blogs/:slug',
+    route: '/api/blogs/:slug',
     method: 'get',
-    handler: './runtime/server/api/public/blogs/[slug].get',
+    handler: './runtime/server/api/blogs/[slug].get',
   },
 ] satisfies FireuxServerHandler[]
 

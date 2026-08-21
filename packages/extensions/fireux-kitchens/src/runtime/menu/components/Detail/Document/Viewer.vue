@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="menu-document"
-    :data-menu-document-kind="documentKind"
-  >
+  <div class="menu-document" :data-menu-document-kind="documentKind">
     <a
       v-if="displayUrl"
       :href="displayUrl"
@@ -15,10 +12,7 @@
       <span class="sr-only">(opens in a new tab)</span>
     </a>
 
-    <div
-      v-if="isPhoto"
-      class="menu-document__photo"
-    >
+    <div v-if="isPhoto" class="menu-document__photo">
       <img
         v-if="!previewFailed"
         :src="displayUrl"
@@ -26,7 +20,7 @@
         class="menu-document__image"
         decoding="async"
         @error="previewFailed = true"
-      >
+      />
 
       <p v-else class="menu-document__preview-state" role="alert">
         Image preview unavailable. Use Open original instead.
@@ -34,10 +28,7 @@
     </div>
 
     <ClientOnly v-else-if="isPdf">
-      <MenuDetailDocumentPdfViewer
-        :url="displayUrl"
-        :title="menuTitle"
-      />
+      <MenuDetailDocumentPdfViewer :url="displayUrl" :title="menuTitle" />
 
       <template #fallback>
         <p class="menu-document__preview-state" role="status">
@@ -53,7 +44,6 @@
         This file cannot be previewed reliably in the browser.
       </p>
     </div>
-
   </div>
 </template>
 
@@ -79,14 +69,16 @@ const displayUrl = computed(
     `/api/menus/${encodeURIComponent(props.menuId)}/file`
 )
 const fileName = computed(() => text(props.menu.file?.name) || menuTitle.value)
-const isPhoto = computed(() =>
-  props.menu.fileKind === 'photo' ||
-  text(props.menu.file?.type).startsWith('image/')
+const isPhoto = computed(
+  () =>
+    props.menu.fileKind === 'photo' ||
+    text(props.menu.file?.type).startsWith('image/')
 )
-const isPdf = computed(() =>
-  !isPhoto.value &&
-  (props.menu.fileKind === 'pdf' ||
-    text(props.menu.file?.type).includes('pdf'))
+const isPdf = computed(
+  () =>
+    !isPhoto.value &&
+    (props.menu.fileKind === 'pdf' ||
+      text(props.menu.file?.type).includes('pdf'))
 )
 const documentKind = computed(() =>
   isPhoto.value ? 'photo' : isPdf.value ? 'pdf' : 'document'

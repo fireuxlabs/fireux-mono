@@ -282,10 +282,10 @@ export const APP_REGISTRY = {
         '/api/kitchens/fireux-route-contract-missing'
       ),
       privateKitchenIndexAuthContract('/api/kitchens?limit=48&visibility=all'),
-      profileIndexApiContract('/api/public/chefs'),
-      profileIndexApiContract('/api/public/drivers'),
-      profileIndexApiContract('/api/public/agents'),
-      profileIndexApiContract('/api/public/professionals'),
+      profileIndexApiContract('/api/chefs'),
+      profileIndexApiContract('/api/drivers'),
+      profileIndexApiContract('/api/agents'),
+      profileIndexApiContract('/api/professionals'),
       appDetailContract('/apps/la-tap-berne', 'la-tap-berne'),
       menuIndexContract('/menus', { kind: 'collection' }),
       menuIndexApiContract('/api/menus?limit=2', 'root', {

@@ -42,7 +42,7 @@ export function normalizeKitchen(
         ? { mode: 'app', app_id: management.appId }
         : { mode: management.mode },
     identity: {
-      name: identity.displayName,
+      display_name: identity.displayName,
       tagline: identity.tagline,
     } satisfies KitchenIdentity,
     assets: {

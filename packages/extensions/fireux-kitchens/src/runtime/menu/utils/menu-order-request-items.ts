@@ -5,7 +5,7 @@ export function menuOrderRequestItems(
   lines: MenuOrderBasketLine[],
   sourceMenuId: string
 ) {
-  return lines.map(line => ({
+  return lines.map((line) => ({
     item_id: line.itemId,
     menu_id: sourceMenuId,
     quantity: line.quantity,
@@ -14,7 +14,7 @@ export function menuOrderRequestItems(
       : {}),
     ...(line.addOns.length
       ? {
-          add_ons: line.addOns.map(addOn => ({
+          add_ons: line.addOns.map((addOn) => ({
             id: addOn.id,
             label: addOn.label,
           })),

@@ -18,10 +18,7 @@
     </UCard>
 
     <UCard>
-      <DevModel
-        :title="'Portfolios · Model'"
-        :model="portfolioModelRuntime"
-      />
+      <DevModel :title="'Portfolios · Model'" :model="portfolioModelRuntime" />
     </UCard>
 
     <PortfolioCollectionManager />
@@ -33,7 +30,8 @@
             Portfolio storage inspector
           </p>
           <p class="text-xs text-muted">
-            Inspect one portfolio across its root, App support record, and known App-scoped child collections.
+            Inspect one portfolio across its root, App support record, and known
+            App-scoped child collections.
           </p>
           <USelect
             v-model="selectedPortfolioId"
@@ -80,7 +78,11 @@
           class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error"
         >
           No App support record found at
-          <code>{{ appSupportPortfolioCollectionPath }}/{{ selectedPortfolioId }}</code>.
+          <code
+            >{{ appSupportPortfolioCollectionPath }}/{{
+              selectedPortfolioId
+            }}</code
+          >.
         </div>
 
         <UAlert
@@ -90,14 +92,14 @@
           description="This inspector compares direct portfolio-owned child families only. Unit drift still needs to be checked under property scope."
         />
 
-<DevDebugPanel
-  object-origin="fetched"
+        <DevDebugPanel
+          object-origin="fetched"
           launcher
           include-route
           title="Portfolio storage (JSON)"
           context="dev portfolios · full storage picture"
           :objects="portfolioStorageJson"
-  :derived="{}"
+          :derived="{}"
           :default-open="false"
           :hide-when-empty="false"
         />
@@ -145,7 +147,9 @@ const childCollectionNames = [
     ClientStorage.collection,
     'financials',
     'maintenance',
-    ...props.additionalChildCollections.map((name) => String(name || '').trim()),
+    ...props.additionalChildCollections.map((name) =>
+      String(name || '').trim()
+    ),
   ]),
 ].filter(Boolean)
 
@@ -155,7 +159,9 @@ const portfolioModelRuntime = PortfolioModelRuntime
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
 const appSupportPortfolioCollectionPath = computed(() =>
-  resolvedAppId.value ? resolvePortfolioWorkspaceCollectionPath(resolvedAppId.value) : ''
+  resolvedAppId.value
+    ? resolvePortfolioWorkspaceCollectionPath(resolvedAppId.value)
+    : ''
 )
 const runtimePortfolio = computed(() => ({
   id: runtime.id.value || null,
@@ -164,7 +170,9 @@ const runtimePortfolio = computed(() => ({
 
 const { portfolios } = usePortfolioCollection()
 
-const portfolioAppsState = useDevStorageCollection<AppPortfolio>(appSupportPortfolioCollectionPath)
+const portfolioAppsState = useDevStorageCollection<AppPortfolio>(
+  appSupportPortfolioCollectionPath
+)
 const portfolioApps = computed(() => portfolioAppsState.items.value)
 
 const rootPortfolioById = computed(() => {
@@ -189,11 +197,13 @@ const portfolioAppById = computed(() => {
 
 const selectedPortfolioId = ref('')
 
-const portfolioOptions = computed<{ label: string, value: string }[]>(() =>
+const portfolioOptions = computed<{ label: string; value: string }[]>(() =>
   portfolios.value.map((portfolio) => {
     const id = String(portfolio.id || '').trim()
     const labelBase = portfolio.name || id
-    const appSupportStatus = portfolioAppById.value.has(id) ? 'workspace' : 'root only'
+    const appSupportStatus = portfolioAppById.value.has(id)
+      ? 'workspace'
+      : 'root only'
     return {
       label: `${labelBase} · ${appSupportStatus}`,
       value: id,
@@ -203,13 +213,15 @@ const portfolioOptions = computed<{ label: string, value: string }[]>(() =>
 
 watch(
   portfolioOptions,
-  (options: { label: string, value: string }[]) => {
+  (options: { label: string; value: string }[]) => {
     if (!options.length) {
       selectedPortfolioId.value = ''
       return
     }
 
-    const stillExists = options.some((option) => option.value === selectedPortfolioId.value)
+    const stillExists = options.some(
+      (option) => option.value === selectedPortfolioId.value
+    )
     if (!stillExists) {
       selectedPortfolioId.value = String(options[0]?.value || '')
     }
@@ -217,10 +229,16 @@ watch(
   { immediate: true }
 )
 
-const selectedRootPortfolio = computed(() => rootPortfolioById.value.get(selectedPortfolioId.value) ?? null)
-const selectedPortfolioApp = computed(() => portfolioAppById.value.get(selectedPortfolioId.value) ?? null)
+const selectedRootPortfolio = computed(
+  () => rootPortfolioById.value.get(selectedPortfolioId.value) ?? null
+)
+const selectedPortfolioApp = computed(
+  () => portfolioAppById.value.get(selectedPortfolioId.value) ?? null
+)
 
-const rootPortfolioCollectionPath = computed(() => ROOT_PORTFOLIO_COLLECTION_PATH)
+const rootPortfolioCollectionPath = computed(
+  () => ROOT_PORTFOLIO_COLLECTION_PATH
+)
 
 const makePortfolioChildPath = (basePath: string, suffix: string) =>
   resolveRuntimePortfolioPath(basePath, selectedPortfolioId.value, suffix)
@@ -228,10 +246,14 @@ const makePortfolioChildPath = (basePath: string, suffix: string) =>
 const childCollectionReaders = childCollectionNames.map((name) => ({
   name,
   root: useDevStorageCollection<Record<string, unknown>>(
-    computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, name))
+    computed(() =>
+      makePortfolioChildPath(rootPortfolioCollectionPath.value, name)
+    )
   ),
   app: useDevStorageCollection<Record<string, unknown>>(
-    computed(() => makePortfolioChildPath(appSupportPortfolioCollectionPath.value, name))
+    computed(() =>
+      makePortfolioChildPath(appSupportPortfolioCollectionPath.value, name)
+    )
   ),
 }))
 
@@ -240,8 +262,14 @@ const childCollectionsSnapshot = computed(() =>
     childCollectionReaders.map(({ name, root, app }) => [
       name,
       {
-        root: buildDevCollectionSnapshot(root.collectionPath.value, root.items.value),
-        app: buildDevCollectionSnapshot(app.collectionPath.value, app.items.value),
+        root: buildDevCollectionSnapshot(
+          root.collectionPath.value,
+          root.items.value
+        ),
+        app: buildDevCollectionSnapshot(
+          app.collectionPath.value,
+          app.items.value
+        ),
       },
     ])
   )
@@ -253,7 +281,9 @@ const migrationSignals = computed(() => {
   const mirroredCollections: string[] = []
   const emptyCollections: string[] = []
 
-  for (const [name, snapshot] of Object.entries(childCollectionsSnapshot.value)) {
+  for (const [name, snapshot] of Object.entries(
+    childCollectionsSnapshot.value
+  )) {
     const rootCount = snapshot.root.count
     const appCount = snapshot.app.count
 
@@ -288,10 +318,14 @@ const portfolioStorageJson = computed(() => ({
   appId: resolvedAppId.value || null,
   runtimePortfolio: runtimePortfolio.value,
   selectedPortfolioId: selectedPortfolioId.value || null,
-  selectedPortfolioName: selectedRootPortfolio.value?.name || selectedRootPortfolio.value?.id || null,
+  selectedPortfolioName:
+    selectedRootPortfolio.value?.name ||
+    selectedRootPortfolio.value?.id ||
+    null,
   paths: {
     rootPortfolioCollection: rootPortfolioCollectionPath.value,
-    appSupportPortfolioCollection: appSupportPortfolioCollectionPath.value || null,
+    appSupportPortfolioCollection:
+      appSupportPortfolioCollectionPath.value || null,
     selectedRootPortfolioDoc: selectedPortfolioId.value
       ? `${rootPortfolioCollectionPath.value}/${selectedPortfolioId.value}`
       : null,

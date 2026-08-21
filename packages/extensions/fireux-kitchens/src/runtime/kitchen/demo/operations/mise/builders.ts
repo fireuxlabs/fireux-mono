@@ -39,38 +39,33 @@ export const miseTask = (
       ? DEANOS_KITCHEN_DEMO_AS_OF_DATE
       : '2026-07-22'
   const resolvedStatus =
-    identity.menuId === deanosKitchenDemoIdentity.menuId
-      ? 'done'
-      : status
+    identity.menuId === deanosKitchenDemoIdentity.menuId ? 'done' : status
 
   return {
-  ...KitchenMiseTaskDefaults,
-  id,
-  kitchen_id: identity.kitchenId,
-  title,
-  description: production.description ?? '',
-  station: stationId,
-  workflow_stage: production.workflowStage ?? '',
-  service_date: serviceDate,
-  status: resolvedStatus,
-  priority,
-  estimated_minutes: estimatedMinutes,
-  ingredient_ids: [...(production.ingredientIds ?? [])],
-  prep_item_ids: [...(production.prepItemIds ?? [])],
-  menu_id: identity.menuId,
-  recipe_id: production.recipeId ?? '',
-  checklist: (production.checklist ?? []).map((item, index) => ({
-    id: `${id}-step-${index + 1}`,
-    label: typeof item === 'string' ? item : item.label,
-    done:
-      resolvedStatus === 'done'
-      || (typeof item !== 'string' && item.done === true),
-  })),
-  created: kitchenDemoCreated(
-    identity,
-    `${serviceDate}T07:00:00.000Z`
-  ),
-  updated: kitchenDemoUpdated(`${serviceDate}T08:00:00.000Z`),
+    ...KitchenMiseTaskDefaults,
+    id,
+    kitchen_id: identity.kitchenId,
+    title,
+    description: production.description ?? '',
+    station: stationId,
+    workflow_stage: production.workflowStage ?? '',
+    service_date: serviceDate,
+    status: resolvedStatus,
+    priority,
+    estimated_minutes: estimatedMinutes,
+    ingredient_ids: [...(production.ingredientIds ?? [])],
+    prep_item_ids: [...(production.prepItemIds ?? [])],
+    menu_id: identity.menuId,
+    recipe_id: production.recipeId ?? '',
+    checklist: (production.checklist ?? []).map((item, index) => ({
+      id: `${id}-step-${index + 1}`,
+      label: typeof item === 'string' ? item : item.label,
+      done:
+        resolvedStatus === 'done' ||
+        (typeof item !== 'string' && item.done === true),
+    })),
+    created: kitchenDemoCreated(identity, `${serviceDate}T07:00:00.000Z`),
+    updated: kitchenDemoUpdated(`${serviceDate}T08:00:00.000Z`),
   }
 }
 
@@ -89,11 +84,8 @@ export const recipeMiseTask = (
   input: DemoRecipeMiseTaskInput
 ): KitchenMiseTask => {
   const status = input.status ?? 'todo'
-  const completedSteps = status === 'done'
-    ? 3
-    : status === 'in_progress'
-      ? 1
-      : 0
+  const completedSteps =
+    status === 'done' ? 3 : status === 'in_progress' ? 1 : 0
 
   return miseTask(
     input.identity,

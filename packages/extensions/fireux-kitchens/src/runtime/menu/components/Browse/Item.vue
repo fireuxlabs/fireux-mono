@@ -17,7 +17,7 @@
       loading="lazy"
       decoding="async"
       @error="hideImage"
-    >
+    />
 
     <div class="menu-browse-item__copy">
       <div class="menu-browse-item__heading">

@@ -2,21 +2,17 @@
 
 import { createProfileProvisionHandler } from 'fireux-core/runtime/server/utils/profile/provision'
 import {
-  AppDriverStorage,
-  createAppDriverProfileSeed,
+  createDriverAppStateSeed,
   createDriverProfileSeed,
-  DriverStorage,
 } from '../../../../user/models/driver.model.ts'
 
 export default createProfileProvisionHandler({
-  id: 'driver',
+  kind: 'driver',
   label: 'Driver',
-  root: {
-    collection: DriverStorage.rootCollection,
+  profile: {
     seed: createDriverProfileSeed,
   },
-  app: {
-    collection: AppDriverStorage.collection,
-    seed: createAppDriverProfileSeed,
+  appState: {
+    seed: createDriverAppStateSeed,
   },
 })

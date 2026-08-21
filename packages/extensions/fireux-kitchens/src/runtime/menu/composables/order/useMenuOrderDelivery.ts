@@ -39,7 +39,8 @@ export function useMenuOrderDelivery(options: UseMenuOrderDeliveryOptions) {
   async function submit(input: SubmitMenuOrderDeliveryInput) {
     const sourceMenuId = text(input.sourceMenuId)
     const address = text(input.address)
-    if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
+    if (!sourceMenuId || !input.lines.length)
+      throw new Error('The basket is empty.')
     if (!address) throw new Error('Choose a delivery address.')
     const name = text(input.name)
     const phone = text(input.phone)

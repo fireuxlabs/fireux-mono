@@ -7,7 +7,7 @@
           :src="item.imageUrl"
           :alt="item.name"
           loading="lazy"
-        >
+        />
         <UIcon v-else name="i-lucide-utensils" aria-hidden="true" />
       </span>
 

@@ -6,11 +6,13 @@
     :selected="selected"
     :show-customer-details="false"
     :header-action-label="isPass && selected ? 'Re-Que' : ''"
-    :body-action-label="isPass
-      ? selected
-        ? 'Remove order from send selection'
-        : 'Select order to send'
-      : ''"
+    :body-action-label="
+      isPass
+        ? selected
+          ? 'Remove order from send selection'
+          : 'Select order to send'
+        : ''
+    "
     :status-action-label="isQueue ? 'Ready' : ''"
     :status-action-aria-label="isQueue ? 'Mark order ready' : ''"
     :status-action-pending="statusActionPending"
@@ -26,16 +28,19 @@ import type { KitchenOrder } from '../../../../models/order.model.ts'
 
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersTicket' })
 
-const props = withDefaults(defineProps<{
-  order: KitchenOrder
-  stage: 'pass' | 'queue'
-  interactive: boolean
-  selected?: boolean
-  statusActionPending?: boolean
-}>(), {
-  selected: false,
-  statusActionPending: false,
-})
+const props = withDefaults(
+  defineProps<{
+    order: KitchenOrder
+    stage: 'pass' | 'queue'
+    interactive: boolean
+    selected?: boolean
+    statusActionPending?: boolean
+  }>(),
+  {
+    selected: false,
+    statusActionPending: false,
+  }
+)
 
 defineEmits<{
   ready: [id: string]

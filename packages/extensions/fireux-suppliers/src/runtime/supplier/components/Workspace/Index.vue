@@ -18,7 +18,10 @@
       title="Supplier workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedSupplier: selection.supplier, suppliers: sections.targets.collection }"
+      :objects="{
+        selectedSupplier: selection.supplier,
+        suppliers: sections.targets.collection,
+      }"
       :derived="debug"
       :default-open="false"
     />
@@ -28,10 +31,5 @@
 <script setup lang="ts">
 import { useSupplierWorkspaceIndex } from '../../composables/workspace/index/useSupplierWorkspaceIndex'
 
-const {
-  selection,
-  sections,
-  actions,
-  debug,
-} = useSupplierWorkspaceIndex()
+const { selection, sections, actions, debug } = useSupplierWorkspaceIndex()
 </script>

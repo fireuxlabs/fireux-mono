@@ -43,10 +43,12 @@
         :label="acceptLabel"
         :loading="accepting"
         :disabled="!canInteract"
-        @click="$emit('accept', {
-          id: normalize(order.id),
-          estimatedMinutes: isScheduled ? null : estimateMinutes,
-        })"
+        @click="
+          $emit('accept', {
+            id: normalize(order.id),
+            estimatedMinutes: isScheduled ? null : estimateMinutes,
+          })
+        "
       />
     </div>
   </div>
@@ -78,11 +80,12 @@ defineEmits<{
 const normalize = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const timestampMs = (value: unknown) => {
   if (value instanceof Date) return value.getTime()
-  if (typeof value === 'number') return value > 1_000_000_000_000 ? value : value * 1000
+  if (typeof value === 'number')
+    return value > 1_000_000_000_000 ? value : value * 1000
 
   const source = value as { seconds?: number; toMillis?: () => number } | null
   if (typeof source?.toMillis === 'function') return source.toMillis()
@@ -94,12 +97,11 @@ const timestampMs = (value: unknown) => {
   return Number.isFinite(parsed) ? parsed : 0
 }
 const collection = computed(() => record(props.order.collection))
-const isScheduled = computed(() =>
-  props.order.order_type === 'pre_order' ||
-    (
-      props.order.order_type === 'collection' &&
-      normalize(collection.value.mode) === 'scheduled'
-    )
+const isScheduled = computed(
+  () =>
+    props.order.order_type === 'pre_order' ||
+    (props.order.order_type === 'collection' &&
+      normalize(collection.value.mode) === 'scheduled')
 )
 const surface = computed(() => {
   if (props.order.order_type === 'delivery') return { label: 'Delivery' }
@@ -132,13 +134,18 @@ const deadline = computed(() => {
     ? ''
     : isTomorrow(requested)
       ? 'Tomorrow '
-      : new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(requested) + ' '
+      : new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(
+          requested
+        ) + ' '
 
-  return day + new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(requested)
+  return (
+    day +
+    new Intl.DateTimeFormat('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(requested)
+  )
 })
 const acceptIcon = computed(() =>
   isScheduled.value ? 'i-lucide-calendar-clock' : 'i-lucide-clock-3'

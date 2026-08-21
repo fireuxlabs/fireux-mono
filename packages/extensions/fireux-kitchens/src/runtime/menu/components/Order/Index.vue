@@ -397,4 +397,4 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 </script>
-<style src="../../assets/styles/menu-order.css"></style>
+<style src="../styles/menu-order.css"></style>

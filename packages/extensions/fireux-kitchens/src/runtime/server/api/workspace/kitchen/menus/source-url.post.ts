@@ -52,10 +52,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const record = kitchenMenuUrlSourceRecord(request, uid)
-  const uploads = serverKitchenMenuUploadsTarget(
-    request.appId,
-    request.kitchenId
-  )
+  const uploads = serverKitchenMenuUploadsTarget(request.kitchenId)
   if (request.replaceExisting && existingSnap?.exists) {
     await serverUpdate(uploads, request.uploadId, {
       ...record,

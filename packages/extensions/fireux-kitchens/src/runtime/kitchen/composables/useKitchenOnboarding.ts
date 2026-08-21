@@ -1,7 +1,10 @@
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: compose Place selection with Kitchen-only identity and atomic activation.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: stage only colours overriding the linked Place.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep the Kitchen adapter over useKitchenCreate.
-import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
+import {
+  useOnboarding,
+  type OnboardingStep,
+} from 'fireux-core/runtime/composables/shared/useOnboarding'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceDetailResponse } from 'fireux-places/runtime/place/models/place-read.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
@@ -26,9 +29,9 @@ function errorMessage(error: unknown) {
     }
     const message = text(
       candidate.data?.statusMessage ||
-      candidate.data?.message ||
-      candidate.statusMessage ||
-      candidate.message
+        candidate.data?.message ||
+        candidate.statusMessage ||
+        candidate.message
     )
     if (message) return message
   }
@@ -44,24 +47,23 @@ export function useKitchenOnboarding() {
   const selectionError = ref('')
   const completion = ref<KitchenOnboardingCompleteResult | null>(null)
   let selectionSequence = 0
-  const {
-    completeKitchenOnboarding,
-    previewKitchenOnboarding,
-  } = useKitchenCreate()
+  const { completeKitchenOnboarding, previewKitchenOnboarding } =
+    useKitchenCreate()
 
   const canEditIdentity = computed(() => preview.value?.existing !== true)
-  const effectiveName = computed(() =>
-    displayName.value || text(place.value?.name) || 'Kitchen'
+  const effectiveName = computed(
+    () => displayName.value || text(place.value?.name) || 'Kitchen'
   )
   const canEditPalette = computed(() => preview.value?.existing === false)
-  const inheritedPalette = computed<SparseBrandPalette>(() =>
-    place.value?.brand_palette || {}
+  const inheritedPalette = computed<SparseBrandPalette>(
+    () => place.value?.brand_palette || {}
   )
 
   function validateIdentity() {
     if (selectionPending.value) return 'Wait while we confirm this Kitchen.'
     if (selectionError.value) return selectionError.value
-    if (!place.value || !preview.value) return 'Choose a Place before continuing.'
+    if (!place.value || !preview.value)
+      return 'Choose a Place before continuing.'
     if (!preview.value.can_complete) {
       return preview.value.message || 'Kitchen access is required.'
     }
@@ -84,18 +86,22 @@ export function useKitchenOnboarding() {
         validate: validateIdentity,
       },
       ...(canEditPalette.value
-        ? [{
-            id: 'brand' as const,
-            label: 'Brand',
-            description: 'Use the Place colours or add a sparse Kitchen override.',
-            icon: 'i-lucide-palette',
-            validate: validatePalette,
-          }]
+        ? [
+            {
+              id: 'brand' as const,
+              label: 'Brand',
+              description:
+                'Use the Place colours or add a sparse Kitchen override.',
+              icon: 'i-lucide-palette',
+              validate: validatePalette,
+            },
+          ]
         : []),
       {
         id: 'review',
         label: 'Review',
-        description: 'Confirm the Kitchen, inherited Place defaults, and workspace access.',
+        description:
+          'Confirm the Kitchen, inherited Place defaults, and workspace access.',
         icon: 'i-lucide-list-checks',
         validate: () => {
           const identity = validateIdentity()
@@ -114,16 +120,16 @@ export function useKitchenOnboarding() {
 
     try {
       const result = await completeKitchenOnboarding({
-            place_id: currentPreview.place_id,
-            ...(currentPreview.existing
-              ? { kitchen_id: currentPreview.kitchen_id }
-              : {}),
-            ...(canEditIdentity.value && displayName.value
-              ? { display_name: displayName.value }
-              : {}),
-            ...(canEditPalette.value && Object.keys(paletteOverride.value).length
-              ? { palette_override: paletteOverride.value }
-              : {}),
+        place_id: currentPreview.place_id,
+        ...(currentPreview.existing
+          ? { kitchen_id: currentPreview.kitchen_id }
+          : {}),
+        ...(canEditIdentity.value && displayName.value
+          ? { display_name: displayName.value }
+          : {}),
+        ...(canEditPalette.value && Object.keys(paletteOverride.value).length
+          ? { palette_override: paletteOverride.value }
+          : {}),
       })
       if (
         result?.ok !== true ||

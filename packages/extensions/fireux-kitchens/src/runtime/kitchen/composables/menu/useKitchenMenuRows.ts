@@ -18,7 +18,7 @@ type MenuRowOptions = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown) =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export function useKitchenMenuRows(options: MenuRowOptions) {
@@ -55,7 +55,9 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             image_url: text(record(dish).image),
             price: Number(item.price || 0),
             addOns: normalizeMenuItemAddOns(record(item).add_ons),
-            priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),
+            priceOptions: normalizeMenuItemPriceOptions(
+              record(item).price_options
+            ),
           }
         }),
       }

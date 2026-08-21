@@ -172,4 +172,3 @@ export const pizzaTheActionKitchenDemoMiseTasks: KitchenMiseTask[] = [
     { ingredientIds: ['tomato', 'basil', 'rocket'] }
   ),
 ]
-

@@ -1,12 +1,13 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { PublicEcosystemDto } from '../../server/utils/public-projection/public-dto.types.ts'
+import type { Ecosystem } from '../models/ecosystem.model.ts'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 
 const text = (value: unknown) => String(value ?? '').trim()
-const excerpt = (value: unknown) => text(value).replace(/\s+/g, ' ').slice(0, 180)
+const excerpt = (value: unknown) =>
+  text(value).replace(/\s+/g, ' ').slice(0, 180)
 
 export function buildEcosystemJsonLd(
-  ecosystem: Partial<PublicEcosystemDto> | null | undefined
+  ecosystem: Partial<Ecosystem> | null | undefined
 ) {
   const id = text(ecosystem?.id)
   const name = text(ecosystem?.name)
@@ -23,7 +24,7 @@ export function buildEcosystemJsonLd(
 }
 
 export function useEcosystemSeo(
-  ecosystem: MaybeRefOrGetter<Partial<PublicEcosystemDto> | null | undefined>
+  ecosystem: MaybeRefOrGetter<Partial<Ecosystem> | null | undefined>
 ) {
   const entry = computed(() => toValue(ecosystem))
   const id = computed(() => text(entry.value?.id))
@@ -33,10 +34,16 @@ export function useEcosystemSeo(
 
   return useSeo({
     title: computed(() => text(entry.value?.name) || 'Ecosystem'),
-    description: computed(() => excerpt(entry.value?.description || 'FireUX ecosystem.')),
+    description: computed(() =>
+      excerpt(entry.value?.description || 'FireUX ecosystem.')
+    ),
     image: computed(() => text(entry.value?.image_url)),
-    path: computed(() => id.value ? `/ecosystems/${encodeURIComponent(id.value)}` : ''),
-    robots: computed(() => isIndexable.value ? 'index, follow' : 'noindex, nofollow'),
+    path: computed(() =>
+      id.value ? `/ecosystems/${encodeURIComponent(id.value)}` : ''
+    ),
+    robots: computed(() =>
+      isIndexable.value ? 'index, follow' : 'noindex, nofollow'
+    ),
     jsonLd: computed(() => buildEcosystemJsonLd(entry.value)),
   })
 }

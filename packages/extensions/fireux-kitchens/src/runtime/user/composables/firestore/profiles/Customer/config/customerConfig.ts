@@ -4,12 +4,11 @@
 import type { ProfileConfig } from 'fireux-core/runtime/models/utils/profile.model'
 
 export const customerConfig: ProfileConfig = {
-  id: 'customer',
-  collectionName: 'customers',
+  kind: 'customer',
   profileType: 'Customer',
   cta: 'Create your Customer profile to make ordering faster.',
   navLabel: 'Customer',
   navIcon: 'i-lucide-user-round',
   provisionRoute: '/api/internal/profiles/customer',
-  storage: 'app-only',
+  storage: 'user',
 } as const

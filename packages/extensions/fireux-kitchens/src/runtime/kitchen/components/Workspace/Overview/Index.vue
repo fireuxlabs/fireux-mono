@@ -38,7 +38,9 @@
 
     <div v-else class="space-y-4">
       <UCard>
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div
+          class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"
+        >
           <div class="min-w-0 space-y-4">
             <div class="flex items-start gap-3">
               <UAvatar
@@ -77,7 +79,9 @@
               :key="item.key"
               class="rounded-lg border border-default px-3 py-2"
             >
-              <div class="flex items-center gap-2 text-xs font-medium text-dimmed">
+              <div
+                class="flex items-center gap-2 text-xs font-medium text-dimmed"
+              >
                 <UIcon :name="item.icon" class="size-3.5" />
                 <span>{{ item.label }}</span>
               </div>
@@ -112,7 +116,10 @@
               />
             </div>
 
-            <div v-if="missingIdentityFields.length" class="flex flex-wrap gap-2">
+            <div
+              v-if="missingIdentityFields.length"
+              class="flex flex-wrap gap-2"
+            >
               <UButton
                 v-for="field in missingIdentityFields"
                 :key="field.key"
@@ -127,9 +134,7 @@
             </div>
 
             <div v-else class="flex flex-wrap gap-2">
-              <UBadge color="success" variant="soft">
-                Ready
-              </UBadge>
+              <UBadge color="success" variant="soft"> Ready </UBadge>
             </div>
 
             <div class="grid gap-2">
@@ -171,7 +176,9 @@
           >
             <div class="flex items-start gap-3">
               <div class="min-w-0">
-                <div class="flex items-center gap-2 text-sm font-semibold text-highlighted">
+                <div
+                  class="flex items-center gap-2 text-sm font-semibold text-highlighted"
+                >
                   <UIcon :name="card.icon" class="size-4 text-dimmed" />
                   <span>{{ card.label }}</span>
                 </div>
@@ -181,12 +188,7 @@
               </div>
             </div>
 
-            <UButton
-              size="xs"
-              color="neutral"
-              variant="soft"
-              :to="card.to"
-            >
+            <UButton size="xs" color="neutral" variant="soft" :to="card.to">
               Open
             </UButton>
           </UCard>
@@ -198,9 +200,9 @@
       <DevDebugPanel
         title="Kitchen overview"
         scope="workspace"
-      object-origin="fetched"
-      :objects="{ selectedKitchen }"
-      :derived="pageDebug"
+        object-origin="fetched"
+        :objects="{ selectedKitchen }"
+        :derived="pageDebug"
         :default-open="false"
       />
     </div>

@@ -310,9 +310,11 @@ export type MenuOrderingFunnelController = {
   openSession?: () => void
   pay: () => Promise<void> | void
   restartSession?: () => void
-  submit: (payload: MenuOrderingSubmitPayload) =>
-    Promise<CreatedMenuOrder | null | undefined> |
-    CreatedMenuOrder |
-    null |
-    undefined
+  submit: (
+    payload: MenuOrderingSubmitPayload
+  ) =>
+    | Promise<CreatedMenuOrder | null | undefined>
+    | CreatedMenuOrder
+    | null
+    | undefined
 }

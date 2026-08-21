@@ -26,14 +26,15 @@ export default defineNuxtRouteMiddleware((to) => {
   })
   const resolvesToMenu = router
     .resolve(genericPath)
-    .matched
-    .some(record => record.meta.menuProjection === true)
+    .matched.some((record) => record.meta.menuProjection === true)
 
   if (!genericPath || !resolvesToMenu) {
-    return abortNavigation(createError({
-      statusCode: 404,
-      statusMessage: 'Menu not found.',
-    }))
+    return abortNavigation(
+      createError({
+        statusCode: 404,
+        statusMessage: 'Menu not found.',
+      })
+    )
   }
 
   if (!to.path.startsWith('/menus/')) return
@@ -50,8 +51,11 @@ export default defineNuxtRouteMiddleware((to) => {
         context: target.context,
       })
 
-  return navigateTo({ path, query: to.query, hash: to.hash }, {
-    redirectCode: 302,
-    replace: true,
-  })
+  return navigateTo(
+    { path, query: to.query, hash: to.hash },
+    {
+      redirectCode: 302,
+      replace: true,
+    }
+  )
 })

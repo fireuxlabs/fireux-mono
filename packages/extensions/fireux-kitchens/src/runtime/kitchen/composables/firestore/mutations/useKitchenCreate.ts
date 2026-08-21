@@ -8,9 +8,7 @@ import type {
 } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type {
-  KitchenCreateInput,
-} from '../../../models/kitchen.model.ts'
+import type { KitchenCreateInput } from '../../../models/kitchen.model.ts'
 import type {
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
@@ -25,6 +23,7 @@ type KitchenPlaceDraft = Record<string, unknown> & {
   slug?: string
 }
 type KitchenCreateDraft = KitchenCreateInput & {
+  place_id?: string
   display_name?: string
   place?: KitchenPlaceDraft
 }
@@ -46,7 +45,6 @@ export const KitchenCreatePlan = defineFireuxCreatePlan({
 })
 
 export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
-
   async function authHeaders() {
     const user = await useRequireUser()
     const token = await user.getIdToken()
@@ -105,7 +103,9 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
       input.identity?.display_name || input.display_name
     )
     if (!existingRootId && !placeId) {
-      throw new Error('A linked Place is required to create a Kitchen workspace.')
+      throw new Error(
+        'A linked Place is required to create a Kitchen workspace.'
+      )
     }
 
     const preview = await previewKitchenOnboarding({
@@ -121,7 +121,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     return {
       id: result.kitchen_id,
       createdRoot: result.created_root,
-      createdAppSupport: result.created_app_support,
+      createdTeamMember: result.created_team_member,
       ...(result.slug ? { slug: result.slug } : {}),
     }
   }

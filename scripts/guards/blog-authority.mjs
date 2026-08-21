@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-07-23
-// usage_note: run through pnpm guard; protects canonical Blog public projection and feed-reference boundaries.
+// usage_note: run through pnpm guard; protects canonical Blog directory/detail reads and feed-reference boundaries.
 
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -17,15 +17,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const projection = read(
     repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/server/utils/blog/public-projection.ts'
+    'packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts'
   )
-  const publicModel = read(
+  const directoryModel = read(
     repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/models/blogPost-public.model.ts'
+    'packages/extensions/fireux-blogs/src/runtime/models/blog-directory.model.ts'
   )
-  const publicIndexEndpoint = read(
+  const directoryEndpoint = read(
     repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/server/api/public/blogs.get.ts'
+    'packages/extensions/fireux-blogs/src/runtime/server/api/blogs/index.get.ts'
   )
   const manager = read(
     repoRoot,
@@ -35,13 +35,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-blogs/src/runtime/components/Blog/Collection/EditorialManager.vue'
   )
-  const publicCollection = read(
+  const directoryCollection = read(
     repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogCollection.ts'
+    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogDirectory.ts'
   )
-  const publicLanguage = read(
+  const blogLanguage = read(
     repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts'
+    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogLanguage.ts'
   )
   const index = read(
     repoRoot,
@@ -89,35 +89,38 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     "translation.status !== 'approved'",
     'available_languages',
   ]) {
-    assert.ok(projection.includes(token), `Blog projection must retain ${token}.`)
+    assert.ok(
+      projection.includes(token),
+      `Blog projection must retain ${token}.`
+    )
   }
   assert.doesNotMatch(
     projection,
     /sourceAppId\s*===\s*scope\.tenantAppId|publication_scope\s*===\s*['"]ecosystem['"]/,
-    'Public Blog routes must aggregate every public post in the runtime ecosystem.'
+    'Blog routes must aggregate every published post in the runtime ecosystem.'
   )
   assert.match(manager, /useBlogCollection/)
-  assert.doesNotMatch(manager, /usePublicBlogCollection/)
-  assert.match(editorialManager, /usePublicBlogCollection/)
+  assert.doesNotMatch(manager, /useBlogDirectory/)
+  assert.match(editorialManager, /useBlogDirectory/)
   assert.doesNotMatch(editorialManager, /useBlogCollection/)
-  assert.match(publicCollection, /nextCursor/)
-  assert.match(publicCollection, /loadMore/)
-  assert.match(publicCollection, /blogLanguage\.query\.value/)
-  assert.match(publicCollection, /watch: \[blogLanguage\.language\]/)
-  assert.match(publicLanguage, /selectionCookie/)
-  assert.match(publicLanguage, /queryParameter/)
-  assert.match(publicModel, /PublicBlogPostIndexProjection/)
-  assert.match(publicModel, /'content'/)
+  assert.match(directoryCollection, /nextCursor/)
+  assert.match(directoryCollection, /loadMore/)
+  assert.match(directoryCollection, /blogLanguage\.query\.value/)
+  assert.match(directoryCollection, /watch: \[blogLanguage\.language\]/)
+  assert.match(blogLanguage, /selectionCookie/)
+  assert.match(blogLanguage, /queryParameter/)
+  assert.match(directoryModel, /BlogDirectoryEntry/)
+  assert.match(directoryModel, /'content'/)
   assert.match(projection, /const \{ content, \.\.\.indexPost \} = post/)
-  assert.match(publicIndexEndpoint, /projectPublicBlogIndexPost/)
-  assert.doesNotMatch(publicIndexEndpoint, /projectPublicBlogPost\(/)
+  assert.match(directoryEndpoint, /projectBlogDirectoryEntry/)
+  assert.doesNotMatch(directoryEndpoint, /projectBlogDetail\(/)
   assert.match(index, /<BlogIndex\s*\/>/)
   assert.doesNotMatch(index, /BlogCollectionManager/)
   assert.match(editorialIndex, /<BlogCollectionEditorialManager\s*\/>/)
   assert.doesNotMatch(editorialIndex, /BlogCollectionManager/)
   assert.match(adminIndex, /<BlogCollectionManager\s*\/>/)
   assert.match(devIndex, /<BlogCollectionManager\s*\/>/)
-  assert.match(detail, /usePublicBlogFetch/)
+  assert.match(detail, /useBlogDetail/)
   assert.doesNotMatch(detail, /fetchBySlug|useBlog\(/)
   assert.match(images, /`blogs\/\$\{blogId\}\/featured\.jpg`/)
   assert.match(images, /`blogs\/\$\{blogId\}\/social\.jpg`/)
@@ -131,13 +134,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts'
   )
   assert.match(createSubmit, /assertBlogEditorialApproval\(payload\)/)
-  for (const token of ['privacy_reviewed', 'facts_reviewed', 'names_approved']) {
-    assert.ok(editorialReview.includes(token), `Blog editorial review must retain ${token}.`)
+  for (const token of [
+    'privacy_reviewed',
+    'facts_reviewed',
+    'names_approved',
+  ]) {
+    assert.ok(
+      editorialReview.includes(token),
+      `Blog editorial review must retain ${token}.`
+    )
   }
   for (const token of [
     "lane: 'mcp-skill'",
     "verbs: updateMode ? ['update'] : ['create']",
-    "databaseId: DATABASE_ID",
+    'databaseId: DATABASE_ID',
     'mcpSkillCreate(app, target',
     'mcpSkillUpdate(app, target',
     'assertBlogEditorialApproval(entry.post)',
@@ -146,6 +156,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     '--confirm=',
     "snapshot.data()?.visibility !== 'public'",
   ]) {
-    assert.ok(localPublisher.includes(token), `Local Blog publishing must retain ${token}.`)
+    assert.ok(
+      localPublisher.includes(token),
+      `Local Blog publishing must retain ${token}.`
+    )
   }
 }

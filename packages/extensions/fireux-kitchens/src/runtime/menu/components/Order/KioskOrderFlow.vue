@@ -1,10 +1,7 @@
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: send a fixed Eat here or Take away order through the shared basket and lifecycle. -->
 <!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Kiosk order delta. -->
 <template>
-  <div
-    class="menu-order-kiosk-order"
-    :data-menu-kiosk-order-type="orderType"
-  >
+  <div class="menu-order-kiosk-order" :data-menu-kiosk-order-type="orderType">
     <div v-if="order.sentOrder.value" class="menu-order-kiosk-order__status">
       <MenuOrderStatus
         :customer-name="order.customerName.value"
@@ -80,7 +77,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, shallowRef, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  shallowRef,
+  watch,
+} from 'vue'
 import type { MenuOrderTypeConfig } from '../../models/menu.model.ts'
 import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
 import { useMenuOrderBasket } from '../../composables/order/useMenuOrderBasket'
@@ -127,18 +131,25 @@ const basketOpen = ref(false)
 const checkoutOpen = ref(false)
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const openCheckoutAfterBasket = ref(false)
-const paymentMethods = computed(() => props.config?.fulfilment?.payment_methods || [])
+const paymentMethods = computed(
+  () => props.config?.fulfilment?.payment_methods || []
+)
 const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
 )
-const requiredContactFields = computed(() => props.config?.customer?.required_fields || [])
+const requiredContactFields = computed(
+  () => props.config?.customer?.required_fields || []
+)
 let readyResetTimer: ReturnType<typeof setTimeout> | undefined
 
-watch(() => basket.quantity.value, (quantity: number) => {
-  if (quantity || order.sentOrder.value) return
-  basketOpen.value = false
-  checkoutOpen.value = false
-})
+watch(
+  () => basket.quantity.value,
+  (quantity: number) => {
+    if (quantity || order.sentOrder.value) return
+    basketOpen.value = false
+    checkoutOpen.value = false
+  }
+)
 
 watch(
   () => order.status.value?.status || order.sentOrder.value?.status,
@@ -217,11 +228,7 @@ async function cancelOrder() {
 
 .menu-order-kiosk-order__status {
   min-height: 0;
-  padding: clamp(
-    calc(var(--spacing) * 4),
-    4vw,
-    calc(var(--spacing) * 12)
-  );
+  padding: clamp(calc(var(--spacing) * 4), 4vw, calc(var(--spacing) * 12));
   overflow-y: auto;
 }
 

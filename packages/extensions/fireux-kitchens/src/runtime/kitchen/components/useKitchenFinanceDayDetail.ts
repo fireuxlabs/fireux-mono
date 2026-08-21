@@ -4,7 +4,12 @@ import type {
 } from '../models/finance-report.model.ts'
 import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 
-export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: KitchenFinanceDailySummary | null; locale: string; timezone: string }) {
+export function useKitchenFinanceDayDetail(props: {
+  currencyCode: string
+  day: KitchenFinanceDailySummary | null
+  locale: string
+  timezone: string
+}) {
   type ItemView = {
     key: string
     label: string
@@ -15,18 +20,19 @@ export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: K
     sharePercent: number
     shareLabel: string
   }
-  
-  const currencySummary = computed(() =>
-    props.day?.currencies.find(
-      currency => currency.currency_code === props.currencyCode
-    ) || null
+
+  const currencySummary = computed(
+    () =>
+      props.day?.currencies.find(
+        (currency) => currency.currency_code === props.currencyCode
+      ) || null
   )
-  
+
   const formattedDate = computed(() => {
     if (!props.day) return ''
     const parts = parseDateKey(props.day.date)
     if (!parts) return props.day.date
-  
+
     return new Intl.DateTimeFormat(props.locale, {
       weekday: 'long',
       day: 'numeric',
@@ -35,23 +41,23 @@ export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: K
       timeZone: 'UTC',
     }).format(new Date(Date.UTC(parts.year, parts.month - 1, parts.day)))
   })
-  
+
   const formattedGrossSales = computed(() =>
     formatMoney(currencySummary.value?.gross_sales.amount_minor || 0)
   )
-  
+
   const formattedItemSales = computed(() =>
     formatMoney(currencySummary.value?.item_sales.amount_minor || 0)
   )
-  
+
   const formattedDeliveryFees = computed(() =>
     formatMoney(currencySummary.value?.delivery_fees.amount_minor || 0)
   )
-  
+
   const headlineMetrics = computed(() => {
     const summary = currencySummary.value
     if (!summary) return []
-  
+
     return [
       {
         label: 'Gross sales',
@@ -79,31 +85,33 @@ export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: K
       },
     ]
   })
-  
+
   const sortedItems = computed<ItemView[]>(() => {
     const summary = currencySummary.value
     if (!summary) return []
-  
+
     return [...summary.items]
-      .sort((left, right) =>
-        right.line_gross.amount_minor - left.line_gross.amount_minor
-        || right.quantity - left.quantity
-        || left.label.localeCompare(right.label, props.locale)
+      .sort(
+        (left, right) =>
+          right.line_gross.amount_minor - left.line_gross.amount_minor ||
+          right.quantity - left.quantity ||
+          left.label.localeCompare(right.label, props.locale)
       )
-      .map(item => toItemView(item, summary.item_sales.amount_minor))
+      .map((item) => toItemView(item, summary.item_sales.amount_minor))
   })
-  
+
   function toItemView(
     item: KitchenFinanceItemSummary,
     itemSalesMinor: number
   ): ItemView {
-    const sharePercent = itemSalesMinor > 0
-      ? Math.min(
-          100,
-          Math.max(0, (item.line_gross.amount_minor / itemSalesMinor) * 100)
-        )
-      : 0
-  
+    const sharePercent =
+      itemSalesMinor > 0
+        ? Math.min(
+            100,
+            Math.max(0, (item.line_gross.amount_minor / itemSalesMinor) * 100)
+          )
+        : 0
+
     return {
       key: [
         item.menu_id,
@@ -124,21 +132,21 @@ export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: K
       })}%`,
     }
   }
-  
+
   function formatMoney(amountMinor: number) {
     return formatFinancialMinorAmount(amountMinor, props.currencyCode, {
       locales: props.locale,
     })
   }
-  
+
   function formatCount(value: number) {
     return value.toLocaleString(props.locale)
   }
-  
+
   function parseDateKey(value: string) {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
     if (!match) return null
-  
+
     const parts = {
       year: Number(match[1]),
       month: Number(match[2]),
@@ -146,9 +154,9 @@ export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: K
     }
     const date = new Date(Date.UTC(parts.year, parts.month - 1, parts.day))
     if (
-      date.getUTCFullYear() !== parts.year
-      || date.getUTCMonth() !== parts.month - 1
-      || date.getUTCDate() !== parts.day
+      date.getUTCFullYear() !== parts.year ||
+      date.getUTCMonth() !== parts.month - 1 ||
+      date.getUTCDate() !== parts.day
     ) {
       return null
     }

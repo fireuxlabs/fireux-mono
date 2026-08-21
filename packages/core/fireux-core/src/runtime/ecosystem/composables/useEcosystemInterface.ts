@@ -1,6 +1,5 @@
 import type { Ecosystem } from '../models/ecosystem.model.ts'
 import type { EcosystemDirectoryEntry } from '../../models/utils/directory'
-import type { PublicEcosystemDto } from '../../server/utils/public-projection/public-dto.types.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const labelize = (value: string) =>
@@ -10,7 +9,7 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export type EcosystemSurface = Partial<Ecosystem> | PublicEcosystemDto | EcosystemDirectoryEntry
+export type EcosystemSurface = Partial<Ecosystem> | EcosystemDirectoryEntry
 
 export type EcosystemInterfaceInput = EcosystemSurface & {
   key?: string
@@ -63,7 +62,9 @@ function surface<T extends object = EcosystemSurface>(
   return source && id ? ({ ...source, id } as T & { id: string }) : null
 }
 
-function buildCard(target?: EcosystemInterfaceInput | null): EcosystemInterfaceCard | null {
+function buildCard(
+  target?: EcosystemInterfaceInput | null
+): EcosystemInterfaceCard | null {
   if (!target) return null
   const id = text(target.id || target.key)
   const name = text(target.name)

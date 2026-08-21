@@ -77,9 +77,12 @@ export function useBlogCreate() {
     const sourceEcosystemId = normalizeString(
       payload.source_ecosystem_id || fireux.ecosystemId
     )
-    const ownerType = normalizeString(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem'))
+    const ownerType = normalizeString(
+      payload.owner_type || (sourceAppId ? 'app' : 'ecosystem')
+    )
     const ownerId = normalizeString(
-      payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
+      payload.owner_id ||
+        (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
     )
     const data = {
       ...payload,

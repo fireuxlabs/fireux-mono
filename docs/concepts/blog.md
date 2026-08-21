@@ -8,7 +8,7 @@ Role: map, not canon
 
 Give FireUX BlogPosts a consistent editorial method without centralising their
 authored content. This map inherits the bottom-up literature rule in
-`docs/concepts/product-language.md`; current source, public projections, and
+`docs/concepts/product-language.md`; current source, directory/detail reads, and
 published posts remain authority.
 
 ## Editorial shape
@@ -97,7 +97,7 @@ Use `views`, not `people` or `reads`, unless the implemented measurement can
 truthfully prove unique people or completed reading. The intended aggregate
 must remain server-validated, bot-filtered, identifier-free, retention-bounded,
 and free of event-level visitor records. Its implementation requires a privacy
-and public-projection decision in the shared measurement spine before Blog UI
+and Blog presentation-reader decision in the shared measurement spine before Blog UI
 or storage changes begin.
 
 ## Ownership and boundaries
@@ -115,7 +115,7 @@ or storage changes begin.
 ## Current sources and exemplars
 
 - `packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts`
-- `packages/extensions/fireux-blogs/src/runtime/server/utils/blog/public-projection.ts`
+- `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
 - `projects/misebox/interlaken-essen/app/content/futter.ts`
 - `scripts/guards/blog-authority.mjs`
 - `packages/extensions/fireux-blogs/src/runtime/utils/editorial-review.ts`
@@ -131,4 +131,4 @@ Review this map when Blog ownership, translation review, feed composition, or
 the recurring editorial method changes. Do not update it for a single event.
 Before publishing, verify source facts, validate the canonical model fields,
 run the Blog authority and relevant copy guards, and inspect every approved
-language through the public projection.
+language through the Blog presentation reader.

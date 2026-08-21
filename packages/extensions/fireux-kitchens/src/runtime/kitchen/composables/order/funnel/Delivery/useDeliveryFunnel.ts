@@ -1,11 +1,5 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: consume the shared customer autofill seam after its move.
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
@@ -60,8 +54,8 @@ export function useDeliveryFunnel(
   const menuId = computed(() => toValue(order).menuId)
   const kitchenSlug = computed(() => toValue(order).kitchenSlug)
   const { customer: autofillCustomer } = useCustomerAutofill()
-  const zones = computed(() =>
-    toValue(order).policy?.fulfilment?.delivery_zones || []
+  const zones = computed(
+    () => toValue(order).policy?.fulfilment?.delivery_zones || []
   )
   const total = computed(() =>
     toValue(order).selection.items.reduce(
@@ -92,11 +86,12 @@ export function useDeliveryFunnel(
   const matchedZone = computed(() => result.value?.zone || null)
   const minimum = computed(() => Number(matchedZone.value?.min_order_chf || 0))
   const fee = computed(() => Number(matchedZone.value?.fee_chf || 0))
-  const minimumMet = computed(() =>
-    !matchedZone.value || total.value >= minimum.value
+  const minimumMet = computed(
+    () => !matchedZone.value || total.value >= minimum.value
   )
-  const selectedAddressLabel = computed(() =>
-    text(selectedAddress.value?.description) ||
+  const selectedAddressLabel = computed(
+    () =>
+      text(selectedAddress.value?.description) ||
       text(result.value?.address?.formatted) ||
       text(address.value)
   )
@@ -194,7 +189,7 @@ export function useDeliveryFunnel(
 
   watch(
     autofillCustomer,
-    async (customer: { address: string, address_place_id: string }) => {
+    async (customer: { address: string; address_place_id: string }) => {
       const savedAddress = text(customer.address)
       if (
         autofillApplied.value ||
@@ -221,18 +216,22 @@ export function useDeliveryFunnel(
   )
 
   async function check(input: DeliveryAddressCheckInput) {
-    const body = typeof input === 'string'
-      ? { address: text(input) }
-      : {
-          ...(text(input.address) ? { address: text(input.address) } : {}),
-          ...(text(input.place_id || input.placeId)
-            ? { place_id: text(input.place_id || input.placeId) }
-            : {}),
-          ...(Number.isFinite(input.lat) ? { lat: input.lat } : {}),
-          ...(Number.isFinite(input.lng) ? { lng: input.lng } : {}),
-        }
+    const body =
+      typeof input === 'string'
+        ? { address: text(input) }
+        : {
+            ...(text(input.address) ? { address: text(input.address) } : {}),
+            ...(text(input.place_id || input.placeId)
+              ? { place_id: text(input.place_id || input.placeId) }
+              : {}),
+            ...(Number.isFinite(input.lat) ? { lat: input.lat } : {}),
+            ...(Number.isFinite(input.lng) ? { lng: input.lng } : {}),
+          }
     const missingCoordinates = body.lat === undefined || body.lng === undefined
-    if (!checkEndpoint.value || (!body.address && !body.place_id && missingCoordinates)) {
+    if (
+      !checkEndpoint.value ||
+      (!body.address && !body.place_id && missingCoordinates)
+    ) {
       result.value = null
       checkError.value = checkEndpoint.value
         ? 'Delivery address is required.'
@@ -244,19 +243,24 @@ export function useDeliveryFunnel(
     checkError.value = ''
 
     try {
-      const checked = await $fetch<DeliveryAddressCheckResult>(checkEndpoint.value, {
-        method: 'POST',
-        body,
-      })
+      const checked = await $fetch<DeliveryAddressCheckResult>(
+        checkEndpoint.value,
+        {
+          method: 'POST',
+          body,
+        }
+      )
 
       result.value = checked
 
       return checked
     } catch (err) {
-      const statusMessage = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : ''
-      checkError.value = statusMessage || 'Delivery address could not be checked.'
+      const statusMessage =
+        err && typeof err === 'object' && 'statusMessage' in err
+          ? text((err as { statusMessage?: unknown }).statusMessage)
+          : ''
+      checkError.value =
+        statusMessage || 'Delivery address could not be checked.'
       result.value = null
 
       return null

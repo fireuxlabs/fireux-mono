@@ -11,9 +11,7 @@
         <p class="text-xs font-medium uppercase tracking-wide text-primary">
           Kitchen AI
         </p>
-        <h2 class="text-base font-semibold text-highlighted">
-          KitchenAiMenu
-        </h2>
+        <h2 class="text-base font-semibold text-highlighted">KitchenAiMenu</h2>
         <p class="text-sm text-muted">
           How can I help manage your Menus today?
         </p>

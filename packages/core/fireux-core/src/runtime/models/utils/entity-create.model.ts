@@ -3,7 +3,7 @@ export type FireuxEntityCreateMode = 'root' | 'workspace'
 export type FireuxEntityCreateResult = {
   id: string
   createdRoot: boolean
-  createdAppSupport: boolean
+  createdTeamMember: boolean
 }
 
 export type FireuxRootCreateResult = {

@@ -8,32 +8,9 @@ import {
   type Firestore,
 } from 'firebase/firestore'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { MenuStorage as RootMenuStorage } from '../../../models/menu.model.ts'
 import { MenuSourceUploadStorage } from '../../../models/menu-source-upload.model.ts'
 import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { menuItemsPath, menuSectionsPath } from '../utils/paths'
-import {
-  menuRootEntryId,
-  menuRootEntryMergePatchFromSourceMenu,
-  menuRootEntryIdentifierPatch,
-  readMenuRootEntryDocs,
-  readSingleStaleMenuRootEntryDoc,
-} from '../utils/root-entry'
-
-const rootEntryDerivedKeys = [
-  'slug',
-  'path',
-  'qr_path',
-  'url',
-  'qr_url',
-  'source_path',
-  'source_kind',
-  'image_url',
-  'image_shade',
-  'ordering',
-  'kiosk_skin_id',
-  'views',
-]
 
 const withoutId = <T extends Record<string, unknown>>(
   data: T,
@@ -73,44 +50,6 @@ export async function renameKitchenMenuDocuments({
   if (nextMenuSnap.exists()) {
     throw new Error(`Menu already exists: ${nextMenuId}`)
   }
-
-  let rootMenuDocs = await readMenuRootEntryDocs({
-    db,
-    appId,
-    kitchenId,
-    menuId,
-  })
-  if (!rootMenuDocs.length) {
-    rootMenuDocs = await readSingleStaleMenuRootEntryDoc({
-      db,
-      appId,
-      kitchenId,
-      scopedMenuCollectionPath: menuCollectionPath,
-      menuId,
-    })
-  }
-
-  const rootEntryMoves = await Promise.all(
-    rootMenuDocs.map(async (docSnap) => {
-      const rootData = docSnap.data() as Record<string, unknown>
-      const rootId = menuRootEntryId(nextMenuId) || docSnap.id
-      const ref = doc(db, RootMenuStorage.rootCollection, rootId)
-
-      if (rootId !== docSnap.id) {
-        const existingSnap = await getDoc(ref)
-        if (existingSnap.exists()) {
-          throw new Error(`Menu route already exists: ${rootId}`)
-        }
-      }
-
-      return {
-        from: docSnap,
-        to: ref,
-        id: rootId,
-        data: rootData,
-      }
-    })
-  )
 
   const sectionsPath = menuSectionsPath({
     kitchenCollectionPath,
@@ -214,28 +153,6 @@ export async function renameKitchenMenuDocuments({
 
   if (oldUploadSnap.exists() && !nextUploadSnap.exists()) {
     nextBatchOp().delete(oldUploadRef)
-  }
-
-  const rootMenuData = oldMenuSnap.data() as Record<string, unknown>
-  for (const move of rootEntryMoves) {
-    nextBatchOp().set(
-      move.to,
-      {
-        ...withoutId(move.data, rootEntryDerivedKeys),
-        ...menuRootEntryIdentifierPatch(move.id),
-        ...menuRootEntryMergePatchFromSourceMenu({
-          scopedMenuCollectionPath: menuCollectionPath,
-          menuId: nextMenuId,
-          data: rootMenuData,
-        }),
-        updated,
-      },
-      { merge: true }
-    )
-
-    if (move.id !== move.from.id) {
-      nextBatchOp().delete(move.from.ref)
-    }
   }
 
   for (const { section, items } of sectionsWithItems) {

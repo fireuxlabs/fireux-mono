@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-20 23:01 CEST — Misebox dev recovery: make workspace runtime imports explicit for Nitro resolution.
 // Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox profile correction: retain the canonical persisted experience discriminator allowlist.
 import type {
-  PublicProfileHandlerConfig,
-  PublicProfileMapper,
-} from 'fireux-core/runtime/server/utils/public-projection/public-profile'
+  ProfileDirectoryConfig,
+  ProfileDirectoryMapper,
+} from 'fireux-core/runtime/user/server/directory/profile-directory'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
 import { ProfessionalConstraints } from '../../../models/profiles/Professional/Professional.model'
@@ -113,7 +113,7 @@ function experience(value: unknown, limit: number) {
   })
 }
 
-export const mapAgentPublicProfile: PublicProfileMapper = (data, mode) => ({
+export const mapAgentProfile: ProfileDirectoryMapper = (data, mode) => ({
   title: text(data.title, 120),
   summary: text(data.summary, 1_000),
   agent_bio: text(data.agent_bio, 4_000),
@@ -132,7 +132,7 @@ export const mapAgentPublicProfile: PublicProfileMapper = (data, mode) => ({
     : {}),
 })
 
-export const mapProfessionalPublicProfile: PublicProfileMapper = (data, mode) => {
+export const mapProfessionalProfile: ProfileDirectoryMapper = (data, mode) => {
   const structuredCount = [
     'relevant_experience',
     'other_experience',
@@ -217,14 +217,12 @@ export const mapProfessionalPublicProfile: PublicProfileMapper = (data, mode) =>
   }
 }
 
-export const publicAgentProfileConfig: PublicProfileHandlerConfig = {
-  collection: 'agents',
+export const agentProfileDirectory: ProfileDirectoryConfig = {
   kind: 'agent',
-  mapProfile: mapAgentPublicProfile,
+  mapProfile: mapAgentProfile,
 }
 
-export const publicProfessionalProfileConfig: PublicProfileHandlerConfig = {
-  collection: 'professionals',
+export const professionalProfileDirectory: ProfileDirectoryConfig = {
   kind: 'professional',
-  mapProfile: mapProfessionalPublicProfile,
+  mapProfile: mapProfessionalProfile,
 }

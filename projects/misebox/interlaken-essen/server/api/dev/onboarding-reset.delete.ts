@@ -6,7 +6,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   INTERLAKEN_ESSEN_APP_ID,
-  MARKETPLACE_PROFILE_COLLECTION,
+  marketplaceProfileAppStatePath,
 } from '../../../app/content/marketplace-profile'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -28,9 +28,7 @@ export default defineEventHandler(async (event) => {
   const membershipRef = db.doc(
     `apps/${appId}/${AppUserStorage.collection}/${uid}`
   )
-  const profileRef = db.doc(
-    `apps/${appId}/${MARKETPLACE_PROFILE_COLLECTION}/${uid}`
-  )
+  const profileRef = db.doc(marketplaceProfileAppStatePath(uid))
 
   const profileRemoved = await db.runTransaction(async (transaction) => {
     const [membership, profile] = await Promise.all([

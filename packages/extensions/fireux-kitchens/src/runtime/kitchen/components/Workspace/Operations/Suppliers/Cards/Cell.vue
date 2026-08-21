@@ -1,12 +1,6 @@
 <template>
-  <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
-    <div
-      class="fx-card--cell"
-    >
+  <NuxtLink v-if="link && to" :to="to" class="block w-full">
+    <div class="fx-card--cell">
       <UAvatar
         :src="avatarUrl || undefined"
         icon="i-lucide-store"
@@ -18,12 +12,18 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div
+            v-if="showBadges && badges.length"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+          >
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -42,16 +42,10 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
-    <div
-      class="fx-card--cell"
-    >
+  <div v-else class="block w-full" @click="onClick">
+    <div class="fx-card--cell">
       <UAvatar
         :src="avatarUrl || undefined"
         icon="i-lucide-store"
@@ -63,12 +57,18 @@
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div
+            v-if="showBadges && badges.length"
+            class="flex shrink-0 flex-wrap items-center gap-1"
+          >
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -87,7 +87,7 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -99,30 +99,33 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<{
-  to?: string
-  id: string
-  title: string
-  subtitle: string
-  avatarUrl: string
-  badges?: SupplierCard.Card['badges']
-  summary?: SupplierCard.Card['summary']
-  prop?: string
-  showSubtitle?: boolean
-  showBadges?: boolean
-  showTagline?: boolean
-  link?: boolean
-  action?: boolean
-}>(), {
-  badges: () => [],
-  summary: '',
-  prop: '',
-  showSubtitle: true,
-  showBadges: true,
-  showTagline: true,
-  link: false,
-  action: false,
-})
+const props = withDefaults(
+  defineProps<{
+    to?: string
+    id: string
+    title: string
+    subtitle: string
+    avatarUrl: string
+    badges?: SupplierCard.Card['badges']
+    summary?: SupplierCard.Card['summary']
+    prop?: string
+    showSubtitle?: boolean
+    showBadges?: boolean
+    showTagline?: boolean
+    link?: boolean
+    action?: boolean
+  }>(),
+  {
+    badges: () => [],
+    summary: '',
+    prop: '',
+    showSubtitle: true,
+    showBadges: true,
+    showTagline: true,
+    link: false,
+    action: false,
+  }
+)
 
 const onClick = (event?: MouseEvent) => {
   if (props.action) {

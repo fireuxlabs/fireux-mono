@@ -67,14 +67,8 @@
               :title="card.title"
               :image-url="card.imageUrl"
               :icon="group.icon"
-              :data-service-state="
-                card.inService ? 'active' : 'inactive'
-              "
-              :class="
-                card.inService
-                  ? ''
-                  : 'opacity-45 saturate-50'
-              "
+              :data-service-state="card.inService ? 'active' : 'inactive'"
+              :class="card.inService ? '' : 'opacity-45 saturate-50'"
             />
           </div>
         </section>
@@ -110,8 +104,7 @@ const {
   loadError,
   isIngredientInService,
   debug,
-} =
-  useKitchenIngredientsWorkspace()
+} = useKitchenIngredientsWorkspace()
 const { pill } = useIngredientInterface()
 
 const debugTitle = computed(() =>

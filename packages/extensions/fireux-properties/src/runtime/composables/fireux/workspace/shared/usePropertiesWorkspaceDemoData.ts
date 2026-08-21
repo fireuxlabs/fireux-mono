@@ -39,13 +39,11 @@ export function usePropertiesWorkspaceDemoData(
           const portfolio = scenario.portfolio
             ? portfolioSurface({
                 portfolio: scenario.portfolio.portfolio,
-                appSupport: scenario.portfolio.appSupport,
               })
             : null
           const properties = scenario.properties.flatMap((target) => {
             const property = propertySurface({
               source: target.property,
-              appSupport: target.appSupport,
             })
             return property ? [property] : []
           })
@@ -63,7 +61,7 @@ export function usePropertiesWorkspaceDemoData(
             properties.length !== scenario.properties.length
           ) {
             throw new Error(
-              `Properties Demo ${scenario.appId} failed canonical root/support composition.`
+              `Properties Demo ${scenario.appId} failed canonical root composition.`
             )
           }
 

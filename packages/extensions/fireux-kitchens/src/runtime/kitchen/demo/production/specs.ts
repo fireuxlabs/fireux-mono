@@ -8,4 +8,3 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   ...deanosKitchenDemoPartySpecs,
   ...deanosKitchenDemoSeasonalSpecs,
 ]
-

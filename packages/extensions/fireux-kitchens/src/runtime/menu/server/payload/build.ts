@@ -92,7 +92,7 @@ export async function readMenuSourceMenu(source: MenuPayloadSource) {
   if (!source.app_id || !source.kitchen_id || !source.menu_id) return {}
 
   const snap = await getRuntimeFirestore()
-    .collection(`apps/${source.app_id}/kitchens/${source.kitchen_id}/menus`)
+    .collection(`kitchens/${source.kitchen_id}/menus`)
     .doc(source.menu_id)
     .get()
   if (!snap.exists) return {}

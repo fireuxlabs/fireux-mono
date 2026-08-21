@@ -49,10 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-} from 'vue'
+import { computed, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -73,7 +70,9 @@ const open = ref(false)
 const note = ref('')
 const cleanNote = computed(() => note.value.trim())
 const canReject = computed(() =>
-  Boolean(props.canInteract && props.orderId && cleanNote.value && !props.rejecting)
+  Boolean(
+    props.canInteract && props.orderId && cleanNote.value && !props.rejecting
+  )
 )
 
 function cancel() {

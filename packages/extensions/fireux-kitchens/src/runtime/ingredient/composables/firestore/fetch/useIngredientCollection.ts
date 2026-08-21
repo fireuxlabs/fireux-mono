@@ -5,13 +5,11 @@ import {
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { computed, type ComputedRef } from 'vue'
-import type {
-  PublicIngredient,
-  PublicIngredientCollectionResponse,
-} from '../../../models/ingredient-public.model.ts'
+import type { IngredientDirectoryPage } from '../../../models/ingredient-directory.model.ts'
+import type { Ingredient } from '../../../models/ingredient.model.ts'
 
 export type UseIngredientCollectionResult = {
-  ingredients: ComputedRef<PublicIngredient[] | undefined>
+  ingredients: ComputedRef<Ingredient[] | undefined>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -24,24 +22,21 @@ export function useIngredientCollection(
 ): UseIngredientCollectionResult {
   const includeInactive = options.includeInactive === true
   const { currentUser } = useAuth()
-  const state = useAsyncData<PublicIngredientCollectionResponse>(
+  const state = useAsyncData<IngredientDirectoryPage>(
     includeInactive
       ? 'curator-ingredient-library-v2'
-      : 'public-ingredient-library-v2',
+      : 'ingredient-directory-v2',
     async () => {
       if (!includeInactive) {
-        return $fetch<PublicIngredientCollectionResponse>('/api/ingredients')
+        return $fetch<IngredientDirectoryPage>('/api/ingredients')
       }
 
       const user = currentUser.value
       if (!user) throw new Error('Sign in to curate Ingredients')
       const token = await user.getIdToken()
-      return $fetch<PublicIngredientCollectionResponse>(
-        '/api/internal/ingredients',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
+      return $fetch<IngredientDirectoryPage>('/api/internal/ingredients', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
     },
     {
       dedupe: 'defer',

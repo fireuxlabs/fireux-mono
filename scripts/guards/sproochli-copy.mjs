@@ -141,7 +141,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     interlakenPersonalMarketplace,
     interlakenMarketplaceOnboarding,
   ]
-  const interlakenMarketplacePublicSurfaces = [
+  const interlakenMarketplaceDirectorySurfaces = [
     'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
     'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
     'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
@@ -269,7 +269,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const menuRootEntry = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/utils/root-entry.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/menu/server/draft/root-entry.ts'
   )
   const menuPayloadTypes = read(
     repoRoot,
@@ -542,11 +542,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(interlakenFeed, /blogPost\.available_languages\.includes/)
   assert.match(interlakenFeed, /v-if="resolvedFutterPosts\.length"/)
   assert.match(
-    interlakenMarketplacePublicSurfaces,
-    /\/api\/public\/marketplace\/stores/
+    interlakenMarketplaceDirectorySurfaces,
+    /\/api\/marketplace-stores/
   )
   assert.doesNotMatch(
-    interlakenMarketplacePublicSurfaces,
+    interlakenMarketplaceDirectorySurfaces,
     /marketplace-preview|marketplacePreviewSellers|MarketplaceSellerCard|MarketplaceStorefront/
   )
   assert.match(interlakenStyleFacade, /@import '\.\/market-shell\.css';/)
@@ -885,7 +885,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(menuRootEntry, /source_language/)
   assert.doesNotMatch(menuPayloadTypes, /sourceLanguage/)
   assert.doesNotMatch(menuEndpoint, /source_language|sourceLanguage/)
-  assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(appKitchenData\)/)
+  assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(kitchenData\)/)
   assert.equal(TranslationMemoryStorage.collection, 'translation_memory')
   assert.equal(TranslationMemoryStorage.access, 'server-only')
   assert.match(

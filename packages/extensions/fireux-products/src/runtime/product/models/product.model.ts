@@ -44,7 +44,7 @@ export const ProductEntity = defineFireuxEntity({
   name: 'Product',
   family: 'commerce',
   identity: 'root',
-  authority: 'owning-app-database',
+  authority: 'domain-database',
   appSupport: 'none',
   workspace: false,
   root: ProductStorage.path,

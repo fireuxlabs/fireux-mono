@@ -10,18 +10,17 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
-import { chefConfig } from '../firestore/profiles/Chef/config/chefConfig'
 import type {
   Chef,
-  PublicChefDirectoryProfile,
-  PublicChefProfile,
+  ChefDirectoryProfile,
+  ChefProfile,
 } from '../../models/chef.model.ts'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle'>>
-type ChefTarget = PublicChefDirectoryProfile &
-  Partial<Pick<PublicChefProfile, 'chef_signature_dishes'>>
+type ChefTarget = ChefDirectoryProfile &
+  Partial<Pick<ChefProfile, 'chef_signature_dishes'>>
 
 export namespace ChefCard {
   export type Card = {
@@ -77,9 +76,7 @@ export function useChefInterface(
 
     return {
       id,
-      to: routeKey
-        ? `/${chefConfig.collectionName}/${encodeURIComponent(routeKey)}`
-        : '',
+      to: routeKey ? `/chefs/${encodeURIComponent(routeKey)}` : '',
       imageUrl: avatarUrl,
       avatarUrl,
       secondaryAvatarUrl,
@@ -99,7 +96,7 @@ export function useChefInterface(
     target?: ChefTarget | null,
     userOverride?: UserLike | null
   ): ChefCard.Card | null {
-    const p = target ?? profileRefs?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.profile?.value ?? null
     if (!p) return null
 
     const mapped = map(p, userOverride ?? userRef?.value ?? null)

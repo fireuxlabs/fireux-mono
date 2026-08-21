@@ -34,7 +34,7 @@ async function readMenuManifest(
   request: KitchenAgentRequest
 ) {
   const snapshot = await access.db
-    .collection(`apps/${request.appId}/kitchens/${request.kitchenId}/menus`)
+    .collection(`kitchens/${request.kitchenId}/menus`)
     .limit(MAX_MENUS)
     .get()
   return Promise.all(
@@ -70,7 +70,7 @@ async function readDrinks(
   if (request.operation !== 'drinks') return []
 
   const snapshot = await access.db
-    .collection(`apps/${request.appId}/kitchens/${request.kitchenId}/dishes`)
+    .collection(`kitchens/${request.kitchenId}/dishes`)
     .limit(MAX_DRINKS)
     .get()
 

@@ -74,15 +74,15 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { reactive, ref, watchEffect } from 'vue'
 import { useDriverFetch } from '../../composables/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverUpdate } from '../../composables/firestore/profiles/Driver/mutations/useDriverUpdate'
-import type { PublicDriverDirectoryProfile } from '../../models/driver.model.ts'
+import type { DriverDirectoryProfile } from '../../models/driver.model.ts'
 
-type DriverEntry = PublicDriverDirectoryProfile
+type DriverEntry = DriverDirectoryProfile
 type DriverDraft = {
   coverage_radius_m: string
 }
 
 const { drivers, userById } = useDriverFetch()
-const { updateCoreProfile } = useDriverUpdate()
+const { updateProfile } = useDriverUpdate()
 const toast = useToastify()
 const drafts = reactive<Record<string, DriverDraft>>({})
 const savingId = ref('')
@@ -125,7 +125,7 @@ async function saveDriver(driver: DriverEntry) {
   }
 
   try {
-    await updateCoreProfile(patch, { id })
+    await updateProfile(patch, { id })
     toast.add({
       title: 'Driver saved',
       description: `${displayName(driver)} has been updated.`,

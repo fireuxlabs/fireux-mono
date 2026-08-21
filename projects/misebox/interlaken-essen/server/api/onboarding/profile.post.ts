@@ -8,8 +8,10 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   INTERLAKEN_ESSEN_APP_ID,
   INTERLAKEN_LOCALITIES,
-  MARKETPLACE_PROFILE_COLLECTION,
+  MARKETPLACE_PROFILE_KIND,
   OTHER_LOCALITY_ID,
+  marketplaceProfileAppStatePath,
+  marketplaceProfilePath,
   type MarketplaceOnboardingInput,
 } from '../../../app/content/marketplace-profile'
 
@@ -38,7 +40,7 @@ function record(value: unknown): RecordValue {
 function text(
   value: unknown,
   label: string,
-  options: { required?: boolean, max: number, min?: number }
+  options: { required?: boolean; max: number; min?: number }
 ) {
   if (value === undefined || value === null) {
     if (options.required) fail(400, `${label} is required.`)
@@ -61,9 +63,12 @@ function parseRequest(value: unknown): MarketplaceOnboardingInput & {
   postal_code: string
 } {
   const body = record(value)
-  const unsupported = Object.keys(body).find(key => !allowedFields.has(key))
+  const unsupported = Object.keys(body).find((key) => !allowedFields.has(key))
   if (unsupported) {
-    fail(400, `The onboarding request contains an unsupported field: ${unsupported}.`)
+    fail(
+      400,
+      `The onboarding request contains an unsupported field: ${unsupported}.`
+    )
   }
   if (typeof body.offers_enabled !== 'boolean') {
     fail(400, 'Offer availability must be true or false.')
@@ -74,7 +79,7 @@ function parseRequest(value: unknown): MarketplaceOnboardingInput & {
     max: 40,
   })
   const knownLocality = INTERLAKEN_LOCALITIES.find(
-    locality => locality.id === localityId
+    (locality) => locality.id === localityId
   )
 
   let localityLabel = knownLocality?.label ?? ''
@@ -141,14 +146,14 @@ export default defineEventHandler(async (event) => {
   const membershipRef = db.doc(
     `apps/${appId}/${AppUserStorage.collection}/${uid}`
   )
-  const profileRef = db.doc(
-    `apps/${appId}/${MARKETPLACE_PROFILE_COLLECTION}/${uid}`
-  )
+  const profileRef = db.doc(marketplaceProfilePath(uid))
+  const appStateRef = db.doc(marketplaceProfileAppStatePath(uid))
 
   await db.runTransaction(async (transaction) => {
-    const [membership, profile] = await Promise.all([
+    const [membership, profile, appState] = await Promise.all([
       transaction.get(membershipRef),
       transaction.get(profileRef),
+      transaction.get(appStateRef),
     ])
 
     const role = String(membership.get('role') || '').trim()
@@ -156,8 +161,9 @@ export default defineEventHandler(async (event) => {
       fail(409, 'A valid Interlaken Essen membership is required.')
     }
 
-    const profileData = {
-      id: uid,
+    const appStateData = {
+      profile_kind: MARKETPLACE_PROFILE_KIND,
+      app_id: appId,
       locality: {
         id: input.locality_id,
         label: input.locality_label,
@@ -169,19 +175,26 @@ export default defineEventHandler(async (event) => {
             public_name: input.public_name,
             introduction: input.introduction,
           }
-        : profile.exists
+        : appState.exists
           ? {
               public_name: FieldValue.delete(),
               introduction: FieldValue.delete(),
             }
           : {}),
-      ...(!profile.exists
+      ...(!appState.exists
         ? { created: serverAuditStamp({ by: uid, appId }) }
         : {}),
       updated: serverAuditStamp({ by: uid }),
     }
 
-    transaction.set(profileRef, profileData, { merge: true })
+    if (!profile.exists) {
+      transaction.create(profileRef, {
+        kind: MARKETPLACE_PROFILE_KIND,
+        created: serverAuditStamp({ by: uid }),
+        updated: serverAuditStamp({ by: uid }),
+      })
+    }
+    transaction.set(appStateRef, appStateData, { merge: true })
     transaction.update(membershipRef, {
       onboarding_status: 'completed',
       updated: serverAuditStamp({ by: uid }),

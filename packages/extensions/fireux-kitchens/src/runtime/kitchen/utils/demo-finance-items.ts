@@ -21,7 +21,7 @@ export function itemKey(item: {
     item.label,
     item.variantId ?? '',
     item.variantLabel ?? '',
-  ].map(value => String(value ?? '').trim())
+  ].map((value) => String(value ?? '').trim())
   return parts.slice(0, 4).every(Boolean) ? parts.join(':') : ''
 }
 
@@ -62,14 +62,14 @@ export function groupItems(
     0
   )
   return [...totals.values()]
-    .sort((left, right) =>
-      right.lineGrossMinor - left.lineGrossMinor
-      || left.label.localeCompare(right.label)
+    .sort(
+      (left, right) =>
+        right.lineGrossMinor - left.lineGrossMinor ||
+        left.label.localeCompare(right.label)
     )
-    .map(item => ({
+    .map((item) => ({
       ...item,
-      sharePercent: Math.round(
-        item.lineGrossMinor / itemSalesMinor * 1_000
-      ) / 10,
+      sharePercent:
+        Math.round((item.lineGrossMinor / itemSalesMinor) * 1_000) / 10,
     }))
 }

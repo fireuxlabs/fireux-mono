@@ -1,13 +1,7 @@
 <template>
-  <div
-    class="menu-order-quantity"
-    data-menu-option-group="quantity"
-  >
+  <div class="menu-order-quantity" data-menu-option-group="quantity">
     <span :id="labelId">Quantity</span>
-    <div
-      class="menu-order-quantity__stepper"
-      :aria-labelledby="labelId"
-    >
+    <div class="menu-order-quantity__stepper" :aria-labelledby="labelId">
       <button
         type="button"
         aria-label="Decrease quantity"

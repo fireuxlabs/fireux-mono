@@ -1,8 +1,5 @@
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: omit next-opening copy when canonical timezone data is absent.
-import {
-  readWeekdayTimeWindowsConfig,
-  weekdayTimeDays,
-} from './weekday-time'
+import { readWeekdayTimeWindowsConfig, weekdayTimeDays } from './weekday-time'
 import type {
   WeekdayTimeDay,
   WeekdayTimeWindow,
@@ -92,9 +89,7 @@ export function readWeekdayTimeNextOpeningText(
     if (!time) continue
 
     const label =
-      offset === 0 ? 'today'
-        : offset === 1 ? 'tomorrow'
-          : dayLabels[day]
+      offset === 0 ? 'today' : offset === 1 ? 'tomorrow' : dayLabels[day]
 
     return `${label} at ${time}`
   }

@@ -1,16 +1,9 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Room service destination
-    </h2>
+    <h2 class="menu-order-screen-title">Room service destination</h2>
 
     <UFormField label="Room, suite, or villa" required>
-      <UInput
-        v-model="room"
-        maxlength="64"
-        placeholder="Suite A"
-        size="lg"
-      />
+      <UInput v-model="room" maxlength="64" placeholder="Suite A" size="lg" />
     </UFormField>
 
     <UFormField label="Guest name">
@@ -43,12 +36,13 @@ const room = computed({
 })
 const guestName = computed({
   get: () => String(props.funnel.incoming.customer?.name || ''),
-  set: (name: string) => props.funnel.collect({
-    customer: {
-      ...props.funnel.incoming.customer,
-      name,
-    },
-  }),
+  set: (name: string) =>
+    props.funnel.collect({
+      customer: {
+        ...props.funnel.incoming.customer,
+        name,
+      },
+    }),
 })
 
 watchEffect(() => {

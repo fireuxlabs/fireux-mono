@@ -27,12 +27,6 @@ export interface AppUser extends FireuxStamped {
   onboarding_status: AppUserOnboardingStatus
 }
 
-/** Workspace targets assigned to one User. */
-export interface UserTargets {
-  project_ids: string[]
-  kitchen_ids: string[]
-}
-
 export const UserStorage = {
   shape: 'root',
   database: 'named',
@@ -46,15 +40,6 @@ export const AppUserStorage = {
   path: 'apps/{appId}/users/{userId}',
   collection: 'users',
   parent: 'app',
-  idParam: 'userId',
-} as const
-
-export const UserTargetsStorage = {
-  shape: 'scoped',
-  path: 'users/{userId}/private/targets',
-  collection: 'private',
-  document: 'targets',
-  parent: 'user',
   idParam: 'userId',
 } as const
 
@@ -107,11 +92,6 @@ export const AppUserDefaults: AppUser = {
     at: {} as FirebaseTimestamp,
     by: undefined,
   },
-}
-
-export const UserTargetsDefaults: UserTargets = {
-  project_ids: [],
-  kitchen_ids: [],
 }
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>

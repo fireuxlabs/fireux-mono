@@ -5,9 +5,14 @@
     <template #header>
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 class="text-sm font-semibold text-highlighted">{{ surfaceLabel }} timing</h3>
+          <h3 class="text-sm font-semibold text-highlighted">
+            {{ surfaceLabel }} timing
+          </h3>
           <p class="text-sm text-dimmed">
-            {{ description || `Define when customers can order and which ${timeLabel.toLowerCase()} times they can choose.` }}
+            {{
+              description ||
+              `Define when customers can order and which ${timeLabel.toLowerCase()} times they can choose.`
+            }}
           </p>
         </div>
         <UBadge color="success" variant="soft">Field editable</UBadge>
@@ -69,7 +74,7 @@
         :rows="2"
         :maxlength="240"
         :firebase-value="message"
-          :placeholder="customerMessagePlaceholder"
+        :placeholder="customerMessagePlaceholder"
         :disabled="disabled"
         disabled-message="This menu is read-only."
         :update-function="updateMessage"
@@ -93,12 +98,16 @@
           :color="menuHours.windows.length ? 'neutral' : 'warning'"
           variant="soft"
           icon="i-lucide-clock"
-          :title="menuHours.windows.length
-            ? `${surfaceLabel} follows Menu service hours`
-            : 'Menu service hours are missing'"
-          :description="menuHours.windows.length
-            ? inheritedHoursSummary
-            : `Add Menu service hours or switch to custom ${surfaceLabel} hours.`"
+          :title="
+            menuHours.windows.length
+              ? `${surfaceLabel} follows Menu service hours`
+              : 'Menu service hours are missing'
+          "
+          :description="
+            menuHours.windows.length
+              ? inheritedHoursSummary
+              : `Add Menu service hours or switch to custom ${surfaceLabel} hours.`
+          "
         />
 
         <MoleculesFormsFirestoreSimpleField
@@ -130,23 +139,26 @@ import {
 
 type UpdateFn = (patch: Partial<MenuOrderTypeConfig>) => Promise<void>
 
-const props = withDefaults(defineProps<{
-  allowAsap?: boolean
-  config: MenuOrderTypeConfig
-  customerMessagePlaceholder: string
-  description?: string
-  disabled?: boolean
-  menuHours: WeekdayTimeWindowsConfig
-  noticeLabel?: string
-  surfaceLabel: string
-  timeLabel: string
-  updateFunction: UpdateFn
-}>(), {
-  allowAsap: true,
-  noticeLabel: 'Minimum preparation time (minutes)',
-})
+const props = withDefaults(
+  defineProps<{
+    allowAsap?: boolean
+    config: MenuOrderTypeConfig
+    customerMessagePlaceholder: string
+    description?: string
+    disabled?: boolean
+    menuHours: WeekdayTimeWindowsConfig
+    noticeLabel?: string
+    surfaceLabel: string
+    timeLabel: string
+    updateFunction: UpdateFn
+  }>(),
+  {
+    allowAsap: true,
+    noticeLabel: 'Minimum preparation time (minutes)',
+  }
+)
 
-const slotIntervalOptions = [15, 30, 45, 60].map(value => ({
+const slotIntervalOptions = [15, 30, 45, 60].map((value) => ({
   label: `${value} minutes`,
   value: String(value),
 }))
@@ -157,17 +169,19 @@ const noticeMinutes = computed(() =>
 const slotIntervalMinutes = computed(() =>
   String(props.config.slot_interval_minutes || 30)
 )
-const scheduleHorizonDays = computed(() =>
-  props.config.schedule_horizon_days || 7
+const scheduleHorizonDays = computed(
+  () => props.config.schedule_horizon_days || 7
 )
 const message = computed(() => String(props.config.message || ''))
-const inheritMenuHours = computed(() =>
-  props.config.service_hours?.inherit_menu_service_hours !== false
+const inheritMenuHours = computed(
+  () => props.config.service_hours?.inherit_menu_service_hours !== false
 )
-const customHoursText = computed(() => formatWeekdayTimeText(
-  props.config.service_hours?.operation_hours
-))
-const inheritedHoursSummary = computed(() => formatWeekdayTimeText(props.menuHours))
+const customHoursText = computed(() =>
+  formatWeekdayTimeText(props.config.service_hours?.operation_hours)
+)
+const inheritedHoursSummary = computed(() =>
+  formatWeekdayTimeText(props.menuHours)
+)
 
 const validNumber = (
   value: string,
@@ -179,7 +193,10 @@ const validNumber = (
 
   return Number.isFinite(number) && number >= minimum && number <= maximum
     ? { isValid: true }
-    : { isValid: false, message: `${label} must be between ${minimum} and ${maximum}.` }
+    : {
+        isValid: false,
+        message: `${label} must be between ${minimum} and ${maximum}.`,
+      }
 }
 const validateNoticeMinutes = (value: string): ValidationResult => {
   const minutes = Number(value)
@@ -198,13 +215,17 @@ const validateCustomHours = (value: string): ValidationResult => {
     const hours = parseWeekdayTimeText(value, props.menuHours.timezone)
     return hours.windows.length
       ? { isValid: true }
-      : { isValid: false, message: `Add at least one ${props.surfaceLabel}-hours range.` }
+      : {
+          isValid: false,
+          message: `Add at least one ${props.surfaceLabel}-hours range.`,
+        }
   } catch (error) {
     return {
       isValid: false,
-      message: error instanceof Error
-        ? error.message
-        : `${props.surfaceLabel} hours are invalid.`,
+      message:
+        error instanceof Error
+          ? error.message
+          : `${props.surfaceLabel} hours are invalid.`,
     }
   }
 }

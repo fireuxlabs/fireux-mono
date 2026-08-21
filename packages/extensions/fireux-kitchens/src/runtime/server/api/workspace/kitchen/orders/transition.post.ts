@@ -44,8 +44,8 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const uid = await requireKitchenOperator(event, { appId, kitchenId })
-  const orders = serverKitchenOrdersTarget(appId, kitchenId)
-  const sales = serverKitchenSalesTarget(appId, kitchenId)
+  const orders = serverKitchenOrdersTarget(kitchenId)
+  const sales = serverKitchenSalesTarget(kitchenId)
   const financialFacts = serverAppFinancialFactsTarget(appId)
   const outcome = await runGuardedServerTransaction(
     { kind: 'runtime' },

@@ -1,13 +1,13 @@
 # Menu family
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
 
 Map the Menu family without conflating globally addressable Menu identity,
-Kitchen-scoped structured content, public route projections, or ordering.
+Kitchen-scoped structured content, directory route responses, or ordering.
 
 ## Links
 
@@ -23,7 +23,7 @@ Kitchen-scoped structured content, public route projections, or ordering.
 
 | Concept          | Kind   | Identity           | Job                                                                                                                              |
 | ---------------- | ------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| Menu             | Entity | Root               | Globally addressable public doorway; owns public identity, publication, and either a document source or a pointer to KitchenMenu |
+| Menu             | Entity | Root               | Globally addressable doorway; owns identity, publication, and either a document source or a pointer to KitchenMenu               |
 | KitchenMenu      | Entity | Kitchen-scoped     | Structured sections/items and Kitchen operational policy                                                                         |
 | MenuSection      | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle                                                                                |
 | MenuItem         | Record | MenuSection-scoped | Menu placement, price, options, and order; always references a Dish                                                              |
@@ -46,36 +46,36 @@ catalogues: `/workspace/kitchen/dishes` contains food and
 both. This is a navigation and operating split over `Dish.item_kind`, not a
 second Drink entity or a duplicated collection.
 
-AppKitchen `workspace.menus` also names the Kitchen's primary Menu and optional
+Kitchen presentation also names the Kitchen's primary Menu and optional
 Specials Menu by explicit id. Collection order is never Menu role identity.
-When enabled, the bounded public projection embeds the published Specials
+When enabled, the bounded response embeds the published Specials
 content only into the configured primary Menu; Specials remains an ordinary,
 independently edited KitchenMenu and inherits the parent renderer's style.
 
 ## Shared spine
 
-- Public Menu reads use bounded server projections. Raw Menu or KitchenMenu
+- Menu reads use bounded server responses. Raw Menu or KitchenMenu
   Firestore rows are not the guest transport.
 - `useMenuCollection` owns Menu Directory outcomes, pagination, tenant redirect
   policy, and links.
-- `useMenu` owns one resolved public detail projection, render kind, safe
+- `useMenu` owns one resolved detail response, render kind, safe
   failure state, and relative Menu/index/QR paths.
 - URL scope and Firestore ownership are separate. The server resolves
   ownership; a route slug cannot select a different App or Kitchen.
 - A structured Menu with a valid Kitchen source is canonical at its
-  Kitchen-directory doorway. Its global root doorway remains a public discovery
+  Kitchen-directory doorway. Its global root doorway remains a discovery
   alias over the same bounded Browse projection. Root document Menus without a
   Kitchen remain canonical at their global root doorway; tenant Menus remain
   canonical on their tenant doorway.
 - Root Menu stores no copied Kitchen name, image, route, currency, hours, or
-  ordering policy. Public projections join bounded presentation truth.
+  ordering policy. Bounded responses join presentation truth.
 - Missing, unpublished, wrong-scope, malformed, or configuration-invalid
   Menus fail closed. Missing content is 404; configuration/read failure remains
   5xx and exposes no raw server detail.
 - Menu count may change index presentation but not detail route grammar.
-- QR is a distribution doorway to an existing public Menu projection. It is
-  not Menu data ownership and does not choose the canonical public route.
-- Public Browse is readable by default. Ordering availability belongs to the
+- QR is a distribution doorway to an existing Menu response. It is not Menu
+  data ownership and does not choose the canonical route.
+- Browse is readable by default. Ordering availability belongs to the
   ordering contract in `menu-ordering.md`.
 - Kiosk ordering enters its catalogue through a section landing rather than
   preselecting the first section. The landing renders Food first and Drinks
@@ -86,7 +86,7 @@ independently edited KitchenMenu and inherits the parent renderer's style.
   artwork; without keyed artwork, a section card derives its representative
   image from that section's canonical Dish media.
 
-## Public doorways
+## Menu doorways
 
 | Scope             | Index                           | Detail                                   | Why it differs                                                                                 |
 | ----------------- | ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -115,7 +115,7 @@ The current route vocabulary is:
 - `generic` → Browse projection;
 - `delivery`, `collection`, `kiosk`, `pre_order` → Order projection;
 - `table`, `staff_pos`, `dine_in`, `room_service` → diagnostic projection
-  until a dedicated public/private renderer is proved.
+  until a dedicated guest/authenticated renderer is proved.
 
 Contexts append to Menu identity, for example `<menuId>.collection`. A Kitchen
 slug with a suffix but no Menu identity is not a Menu context. The route model,
@@ -124,7 +124,7 @@ projection classifier, middleware layout, and QR path are locked together by
 
 ## Source and maturity
 
-Root public Menu kinds:
+Root Menu kinds:
 
 - `doc`: uploaded photo, PDF, generic document, or source URL doorway;
 - `menu`: structured doorway pointing to KitchenMenu through minimal
@@ -153,11 +153,11 @@ validates and commits it.
 
 ## Presentation inheritance
 
-Public Menu presentation is resolved, not copied:
+Menu presentation is resolved, not copied:
 
 1. Place supplies shared business defaults such as currency and hours plus its
    one `identity_color` when known. Kitchen does not override that colour.
-2. AppKitchen `workspace.theme.palette` owns the Kitchen's four-role Menu default:
+2. Kitchen `theme.palette` owns the Kitchen's four-role Menu default:
    `canvas`, `text`, `accent`, and `accent_contrast`.
 3. KitchenMenu may own one optional complete four-role `theme.palette` when a
    Menu genuinely differs. Absence inherits the Kitchen palette; resetting the
@@ -165,14 +165,14 @@ Public Menu presentation is resolved, not copied:
 4. Ordering surfaces inherit the effective Menu policy unless explicitly
    configured.
 
-The bounded public presentation exposes the effective theme plus
+The bounded presentation exposes the effective theme plus
 `themeSource: menu | kitchen | place-default` for inspectable provenance. The
-public manifest combines those layers for rendering. App support records
-remain access-only. The Menu Directory stays in host App chrome; Menu detail may
+Menu manifest combines those layers for rendering. The Menu Directory stays
+in host App chrome; Menu detail may
 use the resolved Menu canvas and package-owned Menu layout.
 
 When Sproochli is attached, the Kitchen's `default_language` also supplies the
-public Menu interface language for labels such as sections, options, and
+Menu interface language for labels such as sections, options, and
 allergy information. A visitor-selected `sproochli` language replaces that
 interface copy together with the translated Menu projection; the unselected
 default route never rewrites the original Menu content.
@@ -205,17 +205,17 @@ Root technical paths are completed legacy placements and must not return.
 | Root document Menu has no Kitchen                                 | `accepted` | Quick upload and QR must work before Kitchen onboarding                                                                                        |
 | KitchenMenu has no root Menu                                      | `accepted` | A Kitchen may prepare private/unpublished structured content before creating a global doorway                                                  |
 | Tenant route omits Kitchen slug                                   | `accepted` | Config provides the bounded Kitchen scope                                                                                                      |
-| Global, directory, and tenant routes share data but not URL shape | `accepted` | Each route expresses a different public navigation context, not different ownership                                                            |
-| Browse and Order are separate projections                         | `accepted` | Readability is public by default; transactional controls require explicit policy and lifecycle                                                 |
+| Global, directory, and tenant routes share data but not URL shape | `accepted` | Each route expresses a different navigation context, not different ownership                                                                   |
+| Browse and Order are separate projections                         | `accepted` | Browse is readable by default; transactional controls require explicit policy and lifecycle                                                     |
 | Private context identities are reserved in route grammar          | `accepted` | Stable QR and entry identities can exist before each restricted product surface is complete; unfinished rendering remains migration debt below |
 
 ## Migration and drift register
 
 | Difference                                                                                  | State        | Required direction                                                                                                                                            |
 | ------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Older flat `doc_*` and `kitchen_*` root Menu fields                                         | `migration`  | Read during migration, emit the clean `kind`/`file`/`source` public contract, and stop writing flat compatibility fields                                      |
-| AppKitchen `workspace.menus.style` still contains legacy colour `PageStyle` for some Kitchens | `migration`  | Move proved colours to the four-role Workspace palette with protected pre-images; retain the reader only for records whose accent authority is still unresolved |
-| Exact quick Menu → KitchenMenu migration behavior                                           | `to-confirm` | Preserve the root public/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions                                     |
+| Older flat `doc_*` and `kitchen_*` root Menu fields                                         | `migration`  | Read during migration, emit the clean `kind`/`file`/`source` Menu contract, and stop writing flat compatibility fields                                         |
+| AppKitchen `workspace.menus.style` contains legacy colour `PageStyle`                       | `migration`  | Move the proved four-role palette to Kitchen with protected preimages; remove the AppKitchen reader at cutover                                                   |
+| Exact quick Menu → KitchenMenu migration behavior                                           | `to-confirm` | Preserve the root Menu/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions                                        |
 | Global and Kitchen-directory routes expose one KitchenMenu                                  | `accepted`   | The Kitchen-directory doorway is canonical; the global route remains an additive discovery alias                                                              |
 | Alternate unshipped ordering funnels still have direct consumers                            | `migration`  | Move consumers atomically to `MenuOrder`, then delete the alternate implementation                                                                            |
 | Diagnostic contexts use generic JSON rendering                                              | `migration`  | Replace only when each context has a proven dedicated surface and privacy contract                                                                            |
@@ -233,7 +233,7 @@ Start with:
 - Entity declarations: `models/kitchen/menu/menu.model.ts` and
   `models/kitchen/menu/kitchen-menu.model.ts`.
 - Route grammar: `utils/kitchen-menu-route.ts`.
-- Ownership resolution: `runtime/menu/server/ownership/public-target.ts`.
+- Ownership resolution: `runtime/menu/server/ownership/target.ts`.
 - Menu Directory: `runtime/menu/composables/useMenuCollection.ts`.
 - Menu detail: `runtime/menu/composables/useMenu.ts`.
 - Workspace operation:
@@ -245,7 +245,7 @@ Start with:
 ### Now
 
 - Preserve distinct Menu and KitchenMenu identity.
-- Keep all public doorways on one bounded ownership resolver and guarded route
+- Keep all Menu doorways on one bounded ownership resolver and guarded route
   grammar.
 - Keep Browse readable and ordering capability explicit.
 

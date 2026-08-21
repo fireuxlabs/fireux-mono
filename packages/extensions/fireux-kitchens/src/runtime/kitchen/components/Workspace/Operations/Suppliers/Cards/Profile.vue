@@ -3,16 +3,21 @@
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
       <div
         class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
-        style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+        style="width: 256px; height: 256px; max-width: 256px; max-height: 256px"
       >
         <img
           v-if="imageUrl"
           :src="imageUrl"
           :alt="title"
           class="object-cover"
-          style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+          style="
+            width: 256px;
+            height: 256px;
+            max-width: 256px;
+            max-height: 256px;
+          "
           loading="lazy"
-        >
+        />
         <div
           v-else
           class="flex h-full w-full items-center justify-center text-dimmed"
@@ -42,7 +47,9 @@
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Status:
-            <span class="workspace-summary-value">{{ status || 'Linked' }}</span>
+            <span class="workspace-summary-value">{{
+              status || 'Linked'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Categories:
@@ -50,7 +57,9 @@
           </div>
           <div class="workspace-summary-field">
             Delivery areas:
-            <span class="workspace-summary-value">{{ deliveryAreas.length }}</span>
+            <span class="workspace-summary-value">{{
+              deliveryAreas.length
+            }}</span>
           </div>
           <div v-if="headquartersLabel" class="workspace-summary-field">
             Headquarters:
@@ -95,25 +104,27 @@ const title = computed(
     normalizeString(props.supplier?.id) ||
     'Untitled supplier'
 )
-const headline = computed(() => normalizeString(props.supplier?.supplier_headline))
+const headline = computed(() =>
+  normalizeString(props.supplier?.supplier_headline)
+)
 const summary = computed(() =>
   normalizeString((props.supplier as { summary?: unknown } | null)?.summary)
 )
 const companyPlace = computed(() => {
   const value = props.supplier?.company_place
   return value && typeof value === 'object'
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : null
 })
 const imageUrl = computed(
   () =>
-    normalizeString(companyPlace.value?.image_url)
-    || normalizeString(props.supplier?.supplier_image)
+    normalizeString(companyPlace.value?.image_url) ||
+    normalizeString(props.supplier?.supplier_image)
 )
 const headquartersLabel = computed(
   () =>
-    normalizeString(companyPlace.value?.short_address)
-    || normalizeString(companyPlace.value?.name)
+    normalizeString(companyPlace.value?.short_address) ||
+    normalizeString(companyPlace.value?.name)
 )
 const status = computed(() =>
   normalizeString((props.supplier as { state?: unknown } | null)?.state)

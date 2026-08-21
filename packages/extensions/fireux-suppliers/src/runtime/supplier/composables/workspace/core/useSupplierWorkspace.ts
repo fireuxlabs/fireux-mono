@@ -13,9 +13,7 @@ import { useWorkspaceFamilyRuntime } from 'fireux-core/runtime/composables/fireu
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
 import { useWorkspaceTargets } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import {
-  useSupplierCollection,
-} from '../../firestore/fetch/useSupplierCollection'
+import { useSupplierCollection } from '../../firestore/fetch/useSupplierCollection'
 import { type SupplierSurface } from '../../firestore/utils/view/useSupplierInterface'
 import { SupplierStorage } from '../../../models/Supplier.model.ts'
 import { useSupplierWorkspaceDemoData } from './useSupplierWorkspaceDemoData'
@@ -52,15 +50,15 @@ function createSupplierWorkspace() {
   )
   const targetSuppliers = computed<SupplierSurface[]>(() =>
     workspaceRoot.source.value === 'demo'
-      ? demoData.data.value?.suppliers ?? []
+      ? (demoData.data.value?.suppliers ?? [])
       : sourceCollection.suppliers.value
   )
   const targetData = computed(() =>
     workspaceRoot.source.value === 'demo'
-      ? (demoData.data.value?.suppliers ?? []).map(supplier =>
+      ? (demoData.data.value?.suppliers ?? []).map((supplier) =>
           workspaceData('demo', supplier)
         )
-      : sourceCollection.suppliers.value.map(supplier =>
+      : sourceCollection.suppliers.value.map((supplier) =>
           workspaceData(
             workspaceRoot.source.value === 'test' ? 'test' : 'live',
             supplier
@@ -82,9 +80,8 @@ function createSupplierWorkspace() {
       ? demoData.outcome.value
       : sourceCollection.outcome.value
   )
-  const membershipAwareTargetsOutcome = workspaceTargets.resolveOutcome(
-    sourceTargetsOutcome
-  )
+  const membershipAwareTargetsOutcome =
+    workspaceTargets.resolveOutcome(sourceTargetsOutcome)
   const targetsOutcome = computed<WorkspaceTargetOutcome>(() =>
     workspaceRoot.source.value === 'demo'
       ? sourceTargetsOutcome.value

@@ -48,7 +48,7 @@
 import { professionalConfig } from '../../../composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { ref } from 'vue'
 
-const profileKey = professionalConfig.id ?? 'professional'
+const profileKey = professionalConfig.kind
 const navLabel =
   professionalConfig.navLabel ?? `${professionalConfig.profileType} Profile`
 const navIcon = professionalConfig.navIcon ?? 'i-lucide-user'

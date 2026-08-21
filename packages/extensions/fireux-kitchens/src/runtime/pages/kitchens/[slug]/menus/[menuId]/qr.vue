@@ -24,5 +24,7 @@ definePageMeta({
 const kitchenSlug = useRouteParam('slug')
 const routeMenuId = useRouteParam('menuId')
 const menuTarget = computed(() => parseMenuRouteTarget(routeMenuId.value))
-const menuRouteScope = computed(() => directoryMenuRouteScope(kitchenSlug.value))
+const menuRouteScope = computed(() =>
+  directoryMenuRouteScope(kitchenSlug.value)
+)
 </script>

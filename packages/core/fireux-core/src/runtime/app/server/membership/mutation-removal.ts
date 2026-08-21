@@ -1,7 +1,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppDriversTarget,
   serverAppJoinRequestsTarget,
   serverAppMembershipBlocksTarget,
   serverAppUsersTarget,
@@ -14,7 +13,6 @@ import {
   isAdminMembership,
   readTargetAuthorityRevocations,
   requireAdmin,
-  revokedDriverLinks,
   stamp,
   type MembershipTransactionState,
   type TransactionOutcome,
@@ -44,11 +42,9 @@ export async function handleRemoveMember(
 
   const joins = serverAppJoinRequestsTarget(appId)
   const blocks = serverAppMembershipBlocksTarget(appId)
-  const drivers = serverAppDriversTarget(appId)
-  const [join, block, driver, authority] = await Promise.all([
+  const [join, block, authority] = await Promise.all([
     mutations.read(joins, userId),
     mutations.read(blocks, userId),
-    mutations.read(drivers, userId),
     readTargetAuthorityRevocations(mutations, appId, userId),
   ])
   if (target.exists) mutations.delete(memberships, userId)
@@ -57,12 +53,6 @@ export async function handleRemoveMember(
     mutations.update(grant.target, grant.id, {
       operator_ids: FieldValue.arrayRemove(userId),
       team_ids: FieldValue.arrayRemove(userId),
-      updated: stamp(actorUid),
-    })
-  if (driver.exists)
-    mutations.update(drivers, userId, {
-      active_kitchen_ids: [],
-      kitchen_links: revokedDriverLinks(driver.data ?? {}),
       updated: stamp(actorUid),
     })
   if (userId !== actorUid) {

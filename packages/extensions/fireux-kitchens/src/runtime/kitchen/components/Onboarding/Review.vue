@@ -28,7 +28,6 @@
         <dd>{{ paletteLabel }}</dd>
       </div>
     </dl>
-
   </section>
 </template>
 

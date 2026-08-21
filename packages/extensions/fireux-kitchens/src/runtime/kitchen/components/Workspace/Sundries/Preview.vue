@@ -1,14 +1,12 @@
 <template>
   <UCard>
     <template #header>
-      <h1 class="text-base font-semibold text-highlighted">
-        Preview moved
-      </h1>
+      <h1 class="text-base font-semibold text-highlighted">Preview moved</h1>
     </template>
 
     <p class="text-sm text-dimmed">
-      Menus now preview through exact published menu URLs. Create and publish a menu,
-      then open it from the menu QR page.
+      Menus now preview through exact published menu URLs. Create and publish a
+      menu, then open it from the menu QR page.
     </p>
 
     <template #footer>

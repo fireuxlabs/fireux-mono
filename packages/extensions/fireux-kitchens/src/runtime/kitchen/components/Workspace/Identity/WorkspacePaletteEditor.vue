@@ -4,7 +4,9 @@
       <div class="flex items-start gap-3">
         <UIcon name="i-lucide-swatch-book" class="mt-1 size-5 text-muted" />
         <div>
-          <div class="text-base font-semibold text-highlighted">Workspace palette</div>
+          <div class="text-base font-semibold text-highlighted">
+            Workspace palette
+          </div>
           <p class="text-sm text-dimmed">
             Four functional colours inherited by menus and any later App theme.
           </p>
@@ -21,7 +23,7 @@
             :value="draft[field.key]"
             :disabled="!canWrite"
             @input="set(field.key, ($event.target as HTMLInputElement).value)"
-          >
+          />
           <UInput
             :model-value="draft[field.key]"
             :disabled="!canWrite"
@@ -67,12 +69,16 @@ const fields = [
 ] as const
 
 const draft = reactive<WorkspacePalette>({ ...props.palette })
-watch(() => props.palette, palette => Object.assign(draft, palette), { deep: true })
+watch(
+  () => props.palette,
+  (palette) => Object.assign(draft, palette),
+  { deep: true }
+)
 
 const set = (key: keyof WorkspacePalette, value: string) => {
   draft[key] = value.trim().toLowerCase()
 }
 const valid = computed(() =>
-  fields.every(field => /^#[0-9a-f]{6}$/i.test(draft[field.key]))
+  fields.every((field) => /^#[0-9a-f]{6}$/i.test(draft[field.key]))
 )
 </script>

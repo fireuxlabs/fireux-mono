@@ -35,8 +35,9 @@ export function useOrderStatus(
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id)}/orders/${encodeURIComponent(order)}${qs ? `?${qs}` : ''}`
   })
-  const enabled = computed(() =>
-    available.value &&
+  const enabled = computed(
+    () =>
+      available.value &&
       toValue(options.enabled) !== false &&
       Boolean(endpoint.value)
   )
@@ -51,9 +52,10 @@ export function useOrderStatus(
       status.value = nextStatus
       return nextStatus
     } catch (err) {
-      const statusCode = err && typeof err === 'object' && 'statusCode' in err
-        ? Number((err as { statusCode?: unknown }).statusCode)
-        : 0
+      const statusCode =
+        err && typeof err === 'object' && 'statusCode' in err
+          ? Number((err as { statusCode?: unknown }).statusCode)
+          : 0
       if (statusCode === 404) {
         status.value = null
         error.value = 'Order status is no longer available.'
@@ -61,9 +63,10 @@ export function useOrderStatus(
         return null
       }
 
-      error.value = err && typeof err === 'object' && 'statusMessage' in err
-        ? text((err as { statusMessage?: unknown }).statusMessage)
-        : 'Order status could not be checked.'
+      error.value =
+        err && typeof err === 'object' && 'statusMessage' in err
+          ? text((err as { statusMessage?: unknown }).statusMessage)
+          : 'Order status could not be checked.'
       return null
     } finally {
       pending.value = false
@@ -85,15 +88,19 @@ export function useOrderStatus(
     }, 2500)
   }
 
-  watch(enabled, (isEnabled: boolean) => {
-    if (!isEnabled) {
-      stop()
-      return
-    }
+  watch(
+    enabled,
+    (isEnabled: boolean) => {
+      if (!isEnabled) {
+        stop()
+        return
+      }
 
-    refresh()
-    schedule()
-  }, { immediate: true })
+      refresh()
+      schedule()
+    },
+    { immediate: true }
+  )
 
   watch(endpoint, () => {
     status.value = null

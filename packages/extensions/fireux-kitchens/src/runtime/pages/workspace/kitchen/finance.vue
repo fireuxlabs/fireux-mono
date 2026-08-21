@@ -99,7 +99,10 @@ const { selection } = useKitchenWorkspace()
 const isDemo = computed(() => selection.kitchenSource.value === 'demo')
 const demoData = useKitchenWorkspaceDemoData(isDemo)
 const demoScenario = computed(() =>
-  findKitchenWorkspaceDemoScenario(demoData.data.value, selection.kitchenId.value)
+  findKitchenWorkspaceDemoScenario(
+    demoData.data.value,
+    selection.kitchenId.value
+  )
 )
 const simulationDate = computed(
   () => demoScenario.value?.finance?.asOfDate ?? ''

@@ -21,7 +21,10 @@
           :disabled="readOnly || saving"
         />
 
-        <UFormField v-if="specialsEnabled && specialsMenuExists" label="Specials menu">
+        <UFormField
+          v-if="specialsEnabled && specialsMenuExists"
+          label="Specials menu"
+        >
           <USelect
             v-model="specialsMenuId"
             :items="specialsOptions"
@@ -57,13 +60,8 @@ import { computed, ref, watch } from 'vue'
 import { useToast } from '#imports'
 import { useKitchenMenusWorkspace } from '../../../../composables/workspace/operations/Menus/useKitchenMenusWorkspace'
 
-const {
-  menus,
-  readOnly,
-  menuConfig,
-  updateMenuConfig,
-  createSpecialsMenu,
-} = useKitchenMenusWorkspace()
+const { menus, readOnly, menuConfig, updateMenuConfig, createSpecialsMenu } =
+  useKitchenMenusWorkspace()
 const toast = useToast()
 const text = (value: unknown) => String(value ?? '').trim()
 const primaryMenuId = ref('')
@@ -72,28 +70,34 @@ const specialsMenuId = ref('')
 const saving = ref(false)
 const creating = ref(false)
 
-watch(menuConfig, config => {
-  primaryMenuId.value = config.primaryMenuId
-  specialsEnabled.value = config.specialsEnabled
-  specialsMenuId.value = config.specialsMenuId
-}, { immediate: true })
-
-const menuOptions = computed(() => menus.value.map(menu => ({
-  label: text(menu.name) || text(menu.id),
-  value: text(menu.id),
-})))
-const specialsOptions = computed(() => menuOptions.value.filter(option =>
-  option.value !== primaryMenuId.value
-))
-const specialsMenuExists = computed(() =>
-  specialsOptions.value.some(option => option.value === specialsMenuId.value)
+watch(
+  menuConfig,
+  (config) => {
+    primaryMenuId.value = config.primaryMenuId
+    specialsEnabled.value = config.specialsEnabled
+    specialsMenuId.value = config.specialsMenuId
+  },
+  { immediate: true }
 )
-const canSave = computed(() =>
-  !readOnly.value && (
-    primaryMenuId.value !== menuConfig.value.primaryMenuId ||
-    specialsEnabled.value !== menuConfig.value.specialsEnabled ||
-    specialsMenuId.value !== menuConfig.value.specialsMenuId
-  )
+
+const menuOptions = computed(() =>
+  menus.value.map((menu) => ({
+    label: text(menu.name) || text(menu.id),
+    value: text(menu.id),
+  }))
+)
+const specialsOptions = computed(() =>
+  menuOptions.value.filter((option) => option.value !== primaryMenuId.value)
+)
+const specialsMenuExists = computed(() =>
+  specialsOptions.value.some((option) => option.value === specialsMenuId.value)
+)
+const canSave = computed(
+  () =>
+    !readOnly.value &&
+    (primaryMenuId.value !== menuConfig.value.primaryMenuId ||
+      specialsEnabled.value !== menuConfig.value.specialsEnabled ||
+      specialsMenuId.value !== menuConfig.value.specialsMenuId)
 )
 
 async function save() {

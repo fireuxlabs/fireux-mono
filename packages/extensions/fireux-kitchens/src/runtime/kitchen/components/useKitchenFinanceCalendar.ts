@@ -303,20 +303,6 @@ export function useKitchenFinanceCalendar(
     )
   }
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
   return {
     visibleMonth,
     dayByDate,

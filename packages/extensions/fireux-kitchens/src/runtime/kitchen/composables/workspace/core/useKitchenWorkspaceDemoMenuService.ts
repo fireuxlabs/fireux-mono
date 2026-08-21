@@ -1,8 +1,4 @@
-import {
-  computed,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { KitchenMiseTask } from '../../../models/mise.model.ts'
 import {
   projectKitchenDemoMenuCascade,
@@ -29,9 +25,7 @@ type KitchenDemoMenuServiceScenario =
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenWorkspaceDemoMenuService(
-  scenario: MaybeRefOrGetter<
-    KitchenDemoMenuServiceScenario | null | undefined
-  >
+  scenario: MaybeRefOrGetter<KitchenDemoMenuServiceScenario | null | undefined>
 ) {
   const currentScenario = computed(() => toValue(scenario) ?? null)
   const cascade = computed(() => {
@@ -45,10 +39,11 @@ export function useKitchenWorkspaceDemoMenuService(
   })
   const service = useKitchenMenuServiceSelection(
     () => clean(currentScenario.value?.kitchen.id),
-    () => cascade.value?.menus.map(menu => ({
-      id: menu.id,
-      defaultInService: menu.inService,
-    })) ?? []
+    () =>
+      cascade.value?.menus.map((menu) => ({
+        id: menu.id,
+        defaultInService: menu.inService,
+      })) ?? []
   )
   const entityMenuIds = (
     family: KitchenDemoServiceEntityFamily,
@@ -56,7 +51,9 @@ export function useKitchenWorkspaceDemoMenuService(
   ) => {
     const entities: readonly KitchenDemoMenuCascadeEntity[] =
       cascade.value?.[family] ?? []
-    return entities.find(entity => entity.id === clean(entityId))?.menuIds ?? []
+    return (
+      entities.find((entity) => entity.id === clean(entityId))?.menuIds ?? []
+    )
   }
   const isEntityInService = (
     family: KitchenDemoServiceEntityFamily,
@@ -70,8 +67,8 @@ export function useKitchenWorkspaceDemoMenuService(
     return !menuIds.length || service.hasInServiceMenu(menuIds)
   }
   const menuMode = (menuId: string) =>
-    cascade.value?.menus.find(menu => menu.id === clean(menuId))?.mode
-    ?? 'off'
+    cascade.value?.menus.find((menu) => menu.id === clean(menuId))?.mode ??
+    'off'
 
   return {
     ...service,

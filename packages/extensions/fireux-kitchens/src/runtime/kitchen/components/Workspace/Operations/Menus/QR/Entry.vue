@@ -47,10 +47,7 @@ onBeforeUnmount(() => {
   currentQr = null
 })
 
-watch(
-  () => props.target.url,
-  renderQr
-)
+watch(() => props.target.url, renderQr)
 
 async function renderQr() {
   if (!import.meta.client) return

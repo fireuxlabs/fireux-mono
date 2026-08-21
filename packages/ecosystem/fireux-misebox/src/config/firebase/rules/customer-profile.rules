@@ -1,0 +1,66 @@
+// @fireux-ecosystem-rules-fragment misebox/customer-profile
+    match /users/{userId}/profiles/customer {
+      function isValidCustomerPrivate(value) {
+        return value is map &&
+          value.keys().hasAll([
+            'name',
+            'phone',
+            'allergy_note',
+            'default_delivery_address',
+            'saved_addresses',
+            'order_history'
+          ]) &&
+          value.keys().hasOnly([
+            'name',
+            'phone',
+            'allergy_note',
+            'default_delivery_address',
+            'saved_addresses',
+            'order_history'
+          ]) &&
+          value.name is string && value.name.size() <= 120 &&
+          value.phone is string && value.phone.size() <= 40 &&
+          value.allergy_note is string && value.allergy_note.size() <= 1000 &&
+          value.default_delivery_address is string &&
+          value.default_delivery_address.size() <= 500 &&
+          value.saved_addresses is list && value.saved_addresses.size() <= 20 &&
+          value.order_history is list && value.order_history.size() <= 200;
+      }
+
+      function isValidCustomerProfile(data) {
+        return data.keys().hasAll(['kind', 'created', 'updated']) &&
+          data.keys().hasOnly(['kind', 'private', 'created', 'updated']) &&
+          data.kind == 'customer' &&
+          (!('private' in data) || isValidCustomerPrivate(data.private)) &&
+          validCreatedStamp(data.created) &&
+          validUpdatedStamp(data.updated);
+      }
+
+      function validCustomerSelfChange() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'private',
+            'updated'
+          ]) &&
+          (
+            ('private' in resource.data &&
+              request.resource.data.private.diff(resource.data.private)
+                .affectedKeys().hasOnly([
+                  'name',
+                  'phone',
+                  'allergy_note',
+                  'default_delivery_address'
+                ])) ||
+            (!('private' in resource.data) &&
+              request.resource.data.private.saved_addresses.size() == 0 &&
+              request.resource.data.private.order_history.size() == 0)
+          );
+      }
+
+      allow get: if isOwner(userId) && isValidCustomerProfile(resource.data);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidCustomerProfile(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        validCustomerSelfChange() &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }

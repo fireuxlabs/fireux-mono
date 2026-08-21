@@ -63,9 +63,10 @@ export function useDishCreate(
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
 
-  const kitchenCollectionPath = computed(() =>
-    normalizeString(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      normalizeString(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const createDish = async (
@@ -89,17 +90,10 @@ export function useDishCreate(
       throw new Error('Dish already exists')
     }
 
-    const payload = buildDishPayload(
-      dishId,
-      draft,
-      kitchenId
-    )
+    const payload = buildDishPayload(dishId, draft, kitchenId)
 
     await create(
-      defineRuntimeClientCreateTarget(
-        'project.kitchen-dishes',
-        collectionPath
-      ),
+      defineRuntimeClientCreateTarget('project.kitchen-dishes', collectionPath),
       payload as Dish,
       { id: dishId, app: true, creator: true }
     )

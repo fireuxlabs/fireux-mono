@@ -5,9 +5,7 @@
     class="block w-full"
     @click="onClick"
   >
-    <div
-      class="fx-card--cell"
-    >
+    <div class="fx-card--cell">
       <UAvatar
         :src="record.imageUrl || undefined"
         :alt="record.title"
@@ -22,7 +20,10 @@
             <div class="truncate text-sm font-semibold">
               {{ record.title }}
             </div>
-            <div v-if="showSubtitle && record.subtitle" class="truncate text-xs text-dimmed">
+            <div
+              v-if="showSubtitle && record.subtitle"
+              class="truncate text-xs text-dimmed"
+            >
               {{ record.subtitle }}
             </div>
           </div>
@@ -47,7 +48,9 @@
             {{ record.productId }}
           </UBadge>
           <UBadge
-            v-if="record.ingredientId && record.ingredientId !== record.productId"
+            v-if="
+              record.ingredientId && record.ingredientId !== record.productId
+            "
             variant="soft"
             color="neutral"
             size="xs"

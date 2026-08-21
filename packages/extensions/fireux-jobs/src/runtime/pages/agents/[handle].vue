@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDetailSurface
+  <UserProfileDetailSurface
     entity-label="Hiring profile"
     plural-label="Hiring profiles"
     back-to="/agents"
@@ -33,18 +33,18 @@
         :default-open="false"
       />
     </div>
-  </PublicProfileDetailSurface>
+  </UserProfileDetailSurface>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, setResponseStatus } from '#imports'
-import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
+import { useProfileDetail } from 'fireux-core/runtime/user/composables/profile/useProfileDetail'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { PublicAgentProfilePayload } from '../../models/profiles/Agent/Agent.model'
+import type { AgentProfilePayload } from '../../models/profiles/Agent/Agent.model'
 
 definePageMeta({
   visibility: { profiles: ['agent'] },
@@ -61,7 +61,7 @@ const {
   missing,
   failed,
   outcome,
-} = await usePublicProfileDetail<PublicAgentProfilePayload>(
+} = await useProfileDetail<AgentProfilePayload>(
   { collection: 'agents', kind: 'agent' },
   requestedIdentifier
 )

@@ -80,9 +80,11 @@ const toBaseAmount = (
   const quantity = Number(quantityValue)
   const unit = clean(unitValue).toLowerCase()
   if (!Number.isFinite(quantity) || quantity <= 0) return null
-  if (unit === 'kg') return { dimension: 'mass', quantity: quantity * 1000, unit: 'g' }
+  if (unit === 'kg')
+    return { dimension: 'mass', quantity: quantity * 1000, unit: 'g' }
   if (unit === 'g') return { dimension: 'mass', quantity, unit: 'g' }
-  if (unit === 'l') return { dimension: 'volume', quantity: quantity * 1000, unit: 'ml' }
+  if (unit === 'l')
+    return { dimension: 'volume', quantity: quantity * 1000, unit: 'ml' }
   if (unit === 'ml') return { dimension: 'volume', quantity, unit: 'ml' }
   if (unit === 'each') return { dimension: 'count', quantity, unit: 'each' }
   return null
@@ -95,12 +97,13 @@ const scaleFactor = (
   const requiredQuantity = Number(required.quantity)
   const producedQuantity = Number(produced.quantity)
   if (
-    !Number.isFinite(requiredQuantity)
-    || requiredQuantity <= 0
-    || !Number.isFinite(producedQuantity)
-    || producedQuantity <= 0
-    || clean(required.unit) !== clean(produced.unit)
-  ) return null
+    !Number.isFinite(requiredQuantity) ||
+    requiredQuantity <= 0 ||
+    !Number.isFinite(producedQuantity) ||
+    producedQuantity <= 0 ||
+    clean(required.unit) !== clean(produced.unit)
+  )
+    return null
   return requiredQuantity / producedQuantity
 }
 
@@ -108,8 +111,12 @@ const buildRequirements = (
   spec: KitchenDemoDishSpec,
   scenario: Pick<KitchenDemoScenario, 'prepItems' | 'recipes'>
 ) => {
-  const prepItemById = new Map(scenario.prepItems.map(item => [clean(item.id), item]))
-  const recipeById = new Map(scenario.recipes.map(recipe => [clean(recipe.id), recipe]))
+  const prepItemById = new Map(
+    scenario.prepItems.map((item) => [clean(item.id), item])
+  )
+  const recipeById = new Map(
+    scenario.recipes.map((recipe) => [clean(recipe.id), recipe])
+  )
   const requirements: CostRequirement[] = []
   const unresolvedRequirementIds: string[] = []
 
@@ -166,8 +173,8 @@ export function estimateKitchenDishFinance(input: {
   scenario: Pick<KitchenDemoScenario, 'prepItems' | 'recipes'>
   supplyLineByIngredientId: ReadonlyMap<string, KitchenDishFinanceSupplyLine>
 }): KitchenDishFinanceEstimate | null {
-  const { requirements, unresolvedRequirementIds: unresolvedComponents }
-    = buildRequirements(input.dishSpec, input.scenario)
+  const { requirements, unresolvedRequirementIds: unresolvedComponents } =
+    buildRequirements(input.dishSpec, input.scenario)
   const costLines: KitchenDishFinanceCostLine[] = []
   const unresolvedRequirementIds = [...unresolvedComponents]
   const currencyCodes = new Set<string>()
@@ -176,14 +183,20 @@ export function estimateKitchenDishFinance(input: {
     const line = input.supplyLineByIngredientId.get(requirement.ingredientId)
     const supplierItem = line?.supplierItem
     const requiredAmount = toBaseAmount(requirement.quantity, requirement.unit)
-    const packAmount = toBaseAmount(supplierItem?.quantity_per_pack, supplierItem?.unit)
+    const packAmount = toBaseAmount(
+      supplierItem?.quantity_per_pack,
+      supplierItem?.unit
+    )
     const packCostMinor = Number(supplierItem?.pack_cost_minor)
     const currencyCode = clean(supplierItem?.currency_code).toUpperCase()
     if (
-      !line || !requiredAmount || !packAmount
-      || requiredAmount.dimension !== packAmount.dimension
-      || !Number.isSafeInteger(packCostMinor) || packCostMinor <= 0
-      || !/^[A-Z]{3}$/.test(currencyCode)
+      !line ||
+      !requiredAmount ||
+      !packAmount ||
+      requiredAmount.dimension !== packAmount.dimension ||
+      !Number.isSafeInteger(packCostMinor) ||
+      packCostMinor <= 0 ||
+      !/^[A-Z]{3}$/.test(currencyCode)
     ) {
       unresolvedRequirementIds.push(requirement.id)
       continue
@@ -196,9 +209,12 @@ export function estimateKitchenDishFinance(input: {
       sourceLabel: requirement.sourceLabel,
       quantity: requiredAmount.quantity,
       unit: requiredAmount.unit,
-      supplierName: clean(line.supplierScenario.supplier.supplier_organization_name),
+      supplierName: clean(
+        line.supplierScenario.supplier.supplier_organization_name
+      ),
       supplierPackLabel: clean(line.supplierItem.pack_size_label),
-      costMinorExact: packCostMinor * requiredAmount.quantity / packAmount.quantity,
+      costMinorExact:
+        (packCostMinor * requiredAmount.quantity) / packAmount.quantity,
     })
   }
 
@@ -210,42 +226,47 @@ export function estimateKitchenDishFinance(input: {
     costLines.reduce((total, line) => total + line.costMinorExact, 0)
   )
   const matchingPrices = input.menuUsage
-    .filter(usage =>
-      usage.active !== false
-      && clean(usage.currencyCode).toUpperCase() === currencyCode
-      && Number.isFinite(Number(usage.price))
-      && Number(usage.price) > 0
+    .filter(
+      (usage) =>
+        usage.active !== false &&
+        clean(usage.currencyCode).toUpperCase() === currencyCode &&
+        Number.isFinite(Number(usage.price)) &&
+        Number(usage.price) > 0
     )
-    .map(usage => Number(usage.price))
-  const sellingPrice = matchingPrices.length ? Math.min(...matchingPrices) : null
-  const sellingPriceMinor = sellingPrice === null
-    ? null
-    : financialMoneyFromDecimal({
-        amount: sellingPrice,
-        currencyCode,
-        minorUnitDigits,
-        allowNegative: false,
-        allowZero: false,
-        label: 'Dish selling price',
-      }).amount_minor
-  const grossProfitMinor = sellingPriceMinor === null
-    ? null
-    : sellingPriceMinor - costOfSalesMinor
+    .map((usage) => Number(usage.price))
+  const sellingPrice = matchingPrices.length
+    ? Math.min(...matchingPrices)
+    : null
+  const sellingPriceMinor =
+    sellingPrice === null
+      ? null
+      : financialMoneyFromDecimal({
+          amount: sellingPrice,
+          currencyCode,
+          minorUnitDigits,
+          allowNegative: false,
+          allowZero: false,
+          label: 'Dish selling price',
+        }).amount_minor
+  const grossProfitMinor =
+    sellingPriceMinor === null ? null : sellingPriceMinor - costOfSalesMinor
 
   return {
     basis: 'supplier-offer-estimate',
     currencyCode,
     minorUnitDigits,
     sellingPriceMinor,
-    sellingPriceLabel: matchingPrices.length > 1 ? 'From selling price' : 'Selling price',
+    sellingPriceLabel:
+      matchingPrices.length > 1 ? 'From selling price' : 'Selling price',
     costOfSalesMinor,
     grossProfitMinor,
     foodCostPercentage: sellingPriceMinor
-      ? costOfSalesMinor / sellingPriceMinor * 100
+      ? (costOfSalesMinor / sellingPriceMinor) * 100
       : null,
-    grossMarginPercentage: sellingPriceMinor && grossProfitMinor !== null
-      ? grossProfitMinor / sellingPriceMinor * 100
-      : null,
+    grossMarginPercentage:
+      sellingPriceMinor && grossProfitMinor !== null
+        ? (grossProfitMinor / sellingPriceMinor) * 100
+        : null,
     complete: unresolvedRequirementIds.length === 0,
     resolvedRequirementCount: costLines.length,
     requirementCount: requirements.length + unresolvedComponents.length,

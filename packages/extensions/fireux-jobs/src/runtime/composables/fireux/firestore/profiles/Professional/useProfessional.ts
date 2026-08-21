@@ -19,7 +19,7 @@ export type { ProfessionalCard, Professional }
  * useProfessional
  * - Runtime facade for Professional profiles
  * - Exposes:
- *   - raw refs: profileRefs, coreProfile, appProfile, pending
+ *   - raw refs: profileRefs, profile, pending
  *   - computed helpers
  *   - UI helpers (pill, cell, profile)
  *   - update helpers
@@ -28,10 +28,12 @@ export function useProfessional() {
   const { profile: refs, pending } =
     useProfile<Professional>(professionalConfig)
 
-  const { coreProfile, appProfile } = refs
+  const { profile: professionalProfile } = refs
 
   const computedState = useProfessionalComputed(refs, pending)
-  const profileUser = useUserFetch(computed(() => coreProfile.value?.id ?? null))
+  const profileUser = useUserFetch(
+    computed(() => professionalProfile.value?.id ?? null)
+  )
   const professional = useProfessionalInterface(
     refs,
     computed(() => profileUser.user.value ?? null)
@@ -41,8 +43,7 @@ export function useProfessional() {
 
   return {
     profileRefs: refs,
-    coreProfile,
-    appProfile,
+    professionalProfile,
     pending,
 
     ...computedState,

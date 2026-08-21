@@ -2,6 +2,7 @@ import {
   addFinancialMoney,
   multiplyFinancialMoney,
 } from 'fireux-finance/runtime/utils/money'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
 import {
   MARKETPLACE_OFFER_STATES,
   MARKETPLACE_ORDER_STATUSES,
@@ -19,7 +20,6 @@ import {
   optionalText,
   price,
   record,
-  stringIds,
 } from './validation-common'
 import {
   normalizeMarketplaceOfferCreate,
@@ -35,7 +35,7 @@ export function canonicalMarketplaceStore(
     data,
     [
       'id',
-      'app_id',
+      'management',
       'slug',
       'name',
       'description',
@@ -45,8 +45,6 @@ export function canonicalMarketplaceStore(
       'section_ids',
       'fulfilment_methods',
       'publication_state',
-      'owner_ids',
-      'editor_ids',
       'submitted_at',
       'published_at',
       'created',
@@ -66,17 +64,14 @@ export function canonicalMarketplaceStore(
   })
   if (
     !MARKETPLACE_STORE_STATES.includes(data.publication_state as never) ||
-    !Array.isArray(data.owner_ids) ||
-    !Array.isArray(data.editor_ids) ||
     !data.created ||
     !data.updated
   )
     fail('Stored Store is invalid.')
-  const ownerIds = stringIds(data.owner_ids, 'Store owners', 5)
-  const editorIds = stringIds(data.editor_ids, 'Store editors', 10)
+  const management = readFireuxEntityManagement(data.management)
   if (
-    (!ownerIds.length && data.publication_state !== 'draft') ||
-    ownerIds.some((uid) => editorIds.includes(uid)) ||
+    !management ||
+    management.mode !== 'app' ||
     (['pending_review', 'published'].includes(
       data.publication_state as string
     ) &&
@@ -86,12 +81,10 @@ export function canonicalMarketplaceStore(
   }
   return {
     id,
-    app_id: marketplaceDocumentId(data.app_id, 'Store App id'),
+    management,
     ...normalized,
     publication_state:
       data.publication_state as MarketplaceStore['publication_state'],
-    owner_ids: ownerIds,
-    editor_ids: editorIds,
     submitted_at: (data.submitted_at ||
       null) as MarketplaceStore['submitted_at'],
     published_at: (data.published_at ||
@@ -160,6 +153,7 @@ export function canonicalMarketplaceOrder(
     data,
     [
       'id',
+      'record_type',
       'app_id',
       'store_id',
       'store_name',
@@ -176,6 +170,7 @@ export function canonicalMarketplaceOrder(
     'Stored Order'
   )
   if (
+    data.record_type !== 'marketplace-order' ||
     !MARKETPLACE_ORDER_STATUSES.includes(data.status as never) ||
     !Array.isArray(data.lines) ||
     !data.lines.length ||
@@ -265,6 +260,7 @@ export function canonicalMarketplaceOrder(
   }
   return {
     id,
+    record_type: 'marketplace-order',
     app_id: marketplaceDocumentId(data.app_id, 'Order App id'),
     store_id: marketplaceDocumentId(data.store_id, 'Order Store id'),
     store_name: marketplaceText(data.store_name, 'Order Store name', 2, 80),

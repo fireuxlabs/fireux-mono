@@ -42,4 +42,3 @@ export const recipeComponent = (
   quantity,
   unit,
 })
-

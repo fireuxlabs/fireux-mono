@@ -101,9 +101,7 @@ const normalizeClient = (value: Partial<Client>): Client => {
     monthly_rent: Number(value.monthly_rent || 0),
     currency: safeString(value.currency || 'GBP').toUpperCase() || 'GBP',
 
-    avatar_url:
-      safeString(value.avatar_url) ||
-      safeString(value.logo_url),
+    avatar_url: safeString(value.avatar_url) || safeString(value.logo_url),
     logo_url: safeString(value.logo_url),
     email: safeString(value.email),
     phone: safeString(value.phone),

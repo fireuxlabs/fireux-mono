@@ -1,6 +1,8 @@
 <!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: expose focused settings for configured order surfaces. -->
 <template>
-  <div class="flex items-start justify-between gap-3 rounded-md border border-default bg-default/80 p-3">
+  <div
+    class="flex items-start justify-between gap-3 rounded-md border border-default bg-default/80 p-3"
+  >
     <div class="min-w-0 space-y-1">
       <p class="text-sm font-semibold text-highlighted">
         {{ choice.label }}

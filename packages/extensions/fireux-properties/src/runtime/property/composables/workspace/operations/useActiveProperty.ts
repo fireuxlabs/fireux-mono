@@ -38,15 +38,12 @@ export function requirePropertyWorkspaceWrite(
 }
 
 export function useActiveProperty(): ActivePropertyRuntime {
-  const {
-    properties,
-    selection,
-    runtime,
-  } = usePropertyWorkspace()
+  const { properties, selection, runtime } = usePropertyWorkspace()
 
-  const id = computed(() =>
-    normalizeString(selection.property.value?.id) ||
-    normalizeString(selection.propertyId.value)
+  const id = computed(
+    () =>
+      normalizeString(selection.property.value?.id) ||
+      normalizeString(selection.propertyId.value)
   )
   const rootCollection = computed(() =>
     normalizePath(runtime.rootCollection.value)

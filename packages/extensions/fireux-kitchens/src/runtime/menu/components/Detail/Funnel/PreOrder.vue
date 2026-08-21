@@ -1,8 +1,5 @@
 <template>
-  <MenuDetailFunnelBasketStep
-    v-if="step === 1"
-    :funnel="funnel"
-  />
+  <MenuDetailFunnelBasketStep v-if="step === 1" :funnel="funnel" />
 
   <ClientOnly v-else-if="step === 2">
     <MenuDetailFunnelAllergen v-model="allergenAccepted" />
@@ -20,15 +17,9 @@
     @update:ready="$emit('update:ready', $event)"
   />
 
-  <MenuDetailFunnelPayment
-    v-else-if="step === 5"
-    :funnel="funnel"
-  />
+  <MenuDetailFunnelPayment v-else-if="step === 5" :funnel="funnel" />
 
-  <MenuDetailFunnelConfirmation
-    v-else-if="step === 6"
-    :funnel="funnel"
-  />
+  <MenuDetailFunnelConfirmation v-else-if="step === 6" :funnel="funnel" />
 </template>
 
 <script setup lang="ts">
@@ -52,23 +43,33 @@ const allergenAccepted = computed({
   },
 })
 
-watch([() => props.step, allergenAccepted], () => {
-  emit('update:ready', props.step !== 2 || allergenAccepted.value)
-}, {
-  immediate: true,
-})
+watch(
+  [() => props.step, allergenAccepted],
+  () => {
+    emit('update:ready', props.step !== 2 || allergenAccepted.value)
+  },
+  {
+    immediate: true,
+  }
+)
 
-watch(() => props.funnel.order.quantity, (quantity: number) => {
-  if (quantity) return
+watch(
+  () => props.funnel.order.quantity,
+  (quantity: number) => {
+    if (quantity) return
 
-  props.funnel.collect({
-    allergen_checked: false,
-  })
-})
+    props.funnel.collect({
+      allergen_checked: false,
+    })
+  }
+)
 
-watch(() => props.funnel.order.orderType, () => {
-  props.funnel.collect({
-    allergen_checked: false,
-  })
-})
+watch(
+  () => props.funnel.order.orderType,
+  () => {
+    props.funnel.collect({
+      allergen_checked: false,
+    })
+  }
+)
 </script>

@@ -28,11 +28,15 @@ export const menuPath = (options: MenuPathOptions = {}) =>
 export const menuSectionsPath = (options: MenuPathOptions) => {
   const menusPath = menuPath(options)
   const menuId = normalizeString(options.menuId)
-  return menusPath && menuId ? `${menusPath}/${menuId}/${MenuSectionStorage.collection}` : ''
+  return menusPath && menuId
+    ? `${menusPath}/${menuId}/${MenuSectionStorage.collection}`
+    : ''
 }
 
 export const menuItemsPath = (options: MenuPathOptions) => {
   const sectionsPath = menuSectionsPath(options)
   const sectionId = normalizeString(options.sectionId)
-  return sectionsPath && sectionId ? `${sectionsPath}/${sectionId}/${MenuItemStorage.collection}` : ''
+  return sectionsPath && sectionId
+    ? `${sectionsPath}/${sectionId}/${MenuItemStorage.collection}`
+    : ''
 }

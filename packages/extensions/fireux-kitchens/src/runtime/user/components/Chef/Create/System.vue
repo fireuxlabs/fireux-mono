@@ -49,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useChefCreate } from '../../../composables/firestore/profiles/Chef/mutations/useChefCreate';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useChefCreate } from '../../../composables/firestore/profiles/Chef/mutations/useChefCreate'
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

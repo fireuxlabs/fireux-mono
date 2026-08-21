@@ -1,7 +1,7 @@
 # Search visibility
 
 Updated: 2026-08-19
-Ref: 8287d99bb
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -151,8 +151,8 @@ provider.
   document ID or a source-defined field such as a reviewed slug or User handle.
 - Document IDs remain byte-for-byte route keys; slug normalization must not
   mutate them.
-- Sitemap publication must match the same bounded public eligibility as the
-  route. A convenient root query is not valid when public state depends on
+- Sitemap publication must match the same bounded directory eligibility as the
+  route. A convenient root query is not valid when publication depends on
   tenant scope, joins, or server-only validation.
 - Jobs is the proving bounded sibling: its category, tenant, publication,
   Company, and Place contract uses one `readJobDirectoryPage` owner for the
@@ -160,16 +160,16 @@ provider.
   to the generic visibility-only root provider.
 - Kitchens follow the same transport rule with their own domain gates: JSON
   and XML share one reader that applies boolean root visibility, management,
-  AppKitchen support, the same-id Place relationship, and the bounded Kitchen
+  the same-id Place relationship, and the bounded Kitchen
   DTO. A raw root query is not sufficient sitemap authority.
 - Empty sitemap results and storage failures require observable verification;
-  production must not silently present missing public inventory as success.
+  production must not silently present missing directory inventory as success.
 
 ## Structured data and entity consistency
 
-Structured data is another public projection, not a second entity model.
+Structured data is another directory representation, not a second Entity model.
 
-- Use canonical public URLs as stable `@id` values.
+- Use canonical directory URLs as stable `@id` values.
 - Prefer one connected page `@graph` joining WebSite, Organization, WebPage,
   BreadcrumbList, and the page's real entity where current source proves each
   relationship.

@@ -23,8 +23,12 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const { appId } = useFireUXConfig()
   const create = useFirestoreClientCreate()
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
-  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
+  const { deleteDocument } = useFirestoreDelete({
+    databaseId: options.databaseId,
+  })
 
   const path = (kitchenId: string) =>
     resolveKitchenChildCollectionPath({
@@ -67,7 +71,9 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
   const updateKitchenTeamJoinRequest = async (
     kitchenId: string,
     requestId: string,
-    patch: Partial<Omit<KitchenTeamJoinRequest, 'id' | 'created' | 'updated' | 'kitchen_id'>>
+    patch: Partial<
+      Omit<KitchenTeamJoinRequest, 'id' | 'created' | 'updated' | 'kitchen_id'>
+    >
   ) => {
     requireWritableData()
     const collectionPath = path(kitchenId)

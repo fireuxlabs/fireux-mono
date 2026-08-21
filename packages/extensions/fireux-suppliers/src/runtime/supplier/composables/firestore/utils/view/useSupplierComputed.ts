@@ -5,11 +5,11 @@ export function useSupplierComputed(
   supplier?: Ref<Partial<Supplier> | null | undefined>
 ) {
   const hasSupplier = computed(() => Boolean(supplier?.value?.id))
-  const hasMissingName = computed(() =>
-    !String(supplier?.value?.supplier_organization_name || '').trim()
+  const hasMissingName = computed(
+    () => !String(supplier?.value?.supplier_organization_name || '').trim()
   )
-  const hasMissingSlug = computed(() =>
-    !String(supplier?.value?.slug || '').trim()
+  const hasMissingSlug = computed(
+    () => !String(supplier?.value?.slug || '').trim()
   )
   const isOfficial = computed(() => supplier?.value?.state === 'official')
   const isPublic = computed(() => supplier?.value?.state === 'public')

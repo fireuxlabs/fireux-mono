@@ -26,11 +26,7 @@
         Request kitchen access
       </UButton>
 
-      <UBadge
-        v-else-if="hasPendingRequest"
-        color="warning"
-        variant="soft"
-      >
+      <UBadge v-else-if="hasPendingRequest" color="warning" variant="soft">
         Request pending
       </UBadge>
     </div>
@@ -66,23 +62,28 @@ const submitting = ref(false)
 const currentAppId = computed(() => String(appId || '').trim())
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const kitchenName = computed(() =>
-  String(props.kitchen?.display_name || props.kitchen?.name || 'this kitchen').trim()
+  String(
+    props.kitchen?.display_name || props.kitchen?.name || 'this kitchen'
+  ).trim()
 )
 const operatorAppId = computed(() =>
   String(props.kitchen?.management_app_id || currentAppId.value).trim()
 )
 const operatorCollectionPath = computed(() =>
-  operatorAppId.value ? resolveKitchenScopeCollectionPath(operatorAppId.value) : ''
+  operatorAppId.value
+    ? resolveKitchenScopeCollectionPath(operatorAppId.value)
+    : ''
 )
 const { kitchen: operatorKitchen } = useKitchenFetch(kitchenId, {
   collectionPath: operatorCollectionPath,
   hydrate: false,
 })
-const { items: joinRequests } = useKitchenChildCollection<KitchenTeamJoinRequest>(
-  KitchenTeamJoinRequestStorage.collection,
-  kitchenId,
-  { kitchenCollectionPath: operatorCollectionPath }
-)
+const { items: joinRequests } =
+  useKitchenChildCollection<KitchenTeamJoinRequest>(
+    KitchenTeamJoinRequestStorage.collection,
+    kitchenId,
+    { kitchenCollectionPath: operatorCollectionPath }
+  )
 const { createKitchenTeamJoinRequest } = useKitchenTeamJoinRequestMutations({
   kitchenCollectionPath: operatorCollectionPath,
 })
@@ -93,8 +94,9 @@ const hasKitchenAccess = computed(() =>
 const hasPendingRequest = computed(() =>
   Boolean(
     userId.value &&
-      joinRequests.value.some((request) =>
-        request.user_id === userId.value && request.status === 'pending'
+      joinRequests.value.some(
+        (request) =>
+          request.user_id === userId.value && request.status === 'pending'
       )
   )
 )
@@ -120,9 +122,7 @@ const authTo = computed(
 )
 const requesterName = computed(() =>
   String(
-    currentUser.value?.displayName ||
-      currentUser.value?.email ||
-      userId.value
+    currentUser.value?.displayName || currentUser.value?.email || userId.value
   ).trim()
 )
 

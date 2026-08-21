@@ -1,9 +1,4 @@
-import {
-  computed,
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
@@ -24,8 +19,8 @@ export function useKitchenOrderTransition(options: {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const error = ref('')
   const pendingByOrderId = ref<Record<string, boolean>>({})
-  const pendingCount = computed(() =>
-    Object.values(pendingByOrderId.value).filter(Boolean).length
+  const pendingCount = computed(
+    () => Object.values(pendingByOrderId.value).filter(Boolean).length
   )
 
   function isTransitioning(orderId: unknown) {
@@ -66,7 +61,9 @@ export function useKitchenOrderTransition(options: {
         text(toValue(options.appId)) !== appId ||
         text(selectedId.value) !== resolvedKitchenId
       ) {
-        throw new Error('The selected Kitchen changed before the order could update.')
+        throw new Error(
+          'The selected Kitchen changed before the order could update.'
+        )
       }
 
       return await $fetch('/api/workspace/kitchen/orders/transition', {
@@ -102,15 +99,18 @@ export function useKitchenOrderTransition(options: {
 }
 
 function transitionErrorMessage(error: unknown) {
-  const source = error && typeof error === 'object'
-    ? error as {
-        data?: { statusMessage?: unknown }
-        message?: unknown
-        statusMessage?: unknown
-      }
-    : {}
+  const source =
+    error && typeof error === 'object'
+      ? (error as {
+          data?: { statusMessage?: unknown }
+          message?: unknown
+          statusMessage?: unknown
+        })
+      : {}
 
-  return text(
-    source.data?.statusMessage || source.statusMessage || source.message
-  ) || 'The order could not be updated.'
+  return (
+    text(
+      source.data?.statusMessage || source.statusMessage || source.message
+    ) || 'The order could not be updated.'
+  )
 }

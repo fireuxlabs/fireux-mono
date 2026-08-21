@@ -1,7 +1,7 @@
 # Core Models
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -79,31 +79,31 @@ provisioning operations, and no client mutation or umbrella `useEcosystem()`
 entrypoint owns them.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
-in the FireUX control-plane named database, `AppProject` owns FireUX Workspace
-access, and the local meta adds only its named `database_id`. Project document
-ID is route identity, so neither Project shape stores a duplicate slug.
+in the FireUX control-plane named database, each Project owns its
+`team/{uid}` access records, and the local meta adds only its named
+`database_id`. Project document ID is route identity, so neither Project shape
+stores a duplicate slug.
 
 The entity-facing Project stack currently lives under
 `composables/fireux/project` and moves coherently to the Project entity scope.
 `useProjectCollection` reads the caller's target-bounded control-plane endpoint,
 `useProjectDetail` selects one Project from that bounded result, and
-`useProjectInterface` maps presentation. `/projects` is the public collection of
+`useProjectInterface` maps presentation. `/projects` is the directory collection of
 active Project identity and presentation DTOs. It never exposes access,
-database credentials, team, or operational state. There is no public Project
+database credentials, Team, or operational state. There is no directory Project
 detail route and no browser Firestore read or mutation entrypoint; private
 selection and operations remain under `/workspace/project`.
 
 The read-only Project Workspace may expose capabilities backed by existing
-authority. Its Team sheet reads the selected Project's `AppProject`
-operator/team ids through an admin-only server endpoint and resolves their
-canonical User presentation. It does not create a second Project membership
-model. Project notifications remain undefined until a real Project-scoped
-emitter and User-owned delivery contract exist.
+authority. Its Team sheet reads the selected Project's `team/{uid}` records
+through an admin-only server endpoint and resolves canonical User
+presentation. Project notifications remain undefined until a real
+Project-scoped emitter and User-owned delivery contract exist.
 
 The FireUX control-plane named database keeps canonical `projects/{projectId}`
-roots for every Project added to the Workspace. Its
-`apps/{appId}/projects/{projectId}` AppProject records are access-only support
-and determine which roots that App Workspace exposes.
+roots for every Project added to the Workspace. Root management, exact Project
+Team records, and AppUser membership determine which roots an App Workspace
+may expose; there is no App-nested Project access record.
 
 `UserAccount` and User notifications are private, User-scoped support records.
 They are not additional User identities. Profile bases, directory DTOs,
@@ -129,8 +129,7 @@ Core entity model files use one order: vocabulary, canonical entity,
 supporting records, storage declarations, entity declaration, defaults, then
 command inputs. Runtime seed objects use the `Defaults` suffix; `Model` is not
 used for a value or as an alias for the entity type. Each stored record has its
-own storage declaration, so an App support record never shares a combined
-storage object with its canonical root.
+own storage declaration and sits beneath its honest owner.
 
 The former `models/core`, `models/system`, and entity-owning parts of
 `models/operations` have moved into App, Ecosystem, User, and Project. Root
@@ -158,7 +157,8 @@ and authored App configuration; neither becomes an alternate App identity.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
 - `AppUser` owns App membership, role, premium entitlement, and onboarding.
-  Workspace target access belongs to each Workspace Entity's App-support record.
+  Workspace target access belongs to each Workspace Entity's `team/{uid}`
+  record.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.
@@ -168,14 +168,11 @@ and authored App configuration; neither becomes an alternate App identity.
 
 ## Named projection debt
 
-The simplified source model excludes reconciled or duplicated values. The
-2026-08-05 bounded User migration removed the User/AppUser copies from every
-current named database. Membership documents now determine App access, profile
-document existence determines profile state, and owner navigation targets live
-only at `users/{uid}/private/targets`:
-
-- `project_ids`
-- `kitchen_ids`
+The owner-first target excludes reconciled or duplicated values. AppUser
+membership determines App access, `users/{uid}/profiles/{kind}` determines
+profile state, and each Workspace Entity's `team/{uid}` record determines
+Workspace access. User-owned target arrays and App-nested Workspace access
+records are migration sources only.
 
 Remaining non-User projection debt is:
 
@@ -194,9 +191,8 @@ cleanup: migrate readers, writers, Rules, guards, and stored records together.
    identity database; canonical stacks must not use an ambiguous default.
 3. Replace Nuxt-driven identity repair with an explicit provisioning command
    and a read-only current-App context.
-4. Keep User readers, writers, Rules, and stored records on the completed
-   minimal shape; migrate remaining App projections such as
-   `App.derived.user_count` independently.
+4. Move User profiles and Order links beneath User, and move Workspace Team and
+   operations beneath each root before retiring old target/support records.
 5. Collapse App database metadata to one infrastructure source and remove
    stored-id/slug duplication only after route and data migrations are proven.
 

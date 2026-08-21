@@ -77,14 +77,14 @@
       "
     />
 
-<DevDebugPanel
-  object-origin="fetched"
+    <DevDebugPanel
+      object-origin="fetched"
       launcher
       include-route
       title="Drivers (JSON)"
       context="collection manager · drivers"
       :objects="devJsonData"
-  :derived="{}"
+      :derived="{}"
       :default-open="false"
       @opened="loadDevJson"
       @closed="unloadDevJson"
@@ -101,9 +101,9 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/driver/useDriverInterface'
-import type { PublicDriverDirectoryProfile } from '../../../models/driver.model.ts'
+import type { DriverDirectoryProfile } from '../../../models/driver.model.ts'
 
-type DriverEntry = PublicDriverDirectoryProfile
+type DriverEntry = DriverDirectoryProfile
 
 const props = withDefaults(
   defineProps<{

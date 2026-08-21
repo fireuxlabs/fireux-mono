@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: write Customer ordering details only in app scope.
 // Profile family canon: docs/concepts/entities.md
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileAppUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import {
   CustomerStorage,
   type Customer,
@@ -12,51 +12,67 @@ type CustomerPatch = Partial<Customer> & Record<string, unknown>
 export function useCustomerUpdate(
   profile?: ProfileRefs<Customer, Customer> | null
 ) {
-  const base = useProfileAppUpdateBase<Customer, Customer>(
-    CustomerStorage.collection,
-    profile
-  )
+  const base = useProfileUpdateBase<Customer>(CustomerStorage.document, profile)
   type UpdateOptions = { id?: string | null }
 
-  const updateAppProfile = base.updateAppProfile
+  const updateProfile = base.updateProfile
+  const currentPreferences = () => {
+    const preferences = profile?.profile.value?.preferences
+    if (!preferences) {
+      throw new Error('Load the Customer profile before updating preferences.')
+    }
+    return preferences
+  }
   const commitUpdate = async (
     patch: Partial<Customer>,
     options: UpdateOptions = {}
   ) => {
-    await updateAppProfile(patch, options)
+    await updateProfile(patch, options)
   }
 
   const updateCustomerName = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateAppProfile({
-      'private.name': normalized ?? '',
+    await updateProfile({
+      preferences: {
+        ...currentPreferences(),
+        name: normalized ?? '',
+      },
     } as CustomerPatch)
   }
 
   const updateCustomerPhone = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateAppProfile({
-      'private.phone': normalized ?? '',
+    await updateProfile({
+      preferences: {
+        ...currentPreferences(),
+        phone: normalized ?? '',
+      },
     } as CustomerPatch)
   }
 
   const updateAllergyNote = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateAppProfile({
-      'private.allergy_note': normalized ?? '',
+    await updateProfile({
+      preferences: {
+        ...currentPreferences(),
+        allergy_note: normalized ?? '',
+      },
     } as CustomerPatch)
   }
 
   const updateDefaultDeliveryAddress = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateAppProfile({
-      'private.default_delivery_address': normalized ?? '',
+    await updateProfile({
+      preferences: {
+        ...currentPreferences(),
+        default_delivery_address: normalized ?? '',
+      },
     } as CustomerPatch)
   }
 
   return {
     commitUpdate,
-    updateAppProfile,
+    updateProfile,
     updateCustomerName,
     updateCustomerPhone,
     updateAllergyNote,

@@ -1,15 +1,15 @@
 import type {
-  PublicMarketplaceOffer,
-  PublicMarketplaceStore,
+  MarketplaceOfferDirectoryEntry,
+  MarketplaceStoreDirectoryEntry,
 } from '../../models/marketplace-api.model.ts'
 import type {
   MarketplaceOffer,
   MarketplaceStore,
 } from '../../models/marketplace.model.ts'
 
-export function projectPublicMarketplaceOffer(
+export function projectMarketplaceOfferDirectoryEntry(
   offer: MarketplaceOffer
-): PublicMarketplaceOffer | null {
+): MarketplaceOfferDirectoryEntry | null {
   if (offer.state !== 'published' || !offer.price) return null
   return {
     id: offer.id,
@@ -22,14 +22,14 @@ export function projectPublicMarketplaceOffer(
   }
 }
 
-export function projectPublicMarketplaceStore(
+export function projectMarketplaceStoreDirectoryEntry(
   store: MarketplaceStore,
   offers?: MarketplaceOffer[]
-): PublicMarketplaceStore | null {
+): MarketplaceStoreDirectoryEntry | null {
   if (store.publication_state !== 'published') return null
   const projectedOffers = offers
-    ?.map(projectPublicMarketplaceOffer)
-    .filter((offer): offer is PublicMarketplaceOffer => Boolean(offer))
+    ?.map(projectMarketplaceOfferDirectoryEntry)
+    .filter((offer): offer is MarketplaceOfferDirectoryEntry => Boolean(offer))
     .sort((left, right) => left.title.localeCompare(right.title))
   return {
     id: store.id,
@@ -47,7 +47,7 @@ export function projectPublicMarketplaceStore(
 
 export function projectMarketplaceStoreDirectoryPreview(
   store: MarketplaceStore
-): PublicMarketplaceStore {
+): MarketplaceStoreDirectoryEntry {
   return {
     id: store.id,
     slug: store.slug,
@@ -65,11 +65,11 @@ export function projectMarketplaceStoreDirectoryPreview(
 export function projectMarketplaceStorePreview(
   store: MarketplaceStore,
   offers: MarketplaceOffer[]
-): PublicMarketplaceStore {
+): MarketplaceStoreDirectoryEntry {
   return {
     ...projectMarketplaceStoreDirectoryPreview(store),
     offers: offers
-      .flatMap((offer): PublicMarketplaceOffer[] =>
+      .flatMap((offer): MarketplaceOfferDirectoryEntry[] =>
         offer.price
           ? [
               {

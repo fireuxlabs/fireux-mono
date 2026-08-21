@@ -7,10 +7,7 @@ import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPa
 import { useKitchenWorkspaceSupplyWorkspace } from './useKitchenWorkspaceSupplyWorkspace'
 
 export function useKitchenWorkspaceSuppliers() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
@@ -27,25 +24,22 @@ export function useKitchenWorkspaceSuppliers() {
     suppliers: fetchedSuppliers,
     pending: fetchedSuppliersPending,
     collectionPath: fetchedCollectionPath,
-  } =
-    useKitchenSupplierFetch(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-      enabled,
-    })
+  } = useKitchenSupplierFetch(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+    enabled,
+  })
   const supply = useKitchenWorkspaceSupplyWorkspace()
   const demoSuppliers = computed<SupplierSurface[]>(() =>
-    supply.supplierScenarios.value.map(scenario => scenario.supplier)
+    supply.supplierScenarios.value.map((scenario) => scenario.supplier)
   )
   const typedSuppliers = computed<SupplierSurface[]>(() =>
     runtime.isDemo.value
       ? demoSuppliers.value
-      : fetchedSuppliers.value as SupplierSurface[]
+      : (fetchedSuppliers.value as SupplierSurface[])
   )
   const suppliersPending = computed(() =>
-    runtime.isDemo.value
-      ? supply.pending.value
-      : fetchedSuppliersPending.value
+    runtime.isDemo.value ? supply.pending.value : fetchedSuppliersPending.value
   )
   const collectionPath = computed(() =>
     runtime.isDemo.value
@@ -70,7 +64,7 @@ export function useKitchenWorkspaceSuppliers() {
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
-    unresolvedSupplyLinks: supply.unresolvedLinks.value.map(link => link.id),
+    unresolvedSupplyLinks: supply.unresolvedLinks.value.map((link) => link.id),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))

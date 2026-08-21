@@ -67,30 +67,31 @@ const cards = computed(() =>
         imageFit: 'contain',
         imageBackground: card.mediaBackdropColor,
         icon: 'i-lucide-chef-hat',
-        badges: [
-          props.source === 'demo' ? 'Demo · Read-only' : 'Live',
-        ],
+        badges: [props.source === 'demo' ? 'Demo · Read-only' : 'Live'],
       }
     })
     .filter((card): card is WorkspaceTargetCardType => Boolean(card))
 )
-const cardIdSet = computed(() =>
-  new Set(cards.value.map((card) => card.id).filter(Boolean))
+const cardIdSet = computed(
+  () => new Set(cards.value.map((card) => card.id).filter(Boolean))
 )
 const selectedId = computed(() => String(props.selectedId ?? '').trim())
 const stateCopy = computed(() =>
   props.source === 'demo'
     ? {
         entity: 'demo kitchen targets',
-        errorDescription: 'Demo kitchens could not be loaded. Please try again.',
+        errorDescription:
+          'Demo kitchens could not be loaded. Please try again.',
         emptyTitle: 'No demo kitchens found',
         emptyDescription: 'Read-only demo kitchens will appear here.',
       }
     : {
         entity: 'kitchen targets',
-        errorDescription: 'Your kitchens could not be loaded. Please try again.',
+        errorDescription:
+          'Your kitchens could not be loaded. Please try again.',
         emptyTitle: 'No kitchens linked to you',
-        emptyDescription: 'Kitchens linked to your current user profile will appear here.',
+        emptyDescription:
+          'Kitchens linked to your current user profile will appear here.',
       }
 )
 

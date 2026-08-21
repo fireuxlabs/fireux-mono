@@ -110,10 +110,7 @@ export async function createKitchenTeamMember(
       actor,
       requested.kitchenId
     )
-    const teamMembers = serverKitchenTeamMembersTarget(
-      kitchen.ownerAppId,
-      requested.kitchenId
-    )
+    const teamMembers = serverKitchenTeamMembersTarget(requested.kitchenId)
     const existingMembers = await mutations.readAll<{
       name?: unknown
       slug?: unknown
@@ -126,7 +123,7 @@ export async function createKitchenTeamMember(
       memberId,
       name: requested.name,
       slug,
-      role: requested.role,
+      jobTitle: requested.role,
       station: requested.station,
       certifications: requested.certifications,
       notes: requested.notes,

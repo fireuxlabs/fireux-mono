@@ -113,7 +113,7 @@ export function parseMenuPageStyleInput(
 }
 
 type MenuPageStyleLayer = {
-  source: 'place' | 'root-kitchen' | 'workspace-theme' | 'app-kitchen' | 'menu'
+  source: 'place' | 'root-kitchen' | 'workspace-theme' | 'kitchen-menu' | 'menu'
   style: unknown
 }
 

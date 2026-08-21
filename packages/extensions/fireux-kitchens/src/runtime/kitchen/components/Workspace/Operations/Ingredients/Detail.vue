@@ -66,20 +66,15 @@ import { useIngredientInterface } from '../../../../../ingredient/composables/us
 import IngredientProfile from '../../../../../ingredient/components/Cards/Profile.vue'
 
 const { profile: makeProfile } = useIngredientInterface()
-const {
-  ingredient,
-  ingredientId,
-  pending,
-  loadError,
-  debug,
-} = useKitchenWorkspaceIngredient()
+const { ingredient, ingredientId, pending, loadError, debug } =
+  useKitchenWorkspaceIngredient()
 const profile = computed(() => makeProfile(ingredient.value))
 const rootIngredientPath = computed(() => {
   const id = String(
     ingredient.value?.ingredient_id ||
-    ingredient.value?.id ||
-    ingredientId.value ||
-    ''
+      ingredient.value?.id ||
+      ingredientId.value ||
+      ''
   ).trim()
 
   return id ? `/ingredients/${encodeURIComponent(id)}` : ''

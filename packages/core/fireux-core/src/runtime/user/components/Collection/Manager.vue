@@ -112,7 +112,6 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: carry public biography through directory cards and live-self hydration.
 import { useFetch } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
@@ -121,24 +120,11 @@ import { useUserInterface } from '../../composables/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import { UserDefaults, type User } from '../../models/user.model.ts'
+import type { UserDetail } from '../../models/user-directory.model.ts'
+import type { CollectionResponse } from '../../../models/utils/directory.ts'
 
-type PublicUserDto = {
-  id: string
-  handle: string
-  displayName: string
-  bio: string
-  avatar: string
-  apps: string[]
-  profiles: string[]
-  path: string
-  isPublic: boolean
-}
-
-type PublicUsersResponse = {
-  ok: true
-  count: number
-  items: PublicUserDto[]
-  users: PublicUserDto[]
+type UserDirectoryResponse = CollectionResponse<UserDetail> & {
+  users: UserDetail[]
 }
 
 type UserCollectionOutcome = 'pending' | 'error' | 'empty' | 'ready'
@@ -168,15 +154,14 @@ const props = withDefaults(
   }
 )
 
-// The server projection owns the Directory DTO and prevents protected sibling
-// records from entering this surface.
+// The server reader owns the Directory view and its scope.
 const { appId, isTenant } = useFireUXConfig()
-const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
-  key: `public-users-index-${isTenant ? appId : 'global'}`,
+const fetched = useFetch<UserDirectoryResponse>('/api/users', {
+  key: `users-directory-${isTenant ? appId : 'global'}`,
   query: { limit: 200 },
 })
 const { user: currentUser, appUser, appOutcome } = useUser()
-const liveSelfUser = computed<PublicUserDto | null>(() => {
+const liveSelfUser = computed<UserDetail | null>(() => {
   const user = currentUser.value
   if (!user) return null
   if (isTenant && (appOutcome.value !== 'ready' || !appUser.value)) {
@@ -197,13 +182,13 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
     displayName,
     bio: String(user.bio || '').trim(),
     avatar,
-    apps: [],
-    profiles: [],
     path: `/users/${encodeURIComponent(handle)}`,
-    isPublic: true,
+    title: displayName,
+    description: String(user.bio || '').trim() || `Profile for ${displayName}.`,
+    updatedAt: new Date(0).toISOString(),
   }
 })
-const fetchedPublicUsers = computed<PublicUserDto[]>(() => {
+const fetchedUsers = computed<UserDetail[]>(() => {
   const payload = fetched.data.value
   return Array.isArray(payload?.users)
     ? payload.users
@@ -211,8 +196,8 @@ const fetchedPublicUsers = computed<PublicUserDto[]>(() => {
       ? payload.items
       : []
 })
-const publicUsers = computed<PublicUserDto[]>(() => {
-  const merged = [...fetchedPublicUsers.value]
+const directoryUsers = computed<UserDetail[]>(() => {
+  const merged = [...fetchedUsers.value]
   const live = liveSelfUser.value
   if (!live) return merged
 
@@ -227,7 +212,7 @@ const publicUsers = computed<PublicUserDto[]>(() => {
   return [live, ...merged]
 })
 const collection = computed<User[]>(() =>
-  publicUsers.value.map((user) => ({
+  directoryUsers.value.map((user) => ({
     ...UserDefaults,
     id: user.id,
     display_name: user.displayName,
@@ -288,15 +273,15 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} of ${totalCount.value} users`
     : `${totalCount.value} user${totalCount.value === 1 ? '' : 's'}`
 )
-const devJsonContext = 'collection manager · users · public projection'
+const devJsonContext = 'collection manager · users · Directory'
 const devJsonData = computed(() => ({
   objects: {
-    users: publicUsers.value,
+    users: directoryUsers.value,
   },
   derived: {
-    source: '/api/public/users',
+    source: '/api/users',
     scope: isTenant ? `app:${appId}` : 'global',
-    count: publicUsers.value.length,
+    count: directoryUsers.value.length,
     visibleCount: visibleCount.value,
     variant: variant.value,
     query: query.value,

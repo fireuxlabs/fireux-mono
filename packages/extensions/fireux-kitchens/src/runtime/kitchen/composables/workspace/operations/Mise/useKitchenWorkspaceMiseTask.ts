@@ -21,8 +21,9 @@ export function useKitchenWorkspaceMiseTask() {
 
   const task = computed<KitchenMiseTask | null>(
     () =>
-      miseTasks.value.find((item) => normalizeString(item?.id) === miseId.value) ??
-      null
+      miseTasks.value.find(
+        (item) => normalizeString(item?.id) === miseId.value
+      ) ?? null
   )
 
   const canEditMise = computed(

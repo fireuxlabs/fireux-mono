@@ -36,8 +36,7 @@ export type MarketplaceOfferCreateIntent = Pick<
   | 'fulfilment_methods'
 >
 
-export type MarketplaceOfferPatchIntent =
-  Partial<MarketplaceOfferCreateIntent>
+export type MarketplaceOfferPatchIntent = Partial<MarketplaceOfferCreateIntent>
 
 export type MarketplaceOrderCreateIntent = {
   store_id: string
@@ -47,7 +46,7 @@ export type MarketplaceOrderCreateIntent = {
   buyer_note?: string
 }
 
-export type PublicMarketplaceOffer = {
+export type MarketplaceOfferDirectoryEntry = {
   id: string
   title: string
   description: string
@@ -57,7 +56,7 @@ export type PublicMarketplaceOffer = {
   fulfilment_methods: MarketplaceFulfilmentMethod[]
 }
 
-export type PublicMarketplaceStore = {
+export type MarketplaceStoreDirectoryEntry = {
   id: string
   slug: string
   name: string
@@ -68,16 +67,16 @@ export type PublicMarketplaceStore = {
   section_ids: string[]
   fulfilment_methods: MarketplaceFulfilmentMethod[]
   publication_state?: MarketplaceStoreState
-  offers?: PublicMarketplaceOffer[]
+  offers?: MarketplaceOfferDirectoryEntry[]
 }
 
-export type PublicMarketplaceStoreListResponse = {
-  items: PublicMarketplaceStore[]
+export type MarketplaceStoreDirectoryPage = {
+  items: MarketplaceStoreDirectoryEntry[]
   truncated: boolean
 }
 
-export type PublicMarketplaceStoreResponse = {
-  store: PublicMarketplaceStore
+export type MarketplaceStoreDetailResponse = {
+  store: MarketplaceStoreDirectoryEntry
 }
 
 export type ManagedMarketplaceStore = MarketplaceStore & {
@@ -128,7 +127,7 @@ export type MarketplaceAdminStoresResponse = {
   truncated: boolean
 }
 
-export type MarketplaceStorePublicState = Extract<
+export type MarketplaceStorePublishedState = Extract<
   MarketplaceStoreState,
   'published'
 >

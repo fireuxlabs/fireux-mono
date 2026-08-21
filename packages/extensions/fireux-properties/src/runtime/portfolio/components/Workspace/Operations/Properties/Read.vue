@@ -14,11 +14,15 @@
       <div class="workspace-summary-grid">
         <div class="workspace-summary-field">
           Portfolio:
-          <span class="workspace-summary-value">{{ portfolioName || 'Unset' }}</span>
+          <span class="workspace-summary-value">{{
+            portfolioName || 'Unset'
+          }}</span>
         </div>
         <div class="workspace-summary-field">
           Source:
-          <span class="workspace-summary-value">{{ collectionPath || 'Unavailable' }}</span>
+          <span class="workspace-summary-value">{{
+            collectionPath || 'Unavailable'
+          }}</span>
         </div>
       </div>
     </div>
@@ -27,19 +31,15 @@
   <DevDebugPanel
     title="Portfolio properties"
     scope="workspace"
-      object-origin="fetched"
-      :objects="{ properties }"
-      :derived="debug"
+    object-origin="fetched"
+    :objects="{ properties }"
+    :derived="debug"
   />
 </template>
 
 <script setup lang="ts">
 import { usePortfolioWorkspaceProperties } from '../../../../composables/workspace/operations/Properties/usePortfolioWorkspaceProperties'
 
-const {
-  properties,
-  portfolioName,
-  collectionPath,
-  debug,
-} = usePortfolioWorkspaceProperties()
+const { properties, portfolioName, collectionPath, debug } =
+  usePortfolioWorkspaceProperties()
 </script>

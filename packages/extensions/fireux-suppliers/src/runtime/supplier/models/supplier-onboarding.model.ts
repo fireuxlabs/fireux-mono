@@ -13,5 +13,5 @@ export type SupplierOnboardingCompleteResult = {
   supplier_id: string
   action: SupplierOnboardingAction
   created_root: boolean
-  created_app_support: boolean
+  created_team_member: boolean
 }

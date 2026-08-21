@@ -8,14 +8,19 @@ export type SupplierItemAvailabilityState =
   | 'unavailable'
   | string
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends null ? null
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends null
+        ? null
+        : T extends readonly (infer U)[]
+          ? WidenLiteral<U>[]
+          : T extends Record<string, unknown>
+            ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+            : T
 
 /**
  * Family: Supplier-owned commercial offer Record
@@ -96,5 +101,8 @@ export type SupplierItemCreateInput = Omit<
 >
 
 export type SupplierItemUpdateInput = Partial<
-  Omit<SupplierItem, 'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'>
+  Omit<
+    SupplierItem,
+    'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'
+  >
 >

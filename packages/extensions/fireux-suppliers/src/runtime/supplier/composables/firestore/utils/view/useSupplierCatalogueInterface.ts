@@ -48,7 +48,9 @@ export namespace SupplierCatalogueItemCard {
 export function useSupplierCatalogueInterface() {
   const { interface: makeItemCard } = useSupplierItemInterface()
 
-  function map(item: SupplierCatalogueInterfaceItem): SupplierCatalogueItemCard.Card {
+  function map(
+    item: SupplierCatalogueInterfaceItem
+  ): SupplierCatalogueItemCard.Card {
     const id = safeString(item.id).trim()
     const itemCardsById = new Map<
       string,
@@ -71,12 +73,13 @@ export function useSupplierCatalogueInterface() {
             const supplierItemId = safeString(option.supplier_item_id).trim()
             const productId = safeString(option.product_id).trim()
             const itemCard =
-              itemCardsById.get(supplierItemId) ||
-              itemCardsById.get(productId)
+              itemCardsById.get(supplierItemId) || itemCardsById.get(productId)
 
             return {
               id: safeString(option.id).trim(),
-              label: safeString(itemCard?.title || option.label || supplierItemId).trim(),
+              label: safeString(
+                itemCard?.title || option.label || supplierItemId
+              ).trim(),
               supplierItemId,
               productId,
               active: option.active !== false,
@@ -98,7 +101,9 @@ export function useSupplierCatalogueInterface() {
           id: safeString(section.id).trim(),
           label: safeString(section.label || section.id).trim(),
           description: safeString(section.description).trim(),
-          imageUrl: safeString(options.find((option) => option.imageUrl)?.imageUrl).trim(),
+          imageUrl: safeString(
+            options.find((option) => option.imageUrl)?.imageUrl
+          ).trim(),
           options,
         }
       })

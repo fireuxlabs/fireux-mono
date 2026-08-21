@@ -14,9 +14,9 @@ import {
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppSuppliersTarget,
   serverAppUsersTarget,
   serverSupplierItemsTarget,
+  serverSupplierTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 type SupplierItemAction = 'create' | 'update' | 'delete'
@@ -45,9 +45,11 @@ const CREATE_FIELDS = new Set([
   'active',
   'metadata',
 ])
-const UPDATE_FIELDS = new Set([...CREATE_FIELDS].filter(field =>
-  field !== 'product_id' && field !== 'ingredient_id'
-))
+const UPDATE_FIELDS = new Set(
+  [...CREATE_FIELDS].filter(
+    (field) => field !== 'product_id' && field !== 'ingredient_id'
+  )
+)
 
 function payload(value: unknown, action: SupplierItemAction) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -55,22 +57,13 @@ function payload(value: unknown, action: SupplierItemAction) {
   }
   const source = value as Record<string, unknown>
   const allowed = action === 'create' ? CREATE_FIELDS : UPDATE_FIELDS
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
-  if (unsupported) fail(400, `Supplier Item contains unsupported field: ${unsupported}.`)
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
+  if (unsupported)
+    fail(400, `Supplier Item contains unsupported field: ${unsupported}.`)
   if (action === 'update' && !Object.keys(source).length) {
     fail(400, 'Supplier Item update is empty.')
   }
   return source
-}
-
-function operatorIds(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    fail(409, 'Supplier access has an invalid operator list.')
-  }
-  if (value.some(id => typeof id !== 'string')) {
-    fail(409, 'Supplier access has an invalid operator list.')
-  }
-  return value.map(text).filter(Boolean)
 }
 
 async function authority(event: H3Event, supplierId: string) {
@@ -78,7 +71,7 @@ async function authority(event: H3Event, supplierId: string) {
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
-  const supports = serverAppSuppliersTarget(appId)
+  const team = serverSupplierTeamMembersTarget(supplierId)
   const memberships = serverAppUsersTarget(appId)
   const items = serverSupplierItemsTarget(supplierId)
 
@@ -87,7 +80,7 @@ async function authority(event: H3Event, supplierId: string) {
     appId,
     ecosystem: fireux.ecosystem,
     suppliers,
-    supports,
+    team,
     memberships,
     items,
   }
@@ -98,12 +91,12 @@ async function assertOperator(
   context: Awaited<ReturnType<typeof authority>>,
   supplierId: string
 ) {
-  const [supplier, support, membership] = await Promise.all([
+  const [supplier, teamMember, membership] = await Promise.all([
     mutations.read<Record<string, unknown>>(context.suppliers, supplierId),
-    mutations.read<Record<string, unknown>>(context.supports, supplierId),
+    mutations.read<Record<string, unknown>>(context.team, context.uid),
     mutations.read<Record<string, unknown>>(context.memberships, context.uid),
   ])
-  if (!supplier.exists || !support.exists) fail(404, 'Supplier not found.')
+  if (!supplier.exists) fail(404, 'Supplier not found.')
   const management = readFireuxEntityManagement(supplier.data?.management)
   const managementAppId = management
     ? resolveFireuxEntityManagementAppId(management, context.ecosystem)
@@ -111,9 +104,16 @@ async function assertOperator(
   if (management?.mode === 'root' || managementAppId !== context.appId) {
     fail(409, 'Supplier belongs to another App scope.')
   }
-  const isAdmin = membership.exists && text(membership.data?.role) === 'admin'
-  const isOperator = operatorIds(support.data?.operator_ids).includes(context.uid)
-  if (!isAdmin && !isOperator) fail(403, 'Supplier operator access is required.')
+  if (!membership.exists) fail(403, 'Current App membership is required.')
+  const teamRole = text(teamMember.data?.role)
+  if (
+    !teamMember.exists ||
+    text(teamMember.data?.user_id) !== context.uid ||
+    text(teamMember.data?.status) !== 'active' ||
+    (teamRole !== 'owner' && teamRole !== 'operator')
+  ) {
+    fail(403, 'Supplier owner or operator access is required.')
+  }
 }
 
 export async function createSupplierItem(
@@ -129,28 +129,44 @@ export async function createSupplierItem(
   const itemId = randomUUID()
   const context = await authority(event, supplierId)
 
-  return runGuardedServerTransaction(context.suppliers.database, async mutations => {
-    await assertOperator(mutations, context, supplierId)
-    const [product, ingredient] = await Promise.all([
-      mutations.read<Record<string, unknown>>(FIRESTORE_MUTATION_TARGETS.products, productId),
-      ingredientId
-        ? mutations.read<Record<string, unknown>>(FIRESTORE_MUTATION_TARGETS.ingredients, ingredientId)
-        : Promise.resolve({ exists: false, data: undefined }),
-    ])
-    if (!product.exists) fail(409, 'Supplier Item requires an existing Product.')
-    if (ingredientId && (!ingredient.exists || text(ingredient.data?.status) !== 'active')) {
-      fail(409, 'Supplier Item Ingredient must be an active canonical Ingredient.')
+  return runGuardedServerTransaction(
+    context.suppliers.database,
+    async (mutations) => {
+      await assertOperator(mutations, context, supplierId)
+      const [product, ingredient] = await Promise.all([
+        mutations.read<Record<string, unknown>>(
+          FIRESTORE_MUTATION_TARGETS.products,
+          productId
+        ),
+        ingredientId
+          ? mutations.read<Record<string, unknown>>(
+              FIRESTORE_MUTATION_TARGETS.ingredients,
+              ingredientId
+            )
+          : Promise.resolve({ exists: false, data: undefined }),
+      ])
+      if (!product.exists)
+        fail(409, 'Supplier Item requires an existing Product.')
+      if (
+        ingredientId &&
+        (!ingredient.exists || text(ingredient.data?.status) !== 'active')
+      ) {
+        fail(
+          409,
+          'Supplier Item Ingredient must be an active canonical Ingredient.'
+        )
+      }
+      mutations.create(context.items, itemId, {
+        ...body,
+        supplier_id: supplierId,
+        product_id: productId,
+        ...(ingredientId ? { ingredient_id: ingredientId } : {}),
+        created: serverAuditStamp({ by: context.uid, appId: context.appId }),
+        updated: serverAuditStamp({ by: context.uid }),
+      })
+      return { ok: true as const, supplier_item_id: itemId }
     }
-    mutations.create(context.items, itemId, {
-      ...body,
-      supplier_id: supplierId,
-      product_id: productId,
-      ...(ingredientId ? { ingredient_id: ingredientId } : {}),
-      created: serverAuditStamp({ by: context.uid, appId: context.appId }),
-      updated: serverAuditStamp({ by: context.uid }),
-    })
-    return { ok: true as const, supplier_item_id: itemId }
-  })
+  )
 }
 
 export async function updateSupplierItem(
@@ -164,16 +180,22 @@ export async function updateSupplierItem(
   const body = payload(input, 'update')
   const context = await authority(event, supplierId)
 
-  return runGuardedServerTransaction(context.suppliers.database, async mutations => {
-    await assertOperator(mutations, context, supplierId)
-    const item = await mutations.read<Record<string, unknown>>(context.items, itemId)
-    if (!item.exists) fail(404, 'Supplier Item not found.')
-    mutations.update(context.items, itemId, {
-      ...body,
-      updated: serverAuditStamp({ by: context.uid }),
-    })
-    return { ok: true as const, supplier_item_id: itemId }
-  })
+  return runGuardedServerTransaction(
+    context.suppliers.database,
+    async (mutations) => {
+      await assertOperator(mutations, context, supplierId)
+      const item = await mutations.read<Record<string, unknown>>(
+        context.items,
+        itemId
+      )
+      if (!item.exists) fail(404, 'Supplier Item not found.')
+      mutations.update(context.items, itemId, {
+        ...body,
+        updated: serverAuditStamp({ by: context.uid }),
+      })
+      return { ok: true as const, supplier_item_id: itemId }
+    }
+  )
 }
 
 export async function deleteSupplierItem(
@@ -185,11 +207,17 @@ export async function deleteSupplierItem(
   const itemId = requireFirestoreDocumentId(itemIdInput, 'Supplier Item id')
   const context = await authority(event, supplierId)
 
-  return runGuardedServerTransaction(context.suppliers.database, async mutations => {
-    await assertOperator(mutations, context, supplierId)
-    const item = await mutations.read<Record<string, unknown>>(context.items, itemId)
-    if (!item.exists) fail(404, 'Supplier Item not found.')
-    mutations.delete(context.items, itemId)
-    return { ok: true as const, supplier_item_id: itemId }
-  })
+  return runGuardedServerTransaction(
+    context.suppliers.database,
+    async (mutations) => {
+      await assertOperator(mutations, context, supplierId)
+      const item = await mutations.read<Record<string, unknown>>(
+        context.items,
+        itemId
+      )
+      if (!item.exists) fail(404, 'Supplier Item not found.')
+      mutations.delete(context.items, itemId)
+      return { ok: true as const, supplier_item_id: itemId }
+    }
+  )
 }

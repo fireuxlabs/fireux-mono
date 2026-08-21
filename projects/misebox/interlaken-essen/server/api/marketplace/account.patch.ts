@@ -7,7 +7,9 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   INTERLAKEN_ESSEN_APP_ID,
-  MARKETPLACE_PROFILE_COLLECTION,
+  MARKETPLACE_PROFILE_KIND,
+  marketplaceProfileAppStatePath,
+  marketplaceProfilePath,
   type MarketplaceAccountSettings,
   type MarketplaceAccountSettingsInput,
 } from '../../../app/content/marketplace-profile'
@@ -26,9 +28,12 @@ function parseRequest(value: unknown): MarketplaceAccountSettingsInput {
   }
 
   const body = value as RecordValue
-  const unsupported = Object.keys(body).find(key => !allowedFields.has(key))
+  const unsupported = Object.keys(body).find((key) => !allowedFields.has(key))
   if (unsupported) {
-    fail(400, `The account settings request contains an unsupported field: ${unsupported}.`)
+    fail(
+      400,
+      `The account settings request contains an unsupported field: ${unsupported}.`
+    )
   }
   if (typeof body.delivery_address !== 'string') {
     fail(400, 'Delivery address must be text.')
@@ -57,29 +62,40 @@ export default defineEventHandler(async (event) => {
   const membershipRef = db.doc(
     `apps/${appId}/${AppUserStorage.collection}/${uid}`
   )
-  const profileRef = db.doc(
-    `apps/${appId}/${MARKETPLACE_PROFILE_COLLECTION}/${uid}`
-  )
+  const profileRef = db.doc(marketplaceProfilePath(uid))
+  const appStateRef = db.doc(marketplaceProfileAppStatePath(uid))
 
   await db.runTransaction(async (transaction) => {
-    const [membership, profile] = await Promise.all([
+    const [membership, profile, appState] = await Promise.all([
       transaction.get(membershipRef),
       transaction.get(profileRef),
+      transaction.get(appStateRef),
     ])
     const role = String(membership.get('role') || '').trim()
     if (!membership.exists || (role !== 'user' && role !== 'admin')) {
       fail(403, 'A valid Interlaken Essen membership is required.')
     }
 
-    transaction.set(profileRef, {
-      id: uid,
-      delivery_address:
-        input.delivery_address || FieldValue.delete(),
-      ...(!profile.exists
-        ? { created: serverAuditStamp({ by: uid, appId }) }
-        : {}),
-      updated: serverAuditStamp({ by: uid }),
-    }, { merge: true })
+    if (!profile.exists) {
+      transaction.create(profileRef, {
+        kind: MARKETPLACE_PROFILE_KIND,
+        created: serverAuditStamp({ by: uid }),
+        updated: serverAuditStamp({ by: uid }),
+      })
+    }
+    transaction.set(
+      appStateRef,
+      {
+        profile_kind: MARKETPLACE_PROFILE_KIND,
+        app_id: appId,
+        delivery_address: input.delivery_address || FieldValue.delete(),
+        ...(!appState.exists
+          ? { created: serverAuditStamp({ by: uid, appId }) }
+          : {}),
+        updated: serverAuditStamp({ by: uid }),
+      },
+      { merge: true }
+    )
   })
 
   const settings: MarketplaceAccountSettings = {

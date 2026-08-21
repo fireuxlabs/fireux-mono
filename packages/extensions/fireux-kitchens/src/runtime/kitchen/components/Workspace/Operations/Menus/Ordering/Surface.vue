@@ -1,9 +1,9 @@
 <template>
   <section
     class="rounded-md border p-3 transition-colors"
-    :class="active
-      ? 'border-primary/50 bg-primary/5'
-      : 'border-default bg-default/60'"
+    :class="
+      active ? 'border-primary/50 bg-primary/5' : 'border-default bg-default/60'
+    "
   >
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0 space-y-1">
@@ -72,12 +72,15 @@ const emit = defineEmits<{
   toggle: [type: KitchenOrderType, enabled: boolean]
 }>()
 const active = computed(() =>
-  props.surface.choices.some(choice => props.enabledTypes.includes(choice.type))
+  props.surface.choices.some((choice) =>
+    props.enabledTypes.includes(choice.type)
+  )
 )
 const singleChoice = computed(() =>
   props.surface.choices.length === 1 ? props.surface.choices[0] : null
 )
-const settingsRoute = computed(() =>
-  `/workspace/kitchen/menus/${encodeURIComponent(props.menuId)}/ordering/${props.surface.settingsPath}`
+const settingsRoute = computed(
+  () =>
+    `/workspace/kitchen/menus/${encodeURIComponent(props.menuId)}/ordering/${props.surface.settingsPath}`
 )
 </script>

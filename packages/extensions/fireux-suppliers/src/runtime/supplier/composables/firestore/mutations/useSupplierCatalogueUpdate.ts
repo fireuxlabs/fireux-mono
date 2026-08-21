@@ -7,9 +7,11 @@ import { resolveSupplierCatalogueCollectionPath } from '../fetch/useSupplierCata
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierCatalogueUpdate(options: {
-  supplierCollectionPath?: string
-} = {}) {
+export function useSupplierCatalogueUpdate(
+  options: {
+    supplierCollectionPath?: string
+  } = {}
+) {
   const { updateDocument } = useFirestoreUpdate()
 
   async function updateSupplierCatalogue(

@@ -24,11 +24,7 @@
       </UButton>
     </div>
 
-    <form
-      v-if="recipe"
-      class="space-y-6"
-      @submit.prevent="saveRecipe"
-    >
+    <form v-if="recipe" class="space-y-6" @submit.prevent="saveRecipe">
       <UCard>
         <template #header>
           <div class="workspace-card-header">
@@ -38,10 +34,7 @@
 
         <div class="space-y-4">
           <UFormField label="Name">
-            <UInput
-              v-model="form.name"
-              :disabled="!canWrite"
-            />
+            <UInput v-model="form.name" :disabled="!canWrite" />
           </UFormField>
 
           <UFormField label="Description">
@@ -54,10 +47,7 @@
         </div>
       </UCard>
 
-      <div
-        v-if="canWrite"
-        class="flex flex-wrap items-center gap-3"
-      >
+      <div v-if="canWrite" class="flex flex-wrap items-center gap-3">
         <UButton
           type="submit"
           icon="i-lucide-save"
@@ -67,10 +57,7 @@
           Save recipe
         </UButton>
 
-        <p
-          v-if="saveMessage"
-          class="text-sm text-dimmed"
-        >
+        <p v-if="saveMessage" class="text-sm text-dimmed">
           {{ saveMessage }}
         </p>
       </div>
@@ -96,9 +83,9 @@
       <DevDebugPanel
         title="Kitchen recipe detail"
         scope="workspace"
-      object-origin="fetched"
-      :objects="{ recipe, dishUsage }"
-      :derived="debug"
+        object-origin="fetched"
+        :objects="{ recipe, dishUsage }"
+        :derived="debug"
         class="mt-4"
       />
     </details>
@@ -216,7 +203,9 @@ const saveRecipe = async () => {
     saveMessage.value = 'Saved.'
     toast.add({ title: 'Recipe saved', icon: 'i-heroicons-check-circle' })
   } catch (error) {
-    const message = String((error as any)?.message || error || 'Failed to save recipe')
+    const message = String(
+      (error as any)?.message || error || 'Failed to save recipe'
+    )
     toast.add({
       title: 'Recipe save failed',
       description: message,
@@ -236,7 +225,9 @@ const deleteSelectedRecipe = async () => {
   const usageNote = usageCount
     ? `\n\n${usageCount} dish record${usageCount === 1 ? '' : 's'} reference this recipe. This delete will not cascade.`
     : ''
-  const ok = window.confirm(`Delete recipe "${title}"?\n\nThis will only delete the recipe document.${usageNote}`)
+  const ok = window.confirm(
+    `Delete recipe "${title}"?\n\nThis will only delete the recipe document.${usageNote}`
+  )
   if (!ok) return
 
   deleting.value = true
@@ -246,7 +237,9 @@ const deleteSelectedRecipe = async () => {
     toast.add({ title: 'Recipe deleted', icon: 'i-heroicons-check-circle' })
     await navigateTo('/workspace/kitchen/recipes')
   } catch (error) {
-    const message = String((error as any)?.message || error || 'Failed to delete recipe')
+    const message = String(
+      (error as any)?.message || error || 'Failed to delete recipe'
+    )
     toast.add({
       title: 'Recipe delete failed',
       description: message,

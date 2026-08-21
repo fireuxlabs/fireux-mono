@@ -31,7 +31,10 @@
         Loading table tabs...
       </p>
 
-      <div v-else-if="tableRows.length" class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div
+        v-else-if="tableRows.length"
+        class="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+      >
         <article
           v-for="row in tableRows"
           :key="row.key"
@@ -46,7 +49,10 @@
                 {{ row.tab ? roundLabel(row.tab) : 'No open tab' }}
               </p>
             </div>
-            <UBadge :color="row.tab ? statusColor(row.tab.status) : 'neutral'" variant="soft">
+            <UBadge
+              :color="row.tab ? statusColor(row.tab.status) : 'neutral'"
+              variant="soft"
+            >
               {{ row.tab ? statusLabel(row.tab.status) : 'available' }}
             </UBadge>
           </header>
@@ -54,27 +60,33 @@
           <dl class="grid grid-cols-2 gap-2 text-sm">
             <div>
               <dt class="text-muted">Guests</dt>
-              <dd class="m-0 font-black text-highlighted">{{ row.tab?.guest_count || 0 }}</dd>
+              <dd class="m-0 font-black text-highlighted">
+                {{ row.tab?.guest_count || 0 }}
+              </dd>
             </div>
             <div>
               <dt class="text-muted">Staged items</dt>
-              <dd class="m-0 font-black text-highlighted">{{ row.tab?.staged_line_count || 0 }}</dd>
+              <dd class="m-0 font-black text-highlighted">
+                {{ row.tab?.staged_line_count || 0 }}
+              </dd>
             </div>
             <div>
               <dt class="text-muted">Sent rounds</dt>
-              <dd class="m-0 font-black text-highlighted">{{ row.tab?.submitted_round_count || 0 }}</dd>
+              <dd class="m-0 font-black text-highlighted">
+                {{ row.tab?.submitted_round_count || 0 }}
+              </dd>
             </div>
             <div>
               <dt class="text-muted">Outstanding</dt>
-              <dd class="m-0 font-black text-highlighted">{{ row.tab ? money(row.tab) : '—' }}</dd>
+              <dd class="m-0 font-black text-highlighted">
+                {{ row.tab ? money(row.tab) : '—' }}
+              </dd>
             </div>
           </dl>
         </article>
       </div>
 
-      <p v-else class="m-0 text-sm text-muted">
-        No table tabs are open.
-      </p>
+      <p v-else class="m-0 text-sm text-muted">No table tabs are open.</p>
     </UCard>
 
     <DevDebugPanel
@@ -96,25 +108,35 @@ import type {
 } from '../../../../models/table-tab.model.ts'
 import { useKitchenWorkspaceTables } from '../../../../composables/workspace/operations/Tables/useKitchenWorkspaceTables'
 
-const {
-  activeTabs,
-  stagingTabs,
-  billingTabs,
-  tableCount,
-  pending,
-  debug,
-} = useKitchenWorkspaceTables()
+const { activeTabs, stagingTabs, billingTabs, tableCount, pending, debug } =
+  useKitchenWorkspaceTables()
 
 const summaries = computed(() => [
-  { label: 'Open tables', count: activeTabs.value.length, icon: 'i-lucide-layout-grid' },
-  { label: 'Staging rounds', count: stagingTabs.value.length, icon: 'i-lucide-list-plus' },
-  { label: 'Billing', count: billingTabs.value.length, icon: 'i-lucide-receipt' },
+  {
+    label: 'Open tables',
+    count: activeTabs.value.length,
+    icon: 'i-lucide-layout-grid',
+  },
+  {
+    label: 'Staging rounds',
+    count: stagingTabs.value.length,
+    icon: 'i-lucide-list-plus',
+  },
+  {
+    label: 'Billing',
+    count: billingTabs.value.length,
+    icon: 'i-lucide-receipt',
+  },
 ])
 const sortedTabs = computed(() =>
   [...activeTabs.value].sort((left, right) =>
-    String(left.table_label || '').localeCompare(String(right.table_label || ''), undefined, {
-      numeric: true,
-    })
+    String(left.table_label || '').localeCompare(
+      String(right.table_label || ''),
+      undefined,
+      {
+        numeric: true,
+      }
+    )
   )
 )
 const normalizedTableNumber = (tab: KitchenTableTab) => {
@@ -125,8 +147,8 @@ const normalizedTableNumber = (tab: KitchenTableTab) => {
 const tableRows = computed(() => {
   const configured = Array.from({ length: tableCount.value }, (_, index) => {
     const number = index + 1
-    const tab = sortedTabs.value.find((candidate) =>
-      normalizedTableNumber(candidate) === number
+    const tab = sortedTabs.value.find(
+      (candidate) => normalizedTableNumber(candidate) === number
     )
 
     return {
@@ -152,7 +174,8 @@ const statusLabel = (status: KitchenTableTabStatus) =>
   String(status || 'open').replace(/_/g, ' ')
 const statusColor = (status: KitchenTableTabStatus) => {
   if (status === 'paid') return 'success' as const
-  if (status === 'bill_requested' || status === 'payment_pending') return 'warning' as const
+  if (status === 'bill_requested' || status === 'payment_pending')
+    return 'warning' as const
   return 'neutral' as const
 }
 const roundLabel = (tab: KitchenTableTab) => {

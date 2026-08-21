@@ -87,7 +87,7 @@ async function readContext(event: H3Event, kitchenId: string) {
   )
   const [app, support, membership] = await Promise.all([
     db.doc(`apps/${appId}`).get(),
-    db.doc(`apps/${appId}/kitchens/${kitchenId}`).get(),
+    db.doc(`kitchens/${kitchenId}`).get(),
     db.doc(`apps/${appId}/users/${actor.uid}`).get(),
   ])
   if (!app.exists) fail(409, 'The dedicated App record does not exist.')
@@ -176,7 +176,10 @@ export async function updateKitchenAppTheme(event: H3Event, value: unknown) {
       }
       const inheritedPalette = workspacePalette(current.rootData)
       if (!inheritedPalette) {
-        fail(409, 'Complete the Workspace palette before editing the App theme.')
+        fail(
+          409,
+          'Complete the Workspace palette before editing the App theme.'
+        )
       }
       const app = await mutations.read<Record<string, unknown>>(
         FIRESTORE_MUTATION_TARGETS.runtimeApps,

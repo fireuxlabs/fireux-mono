@@ -40,19 +40,27 @@
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Headline:
-            <span class="workspace-summary-value">{{ headline || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              headline || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Summary:
-            <span class="workspace-summary-value">{{ summary || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              summary || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Categories:
-            <span class="workspace-summary-value">{{ categoryLabel || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              categoryLabel || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Delivery areas:
-            <span class="workspace-summary-value">{{ deliveryAreaLabel || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              deliveryAreaLabel || 'Unset'
+            }}</span>
           </div>
         </div>
       </UCard>

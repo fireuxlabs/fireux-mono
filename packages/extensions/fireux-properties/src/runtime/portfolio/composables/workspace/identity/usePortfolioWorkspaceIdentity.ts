@@ -5,11 +5,7 @@ import { PortfolioStorage } from '../../../models/portfolio.model.ts'
 import { usePortfolioWorkspace } from '../core/usePortfolioWorkspace'
 
 export function usePortfolioWorkspaceIdentity() {
-  const {
-    selection,
-    runtime,
-    actions,
-  } = usePortfolioWorkspace()
+  const { selection, runtime, actions } = usePortfolioWorkspace()
 
   const name = computed(() => normalizeString(selection.portfolio.value?.name))
   const tagline = computed(() =>
@@ -18,7 +14,9 @@ export function usePortfolioWorkspaceIdentity() {
   const imageUrl = computed(() =>
     normalizeString(selection.portfolio.value?.image_url)
   )
-  const notes = computed(() => normalizeString(selection.portfolio.value?.notes))
+  const notes = computed(() =>
+    normalizeString(selection.portfolio.value?.notes)
+  )
   const ownerLabel = computed(() =>
     normalizeString(selection.portfolio.value?.owner_label)
   )

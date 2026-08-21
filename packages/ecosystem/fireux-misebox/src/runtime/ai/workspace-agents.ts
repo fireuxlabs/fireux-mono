@@ -35,7 +35,7 @@ export const miseboxWorkspaceAgents = [
     contextProviders: [
       { id: 'user.context', owner: 'User', required: false },
       { id: 'kitchen.identity', owner: 'Kitchen', required: true },
-      { id: 'kitchen.context', owner: 'AppKitchen', required: false },
+      { id: 'kitchen.context', owner: 'Kitchen', required: false },
     ],
     operationAgents: kitchenOperationAgents,
   }),

@@ -55,8 +55,10 @@ export function useKitchenPrepItemCreate(
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
   const { seedTranslations } = useTranslationSeed()
-  const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) || resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      trim(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const createPrepItem = async (
@@ -112,17 +114,22 @@ export function useKitchenPrepItemCreate(
       method: (draft.method ?? []).map(trim).filter(Boolean),
     }
     await create(
-      defineRuntimeClientCreateTarget('project.kitchen-prep-items', collectionPath),
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-prep-items',
+        collectionPath
+      ),
       payload as KitchenPrepItem,
       { id: prepItemId, app: true, creator: true }
     )
 
     return {
       id: prepItemId,
-      failedLanguages: Array.from(new Set([
-        ...nameSeed.failedLanguages,
-        ...(descriptionSeed?.failedLanguages ?? []),
-      ])),
+      failedLanguages: Array.from(
+        new Set([
+          ...nameSeed.failedLanguages,
+          ...(descriptionSeed?.failedLanguages ?? []),
+        ])
+      ),
     }
   }
 

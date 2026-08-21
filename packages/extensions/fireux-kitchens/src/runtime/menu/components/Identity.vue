@@ -51,32 +51,35 @@
 import { computed } from 'vue'
 import { useMenuExit } from '../composables/useMenuExit'
 
-const props = withDefaults(defineProps<{
-  identityKind?: 'menu' | 'kitchen-menu'
-  backToMenusLabel?: string
-  closeMenuLabel?: string
-  headingId?: string
-  kitchenName?: string
-  menuName: string
-  description?: string
-  currencyCode?: string
-  showCurrency?: boolean
-  presentation?: 'framed' | 'open'
-  pricesLabel?: string
-  showExit?: boolean
-}>(), {
-  identityKind: 'kitchen-menu',
-  backToMenusLabel: 'Back to menus',
-  closeMenuLabel: 'Close menu',
-  headingId: 'menu-title',
-  kitchenName: '',
-  description: '',
-  currencyCode: '',
-  showCurrency: true,
-  presentation: 'framed',
-  pricesLabel: 'Prices',
-  showExit: true,
-})
+const props = withDefaults(
+  defineProps<{
+    identityKind?: 'menu' | 'kitchen-menu'
+    backToMenusLabel?: string
+    closeMenuLabel?: string
+    headingId?: string
+    kitchenName?: string
+    menuName: string
+    description?: string
+    currencyCode?: string
+    showCurrency?: boolean
+    presentation?: 'framed' | 'open'
+    pricesLabel?: string
+    showExit?: boolean
+  }>(),
+  {
+    identityKind: 'kitchen-menu',
+    backToMenusLabel: 'Back to menus',
+    closeMenuLabel: 'Close menu',
+    headingId: 'menu-title',
+    kitchenName: '',
+    description: '',
+    currencyCode: '',
+    showCurrency: true,
+    presentation: 'framed',
+    pricesLabel: 'Prices',
+    showExit: true,
+  }
+)
 const {
   exitKind,
   exitLabel: defaultExitLabel,
@@ -88,7 +91,6 @@ const resolvedExitLabel = computed(() =>
     ? props.closeMenuLabel || defaultExitLabel.value
     : props.backToMenusLabel || defaultExitLabel.value
 )
-
 </script>
 
 <style scoped>

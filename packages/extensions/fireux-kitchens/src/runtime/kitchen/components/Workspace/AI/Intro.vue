@@ -7,11 +7,7 @@
       </span>
     </div>
     <p class="fx-type-label">{{ agentLabel }}</p>
-    <h1
-      id="kitchen-ai-title"
-      class="fx-type-display-title"
-      v-text="title"
-    />
+    <h1 id="kitchen-ai-title" class="fx-type-display-title" v-text="title" />
     <p class="fx-type-description text-toned">{{ description }}</p>
   </div>
 </template>

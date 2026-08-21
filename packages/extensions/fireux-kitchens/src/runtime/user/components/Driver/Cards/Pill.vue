@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDirectoryCard
+  <UserProfileDirectoryCard
     variant="compact"
     kind-label="Driver"
     icon="i-lucide-truck"

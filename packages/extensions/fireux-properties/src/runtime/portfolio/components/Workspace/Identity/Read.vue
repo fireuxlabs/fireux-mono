@@ -39,15 +39,21 @@
         <div class="workspace-summary-grid">
           <div class="workspace-summary-field">
             Owner:
-            <span class="workspace-summary-value">{{ ownerLabel || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              ownerLabel || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Strategy:
-            <span class="workspace-summary-value">{{ strategyLabel || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              strategyLabel || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Region:
-            <span class="workspace-summary-value">{{ regionLabel || 'Unset' }}</span>
+            <span class="workspace-summary-value">{{
+              regionLabel || 'Unset'
+            }}</span>
           </div>
           <div class="workspace-summary-field">
             Notes:

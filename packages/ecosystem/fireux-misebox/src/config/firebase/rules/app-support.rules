@@ -11,7 +11,8 @@
         allow get, list, create, update, delete: if false;
       }
 
-      // Administrative removal blocks are server-owned and never client-readable.
+      // AppUser is membership and App governance only. Profile and Workspace
+      // capability state live under their own owners.
       // @fireux-core-rules membership-block
       match /users/{userId} {
         function isValidAppUser(data) {
@@ -49,173 +50,21 @@
         allow create, update, delete: if false;
       }
 
-      // =============================================================
-      // App-private Customer and Driver profiles
-      // =============================================================
-      match /customers/{userId} {
-        function isValidCustomerPrivate(value) {
-          return value is map &&
-            value.keys().hasAll([
-              'name',
-              'phone',
-              'allergy_note',
-              'default_delivery_address',
-              'saved_addresses',
-              'order_history'
-            ]) &&
-            value.keys().hasOnly([
-              'name',
-              'phone',
-              'allergy_note',
-              'default_delivery_address',
-              'saved_addresses',
-              'order_history'
-            ]) &&
-            value.name is string && value.name.size() <= 120 &&
-            value.phone is string && value.phone.size() <= 40 &&
-            value.allergy_note is string && value.allergy_note.size() <= 1000 &&
-            value.default_delivery_address is string &&
-            value.default_delivery_address.size() <= 500 &&
-            value.saved_addresses is list && value.saved_addresses.size() <= 20 &&
-            value.order_history is list && value.order_history.size() <= 200;
-        }
-
-        function isValidCustomer(data) {
-          return data.keys().hasAll(['created', 'updated']) &&
-            data.keys().hasOnly(['private', 'created', 'updated']) &&
-            (!('private' in data) || isValidCustomerPrivate(data.private)) &&
-            validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
-            validUpdatedStamp(data.updated);
-        }
-
-        function validCustomerSelfChange() {
-          return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'private',
-              'updated'
-            ]) &&
-            (
-              ('private' in resource.data &&
-                request.resource.data.private.diff(resource.data.private)
-                  .affectedKeys().hasOnly([
-                    'name',
-                    'phone',
-                    'allergy_note',
-                    'default_delivery_address'
-                  ])) ||
-              (!('private' in resource.data) &&
-                request.resource.data.private.saved_addresses.size() == 0 &&
-                request.resource.data.private.order_history.size() == 0)
-            );
-        }
-
-        allow get: if (isOwner(userId) && isAppMember(appId)) ||
-          (isAppAdmin(appId) && isValidCustomer(resource.data));
-        allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidCustomer(request.resource.data) &&
-          request.resource.data.created == resource.data.created &&
-          validCustomerSelfChange() &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
+      // These App-owned records are trusted-server capabilities. Ignition is
+      // represented by a Conversation kind, not another App collection.
+      match /events/{eventId} {
+        allow get, list, create, update, delete: if false;
       }
 
-      match /drivers/{userId} {
-        function isValidAppDriver(data) {
-          return data.keys().hasAll(['created', 'updated']) &&
-            data.keys().hasOnly([
-              'driver_phone',
-              'accepts_weak_pings',
-              'accepts_delivery_tenders',
-              'active_kitchen_ids',
-              'kitchen_links',
-              'created',
-              'updated'
-            ]) &&
-            validOptionalText(data, 'driver_phone', 40) &&
-            (!('accepts_weak_pings' in data) ||
-              data.accepts_weak_pings is bool) &&
-            (!('accepts_delivery_tenders' in data) ||
-              data.accepts_delivery_tenders is bool) &&
-            validOptionalList(data, 'active_kitchen_ids', 50) &&
-            validOptionalList(data, 'kitchen_links', 50) &&
-            validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
-            validUpdatedStamp(data.updated);
-        }
-
-        allow get: if (isOwner(userId) && isAppMember(appId)) ||
-          (isAppAdmin(appId) && isValidAppDriver(resource.data));
-        allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidAppDriver(request.resource.data) &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'driver_phone',
-            'accepts_weak_pings',
-            'accepts_delivery_tenders',
-            'updated'
-          ]) &&
-          request.resource.data.created == resource.data.created &&
-          request.resource.data.active_kitchen_ids == resource.data.active_kitchen_ids &&
-          request.resource.data.kitchen_links == resource.data.kitchen_links &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
-      }
-
-      // =============================================================
-      // App-scoped marketplace authority
-      // =============================================================
-      match /marketplace-stores/{storeId} {
-        // Store authority includes private owner/editor ids. Guests consume
-        // bounded public DTOs and members use trusted marketplace endpoints.
+      match /conversations/{conversationId} {
         allow get, list, create, update, delete: if false;
 
-        match /offers/{offerId} {
-          // Offer publication and price validation are server-owned.
+        match /{nested=**} {
           allow get, list, create, update, delete: if false;
         }
       }
 
       match /marketplace-orders/{orderId} {
-        // Orders contain buyer identity, fulfilment details and immutable
-        // offer/price snapshots. All access uses trusted private endpoints.
         allow get, list, create, update, delete: if false;
       }
-
-      // =============================================================
-      // Minimal app overlays for public identity profiles
-      // =============================================================
-      match /{profileCollection}/{userId} {
-        function isIdentityProfileOverlay() {
-          return profileCollection in ['agents', 'chefs', 'professionals'];
-        }
-
-        // @fireux-core-rules overlay-validator
-        allow get: if isIdentityProfileOverlay() &&
-          ((isOwner(userId) && isAppMember(appId)) ||
-            (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
-        allow list: if isIdentityProfileOverlay() &&
-          isAppAdmin(appId);
-        // Trusted profile provisioning creates the profile record.
-        allow create: if false;
-        allow update: if isIdentityProfileOverlay() &&
-          isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidProfileOverlay(request.resource.data) &&
-          request.resource.data.created == resource.data.created &&
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'updated'
-          ]) &&
-          validOwnerUpdateStamp(request.resource.data, userId);
-        allow delete: if false;
-      }
-
-      // =============================================================
-      // Kitchen operations and Customer-order PII
-      // =============================================================
+    }

@@ -1,6 +1,8 @@
 <template>
   <UPageCard variant="subtle">
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch">
+    <div
+      class="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] lg:items-stretch"
+    >
       <div class="space-y-3">
         <div class="aspect-video overflow-hidden rounded-lg bg-elevated">
           <img
@@ -8,7 +10,7 @@
             :src="coverImage"
             :alt="`${kitchenTitle} cover image`"
             class="size-full object-cover"
-          >
+          />
           <div
             v-else
             class="flex size-full flex-col items-center justify-center gap-2 text-dimmed"
@@ -61,7 +63,9 @@
               :key="item.key"
               class="rounded-lg border border-default px-3 py-2"
             >
-              <div class="flex items-center gap-2 text-xs font-medium text-dimmed">
+              <div
+                class="flex items-center gap-2 text-xs font-medium text-dimmed"
+              >
                 <UIcon :name="item.icon" class="size-3.5" />
                 <span>{{ item.label }}</span>
               </div>
@@ -122,11 +126,11 @@ const props = defineProps<{
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const source = computed(() => (props.kitchen || {}) as Record<string, any>)
-const kitchenTitle = computed(() =>
-  clean(source.value.display_name || source.value.name) || 'Kitchen'
+const kitchenTitle = computed(
+  () => clean(source.value.display_name || source.value.name) || 'Kitchen'
 )
-const kitchenSubtitle = computed(() =>
-  clean(source.value.tagline) || clean(source.value.short_address)
+const kitchenSubtitle = computed(
+  () => clean(source.value.tagline) || clean(source.value.short_address)
 )
 const coverImage = computed(() => clean(source.value.cover_image))
 const identityImage = computed(() =>
@@ -136,14 +140,17 @@ const identityImage = computed(() =>
       source.value.identity?.image_url
   )
 )
-const address = computed(() =>
-  clean(source.value.formatted_address) || clean(source.value.short_address)
+const address = computed(
+  () =>
+    clean(source.value.formatted_address) || clean(source.value.short_address)
 )
 const phone = computed(() => clean(source.value.phone))
 const website = computed(() => clean(source.value.website))
 const websiteTo = computed(() => {
   if (!website.value) return ''
-  return /^https?:\/\//.test(website.value) ? website.value : `https://${website.value}`
+  return /^https?:\/\//.test(website.value)
+    ? website.value
+    : `https://${website.value}`
 })
 const hasLinkedPlace = computed(() => Boolean(clean(source.value.place_id)))
 const visibilityStatusLabel = computed(() =>
@@ -152,46 +159,47 @@ const visibilityStatusLabel = computed(() =>
 const visibilityStatusColor = computed(() =>
   source.value.visibility === true ? 'success' : 'neutral'
 )
-const profileFacts = computed(() =>
-  [
-    address.value
-      ? {
-          key: 'address',
-          label: 'Address',
-          value: address.value,
-          icon: 'i-lucide-map-pin',
-        }
-      : null,
-    phone.value
-      ? {
-          key: 'phone',
-          label: 'Phone',
-          value: phone.value,
-          icon: 'i-lucide-phone',
-        }
-      : null,
-    website.value
-      ? {
-          key: 'website',
-          label: 'Website',
-          value: website.value.replace(/^https?:\/\//, '').replace(/\/$/, ''),
-          icon: 'i-lucide-globe',
-        }
-      : null,
-    props.kitchenId
-      ? {
-          key: 'id',
-          label: 'Kitchen ID',
-          value: props.kitchenId,
-          icon: 'i-lucide-fingerprint',
-        }
-      : null,
-  ].filter(Boolean) as Array<{
-    key: string
-    label: string
-    value: string
-    icon: string
-  }>
+const profileFacts = computed(
+  () =>
+    [
+      address.value
+        ? {
+            key: 'address',
+            label: 'Address',
+            value: address.value,
+            icon: 'i-lucide-map-pin',
+          }
+        : null,
+      phone.value
+        ? {
+            key: 'phone',
+            label: 'Phone',
+            value: phone.value,
+            icon: 'i-lucide-phone',
+          }
+        : null,
+      website.value
+        ? {
+            key: 'website',
+            label: 'Website',
+            value: website.value.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+            icon: 'i-lucide-globe',
+          }
+        : null,
+      props.kitchenId
+        ? {
+            key: 'id',
+            label: 'Kitchen ID',
+            value: props.kitchenId,
+            icon: 'i-lucide-fingerprint',
+          }
+        : null,
+    ].filter(Boolean) as Array<{
+      key: string
+      label: string
+      value: string
+      icon: string
+    }>
 )
 const setupItems = computed(() => [
   { ready: Boolean(coverImage.value) },
@@ -199,11 +207,11 @@ const setupItems = computed(() => [
   { ready: Boolean(clean(source.value.tagline)) },
   { ready: hasLinkedPlace.value },
 ])
-const completedSetupCount = computed(() =>
-  setupItems.value.filter((item) => item.ready).length
+const completedSetupCount = computed(
+  () => setupItems.value.filter((item) => item.ready).length
 )
-const setupComplete = computed(() =>
-  completedSetupCount.value === setupItems.value.length
+const setupComplete = computed(
+  () => completedSetupCount.value === setupItems.value.length
 )
 const imageInitials = computed(() => {
   const parts = kitchenTitle.value.split(/\s+/).filter(Boolean)

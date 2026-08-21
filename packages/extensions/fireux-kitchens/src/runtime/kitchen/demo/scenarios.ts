@@ -58,15 +58,12 @@ import { buildKitchenDemoScenario } from './scenario/build'
 
 export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   identity: deanosKitchenDemoIdentity,
-  appSupport: deanosKitchenDemoTarget.appSupport,
+  access: deanosKitchenDemoTarget.access,
   kitchen: deanosKitchenDemoTarget.kitchen,
   place: deanosKitchenDemoTarget.place,
   menu: deanosKitchenDemoMenu,
   menuModes: deanosKitchenDemoMenuModes,
-  additionalMenus: [
-    deanosPartyDemoMenu,
-    deanosXmasDemoMenu,
-  ],
+  additionalMenus: [deanosPartyDemoMenu, deanosXmasDemoMenu],
   dishSpecs: deanosKitchenDemoSpecs,
   dishFinance: deanosKitchenDemoDishFinance,
   finance: deanosKitchenDemoFinance,
@@ -86,7 +83,7 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
 
 export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
   identity: pizzaTheActionKitchenDemoIdentity,
-  appSupport: pizzaTheActionKitchenDemoTarget.appSupport,
+  access: pizzaTheActionKitchenDemoTarget.access,
   kitchen: pizzaTheActionKitchenDemoTarget.kitchen,
   place: pizzaTheActionKitchenDemoTarget.place,
   menu: pizzaTheActionKitchenDemoMenu,
@@ -99,15 +96,14 @@ export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
 
 export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
   identity: miseboxRestaurantKitchenDemoIdentity,
-  appSupport: miseboxRestaurantKitchenDemoTarget.appSupport,
+  access: miseboxRestaurantKitchenDemoTarget.access,
   kitchen: miseboxRestaurantKitchenDemoTarget.kitchen,
   place: miseboxRestaurantKitchenDemoTarget.place,
   menu: miseboxRestaurantKitchenDemoMenu,
   kitchenIngredients: miseboxRestaurantKitchenDemoIngredientLinks,
   orders: miseboxRestaurantKitchenDemoOrders,
   stations: miseboxRestaurantKitchenDemoStations,
-  supplierIngredientLinks:
-    miseboxRestaurantKitchenDemoSupplierIngredientLinks,
+  supplierIngredientLinks: miseboxRestaurantKitchenDemoSupplierIngredientLinks,
   miseTasks: miseboxRestaurantKitchenDemoMiseTasks,
 })
 
@@ -174,15 +170,17 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
   },
 ]
 
-const scenarioIds = kitchenDemoScenarios.map(value => value.kitchen.id).sort()
+const scenarioIds = kitchenDemoScenarios.map((value) => value.kitchen.id).sort()
 const descriptorIds = kitchenDemoScenarioDescriptors
-  .map(value => value.kitchenId)
+  .map((value) => value.kitchenId)
   .sort()
 if (
-  scenarioIds.length !== descriptorIds.length
-  || scenarioIds.some((value, index) => value !== descriptorIds[index])
+  scenarioIds.length !== descriptorIds.length ||
+  scenarioIds.some((value, index) => value !== descriptorIds[index])
 ) {
-  throw new Error('Every Kitchen Demo scenario requires one maturity descriptor.')
+  throw new Error(
+    'Every Kitchen Demo scenario requires one maturity descriptor.'
+  )
 }
 
 const miseboxDemoSupplierIds = [
@@ -194,26 +192,27 @@ const sameStringSet = (left: string[], right: string[]) => {
   const normalizedLeft = [...new Set(left)].sort()
   const normalizedRight = [...new Set(right)].sort()
   return (
-    normalizedLeft.length === normalizedRight.length
-    && normalizedLeft.every((value, index) => value === normalizedRight[index])
+    normalizedLeft.length === normalizedRight.length &&
+    normalizedLeft.every((value, index) => value === normalizedRight[index])
   )
 }
 
 if (
-  kitchenDemoScenarios.length !== 3
-  || kitchenDemoScenarios.some(scenario =>
-    !scenario.menus.length
-    || !scenario.dishes.length
-    || !scenario.kitchenIngredients.length
-    || !scenario.supplierIngredientLinks.length
-    || !scenario.orders.length
-    || !scenario.stations.length
-    || !scenario.miseTasks.length
-    || Number(scenario.kitchen.tables.count) <= 0
-    || !sameStringSet(
-      scenario.supplierIngredientLinks.map(link => link.supplier_id),
-      miseboxDemoSupplierIds
-    )
+  kitchenDemoScenarios.length !== 3 ||
+  kitchenDemoScenarios.some(
+    (scenario) =>
+      !scenario.menus.length ||
+      !scenario.dishes.length ||
+      !scenario.kitchenIngredients.length ||
+      !scenario.supplierIngredientLinks.length ||
+      !scenario.orders.length ||
+      !scenario.stations.length ||
+      !scenario.miseTasks.length ||
+      Number(scenario.kitchen.tables.count) <= 0 ||
+      !sameStringSet(
+        scenario.supplierIngredientLinks.map((link) => link.supplier_id),
+        miseboxDemoSupplierIds
+      )
   )
 ) {
   throw new Error(

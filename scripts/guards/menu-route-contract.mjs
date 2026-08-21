@@ -88,6 +88,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ),
     'utf8'
   )
+  const serverConfig = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
+    ),
+    'utf8'
+  )
 
   for (const retiredPath of [
     'models/menu-index.model.ts',
@@ -113,6 +120,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(directoryHttp, /getQuery\(event\)/)
   assert.match(directoryHttp, /readMenuDirectoryPage/)
   assert.doesNotMatch(directoryHttp, /getRuntimeFirestore|\.collection\(/)
+  for (const route of [
+    '/api/menus',
+    '/api/menus/availability',
+    '/api/menus/create',
+    '/api/menus/:menuId',
+    '/api/menus/:menuId/file',
+    '/api/menus/:menuId/delivery-address',
+  ]) {
+    assert.match(serverConfig, new RegExp(`route: ['"]${route}['"]`))
+  }
   assert.match(directoryReader, /ReadMenuDirectoryPageInput/)
   assert.match(directoryReader, /projectMenuDirectoryEntry/)
   assert.match(directoryReader, /readMenuDirectoryContext/)

@@ -3,9 +3,7 @@
     <NuxtLink :to="backTo" class="market-storefront__back">
       <UIcon name="i-lucide-arrow-left" aria-hidden="true" />
       {{
-        copy(preview
-          ? 'market_admin_back'
-          : 'storefront_back_to_marketplace')
+        copy(preview ? 'market_admin_back' : 'storefront_back_to_marketplace')
       }}
     </NuxtLink>
 
@@ -45,7 +43,7 @@
           v-if="store.image_url"
           :src="store.image_url"
           :alt="store.image_alt"
-        >
+        />
         <span v-else aria-hidden="true">
           <UIcon name="i-lucide-mountain-snow" />
           <UIcon name="i-lucide-store" />
@@ -118,14 +116,18 @@
         </NuxtLink>
       </template>
 
-      <form v-else class="market-canonical-order__form" @submit.prevent="sendOrder">
+      <form
+        v-else
+        class="market-canonical-order__form"
+        @submit.prevent="sendOrder"
+      >
         <div>
           <p class="market-eyebrow">{{ selectedOffer.title }}</p>
           <h2>{{ formatMoney(selectedOffer.price) }}</h2>
         </div>
         <label>
           <span>{{ copy('market_quantity') }}</span>
-          <input v-model.number="quantity" type="number" min="1" max="99">
+          <input v-model.number="quantity" type="number" min="1" max="99" />
         </label>
         <label>
           <span>{{ copy('market_fulfilment') }}</span>
@@ -188,21 +190,20 @@
 import { computed, ref } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type {
-  PublicMarketplaceStore,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
-import type {
-  MarketplaceFulfilmentMethod,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
+import type { MarketplaceStoreDirectoryEntry } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { MarketplaceFulfilmentMethod } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace.model'
 
-const props = withDefaults(defineProps<{
-  store: PublicMarketplaceStore
-  preview?: boolean
-  backTo?: string
-}>(), {
-  preview: false,
-  backTo: '/marktplatz',
-})
+const props = withDefaults(
+  defineProps<{
+    store: MarketplaceStoreDirectoryEntry
+    preview?: boolean
+    backTo?: string
+  }>(),
+  {
+    preview: false,
+    backTo: '/marktplatz',
+  }
+)
 const { copy, locale } = useInterlakenCopy()
 const { currentUser: authUser } = useAuth()
 const marketplace = useMarketplaceClient()
@@ -215,14 +216,12 @@ const buyerNote = ref('')
 const requestState = ref<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
 const selectedOffer = computed(() =>
-  props.store.offers?.find(offer => offer.id === selectedOfferId.value)
+  props.store.offers?.find((offer) => offer.id === selectedOfferId.value)
 )
 
 function methodLabel(method: MarketplaceFulfilmentMethod) {
   return copy(
-    method === 'collection'
-      ? 'market_collection'
-      : 'market_local_delivery'
+    method === 'collection' ? 'market_collection' : 'market_local_delivery'
   )
 }
 
@@ -235,9 +234,8 @@ function formatMoney(money: { amount_minor: number; currency_code: string }) {
 
 function selectOffer(offerId: string) {
   selectedOfferId.value = offerId
-  const offer = props.store.offers?.find(item => item.id === offerId)
-  fulfilmentMethod.value =
-    offer?.fulfilment_methods[0] || 'collection'
+  const offer = props.store.offers?.find((item) => item.id === offerId)
+  fulfilmentMethod.value = offer?.fulfilment_methods[0] || 'collection'
   quantity.value = 1
   requestState.value = 'idle'
 }

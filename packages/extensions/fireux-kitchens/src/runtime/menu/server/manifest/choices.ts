@@ -92,9 +92,7 @@ export async function readKitchenMenuChoices(
     return []
   }
 
-  const snap = await db
-    .collection(`apps/${input.appId}/kitchens/${input.kitchenId}/menus`)
-    .get()
+  const snap = await db.collection(`kitchens/${input.kitchenId}/menus`).get()
   const rows = snap.docs
     .map((doc) => ({
       id: doc.id,

@@ -1,20 +1,15 @@
 <template>
-  <section
-    v-if="view"
-    class="kiosk-browse"
-    aria-label="Kiosk browse"
-  >
-    <aside
-      class="kiosk-browse__menu"
-      aria-label="Menu sections"
-    >
+  <section v-if="view" class="kiosk-browse" aria-label="Kiosk browse">
+    <aside class="kiosk-browse__menu" aria-label="Menu sections">
       <div class="kiosk-browse__sections" aria-label="Sections">
         <button
           v-for="section in activeSections"
           :key="section.id"
           type="button"
           class="kiosk-browse__section"
-          :class="{ 'kiosk-browse__section--active': section.id === activeSectionId }"
+          :class="{
+            'kiosk-browse__section--active': section.id === activeSectionId,
+          }"
           @click="activeSectionId = section.id"
         >
           {{ section.label }}
@@ -42,9 +37,7 @@
     </main>
   </section>
 
-  <p v-else class="kiosk-browse__empty">
-    Menu unavailable.
-  </p>
+  <p v-else class="kiosk-browse__empty">Menu unavailable.</p>
 </template>
 
 <script setup lang="ts">
@@ -65,26 +58,41 @@ const emit = defineEmits<{
 
 const activeSectionId = ref('')
 const activeSections = computed<MenuManifestSection[]>(() =>
-  (props.view?.menu.content.sections ?? []).filter((section) => section.items.length)
+  (props.view?.menu.content.sections ?? []).filter(
+    (section) => section.items.length
+  )
 )
-const activeSection = computed(() =>
-  activeSections.value.find((section) => section.id === activeSectionId.value) ??
+const activeSection = computed(
+  () =>
+    activeSections.value.find(
+      (section) => section.id === activeSectionId.value
+    ) ??
     activeSections.value[0] ??
     null
 )
 
-watch(activeSections, (sections: MenuManifestSection[]) => {
-  if (sections.some((section: MenuManifestSection) => section.id === activeSectionId.value)) return
+watch(
+  activeSections,
+  (sections: MenuManifestSection[]) => {
+    if (
+      sections.some(
+        (section: MenuManifestSection) => section.id === activeSectionId.value
+      )
+    )
+      return
 
-  activeSectionId.value = sections[0]?.id || ''
-}, { immediate: true })
+    activeSectionId.value = sections[0]?.id || ''
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
 .kiosk-browse {
   --kiosk-browse-columns: 10.5rem minmax(0, 1fr);
   --kiosk-browse-gap: calc(var(--spacing) * 10);
-  --kiosk-browse-padding: 24svh calc(var(--spacing) * 8) calc(var(--spacing) * 8) 0;
+  --kiosk-browse-padding: 24svh calc(var(--spacing) * 8)
+    calc(var(--spacing) * 8) 0;
   --kiosk-dish-columns: repeat(3, minmax(0, 1fr));
 
   position: relative;
@@ -206,7 +214,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   .kiosk-browse {
     --kiosk-browse-columns: 9.5rem minmax(0, 1fr);
     --kiosk-browse-gap: calc(var(--spacing) * 6);
-    --kiosk-browse-padding: 22svh calc(var(--spacing) * 5) calc(var(--spacing) * 5) 0;
+    --kiosk-browse-padding: 22svh calc(var(--spacing) * 5)
+      calc(var(--spacing) * 5) 0;
     --kiosk-dish-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
   }
 
@@ -219,7 +228,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   .kiosk-browse {
     --kiosk-browse-columns: 8.5rem minmax(0, 1fr);
     --kiosk-browse-gap: calc(var(--spacing) * 4);
-    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4) calc(var(--spacing) * 4) 0;
+    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4)
+      calc(var(--spacing) * 4) 0;
     --kiosk-dish-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -231,7 +241,8 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
 @media (max-width: 640px) {
   .kiosk-browse {
     --kiosk-browse-columns: 1fr;
-    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4) calc(var(--spacing) * 4);
+    --kiosk-browse-padding: 18svh calc(var(--spacing) * 4)
+      calc(var(--spacing) * 4);
     --kiosk-dish-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
 
     grid-template-rows: auto minmax(0, 1fr);
@@ -279,7 +290,6 @@ watch(activeSections, (sections: MenuManifestSection[]) => {
   .kiosk-browse__content-header h2 {
     font-size: clamp(1.75rem, 6vw, var(--text-4xl));
   }
-
 }
 
 @media (max-width: 560px) {

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: require an explicit entity id on fixed root and App-overlay writes.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: retire generic App access-array updates.
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import {
   SupplierStorage,
   type Supplier,
@@ -14,8 +14,6 @@ type SupplierMutationOptions = { id: string }
  * - App access changes require a trusted lifecycle and are not exposed here.
  */
 export function useSupplierUpdate() {
-  const { updateDocument } = useFirestoreUpdate()
-
   const pruneUndefined = <T extends Record<string, any>>(
     payload: Partial<T>
   ) => {
@@ -55,11 +53,22 @@ export function useSupplierUpdate() {
   }) => {
     const resolvedId = resolveId(input.supplierId)
 
-    await updateDocument<Supplier>(
-      SupplierStorage.collection,
-      resolvedId,
-      pruneUndefined(input.changes)
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const result = await $fetch<{ ok: true; supplier_id: string }>(
+      '/api/workspace/supplier/update',
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body: {
+          supplier_id: resolvedId,
+          patch: pruneUndefined(input.changes),
+        },
+      }
     )
+    if (result.ok !== true || result.supplier_id !== resolvedId) {
+      throw new Error('Supplier update response was invalid.')
+    }
   }
 
   const updateHeadline = async (

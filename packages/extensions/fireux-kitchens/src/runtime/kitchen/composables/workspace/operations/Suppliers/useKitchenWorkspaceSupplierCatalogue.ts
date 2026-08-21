@@ -3,7 +3,7 @@ import { useKitchenWorkspaceSupplier } from './useKitchenWorkspaceSupplier'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeArray = <T>(value: unknown): T[] =>
-  Array.isArray(value) ? value as T[] : []
+  Array.isArray(value) ? (value as T[]) : []
 
 export function useKitchenWorkspaceSupplierCatalogue() {
   const supplierState = useKitchenWorkspaceSupplier()
@@ -18,7 +18,7 @@ export function useKitchenWorkspaceSupplierCatalogue() {
   const catalogues = computed(() =>
     hasIntegratedCatalogue.value
       ? supplierScenario.value
-        ? supplierScenario.value.catalogues.map(catalogue => ({
+        ? supplierScenario.value.catalogues.map((catalogue) => ({
             ...catalogue,
             supplier_items: supplierScenario.value?.items ?? [],
           }))
@@ -26,13 +26,16 @@ export function useKitchenWorkspaceSupplierCatalogue() {
       : []
   )
   const pending = computed(() => false)
-  const supplierName = computed(() =>
-    normalizeString(supplier.value?.supplier_organization_name) ||
-    normalizeString(supplier.value?.name) ||
-    supplierId.value
+  const supplierName = computed(
+    () =>
+      normalizeString(supplier.value?.supplier_organization_name) ||
+      normalizeString(supplier.value?.name) ||
+      supplierId.value
   )
   const title = computed(() =>
-    supplierName.value ? `${supplierName.value} Catalogue` : 'Supplier Catalogue'
+    supplierName.value
+      ? `${supplierName.value} Catalogue`
+      : 'Supplier Catalogue'
   )
   const description = computed(() =>
     hasIntegratedCatalogue.value

@@ -155,7 +155,8 @@ export function deriveKitchenOrderBoardStage(order: {
     status === 'completed' ||
     status === 'cancelled' ||
     status === 'changes_requested'
-  ) return 'recent'
+  )
+    return 'recent'
   if (status === 'pending_payment') return 'payment'
   if (status === 'pending_acceptance') return 'incoming'
   if (status === 'ready') return 'pass'
@@ -163,7 +164,9 @@ export function deriveKitchenOrderBoardStage(order: {
   return 'unmapped'
 }
 
-export function isKitchenOrderStatus(value: unknown): value is KitchenOrderStatus {
+export function isKitchenOrderStatus(
+  value: unknown
+): value is KitchenOrderStatus {
   return KitchenOrderStatuses.includes(value as KitchenOrderStatus)
 }
 
@@ -217,4 +220,3 @@ export function kitchenOrderTransitionRule(
 ): KitchenOrderTransitionRule {
   return KitchenOrderTransitionRules[transition]
 }
-

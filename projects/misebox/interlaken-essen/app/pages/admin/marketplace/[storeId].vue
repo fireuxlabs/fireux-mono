@@ -18,16 +18,14 @@
 import { onMounted, ref } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import type {
-  PublicMarketplaceStore,
-} from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
+import type { MarketplaceStoreDirectoryEntry } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({ layout: 'marketplace' })
 
 const { copy } = useInterlakenCopy()
 const marketplace = useMarketplaceClient()
 const storeId = useRouteParam('storeId')
-const store = ref<PublicMarketplaceStore | null>(null)
+const store = ref<MarketplaceStoreDirectoryEntry | null>(null)
 const state = ref<'loading' | 'idle' | 'error'>('loading')
 const message = ref('')
 

@@ -26,11 +26,15 @@ export function useKitchenPrepItemUpdate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
-  const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) || resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      trim(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const updatePrepItem = async (
@@ -55,7 +59,9 @@ export function useKitchenPrepItemUpdate(
       next.names = normalizeKitchenPrepItemTranslatedText(next.names)
     }
     if ('descriptions' in next) {
-      next.descriptions = normalizeKitchenPrepItemTranslatedText(next.descriptions)
+      next.descriptions = normalizeKitchenPrepItemTranslatedText(
+        next.descriptions
+      )
     }
     if ('station' in next) next.station = trim(next.station)
     if ('inputs' in next) {
@@ -68,10 +74,15 @@ export function useKitchenPrepItemUpdate(
         unit: normalizeKitchenPrepItemUnit(next.yield?.unit),
       }
     }
-    if ('method' in next) next.method = (next.method ?? []).map(trim).filter(Boolean)
+    if ('method' in next)
+      next.method = (next.method ?? []).map(trim).filter(Boolean)
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/${KitchenPrepItemStorage.collection}`
-    await updateDocument<KitchenPrepItem>(collectionPath, resolvedPrepItemId, next)
+    await updateDocument<KitchenPrepItem>(
+      collectionPath,
+      resolvedPrepItemId,
+      next
+    )
   }
 
   return { updatePrepItem }

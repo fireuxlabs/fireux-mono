@@ -5,9 +5,7 @@
       <p class="text-xs text-dimmed">{{ description }}</p>
     </div>
 
-    <div v-if="pending" class="text-sm text-dimmed">
-      Loading operators...
-    </div>
+    <div v-if="pending" class="text-sm text-dimmed">Loading operators...</div>
 
     <div v-else-if="operatorCards.length" class="grid gap-2 sm:grid-cols-2">
       <UserCardsPill
@@ -27,7 +25,6 @@
       title="No operators listed"
       description="This kitchen can be selected, but no operator users are listed on the selected kitchen yet."
     />
-
   </div>
 </template>
 

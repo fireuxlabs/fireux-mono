@@ -24,12 +24,9 @@
     //   raw reads require App membership or the fixed bootstrap developer.
     // apps/{appId}/join-requests/{uid}: owner-visible/admin-listable request.
     // apps/{appId}/users/{uid}: private membership and capability authority.
-    // apps/{appId}/customers/{uid}: app-private ordering identity and PII.
-    // drivers/{uid}: public Driver presentation/capability.
-    // agents/{uid}, chefs/{uid}, professionals/{uid}: owner-readable raw
-    //   profiles; guests consume allowlisted domain API projections.
-    // apps/{appId}/drivers/{uid}: private contact, preferences, and
-    //   server-owned kitchen grants.
+    // users/{uid}/profiles/{kind}: User-owned role profile.
+    // users/{uid}/profiles/{kind}/app-state/{appId}: App-specific profile
+    //   capability and server-owned grants where the role needs them.
     // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
     //   client reads are restricted to Kitchen operators. Granted Drivers use
     //   authenticated server-projected dispatch beacons instead.

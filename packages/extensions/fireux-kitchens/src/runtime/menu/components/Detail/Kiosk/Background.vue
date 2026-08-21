@@ -10,7 +10,7 @@
       class="kiosk-background__logo"
       :src="logoImageUrl"
       :alt="kitchenName || ''"
-    >
+    />
 
     <div class="kiosk-background__content">
       <slot />
@@ -39,16 +39,18 @@ const backgroundStyle = computed(() => {
         '--kiosk-background-image': `url('${url}')`,
         '--kiosk-primary': props.primaryColor || '#ff7912',
         '--kiosk-secondary': props.secondaryColor || '#050505',
-        '--kiosk-background-overlay': props.tone === 'light'
-          ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
-          : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
+        '--kiosk-background-overlay':
+          props.tone === 'light'
+            ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
+            : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
       }
     : {
         '--kiosk-primary': props.primaryColor || '#ff7912',
         '--kiosk-secondary': props.secondaryColor || '#050505',
-        '--kiosk-background-overlay': props.tone === 'light'
-          ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
-          : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
+        '--kiosk-background-overlay':
+          props.tone === 'light'
+            ? 'linear-gradient(rgb(255 255 255 / 2%), rgb(255 255 255 / 8%))'
+            : 'linear-gradient(rgb(0 0 0 / 24%), rgb(0 0 0 / 38%))',
       }
 })
 </script>
@@ -60,7 +62,10 @@ const backgroundStyle = computed(() => {
   --menu-bg: var(--kiosk-secondary, #050505);
   --menu-muted: rgb(255 255 255 / 72%);
   --menu-primary: var(--menu-theme-primary, var(--kiosk-primary, #ff7912));
-  --menu-primary-source: var(--menu-theme-primary, var(--kiosk-primary, #ff7912));
+  --menu-primary-source: var(
+    --menu-theme-primary,
+    var(--kiosk-primary, #ff7912)
+  );
   --menu-text: white;
   --menu-title: white;
 
@@ -72,14 +77,13 @@ const backgroundStyle = computed(() => {
   overscroll-behavior: none;
   background-image:
     var(--kiosk-background-overlay),
-    var(
-      --kiosk-background-image,
-      linear-gradient(145deg, #111, #2a1204)
-    );
+    var(--kiosk-background-image, linear-gradient(145deg, #111, #2a1204));
   background-color: var(--kiosk-secondary, #050505);
   background-position: center, center;
   background-repeat: no-repeat;
-  background-size: 100% 100%, auto 100%;
+  background-size:
+    100% 100%,
+    auto 100%;
   color: white;
 }
 

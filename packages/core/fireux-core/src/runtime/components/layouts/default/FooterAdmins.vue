@@ -48,7 +48,7 @@ onMounted(async () => {
 
   try {
     const response = await $fetch<{ admins: PublicAppAdmin[] }>(
-      '/api/public/app/admins'
+      '/api/app/admins'
     )
     admins.value = response.admins || []
   } catch (error) {
@@ -67,7 +67,9 @@ const adminCards = computed(() => {
 
   entries.forEach((record: PublicAppAdmin, index: number) => {
     const handle = record.handle ? `@${record.handle}` : ''
-    const to = record.handle ? `/users/${encodeURIComponent(record.handle)}` : ''
+    const to = record.handle
+      ? `/users/${encodeURIComponent(record.handle)}`
+      : ''
 
     result.push({
       key: record.id || `${index}`,
@@ -97,7 +99,6 @@ const adminCards = computed(() => {
 })
 
 const isLoading = computed(() => Boolean(pending.value))
-
 </script>
 
 <style scoped>

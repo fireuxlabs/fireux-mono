@@ -15,10 +15,7 @@ import {
 } from '../core/useKitchenWorkspaceDemoData'
 
 function createKitchenWorkspaceTeam() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenWorkspace()
+  const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
@@ -26,11 +23,12 @@ function createKitchenWorkspaceTeam() {
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
-  const demoTeamMembers = computed<KitchenTeamMember[]>(() =>
-    findKitchenWorkspaceDemoScenario(
-      demoData.data.value,
-      kitchenId.value
-    )?.team.map(member => ({ ...member })) ?? []
+  const demoTeamMembers = computed<KitchenTeamMember[]>(
+    () =>
+      findKitchenWorkspaceDemoScenario(
+        demoData.data.value,
+        kitchenId.value
+      )?.team.map((member) => ({ ...member })) ?? []
   )
   const access = useWorkspaceTeam({
     target: selectedKitchen,
@@ -80,16 +78,14 @@ function createKitchenWorkspaceTeam() {
     collectionPath,
   })
   const workspaceTeamMembers = computed(() => page.collection.value.items)
-  const joinRequests = computed<KitchenTeamJoinRequest[]>(() =>
-    joinRequestItems.value
+  const joinRequests = computed<KitchenTeamJoinRequest[]>(
+    () => joinRequestItems.value
   )
   const pendingJoinRequests = computed(() =>
     joinRequests.value.filter((request) => request.status === 'pending')
   )
   const pending = computed(() => page.collection.value.pending)
-  const joinRequestsPending = computed(() =>
-    joinRequestItemsPending.value
-  )
+  const joinRequestsPending = computed(() => joinRequestItemsPending.value)
   const debug = computed(() => ({
     access: access.debug.value,
     people: {
@@ -129,7 +125,9 @@ function createKitchenWorkspaceTeam() {
   }
 }
 
-export type KitchenWorkspaceTeamWorkspace = ReturnType<typeof createKitchenWorkspaceTeam>
+export type KitchenWorkspaceTeamWorkspace = ReturnType<
+  typeof createKitchenWorkspaceTeam
+>
 
 const kitchenWorkspaceTeamKey: InjectionKey<KitchenWorkspaceTeamWorkspace> =
   Symbol('fireux-kitchen-workspace-team')

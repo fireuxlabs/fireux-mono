@@ -5,14 +5,9 @@ import type {
 } from '../demo/production'
 import type { KitchenDemoScenario } from '../demo/core/types'
 
-export const KITCHEN_DEMO_MENU_MODES = [
-  'on',
-  'order_led',
-  'off',
-] as const
+export const KITCHEN_DEMO_MENU_MODES = ['on', 'order_led', 'off'] as const
 
-export type KitchenDemoMenuMode =
-  (typeof KITCHEN_DEMO_MENU_MODES)[number]
+export type KitchenDemoMenuMode = (typeof KITCHEN_DEMO_MENU_MODES)[number]
 
 type KitchenDemoMenuCascadeScenario = Pick<
   KitchenDemoScenario,
@@ -87,15 +82,14 @@ const projectEntity = (
   menuOrder: ReadonlyMap<string, number>
 ): KitchenDemoMenuCascadeEntity => {
   const sortMenuIds = (menuIds: Iterable<string>) =>
-    [...menuIds].sort((left, right) =>
-      (menuOrder.get(left) ?? Number.MAX_SAFE_INTEGER)
-      - (menuOrder.get(right) ?? Number.MAX_SAFE_INTEGER)
-      || left.localeCompare(right)
+    [...menuIds].sort(
+      (left, right) =>
+        (menuOrder.get(left) ?? Number.MAX_SAFE_INTEGER) -
+          (menuOrder.get(right) ?? Number.MAX_SAFE_INTEGER) ||
+        left.localeCompare(right)
     )
   const menuIds = sortMenuIds(usage.get(id) ?? [])
-  const activeMenuIds = menuIds.filter(menuId =>
-    inServiceMenuIds.has(menuId)
-  )
+  const activeMenuIds = menuIds.filter((menuId) => inServiceMenuIds.has(menuId))
 
   return {
     id,
@@ -105,9 +99,7 @@ const projectEntity = (
   }
 }
 
-const requirementSourceKey = (
-  requirement: KitchenDemoMiseRequirement
-) =>
+const requirementSourceKey = (requirement: KitchenDemoMiseRequirement) =>
   requirement.source.kind === 'prep_item'
     ? `prep_item:${requirement.source.prepItemId}`
     : `recipe:${requirement.source.recipeId}`
@@ -119,7 +111,7 @@ const requirementSourceKey = (
 export function projectKitchenDemoMenuCascade(
   input: KitchenDemoMenuCascadeInput
 ): KitchenDemoMenuCascade {
-  const menuIds = input.scenario.menus.map(menu =>
+  const menuIds = input.scenario.menus.map((menu) =>
     cleanId(menu.kitchenMenu.id)
   )
   const menuIdSet = new Set(menuIds)
@@ -136,28 +128,24 @@ export function projectKitchenDemoMenuCascade(
     }
   }
 
-  const menus = input.scenario.menus.map(
-    (menu): KitchenDemoMenuCascadeMenu => {
-      const id = cleanId(menu.kitchenMenu.id)
-      const mode = input.modeByMenuId[id]
-      if (!menuModeValues.has(mode)) {
-        throw new Error(
-          `Kitchen Demo Menu availability is unresolved: ${id}`
-        )
-      }
-      const triggered = triggeredMenuIds.has(id)
-
-      return {
-        id,
-        name: cleanId(menu.kitchenMenu.name) || id,
-        mode,
-        triggered,
-        inService: mode === 'on' || (mode === 'order_led' && triggered),
-      }
+  const menus = input.scenario.menus.map((menu): KitchenDemoMenuCascadeMenu => {
+    const id = cleanId(menu.kitchenMenu.id)
+    const mode = input.modeByMenuId[id]
+    if (!menuModeValues.has(mode)) {
+      throw new Error(`Kitchen Demo Menu availability is unresolved: ${id}`)
     }
-  )
+    const triggered = triggeredMenuIds.has(id)
+
+    return {
+      id,
+      name: cleanId(menu.kitchenMenu.name) || id,
+      mode,
+      triggered,
+      inService: mode === 'on' || (mode === 'order_led' && triggered),
+    }
+  })
   const inServiceMenuIds = new Set(
-    menus.filter(menu => menu.inService).map(menu => menu.id)
+    menus.filter((menu) => menu.inService).map((menu) => menu.id)
   )
 
   const dishUsage = new Map<string, Set<string>>()
@@ -165,13 +153,13 @@ export function projectKitchenDemoMenuCascade(
   const recipeUsage = new Map<string, Set<string>>()
   const ingredientUsage = new Map<string, Set<string>>()
   const specByDishId = new Map(
-    input.scenario.dishSpecs.map(spec => [cleanId(spec.dishId), spec])
+    input.scenario.dishSpecs.map((spec) => [cleanId(spec.dishId), spec])
   )
   const prepItemById = new Map(
-    input.scenario.prepItems.map(prepItem => [cleanId(prepItem.id), prepItem])
+    input.scenario.prepItems.map((prepItem) => [cleanId(prepItem.id), prepItem])
   )
   const recipeById = new Map(
-    input.scenario.recipes.map(recipe => [cleanId(recipe.id), recipe])
+    input.scenario.recipes.map((recipe) => [cleanId(recipe.id), recipe])
   )
 
   const addComponentUse = (
@@ -203,7 +191,7 @@ export function projectKitchenDemoMenuCascade(
     const menuId = cleanId(menu.kitchenMenu.id)
     const activeItems = menu.menuSections
       .filter(({ section }) => section.status === 'active')
-      .flatMap(({ items }) => items.filter(item => item.status === 'active'))
+      .flatMap(({ items }) => items.filter((item) => item.status === 'active'))
 
     for (const item of activeItems) {
       const dishId = cleanId(item.dish_id)
@@ -214,8 +202,8 @@ export function projectKitchenDemoMenuCascade(
 
       for (const delta of input.scenario.menuItemComponentDeltas) {
         if (
-          cleanId(delta.menuId) !== menuId
-          || cleanId(delta.menuItemId) !== cleanId(item.id)
+          cleanId(delta.menuId) !== menuId ||
+          cleanId(delta.menuItemId) !== cleanId(item.id)
         ) {
           continue
         }
@@ -230,41 +218,43 @@ export function projectKitchenDemoMenuCascade(
   const project = (
     ids: readonly string[],
     usage: ReadonlyMap<string, Set<string>>
-  ) => uniqueIds(ids).map(id =>
-    projectEntity(id, usage, inServiceMenuIds, menuOrder)
-  )
+  ) =>
+    uniqueIds(ids).map((id) =>
+      projectEntity(id, usage, inServiceMenuIds, menuOrder)
+    )
 
   const dishes = project(
-    input.scenario.menus.flatMap(menu =>
-      menu.dishes.map(dish => cleanId(dish.id))
+    input.scenario.menus.flatMap((menu) =>
+      menu.dishes.map((dish) => cleanId(dish.id))
     ),
     dishUsage
   )
   const prepItems = project(
-    input.scenario.prepItems.map(prepItem => cleanId(prepItem.id)),
+    input.scenario.prepItems.map((prepItem) => cleanId(prepItem.id)),
     prepItemUsage
   )
   const recipes = project(
-    input.scenario.recipes.map(recipe => cleanId(recipe.id)),
+    input.scenario.recipes.map((recipe) => cleanId(recipe.id)),
     recipeUsage
   )
   const ingredients = project(
-    input.scenario.kitchenIngredients.map(ingredient =>
+    input.scenario.kitchenIngredients.map((ingredient) =>
       cleanId(ingredient.ingredient_id)
     ),
     ingredientUsage
   )
   const prepItemByCascadeId = new Map(
-    prepItems.map(prepItem => [prepItem.id, prepItem])
+    prepItems.map((prepItem) => [prepItem.id, prepItem])
   )
   const recipeByCascadeId = new Map(
-    recipes.map(recipe => [recipe.id, recipe])
+    recipes.map((recipe) => [recipe.id, recipe])
   )
   const miseCandidates = input.scenario.miseRequirements.map(
     (requirement): KitchenDemoMenuCascadeMiseCandidate => {
-      const entity = requirement.source.kind === 'prep_item'
-        ? prepItemByCascadeId.get(cleanId(requirement.source.prepItemId))
-        : recipeByCascadeId.get(cleanId(requirement.source.recipeId))
+      const entity =
+        requirement.source.kind === 'prep_item'
+          ? prepItemByCascadeId.get(cleanId(requirement.source.prepItemId))
+          : recipeByCascadeId.get(cleanId(requirement.source.recipeId))
       return {
         requirement,
         sourceKey: requirementSourceKey(requirement),
@@ -301,7 +291,7 @@ export function projectKitchenDemoMiseTaskMenuIds(
     id: unknown
   ) => {
     const entityId = cleanId(id)
-    const entity = entities.find(candidate => candidate.id === entityId)
+    const entity = entities.find((candidate) => candidate.id === entityId)
     for (const menuId of entity?.menuIds ?? []) menuIds.add(menuId)
     return Boolean(entity?.menuIds.length)
   }
@@ -309,13 +299,11 @@ export function projectKitchenDemoMiseTaskMenuIds(
   let hasProductionSource = false
   for (const prepItemId of task.prep_item_ids) {
     hasProductionSource =
-      addEntityMenus(cascade.prepItems, prepItemId)
-      || hasProductionSource
+      addEntityMenus(cascade.prepItems, prepItemId) || hasProductionSource
   }
   if (task.recipe_id) {
     hasProductionSource =
-      addEntityMenus(cascade.recipes, task.recipe_id)
-      || hasProductionSource
+      addEntityMenus(cascade.recipes, task.recipe_id) || hasProductionSource
   }
   if (!hasProductionSource) {
     for (const ingredientId of task.ingredient_ids) {
@@ -327,9 +315,10 @@ export function projectKitchenDemoMiseTaskMenuIds(
     menuIds.add(cleanId(task.menu_id))
   }
 
-  return [...menuIds].sort((left, right) =>
-    (menuOrder.get(left) ?? Number.MAX_SAFE_INTEGER)
-    - (menuOrder.get(right) ?? Number.MAX_SAFE_INTEGER)
-    || left.localeCompare(right)
+  return [...menuIds].sort(
+    (left, right) =>
+      (menuOrder.get(left) ?? Number.MAX_SAFE_INTEGER) -
+        (menuOrder.get(right) ?? Number.MAX_SAFE_INTEGER) ||
+      left.localeCompare(right)
   )
 }

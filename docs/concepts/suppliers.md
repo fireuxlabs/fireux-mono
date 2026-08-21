@@ -1,7 +1,7 @@
 # Suppliers
 
-Updated: 2026-08-19
-Ref: d232cc731
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -13,7 +13,7 @@ server handlers, Firestore Rules, and executable guards remain authority.
 ## Product boundary
 
 - Bringli is the Supplier product and canonical supply-network host. Its App,
-  Firebase binding, membership, public Supplier routes, Supplier Workspace and
+  Firebase binding, membership, Supplier directory routes, Supplier Workspace and
   trusted onboarding form one authority.
 - `fireux-suppliers` is the reusable domain package. Owner mode exposes that
   product authority; consumer mode exposes only shared Supplier presentation
@@ -26,12 +26,13 @@ server handlers, Firestore Rules, and executable guards remain authority.
   Bringli while bookmarks and DNS are migrated.
 - `Supplier` is the canonical Workspace Entity. The root owns identity and its
   Supplier-scoped Ingredient, Item, and Catalogue records.
-- `apps/{appId}/suppliers/{supplierId}` is access-only App support. It never
-  owns Supplier identity, catalogue data, marketplace copy, or fulfilment.
+- `suppliers/{supplierId}` owns Supplier identity, `team/{uid}`, Team requests,
+  Catalogue, Ingredient, and Item operations. No App-nested Supplier access
+  record participates in authority.
 - Supplier creation and attachment in Bringli use the authenticated fixed-runtime
   onboarding endpoint. New Supplier document ids are normalized organization
-  slugs, and that id remains the public route identity.
-- Supplier operators work through Bringli `/workspace/supplier`; the public directory
+  slugs, and that id remains the directory route identity.
+- Supplier operators work through Bringli `/workspace/supplier`; the directory
   and detail routes describe published Supplier identity without granting
   mutation authority.
 
@@ -51,10 +52,12 @@ authority.
 - A Supplier may be listed in more than one marketplace without acquiring a
   second identity or Workspace.
 
-The unshipped `MarketplaceStore` and `MarketplaceOffer` prototype is not a
-compatibility contract. Do not extend it or preserve an adapter for it.
-Replace it outright with the Supplier listing projection, verify the new
-paths and data, then remove the prototype code and records.
+Marketplace Store is a separate root Workspace Entity. It owns Store Team,
+offers, customer baskets, and marketplace Orders beneath
+`marketplace-stores/{storeId}`. A Store may reference Suppliers and Supplier
+Items for publication without becoming their authority. The App-nested Store
+prototype is migration input only; do not preserve it through a compatibility
+adapter.
 
 ## Current source
 
@@ -71,7 +74,7 @@ paths and data, then remove the prototype code and records.
 - Product host: `projects/bringli/bringli-app/nuxt.config.ts`
 - Entity and Workspace guards:
   `scripts/guards/entity-matrix.mjs`,
-  `scripts/guards/root-app-support-authority.mjs`, and
+  `scripts/guards/workspace-entity-authority.mjs`, and
   `scripts/guards/workspace-indexes.mjs`
 
 ## Verification
@@ -83,7 +86,7 @@ and adversarial checks.
 
 ## Living maintenance
 
-Update this map when Supplier identity, App-support authority, Workspace
-operations, public projection, or marketplace publication ownership changes.
+Update this map when Supplier identity, Team authority, Workspace operations,
+directory projection, or marketplace publication ownership changes.
 Temporary migrations, individual supplier data, and tenant launch state do not
 belong here.

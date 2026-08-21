@@ -8,4 +8,3 @@ export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
   ...deanosKitchenDemoProductionMiseTasks,
   ...deanosKitchenDemoServiceMiseTasks,
 ]
-

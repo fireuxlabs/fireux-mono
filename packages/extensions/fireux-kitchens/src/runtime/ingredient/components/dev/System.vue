@@ -31,14 +31,14 @@
         </div>
       </template>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         title="Ingredients (JSON)"
         context="dev ingredients · filtered collection"
         :objects="filteredCollection"
-  :derived="{}"
+        :derived="{}"
         :default-open="false"
         :hide-when-empty="false"
       />
@@ -53,15 +53,15 @@ import { useIngredientCollection } from '../../composables/firestore/fetch/useIn
 import {
   IngredientStorage,
   IngredientDefaults,
+  type Ingredient,
 } from '../../models/ingredient.model.ts'
-import type { PublicIngredient } from '../../models/ingredient-public.model.ts'
 
 defineOptions({ name: 'DevIngredientSystem' })
 
 const ingredientModelRuntime = IngredientDefaults
 
 const { ingredients } = useIngredientCollection()
-const ingredientsCollection = computed<PublicIngredient[]>(
+const ingredientsCollection = computed<Ingredient[]>(
   () => ingredients.value ?? []
 )
 

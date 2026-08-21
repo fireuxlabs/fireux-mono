@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="options.length"
-    class="menu-item__choices"
-    :aria-label="label"
-  >
+  <div v-if="options.length" class="menu-item__choices" :aria-label="label">
     <template v-if="interactive">
       <button
         v-for="option in options"

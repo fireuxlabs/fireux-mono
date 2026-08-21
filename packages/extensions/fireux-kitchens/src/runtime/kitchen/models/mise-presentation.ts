@@ -70,19 +70,19 @@ const positiveInteger = (value: unknown) => {
 
 const relationCount = (value: unknown) =>
   (Array.isArray(value) ? value : [])
-    .map(item => cleanKitchenMiseText(item))
+    .map((item) => cleanKitchenMiseText(item))
     .filter(Boolean).length
 
 const projectChecklist = (
   task: KitchenMiseTask
 ): KitchenMiseChecklistSummary[] =>
   task.checklist
-    .map(item => ({
+    .map((item) => ({
       done: item.done === true,
       id: cleanKitchenMiseText(item.id),
       label: cleanKitchenMiseText(item.label),
     }))
-    .filter(item => item.id && item.label)
+    .filter((item) => item.id && item.label)
 
 export const kitchenMisePriorityColor = (priority: KitchenMisePriority) => {
   if (priority === 'urgent') return 'error' as const
@@ -99,13 +99,13 @@ export const projectKitchenMiseTask = (
 
   const stationId = cleanKitchenMiseText(task.station)
   const station =
-    cleanKitchenMiseText(options.stationNames?.[stationId])
-    || kitchenMiseTitleCase(stationId)
+    cleanKitchenMiseText(options.stationNames?.[stationId]) ||
+    kitchenMiseTitleCase(stationId)
   const checklist = projectChecklist(task)
 
   return {
     checklist,
-    checklistDoneCount: checklist.filter(item => item.done).length,
+    checklistDoneCount: checklist.filter((item) => item.done).length,
     description: cleanKitchenMiseText(task.description),
     estimatedMinutes: positiveInteger(task.estimated_minutes),
     id,
@@ -145,7 +145,7 @@ export const groupKitchenMiseTaskSummariesByWorkflow = (
 
   return options.flatMap((option) => {
     const stageTasks = tasks
-      .filter(task =>
+      .filter((task) =>
         option.value === 'unsorted'
           ? !task.workflowStage
           : task.workflowStage === option.value
@@ -154,18 +154,20 @@ export const groupKitchenMiseTaskSummariesByWorkflow = (
         const priorityDelta =
           priorityRank[left.priority] - priorityRank[right.priority]
         return (
-          priorityDelta
-          || left.title.localeCompare(right.title)
-          || left.id.localeCompare(right.id)
+          priorityDelta ||
+          left.title.localeCompare(right.title) ||
+          left.id.localeCompare(right.id)
         )
       })
 
     return stageTasks.length
-      ? [{
-          ...option,
-          value: option.value,
-          tasks: stageTasks,
-        }]
+      ? [
+          {
+            ...option,
+            value: option.value,
+            tasks: stageTasks,
+          },
+        ]
       : []
   })
 }

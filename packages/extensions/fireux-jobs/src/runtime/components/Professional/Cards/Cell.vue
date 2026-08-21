@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDirectoryCard
+  <UserProfileDirectoryCard
     variant="cell"
     kind-label="Professional"
     icon="i-lucide-briefcase-business"

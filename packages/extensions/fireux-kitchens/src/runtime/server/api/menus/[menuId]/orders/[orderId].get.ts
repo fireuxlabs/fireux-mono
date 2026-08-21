@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
   const snap = await getRuntimeFirestore()
-    .collection(`apps/${context.appId}/kitchens/${context.kitchenId}/orders`)
+    .collection(`kitchens/${context.kitchenId}/orders`)
     .doc(orderId)
     .get()
   if (!snap.exists) {

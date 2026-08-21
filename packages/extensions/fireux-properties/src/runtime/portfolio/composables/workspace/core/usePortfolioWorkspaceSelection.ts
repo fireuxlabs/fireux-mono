@@ -10,7 +10,9 @@ export function usePortfolioWorkspaceSelection() {
   const { selectedId, selectTarget, clearSelection } =
     useWorkspaceSelection('portfolio')
 
-  const setPortfolioWorkspaceSelection = (selectionPatch: PortfolioWorkspaceSelectionInput = {}) => {
+  const setPortfolioWorkspaceSelection = (
+    selectionPatch: PortfolioWorkspaceSelectionInput = {}
+  ) => {
     const hasNextId =
       selectionPatch.selectedId !== undefined ||
       selectionPatch.portfolioId !== undefined

@@ -29,8 +29,8 @@
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { findMarketSection } from '../../content/market-sections'
 import type {
-  PublicMarketplaceStore,
-  PublicMarketplaceStoreListResponse,
+  MarketplaceStoreDirectoryEntry,
+  MarketplaceStoreDirectoryPage,
 } from 'fireux-marketplace/runtime/marketplace-store/models/marketplace-api.model'
 
 definePageMeta({
@@ -50,12 +50,12 @@ if (!section) {
 }
 
 const titleId = `section-${section.id}`
-const { data } = await useFetch<PublicMarketplaceStoreListResponse>(
-  '/api/public/marketplace/stores',
+const { data } = await useFetch<MarketplaceStoreDirectoryPage>(
+  '/api/marketplace-stores',
   { default: () => ({ items: [], truncated: false }) }
 )
 const sectionStores = computed(() =>
-  (data.value?.items || []).filter((store: PublicMarketplaceStore) =>
+  (data.value?.items || []).filter((store: MarketplaceStoreDirectoryEntry) =>
     store.section_ids.includes(section.id)
   )
 )

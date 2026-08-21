@@ -7,7 +7,7 @@ import type {
 } from '../../../models/user-handle'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
-import { publicUserIdentityAsyncDataKey } from '../../usePublicUserIdentity'
+import { userIdentitySummaryAsyncDataKey } from '../../useUserIdentitySummary'
 
 function responseMessage(payload: unknown, fallback: string) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -31,7 +31,8 @@ export function useUserHandleUpdate() {
     if (!normalizedUid) throw new Error('Missing uid')
 
     const validation = validateUserHandleForPublicRoute(desiredHandle)
-    if (!validation.isValid) throw new Error(validation.message || 'Invalid handle')
+    if (!validation.isValid)
+      throw new Error(validation.message || 'Invalid handle')
 
     const user = await useRequireUser()
     if (user.uid !== normalizedUid) {
@@ -58,7 +59,7 @@ export function useUserHandleUpdate() {
       )
     }
 
-    await refreshNuxtData(publicUserIdentityAsyncDataKey(normalizedUid))
+    await refreshNuxtData(userIdentitySummaryAsyncDataKey(normalizedUid))
 
     return payload as UserHandleResult
   }

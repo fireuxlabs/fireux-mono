@@ -3,7 +3,9 @@
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-base font-semibold text-highlighted">Creation queue</h2>
+          <h2 class="text-base font-semibold text-highlighted">
+            Creation queue
+          </h2>
           <p class="text-sm text-dimmed">
             Uploaded menu sources waiting for AI processing and review.
           </p>
@@ -119,12 +121,13 @@ const processLabel = (source: {
 }) => {
   // Creation queue language: uploaded means "needs AI"; draft means "needs operator confirm".
   if (source.status === 'draft') return 'Confirm draft'
-  return sourceKind(source) === 'url' ? 'Review and process URL' : 'Review and process'
+  return sourceKind(source) === 'url'
+    ? 'Review and process URL'
+    : 'Review and process'
 }
 
-const processIcon = (source: {
-  status?: MenuSourceUploadStatus
-}) => source.status === 'draft' ? 'i-lucide-check-circle-2' : 'i-lucide-scan-text'
+const processIcon = (source: { status?: MenuSourceUploadStatus }) =>
+  source.status === 'draft' ? 'i-lucide-check-circle-2' : 'i-lucide-scan-text'
 
 const statusColor = (status: MenuSourceUploadStatus) => {
   if (status === 'published') return 'success'

@@ -12,10 +12,7 @@
           <div class="fx-card__header">
             <div class="fx-card__content">
               <div class="fx-card__title fx-card__title--lg">{{ name }}</div>
-              <div
-                v-if="subtitle"
-                class="fx-card__subtitle"
-              >
+              <div v-if="subtitle" class="fx-card__subtitle">
                 {{ subtitle }}
               </div>
             </div>
@@ -31,10 +28,7 @@
             </UBadge>
           </div>
 
-          <div
-            v-if="showBody"
-            class="fx-card__body"
-          >
+          <div v-if="showBody" class="fx-card__body">
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
           </div>
@@ -53,15 +47,8 @@
         </UBadge>
       </div>
 
-      <div
-        v-if="details?.length"
-        class="fx-card__stack fx-card__stack--tight"
-      >
-        <div
-          v-for="item in details"
-          :key="item.label"
-          class="fx-card__stack"
-        >
+      <div v-if="details?.length" class="fx-card__stack fx-card__stack--tight">
+        <div v-for="item in details" :key="item.label" class="fx-card__stack">
           <div class="fx-card__label">
             {{ item.label }}
           </div>

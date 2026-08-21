@@ -21,6 +21,11 @@ const serverHandlers = [
     method: 'post',
     handler: './runtime/server/api/suppliers/onboarding/complete.post',
   },
+  {
+    route: '/api/workspace/supplier/update',
+    method: 'patch',
+    handler: './runtime/server/api/workspace/supplier/update.patch',
+  },
 ] satisfies FireuxServerHandler[]
 
 export function configureServer(resolver: Resolver) {

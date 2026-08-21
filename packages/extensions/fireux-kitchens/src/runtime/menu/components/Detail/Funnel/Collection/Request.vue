@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Collection
-    </h2>
+    <h2 class="menu-order-screen-title">Collection</h2>
 
     <div class="menu-order-choice-grid">
       <button
@@ -26,18 +24,12 @@
       </button>
     </div>
 
-    <section
-      v-if="mode === 'scheduled'"
-      class="menu-order-schedule"
-    >
+    <section v-if="mode === 'scheduled'" class="menu-order-schedule">
       <div class="menu-order-schedule__fields">
         <label class="menu-order-field">
           Date
           <span class="menu-order-date-control">
-            <span
-              v-if="!dateInputOpen"
-              class="menu-order-date-pill"
-            >
+            <span v-if="!dateInputOpen" class="menu-order-date-pill">
               {{ scheduledDateLabel }}
             </span>
 
@@ -47,7 +39,7 @@
               v-model="scheduledDate"
               class="menu-order-schedule__input"
               type="date"
-            >
+            />
 
             <button
               type="button"
@@ -55,10 +47,7 @@
               aria-label="Choose collection date"
               @click="openCalendar"
             >
-              <UIcon
-                name="i-lucide-calendar"
-                aria-hidden="true"
-              />
+              <UIcon name="i-lucide-calendar" aria-hidden="true" />
             </button>
           </span>
         </label>
@@ -69,7 +58,7 @@
             v-model="scheduledTime"
             class="menu-order-schedule__input"
             type="time"
-          >
+          />
         </label>
       </div>
 
@@ -85,9 +74,11 @@
         v-if="scheduleSelection.available && !noticeSelection.available"
         class="menu-order-placeholder"
       >
-        {{ noticeSelection.noticeHours > 0
-          ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
-          : 'Choose a future date and time.' }}
+        {{
+          noticeSelection.noticeHours > 0
+            ? `Choose a time at least ${noticeSelection.noticeHours} hours from now.`
+            : 'Choose a future date and time.'
+        }}
       </p>
     </section>
   </div>
@@ -125,5 +116,4 @@ async function openCalendar() {
     // Some browsers only allow native pickers during the original click frame.
   }
 }
-
 </script>

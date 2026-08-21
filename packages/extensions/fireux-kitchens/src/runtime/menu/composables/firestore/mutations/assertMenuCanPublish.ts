@@ -24,7 +24,9 @@ export async function assertMenuCanPublish(options: {
   const kitchenId = clean(options.kitchenId)
   const menuId = clean(options.menuId)
   const kitchenCollectionPath = clean(options.kitchenCollectionPath)
-  const menuSnap = await getDoc(doc(options.db, options.menuCollectionPath, menuId))
+  const menuSnap = await getDoc(
+    doc(options.db, options.menuCollectionPath, menuId)
+  )
   const menu = menuSnap.exists()
     ? { ...(menuSnap.data() as Menu), id: menuSnap.id }
     : null

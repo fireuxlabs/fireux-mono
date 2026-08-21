@@ -4,16 +4,15 @@ import {
   defineFirestoreMutationTarget,
 } from './target-definition'
 
-const ROOT_PROFILE_COLLECTIONS = Object.freeze({
-  agent: 'agents',
-  chef: 'chefs',
-  driver: 'drivers',
-  professional: 'professionals',
-})
-const APP_PROFILE_COLLECTIONS = Object.freeze({
-  ...ROOT_PROFILE_COLLECTIONS,
-  customer: 'customers',
-})
+export const USER_PROFILE_KINDS = [
+  'agent',
+  'chef',
+  'customer',
+  'driver',
+  'marketplace',
+  'professional',
+] as const
+export type UserProfileKind = (typeof USER_PROFILE_KINDS)[number]
 const APP_AUTHORITY_COLLECTIONS = Object.freeze({
   blank: 'blanks',
   kitchen: 'kitchens',
@@ -51,161 +50,68 @@ export const serverAppJoinRequestsTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.join-requests', 'join_requests')
 export const serverAppMembershipBlocksTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.membership-blocks', 'membership_blocks')
-export const serverAppDriversTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.drivers', 'drivers')
-export const serverAppKitchensTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.kitchens', 'kitchens')
-export const serverAppMarketplaceStoresTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.marketplace-stores', 'marketplace-stores')
 
-export const serverKitchenMenuUploadsTarget = (
-  appId: string,
-  kitchenId: string
-) => {
-  const app = segment(appId, 'appId')
+function serverKitchenChildTarget(
+  kitchenId: string,
+  key: string,
+  collection: string
+) {
   const kitchen = segment(kitchenId, 'kitchenId')
   return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.menu-uploads',
+    key,
     lane: 'server',
     verbs,
     database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/menu-uploads`,
+    collectionPath: `kitchens/${kitchen}/${collection}`,
   })
 }
 
-export const serverKitchenAiUsageTarget = (
-  appId: string,
-  kitchenId: string
-) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
+export const serverKitchenMenuUploadsTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.menu-uploads', 'menu-uploads')
+export const serverKitchenAiUsageTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.ai-usage', 'ai-usage')
+export const serverKitchenMenusTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.menus', 'menus')
+export const serverKitchenDishesTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.dishes', 'dishes')
+export const serverKitchenTeamMembersTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.team', 'team')
+export const serverKitchenOrdersTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.orders', 'orders')
+export const serverKitchenOrderServiceTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.order-service', 'order-service')
+export const serverKitchenOrderIdempotencyTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(
+    kitchenId,
+    'kitchens.order-idempotency',
+    'order-idempotency'
+  )
+
+export const serverUserOrdersTarget = (userId: string) => {
+  const user = segment(userId, 'userId')
   return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.ai-usage',
+    key: 'users.orders',
     lane: 'server',
     verbs,
     database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/ai-usage`,
+    collectionPath: `users/${user}/orders`,
   })
 }
 
-export const serverKitchenMenusTarget = (appId: string, kitchenId: string) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.menus',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/menus`,
-  })
-}
-
-export const serverKitchenDishesTarget = (appId: string, kitchenId: string) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.dishes',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/dishes`,
-  })
-}
-
-export const serverKitchenTeamMembersTarget = (
-  appId: string,
-  kitchenId: string
-) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.team',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/team`,
-  })
-}
-
-export const serverKitchenOrdersTarget = (appId: string, kitchenId: string) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.orders',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/orders`,
-  })
-}
-
-export const serverKitchenOrderServiceTarget = (
-  appId: string,
-  kitchenId: string
-) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.order-service',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/order-service`,
-  })
-}
-
-export const serverKitchenOrderIdempotencyTarget = (
-  appId: string,
-  kitchenId: string
-) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.order-idempotency',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/order-idempotency`,
-  })
-}
-
-// prettier-ignore
-export const serverCustomerOrdersTarget = (appId: string, customerId: string) => {
-  const app = segment(appId, 'appId')
-  const customer = segment(customerId, 'customerId')
-  return defineFirestoreMutationTarget({
-    key: 'customers.orders',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/customers/${customer}/orders`,
-  })
-}
-
-export const serverKitchenSalesTarget = (appId: string, kitchenId: string) => {
-  const app = segment(appId, 'appId')
-  const kitchen = segment(kitchenId, 'kitchenId')
-  return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.sales',
-    lane: 'server',
-    verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${app}/kitchens/${kitchen}/sales`,
-  })
-}
+export const serverKitchenSalesTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.sales', 'sales')
 
 export const serverAppFinancialFactsTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.financial-facts', 'financial-facts')
 
 export const serverKitchenMenuSectionsTarget = (
-  appId: string,
   kitchenId: string,
   menuId: string
 ) => {
-  const menus = serverKitchenMenusTarget(appId, kitchenId)
+  const menus = serverKitchenMenusTarget(kitchenId)
   const menu = segment(menuId, 'menuId')
   return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.menus.sections',
+    key: 'kitchens.menus.sections',
     lane: 'server',
     verbs,
     database: { kind: 'runtime' },
@@ -214,15 +120,14 @@ export const serverKitchenMenuSectionsTarget = (
 }
 
 export const serverKitchenMenuItemsTarget = (
-  appId: string,
   kitchenId: string,
   menuId: string,
   sectionId: string
 ) => {
-  const sections = serverKitchenMenuSectionsTarget(appId, kitchenId, menuId)
+  const sections = serverKitchenMenuSectionsTarget(kitchenId, menuId)
   const section = segment(sectionId, 'sectionId')
   return defineFirestoreMutationTarget({
-    key: 'apps.kitchens.menus.sections.items',
+    key: 'kitchens.menus.sections.items',
     lane: 'server',
     verbs,
     database: { kind: 'runtime' },
@@ -230,12 +135,43 @@ export const serverKitchenMenuItemsTarget = (
   })
 }
 
-export const serverAppPropertiesTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.properties', 'properties')
-export const serverAppPortfoliosTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.portfolios', 'portfolios')
-export const serverAppSuppliersTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.suppliers', 'suppliers')
+export const serverMarketplaceStoresTarget = defineFirestoreMutationTarget({
+  key: 'marketplace-stores',
+  lane: 'server',
+  verbs,
+  database: { kind: 'runtime' },
+  collectionPath: 'marketplace-stores',
+})
+export const serverMarketplaceStoreTeamMembersTarget = (storeId: string) => {
+  const store = segment(storeId, 'storeId')
+  return defineFirestoreMutationTarget({
+    key: 'marketplace-stores.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `marketplace-stores/${store}/team`,
+  })
+}
+export const serverPropertyTeamMembersTarget = (propertyId: string) => {
+  const property = segment(propertyId, 'propertyId')
+  return defineFirestoreMutationTarget({
+    key: 'properties.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `properties/${property}/team`,
+  })
+}
+export const serverPortfolioTeamMembersTarget = (portfolioId: string) => {
+  const portfolio = segment(portfolioId, 'portfolioId')
+  return defineFirestoreMutationTarget({
+    key: 'portfolios.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `portfolios/${portfolio}/team`,
+  })
+}
 export const serverSupplierItemsTarget = (supplierId: string) => {
   const supplier = segment(supplierId, 'supplierId')
   return defineFirestoreMutationTarget({
@@ -246,8 +182,16 @@ export const serverSupplierItemsTarget = (supplierId: string) => {
     collectionPath: `suppliers/${supplier}/items`,
   })
 }
-export const serverAppProjectsTarget = (appId: string) =>
-  serverAppChildTarget(appId, 'apps.projects', 'projects')
+export const serverSupplierTeamMembersTarget = (supplierId: string) => {
+  const supplier = segment(supplierId, 'supplierId')
+  return defineFirestoreMutationTarget({
+    key: 'suppliers.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `suppliers/${supplier}/team`,
+  })
+}
 
 function fireuxAppChildTarget(appId: string, key: string, collection: string) {
   const id = segment(appId, 'appId')
@@ -262,8 +206,16 @@ function fireuxAppChildTarget(appId: string, key: string, collection: string) {
 
 export const fireuxAppUsersTarget = (appId: string) =>
   fireuxAppChildTarget(appId, 'fireux.apps.users', 'users')
-export const fireuxAppProjectsTarget = (appId: string) =>
-  fireuxAppChildTarget(appId, 'fireux.apps.projects', 'projects')
+export const fireuxProjectTeamMembersTarget = (projectId: string) => {
+  const project = segment(projectId, 'projectId')
+  return defineFirestoreMutationTarget({
+    key: 'fireux.projects.team',
+    lane: 'server',
+    verbs,
+    database: { kind: 'named', databaseId: 'fireux' },
+    collectionPath: `projects/${project}/team`,
+  })
+}
 
 export function serverUserTargetsTarget(userId: string) {
   const id = segment(userId, 'userId')
@@ -356,38 +308,36 @@ export function serverIdentityUserNotificationsTarget(userId: string) {
   })
 }
 
-export function serverRootProfileTarget(
-  profileId: keyof typeof ROOT_PROFILE_COLLECTIONS,
+export function serverUserProfileTarget(
+  userId: string,
+  kind: UserProfileKind,
   placement: 'runtime' | 'identity'
 ) {
+  const user = segment(userId, 'userId')
+  const profileKind = segment(kind, 'profileKind')
   return defineFirestoreMutationTarget({
-    key: `profiles.root.${profileId}`,
+    key: `users.profiles.${profileKind}`,
     lane: 'server',
     verbs,
     database: { kind: placement },
-    collectionPath: ROOT_PROFILE_COLLECTIONS[profileId],
+    collectionPath: `users/${user}/profiles`,
   })
 }
 
-export function serverAppProfileTarget(
+export function serverUserProfileAppStateTarget(
+  userId: string,
+  kind: UserProfileKind,
   appId: string,
-  profileId: keyof typeof APP_PROFILE_COLLECTIONS
+  placement: 'runtime' | 'identity'
 ) {
-  const id = segment(appId, 'appId')
+  const user = segment(userId, 'userId')
+  const profileKind = segment(kind, 'profileKind')
+  segment(appId, 'appId')
   return defineFirestoreMutationTarget({
-    key: `profiles.app.${profileId}`,
+    key: `users.profiles.${profileKind}.app-state`,
     lane: 'server',
     verbs,
-    database: { kind: 'runtime' },
-    collectionPath: `apps/${id}/${APP_PROFILE_COLLECTIONS[profileId]}`,
+    database: { kind: placement },
+    collectionPath: `users/${user}/profiles/${profileKind}/app-state`,
   })
-}
-
-export function profileCollectionForTarget(
-  scope: 'root' | 'app',
-  profileId: string
-) {
-  const collections =
-    scope === 'root' ? ROOT_PROFILE_COLLECTIONS : APP_PROFILE_COLLECTIONS
-  return collections[profileId as keyof typeof collections] ?? ''
 }

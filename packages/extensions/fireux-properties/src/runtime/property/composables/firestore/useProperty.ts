@@ -3,7 +3,6 @@ import type { Ref } from 'vue'
 import type { Property } from '../../models/property.model.ts'
 import { usePropertyCollection } from './fetch/usePropertyCollection'
 import {
-  useAppPropertyFetch,
   usePropertyFetch,
   usePropertyManualFetch,
 } from './fetch/usePropertyFetch'
@@ -20,7 +19,6 @@ export type {
 export {
   usePropertyCollection,
   usePropertyFetch,
-  useAppPropertyFetch,
   usePropertyManualFetch,
   usePropertyCreate,
   usePropertyUpdate,

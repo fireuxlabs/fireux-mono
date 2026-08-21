@@ -20,7 +20,7 @@
         loading="lazy"
         decoding="async"
         @error="hideImage"
-      >
+      />
 
       <span class="menu-order-item__copy">
         <span class="menu-order-item__heading">
@@ -46,7 +46,8 @@
             type="button"
             class="menu-order-item__variant"
             :class="{
-              'menu-order-item__variant--selected': selectedVariantId === variant.id,
+              'menu-order-item__variant--selected':
+                selectedVariantId === variant.id,
             }"
             role="radio"
             :aria-checked="selectedVariantId === variant.id"
@@ -70,7 +71,9 @@
         <button
           type="button"
           class="menu-order-item__add"
-          :data-menu-action="requiresConfiguration ? 'configure-item' : 'add-item'"
+          :data-menu-action="
+            requiresConfiguration ? 'configure-item' : 'add-item'
+          "
           :aria-label="actionLabel"
           :title="actionLabel"
           :disabled="!canSelect"
@@ -123,21 +126,26 @@ const resolvedPriceOptions = computed(() =>
 const resolvedAddOns = computed(() => resolveMenuOrderAddOns(props.item.addOns))
 const priceOptions = computed(() => resolvedPriceOptions.value || [])
 const addOns = computed(() => resolvedAddOns.value || [])
-const orderDataValid = computed(() =>
-  resolvedPriceOptions.value !== null && resolvedAddOns.value !== null
+const orderDataValid = computed(
+  () => resolvedPriceOptions.value !== null && resolvedAddOns.value !== null
 )
 const itemIdentityValid = computed(() =>
-  Boolean(String(props.item.id || '').trim() && String(props.item.name || '').trim())
+  Boolean(
+    String(props.item.id || '').trim() && String(props.item.name || '').trim()
+  )
 )
 const hasPriceOptions = computed(() => priceOptions.value.length > 0)
-const selectedVariant = computed(() => priceOptions.value.find(
-  ({ id }) => id === selectedVariantId.value
-) || null)
+const selectedVariant = computed(
+  () =>
+    priceOptions.value.find(({ id }) => id === selectedVariantId.value) || null
+)
 const startingPrice = computed(() => {
   if (!orderDataValid.value) return 0
 
   if (!hasPriceOptions.value) {
-    return menuOrderPositivePrice(props.item.price) ? Number(props.item.price) : 0
+    return menuOrderPositivePrice(props.item.price)
+      ? Number(props.item.price)
+      : 0
   }
 
   return Math.min(...priceOptions.value.map(({ price }) => Number(price)))
@@ -147,17 +155,17 @@ const actionPriceLabel = computed(() => {
 
   return formatPrice(price)
 })
-const canSelect = computed(() =>
-  orderDataValid.value && itemIdentityValid.value && startingPrice.value > 0
+const canSelect = computed(
+  () =>
+    orderDataValid.value && itemIdentityValid.value && startingPrice.value > 0
 )
-const requiresConfiguration = computed(() =>
-  addOns.value.length > 0
-)
-const actionLabel = computed(() => requiresConfiguration.value
-  ? `Choose extras for ${props.item.name}`
-  : selectedVariant.value
-    ? `Add ${props.item.name}, ${selectedVariant.value.label}, to basket`
-    : `Add ${props.item.name} to basket`
+const requiresConfiguration = computed(() => addOns.value.length > 0)
+const actionLabel = computed(() =>
+  requiresConfiguration.value
+    ? `Choose extras for ${props.item.name}`
+    : selectedVariant.value
+      ? `Add ${props.item.name}, ${selectedVariant.value.label}, to basket`
+      : `Add ${props.item.name} to basket`
 )
 
 watch(
@@ -170,9 +178,8 @@ watch(
 watch(
   () => props.item,
   () => {
-    selectedVariantId.value = defaultMenuOrderPriceOption(
-      priceOptions.value
-    )?.id || ''
+    selectedVariantId.value =
+      defaultMenuOrderPriceOption(priceOptions.value)?.id || ''
   },
   { immediate: true }
 )
@@ -305,7 +312,8 @@ function formatPrice(price: number) {
   border-color: var(--menu-primary);
   background: var(--menu-primary);
   color: var(--menu-bg);
-  box-shadow: 0 0.2rem 0.65rem color-mix(in srgb, var(--menu-primary) 18%, transparent);
+  box-shadow: 0 0.2rem 0.65rem
+    color-mix(in srgb, var(--menu-primary) 18%, transparent);
 }
 
 .menu-order-item__variant:focus-visible {
@@ -375,5 +383,4 @@ function formatPrice(price: number) {
     height: 4rem;
   }
 }
-
 </style>

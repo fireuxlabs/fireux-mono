@@ -58,15 +58,28 @@ export function useDishInterface() {
 
   function preview(target?: Dish | null) {
     const base = buildInterface(target)
-    return base ? { id: base.id, title: base.title, description: base.description } : null
+    return base
+      ? { id: base.id, title: base.title, description: base.description }
+      : null
   }
 
   function profile(target?: Dish | null): DishProfile | null {
     const base = buildInterface(target)
     return base
-      ? { card: base, title: base.title, subtitle: base.subtitle, description: base.description }
+      ? {
+          card: base,
+          title: base.title,
+          subtitle: base.subtitle,
+          description: base.description,
+        }
       : null
   }
 
-  return { interface: buildInterface, pill: buildInterface, cell, preview, profile }
+  return {
+    interface: buildInterface,
+    pill: buildInterface,
+    cell,
+    preview,
+    profile,
+  }
 }

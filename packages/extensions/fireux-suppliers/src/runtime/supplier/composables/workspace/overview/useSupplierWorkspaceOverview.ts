@@ -6,13 +6,7 @@ import { type SupplierSurface } from '../../firestore/utils/view/useSupplierInte
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
 
 export function useSupplierWorkspaceOverview() {
-  const {
-    suppliers,
-    selection,
-    runtime,
-    actions,
-  } =
-    useSupplierWorkspace()
+  const { suppliers, selection, runtime, actions } = useSupplierWorkspace()
 
   const overview = useWorkspaceOverview<SupplierSurface>({
     selectedEntity: selection.supplier,
@@ -29,7 +23,9 @@ export function useSupplierWorkspaceOverview() {
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
-      ids: overview.multiple.value.items.map((item) => normalizeString(item?.id)),
+      ids: overview.multiple.value.items.map((item) =>
+        normalizeString(item?.id)
+      ),
     },
   }))
 

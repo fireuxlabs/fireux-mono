@@ -249,5 +249,4 @@ defineExpose({
   font-size: var(--text-sm);
   margin-bottom: calc(var(--spacing) * 2);
 }
-
 </style>

@@ -79,15 +79,3 @@ export function requireProjectAdmin(
     )
   }
 }
-
-export function projectAccessIds(data?: Record<string, unknown>) {
-  const values = [
-    ...(Array.isArray(data?.operator_ids) ? data.operator_ids : []),
-    ...(Array.isArray(data?.team_ids) ? data.team_ids : []),
-  ]
-  const ids = values.map(projectText).filter(Boolean)
-  if (ids.some((id) => id.includes('/')) || ids.length > 150) {
-    failProjectCommand(409, 'Project App support has invalid access ids.')
-  }
-  return [...new Set(ids)]
-}

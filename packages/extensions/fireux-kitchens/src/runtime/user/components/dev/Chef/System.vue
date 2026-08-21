@@ -1,10 +1,7 @@
 <template>
   <section class="space-y-10">
     <UCard>
-      <DevModel
-        :title="'Chefs · Core Model'"
-        :model="chefCoreModelRuntime"
-      />
+      <DevModel :title="'Chefs · Core Model'" :model="chefCoreModelRuntime" />
     </UCard>
 
     <UCard>
@@ -15,7 +12,8 @@
               Chefs collection
             </p>
             <p class="text-xs text-muted">
-              Inspect model drift separately from the public chefs collection manager.
+              Inspect model drift separately from the public chefs collection
+              manager.
             </p>
             <DevDriftToolbar
               :drift-kind="driftKind"
@@ -92,7 +90,6 @@ const { pill: makeChefCard } = useChefInterface()
 
 const collection = computed(() => coreChefs.value ?? [])
 
-
 const {
   driftKind,
   setDriftKind,
@@ -121,7 +118,8 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/user/models/chef.model',
+  modelPath:
+    'packages/extensions/fireux-kitchens/src/runtime/user/models/chef.model',
   itemsKey: 'chefs',
   items: filteredDriftPayload,
   total: computed(() => collection.value.length),

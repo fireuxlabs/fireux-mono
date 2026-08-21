@@ -1,7 +1,9 @@
 import { defineKitchenTeamTool } from './types'
+import { workspaceTeamMemberCreatePrimitive } from 'fireux-core/runtime/tools/workspace/team/create-member'
 
 export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
   id: 'kitchen.team.create-member',
+  primitive: workspaceTeamMemberCreatePrimitive.id,
   mode: 'write',
   risk: 'write',
   confirmation: 'required',
@@ -35,6 +37,23 @@ export const kitchenTeamMemberCreateTool = defineKitchenTeamTool({
     },
     required: ['name'],
     additionalProperties: false,
+  },
+  ai: {
+    baked: {
+      purpose: 'Add one named person to the selected Kitchen Team.',
+      knows: ['The selected Kitchen and user-supplied member details.'],
+      constraints: [
+        'Do not create or link a User.',
+        'Do not grant Workspace access.',
+        'Do not invent dossier facts that the user did not supply or approve.',
+      ],
+      evidence: ['Return the created member identity and stored fields.'],
+    },
+    runtime: {
+      accepted: true,
+      required: ['workspaceSelection', 'name'],
+      optional: ['role', 'station', 'certifications', 'notes', 'userRequest'],
+    },
   },
   surfaces: {
     human: {

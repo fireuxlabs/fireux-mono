@@ -17,9 +17,7 @@
 
         <div class="fx-public-action__content">
           <div class="fx-public-action__copy">
-            <h2 class="fx-public-action__title">
-              Kitchen Operations
-            </h2>
+            <h2 class="fx-public-action__title">Kitchen Operations</h2>
             <p class="fx-public-action__description">
               {{ panelDescription }}
             </p>
@@ -85,22 +83,28 @@ const isTenantWorkspaceHandoff = computed(() =>
 const { app: operatorApp } = useAppDetail(operatorAppId)
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const { kitchens: workspaceTargets } = useKitchenWorkspaceTargetCollection()
-const workspaceKitchen = computed(() =>
-  workspaceTargets.value.find(kitchen => kitchen.id === kitchenId.value) || null
+const workspaceKitchen = computed(
+  () =>
+    workspaceTargets.value.find((kitchen) => kitchen.id === kitchenId.value) ||
+    null
 )
 const hasWorkspaceAccess = computed(() => Boolean(workspaceKitchen.value))
 const subjectUserPill = computed(() =>
   hasWorkspaceAccess.value ? pill(currentUser.value) : null
 )
 const operatorAppName = computed(() =>
-  String((operatorApp.value as any)?.app_short_name || (operatorApp.value as any)?.app_name || '').trim()
+  String(
+    (operatorApp.value as any)?.app_short_name ||
+      (operatorApp.value as any)?.app_name ||
+      ''
+  ).trim()
 )
 const panelDescription = computed(() =>
   hasWorkspaceAccess.value && isTenantWorkspaceHandoff.value
     ? `This kitchen is managed from the ${operatorAppName.value || 'tenant'} app workspace.`
     : hasWorkspaceAccess.value
-    ? 'You have operator access for this kitchen workspace.'
-    : 'This kitchen has no operators yet. Make a workspace to manage menus, orders, team, and stations.'
+      ? 'You have operator access for this kitchen workspace.'
+      : 'This kitchen has no operators yet. Make a workspace to manage menus, orders, team, and stations.'
 )
 const subjectLabel = computed(() =>
   hasWorkspaceAccess.value ? 'Signed in as' : ''
@@ -148,8 +152,8 @@ const operationLabel = computed(() =>
   hasWorkspaceAccess.value && isTenantWorkspaceHandoff.value
     ? `Open ${operatorAppName.value || 'tenant'} workspace`
     : hasWorkspaceAccess.value
-    ? 'Open workspace'
-    : 'Make workspace'
+      ? 'Open workspace'
+      : 'Make workspace'
 )
 const operationAction = computed<PublicActionButton | null>(() =>
   operationTo.value
@@ -159,7 +163,9 @@ const operationAction = computed<PublicActionButton | null>(() =>
         icon: hasWorkspaceAccess.value
           ? 'i-lucide-panel-right-open'
           : 'i-lucide-key-round',
-        color: hasWorkspaceAccess.value ? 'neutral' as const : 'primary' as const,
+        color: hasWorkspaceAccess.value
+          ? ('neutral' as const)
+          : ('primary' as const),
         onClick:
           hasWorkspaceAccess.value && !isTenantWorkspaceHandoff.value
             ? selectWorkspaceKitchen

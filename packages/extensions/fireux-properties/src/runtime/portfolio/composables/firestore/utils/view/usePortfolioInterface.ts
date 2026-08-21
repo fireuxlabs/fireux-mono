@@ -1,22 +1,16 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: compose only app access delta onto canonical root identity.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
-import { safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import {
   PortfolioStorage,
-  type AppPortfolio,
   type Portfolio,
 } from '../../../../models/portfolio.model.ts'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-type PortfolioAccessDelta = Partial<
-  Pick<AppPortfolio, 'operator_ids' | 'team_ids' | 'join_requests'>
->
-export type PortfolioSurface = Partial<Portfolio> & PortfolioAccessDelta
+export type PortfolioSurface = Partial<Portfolio>
 export type PortfolioSurfaceParts<
   TPortfolio extends Partial<Portfolio> = Partial<Portfolio>,
 > = {
   portfolio?: TPortfolio | null | undefined
-  appSupport?: AppPortfolio | null | undefined
 }
 
 export namespace PortfolioCard {
@@ -58,18 +52,8 @@ export function usePortfolioInterface() {
       join_requests: _legacyJoinRequests,
       ...root
     } = source as TPortfolio & Record<string, unknown>
-    const appSupport = parts.appSupport
-    const accessDelta: PortfolioAccessDelta = appSupport
-      ? {
-          operator_ids: safeStringArray(appSupport.operator_ids),
-          team_ids: safeStringArray(appSupport.team_ids),
-          join_requests: safeStringArray(appSupport.join_requests),
-        }
-      : {}
-
     return {
       ...root,
-      ...accessDelta,
       id,
     } as TPortfolio & PortfolioSurface
   }
@@ -83,7 +67,9 @@ export function usePortfolioInterface() {
 
     return {
       id,
-      to: id ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id)}` : '',
+      to: id
+        ? `/${PortfolioStorage.rootCollection}/${encodeURIComponent(id)}`
+        : '',
       imageUrl: '',
       avatarUrl: '',
       title: name,
@@ -114,11 +100,15 @@ export function usePortfolioInterface() {
     return buildInterface(target)
   }
 
-  function pill(target?: PortfolioSurface | null | undefined): PortfolioPill | null {
+  function pill(
+    target?: PortfolioSurface | null | undefined
+  ): PortfolioPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: PortfolioSurface | null | undefined): PortfolioCell | null {
+  function cell(
+    target?: PortfolioSurface | null | undefined
+  ): PortfolioCell | null {
     return buildInterface(target)
   }
 

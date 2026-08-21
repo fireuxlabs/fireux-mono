@@ -1,7 +1,7 @@
 # Translation and reviewed copy
 
 Updated: 2026-08-19
-Ref: d232cc731
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -48,9 +48,8 @@ human-reviewed public copy.
 - Apps own tenant-specific language profiles and phrase packs. Generic packages
   own the workflow contract, never a tenant's vocabulary.
 - A sparse `sproochli` attachment on the canonical root Kitchen owns whether
-  its shared public surfaces participate and which source state they present.
-  AppKitchen remains access/support only and cannot override this capability.
-- A public Menu manifest exposes only its final Sproochli `state`, selected
+  its shared Menu surfaces participate and which source state they present.
+- A Menu manifest exposes only its final Sproochli `state`, selected
   `language`, nullable `readyLanguages`, and resolved shared surface copy.
   Menu records carry no source language: canonical authored content is always
   `Default` and may itself be multilingual. `?sproochli=<code>` is the sole
@@ -188,9 +187,9 @@ translation state onto Kitchen.
   `projects/misebox/interlaken-essen/app/content/sproochli-site.ts` and
   `projects/misebox/interlaken-essen/app/composables/useInterlakenSproochli.ts`
 - Localized Blog projection:
-  `packages/extensions/fireux-blogs/src/runtime/server/utils/blog/public-projection.ts`
+  `packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts`
   and
-  `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts`
+  `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogLanguage.ts`
 - Kitchen attachment authority and trusted mutation:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/sproochli.ts`
 - Public Menu projection:

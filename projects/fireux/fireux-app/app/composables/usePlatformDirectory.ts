@@ -12,7 +12,7 @@ import type {
 export function usePlatformDirectory() {
   return useAsyncData<PlatformDirectoryResponse>(
     'fireux-default-directory',
-    () => $fetch('/api/public/directory'),
+    () => $fetch('/api/directory'),
     { server: true, lazy: false }
   )
 }

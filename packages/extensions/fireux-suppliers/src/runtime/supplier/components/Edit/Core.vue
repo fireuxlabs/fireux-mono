@@ -58,7 +58,12 @@
       </UCard>
     </div>
 
-    <MoleculesStateCard v-else entity="supplier record" kind="document" loading />
+    <MoleculesStateCard
+      v-else
+      entity="supplier record"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -101,13 +106,18 @@ const deliveryAreas = computed(() =>
 )
 const mutationOptions = () => ({ id: String(supplier.value?.id ?? '').trim() })
 
-const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
+const wrap = async (
+  fn: () => Promise<void>,
+  okTitle: string,
+  failTitle: string
+) => {
   try {
     await fn()
     toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.add({
       title: failTitle,
       description,

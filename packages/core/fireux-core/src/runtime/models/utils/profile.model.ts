@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/utils/profile.model.ts
 
-// Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: distinguish public profiles from app-private records.
+// User owns every profile; optional App state remains below that profile.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: support atomic domain-owned root profile seeds.
 // Concurrent edit — 2026-07-20 17:41 CEST — Repo Efficiency Pass 2 of 6: route profile creation through trusted domain provisioners.
 import type { FirebaseTimestamp } from '../../../types/firebase'
@@ -10,32 +10,29 @@ import type { FireuxStamped } from './stamps.model'
  * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: Identity support
- * Storage: base shapes for root profile records and app overlays
- * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, and similar identity profile collections
+ * Storage: users/<userId>/profiles/<profileKind> with optional app-state/<appId>
  *
  * Decision note:
- * - User is the only public identity truth; profile roots contain only their
- *   domain presentation/capability fields and use the matching uid.
- * - App profile records are overlays for app-specific presentation or capability state.
- * - Identity profile overlays do not use entity management because they are not root-plus-App operational targets.
+ * - User is the only person identity truth.
+ * - App profile state exists only for genuine App-specific capability state.
  * - This file defines the shared base shapes so individual profile files stay aligned.
  * - If the identity rule changes later, update the models README first, then this file.
  */
 export const ProfileStorage = {
-  shape: 'both',
-  root: '{profileCollection}/{userId}',
-  overlay: 'apps/{appId}/{profileCollection}/{userId}',
+  shape: 'user-owned',
+  profile: 'users/{userId}/profiles/{profileKind}',
+  appState: 'users/{userId}/profiles/{profileKind}/app-state/{appId}',
   idParam: 'userId',
 } as const
 
-export const AppProfileStorage = {
+export const ProfileAppStateStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/{profileCollection}/{userId}',
-  parent: 'app',
-  idParam: 'userId',
+  path: ProfileStorage.appState,
+  parent: 'profile',
+  idParam: 'appId',
 } as const
 
-export const AppProfileStamps = {
+export const ProfileAppStateStamps = {
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -49,7 +46,7 @@ export const AppProfileStamps = {
 
 /**
  * Profile doc base shape (global truth)
- * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
+ * Example path: /users/<uid>/profiles/chef.
  *
  * Canon notes:
  * - Profiles are user-owned (the document uid is the authority).
@@ -58,6 +55,7 @@ export const AppProfileStamps = {
  */
 export type ProfileBase = FireuxStamped & {
   id: string
+  kind: string
 
   title: string
   subtitle: string
@@ -65,29 +63,30 @@ export type ProfileBase = FireuxStamped & {
   tags: string[]
 }
 
-/** Smallest shared contract for root profiles and app-private profile records. */
+/** Smallest shared contract for a profile or its App-specific state. */
 export type ProfileRecord = {
   id: string
 }
 
 /**
- * App profile overlay base shape
- * Example path: /apps/<appId>/<collection>/<uid>
+ * Profile App-state base shape
+ * Example path: /users/<uid>/profiles/<kind>/app-state/<appId>
  *
  * Delta-only by design.
  * Keep it minimal until you truly need overlay fields.
  */
-export type AppProfileBase = FireuxStamped & ProfileRecord
+export type ProfileAppStateBase = FireuxStamped &
+  ProfileRecord & {
+    profile_kind: string
+    app_id: string
+  }
 
 /**
  * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {
-  /** Lowercase identifier like 'chef', 'supplier', 'agent', 'professional' */
-  id: string
-
-  /** Firestore collection name */
-  collectionName: string
+  /** Fixed profile document kind below users/{uid}/profiles. */
+  kind: string
 
   /** Human-readable label */
   profileType: string
@@ -104,6 +103,6 @@ export interface ProfileConfig {
   /** Fixed authenticated endpoint that owns this profile's exact seed and writes. */
   provisionRoute: string
 
-  /** Public profiles own a root record; app-private profiles exist only under the current App. */
-  storage?: 'root-and-app' | 'app-only'
+  /** Profiles are User-owned; some add genuine App-specific state. */
+  storage?: 'user' | 'user-with-app-state'
 }

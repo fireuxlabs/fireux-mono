@@ -13,9 +13,7 @@
     :file-url="documentUrl"
   />
 
-  <p v-else class="document-menu__empty">
-    Menu document unavailable.
-  </p>
+  <p v-else class="document-menu__empty">Menu document unavailable.</p>
 </template>
 
 <script setup lang="ts">

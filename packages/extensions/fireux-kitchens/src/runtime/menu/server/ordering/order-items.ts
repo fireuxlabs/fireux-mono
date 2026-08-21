@@ -58,9 +58,7 @@ export async function resolveMenuOrderItems(
     await Promise.all(
       sourceMenuIds.map(async (sourceMenuId) => {
         const sourceMenuSnap = await db
-          .doc(
-            `apps/${input.context.appId}/kitchens/${input.context.kitchenId}/menus/${sourceMenuId}`
-          )
+          .doc(`kitchens/${input.context.kitchenId}/menus/${sourceMenuId}`)
           .get()
         const sourceMenuData = sourceMenuSnap.data() || {}
         if (

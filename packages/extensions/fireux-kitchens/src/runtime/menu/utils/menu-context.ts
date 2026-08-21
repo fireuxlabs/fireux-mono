@@ -135,13 +135,11 @@ export function guestDiscoverableMenuContexts(
 ): MenuRouteContext[] {
   if (!ordering?.enabled) return []
 
-  const orderTypes = new Set(
-    ordering.order_types.map(({ type }) => type)
-  )
+  const orderTypes = new Set(ordering.order_types.map(({ type }) => type))
 
   return guestDiscoverableMenuSurfaceProfiles
     .filter(({ visibleOrderTypes }) =>
-      visibleOrderTypes.some(type => orderTypes.has(type))
+      visibleOrderTypes.some((type) => orderTypes.has(type))
     )
     .map(({ context }) => context)
 }
@@ -175,9 +173,10 @@ export function guestMenuSurfaceOptions(options: {
   ])
 
   return [profiles.generic, ...guestDiscoverableMenuSurfaceProfiles]
-    .filter((surface) =>
-      surface.context === 'generic' ||
-      surface.visibleOrderTypes.some((type) => surfaceOrderTypes.has(type))
+    .filter(
+      (surface) =>
+        surface.context === 'generic' ||
+        surface.visibleOrderTypes.some((type) => surfaceOrderTypes.has(type))
     )
     .map((surface) => {
       if (surface.context === 'generic') {
@@ -195,11 +194,14 @@ export function guestMenuSurfaceOptions(options: {
       const hasLocalOrderType = surface.visibleOrderTypes.some((type) =>
         availableOrderTypes.includes(type)
       )
-      const linkedChoice = choices.find((choice) =>
-        Boolean(choice.to) &&
-        Boolean(choice.menu_id) &&
-        Boolean(choice.order_type) &&
-        surface.visibleOrderTypes.includes(choice.order_type as KitchenOrderType)
+      const linkedChoice = choices.find(
+        (choice) =>
+          Boolean(choice.to) &&
+          Boolean(choice.menu_id) &&
+          Boolean(choice.order_type) &&
+          surface.visibleOrderTypes.includes(
+            choice.order_type as KitchenOrderType
+          )
       )
 
       return {
@@ -221,7 +223,7 @@ export function guestMenuSurfaceOptions(options: {
 export function normalizeMenuRouteContext(value: unknown): MenuRouteContext {
   const context = text(value)
 
-  return contextSet.has(context) ? context as MenuRouteContext : 'generic'
+  return contextSet.has(context) ? (context as MenuRouteContext) : 'generic'
 }
 
 export function menuContextProfile(value: unknown): MenuContextProfile {
@@ -249,8 +251,9 @@ export function menuManifestSupportsContext(
     behaviour.ordering.order_types.map(({ type }) => type)
   )
 
-  return profile.visibleOrderTypes.some((type) =>
-    behaviour.orderTypes.includes(type) && configuredOrderTypes.has(type)
+  return profile.visibleOrderTypes.some(
+    (type) =>
+      behaviour.orderTypes.includes(type) && configuredOrderTypes.has(type)
   )
 }
 

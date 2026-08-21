@@ -10,7 +10,8 @@ export function useSupplierItemDelete() {
     const id = text(supplierId)
     const itemId = text(supplierItemId)
     if (!id) throw new Error('[fireux-suppliers] supplier id is required.')
-    if (!itemId) throw new Error('[fireux-suppliers] supplier item id is required.')
+    if (!itemId)
+      throw new Error('[fireux-suppliers] supplier item id is required.')
     const user = await useRequireUser()
     const token = await user.getIdToken()
     await $fetch(

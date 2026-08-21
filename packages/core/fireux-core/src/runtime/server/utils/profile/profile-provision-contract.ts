@@ -1,47 +1,28 @@
 import type { DocumentData } from 'firebase-admin/firestore'
 import { createError } from 'h3'
+import type { UserProfileKind } from '../../../utils/firestore-mutations/targets'
+import { USER_PROFILE_KINDS } from '../../../utils/firestore-mutations/targets'
 import { serverAuditStamp } from '../records/stamps'
-import { profileCollectionForTarget } from '../../../utils/firestore-mutations/targets'
 
 export type ProfileProvisionContractSeed = Readonly<Record<string, unknown>>
 
 export type ProfileProvisionContractDefinition = {
-  id: string
+  kind: UserProfileKind
   label: string
-  root?: {
-    collection: string
+  profile: {
     seed: () => ProfileProvisionContractSeed
   }
-  app: {
-    collection: string
+  appState?: {
     seed: () => ProfileProvisionContractSeed
   }
 }
 
 export type ProfileProvisionTransactionOutcome = {
-  createdCore: boolean
-  createdApp: boolean
+  createdProfile: boolean
+  createdAppState: boolean
 }
 
-export const PROFILE_PROVISION_ROOT_ORDER = [
-  'agent',
-  'chef',
-  'driver',
-  'professional',
-] as const
-export const PROFILE_PROVISION_APP_ORDER = [
-  'agent',
-  'chef',
-  'customer',
-  'driver',
-  'professional',
-] as const
-const ROOT_PROFILE_IDS: ReadonlySet<string> = new Set(
-  PROFILE_PROVISION_ROOT_ORDER
-)
-const APP_PROFILE_IDS: ReadonlySet<string> = new Set(
-  PROFILE_PROVISION_APP_ORDER
-)
+const PROFILE_KINDS: ReadonlySet<string> = new Set(USER_PROFILE_KINDS)
 const RESERVED_SEED_KEYS = new Set([
   'id',
   'user',
@@ -69,42 +50,16 @@ export function requireProfileProvisionSegment(value: unknown, label: string) {
 export function assertProfileProvisionDefinition(
   definition: ProfileProvisionContractDefinition
 ) {
-  const id = requireProfileProvisionSegment(definition.id, 'Profile id')
+  const kind = requireProfileProvisionSegment(definition.kind, 'Profile kind')
   requireProfileProvisionSegment(definition.label, 'Profile label')
-  requireProfileProvisionSegment(
-    definition.app.collection,
-    'App profile collection'
-  )
-
-  if (!APP_PROFILE_IDS.has(id)) {
-    failProfileProvision(
-      500,
-      `The ${definition.label} App profile is not supported.`
-    )
+  if (!PROFILE_KINDS.has(kind)) {
+    failProfileProvision(500, `${definition.label} profile is not supported.`)
   }
-  if (definition.app.collection !== profileCollectionForTarget('app', id)) {
-    failProfileProvision(
-      500,
-      `${definition.label} App profile collection is not canonical.`
-    )
+  if (typeof definition.profile?.seed !== 'function') {
+    failProfileProvision(500, `${definition.label} profile seed is missing.`)
   }
-  if (definition.root) {
-    requireProfileProvisionSegment(
-      definition.root.collection,
-      'Root profile collection'
-    )
-    if (!ROOT_PROFILE_IDS.has(id)) {
-      failProfileProvision(
-        500,
-        `The ${definition.label} root profile is not supported.`
-      )
-    }
-    if (definition.root.collection !== profileCollectionForTarget('root', id)) {
-      failProfileProvision(
-        500,
-        `${definition.label} root profile collection is not canonical.`
-      )
-    }
+  if (definition.appState && typeof definition.appState.seed !== 'function') {
+    failProfileProvision(500, `${definition.label} App-state seed is missing.`)
   }
 }
 
@@ -141,7 +96,7 @@ export function requireProfileProvisionAppMembership(snapshot: {
   data: DocumentData | undefined
 }) {
   if (!snapshot.exists) {
-    failProfileProvision(403, 'Join this App before creating an App profile.')
+    failProfileProvision(403, 'Join this App before creating a profile.')
   }
 
   const data = snapshot.data ?? {}
@@ -150,24 +105,29 @@ export function requireProfileProvisionAppMembership(snapshot: {
   }
 }
 
-export function buildRootProfileProvisionData(
+export function buildProfileProvisionData(
   seed: ProfileProvisionContractSeed,
-  uid: string
+  uid: string,
+  kind: UserProfileKind
 ) {
   return {
     ...seed,
+    kind,
     created: serverAuditStamp({ by: uid }),
     updated: serverAuditStamp({ by: uid }),
   }
 }
 
-export function buildAppProfileProvisionData(
+export function buildProfileAppStateProvisionData(
   seed: ProfileProvisionContractSeed,
   uid: string,
-  appId: string
+  appId: string,
+  kind: UserProfileKind
 ) {
   return {
     ...seed,
+    profile_kind: kind,
+    app_id: appId,
     created: serverAuditStamp({ by: uid, appId }),
     updated: serverAuditStamp({ by: uid }),
   }

@@ -16,9 +16,13 @@
 
     <template v-else>
       <UCard>
-        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+        <div
+          class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center"
+        >
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div class="size-24 shrink-0 overflow-hidden rounded-xl border border-default bg-muted sm:size-28">
+            <div
+              class="size-24 shrink-0 overflow-hidden rounded-xl border border-default bg-muted sm:size-28"
+            >
               <img
                 v-if="imageUrl"
                 :src="imageUrl"
@@ -35,13 +39,18 @@
 
             <div class="min-w-0 space-y-3">
               <div>
-                <h2 class="text-2xl font-semibold tracking-normal text-highlighted">
+                <h2
+                  class="text-2xl font-semibold tracking-normal text-highlighted"
+                >
                   {{ name || 'Untitled kitchen' }}
                 </h2>
                 <p v-if="tagline" class="mt-1 text-sm text-dimmed">
                   {{ tagline }}
                 </p>
-                <p v-if="shortAddress || formattedAddress" class="mt-2 text-sm text-toned">
+                <p
+                  v-if="shortAddress || formattedAddress"
+                  class="mt-2 text-sm text-toned"
+                >
                   {{ shortAddress || formattedAddress }}
                 </p>
               </div>
@@ -50,8 +59,8 @@
                 <UBadge v-if="placeId" color="neutral" variant="subtle">
                   Place linked
                 </UBadge>
-        <UBadge color="neutral" variant="soft">
-          {{ menuDisplaySummary }}
+                <UBadge color="neutral" variant="soft">
+                  {{ menuDisplaySummary }}
                 </UBadge>
               </div>
             </div>
@@ -91,11 +100,15 @@
           <div class="space-y-3">
             <div class="workspace-summary-field">
               Code:
-              <span class="workspace-summary-value">{{ currencyCode || 'Missing' }}</span>
+              <span class="workspace-summary-value">{{
+                currencyCode || 'Missing'
+              }}</span>
             </div>
             <div class="workspace-summary-field">
               Display:
-              <span class="workspace-summary-value">{{ currencyFormatLabel }}</span>
+              <span class="workspace-summary-value">{{
+                currencyFormatLabel
+              }}</span>
             </div>
             <div class="workspace-summary-field">
               Menu display:
@@ -115,7 +128,9 @@
                   Delivery fulfilment
                 </div>
                 <p class="text-sm text-dimmed">
-                  {{ deliveryZones.length }} delivery zone{{ deliveryZones.length === 1 ? '' : 's' }}
+                  {{ deliveryZones.length }} delivery zone{{
+                    deliveryZones.length === 1 ? '' : 's'
+                  }}
                 </p>
               </div>
             </div>
@@ -129,8 +144,9 @@
             >
               {{ zone.label }}
               <span class="workspace-summary-value">
-                Min {{ currencyCode || 'currency' }} {{ zone.min_order_chf || 0 }} ·
-                fee {{ currencyCode || 'currency' }} {{ zone.fee_chf || 0 }}
+                Min {{ currencyCode || 'currency' }}
+                {{ zone.min_order_chf || 0 }} · fee
+                {{ currencyCode || 'currency' }} {{ zone.fee_chf || 0 }}
               </span>
             </div>
           </div>
@@ -158,9 +174,7 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
 import { useKitchenWorkspaceMenus } from '../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
-import {
-  readKitchenFulfilmentConfig,
-} from '../../../utils/kitchen-spine'
+import { readKitchenFulfilmentConfig } from '../../../utils/kitchen-spine'
 import { menuAcceptsOrderType } from '../../../../menu/utils/menu-ordering-policy'
 
 const {
@@ -174,9 +188,13 @@ const {
 const { place, currencyCode } = useKitchenWorkspacePlace()
 const { menus } = useKitchenWorkspaceMenus()
 
-const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
+const kitchen = computed(
+  () => selectedKitchen.value as Record<string, unknown> | null
+)
 const name = computed(() =>
-  String(kitchenName.value || place.value?.name || place.value?.short_name || '')
+  String(
+    kitchenName.value || place.value?.name || place.value?.short_name || ''
+  )
 )
 const tagline = computed(() =>
   String(kitchenTagline.value || place.value?.brand_tagline || '')
@@ -194,13 +212,17 @@ const shortAddress = computed(() =>
   String(place.value?.short_address || kitchen.value?.short_address || '')
 )
 const formattedAddress = computed(() =>
-  String(place.value?.formatted_address || kitchen.value?.formatted_address || '')
+  String(
+    place.value?.formatted_address || kitchen.value?.formatted_address || ''
+  )
 )
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
-const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format ?? 'dash'))
+const currencyFormat = computed(() =>
+  String(kitchen.value?.menu_currency_format ?? 'dash')
+)
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
-const deliveryZones = computed(() =>
-  readKitchenFulfilmentConfig(kitchen.value).delivery_zones
+const deliveryZones = computed(
+  () => readKitchenFulfilmentConfig(kitchen.value).delivery_zones
 )
 const hasDeliveryMenus = computed(() =>
   menus.value.some((menu) => menuAcceptsOrderType(menu, 'delivery'))

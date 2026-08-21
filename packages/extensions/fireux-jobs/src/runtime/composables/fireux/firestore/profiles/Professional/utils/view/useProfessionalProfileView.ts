@@ -1,14 +1,14 @@
 // Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: enrich projected Professional detail from canonical Places.
 // Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich public profiles through bounded exact Place reads.
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
-import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/composables/firestore/utils/view/mapPlaceToBasePlace'
+import type { PlaceCard } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
-import type { PublicProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
   EducationItem,
@@ -61,7 +61,7 @@ const normalizePlaceId = (placeId?: string | null) => {
 }
 
 export function useProfessionalProfileView(
-  profileRef: Ref<PublicProfessionalProfile | null | undefined>,
+  profileRef: Ref<ProfessionalProfile | null | undefined>,
   cardRef: Ref<ProfessionalCard.Card | null | undefined>,
   propRef?: Ref<string | null | undefined>
 ) {

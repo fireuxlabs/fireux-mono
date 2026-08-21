@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-allergen">
-    <h2 class="menu-order-screen-title">
-      Allergy check
-    </h2>
+    <h2 class="menu-order-screen-title">Allergy check</h2>
 
     <div class="menu-order-allergen__body">
       <div class="menu-order-allergen__copy">

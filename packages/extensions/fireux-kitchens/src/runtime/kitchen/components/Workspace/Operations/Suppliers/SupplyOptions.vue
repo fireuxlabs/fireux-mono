@@ -24,8 +24,16 @@
         <UAlert
           :color="hasIntegratedCatalogue ? 'primary' : 'neutral'"
           variant="soft"
-          :icon="hasIntegratedCatalogue ? 'i-lucide-book-open' : 'i-lucide-clipboard-list'"
-          :title="hasIntegratedCatalogue ? 'Catalogue supply options' : 'Linked ingredients'"
+          :icon="
+            hasIntegratedCatalogue
+              ? 'i-lucide-book-open'
+              : 'i-lucide-clipboard-list'
+          "
+          :title="
+            hasIntegratedCatalogue
+              ? 'Catalogue supply options'
+              : 'Linked ingredients'
+          "
           :description="statusDescription"
         />
 
@@ -49,7 +57,10 @@
           </div>
         </div>
 
-        <div v-else-if="linkedIngredientIds.length" class="flex flex-wrap gap-2">
+        <div
+          v-else-if="linkedIngredientIds.length"
+          class="flex flex-wrap gap-2"
+        >
           <UBadge
             v-for="ingredientId in linkedIngredientIds"
             :key="ingredientId"

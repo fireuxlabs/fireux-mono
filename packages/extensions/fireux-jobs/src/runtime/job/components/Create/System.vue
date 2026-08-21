@@ -48,10 +48,10 @@ import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/u
 
 const router = useRouter()
 const { form, reset, submit } = useJobCreate()
-const { coreProfile, pill: agentInterface } = useAgent()
+const { agentProfile, pill: agentInterface } = useAgent()
 
 const agentCard = computed(() =>
-  coreProfile.value ? agentInterface(coreProfile.value) : null
+  agentProfile.value ? agentInterface(agentProfile.value) : null
 )
 
 const submitting = ref(false)

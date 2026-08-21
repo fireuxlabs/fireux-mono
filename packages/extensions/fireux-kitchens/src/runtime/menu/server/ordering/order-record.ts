@@ -99,7 +99,7 @@ export function assembleMenuOrderRecord(input: {
           command.orderTypeConfig.notifications.whatsapp.recipient_phone
         )
       : ''
-  const path = `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
+  const path = `kitchens/${context.kitchenId}/orders/${identity.id}`
   const receiptItems = input.items.map((item) => ({
     id: item.id,
     source_item_id: item.source_item_id,

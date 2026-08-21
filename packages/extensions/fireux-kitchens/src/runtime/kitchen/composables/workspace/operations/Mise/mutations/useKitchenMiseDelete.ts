@@ -9,12 +9,16 @@ import {
   resolveKitchenChildCollectionPath,
 } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 
-export function useKitchenMiseDelete(options: {
-  kitchenCollectionPath?: string | Ref<string | null | undefined>
-  databaseId?: string | Ref<string | null | undefined>
-} = {}) {
+export function useKitchenMiseDelete(
+  options: {
+    kitchenCollectionPath?: string | Ref<string | null | undefined>
+    databaseId?: string | Ref<string | null | undefined>
+  } = {}
+) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
+  const { deleteDocument } = useFirestoreDelete({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
   async function deleteKitchenMiseTask(kitchenId: string, taskId: string) {

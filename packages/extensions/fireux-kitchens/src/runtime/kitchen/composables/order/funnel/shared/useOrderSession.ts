@@ -64,10 +64,10 @@ const numberValue = (value: unknown) => {
 }
 const readStoredLines = (value: unknown): StoredSessionLine[] =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? Object.values(value as Record<string, unknown>)
-        .filter((line): line is StoredSessionLine =>
+    ? Object.values(value as Record<string, unknown>).filter(
+        (line): line is StoredSessionLine =>
           Boolean(line && typeof line === 'object' && !Array.isArray(line))
-        )
+      )
     : []
 
 const readStoredDraft = (value: unknown) => {
@@ -165,9 +165,9 @@ export const readOrderSessionSummaries = (
       )
       if (!quantity) continue
 
-      const menuIds = Array.from(new Set(
-        lines.map((line) => text(line.menuId)).filter(Boolean)
-      ))
+      const menuIds = Array.from(
+        new Set(lines.map((line) => text(line.menuId)).filter(Boolean))
+      )
 
       sessions.push({
         key,
@@ -182,9 +182,7 @@ export const readOrderSessionSummaries = (
     return []
   }
 
-  return sessions.sort((left, right) =>
-    left.label.localeCompare(right.label)
-  )
+  return sessions.sort((left, right) => left.label.localeCompare(right.label))
 }
 
 export function useOrderSessionConflict(
@@ -197,13 +195,15 @@ export function useOrderSessionConflict(
   const currentContext = computed(() => toValue(options.context))
   const enabled = computed(() => toValue(options.enabled) === true)
   const summaries = useOrderSessionSummaries(kitchenSlug)
-  const conflictingSession = computed<MenuOrderSessionSummary | null>(() =>
-    summaries.sessions.value.find((session: MenuOrderSessionSummary) =>
-      session.orderType !== orderType.value
-    ) || null
+  const conflictingSession = computed<MenuOrderSessionSummary | null>(
+    () =>
+      summaries.sessions.value.find(
+        (session: MenuOrderSessionSummary) =>
+          session.orderType !== orderType.value
+      ) || null
   )
-  const hasConflict = computed(() =>
-    enabled.value && Boolean(conflictingSession.value)
+  const hasConflict = computed(
+    () => enabled.value && Boolean(conflictingSession.value)
   )
   const conflict = computed<MenuOrderSessionConflict | null>(() => {
     const session = conflictingSession.value

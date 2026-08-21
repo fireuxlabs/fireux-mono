@@ -11,8 +11,8 @@
     <template #description>
       <div class="menu-order-allergy-acknowledgement__body">
         <p id="menu-order-allergy-acknowledgement-description">
-          If you have a food allergy or intolerance, please speak to the
-          Kitchen before sending your order.
+          If you have a food allergy or intolerance, please speak to the Kitchen
+          before sending your order.
         </p>
 
         <UCheckbox
@@ -20,9 +20,7 @@
           :disabled="disabled"
           label="I understand"
           :model-value="modelValue"
-          @update:model-value="
-            $emit('update:modelValue', Boolean($event))
-          "
+          @update:model-value="$emit('update:modelValue', Boolean($event))"
         />
       </div>
     </template>
@@ -30,14 +28,17 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  disabled?: boolean
-  invalid?: boolean
-  modelValue: boolean
-}>(), {
-  disabled: false,
-  invalid: false,
-})
+withDefaults(
+  defineProps<{
+    disabled?: boolean
+    invalid?: boolean
+    modelValue: boolean
+  }>(),
+  {
+    disabled: false,
+    invalid: false,
+  }
+)
 
 defineEmits<{
   (event: 'update:modelValue', value: boolean): void

@@ -29,7 +29,7 @@ export const JobEntity = defineFireuxEntity({
   name: 'Job',
   family: ['content'],
   identity: 'root',
-  authority: 'owning-app-database',
+  authority: 'domain-database',
   appSupport: 'none',
   workspace: false,
   root: JobStorage.path,

@@ -102,7 +102,9 @@ let messageId = 0
 
 const selectedLiveScope = computed(() => ({
   appId: String(kitchenWorkspace.runtime.appId.value || '').trim(),
-  kitchenId: String(kitchenWorkspace.runtime.storageKitchenId.value || '').trim(),
+  kitchenId: String(
+    kitchenWorkspace.runtime.storageKitchenId.value || ''
+  ).trim(),
 }))
 
 function pushMessage(

@@ -101,7 +101,7 @@ import {
   type UserCard,
 } from '../../../user/composables/useUserInterface'
 import type { App } from '../../models/app.model.ts'
-import type { PublicUserIdentityDto } from '../../../server/utils/public-projection/public-dto.types.ts'
+import type { UserIdentitySummary } from '../../../user/models/user-directory.model.ts'
 
 const props = defineProps<{ app: App }>()
 const appRef = computed(() => props.app)
@@ -237,7 +237,7 @@ const fallbackUserCard = (options: {
 }
 
 const cardForUser = (
-  target?: PublicUserIdentityDto | null | undefined
+  target?: UserIdentitySummary | null | undefined
 ): UserCard.Card => {
   const payload = userCard(target ?? undefined)
   if (payload) return payload

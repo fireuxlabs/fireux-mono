@@ -6,7 +6,10 @@ import {
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { KitchenMenuStorage as MenuStorage, type KitchenMenu as Menu } from '../../../models/kitchen-menu.model.ts'
+import {
+  KitchenMenuStorage as MenuStorage,
+  type KitchenMenu as Menu,
+} from '../../../models/kitchen-menu.model.ts'
 import { resolveKitchenChildCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 
 export function useMenuFetch(
@@ -36,23 +39,25 @@ export function useMenuFetch(
   })
   const menu = import.meta.server
     ? computed<Menu | undefined>(() => undefined)
-    : (useDocument<Menu>(docRef, {
-        ssrKey: computed(() =>
-          collectionPath.value && resolvedMenuId.value
-            ? `${collectionPath.value}-${resolvedMenuId.value}`
-            : 'menu-empty'
-        ),
-        transform: (docSnap: DocumentSnapshot<Menu>) => {
-          const raw = docSnap.data()
-          if (!raw) return undefined
-          const value = { ...(raw as Menu), id: docSnap.id }
-          return attachDevCollectionMeta(
-            value,
-            collectionPath.value,
-            docSnap.id
-          ) as Menu
-        },
-      } as any) as any).data as Ref<Menu | undefined>
+    : ((
+        useDocument<Menu>(docRef, {
+          ssrKey: computed(() =>
+            collectionPath.value && resolvedMenuId.value
+              ? `${collectionPath.value}-${resolvedMenuId.value}`
+              : 'menu-empty'
+          ),
+          transform: (docSnap: DocumentSnapshot<Menu>) => {
+            const raw = docSnap.data()
+            if (!raw) return undefined
+            const value = { ...(raw as Menu), id: docSnap.id }
+            return attachDevCollectionMeta(
+              value,
+              collectionPath.value,
+              docSnap.id
+            ) as Menu
+          },
+        } as any) as any
+      ).data as Ref<Menu | undefined>)
   const exists = computed(() => Boolean(menu.value))
 
   return {

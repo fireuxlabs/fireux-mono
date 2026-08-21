@@ -1,11 +1,9 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
-  AppSupplierDefaults,
   SupplierCatalogueDefaults,
   SupplierIngredientDefaults,
   SupplierItemDefaults,
   SupplierDefaults,
-  type AppSupplier,
   type Supplier,
   type SupplierCatalogue,
   type SupplierIngredient,
@@ -79,8 +77,7 @@ export const supplierIngredient = (
 
 export const supplierRoot = (
   input: SupplierDemoScenarioSeed,
-  ingredients: SupplierIngredient[],
-  appId: string
+  ingredients: SupplierIngredient[]
 ): Supplier => ({
   ...SupplierDefaults,
   id: input.id,
@@ -102,22 +99,6 @@ export const supplierRoot = (
   ),
   hello: `Welcome to ${input.name}.`,
   created,
-  updated,
-})
-
-export const supplierAppSupport = (
-  supplierId: string,
-  appId: string
-): AppSupplier => ({
-  ...AppSupplierDefaults,
-  id: supplierId,
-  operator_ids: [],
-  team_ids: [],
-  join_requests: [],
-  created: {
-    ...created,
-    app_id: appId,
-  },
   updated,
 })
 

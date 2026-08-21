@@ -107,14 +107,14 @@ const selectIngredientLinks = (ids?: readonly string[]) => {
   if (!ids) return kitchenDemoIngredientLinks
 
   const requested = new Set(ids)
-  const definitions = kitchenDemoIngredientLinks.filter(definition =>
+  const definitions = kitchenDemoIngredientLinks.filter((definition) =>
     requested.has(definition.ingredientId)
   )
   if (definitions.length !== requested.size) {
     const resolved = new Set(
-      definitions.map(definition => definition.ingredientId)
+      definitions.map((definition) => definition.ingredientId)
     )
-    const missing = [...requested].filter(id => !resolved.has(id))
+    const missing = [...requested].filter((id) => !resolved.has(id))
     throw new Error(
       `Kitchen Demo Ingredient links are missing: ${missing.join(', ')}`
     )
@@ -128,7 +128,7 @@ const kitchenIngredientWorld = (
 ) => {
   const definitions = selectIngredientLinks(ids)
   const kitchenIngredients: KitchenIngredient[] = definitions.map(
-    definition => ({
+    (definition) => ({
       ...KitchenIngredientModel,
       id: definition.ingredientId,
       ingredient_id: definition.ingredientId,
@@ -137,7 +137,7 @@ const kitchenIngredientWorld = (
     })
   )
   const supplierIngredientLinks: KitchenSupplierIngredient[] = definitions.map(
-    definition => ({
+    (definition) => ({
       ...KitchenSupplierIngredientModel,
       id: `${definition.supplierId}:${definition.ingredientId}`,
       kitchen_id: identity.kitchenId,

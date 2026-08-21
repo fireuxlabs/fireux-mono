@@ -11,10 +11,7 @@ const deanosKitchenDemoNextServiceNumber =
   deanosKitchenDemoCurrentService.completedOrders.length + 1
 
 const deanosCurrentOrderNumber = (serviceNumber: number) =>
-  deanosKitchenDemoOrderNumber(
-    DEANOS_KITCHEN_DEMO_AS_OF_DATE,
-    serviceNumber
-  )
+  deanosKitchenDemoOrderNumber(DEANOS_KITCHEN_DEMO_AS_OF_DATE, serviceNumber)
 
 const deanosKitchenDemoActiveOrders: KitchenOrder[] = [
   makeOrder({
@@ -277,40 +274,36 @@ const deanosKitchenDemoActiveOrders: KitchenOrder[] = [
 ]
 
 const deanosKitchenDemoRecentCompletedOrders: KitchenOrder[] =
-  deanosKitchenDemoCurrentService.completedOrders
-    .slice(-3)
-    .map(transaction =>
-      makeOrder({
-        identity: deanosKitchenDemoIdentity,
-        id: transaction.id,
-        orderNumber: transaction.orderNumber,
-        serviceId: transaction.serviceId,
-        serviceNumber: transaction.serviceNumber,
-        status: 'completed',
-        orderType: transaction.orderType,
-        channel: transaction.channel,
-        createdAt: transaction.placedAt,
-        updatedAt: transaction.completedAt,
-        updatedBy: transaction.closedByTeamMemberId,
-        totalMinor: transaction.pricing.totalMinor,
-        items: transaction.items.map((item, itemIndex) => ({
-          id: `item-${itemIndex + 1}`,
-          itemId: item.sourceItemId,
-          dishId: item.dishId,
-          itemKind: item.itemKind,
-          label: item.label,
-          unitPrice: item.unitPriceMinor / 100,
-          quantity: item.quantity,
-          checked: true,
-          ...(item.variantId ? { variantId: item.variantId } : {}),
-          ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
-        })),
-      })
-    )
+  deanosKitchenDemoCurrentService.completedOrders.slice(-3).map((transaction) =>
+    makeOrder({
+      identity: deanosKitchenDemoIdentity,
+      id: transaction.id,
+      orderNumber: transaction.orderNumber,
+      serviceId: transaction.serviceId,
+      serviceNumber: transaction.serviceNumber,
+      status: 'completed',
+      orderType: transaction.orderType,
+      channel: transaction.channel,
+      createdAt: transaction.placedAt,
+      updatedAt: transaction.completedAt,
+      updatedBy: transaction.closedByTeamMemberId,
+      totalMinor: transaction.pricing.totalMinor,
+      items: transaction.items.map((item, itemIndex) => ({
+        id: `item-${itemIndex + 1}`,
+        itemId: item.sourceItemId,
+        dishId: item.dishId,
+        itemKind: item.itemKind,
+        label: item.label,
+        unitPrice: item.unitPriceMinor / 100,
+        quantity: item.quantity,
+        checked: true,
+        ...(item.variantId ? { variantId: item.variantId } : {}),
+        ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
+      })),
+    })
+  )
 
 export const deanosKitchenDemoOrders: KitchenOrder[] = [
   ...deanosKitchenDemoActiveOrders,
   ...deanosKitchenDemoRecentCompletedOrders,
 ]
-
-

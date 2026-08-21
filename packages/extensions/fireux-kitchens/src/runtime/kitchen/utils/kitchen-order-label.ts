@@ -2,7 +2,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export function kitchenOrderServiceNumber(order: Record<string, unknown>) {
@@ -29,15 +29,14 @@ export function kitchenOrderTicketFooterLabel(
   placedTime = ''
 ) {
   const number = kitchenOrderServiceNumber(order)
-  const customerName = text(order.order_type) === 'collection'
-    ? kitchenOrderCollectionCustomerName(order)
-    : ''
+  const customerName =
+    text(order.order_type) === 'collection'
+      ? kitchenOrderCollectionCustomerName(order)
+      : ''
 
-  return [
-    number ? `Order ${number}` : 'Order',
-    customerName,
-    text(placedTime),
-  ].filter(Boolean).join(' - ')
+  return [number ? `Order ${number}` : 'Order', customerName, text(placedTime)]
+    .filter(Boolean)
+    .join(' - ')
 }
 
 function kitchenOrderCollectionCustomerName(order: Record<string, unknown>) {

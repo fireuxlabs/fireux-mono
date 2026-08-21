@@ -1,7 +1,10 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { JobApplicationStorage } from '../../../models/job-application.model.ts'
@@ -14,7 +17,6 @@ import { nextEngagementStatus } from '../../../utils/job-hiring-policy.ts'
 import { readJobServerScope } from '../../core/runtime.ts'
 import {
   appRef,
-  appAgentRef,
   assertCurrentAppMembership,
   canonicalApplication,
   canonicalEngagement,
@@ -25,6 +27,7 @@ import {
   membershipRef,
   record,
   text,
+  userProfileRef,
 } from './records.ts'
 import { viewResponse } from './views.ts'
 
@@ -41,6 +44,10 @@ export async function mutateJobEngagement(
   )
   const action = engagementAction(input)
   const db = getRuntimeFirestore(scope.databaseId)
+  const identityDb = getRuntimeIdentityFirestore(scope.identityDatabaseId)
+  if (!hasProfile(await userProfileRef(identityDb, uid, 'agent').get())) {
+    fail(403, 'An active Agent profile is required.')
+  }
   const engagementRef = db
     .collection(JobEngagementStorage.collection)
     .doc(engagementId)
@@ -57,16 +64,12 @@ export async function mutateJobEngagement(
     ) {
       fail(404, 'Engagement not found.')
     }
-    const [appSnapshot, membershipSnapshot, agentSnapshot] =
+    const [appSnapshot, membershipSnapshot] =
       await transaction.getAll(
         appRef(db, scope.appId),
-        membershipRef(db, scope.appId, uid),
-        appAgentRef(db, scope.appId, uid)
+        membershipRef(db, scope.appId, uid)
       )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    if (!hasProfile(agentSnapshot)) {
-      fail(403, 'An active Agent profile is required.')
-    }
     const capacityRef =
       engagement.contract_type === 'temporary'
         ? db

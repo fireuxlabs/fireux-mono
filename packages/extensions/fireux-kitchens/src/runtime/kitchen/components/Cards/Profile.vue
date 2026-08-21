@@ -10,9 +10,7 @@
 
       <div class="min-w-0 flex-1 space-y-3">
         <div class="space-y-1">
-          <div class="fx-type-label">
-            Kitchen
-          </div>
+          <div class="fx-type-label">Kitchen</div>
 
           <h2 class="text-2xl font-semibold text-highlighted">
             {{ model.title }}
@@ -33,14 +31,17 @@
           </UBadge>
         </div>
 
-        <div v-if="model.foodGallery.length" class="flex gap-2 overflow-x-auto pb-1">
+        <div
+          v-if="model.foodGallery.length"
+          class="flex gap-2 overflow-x-auto pb-1"
+        >
           <img
             v-for="image in model.foodGallery"
             :key="image"
             :src="image"
             :alt="model.title || 'Food gallery image'"
             class="size-20 shrink-0 rounded-lg object-cover"
-          >
+          />
         </div>
       </div>
     </div>

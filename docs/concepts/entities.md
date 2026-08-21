@@ -1,7 +1,7 @@
 # Entities
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -58,9 +58,9 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `kind`       | entity, record, shape, primitive, bucket, to-confirm                                                          | What sort of concept is it?                    |
 | `family`     | one or more named FireUX families                                                                             | Which siblings should be compared?             |
 | `identity`   | root, parent-scoped, none, to-confirm                                                                         | Where does canonical identity live?            |
-| `authority`  | owning App database, identity database, ecosystem identity database, FireUX control plane, parent, to-confirm | Who owns lifecycle truth?                      |
-| `appSupport` | none, access record, membership record, operational record, profile delta, to-confirm                         | What non-identity App record may accompany it? |
-| `workspace`    | boolean                                                                                                       | Is it a Workspace Entity?                        |
+| `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent   | Who owns lifecycle truth?                      |
+| `appSupport` | none, membership record, profile delta, to-confirm                                                            | What genuine App-owned support may accompany it? |
+| `workspace`  | boolean                                                                                                       | Is it a Workspace Entity?                      |
 | `parent`     | optional Entity name                                                                                          | Which Entity owns a parent-scoped declaration? |
 
 A root Entity document is its canonical readable Entity. Information that
@@ -72,25 +72,25 @@ Entity declaration does not carry a second read-classification axis.
 
 The current declared Entities are:
 
-| Entity           | Family                    | Identity       | Authority                   | App support       | Workspace |
-| ---------------- | ------------------------- | -------------- | --------------------------- | ----------------- | ------- |
-| App              | core, system              | root           | owning App database         | none              | no      |
-| Ecosystem        | system                    | root           | Ecosystem identity database | none              | no      |
-| User             | core, identity            | root           | identity database           | membership record | no      |
-| Project          | system, workspace entity    | root           | FireUX control plane        | none              | yes     |
-| Job              | content                   | root           | owning App database         | none              | no      |
-| Place            | place                     | root           | owning App database         | none              | no      |
-| MarketplaceStore | commerce                  | App-scoped     | parent                      | none              | no      |
-| Kitchen          | kitchen, workspace entity   | root           | owning App database         | access record     | yes     |
-| KitchenMenu      | menu, kitchen             | Kitchen-scoped | parent                      | none              | no      |
-| Recipe           | kitchen                   | Kitchen-scoped | parent                      | none              | no      |
-| KitchenPrepItem  | kitchen                   | Kitchen-scoped | parent                      | none              | no      |
-| Dish             | kitchen, menu             | Kitchen-scoped | parent                      | none              | no      |
-| KitchenOrder     | kitchen, ordering         | Kitchen-scoped | parent                      | none              | no      |
-| Menu             | menu                      | root           | owning App database         | none              | no      |
-| Supplier         | supplier, workspace entity  | root           | owning App database         | access record     | yes     |
-| Portfolio        | portfolio, workspace entity | root           | owning App database         | access record     | yes     |
-| Property         | property, workspace entity  | root           | owning App database         | access record     | yes     |
+| Entity           | Family                     | Identity       | Authority                   | App support       | Workspace |
+| ---------------- | -------------------------- | -------------- | --------------------------- | ----------------- | --------- |
+| App              | core, system               | root           | App database                | none              | no        |
+| Ecosystem        | system                     | root           | Ecosystem identity database | none              | no        |
+| User             | core, identity             | root           | identity database           | membership record | no        |
+| Project          | system, workspace entity   | root           | FireUX control plane        | none              | yes       |
+| Job              | content                    | root           | domain database             | none              | no        |
+| Place            | place                      | root           | domain database             | none              | no        |
+| MarketplaceStore | commerce, workspace entity | root           | domain database             | none              | yes       |
+| Kitchen          | kitchen, workspace entity  | root           | domain database             | none              | yes       |
+| KitchenMenu      | menu, kitchen              | Kitchen-scoped | parent                      | none              | no        |
+| Recipe           | kitchen                    | Kitchen-scoped | parent                      | none              | no        |
+| KitchenPrepItem  | kitchen                    | Kitchen-scoped | parent                      | none              | no        |
+| Dish             | kitchen, menu              | Kitchen-scoped | parent                      | none              | no        |
+| KitchenOrder     | kitchen, ordering          | Kitchen-scoped | parent                      | none              | no        |
+| Menu             | menu                       | root           | domain database             | none              | no        |
+| Supplier         | supplier, workspace entity | root           | domain database             | none              | yes       |
+| Portfolio        | portfolio, workspace entity| root           | domain database             | none              | yes       |
+| Property         | property, workspace entity | root           | domain database             | none              | yes       |
 
 The current declared Records are:
 
@@ -101,7 +101,7 @@ The current declared Records are:
 | MenuSection       | KitchenMenu      | It groups MenuItem records inside one Menu                                 |
 | MenuItem          | MenuSection      | It is one parent-owned catalogue row                                       |
 | KitchenSale       | KitchenOrder     | It is the immutable one-to-one result of Order completion                  |
-| CustomerProfile   | User             | It stores App-scoped ordering preferences, not another person identity     |
+| CustomerProfile   | User             | It stores User-owned ordering preferences, not another person identity     |
 | CustomerOrderLink | User             | It points to an Order without copying mutable Order lifecycle state        |
 | MarketplaceOffer  | MarketplaceStore | It has no lifecycle outside its Store                                      |
 | MarketplaceOrder  | MarketplaceStore | It is operational fulfilment truth for one Store                           |
@@ -112,17 +112,18 @@ mega-registry into Core.
 
 ## Confirmed relationship patterns
 
-### Root plus App support
+### Root Workspace ownership
 
-Kitchen, Supplier, Portfolio, and Property have one canonical root Entity and a
-separate same-id App access record. The App record may contain bounded access
-such as `operator_ids`, `team_ids`, and join requests. It is not a second Entity
-identity and must not become a copied profile.
+Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are
+root Workspace Entities. Each owns `team/{uid}`, `team-requests/{uid}`, its
+operations, and any protected support beneath its root document. The Team
+record grants Workspace authority; its document id is the User uid.
 
-Joined reads require both valid halves and a management relationship that
-resolves to the current App. Missing or
-mismatched support must fail closed rather than produce a selectable partial
-target.
+`management` may associate the root with an App or the ecosystem Workspace,
+but that relationship never relocates the Entity or creates a same-id App
+access record. A selected target must resolve one valid root, management
+relationship, AppUser membership where an App is involved, and Team record (or
+the explicit App-admin override).
 
 ### Root plus same-id role
 
@@ -184,11 +185,11 @@ intermediate product's inputs, yield, and method. Dish owns reusable food
 identity and media.
 
 MenuSection, MenuItem, and KitchenStation can have stable document ids without
-independent Entity lifecycle. Kitchen team join requests, document links,
-financial facts, and similar parent-owned support should remain Records unless
-product behavior proves otherwise. KitchenStation is owned below the same-id
-AppKitchen support record; its stable local id lets Team and Mise records refer
-to it without turning it into independent identity or access authority.
+independent Entity lifecycle. Kitchen Team requests, document links, financial
+facts, and similar parent-owned support should remain Records unless product
+behavior proves otherwise. KitchenStation is owned below Kitchen; its stable
+local id lets Team and Mise records refer to it without turning it into
+independent identity or access authority.
 
 ### Directory and presentation views
 
@@ -234,12 +235,12 @@ the same Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` and
 relationships in Misebox without writing data.
 
 KitchenStation is a confirmed Kitchen-owned operational Record at
-`apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`. Run
-`scripts/audit-misebox-kitchen-stations.mjs` to verify its AppKitchen parent,
+`kitchens/{kitchenId}/stations/{stationId}`. Run
+`scripts/audit-misebox-kitchen-stations.mjs` to verify its Kitchen parent,
 scope, required fields, ordering, and Station references without writing data.
 
 KitchenMiseTask is a confirmed Kitchen-owned operational Record at
-`apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}`. It owns preparation workflow,
+`kitchens/{kitchenId}/mise-tasks/{taskId}`. It owns preparation workflow,
 scheduling, checklist and assignment state. `prep_item_ids` links canonical
 KitchenPrepItem entities explicitly; other links remain inside the owning
 Kitchen or point to canonical Ingredient ids. Run
@@ -247,28 +248,30 @@ Kitchen or point to canonical Ingredient ids. Run
 relationships without writing data.
 
 KitchenPrepItem is stored at
-`apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
+`kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
 legacy `mise` migration is complete; new code must not restore those duplicate
-root/AppKitchen documents or normalize them as Mise tasks. Keep
+documents or normalize them as Mise tasks. Keep
 `scripts/migrate-misebox-kitchen-prep-items.mjs` as the migration record and
 use the read-only audit to detect storage regression.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
 Completing a ready Order atomically creates its same-id immutable KitchenSale
-and FinancialFact. CustomerProfile is an optional App-scoped User profile
-Record; CustomerOrderLink is a User-owned, App-scoped pointer that can exist
-without that preferences record. Run
+and FinancialFact. CustomerProfile is an optional User-owned profile Record at
+`users/{uid}/profiles/customer`; registered customer identity is AppUser and
+guest details stay on the Order. CustomerOrderLink is a User-owned pointer at
+`users/{uid}/orders/{orderId}`. Run
 `scripts/audit-misebox-orders-sales-customers.mjs` for the read-only integrity
 check. Legacy root links are planned by
 `scripts/migrate-misebox-customer-order-links.mjs` and require an explicit
 confirmation hash plus protected preimage before application.
 
-ChefProfile and DriverProfile are confirmed User-backed Records. Their root
-document id is the User uid; public profile reads join the canonical User
-rather than copying person identity. Their App documents are non-identity
-profile deltas. KitchenTeamMember and KitchenTeamJoinRequest are Kitchen-owned
-operational Records. Neither record grants Workspace authority: AppKitchen
-operator and team ids remain the access seam. Run
+ChefProfile and DriverProfile are confirmed User-owned Records at
+`users/{uid}/profiles/{kind}`. Presentation reads join canonical User rather
+than copying person identity. Genuine App-specific capability state may live
+beneath that profile at `app-state/{appId}`. KitchenTeamMember is the canonical
+Workspace authority at `kitchens/{kitchenId}/team/{uid}` and may also carry
+Kitchen-specific operational roles. KitchenTeamJoinRequest remains workflow,
+never authority. Run
 `scripts/audit-misebox-chef-driver-kitchen-team.mjs` to verify these profile,
 membership, Kitchen, and workflow joins without writing data.
 
@@ -286,13 +289,12 @@ Run `scripts/audit-misebox-product-supplier-items.mjs` to verify Product,
 Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
 Misebox owner database without writing data.
 
-Kitchen root identity, its required Place, same-id AppKitchen access, and User
-Workspace target pointers are verified by
+Kitchen root identity, its required Place, root-owned Team, and management
+relationship are verified by
 `scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
 operational identity; authored slugs resolve through the Kitchen
-server route seam. Confirmed inert AppKitchen access ids are planned and
-preimage-protected by `scripts/migrate-misebox-kitchen-authority.mjs`; the
-script requires an explicit confirmation hash before changing data.
+server route seam. The owner-first migration must retain a protected preimage
+and an explicit confirmation hash before changing data.
 
 ## Storage and route implications
 
@@ -305,11 +307,9 @@ script requires an explicit confirmation hash before changing data.
   merely to reuse UI.
 - Model and composable folder placement follows the declared owner; folders do
   not create ownership.
-- App support records must use declared support paths and contain only their
-  allowed non-identity delta.
 - Workspace-capable roots store the generic `management` relationship, never a
   domain-enumerated Core type: `root`, `workspace`, or `app` with `app_id` only
-  in the final mode. App support remains access/operations, not root identity.
+  in the final mode. Team and operations remain root-owned in every mode.
 - Cross-root relationships prefer canonical ids over copied Entity objects or
   inverse child arrays unless a named Directory or presentation view owns that
   optimization.
@@ -325,9 +325,9 @@ Directory and Entity Detail family maps.
 | Existing domain concepts exceed the executable matrix          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                             |
 | Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                        |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth |
-| Kitchen root + Place + App support composition                 | `accepted` | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only                               |
+| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration and Team authority, while Place owns location presentation                                      |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                        |
-| Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                                               |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                 |
 | Product root plus Supplier Item relationship                   | `accepted` | Product owns commercial identity and ProductPrice children; Supplier Item is a Supplier-owned offer Record with required `product_id` and optional `ingredient_id`                         |
 | Supplier location chain                                        | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                        |
 | Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                      |
@@ -344,7 +344,7 @@ Directory and Entity Detail family maps.
 ### Next
 
 1. Reconcile existing undeclared domain concepts one owning package at a time.
-2. Complete the Kitchen root/App-support identity migration.
+2. Complete the owner-first Workspace storage migration.
 3. Reconcile remaining duplicate `PublicX` root types with their canonical
    Entity types.
 
@@ -358,7 +358,7 @@ Directory and Entity Detail family maps.
 
 - Do not call every stored object an Entity.
 - Do not use root as a synonym for public.
-- Do not use scoped as a synonym for App support.
+- Do not use scoped as a synonym for App ownership.
 - Do not duplicate identity into access records.
 - Do not add inverse relationship arrays by default.
 - Do not let documentation confirm a concept absent from its source

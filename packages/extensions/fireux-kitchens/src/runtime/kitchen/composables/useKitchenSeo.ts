@@ -13,7 +13,7 @@ export function buildKitchenJsonLd(
     | null
     | undefined
   const name = clean(entry?.display_name || entry?.name)
-  if (entry?.visibility !== true || !clean(entry.slug) || !name) return null
+  if (entry?.visible !== true || !clean(entry.slug) || !name) return null
 
   return {
     '@context': 'https://schema.org',
@@ -43,7 +43,7 @@ export function useKitchenSeo(
   )
   const slug = computed(() => clean(entry.value?.slug))
   const isIndexable = computed(() =>
-    Boolean(entry.value?.visibility === true && slug.value)
+    Boolean(entry.value?.visible === true && slug.value)
   )
 
   return useSeo({

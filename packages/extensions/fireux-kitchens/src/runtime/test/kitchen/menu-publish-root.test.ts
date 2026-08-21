@@ -5,7 +5,9 @@ import { completeKitchenMenuPublication } from '../../menu/server/publication/ru
 test('publishing a scoped KitchenMenu ensures its missing root projection', async () => {
   const calls: string[] = []
   const root = await completeKitchenMenuPublication({
-    updateScopedMenu: async () => { calls.push('scoped') },
+    updateScopedMenu: async () => {
+      calls.push('scoped')
+    },
     ensureRootEntry: async () => {
       calls.push('root')
       return { id: 'friiites', path: '/menus/friiites' }

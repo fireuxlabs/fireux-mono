@@ -6,18 +6,18 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { PublicIngredientDetailResponse } from '../../../ingredient/models/ingredient-public.model.ts'
-import { projectPublicIngredient } from '../../../ingredient/server/public-projection.ts'
+import type { IngredientDetailResponse } from '../../../ingredient/models/ingredient-directory.model.ts'
+import { normalizeIngredient } from '../../../ingredient/server/normalize.ts'
 
 export default defineEventHandler(
-  async (event): Promise<PublicIngredientDetailResponse> => {
+  async (event): Promise<IngredientDetailResponse> => {
     const id = requireFirestoreDocumentId(
       getRouterParam(event, 'id'),
       'Ingredient id'
     )
     const snapshot = await getRuntimeFirestore().doc(`ingredients/${id}`).get()
-    const item = snapshot.exists ? projectPublicIngredient(snapshot) : null
-    if (!item) {
+    const ingredient = snapshot.exists ? normalizeIngredient(snapshot) : null
+    if (!ingredient) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Ingredient not found.',
@@ -29,6 +29,6 @@ export default defineEventHandler(
       'Cache-Control':
         'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
     })
-    return { item }
+    return { ingredient }
   }
 )

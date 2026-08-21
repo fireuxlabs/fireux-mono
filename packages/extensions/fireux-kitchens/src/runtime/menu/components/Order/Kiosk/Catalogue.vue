@@ -7,16 +7,31 @@
     @keydown.esc="closeDrawer"
   >
     <header class="menu-order-kiosk-catalogue__chrome">
-      <button type="button" aria-label="Change order type" @click="$emit('restart')">
+      <button
+        type="button"
+        aria-label="Change order type"
+        @click="$emit('restart')"
+      >
         <UIcon name="i-lucide-chevron-left" aria-hidden="true" />
         Change
       </button>
       <div class="menu-order-kiosk-catalogue__brand">
-        <img v-if="logoImageUrl" :src="logoImageUrl" :alt="kitchenName || 'Kitchen'">
+        <img
+          v-if="logoImageUrl"
+          :src="logoImageUrl"
+          :alt="kitchenName || 'Kitchen'"
+        />
         <strong v-else>{{ kitchenName || 'Menu' }}</strong>
       </div>
       <span class="menu-order-kiosk-catalogue__mode">
-        <UIcon :name="orderType === 'eat_in' ? 'i-lucide-armchair' : 'i-lucide-shopping-bag'" aria-hidden="true" />
+        <UIcon
+          :name="
+            orderType === 'eat_in'
+              ? 'i-lucide-armchair'
+              : 'i-lucide-shopping-bag'
+          "
+          aria-hidden="true"
+        />
         {{ orderType === 'eat_in' ? 'Eat here' : 'Take away' }}
       </span>
     </header>
@@ -45,36 +60,58 @@
                 type="button"
                 :aria-label="`${section.label}, ${section.items.length} items`"
                 :class="{
-                  'menu-order-kiosk-catalogue__section--art': !usesComposedCard(section) && sectionCardImageUrl(section),
-                  'menu-order-kiosk-catalogue__section--composed': usesComposedCard(section),
+                  'menu-order-kiosk-catalogue__section--art':
+                    !usesComposedCard(section) && sectionCardImageUrl(section),
+                  'menu-order-kiosk-catalogue__section--composed':
+                    usesComposedCard(section),
                 }"
                 :data-menu-kiosk-section="section.id"
                 @click="selectSection(section.anchor)"
               >
-                <span class="menu-order-kiosk-catalogue__section-image" aria-hidden="true">
+                <span
+                  class="menu-order-kiosk-catalogue__section-image"
+                  aria-hidden="true"
+                >
                   <img
                     v-if="usesComposedCard(section)"
                     class="menu-order-kiosk-catalogue__section-product"
                     :src="sectionImageUrl(section)"
                     alt=""
-                  >
+                  />
                   <img
-                    v-else-if="sectionCardImageUrl(section) || sectionImageUrl(section)"
-                    :src="sectionCardImageUrl(section) || sectionImageUrl(section)"
+                    v-else-if="
+                      sectionCardImageUrl(section) || sectionImageUrl(section)
+                    "
+                    :src="
+                      sectionCardImageUrl(section) || sectionImageUrl(section)
+                    "
                     alt=""
-                  >
+                  />
                   <img
                     v-if="usesComposedCard(section)"
                     class="menu-order-kiosk-catalogue__section-frame"
                     :src="sectionCardFrameImageUrl"
                     alt=""
+                  />
+                </span>
+                <span
+                  v-if="
+                    usesComposedCard(section) || !sectionCardImageUrl(section)
+                  "
+                  class="menu-order-kiosk-catalogue__section-copy"
+                >
+                  <strong>{{ section.label }}</strong>
+                  <small v-if="!usesComposedCard(section)"
+                    >{{ section.items.length }} items</small
                   >
                 </span>
-                <span v-if="usesComposedCard(section) || !sectionCardImageUrl(section)" class="menu-order-kiosk-catalogue__section-copy">
-                  <strong>{{ section.label }}</strong>
-                  <small v-if="!usesComposedCard(section)">{{ section.items.length }} items</small>
-                </span>
-                <UIcon v-if="!usesComposedCard(section) && !sectionCardImageUrl(section)" name="i-lucide-chevron-right" aria-hidden="true" />
+                <UIcon
+                  v-if="
+                    !usesComposedCard(section) && !sectionCardImageUrl(section)
+                  "
+                  name="i-lucide-chevron-right"
+                  aria-hidden="true"
+                />
               </button>
             </div>
           </section>
@@ -130,7 +167,12 @@
         <aside>
           <header>
             <h2 id="menu-kiosk-drawer-title">Menu</h2>
-            <button ref="drawerClose" type="button" aria-label="Close menu sections" @click="closeDrawer">
+            <button
+              ref="drawerClose"
+              type="button"
+              aria-label="Close menu sections"
+              @click="closeDrawer"
+            >
               <UIcon name="i-lucide-x" aria-hidden="true" />
             </button>
           </header>
@@ -141,8 +183,13 @@
                 v-for="section in family.sections"
                 :key="section.anchor"
                 type="button"
-                :class="{ 'menu-order-kiosk-catalogue__drawer-active': section.anchor === activeSection?.anchor }"
-                :aria-current="section.anchor === activeSection?.anchor ? 'page' : undefined"
+                :class="{
+                  'menu-order-kiosk-catalogue__drawer-active':
+                    section.anchor === activeSection?.anchor,
+                }"
+                :aria-current="
+                  section.anchor === activeSection?.anchor ? 'page' : undefined
+                "
                 @click="selectSection(section.anchor)"
               >
                 {{ section.label }}
@@ -171,7 +218,10 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
-import type { MenuManifestItem, MenuManifestSection } from '../../../models/menu-detail.model.ts'
+import type {
+  MenuManifestItem,
+  MenuManifestSection,
+} from '../../../models/menu-detail.model.ts'
 import type { MenuOrderBasketInput } from '../../../composables/order/useMenuOrderBasket'
 import type { MenuOrderKioskType } from '../../../composables/order/useMenuOrderKiosk'
 import { menuSectionLinks } from '../../../utils/menu-section-links'
@@ -207,38 +257,56 @@ const drawerOpen = ref(false)
 const drawerTrigger = shallowRef<HTMLButtonElement | null>(null)
 const drawerClose = shallowRef<HTMLButtonElement | null>(null)
 const catalogueSections = computed(() =>
-  menuSectionLinks(props.sections).filter(section => section.items.length)
+  menuSectionLinks(props.sections).filter((section) => section.items.length)
 )
-const catalogueFamilies = computed(() => menuCatalogueFamilies(catalogueSections.value))
-const activeSection = computed(() =>
-  catalogueSections.value.find(section => section.anchor === activeSectionAnchor.value) || null
+const catalogueFamilies = computed(() =>
+  menuCatalogueFamilies(catalogueSections.value)
+)
+const activeSection = computed(
+  () =>
+    catalogueSections.value.find(
+      (section) => section.anchor === activeSectionAnchor.value
+    ) || null
 )
 const catalogueBackgroundStyle = computed(() => {
   const imageUrl = String(props.catalogueBackgroundImageUrl || '').trim()
 
-  return imageUrl ? { '--menu-kiosk-catalogue-background-image': `url("${imageUrl}")` } : undefined
+  return imageUrl
+    ? { '--menu-kiosk-catalogue-background-image': `url("${imageUrl}")` }
+    : undefined
 })
 
 function sectionImageUrl(section: { items: MenuManifestItem[] }) {
-  return String(section.items.find(item => String(item.imageUrl || '').trim())?.imageUrl || '').trim()
+  return String(
+    section.items.find((item) => String(item.imageUrl || '').trim())
+      ?.imageUrl || ''
+  ).trim()
 }
 
 function sectionCardImageUrl(section: { id: string; label: string }) {
-  const keys = [section.id, section.label].map(value => String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, ''))
+  const keys = [section.id, section.label].map((value) =>
+    String(value || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+  )
 
-  return String(keys.map(key => props.sectionCardImageUrls?.[key]).find(Boolean) || '').trim()
+  return String(
+    keys.map((key) => props.sectionCardImageUrls?.[key]).find(Boolean) || ''
+  ).trim()
 }
 
 function usesComposedCard(section: { items: MenuManifestItem[] }) {
-  return Boolean(String(props.sectionCardFrameImageUrl || '').trim() && sectionImageUrl(section))
+  return Boolean(
+    String(props.sectionCardFrameImageUrl || '').trim() &&
+      sectionImageUrl(section)
+  )
 }
 
 function selectSection(anchor: string) {
-  if (!catalogueSections.value.some(section => section.anchor === anchor)) return
+  if (!catalogueSections.value.some((section) => section.anchor === anchor))
+    return
   activeSectionAnchor.value = anchor
   closeDrawer()
 }
@@ -259,11 +327,18 @@ function closeDrawer() {
   void nextTick(() => drawerTrigger.value?.focus())
 }
 
-watch(catalogueSections, (sections) => {
-  if (!activeSectionAnchor.value) return
-  if (sections.some(section => section.anchor === activeSectionAnchor.value)) return
-  activeSectionAnchor.value = ''
-}, { immediate: true })
+watch(
+  catalogueSections,
+  (sections) => {
+    if (!activeSectionAnchor.value) return
+    if (
+      sections.some((section) => section.anchor === activeSectionAnchor.value)
+    )
+      return
+    activeSectionAnchor.value = ''
+  },
+  { immediate: true }
+)
 
 function openItem(item: MenuManifestItem, selection: MenuOrderItemSelection) {
   activeItem.value = item

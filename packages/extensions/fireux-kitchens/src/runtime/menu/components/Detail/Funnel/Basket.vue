@@ -1,14 +1,9 @@
 <template>
   <div class="menu-order-basket-list">
-    <h2 class="menu-order-screen-title">
-      Basket
-    </h2>
+    <h2 class="menu-order-screen-title">Basket</h2>
 
     <ul class="menu-order-items">
-      <li
-        v-for="item in items"
-        :key="item.lineId || item.id"
-      >
+      <li v-for="item in items" :key="item.lineId || item.id">
         <span>{{ item.quantity }}x {{ item.name }}</span>
         <strong v-if="lineTotal(item)">{{ lineTotal(item) }}</strong>
       </li>
@@ -28,9 +23,5 @@ import { useBasket } from '../../../../kitchen/composables/order/funnel/shared/u
 const props = defineProps<{
   order: MenuOrderingFunnelState
 }>()
-const {
-  items,
-  lineTotal,
-  totalLabel,
-} = useBasket(() => props.order)
+const { items, lineTotal, totalLabel } = useBasket(() => props.order)
 </script>

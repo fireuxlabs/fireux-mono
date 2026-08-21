@@ -1,299 +1,255 @@
-# Firestore entity stack family
+# Firestore Entity stack family
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
 
-Map the stored access/composable shape for FireUX entities.
+Map where FireUX stores an Entity and the records it owns. Current source,
+Security Rules, guards, and verified live data remain authority while the
+owner-first migration described here is completed.
 
-The Firestore stack is one storage slice of the wider entity capability family.
-The entity family also owns route identity, bounded server projections,
-lifecycle policy, events, interface projection, and its page, Workspace, Tool,
-and operator adapters. It is not merely a CRUD wrapper around a collection.
+The rule is intentionally simple:
 
-## Vertical links
+> A root Entity lives at its named root collection. Everything whose lifecycle
+> belongs to that Entity lives beneath it. A surface never becomes a storage
+> owner.
 
-- Parent: entities.md
-- Parent: composables.md
-- Child: family-workspace-entity.md
-- Child: family-menu.md
+## Links
 
-## Horizontal links
+- Parent: [entities.md](entities.md)
+- Parent: [composables.md](composables.md)
+- Child: [family-workspace-entity.md](family-workspace-entity.md)
+- Child: [family-menu.md](family-menu.md)
+- Horizontal: [workspace.md](workspace.md)
+- Horizontal: [server-api.md](server-api.md)
+- Horizontal: [runtime-filesystem.md](runtime-filesystem.md)
+- Rules: [firestore-rules.md](firestore-rules.md)
 
-- workspace.md
-- server-api.md
-- runtime-filesystem.md
+## Owner-first storage
 
-## Allowed entity stack
+```text
+(default)/
+├── project/{projectId}       local ProjectMeta projection
+├── ecosystem/{ecosystemId}   local EcosystemMeta projection
+└── apps/{appId}              local AppMeta projection
 
-- `runtime/<entity>/composables/firestore`
-- `fetch`
-- `mutations`
-- `seo`
-- `utils`
+<named database>/
+├── apps/{appId}              canonical App
+│   ├── users/{uid}           AppUser membership and governance
+│   ├── join-requests/{uid}
+│   ├── membership-blocks/{uid}
+│   ├── events/{eventId}
+│   ├── conversations/{conversationId}
+│   │   ├── messages/{messageId}
+│   │   └── private/session
+│   └── financial-facts/{factId}
+│
+├── users/{uid}               canonical User
+│   ├── private/account
+│   ├── private/context
+│   ├── notifications/{notificationId}
+│   ├── profiles/{profileKind}
+│   │   └── app-state/{appId} only when that profile has real App-specific state
+│   └── orders/{orderId}      User-owned link to an operational Order
+│
+├── projects/{projectId}
+│   ├── team/{uid}
+│   └── team-requests/{uid}
+│
+├── kitchens/{kitchenId}
+│   ├── team/{uid}
+│   ├── team-requests/{uid}
+│   ├── private/{recordId}
+│   └── <Kitchen operations>/...
+│
+├── suppliers/{supplierId}
+│   ├── team/{uid}
+│   ├── team-requests/{uid}
+│   └── <Supplier operations>/...
+│
+├── portfolios/{portfolioId}
+│   ├── team/{uid}
+│   ├── team-requests/{uid}
+│   └── <Portfolio operations>/...
+│
+├── properties/{propertyId}
+│   ├── team/{uid}
+│   ├── team-requests/{uid}
+│   ├── private/manual
+│   └── <Property operations>/...
+│
+└── marketplace-stores/{storeId}
+    ├── team/{uid}
+    ├── team-requests/{uid}
+    └── <Marketplace Store operations>/...
+```
 
-The root `runtime/composables` spine owns only proven cross-entity Firestore
-primitives. Declared Entity adapters now live under
-`runtime/<entity>/composables/firestore`, including Core User, App, and
-Ecosystem. Completed legacy directories are guarded against returning, and no
-aliases remain at both paths. Confirmed User-backed profile/record adapters use
-the User scope in their owning extension package; to-confirm concepts stay on
-the package spine until their classification changes.
+The examples name ownership, not required empty symmetry. An Entity receives
+only records and operations it genuinely owns.
 
-Example Firestore stack names, not automatic entity proof:
+## Workspace Entity contract
 
-- `kitchen`
-- `supplier`
-- `product`
-- `place`
-- `company`
-- `blog`
-- `property`
-- `portfolio`
-- `ingredient`
-- `recipe`
-- `dish`
-- `menu`
-- `translation`
-- `job`
-- `task`
+Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root
+Workspace Entities.
 
-## Similarities
+- The root document owns identity, lifecycle, presentation, and the
+  `management` relationship.
+- `management` selects the hosting product relationship: `root`, `workspace`,
+  or a dedicated `app`. It never relocates the Entity.
+- `team/{uid}` is Workspace membership and access authority. A Team record may
+  add entity-specific operational fields, but its document id remains the User
+  uid when it grants access.
+- `team-requests/{uid}` owns pending membership workflow. A request is not
+  authority.
+- Operations and protected records live beneath the root Entity, even when a
+  Workspace or Dashboard presents them.
+- AppUser is still required to enter an App. AppUser governs that App; Team
+  governs the Workspace Entity. An App admin may remain the explicit override
+  for Entities managed by that App.
+- User target arrays and App-nested Entity access documents are not canonical
+  authority. Target lists are derived on the trusted server from root
+  management plus Team/AppUser evidence.
 
-- Stored entity stacks should be boring and predictable.
-- Fetch and collection concerns belong in `fetch`.
-- Writes belong in `mutations`.
-- Firestore normalization and storage-specific validation belong in `utils`.
-- Entity-facing computed state, permissions, interfaces, and profile views
-  belong in `runtime/<entity>/composables`. Older `utils/view` and
-  `composables/fireux/<entity>` locations are migration debt, not the target
-  for new families.
-- A bounded route reader belongs in `runtime/<entity>/composables` as
-  `useXDetail`; it does not move the public DTO into the Firestore stack.
-- An entity exposes only supported capabilities. Read-only or server-owned
-  entities do not receive placeholder client mutations for structural parity.
+This replaces the former root-plus-App-support pattern. During migration,
+existing `apps/{appId}/{workspaceCollection}/{entityId}` documents are source
+preimages only; new features must not extend them.
 
-## Mutation lanes
+## User, profiles, and AppUser
 
-- Firestore has Client, Server, and MCP/Skill mutation lanes. Each lane exposes
-  only Create, Update, and Delete through typed mutation targets.
-- The lane selects transport and authority; the entity owns payload validation,
-  permissions, lifecycle transitions, transactions, and resulting events.
-- MCP/Skill is the operator lane used by Tools, agents, scripts, and CLI. It
-  consumes the same typed target and entity command contracts instead of
-  accepting arbitrary databases, collection paths, or raw writes.
-- A page, Workspace, Tool, or operator adapter orchestrates entity capabilities;
-  it does not become another storage or mutation lane.
-- Current authority: `docs/ai/firestore-mutations-context.md` and
-  `scripts/guards/firestore-mutations.mjs`.
+`User` is the person at `users/{uid}`. `AppUser` is membership in one App at
+`apps/{appId}/users/{uid}`.
 
-## Update command grammar
+- AppUser owns App role, entitlement, and onboarding state.
+- A registered customer is an AppUser; Customer is not a second person
+  identity.
+- A profile is a User-owned Record at `users/{uid}/profiles/{profileKind}`.
+- Chef, Driver, and Professional are profile kinds, not root peer collections.
+- A profile may add `app-state/{appId}` only for genuine App-specific state.
+- Customer ordering preferences are optional App-specific Customer profile
+  state. Guest contact and delivery data remain on the Order.
+- A User's cross-App order doorway is `users/{uid}/orders/{orderId}`. The link
+  identifies its App and owning operation without copying mutable Order state.
+- A profile or order link never grants App or Workspace access.
 
-- An ordinary entity `useXUpdate(options?)` exposes one `updateX(input)`
-  command. The input contains named identity and a `changes` object; identity
-  is never positional and is never mixed into the changed fields.
-- Root example: `{ kitchenId, changes }`. Unbound child example:
-  `{ kitchenId, memberId, changes }`. A Workspace child already bound to its
-  selected parent runtime uses `{ childId, changes }`.
-- The mutation lane still selects transport and authority. This grammar does
-  not grant a client raw Firestore access or move server policy into a
-  composable.
-- Field workflows, transitions, media, membership, and compound relationship
-  writes are named capabilities rather than artificial generic patches.
-- Current executable shape guard:
-  `scripts/guards/entity-update-contract.mjs`.
+## App boundary
+
+An App owns only App lifecycle and genuinely App-wide records. Normal App
+children include membership, join requests, membership blocks, events,
+conversations, and FinancialFacts. Other App-owned records must justify an App
+lifecycle independently; an App is not a bucket for every feature it renders.
+
+Workspace Entities, their Team, and their operations never live beneath App.
+Product is root commercial truth. Ignition is a Conversation with
+`kind: 'ignition'`, not a parallel App collection. A Marketplace Store is a
+root Workspace Entity even when one App is its current management host.
+
+## Root and parent-owned records
+
+- A root Entity document is the canonical readable Entity. Firestore cannot
+  redact nested fields, so protected material lives in a separately authorized
+  child record under its honest owner.
+- A parent-owned Entity or Record uses a path beneath its parent. KitchenMenu,
+  Recipe, KitchenPrepItem, Dish, KitchenOrder, MenuSection, MenuItem,
+  KitchenStation, SupplierItem, and similar children follow this rule.
+- A root doorway such as Menu may reference a parent-owned operational Entity;
+  it does not duplicate that Entity's content tree.
+- Directory entries, detail responses, cards, and joined views are transport
+  Shapes. They do not replace or rename the canonical Entity.
+
+## Firestore composable stack
+
+Entity-owned Firestore adapters live under
+`runtime/<entity>/composables/firestore` and use only the capabilities they
+actually support:
+
+- `fetch` for one record or a bounded collection;
+- `mutations` for typed Create, Update, and Delete commands;
+- `seo` for entity search presentation;
+- `utils` for storage normalization and exact path helpers.
+
+Entity-facing state such as `useXDetail`, `useXCollection`, permissions, and
+interface projection belongs one layer above under
+`runtime/<entity>/composables`. Shared reactive reads and typed mutation lanes
+remain in the root FireUX spine.
 
 ## Read-state contract
 
-- `useFirestoreRead` is the shared reactive read authority. Its collection and
-  document refs preserve normal `.value` access while also exposing `data`,
-  `pending`, `error`, `outcome`, `promise`, and `stop`.
-- An inactive path/query is `idle`; an active unresolved read is `pending`; a
-  failed read is `error`. Only a successful settled read may become `empty` or
-  `missing`; successful data is `ready`.
-- Reactive source changes reset stale rows. Exact-id batches expose the same
-  pending/error/outcome distinction and do not turn failures into empty arrays.
-- Construct each fixed-cardinality live read once during setup and pass reactive
-  collection-path, document-path, document-id, or query inputs into that read.
-  The shared read owns source replacement and scope disposal; do not create live
-  reads inside a `computed` or render-time factory.
-- Dynamic-cardinality keyed reads are the narrow exception. Their reconciliation
-  watcher must normalize and deduplicate active IDs, reuse surviving bindings,
-  stop bindings as IDs leave the set, and stop every remaining binding on scope
-  disposal. Derived/computed mapping only reads the reconciled cache.
-- When a document combines authoritative data with optional enrichment, its
-  public pending/error/outcome state follows the authoritative source. Optional
-  enrichment may improve a ready record but must not turn it into a false error
-  or missing result.
-- Collection-family composables derive their public outcome after normalization
-  and access filtering, then return `count`, `pending`, `error`, and `outcome`
-  alongside the collection.
-- Existence checks and other one-shot operations use `firestoreGetDoc`; do not
-  `await firestoreFetchDoc`, because the latter returns a live Ref.
-- Current source: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts`.
-- Current collection-state seam: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts`.
+- `useFirestoreRead` is the shared reactive read authority.
+- An inactive source is `idle`; an unresolved active source is `pending`; a
+  failed source is `error`; only a settled successful source is `ready`,
+  `empty`, or `missing`.
+- Reactive source changes clear stale rows and dispose the previous listener.
+- Exact-id batches expose the same outcome vocabulary.
+- One-shot existence checks use `firestoreGetDoc`; live reads use the shared
+  reactive seam once during setup.
+- A server projection may supply SSR, joins, or authorization, while an exact
+  permitted document listener keeps the already-open surface current. That is
+  a transport choice, not a different Entity.
 
-## Accepted storage deltas
+## Mutation lanes
 
-- A root Entity document is its canonical readable Entity. Protected material
-  belongs in a separately authorized record under its honest owner.
-- Some entities and records have `parent-scoped` identity.
-- Some root entities have a separate App support record. That support record is
-  not another entity scope or fallback identity.
-- An app-private profile record uses only the app-scoped path, records its id on
-  `AppUser.profiles`, and must not acquire a root Entity collection or Entity
-  Directory.
-- Every root profile record is domain-only and uses its document id as the
-  canonical `/users/{uid}` join key. Presentation joins that canonical User;
-  root profile documents never embed a User summary.
-- Every App profile delta record is non-identity support: it does not duplicate
-  public User identity, and successful create/repair records the profile id on
-  `AppUser.profiles`. Root-backed profiles separately retain their public root
-  record and `User.profiles` id.
-- Model placement and Firestore composable placement are related but not identical.
-- Root profile models with App delta records keep raw reads, writes, and config
-  under `firestore/profiles/<Profile>`. Chef and Driver prove the aligned
-  consumer seam: state, interface, and SEO live under
-  `composables/fireux/<profile>`.
-- Project/Ecosystem/App hierarchy uses root documents plus child-owned relation
-  ids, not nested storage: `Ecosystem.project_id`, `App.project_id`, and optional
-  `App.ecosystem_id`.
-- Public directory DTOs are support projections outside Firestore entity stacks;
-  they do not create another storage scope or another entity.
-- Root profile directories use bounded domain-owned projections that join the
-  profile document to canonical User by uid; raw profile collection listeners
-  are reserved for neither public browse nor identity resolution.
-- Private Project control-plane reads do not expose a client Firestore
-  collection binding; the FireUX admin server boundary owns that read.
-- Deployed Firestore rules must independently deny unauthorized direct Project
-  reads; this repository does not currently carry or test that remote ruleset.
-- Place detail is the bounded live-read exception: its server API supplies the
-  initial root record and the browser subscribes to the exact same
-  `places/{placeId}` document. Rules allow `get` only—not collection `list` or
-  browser writes—and a failed listener does not erase the last good Place.
+Firestore has exactly three mutation lanes: Client, Server, and MCP/Skill.
+Each exposes only typed Create, Update, and Delete targets. Pages, Workspaces,
+Dashboards, scripts, and agents are consumers of those lanes, never extra
+storage authorities.
 
-## Root plus App support contract
+An ordinary update accepts one named input containing identity and `changes`.
+Transitions, media, membership, relationships, and compound writes retain
+their narrower domain commands.
 
-- Supplier, Portfolio, Property, and Kitchen declare `identity: 'root'` plus
-  `appSupport: 'access-record'`: one root entity plus a same-id App support
-  document. App support is a separate relationship/access record, not a storage
-  scope of entity identity.
-- The root owns identity, lifecycle, domain truth, and child-owned relationship
-  ids. It does not contain App access arrays. Property root also excludes its
-  guest manual and references Place and optional Portfolio by id.
-- Every Workspace-capable root declares one exact `management` relationship:
-  `{ mode: 'root' }`, `{ mode: 'workspace' }`, or
-  `{ mode: 'app', app_id }`. The ladder is cumulative: Workspace implies root;
-  App implies Workspace and root. `workspace` always resolves to the ecosystem App
-  (`<ecosystem>-app`); neither configuration nor the root duplicates that id.
-  Only a dedicated App relationship stores `app_id`.
-- The management relationship selects the App support/operations host. It does
-  not relocate root truth, grant access, or replace the same-id App support
-  record.
+## Current migration state
 
-## Model source contract
+The 2026-08-20 live inventory confirms the destination is not yet fully
+implemented:
 
-- Entity model files read in one order: vocabulary and canonical types;
-  supporting-record types; one storage declaration per stored record; the
-  entity declaration; `*Defaults` runtime seeds; then create/update inputs.
-- `*Defaults` means a runtime seed or resolved display default. A stored record
-  remains sparse unless its write contract explicitly requires every field.
-- Root and App-support records never share a combined storage object. Use
-  `XStorage` for the entity root and `AppXStorage` for its App support record.
-- Entity-facing composables live at
-  `runtime/<entity>/composables/useXDetail.ts` and `useXInterface.ts`.
-  Firestore reads and writes remain adapters beneath
-  `runtime/<entity>/composables/firestore/`.
-- The App document owns bounded access and only its declared non-secret delta.
-  Collection adapters type it as the named `App<Entity>` record, require the
-  root, and project allowlisted fields instead of spreading it over identity.
-  Supplier, Portfolio, Property, and Kitchen enforce that join. Kitchen also
-  requires its same-id Place: Place owns physical identity and location media,
-  Kitchen owns operational identity/configuration, and AppKitchen owns access
-  only.
-- Property manual credentials live separately at
-  `apps/{appId}/properties/{propertyId}/private/manual`; collection access
-  queries never download that private support record.
-- ID-targeted Supplier, Portfolio, and Property joins exact-load requested App
-  documents by id before composing the root surface. They do not list every App
-  record and filter in browser memory. The root management relationship must
-  resolve to the current App; only complete, same-id root/App pairs enter the
-  target collection.
-- A missing pair half, dangling App document, or root/App management mismatch is an
-  error outcome, not a support-only entity, selectable stale row, or empty
-  collection result.
-- A physically present but schema-invalid Property root is also an error in
-  collection, single-document, and Portfolio-membership reads; it is never
-  translated to `empty`, `missing`, or a valid existing root.
-- Supplier and Portfolio do not yet exact-validate every root field. Reconcile
-  their live shapes before adding strict validators and the corresponding
-  migration; do not describe their present pair/scope checks as exact schema
-  validation.
-- Root and App create/read seams have fixed paths and one shared id. Independent
-  root/App deletes and generic App access mutation helpers are withheld until a
-  trusted lifecycle can maintain root management and App-support access
-  indexes together.
-- Workspace attachment remains domain-owned. Core defines and resolves management
-  modes but contains no registry or create factory for Kitchen, Supplier,
-  Property, Portfolio, or future Workspace families.
-- Property-to-Portfolio membership is `Property.portfolio_id`. The former
-  nested full-Property reader under an App Portfolio is retired. The client
-  query activates only after the selected Portfolio has been resolved through
-  its App access record and then exact-validates each returned management
-  relationship; owner-database Rules still have to enforce that inheritance
-  contract.
-- Public Property browse uses the bounded server `/api/properties` projection;
-  the browser never binds raw Property roots. Creation defaults publication to
-  `draft`, and the projection emits only active, explicitly `published` roots.
-  Browse cards stay unlinked until a bounded public detail read exists.
-- Current source: Supplier, Supplier Item, Product, Ingredient, Portfolio, and
-  Property model/fetch/mutation stacks.
-  Shape guards: `scripts/guards/root-app-support-authority.mjs` and
-  `scripts/guards/entity-management.mjs`.
+- FireUX still has App-nested Project access and duplicated App-nested Product
+  records.
+- Misebox still has App-nested Workspace roots/support, Kitchen operations,
+  profiles, Marketplace Stores, and Customer records, plus some older root
+  Kitchen child duplicates.
+- Granite Portfolio and BuenoHost Property still use root-plus-App-support.
+- current models, readers, writers, Rules, demos, and guards still encode the
+  former support-record contract.
 
-## Migration and drift register
-
-| Difference                                                                                        | State        | Required direction                                                                                                   |
-| ------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Supplier and Portfolio do not exact-validate every root field                                     | `migration`  | Reconcile live data first, then add validators without relabelling read errors as missing                            |
-| Remaining profile consumers below `firestore/profiles/<Profile>` use the old organizational spine | `migration`  | Follow the Chef/Driver split when each complete profile family is aligned; do not move raw adapters out of Firestore |
-| Some folders exist because a thing is stored, not because entity-ness was confirmed               | `drift`      | Check `entities.md` and the executable entity matrix before adding root entity ceremony                              |
-| Older entity-facing view helpers remain inside Firestore stacks                                   | `migration`  | Move one entity and all of its consumers together; User and App are the proving siblings                             |
-| Project direct-read Rules are outside the currently tested repository contract                    | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial                         |
+Migration must move one complete family at a time: model, paths, readers,
+writers, Rules, indexes, guards, Demo adapters, retained preimage, live data,
+and post-write verification. No family is complete while either the source or
+stored data still requires the old path.
 
 ## Do not
 
-- Put workspace operation folders inside Firestore stacks.
-- Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
-- Create fake compatibility branches without an explicit user request.
-- Infer loading from `collection.value === undefined`; VueFire collections begin
-  as arrays, so use the shared `pending` ref.
-- Treat read errors as empty or missing records.
-- Let an App support record overwrite root identity, stamps, or relationships.
-- Fabricate a root entity from an App record when root resolution fails.
-- Accept caller-selected `scope`, `shape`, or `collectionPath` in a root-with-App-support
-  mutation helper.
+- Nest a Workspace Entity, its Team, or its operations beneath App.
+- Use Dashboard, Workspace, Console, Directory, Detail, or Admin as a storage
+  owner.
+- Keep App support arrays, User target arrays, and Team as competing access
+  authorities.
+- Create `PublicX`, `publicRead`, `/api/public/*`, or a second filtered Entity
+  merely to make the root readable.
+- Put protected fields in a readable root and expect Rules to redact them.
+- Add compatibility aliases, dual writes, fallback reads, or generic migration
+  registries as the permanent design.
+- Infer Entity status from a collection or folder.
 
-## Alignment roadmap
+## Verification
 
-### Now
+Before a family cutover:
 
-- Keep ordinary entity stacks boring: root seam plus `fetch`, `mutations`,
-  `seo`, and `utils` only when used.
-- Preserve explicit read outcomes and complete root/App-support pairs.
+1. verify the concrete Firebase project, database, edition, Rules, indexes,
+   source readers/writers, and live path counts;
+2. produce a deterministic dry-run plan and retained protected preimage;
+3. freeze or reject concurrent writes for the affected family;
+4. migrate with version preconditions and typed mutation targets;
+5. verify counts, ids, relationships, access outcomes, and representative live
+   surfaces;
+6. remove old readers/writers and deploy reviewed Rules before old data is
+   retired; and
+7. run focused checks followed by the complete repository guard.
 
-### Next
-
-- Keep Kitchen, required Place, and access-only AppKitchen exact-pair reads
-  aligned across Live, Demo, and Test sources.
-- Reconcile Supplier and Portfolio roots before introducing strict validators.
-- Audit stored folders against confirmed entity/record declarations.
-
-### Later
-
-- Revisit profile composable placement only as one coherent family pass.
-- Verify the external Project Rules boundary before documenting it as guarded.
-- Follow `family-menu.md` for Menu content migration; Menu/KitchenMenu identity
-  is already settled.
+Current executable entrypoints include
+`scripts/_lib/entity-matrix.mjs`,
+`scripts/guards/entity-matrix.mjs`,
+`scripts/guards/firestore-mutations.mjs`, and the owning ecosystem Rules
+artifacts. The temporary migration ledger must shrink to zero rather than
+becoming another accepted system.

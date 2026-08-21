@@ -16,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const ComplianceRecordStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
+  path: 'portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
   collection: 'compliance-records',
   parent: 'portfolio',
   idParam: 'complianceRecordId',

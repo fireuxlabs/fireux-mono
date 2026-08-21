@@ -12,9 +12,14 @@
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-base font-semibold text-highlighted">Menu sections</h2>
+            <h2 class="text-base font-semibold text-highlighted">
+              Menu sections
+            </h2>
             <p class="text-sm text-dimmed">
-              {{ menu.description || 'Build the menu from sections and dish-backed items.' }}
+              {{
+                menu.description ||
+                'Build the menu from sections and dish-backed items.'
+              }}
             </p>
           </div>
           <UButton
@@ -22,7 +27,9 @@
             color="neutral"
             variant="soft"
             :icon="showCreateSection ? 'i-lucide-minus' : 'i-lucide-plus'"
-            :aria-label="showCreateSection ? 'Hide section fields' : 'Add section'"
+            :aria-label="
+              showCreateSection ? 'Hide section fields' : 'Add section'
+            "
             :disabled="!canWrite"
             @click="showCreateSection = !showCreateSection"
           />
@@ -78,7 +85,9 @@
                 :disabled="!canWrite"
                 disabled-message="This menu is read-only."
                 :validation-function="validateSectionLabel"
-                :update-function="(value) => saveSectionLabel(section.id, value)"
+                :update-function="
+                  (value) => saveSectionLabel(section.id, value)
+                "
               />
               <p v-if="section.description" class="text-sm text-dimmed">
                 {{ section.description }}
@@ -143,7 +152,7 @@ const validateSectionLabel = (value: string) => ({
   message: text(value) ? '' : 'Section label is required.',
 })
 
-const displaySectionLabel = (section: { label?: unknown, id?: unknown }) =>
+const displaySectionLabel = (section: { label?: unknown; id?: unknown }) =>
   text(section.label) || text(section.id) || 'Section'
 const canCreateSection = computed(
   () =>
@@ -166,7 +175,11 @@ async function addSection() {
     newSectionLabel.value = ''
     newSectionDescription.value = ''
     showCreateSection.value = false
-    toast.add({ title: 'Section added', color: 'success', icon: 'i-lucide-check' })
+    toast.add({
+      title: 'Section added',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
   } catch (error) {
     toast.add({
       title: 'Could not add section',
@@ -181,8 +194,14 @@ async function addSection() {
 
 async function saveSectionLabel(sectionId: string, value: string) {
   try {
-    await updateSection(kitchenId.value, menuId.value, sectionId, { label: text(value) })
-    toast.add({ title: 'Section label saved', color: 'success', icon: 'i-lucide-check' })
+    await updateSection(kitchenId.value, menuId.value, sectionId, {
+      label: text(value),
+    })
+    toast.add({
+      title: 'Section label saved',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
   } catch (error) {
     toast.add({
       title: 'Could not save section',

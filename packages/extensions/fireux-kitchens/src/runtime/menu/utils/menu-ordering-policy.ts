@@ -32,10 +32,10 @@ const depositTypes = [
 const collectionSlotIntervals = [15, 30, 45, 60] as const
 
 const text = (value: unknown) => String(value ?? '').trim()
-const list = (value: unknown) => Array.isArray(value) ? value : []
+const list = (value: unknown) => (Array.isArray(value) ? value : [])
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const numberValue = (value: unknown) => {
   const number = Number(value)
@@ -55,11 +55,15 @@ const nonNegativeNumber = (value: unknown) => {
 const compact = <T extends Record<string, unknown>>(value: T) =>
   Object.fromEntries(
     Object.entries(value).filter(([, entry]) =>
-      Array.isArray(entry) ? entry.length > 0 : entry !== undefined && entry !== ''
+      Array.isArray(entry)
+        ? entry.length > 0
+        : entry !== undefined && entry !== ''
     )
   ) as Partial<T>
 
-export const readKitchenOrderType = (value: unknown): KitchenOrderType | null => {
+export const readKitchenOrderType = (
+  value: unknown
+): KitchenOrderType | null => {
   const type = text(value) as KitchenOrderType
 
   return kitchenOrderTypes.includes(type) ? type : null
@@ -89,7 +93,7 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
 
       return lat !== undefined && lng !== undefined ? { lat, lng } : null
     })
-    .filter((point): point is { lat: number, lng: number } => Boolean(point))
+    .filter((point): point is { lat: number; lng: number } => Boolean(point))
 
   return compact({
     id,
@@ -97,12 +101,8 @@ const readDeliveryZone = (value: unknown): MenuDeliveryZone | null => {
     min_order_chf: nonNegativeNumber(row.min_order_chf),
     fee_chf: nonNegativeNumber(row.fee_chf),
     radius_m: nonNegativeNumber(row.radius_m),
-    postal_codes: list(row.postal_codes)
-      .map(text)
-      .filter(Boolean),
-    place_ids: list(row.place_ids)
-      .map(text)
-      .filter(Boolean),
+    postal_codes: list(row.postal_codes).map(text).filter(Boolean),
+    place_ids: list(row.place_ids).map(text).filter(Boolean),
     polygon,
     color: text(row.color),
   }) as MenuDeliveryZone
@@ -170,26 +170,31 @@ export const readMenuOrderTypeConfig = (
   const notice = readNoticeHours(row.notice_hours)
   const message = text(row.message)
   const serviceHours = readMenuServiceHoursConfig(row.service_hours)
-  const asapEnabled = typeof row.asap_enabled === 'boolean'
-    ? row.asap_enabled
-    : undefined
-  const slotInterval = Math.round(positiveNumber(row.slot_interval_minutes) || 0)
-  const scheduleHorizon = Math.round(positiveNumber(row.schedule_horizon_days) || 0)
+  const asapEnabled =
+    typeof row.asap_enabled === 'boolean' ? row.asap_enabled : undefined
+  const slotInterval = Math.round(
+    positiveNumber(row.slot_interval_minutes) || 0
+  )
+  const scheduleHorizon = Math.round(
+    positiveNumber(row.schedule_horizon_days) || 0
+  )
   const fulfilment = readMenuOrderFulfilmentPolicy(row.fulfilment)
   const customerRow = record(row.customer)
   const requiredFields = readContactFields(customerRow.required_fields)
   const availabilityRow = record(row.availability)
   const availabilityMessage = text(availabilityRow.message)
-  const availability = availabilityRow.paused === true || availabilityMessage
-    ? {
-        ...(availabilityRow.paused === true ? { paused: true } : {}),
-        ...(availabilityMessage ? { message: availabilityMessage } : {}),
-      }
-    : undefined
+  const availability =
+    availabilityRow.paused === true || availabilityMessage
+      ? {
+          ...(availabilityRow.paused === true ? { paused: true } : {}),
+          ...(availabilityMessage ? { message: availabilityMessage } : {}),
+        }
+      : undefined
   const notificationRow = record(row.notifications)
-  const whatsappNotification = type === 'pre_order'
-    ? readMenuOrderWhatsAppNotificationPolicy(notificationRow.whatsapp)
-    : undefined
+  const whatsappNotification =
+    type === 'pre_order'
+      ? readMenuOrderWhatsAppNotificationPolicy(notificationRow.whatsapp)
+      : undefined
 
   if (!type) return null
 
@@ -200,7 +205,7 @@ export const readMenuOrderTypeConfig = (
     ...(serviceHours ? { service_hours: serviceHours } : {}),
     ...(asapEnabled !== undefined ? { asap_enabled: asapEnabled } : {}),
     ...(collectionSlotIntervals.includes(
-      slotInterval as typeof collectionSlotIntervals[number]
+      slotInterval as (typeof collectionSlotIntervals)[number]
     )
       ? { slot_interval_minutes: slotInterval }
       : {}),
@@ -218,10 +223,7 @@ export const readMenuOrderTypeConfig = (
   }
 }
 
-export const menuAcceptsOrderType = (
-  menu: unknown,
-  type: KitchenOrderType
-) => {
+export const menuAcceptsOrderType = (menu: unknown, type: KitchenOrderType) => {
   const ordering = record(record(menu).ordering)
   if (ordering.enabled !== true) return false
 

@@ -86,7 +86,7 @@ type OperationsResponse = {
 const fireux = useFireUXConfig()
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const { data } = await useAsyncData('public-app-operations', () =>
-  $fetch<OperationsResponse>('/api/public/app/operations')
+  $fetch<OperationsResponse>('/api/app/operations')
 )
 const operations = computed(() => data.value?.operations || [])
 const operationGroups = computed(() => {

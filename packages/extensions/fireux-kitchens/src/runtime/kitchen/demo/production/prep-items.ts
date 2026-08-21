@@ -191,4 +191,3 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
     ],
   },
 ]
-

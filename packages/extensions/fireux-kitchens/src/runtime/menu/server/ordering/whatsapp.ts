@@ -48,7 +48,7 @@ export async function dispatchPreOrderWhatsApp(
     return { state: 'skipped' as const }
   }
 
-  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
+  const orders = serverKitchenOrdersTarget(input.kitchenId)
   const claim = await claimDelivery(orders, input.orderId)
   if (!claim) return { state: 'skipped' as const }
 

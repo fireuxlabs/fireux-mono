@@ -55,11 +55,12 @@ export function useKioskSkinBackground(options: UseKioskSkinBackgroundOptions) {
       Record<MenuKioskSkinBackgroundKey, MenuKioskSkinBackground>
     > = skin?.backgrounds ?? {}
     const currentKey = backgroundKey.value as MenuKioskSkinBackgroundKey
-    const key: MenuKioskSkinBackgroundKey | undefined =
-      backgroundFallbacks[currentKey].find(
-        (fallbackKey: MenuKioskSkinBackgroundKey) =>
-          backgrounds[fallbackKey]?.imageUrl
-      )
+    const key: MenuKioskSkinBackgroundKey | undefined = backgroundFallbacks[
+      currentKey
+    ].find(
+      (fallbackKey: MenuKioskSkinBackgroundKey) =>
+        backgrounds[fallbackKey]?.imageUrl
+    )
 
     return key
       ? backgrounds[key]?.imageUrl || ''

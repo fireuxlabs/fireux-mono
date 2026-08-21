@@ -21,13 +21,16 @@ export function useDishUpdate(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenWorkspaceSelection()
 
-  const kitchenCollectionPath = computed(() =>
-    trim(unref(options.kitchenCollectionPath)) ||
-    resolveKitchenScopeCollectionPath(appId)
+  const kitchenCollectionPath = computed(
+    () =>
+      trim(unref(options.kitchenCollectionPath)) ||
+      resolveKitchenScopeCollectionPath(appId)
   )
 
   const updateDish = async (

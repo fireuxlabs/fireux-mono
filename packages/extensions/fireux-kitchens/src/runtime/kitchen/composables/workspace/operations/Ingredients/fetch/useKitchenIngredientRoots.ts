@@ -1,18 +1,11 @@
 import { useAsyncData } from '#imports'
-import {
-  computed,
-  toValue,
-  type ComputedRef,
-  type MaybeRefOrGetter,
-} from 'vue'
-import type {
-  PublicIngredient,
-  PublicIngredientCollectionResponse,
-} from '../../../../../../ingredient/models/ingredient-public.model.ts'
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
+import type { IngredientDirectoryPage } from '../../../../../../ingredient/models/ingredient-directory.model.ts'
+import type { Ingredient } from '../../../../../../ingredient/models/ingredient.model.ts'
 
 type KitchenIngredientRootsState = {
-  roots: ComputedRef<PublicIngredient[]>
-  rootById: ComputedRef<Map<string, PublicIngredient>>
+  roots: ComputedRef<Ingredient[]>
+  rootById: ComputedRef<Map<string, Ingredient>>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | null>
   refresh: () => Promise<void>
@@ -26,14 +19,14 @@ export function useKitchenIngredientRoots(
     enabled?: MaybeRefOrGetter<boolean>
   } = {}
 ): KitchenIngredientRootsState {
-  const enabled = computed(() =>
-    options.enabled === undefined || Boolean(toValue(options.enabled))
+  const enabled = computed(
+    () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
-  const normalizedIds = computed(() => [
-    ...new Set(toValue(ids).map(text).filter(Boolean)),
-  ].sort())
+  const normalizedIds = computed(() =>
+    [...new Set(toValue(ids).map(text).filter(Boolean))].sort()
+  )
   const idKey = computed(() => normalizedIds.value.join(','))
-  const state = useAsyncData<PublicIngredientCollectionResponse>(
+  const state = useAsyncData<IngredientDirectoryPage>(
     () => `kitchen-ingredient-roots-${idKey.value || 'none'}`,
     async () => {
       if (!enabled.value || !normalizedIds.value.length) return { items: [] }
@@ -46,13 +39,13 @@ export function useKitchenIngredientRoots(
               index * 100,
               (index + 1) * 100
             )
-            return $fetch<PublicIngredientCollectionResponse>(
+            return $fetch<IngredientDirectoryPage>(
               `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
             )
           }
         )
       )
-      return { items: pages.flatMap(page => page.items) }
+      return { items: pages.flatMap((page) => page.items) }
     },
     {
       server: false,
@@ -60,13 +53,11 @@ export function useKitchenIngredientRoots(
       watch: [enabled, idKey],
     }
   )
-  const roots = computed<PublicIngredient[]>(
-    () => state.data.value?.items ?? []
-  )
-  const rootById = computed<Map<string, PublicIngredient>>(
+  const roots = computed<Ingredient[]>(() => state.data.value?.items ?? [])
+  const rootById = computed<Map<string, Ingredient>>(
     () =>
-      new Map<string, PublicIngredient>(
-        roots.value.map((root: PublicIngredient) => [root.id, root])
+      new Map<string, Ingredient>(
+        roots.value.map((root: Ingredient) => [root.id, root])
       )
   )
 

@@ -45,7 +45,7 @@ export async function readKitchenGrossSalesReport(input: {
             ...(input.now ? { now: input.now } : {}),
           })
   const snapshot = await input.db
-    .collection(`apps/${appId}/kitchens/${kitchenId}/sales`)
+    .collection(`kitchens/${kitchenId}/sales`)
     .where('occurred_at', '>=', selection.range.fromTimestamp)
     .where('occurred_at', '<', selection.range.toTimestamp)
     .orderBy('occurred_at', 'asc')

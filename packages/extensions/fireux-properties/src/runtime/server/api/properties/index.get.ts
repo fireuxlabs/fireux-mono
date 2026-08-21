@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { readPublicPropertyIndex } from '../../../property/server/index/public-index'
+import { readPropertyDirectoryPage } from '../../../property/server/index/read'
 
 export default defineEventHandler((event) =>
-  readPublicPropertyIndex(getQuery(event))
+  readPropertyDirectoryPage(getQuery(event))
 )

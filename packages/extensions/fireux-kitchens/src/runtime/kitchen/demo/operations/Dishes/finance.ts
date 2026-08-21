@@ -21,7 +21,8 @@ for (const order of deanosKitchenDemoCompletedOrders) {
   }
 }
 
-export const deanosKitchenDemoDishFinance: KitchenDemoDishFinance[] =
-  [...quantitySoldByDishId]
-    .map(([dishId, quantitySold]) => ({ dishId, quantitySold }))
-    .sort((left, right) => left.dishId.localeCompare(right.dishId))
+export const deanosKitchenDemoDishFinance: KitchenDemoDishFinance[] = [
+  ...quantitySoldByDishId,
+]
+  .map(([dishId, quantitySold]) => ({ dishId, quantitySold }))
+  .sort((left, right) => left.dishId.localeCompare(right.dishId))

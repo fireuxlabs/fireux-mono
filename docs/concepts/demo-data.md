@@ -1,7 +1,7 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-20
+Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
@@ -28,7 +28,7 @@ remain real data even when a Demo record links to them.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
 - Demo has no universal `Place` top level. Its top-level target is the entity
-  selected by the current Workspace, and every linked root/support record follows
+  selected by the current Workspace, and every linked root/owned record follows
   that owning family's declaration. Workspace adapters filter scenarios by their
   declared App before projection; a tenant or sibling App never receives
   another App's fixtures.
@@ -37,16 +37,16 @@ remain real data even when a Demo record links to them.
   `Supplier.company_id -> Company`, where Company and its canonical Place have
   the same id. Property directly references a sparse canonical Place through
   `place_id`.
-- Every Kitchen Demo target includes one same-id access-only AppKitchen fixture
-  and one linked Demo Place. Demo Kitchen roots never duplicate Place media or
-  location presentation, and their App scope names the same parent App as that
-  support fixture. Each target resolves its linked sparse Place through the
+- Every Kitchen Demo target includes root-owned Team fixtures and one linked
+  Demo Place. Demo Kitchen roots never duplicate Place media or location
+  presentation, and their management relationship names the intended host.
+  Each target resolves its linked sparse Place through the
   same canonical `normalizePlace` contract as Live reads. Writable Test Kitchen creation
-  atomically creates the equivalent Kitchen, Test Place, and App support pair
+  atomically creates the equivalent Kitchen, Test Place, and Team authority
   in the simulation database.
-- Supplier Demo targets pair the Supplier root with same-id access-only
-  `AppSupplier` support, link an independently identified Company through
-  `company_id`, and keep Ingredients, Items, and Catalogues Supplier-owned.
+- Supplier Demo targets pair the Supplier root with root-owned Team, link an
+  independently identified Company through `company_id`, and keep Ingredients,
+  Items, and Catalogues Supplier-owned.
   Each linked Company is a stamps-only role root paired with its same-id sparse
   Place; Supplier never gains a duplicate `place_id`. The Supplier owns its
   logo, while the linked Place owns address and location imagery. Demo
@@ -54,19 +54,18 @@ remain real data even when a Demo record links to them.
   a location card prefers the Place image and an avatar prefers the Supplier
   logo, without copying either field across roots. SupplierItem-to-Product
   roots remain unresolved and are not manufactured by Demo.
-- Portfolio Demo targets pair a Portfolio root with same-id access-only
-  `AppPortfolio` support. Property Demo targets pair the Property root with
-  same-id access-only `AppProperty` support and its linked sparse residential
+- Portfolio Demo targets pair a Portfolio root with root-owned Team. Property
+  Demo targets pair the Property root with root-owned Team and its linked sparse residential
   Place root; an optional `portfolio_id` must resolve inside the same scenario.
   BuenoHost's standalone Demo Property therefore has no invented Portfolio,
   while Granite's Property resolves its real Demo Portfolio relationship.
   Portfolio has neither a direct Place nor a Company relationship today;
   `owner_label` is not a Company reference.
-- Blank Demo is the minimal same-id `Blank` + access-only `AppBlank` pair. It
+- Blank Demo is the minimal App-local `Blank` target. It
   has no Place, operations, or Test producer. Project Demo is the control-plane
   exception: `Project`, `App`, and `Ecosystem` are model-shaped roots linked by
-  ids, each scenario explicitly names its owning `appId`, and Project has no
-  App-support entity.
+  ids, each scenario explicitly names its owning `appId`, and Project Team is
+  root-owned.
 - Reservation Demo records are Property-scoped and must reconcile their parent
   Property id, App stamp, dates, status, currency, and non-overlapping stay
   lifecycle. They do not turn Property estimated values into rent or Finance
@@ -79,10 +78,10 @@ remain real data even when a Demo record links to them.
 - Ingredient identity is never Demo data. Kitchen and Supplier Demo records
   store only stable `ingredient_id` references; names, aliases, taxonomy,
   lifecycle, parents, and images resolve from the real canonical
-  `/ingredients/{ingredientId}` authority through the bounded public
+  `/ingredients/{ingredientId}` authority through the bounded
   projection. A Demo fixture must not copy or locally decorate those roots.
 - Firebase Storage is the binary authority for Demo-owned presentation media;
-  the media is an immutable public delivery seam, not domain-record authority.
+  the media is an immutable HTTPS delivery seam, not domain-record authority.
   The Misebox Demo World stores those objects in
   `misebox-78f9c.appspot.com` under owner-relative
   `demo/misebox-app/{kitchens|suppliers|places}/...` paths. Kitchen and Supplier
@@ -112,9 +111,8 @@ remain real data even when a Demo record links to them.
   IDs. Operator audit stamps and Finance transaction closers reference those
   IDs; Workspace Team and Finance resolve presentation names from the same
   selected-Kitchen scenario rather than copying local operator strings. Demo
-  team/operator access uses a separate read-only `AppKitchen`-shaped support
-  fixture composed into the selected-Kitchen surface; those ids do not leak
-  onto the canonical Kitchen root or create Live membership.
+  Team access uses root-owned read-only Team fixtures composed into the
+  selected-Kitchen surface; those fixtures never create Live membership.
 - The Kitchen Demo World may prove a production graph ahead of persisted model
   promotion: a Kitchen-scoped Dish Spec consumes measured root Ingredients,
   stable Prep items, or Recipes; a Menu selects the Dish; and dated Mise tasks
@@ -170,7 +168,7 @@ remain real data even when a Demo record links to them.
   bounded authenticated Live target chooser so the user can leave Demo without
   losing sight of their Kitchens; that navigation read does not activate a
   selected Live Kitchen or its operations. The other narrow exception is a
-  bounded public projection read required to resolve a shared canonical root
+  bounded directory read required to resolve a shared canonical root
   explicitly referenced by a Demo operation record, currently Ingredient.
   This is a bounded reference join, not a Live operation provider or a second Demo
   identity source.
@@ -246,20 +244,20 @@ remain real data even when a Demo record links to them.
   in its Workspace/showroom Product Demo and excludes Ingredient-dependent Cards
   from the Demo-only orbit. Presentation components must not carry their own
   Deanos Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
-- Public Product Demo pages occupy the reserved `app/pages/demo` route family.
+- Product Demo pages occupy the reserved `app/pages/demo` route family.
   They remain thin route compositions and consume the named adapter; they do
   not import fixture modules directly or become a second data authority.
 - Demo World is read-only. Fixture modules do not depend on Firestore, Firebase
-  Admin, Storage SDK/API code, server code, public adapters, or mutation code.
-  A guarded fixed public HTTPS Demo media URL may be a normal model field
+  Admin, Storage SDK/API code, server code, directory adapters, or mutation code.
+  A guarded fixed HTTPS Demo media URL may be a normal model field
   value; it does not grant fixtures runtime Storage authority. Consumer
   adapters may resolve explicitly linked shared roots through their bounded
-  public read projection; arbitrary runtime imports remain forbidden.
+  bounded read response; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
 - Kitchen is the current source-backed writable Test family. Supplier,
   Portfolio, and Property Test sources fail closed until an atomic
-  simulation-database producer exists for each family's canonical root/support
+  simulation-database producer exists for each family's canonical root/Team
   contract; the retired default-database `test-*` collections are not valid
   Test authority. Project's dev-only Test read is unseeded, and Blank declares
   no Test mode.

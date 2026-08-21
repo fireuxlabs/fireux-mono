@@ -12,7 +12,8 @@ const readWeekdayTimeConfigValue = (
   return {
     source: weekdayTimeCore.timeSource(source.source),
     timezone: weekdayTimeCore.text(source.timezone),
-    windows: weekdayTimeCore.list(source.windows)
+    windows: weekdayTimeCore
+      .list(source.windows)
       .map(weekdayTimeCore.readWindow)
       .filter((window): window is WeekdayTimeWindow => Boolean(window)),
   }
@@ -47,9 +48,13 @@ const parseWeekdayTimeConfigText = (
       const source = line.trim()
       if (!source) return null
 
-      const match = source.match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/)
+      const match = source.match(
+        /^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})$/
+      )
       if (!match) {
-        throw new Error(`Line ${index + 1} should look like "Tuesday 08:00 - 13:00".`)
+        throw new Error(
+          `Line ${index + 1} should look like "Tuesday 08:00 - 13:00".`
+        )
       }
 
       const days = weekdayTimeCore.parseDays(match[1])

@@ -1,7 +1,4 @@
-import {
-  computed,
-  toValue,
-} from 'vue'
+import { computed, toValue } from 'vue'
 import { useStoredChoice } from 'fireux-core/runtime/composables/shared/useStoredChoice'
 import { menuOrderTypeLabel } from '../../../../../menu/utils/menu-ordering-ui'
 import {
@@ -40,13 +37,13 @@ const orderChoiceValue = (type: KitchenOrderType): MenuChoiceValue =>
 
 const orderType = (value: unknown): KitchenOrderType | undefined =>
   supportedOrderTypes.includes(value as KitchenOrderType)
-    ? value as KitchenOrderType
+    ? (value as KitchenOrderType)
     : undefined
 
 const orderTypeIndex = (
   visibleOrderTypes: KitchenOrderType[],
   option: MenuChoiceOption
-) => option.orderType ? visibleOrderTypes.indexOf(option.orderType) : -1
+) => (option.orderType ? visibleOrderTypes.indexOf(option.orderType) : -1)
 
 const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
   const type = orderType(choice.order_type)
@@ -65,21 +62,25 @@ const menuChoiceOption = (choice: MenuChoice): MenuChoiceOption | null => {
 export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
   const behaviour = computed(() => toValue(options.menu)?.behaviour)
   const menuContext = computed(() =>
-    normalizeMenuRouteContext(toValue(options.menuContext) || behaviour.value?.context)
+    normalizeMenuRouteContext(
+      toValue(options.menuContext) || behaviour.value?.context
+    )
   )
   const contextProfile = computed(() => menuContextProfile(menuContext.value))
   const orderChannel = computed(() =>
     menuOrderChannelForContext(menuContext.value)
   )
-  const visibleOrderTypes = computed(() => contextProfile.value.visibleOrderTypes)
+  const visibleOrderTypes = computed(
+    () => contextProfile.value.visibleOrderTypes
+  )
   const menuId = computed(() => text(toValue(options.menuId)))
-  const sourceMenuId = computed(() =>
-    text(toValue(options.sourceMenuId)) || menuId.value
+  const sourceMenuId = computed(
+    () => text(toValue(options.sourceMenuId)) || menuId.value
   )
   const kitchenSlug = computed(() => text(toValue(options.kitchenSlug)))
   const menuRouteScope = computed(() => toValue(options.menuRouteScope))
-  const sessionKitchenSlug = computed(() =>
-    text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
+  const sessionKitchenSlug = computed(
+    () => text(toValue(options.sessionKitchenSlug)) || kitchenSlug.value
   )
   const menuStorageScope = computed(() => {
     const slug = sessionKitchenSlug.value
@@ -111,16 +112,20 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
     return Array.isArray(rows) ? rows : []
   })
   const canOrder = computed(() =>
-    Boolean(behaviour.value?.orderingEnabled && availableOrderTypes.value.length)
+    Boolean(
+      behaviour.value?.orderingEnabled && availableOrderTypes.value.length
+    )
   )
   const isVisibleChoice = (option: MenuChoiceOption) =>
     option.orderType
       ? visibleOrderTypes.value.includes(option.orderType) &&
-        (Boolean(option.to) || availableOrderTypes.value.includes(option.orderType))
+        (Boolean(option.to) ||
+          availableOrderTypes.value.includes(option.orderType))
       : menuContext.value === 'generic'
   const sortChoiceOptions = (options: MenuChoiceOption[]) =>
-    [...options].sort((left, right) =>
-      orderTypeIndex(visibleOrderTypes.value, left) -
+    [...options].sort(
+      (left, right) =>
+        orderTypeIndex(visibleOrderTypes.value, left) -
         orderTypeIndex(visibleOrderTypes.value, right)
     )
   const generatedChoiceOptions = computed<MenuChoiceOption[]>(() => {
@@ -147,56 +152,76 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
       : []
     const visibleChoices = sortChoiceOptions(choices.filter(isVisibleChoice))
 
-    return visibleChoices.length > 1 && visibleChoices.some((choice) => !choice.to)
+    return visibleChoices.length > 1 &&
+      visibleChoices.some((choice) => !choice.to)
       ? visibleChoices
       : []
   })
   const choiceOptions = computed<MenuChoiceOption[]>(() => {
-    const choices = sortChoiceOptions((menuChoiceOptions.value.length
-      ? menuChoiceOptions.value
-      : generatedChoiceOptions.value).filter(isVisibleChoice))
+    const choices = sortChoiceOptions(
+      (menuChoiceOptions.value.length
+        ? menuChoiceOptions.value
+        : generatedChoiceOptions.value
+      ).filter(isVisibleChoice)
+    )
 
     return choices.length ? choices : [defaultMenuChoice()]
   })
   const localChoiceOptions = computed<MenuChoiceOption[]>(() => {
     const local = sortChoiceOptions(
-      choiceOptions.value.filter((option) => !option.to && isVisibleChoice(option))
+      choiceOptions.value.filter(
+        (option) => !option.to && isVisibleChoice(option)
+      )
     )
     const generated = sortChoiceOptions(
       generatedChoiceOptions.value.filter(isVisibleChoice)
     )
 
-    return local.length ? local : generated.length ? generated : [defaultMenuChoice()]
+    return local.length
+      ? local
+      : generated.length
+        ? generated
+        : [defaultMenuChoice()]
   })
   const choiceValues = computed<MenuChoiceValue[]>(() =>
     localChoiceOptions.value.map((option) => option.value)
   )
   const preferredChoice = computed<MenuChoiceValue>(() => {
     const preferred = contextProfile.value.defaultOrderType
-      ? localChoiceOptions.value.find((option) =>
-          option.orderType === contextProfile.value.defaultOrderType
+      ? localChoiceOptions.value.find(
+          (option) => option.orderType === contextProfile.value.defaultOrderType
         )
       : undefined
 
-    return preferred?.value || choiceValues.value[0] || defaultMenuChoice().value
+    return (
+      preferred?.value || choiceValues.value[0] || defaultMenuChoice().value
+    )
   })
   const { selected: selectedChoice } = useStoredChoice<MenuChoiceValue>({
     key: computed(() => `fireux:menu:${menuStorageScope.value}:choice`),
     choices: choiceValues,
     fallback: preferredChoice,
   })
-  const selectedChoiceOption = computed<MenuChoiceOption>(() =>
-    localChoiceOptions.value.find((option) => option.value === selectedChoice.value) ||
-    localChoiceOptions.value[0] ||
-    defaultMenuChoice()
+  const selectedChoiceOption = computed<MenuChoiceOption>(
+    () =>
+      localChoiceOptions.value.find(
+        (option) => option.value === selectedChoice.value
+      ) ||
+      localChoiceOptions.value[0] ||
+      defaultMenuChoice()
   )
-  const selectedOrderType = computed<KitchenOrderType>(() =>
-    selectedChoiceOption.value.orderType || 'dine_in'
+  const selectedOrderType = computed<KitchenOrderType>(
+    () => selectedChoiceOption.value.orderType || 'dine_in'
   )
-  const selectedOrderTypeConfig = computed(() =>
-    orderTypeConfigs.value.find((type) => type.type === selectedOrderType.value) ||
-    orderTypeConfigs.value.find((type) => type.type === defaultOrderType.value) ||
-    orderTypeConfigs.value[0]
+  const selectedOrderTypeConfig = computed(
+    () =>
+      orderTypeConfigs.value.find(
+        (type) => type.type === selectedOrderType.value
+      ) ||
+      orderTypeConfigs.value.find(
+        (type) => type.type === defaultOrderType.value
+      ) ||
+      orderTypeConfigs.value[0]
   )
   const surfaceOptions = computed<MenuSurfaceOption[]>(() => {
     return guestMenuSurfaceOptions({
@@ -212,8 +237,8 @@ export function useMenuChoiceState(options: UseKitchenOrderFunnelOptions) {
   }
 
   function selectOrderType(type: KitchenOrderType) {
-    const choice = localChoiceOptions.value.find((option) =>
-      option.orderType === type
+    const choice = localChoiceOptions.value.find(
+      (option) => option.orderType === type
     )
     if (!choice) return false
 

@@ -12,7 +12,7 @@ export function useProfessionalComputed(
   refs: ProfileRefs<Professional>,
   pending: unknown
 ) {
-  const profile = computed(() => refs.coreProfile.value ?? null)
+  const profile = computed(() => refs.profile.value ?? null)
   const computedSummary = computed(() => {
     const p = profile.value
     return {

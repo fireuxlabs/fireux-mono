@@ -24,7 +24,7 @@ export type DocumentLinkTargetType =
  */
 export const DocumentLinkStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/portfolios/{portfolioId}/document-links/{documentLinkId}',
+  path: 'portfolios/{portfolioId}/document-links/{documentLinkId}',
   collection: 'document-links',
   parent: 'portfolio',
   idParam: 'documentLinkId',

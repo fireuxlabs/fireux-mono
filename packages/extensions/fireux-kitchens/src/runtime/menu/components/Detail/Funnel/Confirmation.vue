@@ -1,8 +1,6 @@
 <template>
   <div class="menu-order-dispatch">
-    <h2 class="menu-order-screen-title">
-      Confirmation
-    </h2>
+    <h2 class="menu-order-screen-title">Confirmation</h2>
 
     <p class="menu-order-placeholder">
       {{ confirmationLabel }}
@@ -24,26 +22,14 @@
       </div>
     </section>
 
-    <ul
-      v-if="itemLines.length"
-      class="menu-order-items"
-    >
-      <li
-        v-for="item in itemLines"
-        :key="item.id"
-      >
+    <ul v-if="itemLines.length" class="menu-order-items">
+      <li v-for="item in itemLines" :key="item.id">
         <span class="grid min-w-0 gap-0.5">
           <span>{{ item.quantity }}x {{ item.label }}</span>
-          <small
-            v-if="item.variant"
-            class="text-xs text-dimmed"
-          >
+          <small v-if="item.variant" class="text-xs text-dimmed">
             {{ item.variant }}
           </small>
-          <small
-            v-if="item.addOns.length"
-            class="text-xs text-dimmed"
-          >
+          <small v-if="item.addOns.length" class="text-xs text-dimmed">
             + {{ item.addOns.join(', ') }}
           </small>
         </span>
@@ -51,10 +37,7 @@
       </li>
     </ul>
 
-    <p
-      v-if="totalLabel"
-      class="menu-order-total"
-    >
+    <p v-if="totalLabel" class="menu-order-total">
       <span>Total</span>
       <strong>{{ totalLabel }}</strong>
     </p>
@@ -82,7 +65,7 @@ const numberValue = (value: unknown) => {
 }
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const optionLabels = (value: unknown) =>
   (Array.isArray(value) ? value : [])
@@ -92,7 +75,8 @@ const requestLabel = computed(() => {
   if (props.funnel.order.orderType === 'collection') return 'Collection request'
   if (props.funnel.order.orderType === 'delivery') return 'Delivery order'
   if (props.funnel.order.orderType === 'dine_in') return 'Dine-in order'
-  if (props.funnel.order.orderType === 'room_service') return 'Room-service order'
+  if (props.funnel.order.orderType === 'room_service')
+    return 'Room-service order'
   if (props.funnel.order.orderType === 'eat_in') return 'Eat-here order'
   if (props.funnel.order.orderType === 'takeaway') return 'Take-away order'
 
@@ -107,9 +91,7 @@ const customer = computed(() =>
   record(order.value.customer || receipt.value.customer)
 )
 const payment = computed(() => record(order.value.payment))
-const paymentAccepted = computed(() =>
-  text(payment.value.status) === 'paid'
-)
+const paymentAccepted = computed(() => text(payment.value.status) === 'paid')
 const orderStatus = computed(() =>
   text(props.funnel.processing.status || order.value.status)
 )
@@ -207,16 +189,20 @@ const detailStatus = computed(() => {
   if (isKioskFunnel.value && customerName.value) {
     return `${customerName.value}, we will call you when it is ready.`
   }
-  if (paymentAccepted.value) return 'Payment accepted. The kitchen has the order details.'
+  if (paymentAccepted.value)
+    return 'Payment accepted. The kitchen has the order details.'
   if (text(payment.value.status) === 'pending') return 'Payment is in progress.'
-  if (destinationLabel.value) return `${destinationLabel.value}. The kitchen has the order details.`
+  if (destinationLabel.value)
+    return `${destinationLabel.value}. The kitchen has the order details.`
 
   return 'The kitchen has the order details.'
 })
 const confirmationLabel = computed(() => {
   const orderNumber = props.funnel.processing.order_number
-  if (!props.funnel.processing.exists) return `${requestLabel.value} is not sent yet.`
-  if (orderStatus.value === 'trashed') return 'Order status is no longer available.'
+  if (!props.funnel.processing.exists)
+    return `${requestLabel.value} is not sent yet.`
+  if (orderStatus.value === 'trashed')
+    return 'Order status is no longer available.'
   if (orderStatus.value === 'cancelled') return 'This order was not accepted.'
   if (orderStatus.value === 'completed') return completedDetail.value
   if (orderStatus.value === 'ready') {
@@ -256,34 +242,31 @@ const confirmationLabel = computed(() => {
     : `${requestLabel.value} is with the kitchen.`
 })
 const itemLines = computed(() =>
-  props.funnel.processing.items
-    .map((item, index) => {
-      const source = record(item)
-      const quantity = Math.max(1, numberValue(source.quantity) || 1)
-      const unitPrice = numberValue(source.unitPrice || source.unit_price_chf)
-      const total = numberValue(source.total_chf) || unitPrice * quantity
-      const label = text(source.name || source.label) || 'Item'
-      const variant = text(
-        record(source.variant).label ||
+  props.funnel.processing.items.map((item, index) => {
+    const source = record(item)
+    const quantity = Math.max(1, numberValue(source.quantity) || 1)
+    const unitPrice = numberValue(source.unitPrice || source.unit_price_chf)
+    const total = numberValue(source.total_chf) || unitPrice * quantity
+    const label = text(source.name || source.label) || 'Item'
+    const variant = text(
+      record(source.variant).label ||
         source.variantLabel ||
         source.variant_label
-      )
-      const hasDraftAddOns = Array.isArray(source.addOns)
-      const addOns = optionLabels(
-        hasDraftAddOns ? source.addOns : source.add_ons
-      ).filter((addOn) =>
-        !hasDraftAddOns || !label.includes(addOn)
-      )
+    )
+    const hasDraftAddOns = Array.isArray(source.addOns)
+    const addOns = optionLabels(
+      hasDraftAddOns ? source.addOns : source.add_ons
+    ).filter((addOn) => !hasDraftAddOns || !label.includes(addOn))
 
-      return {
-        id: text(source.lineId || source.id) || `item-${index + 1}`,
-        addOns,
-        label,
-        quantity,
-        totalLabel: total ? money(total) : '',
-        variant: variant && !label.includes(variant) ? variant : '',
-      }
-    })
+    return {
+      id: text(source.lineId || source.id) || `item-${index + 1}`,
+      addOns,
+      label,
+      quantity,
+      totalLabel: total ? money(total) : '',
+      variant: variant && !label.includes(variant) ? variant : '',
+    }
+  })
 )
 const totalLabel = computed(() => {
   const total = numberValue(props.funnel.processing.total_chf)

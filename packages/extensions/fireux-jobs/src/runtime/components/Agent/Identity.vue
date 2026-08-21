@@ -47,16 +47,16 @@ import { agentConfig } from '../../composables/fireux/firestore/profiles/Agent/c
 import { computed, ref } from 'vue'
 import { useAgent } from '../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const { coreProfile, profile: agentCardFromProfile } = useAgent()
+const { agentProfile, profile: agentCardFromProfile } = useAgent()
 const { createProfile: createProfileRecord } = useProfileCreate(agentConfig)
 
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
-const isProfileLoading = computed(() => coreProfile.value === undefined)
-const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
+const isProfileLoading = computed(() => agentProfile.value === undefined)
+const resolvedProfile = computed(() => agentProfile.value ?? null)
 const agentCard = computed(() =>
-  agentCardFromProfile(resolvedCoreProfile.value)
+  agentCardFromProfile(resolvedProfile.value)
 )
 
 const createProfile = async () => {

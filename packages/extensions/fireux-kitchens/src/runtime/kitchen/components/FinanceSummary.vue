@@ -10,33 +10,34 @@ import type {
   FinancialReportMetricView,
   FinancialReportMetricSummaryView,
 } from 'fireux-finance/runtime/models/report-presentation.model'
-import {
-  formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money'
+import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 
-const props = withDefaults(defineProps<{
-  averageDailyGrossSalesMinor?: number | null
-  averageSaleMinor: number
-  compact?: boolean
-  comparison?: {
-    grossSalesPercent: number
-    saleCountPercent: number
-    averageSalePercent: number
-  } | null
-  currencyCode: string
-  grossSalesMinor: number
-  itemQuantity?: number | null
-  locale?: string
-  periodLabel?: string
-  saleCount: number
-}>(), {
-  averageDailyGrossSalesMinor: null,
-  compact: false,
-  comparison: null,
-  itemQuantity: null,
-  locale: 'en-GB',
-  periodLabel: '',
-})
+const props = withDefaults(
+  defineProps<{
+    averageDailyGrossSalesMinor?: number | null
+    averageSaleMinor: number
+    compact?: boolean
+    comparison?: {
+      grossSalesPercent: number
+      saleCountPercent: number
+      averageSalePercent: number
+    } | null
+    currencyCode: string
+    grossSalesMinor: number
+    itemQuantity?: number | null
+    locale?: string
+    periodLabel?: string
+    saleCount: number
+  }>(),
+  {
+    averageDailyGrossSalesMinor: null,
+    compact: false,
+    comparison: null,
+    itemQuantity: null,
+    locale: 'en-GB',
+    periodLabel: '',
+  }
+)
 
 const summary = computed<FinancialReportMetricSummaryView>(() => {
   const supporting: FinancialReportMetricView[] = [

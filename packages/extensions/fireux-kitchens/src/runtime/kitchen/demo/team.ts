@@ -13,7 +13,7 @@ export type KitchenDemoTeamMember = KitchenTeamMember
 const member = (
   id: string,
   name: string,
-  role: string,
+  jobTitle: string,
   stationIds: string[],
   sortOrder: number
 ): KitchenDemoTeamMember => ({
@@ -23,7 +23,8 @@ const member = (
   name,
   slug: id,
   display_name: name,
-  role,
+  role: jobTitle === 'Shift lead' ? 'operator' : 'member',
+  job_title: jobTitle,
   station_ids: stationIds,
   active: true,
   sort_order: sortOrder,

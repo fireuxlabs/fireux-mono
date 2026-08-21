@@ -14,7 +14,9 @@ export function useMenuDelete(
   } = {}
 ) {
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
+  const { deleteDocument } = useFirestoreDelete({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
   async function deleteMenu(kitchenId: string, menuId: string) {

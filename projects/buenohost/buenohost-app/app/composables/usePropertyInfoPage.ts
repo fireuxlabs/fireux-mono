@@ -9,33 +9,51 @@ import {
 } from '../simulations/propertyInfo'
 import { findSimulatedBuenoHostProperty } from '../simulations/properties'
 
-
-
 export function usePropertyInfoPage() {
   const route = useRoute()
   const runtimeConfig = useRuntimeConfig()
-  const property = computed(() => findSimulatedBuenoHostProperty(String(route.params.slug || '')))
-  const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
+  const property = computed(() =>
+    findSimulatedBuenoHostProperty(String(route.params.slug || ''))
+  )
+  const info = computed(() =>
+    property.value ? resolvePropertyInfo(property.value.slug) : null
+  )
 
   if (!info.value) setResponseStatus(404)
 
   const resolvedProperty = computed(() => property.value!)
   const resolvedInfo = computed(() => info.value!)
   const infoHome = computed(() => getPropertyInfoHome(resolvedInfo.value))
-  const infoSections = computed(() => getPropertyInfoSections(resolvedInfo.value))
-  const priorityTopics = computed(() => infoSections.value.filter((topic) => topic.priority))
-  const regularTopics = computed(() => infoSections.value.filter((topic) => !topic.priority))
-  const phoneHref = computed(() => resolvedProperty.value.manual.welcome.phone.replace(/\s+/g, ''))
+  const infoSections = computed(() =>
+    getPropertyInfoSections(resolvedInfo.value)
+  )
+  const priorityTopics = computed(() =>
+    infoSections.value.filter((topic) => topic.priority)
+  )
+  const regularTopics = computed(() =>
+    infoSections.value.filter((topic) => !topic.priority)
+  )
+  const phoneHref = computed(() =>
+    resolvedProperty.value.manual.welcome.phone.replace(/\s+/g, '')
+  )
   const showTranslations = ref(false)
-  const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
+  const translationAvailability = ref<TranslationAvailabilityResponse | null>(
+    null
+  )
   const translationAvailabilityPending = ref(false)
   const translationAvailabilityError = ref('')
-  const availableTranslations = computed(() => translationAvailability.value?.available_languages ?? [])
+  const availableTranslations = computed(
+    () => translationAvailability.value?.available_languages ?? []
+  )
 
   const sproochliBaseUrl = computed(() => {
-    const configured = String(runtimeConfig.public.sproochliBaseUrl || '').trim().replace(/\/+$/, '')
+    const configured = String(runtimeConfig.public.sproochliBaseUrl || '')
+      .trim()
+      .replace(/\/+$/, '')
     if (configured) return configured
-    return import.meta.dev ? 'http://localhost:3011' : 'https://sproochli.web.app'
+    return import.meta.dev
+      ? 'http://localhost:3011'
+      : 'https://sproochli.web.app'
   })
 
   const translationAvailabilityUrl = computed(() => {
@@ -45,7 +63,7 @@ export function usePropertyInfoPage() {
       document_type: ref.document_type,
       document_slug: ref.document_slug,
     })
-    return `${sproochliBaseUrl.value}/api/public/translations/available?${search.toString()}`
+    return `${sproochliBaseUrl.value}/api/translations/available?${search.toString()}`
   })
 
   type PublishedTranslation = {
@@ -69,15 +87,18 @@ export function usePropertyInfoPage() {
   }
 
   function itemClass(tone: PropertyInfoItem['tone']) {
-    if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
-    if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
+    if (tone === 'important')
+      return 'border-primary/20 bg-primary/10 text-default'
+    if (tone === 'warning')
+      return 'border-warning/20 bg-warning/10 text-default'
     return 'bg-default text-default'
   }
 
   async function toggleTranslations() {
     showTranslations.value = !showTranslations.value
     if (!showTranslations.value) return
-    if (translationAvailability.value || translationAvailabilityPending.value) return
+    if (translationAvailability.value || translationAvailabilityPending.value)
+      return
 
     await loadTranslationAvailability()
   }
@@ -89,11 +110,13 @@ export function usePropertyInfoPage() {
     try {
       const response = await fetch(translationAvailabilityUrl.value)
       if (!response.ok) throw new Error(`Sproochli returned ${response.status}`)
-      translationAvailability.value = await response.json() as TranslationAvailabilityResponse
+      translationAvailability.value =
+        (await response.json()) as TranslationAvailabilityResponse
     } catch (error) {
-      translationAvailabilityError.value = error instanceof Error
-        ? error.message
-        : 'Sproochli is not reachable right now.'
+      translationAvailabilityError.value =
+        error instanceof Error
+          ? error.message
+          : 'Sproochli is not reachable right now.'
     } finally {
       translationAvailabilityPending.value = false
     }

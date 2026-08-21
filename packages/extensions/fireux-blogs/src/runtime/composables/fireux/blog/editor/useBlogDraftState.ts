@@ -49,7 +49,10 @@ export function useBlogDraftState() {
   const { currentUser } = useUser()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
-  const blogPost = useStorage<BlogPostCreateInput>('createBlogPost', defaultBlogPost)
+  const blogPost = useStorage<BlogPostCreateInput>(
+    'createBlogPost',
+    defaultBlogPost
+  )
   const featuredImageData = useStorage<string>(
     'createBlogFeaturedImageData',
     ''

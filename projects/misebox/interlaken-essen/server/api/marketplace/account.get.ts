@@ -5,7 +5,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   INTERLAKEN_ESSEN_APP_ID,
-  MARKETPLACE_PROFILE_COLLECTION,
+  marketplaceProfileAppStatePath,
   type MarketplaceAccountSettings,
   type MarketplaceAccountResponse,
   type MarketplaceOnboardingStatus,
@@ -26,9 +26,7 @@ export default defineEventHandler(async (event) => {
   const db = getRuntimeFirestore()
   const [membership, profile] = await Promise.all([
     db.doc(`apps/${appId}/${AppUserStorage.collection}/${uid}`).get(),
-    db.doc(
-      `apps/${appId}/${MARKETPLACE_PROFILE_COLLECTION}/${uid}`
-    ).get(),
+    db.doc(marketplaceProfileAppStatePath(uid)).get(),
   ])
 
   const role = String(membership.get('role') || '').trim()

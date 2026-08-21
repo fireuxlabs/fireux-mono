@@ -30,7 +30,7 @@ export async function readKitchenMenuSections(
     menuId: string
   }
 ) {
-  const basePath = `apps/${input.appId}/kitchens/${input.kitchenId}`
+  const basePath = `kitchens/${input.kitchenId}`
   const dishesSnap = await db.collection(`${basePath}/dishes`).get()
   const dishesById = new Map(
     dishesSnap.docs.map((doc) => [

@@ -1,5 +1,11 @@
 export const INTERLAKEN_ESSEN_APP_ID = 'interlaken-essen'
-export const MARKETPLACE_PROFILE_COLLECTION = 'marketplace-profiles'
+export const MARKETPLACE_PROFILE_KIND = 'marketplace'
+
+export const marketplaceProfilePath = (userId: string) =>
+  `users/${userId}/profiles/${MARKETPLACE_PROFILE_KIND}`
+
+export const marketplaceProfileAppStatePath = (userId: string) =>
+  `${marketplaceProfilePath(userId)}/app-state/${INTERLAKEN_ESSEN_APP_ID}`
 
 export const INTERLAKEN_LOCALITIES = [
   { id: 'interlaken', label: 'Interlaken', postalCode: '3800' },
@@ -44,10 +50,7 @@ export type MarketplaceAccountSettingsInput = {
   delivery_address: string
 }
 
-export type MarketplaceOnboardingStatus =
-  | 'pending'
-  | 'completed'
-  | 'skipped'
+export type MarketplaceOnboardingStatus = 'pending' | 'completed' | 'skipped'
 
 export type MarketplaceAccountResponse = {
   ok: true

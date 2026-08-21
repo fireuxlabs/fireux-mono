@@ -1,5 +1,5 @@
 <template>
-  <PublicProfileDirectoryCard
+  <UserProfileDirectoryCard
     variant="preview"
     kind-label="Chef"
     icon="i-lucide-chef-hat"

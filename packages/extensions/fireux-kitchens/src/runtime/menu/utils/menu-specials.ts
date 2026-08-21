@@ -5,13 +5,14 @@ export const shouldEmbedMenuSpecials = (input: {
   primaryMenuId?: string
   specialsEnabled?: boolean
   specialsMenuId?: string
-}) => Boolean(
-  input.specialsEnabled === true &&
-  input.primaryMenuId &&
-  input.sourceMenuId === input.primaryMenuId &&
-  input.specialsMenuId &&
-  input.specialsMenuId !== input.primaryMenuId
-)
+}) =>
+  Boolean(
+    input.specialsEnabled === true &&
+      input.primaryMenuId &&
+      input.sourceMenuId === input.primaryMenuId &&
+      input.specialsMenuId &&
+      input.specialsMenuId !== input.primaryMenuId
+  )
 
 export const menuSpecialsContent = (input: {
   id: string

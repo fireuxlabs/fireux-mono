@@ -10,15 +10,8 @@ import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import {
-  AppKitchenStorage,
-  KitchenStorage,
-} from '../../models/kitchen.model.ts'
-import {
-  readKitchenOnboardingManagement,
-  readKitchenOnboardingSupport,
-} from '../index/onboarding/onboarding-policy.ts'
-import { resolveKitchenWorkspaceTargetIds } from '../core/workspace-targets.ts'
+import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { readKitchenOnboardingManagement } from '../index/onboarding/onboarding-policy.ts'
 
 const allowedDefaultLanguages = [
   'mixed',
@@ -92,11 +85,13 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
     .collection(KitchenStorage.collection)
     .doc(requested.kitchenId)
   const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
+  const teamMemberRef = rootRef.collection('team').doc(uid)
 
   const result = await db.runTransaction(async (transaction) => {
-    const [root, runtimeMembership] = await Promise.all([
+    const [root, runtimeMembership, teamMember] = await Promise.all([
       transaction.get(rootRef),
       transaction.get(runtimeMembershipRef),
+      transaction.get(teamMemberRef),
     ])
     if (!root.exists) {
       throw createError({
@@ -109,14 +104,16 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       runtimeMembership.get('role'),
       'Current App membership is required to manage this Kitchen.'
     )
-    const runtimeTargetIds = await resolveKitchenWorkspaceTargetIds(
-      uid,
-      runtimeMembership.data() || {}
-    )
-    if (!runtimeTargetIds.includes(requested.kitchenId)) {
+    const teamRole = String(teamMember.get('role') ?? '').trim()
+    if (
+      !teamMember.exists ||
+      String(teamMember.get('user_id') ?? '').trim() !== uid ||
+      String(teamMember.get('status') ?? '').trim() !== 'active' ||
+      (teamRole !== 'owner' && teamRole !== 'operator')
+    ) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'This Kitchen is not an available Workspace target.',
+        statusMessage: 'Kitchen owner or operator access is required.',
       })
     }
 
@@ -132,36 +129,16 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       'Kitchen owner App id'
     )
     const ownerMembershipRef = db.doc(`apps/${ownerAppId}/users/${uid}`)
-    const supportRef = db.doc(
-      `apps/${ownerAppId}/${AppKitchenStorage.collection}/${requested.kitchenId}`
-    )
-    const [ownerMembership, support] = await Promise.all([
+    const ownerMembership =
       ownerMembershipRef.path === runtimeMembershipRef.path
         ? Promise.resolve(runtimeMembership)
-        : transaction.get(ownerMembershipRef),
-      transaction.get(supportRef),
-    ])
-    const ownerRole = memberRole(
-      ownerMembership.exists,
-      ownerMembership.get('role'),
+        : transaction.get(ownerMembershipRef)
+    const resolvedOwnerMembership = await ownerMembership
+    memberRole(
+      resolvedOwnerMembership.exists,
+      resolvedOwnerMembership.get('role'),
       'Kitchen owner App membership is required.'
     )
-    if (!support.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
-    const authority = readKitchenOnboardingSupport(support.data() || {})
-    if (
-      !authority ||
-      (ownerRole !== 'admin' && !authority.operatorIds.includes(uid))
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'App admin or Kitchen operator access is required.',
-      })
-    }
 
     const current = readSproochliAttachmentConfig(root.get('sproochli'))
     const sproochli = readSproochliAttachmentConfig(
@@ -177,13 +154,6 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       sproochli: requested.enabled ? sproochli : FieldValue.delete(),
       updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
     })
-
-    if (Object.hasOwn(support.data() || {}, 'sproochli')) {
-      transaction.update(supportRef, {
-        sproochli: FieldValue.delete(),
-        updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
-      })
-    }
 
     return { appId: ownerAppId, sproochli }
   })

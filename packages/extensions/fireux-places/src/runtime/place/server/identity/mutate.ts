@@ -14,8 +14,8 @@ import {
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
+  serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requireFirebaseStorageDownloadUrl,
@@ -26,10 +26,7 @@ import {
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
-import {
-  placeAuthorityIds,
-  readRootKitchenManagement,
-} from './mutation-authority'
+import { readRootKitchenManagement } from './mutation-authority'
 import {
   allowedPlacePatchKeys as allowedPatchKeys,
   allowedPlaceSocialKeys as allowedSocialKeys,
@@ -276,8 +273,8 @@ export async function mutatePlace(
     ? serverAppUsersTarget(runtimeAppId)
     : null
   const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
-  const kitchenSupports = kitchenAuthority
-    ? serverAppKitchensTarget(kitchenAuthority.appId)
+  const kitchenTeam = kitchenAuthority
+    ? serverKitchenTeamMembersTarget(kitchenAuthority.kitchenId)
     : null
 
   await runGuardedServerTransaction(places.database, async (mutations) => {
@@ -285,7 +282,7 @@ export async function mutatePlace(
       placeSnapshot,
       runtimeMembershipSnapshot,
       rootKitchenSnapshot,
-      scopedKitchenSnapshot,
+      kitchenTeamMemberSnapshot,
     ] = await Promise.all([
       mutations.read<Record<string, unknown>>(places, id),
       memberships
@@ -297,10 +294,10 @@ export async function mutatePlace(
             kitchenAuthority.kitchenId
           )
         : Promise.resolve(null),
-      kitchenAuthority && kitchenSupports
+      kitchenAuthority && kitchenTeam
         ? mutations.read<Record<string, unknown>>(
-            kitchenSupports,
-            kitchenAuthority.kitchenId
+            kitchenTeam,
+            uid
           )
         : Promise.resolve(null),
     ])
@@ -316,14 +313,17 @@ export async function mutatePlace(
       rootKitchen,
       ecosystem
     )
-    const scopedKitchen = scopedKitchenSnapshot?.data || {}
+    const kitchenTeamMember = kitchenTeamMemberSnapshot?.data || {}
+    const kitchenTeamRole = text(kitchenTeamMember.role)
     const kitchenAccess = Boolean(
       kitchenAuthority &&
         rootKitchenSnapshot?.exists &&
-        scopedKitchenSnapshot?.exists &&
+        kitchenTeamMemberSnapshot?.exists &&
         text(rootKitchen.place_id) === id &&
         rootKitchenManagement?.appId === kitchenAuthority.appId &&
-        placeAuthorityIds(scopedKitchen.operator_ids).includes(uid)
+        text(kitchenTeamMember.user_id) === uid &&
+        text(kitchenTeamMember.status) === 'active' &&
+        (kitchenTeamRole === 'owner' || kitchenTeamRole === 'operator')
     )
     if (!runtimeAdmin && !kitchenAccess) {
       throw createError({

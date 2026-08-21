@@ -18,9 +18,7 @@ const formatProductionAmount = (
   const quantityLabel = new Intl.NumberFormat('en-CH', {
     maximumFractionDigits: 2,
   }).format(quantity)
-  const unitLabel = unit === 'portion' && quantity !== 1
-    ? 'portions'
-    : unit
+  const unitLabel = unit === 'portion' && quantity !== 1 ? 'portions' : unit
 
   return `${quantityLabel} ${unitLabel}`
 }
@@ -49,22 +47,23 @@ export function useKitchenWorkspaceDish() {
       null
   )
   const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
-  const demoDishItem = computed(() =>
-    demoDishOperation.value?.items.find(
-      item => normalizeString(item.dish.id) === dishId.value
-    ) ?? null
+  const demoDishItem = computed(
+    () =>
+      demoDishOperation.value?.items.find(
+        (item) => normalizeString(item.dish.id) === dishId.value
+      ) ?? null
   )
   const dishSpec = computed(() => demoDishItem.value?.spec ?? null)
   const getIngredientName = (ingredientId: string) =>
     demoDishOperation.value?.ingredientNameById[
       normalizeString(ingredientId)
-    ] ||
-    normalizeString(ingredientId)
+    ] || normalizeString(ingredientId)
   const getStationName = (stationId: string) =>
-    demoDishOperation.value?.stationNameById[
-      normalizeString(stationId)
-    ] || normalizeString(stationId)
-  const componentViews = computed(() => demoDishItem.value?.componentViews ?? [])
+    demoDishOperation.value?.stationNameById[normalizeString(stationId)] ||
+    normalizeString(stationId)
+  const componentViews = computed(
+    () => demoDishItem.value?.componentViews ?? []
+  )
   const prepItems = computed(() => demoDishItem.value?.prepItems ?? [])
   const recipes = computed(() => demoDishItem.value?.recipes ?? [])
   const miseRequirements = computed(

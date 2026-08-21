@@ -3,19 +3,23 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
 
 export function useSupplierWorkspaceIdentity() {
-  const {
-    selection,
-    runtime,
-    actions,
-  } = useSupplierWorkspace()
+  const { selection, runtime, actions } = useSupplierWorkspace()
 
   const name = computed(() =>
     normalizeString(selection.supplier.value?.supplier_organization_name)
   )
-  const tagline = computed(() => normalizeString((selection.supplier.value as any)?.tagline))
-  const headline = computed(() => normalizeString(selection.supplier.value?.supplier_headline))
-  const summary = computed(() => normalizeString(selection.supplier.value?.summary))
-  const imageUrl = computed(() => normalizeString(selection.supplier.value?.supplier_image))
+  const tagline = computed(() =>
+    normalizeString((selection.supplier.value as any)?.tagline)
+  )
+  const headline = computed(() =>
+    normalizeString(selection.supplier.value?.supplier_headline)
+  )
+  const summary = computed(() =>
+    normalizeString(selection.supplier.value?.summary)
+  )
+  const imageUrl = computed(() =>
+    normalizeString(selection.supplier.value?.supplier_image)
+  )
   const categories = computed(() =>
     Array.isArray(selection.supplier.value?.supplier_item_categories)
       ? selection.supplier.value?.supplier_item_categories

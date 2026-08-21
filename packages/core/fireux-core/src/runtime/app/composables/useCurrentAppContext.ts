@@ -1,10 +1,10 @@
 import { computed, useAsyncData } from '#imports'
 import type { ComputedRef } from 'vue'
 import type {
-  CurrentAppDto,
+  CurrentApp,
   CurrentAppContextResponse,
-  CurrentAppMembershipDto,
-} from '../../server/utils/public-projection/public-dto.types.ts'
+  CurrentAppMembership,
+} from '../models/app-context.model.ts'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import {
   CURRENT_APP_CONTEXT_ASYNC_DATA_KEY,
@@ -13,8 +13,8 @@ import {
 
 export type UseCurrentAppContextReturn = {
   uid: ComputedRef<string>
-  app: ComputedRef<CurrentAppDto | null>
-  membership: ComputedRef<CurrentAppMembershipDto | null>
+  app: ComputedRef<CurrentApp | null>
+  membership: ComputedRef<CurrentAppMembership | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   refresh: () => Promise<void>

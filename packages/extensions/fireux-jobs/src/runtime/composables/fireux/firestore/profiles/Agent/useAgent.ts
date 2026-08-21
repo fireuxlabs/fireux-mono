@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { agentConfig } from './config/agentConfig'
-import type { Agent, AppAgent } from '../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './utils/view/useAgentComputed'
 import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
 import { useAgentUpdate } from './mutations/useAgentUpdate'
@@ -13,23 +13,19 @@ import { useAgentSeo } from './utils/useAgentSeo'
 
 export type AgentState = {
   user: unknown | null
-  core: Agent | null
-  app: Partial<AppAgent> | null
+  profile: Agent | null
 }
 
 export type { Agent, AgentCard }
 
 export function useAgent() {
-  const { profile: refs, pending } = useProfile<Agent, AppAgent>(agentConfig)
-  const { coreProfile, appProfile } = refs
-
+  const { profile: refs, pending } = useProfile<Agent>(agentConfig)
   // canonical user for UI layer
   const { coreUser } = useUser()
 
   const agent = computed<AgentState>(() => ({
     user: (coreUser.value ?? null) as unknown,
-    core: coreProfile.value ?? null,
-    app: appProfile.value ?? null,
+    profile: refs.profile.value ?? null,
   }))
 
   const agentComputed = useAgentComputed(refs, pending)
@@ -39,8 +35,6 @@ export function useAgent() {
 
   return {
     profileRefs: refs,
-    coreProfile,
-    appProfile,
     agent,
     pending,
 

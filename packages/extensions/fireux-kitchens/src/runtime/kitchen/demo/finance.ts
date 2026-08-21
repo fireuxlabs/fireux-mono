@@ -76,7 +76,7 @@ export type KitchenDemoFinance = {
 }
 
 const teamById = new Map(
-  deanosKitchenDemoTeam.map(member => [member.id, member] as const)
+  deanosKitchenDemoTeam.map((member) => [member.id, member] as const)
 )
 
 const transactionFromOrder = (
@@ -115,12 +115,13 @@ const transactionFromOrder = (
     closedBy,
     signedAmountMinor: order.pricing.totalMinor,
     counterparty: 'Guest',
-    summary: order.items.length === 1
-      ? `${firstItem.label} · ${itemQuantity} item${itemQuantity === 1 ? '' : 's'}`
-      : `${firstItem.label} + ${order.items.length - 1} · ${itemQuantity} items`,
+    summary:
+      order.items.length === 1
+        ? `${firstItem.label} · ${itemQuantity} item${itemQuantity === 1 ? '' : 's'}`
+        : `${firstItem.label} + ${order.items.length - 1} · ${itemQuantity} items`,
     itemQuantity,
     grossSalesMinor: order.pricing.totalMinor,
-    items: order.items.map(item => ({
+    items: order.items.map((item) => ({
       menuId: item.menuId,
       sourceItemId: item.sourceItemId,
       dishId: item.dishId,
@@ -207,7 +208,7 @@ export const deanosKitchenDemoFinance: KitchenDemoFinance = {
   asOfDate: DEANOS_KITCHEN_DEMO_AS_OF_DATE,
   currencyCode: DEANOS_KITCHEN_DEMO_CURRENCY_CODE,
   timezone: DEANOS_KITCHEN_DEMO_TIMEZONE,
-  dailyGrossSales: deanosKitchenDemoServices.map(service =>
+  dailyGrossSales: deanosKitchenDemoServices.map((service) =>
     dayFromCompletedOrders(service.date, service.completedOrders)
   ),
 }

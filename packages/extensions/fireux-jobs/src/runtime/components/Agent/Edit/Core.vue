@@ -115,9 +115,9 @@ import { computed } from 'vue'
 import { useAgentUpdate } from '../../../composables/fireux/firestore/profiles/Agent/mutations/useAgentUpdate'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-const { coreProfile } = useAgent()
+const { agentProfile } = useAgent()
 
-const agent = computed(() => coreProfile.value ?? null)
+const agent = computed(() => agentProfile.value ?? null)
 
 const {
   updateTitle,

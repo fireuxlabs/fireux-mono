@@ -29,12 +29,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-const props = withDefaults(defineProps<{
-  endpoint: string
-  query?: Record<string, string> | undefined
-}>(), {
-  query: undefined,
-})
+const props = withDefaults(
+  defineProps<{
+    endpoint: string
+    query?: Record<string, string> | undefined
+  }>(),
+  {
+    query: undefined,
+  }
+)
 
 const { data, error, pending } = await useAsyncData(
   () => `menu-json-${props.endpoint}-${JSON.stringify(props.query ?? {})}`,
@@ -42,11 +45,17 @@ const { data, error, pending } = await useAsyncData(
 )
 const outputJson = computed(() => JSON.stringify(data.value, null, 2))
 const copyStatus = ref('')
-const errorJson = computed(() => JSON.stringify({
-  error: true,
-  message: error.value?.message || 'Menu JSON unavailable.',
-  statusCode: error.value?.statusCode || 500,
-}, null, 2))
+const errorJson = computed(() =>
+  JSON.stringify(
+    {
+      error: true,
+      message: error.value?.message || 'Menu JSON unavailable.',
+      statusCode: error.value?.statusCode || 500,
+    },
+    null,
+    2
+  )
+)
 
 async function copyJson() {
   try {
@@ -66,7 +75,13 @@ pre {
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
   background: var(--ui-bg-muted);
-  font: 0.8125rem/1.5 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font:
+    0.8125rem/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    monospace;
   white-space: pre-wrap;
   word-break: break-word;
 }

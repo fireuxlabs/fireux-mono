@@ -9,9 +9,7 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
-              Kitchens
-            </div>
+            <div class="text-sm font-semibold">Kitchens</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -27,9 +25,7 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
-              Ingredients
-            </div>
+            <div class="text-sm font-semibold">Ingredients</div>
             <UButton
               variant="ghost"
               size="xs"
@@ -45,14 +41,8 @@
 
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
-              Chefs
-            </div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('chefs')"
-            >
+            <div class="text-sm font-semibold">Chefs</div>
+            <UButton variant="ghost" size="xs" @click="toggleSection('chefs')">
               {{ openSections.chefs ? 'Hide' : 'Show' }}
             </UButton>
           </div>

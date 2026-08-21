@@ -21,8 +21,5 @@ import { useKitchenDishesWorkspace } from '../../../../composables/workspace/ope
 import WorkspaceKitchenOperationsDishesRead from './Read.vue'
 import WorkspaceKitchenOperationsDishesTools from './Tools.vue'
 
-const {
-  kitchenId,
-  catalogue,
-} = useKitchenDishesWorkspace()
+const { kitchenId, catalogue } = useKitchenDishesWorkspace()
 </script>

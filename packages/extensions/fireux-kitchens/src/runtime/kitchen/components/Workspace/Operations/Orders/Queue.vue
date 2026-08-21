@@ -25,12 +25,8 @@ import { useKitchenOrdersWorkspace } from '../../../../composables/workspace/ope
 
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersQueue' })
 
-const {
-  queueOrders,
-  canInteract,
-  isOrderTransitioning,
-  markQueueOrderReady,
-} = useKitchenOrdersWorkspace()
+const { queueOrders, canInteract, isOrderTransitioning, markQueueOrderReady } =
+  useKitchenOrdersWorkspace()
 </script>
 
 <style scoped>

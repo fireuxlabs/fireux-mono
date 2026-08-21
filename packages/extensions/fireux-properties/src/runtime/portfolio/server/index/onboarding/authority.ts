@@ -5,8 +5,6 @@ import {
 } from 'fireux-core/runtime/utils/entity-management'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
-  assertWorkspaceEntitySupportCapacity,
-  readWorkspaceEntitySupportAuthority,
   requireWorkspaceEntityMemberRole,
   resolveWorkspaceEntityOnboardingPolicy,
 } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
@@ -14,8 +12,6 @@ import { fail, type MemberRole } from './input'
 
 export type RuntimePolicy = {
   appId: string
-  appRole: string
-  developerId: string
   ecosystem: string
   management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
@@ -35,11 +31,6 @@ export function requireMemberRole(exists: boolean, value: unknown): MemberRole {
     role: value,
     entityLabel: 'Portfolio',
   })
-}
-
-export function readSupport(value: Record<string, unknown> | null) {
-  if (!value) return null
-  return readWorkspaceEntitySupportAuthority(value, 'Portfolio')
 }
 
 export function readManagement(root: Record<string, unknown>) {
@@ -70,31 +61,16 @@ export function assertManagement(
   return management
 }
 
-export function assertSupportCapacity(
-  support: NonNullable<ReturnType<typeof readSupport>>,
+export function requireActiveOperator(
+  member: Record<string, unknown>,
   uid: string
 ) {
-  assertWorkspaceEntitySupportCapacity(support, uid, 'Portfolio')
-}
-
-export function assertOnboardingAuthority(input: {
-  rootExists: boolean
-  support: ReturnType<typeof readSupport>
-  uid: string
-  role: MemberRole
-  canCreate: boolean
-}) {
-  if (!input.rootExists) {
-    if (!input.canCreate) {
-      fail(403, 'Portfolio creation is disabled for this App.')
-    }
-    if (input.role !== 'admin') {
-      fail(403, 'An App admin must create the Portfolio.')
-    }
-    return
+  const role = String(member.role ?? '').trim()
+  if (
+    String(member.user_id ?? '').trim() !== uid ||
+    String(member.status ?? '').trim() !== 'active' ||
+    (role !== 'owner' && role !== 'operator')
+  ) {
+    fail(403, 'Active Portfolio Team membership is required.')
   }
-
-  if (input.role === 'admin') return
-  if (input.support?.operatorIds.includes(input.uid)) return
-  fail(403, 'An App admin or existing Portfolio operator must grant access.')
 }
