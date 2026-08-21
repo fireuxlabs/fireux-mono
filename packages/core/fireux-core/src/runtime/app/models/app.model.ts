@@ -33,30 +33,30 @@ export interface AppDerived {
 
 export type AppWorkspaceFamily = string
 
-export interface AppIdentity {
+export interface App extends FireuxStamped {
   id: string
   project_id: string
   ecosystem_id?: string
   role: AppRole
   status: AppStatus
-}
-
-export interface AppPresentation {
   name: string
   short_name: string
   description: string
   media: AppMedia
-}
-
-export interface App extends FireuxStamped, AppIdentity, AppPresentation {
   theme?: AppThemeLayer
   self_join_enabled: boolean
 }
 
-export interface AppMeta
-  extends AppIdentity,
-    AppPresentation,
-    Pick<FireuxStamped, 'updated'> {
+export interface AppMeta extends Pick<FireuxStamped, 'updated'> {
+  id: string
+  project_id: string
+  ecosystem_id?: string
+  role: AppRole
+  status: AppStatus
+  name: string
+  short_name: string
+  description: string
+  media: AppMedia
   database_id: string
   website_url: string
   workspace_families: AppWorkspaceFamily[]
@@ -89,15 +89,12 @@ export const AppEntity = defineFireuxEntity({
   root: AppStorage.path,
 })
 
-export const AppIdentityDefaults: AppIdentity = {
+export const AppDefaults: App = {
   id: '',
   project_id: '',
   ecosystem_id: '',
   role: '' as AppRole,
   status: 'draft',
-}
-
-export const AppPresentationDefaults: AppPresentation = {
   name: '',
   short_name: '',
   description: '',
@@ -108,11 +105,6 @@ export const AppPresentationDefaults: AppPresentation = {
     wordmark_dark_url: '',
     cover_url: '',
   },
-}
-
-export const AppDefaults: App = {
-  ...AppIdentityDefaults,
-  ...AppPresentationDefaults,
   theme: undefined,
   self_join_enabled: false,
   created: {
@@ -127,8 +119,21 @@ export const AppDefaults: App = {
 }
 
 export const AppMetaDefaults: AppMeta = {
-  ...AppIdentityDefaults,
-  ...AppPresentationDefaults,
+  id: '',
+  project_id: '',
+  ecosystem_id: '',
+  role: '' as AppRole,
+  status: 'draft',
+  name: '',
+  short_name: '',
+  description: '',
+  media: {
+    thumbnail_url: '',
+    logo_url: '',
+    wordmark_light_url: '',
+    wordmark_dark_url: '',
+    cover_url: '',
+  },
   database_id: '',
   website_url: '',
   workspace_families: [],

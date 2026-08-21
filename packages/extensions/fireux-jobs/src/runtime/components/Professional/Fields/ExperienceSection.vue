@@ -211,10 +211,9 @@ import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firesto
 import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
 import {
-  PlaceStorage,
   type Place,
-  type PlaceUpsertInput,
 } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
@@ -325,7 +324,7 @@ const getPlaceCard = (placeId?: string | null) => {
 
 function persistedPlaceCollection(value: string) {
   const normalized = String(value ?? '').trim()
-  return normalized === PlaceStorage.collection ? '' : normalized
+  return normalized === 'places' ? '' : normalized
 }
 
 async function onPlaceSelected(
@@ -335,7 +334,7 @@ async function onPlaceSelected(
   placeSelectionError.value = ''
   const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId
   const selectedPlaceCollection =
-    selectedCollection.value || item.place_collection || PlaceStorage.collection
+    selectedCollection.value || item.place_collection || 'places'
   const placeCollection = persistedPlaceCollection(selectedPlaceCollection)
 
   try {

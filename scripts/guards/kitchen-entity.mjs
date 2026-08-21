@@ -37,10 +37,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const indexApi = read(repoRoot, `${base}server/api/kitchens/index.get.ts`)
   const indexReader = read(repoRoot, `${kitchenBase}server/index/read.ts`)
-  const indexModel = read(
-    repoRoot,
-    `${kitchenBase}models/kitchen-directory.model.ts`
-  )
   const detailApi = read(repoRoot, `${base}server/api/kitchens/[kitchen].get.ts`)
   const operatorPanel = read(
     repoRoot,
@@ -62,11 +58,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(manager, /<KitchenCollectionList :cards="cardsFiltered"/)
   assert.doesNotMatch(manager, /management_mode|Root kitchens|App kitchens/)
   assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
-  assert.match(collection, /\/api\/kitchens\?limit=/)
-  assert.match(
-    collection,
-    /collection:\s*ComputedRef<KitchenDirectoryEntry\[\]>/
-  )
+  assert.match(collection, /useAsyncData<Kitchen\[]>/)
+  assert.match(collection, /collection:\s*ComputedRef<Kitchen\[]>/)
   assert.match(collection, /includeHidden=true/)
   assert.match(collection, /getIdToken\(\)/)
   assert.match(collection, /watch\(\s*\[hasAuthState,\s*uid\]/)
@@ -77,18 +70,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(indexApi, /requireFirebaseBearerUser/)
   assert.match(indexApi, /apps\/\$\{appId\}\/users\/\$\{uid\}/)
   assert.match(indexApi, /!isDeveloper && !isAdmin/)
-  assert.match(indexApi, /readKitchenDirectoryPage/)
+  assert.match(indexApi, /Promise<Kitchen\[]>/)
+  assert.match(indexApi, /readKitchens/)
   assert.doesNotMatch(indexApi, /db\.collection|FieldPath|projectKitchen/)
   assert.match(indexReader, /db\.collection\('kitchens'\)/)
   assert.match(indexReader, /readKitchenRelatedRecords/)
-  assert.match(indexReader, /projectKitchenDirectoryEntry/)
+  assert.match(indexReader, /Promise<Kitchen\[]>/)
+  assert.match(indexReader, /resolveKitchen/)
   assert.match(
     indexReader,
     /where\(FieldPath\.documentId\(\), '==', requestedPlaceId\)/
   )
-  assert.match(indexModel, /type KitchenDirectoryEntry/)
-  assert.match(indexModel, /type KitchenDirectoryPage/)
-  assert.doesNotMatch(indexModel, /PublicKitchen|PUBLIC_KITCHEN/)
+  assert.equal(
+    existsSync(file(repoRoot, `${kitchenBase}models/kitchen-directory.model.ts`)),
+    false,
+    'Kitchen collections must return Kitchen[] without a directory-entry model.'
+  )
   assert.match(detailApi, /projectKitchenDetail/)
   assert.match(detailApi, /server\/identity\/read\.ts/)
   assert.match(detailModel, /kitchen:\s*Kitchen/)
@@ -129,9 +126,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(identityReader, /requested_languages/)
   assert.match(
     identityReader,
-    /const imageUrl = text\(parts\.place\.coverImage \|\| parts\.place\.imageUrl\)/
+    /const imageUrl = kitchen\.place\.cover_image \|\| kitchen\.place\.image_url/
   )
-  assert.match(identityReader, /image_kind:\s*imageKind/)
+  assert.match(identityReader, /image_kind:\s*'photograph'/)
   assert.match(
     identityReader,
     /const placeId = document\.id/

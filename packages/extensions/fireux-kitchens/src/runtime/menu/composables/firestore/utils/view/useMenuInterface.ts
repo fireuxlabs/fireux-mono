@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Menu } from '../../../../models/menu.model.ts'
 import {
   menuRoutePath,

@@ -10,7 +10,6 @@ import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
 import { readKitchenOnboardingManagement } from '../index/onboarding/onboarding-policy.ts'
 
 const allowedDefaultLanguages = [
@@ -82,7 +81,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   )
   const db = getRuntimeFirestore()
   const rootRef = db
-    .collection(KitchenStorage.collection)
+    .collection('kitchens')
     .doc(requested.kitchenId)
   const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
   const teamMemberRef = rootRef.collection('team').doc(uid)

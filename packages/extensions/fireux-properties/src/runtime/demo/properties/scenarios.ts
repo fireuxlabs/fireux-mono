@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   PortfolioModel,
   type Portfolio,
@@ -11,7 +11,8 @@ import {
 
 const stamp: FirebaseTimestamp = { seconds: 1_720_000_000, nanoseconds: 0 }
 const updated = { at: stamp, by: 'demo' }
-const placeCreated = { at: stamp, by: 'demo' }
+type PropertyPlaceSeed = Partial<Place> &
+  Pick<Place, 'id' | 'name' | 'place_type' | 'source'>
 
 export type PortfolioDemoTarget = {
   portfolio: Portfolio
@@ -19,7 +20,7 @@ export type PortfolioDemoTarget = {
 
 export type PropertyDemoTarget = {
   property: Property
-  place: PlaceStored
+  place: PropertyPlaceSeed
 }
 
 export type PropertiesDemoScenario = {
@@ -34,7 +35,7 @@ const createdForApp = (appId: string) => ({
   app_id: appId,
 })
 
-const residentialPlace = (id: string, name: string): PlaceStored => ({
+const residentialPlace = (id: string, name: string): PropertyPlaceSeed => ({
   id,
   name,
   short_name: name,
@@ -54,8 +55,6 @@ const residentialPlace = (id: string, name: string): PlaceStored => ({
   types: ['residential'],
   tags: ['demo', 'residential-location'],
   slug: id,
-  created: placeCreated,
-  updated,
 })
 
 const graniteAppId = 'granite-app'

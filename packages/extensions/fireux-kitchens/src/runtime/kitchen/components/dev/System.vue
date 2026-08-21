@@ -83,7 +83,7 @@
           include-route
           title="Kitchen storage (JSON)"
           context="dev kitchens · full storage picture"
-          :objects="selectedKitchenStorageJson"
+          :objects="selectedKitchenDocumentJson"
           :derived="{}"
           :default-open="false"
           :hide-when-empty="false"
@@ -109,6 +109,6 @@ const {
   kitchenInspectorOptions,
   selectedRootKitchen,
   selectedPlace,
-  selectedKitchenStorageJson,
+  selectedKitchenDocumentJson,
 } = useKitchenDevSystem()
 </script>

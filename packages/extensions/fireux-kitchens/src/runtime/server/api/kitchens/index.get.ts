@@ -8,8 +8,8 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import type { KitchenDirectoryPage } from '../../../kitchen/models/kitchen-directory.model.ts'
-import { readKitchenDirectoryPage } from '../../../kitchen/server/index/read.ts'
+import type { Kitchen } from '../../../kitchen/models/kitchen.model.ts'
+import { readKitchens } from '../../../kitchen/server/index/read.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -35,7 +35,7 @@ async function requireHiddenKitchenAccess(
 }
 
 export default defineEventHandler(
-  async (event): Promise<KitchenDirectoryPage> => {
+  async (event): Promise<Kitchen[]> => {
     const query = getQuery(event)
     const includeHidden = text(query.includeHidden) === 'true'
     if (query.includeHidden && !includeHidden) {
@@ -59,9 +59,7 @@ export default defineEventHandler(
       'Cache-Control': 'private, no-store',
     })
 
-    return readKitchenDirectoryPage({
-      cursor: query.cursor,
-      limit: query.limit,
+    return readKitchens({
       placeId: query.placeId,
       includeHidden,
     })

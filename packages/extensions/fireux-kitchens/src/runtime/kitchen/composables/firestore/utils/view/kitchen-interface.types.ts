@@ -1,16 +1,13 @@
-import type {
-  Place,
-  PlaceImageShade,
-} from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { CurrencyDisplayFormat } from '../../../../../models/shared/currency-display.model.ts'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type {
   Kitchen,
-  KitchenMenusConfig,
+  KitchenFulfilmentMode,
 } from '../../../../models/kitchen.model.ts'
-import type { KitchenDirectoryImageKind } from '../../../../models/kitchen-directory.model.ts'
 
 export namespace KitchenCard {
   export type Card = {
@@ -28,13 +25,20 @@ export namespace KitchenCard {
     shortName: string
     formattedAddress: string
     shortAddress: string
+    tagline: string
+    about: string
+    priceLevel: string
+    fulfilmentModes: KitchenFulfilmentMode[]
+    estimatedMinutes?: { min: number; max: number }
 
     // Media (empty string means unset)
     imageUrl: string
+    logoImageUrl: string
+    categoryLabels: string[]
 
     // Image tone metadata
     imageShade?: PlaceImageShade
-    imageKind?: KitchenDirectoryImageKind
+    imageKind?: 'photograph' | 'brand'
 
     // Search collection (optional)
     collection?: string
@@ -73,7 +77,10 @@ export type KitchenSurface = {
   menu_currency_format?: CurrencyDisplayFormat
   menu_show_currency?: boolean
   menu_available?: boolean
-  menus?: KitchenMenusConfig
+  fulfilment?: {
+    modes?: KitchenFulfilmentMode[]
+    estimated_minutes?: { min: number; max: number }
+  }
   sproochli?: SproochliAttachmentConfig
   menu_style?: Partial<PageStyle>
   formatted_address?: string
@@ -83,17 +90,21 @@ export type KitchenSurface = {
   image_url?: string
   display_image_url?: string
   logo_image_url?: string
+  logo_image?: string
   image_shade?: PlaceImageShade
-  image_kind?: KitchenDirectoryImageKind
+  image_kind?: 'photograph' | 'brand'
   media_backdrop_color?: string
   claimed_by?: string
   brand_tagline?: string
+  price_level?: string
   website?: string
   phone?: string
   social_links?: unknown
   cover_image?: string
   gallery_images?: string[]
   about?: string
+  types?: string[]
+  tags?: string[]
   verified?: boolean
   operator_ids?: string[]
   team_ids?: string[]
@@ -116,9 +127,9 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
           | 'lng'
           | 'timezone'
           | 'image_url'
+          | 'logo_image'
           | 'cover_image'
           | 'gallery_images'
-          | 'image_shade'
           | 'phone'
           | 'email'
           | 'website'
@@ -133,9 +144,8 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
           | 'claimed_by'
           | 'verified'
           | 'slug'
-          | 'search_term'
         >
-      >
+      > & { image_shade?: PlaceImageShade }
     | null
     | undefined
   scope?: Record<string, unknown> | null | undefined

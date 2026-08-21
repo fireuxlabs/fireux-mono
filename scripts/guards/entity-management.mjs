@@ -90,14 +90,17 @@ export async function run(ctx) {
     }
   }
 
-  if (!/appSupport:\s*['"]none['"]/.test(source.kitchen)) {
-    violations.push(
-      `${relativeFiles.kitchen} must declare that Apps do not own Kitchen`
-    )
-  }
   if (/\bmanagement\s*:|FireuxEntityManagement/.test(source.kitchen)) {
     violations.push(
       `${relativeFiles.kitchen} must not store the shared management contract`
+    )
+  }
+  if (!/export type Kitchen\s*=\s*\{/.test(source.kitchen)) {
+    violations.push(`${relativeFiles.kitchen} must export the plain Kitchen model`)
+  }
+  if (/defineFireuxEntity|appSupport|management_mode|management_app_id/.test(source.kitchen)) {
+    violations.push(
+      `${relativeFiles.kitchen} must remain independent of generic Entity/App management metadata`
     )
   }
 

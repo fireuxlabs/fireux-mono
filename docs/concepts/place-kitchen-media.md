@@ -97,7 +97,7 @@ consumer types.
 ## Verification
 
 Start with the canonical Place/Kitchen models, `place-spine.ts`,
-`kitchen-spine.ts`, trusted media mutation boundaries, public/Workspace
+`kitchen-readers.ts`, trusted media mutation boundaries, public/Workspace
 projectors, and `scripts/guards/entity-authority.mjs`. Verify the focused
 package typechecks/builds and visually inspect logo, both wordmarks, card
 override, inherited Place fallback, and photographic Place media.

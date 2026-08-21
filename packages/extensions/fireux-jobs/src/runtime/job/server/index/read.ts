@@ -4,7 +4,6 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { AppStorage } from 'fireux-core/runtime/app/models/app.model'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import {
   JOB_DIRECTORY_MAX_PAGE_SIZE,
   JOB_DIRECTORY_MAX_SCAN_SIZE,
@@ -134,7 +133,7 @@ export async function readJobDirectoryPage(
       placeIds.length
         ? db.getAll(
             ...placeIds.map((id) =>
-              db.collection(PlaceStorage.collection).doc(id)
+              db.collection('places').doc(id)
             )
           )
         : Promise.resolve([]),

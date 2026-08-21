@@ -41,7 +41,7 @@ import {
 } from 'fireux-places/runtime/place/composables/firestore/usePlace'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import { useMenuServiceComputed } from '../../../menu/composables/firestore/useMenu'
-import { readKitchenOperationHours } from '../../utils/kitchen-spine'
+import { readKitchenOperationHours } from '../../utils/kitchen-readers'
 import { weekdayTimeLines } from '../../../utils/weekday-time'
 
 const props = defineProps<{

@@ -234,7 +234,6 @@ for (const item of kitchenDemoTargets) {
     targetIds.has(kitchenId) ||
     kitchenId !== item.identity.kitchenId ||
     placeId !== item.identity.placeId ||
-    !item.place.entity_families.includes('kitchen') ||
     kitchenId !== placeId ||
     item.appId !== item.identity.appId ||
     item.access.kitchenId !== kitchenId ||

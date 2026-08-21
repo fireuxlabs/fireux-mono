@@ -64,7 +64,7 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface'
-import type { PlaceImageShade } from '../../models/place.model.ts'
+import type { PlaceImageShade } from '../../utils/place-spine'
 
 defineOptions({ inheritAttrs: false })
 

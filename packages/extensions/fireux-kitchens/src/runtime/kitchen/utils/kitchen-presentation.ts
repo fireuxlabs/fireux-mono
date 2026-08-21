@@ -1,7 +1,7 @@
 import type {
   MediaBackdropColor,
   PlaceImageShade,
-} from 'fireux-places/runtime/place/models/place.model'
+} from 'fireux-places/runtime/place/utils/place-spine'
 
 type KitchenPresentationRecord = Record<string, unknown> | null | undefined
 

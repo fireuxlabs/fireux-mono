@@ -128,7 +128,7 @@ import { useKitchenWorkspaceMenuOrdering } from '../../../../../composables/work
 import {
   kitchenPaymentMethodsForOrderType,
   readKitchenFulfilmentConfig,
-} from '../../../../../utils/kitchen-spine'
+} from '../../../../../utils/kitchen-readers'
 
 const {
   canWrite,

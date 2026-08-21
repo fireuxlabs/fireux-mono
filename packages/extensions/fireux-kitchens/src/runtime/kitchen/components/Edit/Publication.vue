@@ -28,7 +28,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenPublish } from '../../composables/firestore/mutations/useKitchenPublish'
-import { readKitchenVisibility } from '../../utils/kitchen-spine'
+import { readKitchenVisibility } from '../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null

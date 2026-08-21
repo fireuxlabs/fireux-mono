@@ -3,13 +3,12 @@ import {
   sanitizeShortAddress,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-  BasePlace,
-  PlaceImageShade,
   Place as PlaceShape,
   PlaceSocialLinks,
   PlaceSource,
 } from '../../../../models/place.model.ts'
-import { PlaceStorage } from '../../../../models/place.model.ts'
+import type { BasePlace } from '../../fetch/search/types'
+import type { PlaceImageShade } from '../../../../utils/place-spine'
 
 export namespace PlaceCard {
   export type Card = {
@@ -102,7 +101,7 @@ export function usePlaceInterface() {
     return {
       id,
       to: id
-        ? `/${PlaceStorage.collection}/${encodeURIComponent(id)}`
+        ? `/${'places'}/${encodeURIComponent(id)}`
         : '',
       title: name,
       subtitle: shortAddress || address,

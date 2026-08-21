@@ -31,7 +31,7 @@ export async function loadMiseboxProductDemo(
     import('fireux-kitchens/runtime/kitchen/utils/demo-dishes'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-suppliers'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-finance'),
-    import('fireux-kitchens/runtime/kitchen/utils/kitchen-spine'),
+    import('fireux-kitchens/runtime/kitchen/utils/kitchen-readers'),
     import('fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'),
   ])
   const supplierDemoWorld = projectSupplierDemoWorld({

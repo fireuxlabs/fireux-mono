@@ -4,24 +4,22 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import {
   readPlaceCurrencyCode,
   readPlacePresentation,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import {
-  readKitchenManagementTarget,
   readKitchenFulfilmentConfig,
   readKitchenMenusConfig,
-  readKitchenWorkspacePalette,
+  readKitchenThemePalette,
   readKitchenSproochliConfig,
   resolveKitchenOperationHours,
-} from '../../../kitchen/utils/kitchen-spine'
+} from '../../../kitchen/utils/kitchen-readers'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type {
   KitchenFulfilmentConfig,
 } from '../../../kitchen/models/kitchen.model.ts'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
@@ -62,10 +60,7 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
-  readKitchenManagementTarget(
-    kitchenData,
-    String(useRuntimeConfig().public?.fireux?.ecosystem ?? '').trim()
-  ).appId
+  String(useRuntimeConfig().public?.fireux?.id ?? '').trim()
 
 export async function readMenuKitchenData(kitchenId: string) {
   if (!kitchenId) return {}
@@ -82,7 +77,7 @@ export async function readMenuKitchenPlaceData(kitchenId: string) {
   if (!kitchenId) return {}
 
   const snap = await getRuntimeFirestore()
-    .collection(PlaceStorage.collection)
+    .collection('places')
     .doc(kitchenId)
     .get()
 
@@ -110,7 +105,7 @@ export function menuKitchenIdentity(
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(kitchenData)
-  const workspacePalette = readKitchenWorkspacePalette(kitchenData)
+  const workspacePalette = readKitchenThemePalette(kitchenData)
   const placePalette = record(placeData.brand_palette)
   const placeStyle =
     place.mediaBackdropColor && !readRecordString(placePalette, 'primary_color')

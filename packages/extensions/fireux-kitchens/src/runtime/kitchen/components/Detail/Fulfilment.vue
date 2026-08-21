@@ -25,7 +25,7 @@ import type { KitchenFulfilmentConfig } from '../../models/kitchen.model.ts'
 import {
   readKitchenCurrencyCode,
   readKitchenFulfilmentConfig,
-} from '../../utils/kitchen-spine'
+} from '../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null

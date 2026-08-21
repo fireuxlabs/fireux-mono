@@ -1,12 +1,9 @@
 // Concurrent edit — 2026-07-20 19:40 CEST — Repo Efficiency Pass 2 of 6: map Norwegian canonical Places to NOK.
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: carry real Google defaults without inventing missing Place truth.
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: consume the shared country-to-currency suggestion.
-import {
-  type BasePlace,
-  type GooglePlace,
-  type PlaceAddress,
-  type PlaceUpsertInput,
-} from '../../../../models/place.model.ts'
+import type { PlaceAddress, PlaceBusinessHours } from '../../../../models/place.model.ts'
+import type { PlaceUpsertInput } from '../../../../models/place-onboarding.model.ts'
+import type { BasePlace } from '../search/types'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 import {
   placeBusinessHoursFromGooglePeriods,
@@ -14,6 +11,18 @@ import {
 } from '../../../../utils/place-spine'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
+
+type GooglePlace = BasePlace & {
+  source: 'google'
+  address: PlaceAddress
+  website: string
+  phone: string
+  price_level: string
+  google_maps_url: string
+  types: string[]
+  default_currency_code: string
+  business_hours?: PlaceBusinessHours
+}
 
 export type PlacesAutocompleteDebug = {
   query: string

@@ -4,28 +4,24 @@ import type { FireuxStamped } from '../../models/utils/stamps.model.ts'
 
 export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-export interface EcosystemIdentity {
+export interface Ecosystem extends FireuxStamped {
   id: string
   project_id: string
   status: EcosystemStatus
-}
-
-export interface EcosystemPresentation {
   name: string
   description: string
   image_url: string
   website_url: string
 }
 
-export interface Ecosystem
-  extends FireuxStamped,
-    EcosystemIdentity,
-    EcosystemPresentation {}
-
-export interface EcosystemMeta
-  extends EcosystemIdentity,
-    EcosystemPresentation,
-    Pick<FireuxStamped, 'updated'> {
+export interface EcosystemMeta extends Pick<FireuxStamped, 'updated'> {
+  id: string
+  project_id: string
+  status: EcosystemStatus
+  name: string
+  description: string
+  image_url: string
+  website_url: string
   database_id: string
 }
 
@@ -56,22 +52,14 @@ export const EcosystemEntity = defineFireuxEntity({
   root: EcosystemStorage.path,
 })
 
-export const EcosystemIdentityDefaults: EcosystemIdentity = {
+export const EcosystemDefaults: Ecosystem = {
   id: '',
   project_id: '',
   status: 'draft',
-}
-
-export const EcosystemPresentationDefaults: EcosystemPresentation = {
   name: '',
   description: '',
   image_url: '',
   website_url: '',
-}
-
-export const EcosystemDefaults: Ecosystem = {
-  ...EcosystemIdentityDefaults,
-  ...EcosystemPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -84,8 +72,13 @@ export const EcosystemDefaults: Ecosystem = {
 }
 
 export const EcosystemMetaDefaults: EcosystemMeta = {
-  ...EcosystemIdentityDefaults,
-  ...EcosystemPresentationDefaults,
+  id: '',
+  project_id: '',
+  status: 'draft',
+  name: '',
+  description: '',
+  image_url: '',
+  website_url: '',
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,

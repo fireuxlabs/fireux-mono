@@ -5,7 +5,6 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PlaceOnboardingDefaults } from '../../../models/place-onboarding.model.ts'
-import { PlaceStorage } from '../../../models/place.model.ts'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -31,7 +30,7 @@ export async function context(
   const membershipRef = db.doc(
     `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
   )
-  const placeRef = db.collection(PlaceStorage.collection).doc(id)
+  const placeRef = db.collection('places').doc(id)
   const membership = await membershipRef.get()
   const role = requireMemberRole(membership.exists, membership.get('role'))
   return { uid, runtimeAppId, role, db, membershipRef, placeRef }

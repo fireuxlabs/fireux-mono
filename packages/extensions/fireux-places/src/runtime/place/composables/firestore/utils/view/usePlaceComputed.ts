@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { BasePlace } from '../../../../models/place.model.ts'
+import type { BasePlace } from '../../fetch/search/types'
 
 export function usePlaceComputed(
   place?: Ref<BasePlace | null | undefined>

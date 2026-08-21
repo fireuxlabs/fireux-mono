@@ -6,7 +6,7 @@ import {
 } from '../../../../models/table-tab.model.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
-import { readKitchenTableCount } from '../../../../utils/kitchen-spine'
+import { readKitchenTableCount } from '../../../../utils/kitchen-readers'
 
 const terminalStatuses = new Set(['closed', 'cancelled'])
 

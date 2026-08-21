@@ -14,7 +14,7 @@ import {
   resolveMenuServiceHours,
   resolveMenuSurfaceServiceHours,
 } from '../../utils/menu-service-hours.ts'
-import { kitchenPaymentMethodsForOrderType } from '../../../kitchen/utils/kitchen-spine.ts'
+import { kitchenPaymentMethodsForOrderType } from '../../../kitchen/utils/kitchen-readers.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

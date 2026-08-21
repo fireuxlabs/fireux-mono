@@ -1,18 +1,17 @@
 import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
 } from '../../models/kitchen-detail.model.ts'
-import type { KitchenDirectoryEntry } from '../../models/kitchen-directory.model.ts'
+import type { Kitchen } from '../../models/kitchen.model.ts'
 import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
-} from '../../utils/kitchen-spine.ts'
+} from '../../utils/kitchen-readers.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
@@ -54,7 +53,7 @@ export async function readKitchenRelatedRecords(
 
   for (const document of documents) {
     if (isFirestoreDocumentId(document.id)) {
-      const placeRef = db.collection(PlaceStorage.collection).doc(document.id)
+      const placeRef = db.collection('places').doc(document.id)
       references.set(placeRef.path, placeRef)
     }
   }
@@ -77,7 +76,7 @@ function resolveKitchenReadParts(
   const placeId = document.id
   if (!isFirestoreDocumentId(placeId)) return null
 
-  const placeData = dataByPath.get(`${PlaceStorage.collection}/${placeId}`)
+  const placeData = dataByPath.get(`${'places'}/${placeId}`)
   if (!placeData) return null
 
   const identity = menuKitchenIdentity(rootData, placeData)
@@ -96,43 +95,18 @@ function resolveKitchenReadParts(
   }
 }
 
-export function projectKitchenDirectoryEntry(
+export function resolveKitchen(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
   scope: KitchenReadScope
-): KitchenDirectoryEntry | null {
+): Kitchen | null {
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
   if (!parts) return null
-
-  const rootData = parts.document.data
-  const name = text(parts.identity.name)
-  const slug = readRecordString(rootData, 'slug')
-  const shortName = readRecordString(parts.placeData, 'short_name')
-  const brandTagline = text(parts.place.brandTagline)
-  const formattedAddress = readRecordString(
-    parts.placeData,
-    'formatted_address'
+  return normalizeKitchen(
+    document.id,
+    document.data,
+    normalizePlace(document.id, parts.placeData)
   )
-  const shortAddress = readRecordString(parts.placeData, 'short_address')
-  const imageUrl = text(parts.place.coverImage || parts.place.imageUrl)
-  const mediaBackdropColor = parts.place.mediaBackdropColor
-  const imageKind = 'photograph'
-  const logoImageUrl = text(parts.place.logoImage)
-
-  return {
-    id: parts.document.id,
-    name,
-    slug,
-    visible: parts.visible,
-    ...(shortName ? { short_name: shortName } : {}),
-    ...(brandTagline ? { brand_tagline: brandTagline } : {}),
-    ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
-    ...(shortAddress ? { short_address: shortAddress } : {}),
-    ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
-    ...(imageUrl ? { image_url: imageUrl } : {}),
-    ...(imageUrl ? { image_kind: imageKind } : {}),
-    ...(mediaBackdropColor ? { media_backdrop_color: mediaBackdropColor } : {}),
-  }
 }
 
 export function projectKitchenDetail(
@@ -140,9 +114,9 @@ export function projectKitchenDetail(
   dataByPath: Map<string, Record<string, unknown>>,
   scope: KitchenReadScope
 ): KitchenDetailResponse | null {
-  const item = projectKitchenDirectoryEntry(document, dataByPath, scope)
+  const kitchen = resolveKitchen(document, dataByPath, scope)
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
-  if (!item || !parts) return null
+  if (!kitchen || !parts) return null
 
   const place = parts.placeData
   const placeSocialLinks = record(place.social_links)
@@ -156,15 +130,37 @@ export function projectKitchenDetail(
   const googleMapsUrl = parts.place.googleMapsUrl
   const latitude = number(place.lat)
   const longitude = number(place.lng)
-  const tagline = item.brand_tagline || ''
-  const imageUrl = item.image_url || ''
+  const tagline = kitchen.place.brand_tagline || ''
+  const imageUrl = kitchen.place.cover_image || kitchen.place.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
   const sproochli = readKitchenSproochliConfig(parts.document.data)
 
   const presentation: KitchenDetailPresentation = {
-    ...item,
+    id: kitchen.id,
+    name: kitchen.place.name,
+    slug: kitchen.slug,
+    visible: kitchen.visibility,
     route_scope: 'live',
-    display_name: item.name,
+    display_name: kitchen.place.name,
+    ...(kitchen.place.short_name
+      ? { short_name: kitchen.place.short_name }
+      : {}),
+    ...(kitchen.place.brand_tagline
+      ? { brand_tagline: kitchen.place.brand_tagline }
+      : {}),
+    ...(kitchen.place.formatted_address
+      ? { formatted_address: kitchen.place.formatted_address }
+      : {}),
+    ...(kitchen.place.short_address
+      ? { short_address: kitchen.place.short_address }
+      : {}),
+    ...(kitchen.place.logo_image
+      ? { logo_image_url: kitchen.place.logo_image }
+      : {}),
+    ...(imageUrl ? { image_url: imageUrl, image_kind: 'photograph' } : {}),
+    ...(kitchen.place.media_backdrop_color
+      ? { media_backdrop_color: kitchen.place.media_backdrop_color }
+      : {}),
     ...(sproochli.enabled
       ? {
           sproochli: {
@@ -192,17 +188,13 @@ export function projectKitchenDetail(
     ...(latitude !== null ? { lat: latitude } : {}),
     ...(longitude !== null ? { lng: longitude } : {}),
   }
-  const kitchen = normalizeKitchen(document.id, document.data)
-  const canonicalPlace = normalizePlace(document.id, parts.placeData)
-  if (!kitchen || !canonicalPlace) return null
-
   return {
     kitchen,
-    place: canonicalPlace,
+    place: kitchen.place,
     presentation: resolveKitchenDetailPresentation(
       presentation,
       kitchen,
-      canonicalPlace
+      kitchen.place
     ),
   }
 }

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 12:58 CEST — Misebox Jobs workplace adapter: expose type- and collection-discriminated owner materialization.
 import { useNuxtApp } from '#imports'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 
 export type JobWorkplaceMaterializationInput = {
   workplaceType?: string

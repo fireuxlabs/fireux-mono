@@ -35,7 +35,7 @@ import type {
   KitchenUpdateInput,
 } from '../../../../models/kitchen.model.ts'
 import type { KitchenOrderType } from '../../../../models/order.model.ts'
-import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-spine'
+import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-readers'
 
 type PaymentGroup = {
   id:

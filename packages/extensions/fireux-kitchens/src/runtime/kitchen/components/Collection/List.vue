@@ -46,4 +46,18 @@ withDefaults(
 .kitchen-collection-list--cell > li {
   height: 100%;
 }
+
+.kitchen-collection-list--cell {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 6);
+}
+
+@media (max-width: 980px) {
+  .kitchen-collection-list--cell { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .kitchen-collection-list--cell { grid-template-columns: 1fr; }
+}
 </style>

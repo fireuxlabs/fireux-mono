@@ -1,44 +1,53 @@
 <template>
-  <PublicEntityDirectoryCard
+  <MoleculesActionSurface
     v-if="directory"
     :to="link && to ? to : undefined"
-    :action="action"
-    :disabled="disabled"
-    :title="displayName"
-    :image-url="resolvedImageUrl"
-    image-alt=""
-    :media-fit="imageKind === 'brand' ? 'contain' : 'cover'"
-    :media-background="imageKind === 'brand' ? mediaBackdropColor : ''"
-    fallback-label="Venue photo unavailable"
-    fallback-icon="i-lucide-image-off"
-    @action="emit('action')"
+    class="kitchen-directory-card"
   >
-    <template v-if="visibleBadges.length" #badges>
+    <div class="kitchen-directory-card__media">
+      <img v-if="resolvedImageUrl" :src="resolvedImageUrl" alt="" loading="lazy">
+      <UIcon v-else name="i-lucide-image-off" aria-label="Venue photo unavailable" />
+      <UAvatar
+        v-if="logoImageUrl"
+        :src="logoImageUrl"
+        :alt="`${displayName} logo`"
+        size="xl"
+        class="kitchen-directory-card__logo"
+      />
+    </div>
+    <div class="kitchen-directory-card__body">
+      <div v-if="visibleBadges.length" class="kitchen-directory-card__badges">
       <UBadge
         v-for="badge in visibleBadges"
         :key="badge"
-        variant="solid"
         color="neutral"
-        size="xs"
+        variant="solid"
       >
         {{ badge }}
       </UBadge>
-    </template>
-
-    <template #meta>
-      <p
-        class="kitchen-card-cell__address"
-        :class="{ 'kitchen-card-cell__address--empty': !resolvedAddress }"
-      >
+      </div>
+      <h3>{{ displayName }}</h3>
+      <div v-if="categoryLabels.length" class="kitchen-directory-card__categories">
+        <span v-for="label in categoryLabels" :key="label">{{ label.replaceAll('_', ' ') }}</span>
+      </div>
+      <p class="kitchen-card-cell__address">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
-        <span>{{ resolvedAddress || 'Location unavailable' }}</span>
+        <span>{{ resolvedAddress || 'Location available on profile' }}</span>
       </p>
-    </template>
-
-    <p v-if="showTagline && prop" class="kitchen-card-cell__directory-tagline">
-      {{ prop }}
-    </p>
-  </PublicEntityDirectoryCard>
+      <p v-if="tagline || about || prop" class="kitchen-card-cell__directory-tagline">
+        {{ tagline || about || prop }}
+      </p>
+    <div v-if="estimatedMinutes || fulfilmentModes.length || priceLevel" class="kitchen-card-cell__directory-facts">
+      <span v-if="estimatedMinutes">
+        {{ estimatedMinutes.min }}–{{ estimatedMinutes.max }} min
+      </span>
+      <span v-if="priceLevel">Price {{ priceLevel }}/4</span>
+      <span v-for="mode in fulfilmentModes" :key="mode">
+        {{ fulfilmentLabel(mode) }}
+      </span>
+    </div>
+    </div>
+  </MoleculesActionSurface>
 
   <MoleculesActionSurface
     v-else
@@ -110,6 +119,13 @@ type Props = Partial<
     | 'imageUrl'
     | 'imageShade'
     | 'imageKind'
+    | 'tagline'
+    | 'about'
+    | 'priceLevel'
+    | 'fulfilmentModes'
+    | 'estimatedMinutes'
+    | 'logoImageUrl'
+    | 'categoryLabels'
   >
 > & {
   badges?: KitchenCard.Card['badges']
@@ -136,6 +152,12 @@ const props = withDefaults(defineProps<Props>(), {
   shortAddress: '',
   imageUrl: '',
   imageKind: 'photograph',
+  logoImageUrl: '',
+  categoryLabels: () => [],
+  tagline: '',
+  about: '',
+  priceLevel: '',
+  fulfilmentModes: () => [],
   badges: () => [],
   mediaBackdropColor: '',
   prop: '',
@@ -153,6 +175,13 @@ const resolvedAddress = computed(() => props.shortAddress || '')
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
 const displayName = computed(() => props.name || 'Kitchen')
+const fulfilmentLabel = (mode: string) =>
+  ({
+    delivery: 'Delivery',
+    collection: 'Collection',
+    dine_in: 'Dine in',
+    takeaway: 'Takeaway',
+  })[mode] || mode
 
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade
@@ -178,6 +207,26 @@ const cardClass = computed(() => ({
 <style scoped>
 .kitchen-card-cell {
   min-height: 6.5rem;
+}
+
+.kitchen-directory-card { display: block; overflow: hidden; padding: 0; }
+.kitchen-directory-card__media { position: relative; aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
+.kitchen-directory-card__media > img { width: 100%; height: 100%; object-fit: cover; }
+.kitchen-directory-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
+.kitchen-directory-card__logo { position: absolute; right: calc(var(--spacing) * 4); bottom: calc(var(--spacing) * -6); border: 3px solid var(--ui-bg); background: var(--ui-bg); }
+.kitchen-directory-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 6); }
+.kitchen-directory-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
+.kitchen-directory-card__badges { display: flex; gap: var(--spacing); }
+.kitchen-directory-card__categories { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 2); color: var(--ui-text-muted); font-size: var(--text-xs); text-transform: capitalize; }
+
+.kitchen-card-cell__directory-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  align-items: center;
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .kitchen-card-cell .card__media {

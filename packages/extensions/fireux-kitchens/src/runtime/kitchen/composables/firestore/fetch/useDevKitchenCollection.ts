@@ -1,13 +1,11 @@
 // Concurrent edit — 2026-07-24 18:12 CEST — Kitchen collection canon: isolate raw Firestore reads behind a dev-only adapter.
 import { computed, isRef, type Ref } from 'vue'
 import {
-  PlaceStorage,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { readRuntimeSimulationFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage } from '../../../models/kitchen.model.ts'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 import type { KitchenFetchSource } from './useKitchenFetch'
@@ -75,14 +73,14 @@ export function useDevKitchenCollection(
   const idList = computed(() => Array.from(idSet.value))
   const rootCollectionPath = computed(() =>
     sourceRef.value === 'live' && !hasIdFilter.value
-      ? KitchenStorage.collection
+      ? 'kitchens'
       : ''
   )
   const testCollectionPath = computed(() =>
     sourceRef.value === 'test' &&
     !hasIdFilter.value &&
     simulationDatabaseId.value
-      ? KitchenStorage.collection
+      ? 'kitchens'
       : ''
   )
   const rootSource =
@@ -91,7 +89,7 @@ export function useDevKitchenCollection(
     {
       collectionPath: computed(() =>
         sourceRef.value === 'live' && hasIdFilter.value
-          ? KitchenStorage.collection
+          ? 'kitchens'
           : ''
       ),
       ids: idList,
@@ -107,7 +105,7 @@ export function useDevKitchenCollection(
         sourceRef.value === 'test' &&
         hasIdFilter.value &&
         simulationDatabaseId.value
-          ? KitchenStorage.collection
+          ? 'kitchens'
           : ''
       ),
       ids: idList,
@@ -131,7 +129,7 @@ export function useDevKitchenCollection(
   const exactTestPlaceSource = simulationRead.firestoreLoadDocsByIds<Place>({
     collectionPath: computed(() =>
       sourceRef.value === 'test' && simulationDatabaseId.value
-        ? PlaceStorage.collection
+        ? 'places'
         : ''
     ),
     ids: testPlaceIds,

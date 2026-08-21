@@ -1,4 +1,5 @@
-import { PlaceDefaults, type Place } from './place.model.ts'
+import type { Place } from './place.model.ts'
+import { PlaceDefaults } from '../utils/normalize-place.ts'
 
 export const PLACE_INDEX_PAGE_SIZE = 24
 export const PLACE_INDEX_MAX_PAGE_SIZE = 50

@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref } from 'vue'
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'
 

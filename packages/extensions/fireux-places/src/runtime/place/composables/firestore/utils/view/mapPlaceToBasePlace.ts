@@ -1,6 +1,7 @@
-import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../models/place.model.ts'
+import type { PlaceSource } from '../../../../models/place.model.ts'
+import type { PlaceImageShade } from '../../../../utils/place-spine'
 import { canonicalPlaceId } from '../../fetch/google/usePlacesGoogle'
-import type { BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
+import type { BasePlace, BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
 
 function toSource(value: unknown): PlaceSource {
   const v = String(value ?? '').toLowerCase().trim()

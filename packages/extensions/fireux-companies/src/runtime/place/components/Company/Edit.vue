@@ -21,10 +21,8 @@
 
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import {
-  PlaceDefaults,
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import { PlaceDefaults } from 'fireux-places/runtime/place/utils/normalize-place'
 import { computed } from 'vue'
 import type { CompanyDetail } from '../../models/company-directory.model.ts'
 

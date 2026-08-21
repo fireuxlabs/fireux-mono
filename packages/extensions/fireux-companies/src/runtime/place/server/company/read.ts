@@ -2,7 +2,6 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
-  PlaceStorage,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
@@ -14,7 +13,7 @@ export async function readCompanyPlace(idValue: unknown): Promise<Place> {
   const db = getRuntimeFirestore()
   const [company, place] = await db.getAll(
     db.collection(CompanyStorage.collection).doc(id),
-    db.collection(PlaceStorage.collection).doc(id)
+    db.collection('places').doc(id)
   )
   if (
     !company.exists ||

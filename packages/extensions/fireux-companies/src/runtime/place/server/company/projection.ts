@@ -1,5 +1,4 @@
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -37,7 +36,7 @@ export async function readCompanyDetail(
   const [company, place] = await db
     .getAll(
       db.collection(CompanyStorage.collection).doc(id),
-      db.collection(PlaceStorage.collection).doc(id)
+      db.collection('places').doc(id)
     )
     .catch(() => {
       throw createError({

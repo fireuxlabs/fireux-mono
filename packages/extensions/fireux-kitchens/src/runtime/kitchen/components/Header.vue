@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceHeaderPresentation } from 'fireux-places/runtime/place/models/place-presentation.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenDetailPresentation } from '../models/kitchen-detail.model.ts'
 
 defineOptions({ name: 'KitchenHeader' })
@@ -20,7 +20,7 @@ const identity = computed(() =>
 const name = computed(
   () => clean(raw.value.display_name || raw.value.name) || 'Kitchen'
 )
-const placePresentation = computed<PlaceHeaderPresentation | null>(() => {
+const placePresentation = computed<Partial<Place> | null>(() => {
   if (!props.kitchen) return null
   return {
     name: name.value,
@@ -34,7 +34,6 @@ const placePresentation = computed<PlaceHeaderPresentation | null>(() => {
     media_backdrop_color: clean(
       identity.value.media_backdrop_color || raw.value.media_backdrop_color
     ) as `#${string}` | '',
-    image_shade: 'none',
     verified: false,
     cover_image: clean(raw.value.cover_image),
     logo_image: clean(
@@ -42,7 +41,6 @@ const placePresentation = computed<PlaceHeaderPresentation | null>(() => {
     ),
     wordmark_image: clean(raw.value.wordmark_image),
     website: clean(raw.value.website),
-    brand_palette: {},
     ...(clean(raw.value.google_maps_url)
       ? { google_maps_url: clean(raw.value.google_maps_url) }
       : {}),

@@ -8,27 +8,21 @@ import {
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-export interface ProjectIdentity {
+export interface Project extends FireuxStamped {
   id: string
   status: ProjectStatus
-}
-
-export interface ProjectPresentation {
   name: string
   description: string
   image_url: string
 }
 
-export interface Project
-  extends FireuxStamped,
-    ProjectIdentity,
-    ProjectPresentation {}
-
 /** Local `(default)` projection for this Firebase project's Project. */
-export interface ProjectMeta
-  extends ProjectIdentity,
-    ProjectPresentation,
-    Pick<FireuxStamped, 'updated'> {
+export interface ProjectMeta extends Pick<FireuxStamped, 'updated'> {
+  id: string
+  status: ProjectStatus
+  name: string
+  description: string
+  image_url: string
   database_id: string
 }
 
@@ -71,20 +65,12 @@ export const ProjectEntity = defineFireuxEntity({
   root: ProjectStorage.path,
 })
 
-export const ProjectIdentityDefaults: ProjectIdentity = {
+export const ProjectDefaults: Project = {
   id: '',
   status: 'draft',
-}
-
-export const ProjectPresentationDefaults: ProjectPresentation = {
   name: '',
   description: '',
   image_url: '',
-}
-
-export const ProjectDefaults: Project = {
-  ...ProjectIdentityDefaults,
-  ...ProjectPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -97,8 +83,11 @@ export const ProjectDefaults: Project = {
 }
 
 export const ProjectMetaDefaults: ProjectMeta = {
-  ...ProjectIdentityDefaults,
-  ...ProjectPresentationDefaults,
+  id: '',
+  status: 'draft',
+  name: '',
+  description: '',
+  image_url: '',
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,

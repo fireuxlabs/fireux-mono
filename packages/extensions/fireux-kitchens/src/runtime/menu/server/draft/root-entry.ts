@@ -9,7 +9,6 @@ import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutatio
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { KitchenStorage } from '../../../kitchen/models/kitchen.model.ts'
 import { MenuStorage } from '../../models/menu.model.ts'
 
 type RootMenuEntryInput = {
@@ -134,7 +133,7 @@ export async function ensureKitchenMenuRootEntry(
   // Root menus are route/list projections; scoped kitchen menus remain the content authority.
   const scopedKitchenSnap = await db.doc(input.kitchenPath).get()
   const rootKitchenSnap = await db
-    .collection(KitchenStorage.collection)
+    .collection('kitchens')
     .doc(input.kitchenId)
     .get()
   const identity = kitchenIdentity(

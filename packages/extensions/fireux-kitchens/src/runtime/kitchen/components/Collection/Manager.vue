@@ -1,39 +1,19 @@
 <template>
   <section class="collection-directory kitchen-directory">
-    <CollectionDirectoryHeader
-      :title="title"
-      :description="description"
-      compact
-    >
-      <template #controls>
-        <UInput
-          v-if="showSearchInput"
-          v-model="query"
-          :placeholder="searchPlaceholder"
-          :aria-label="searchPlaceholder"
-          icon="i-lucide-search"
-          class="collection-directory__search"
-        />
+    <div class="kitchen-directory__toolbar">
+      <UInput
+        v-model="query"
+        :placeholder="searchPlaceholder"
+        :aria-label="searchPlaceholder"
+        icon="i-lucide-search"
+        size="xl"
+        class="kitchen-directory__search"
+      />
 
-        <UButton
-          v-if="showVariantToggle"
-          size="sm"
-          color="neutral"
-          variant="ghost"
-          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
-          :aria-label="
-            variant === 'pill'
-              ? 'Switch to card view'
-              : 'Switch to compact view'
-          "
-          @click="toggleVariant"
-        />
-
-        <span v-if="showCount && isSettled" class="collection-directory__count">
-          {{ countLabel }}
-        </span>
-      </template>
-    </CollectionDirectoryHeader>
+      <span v-if="showCount && isSettled" class="kitchen-directory__count">
+        {{ countLabel }}
+      </span>
+    </div>
 
     <CollectionDirectoryState
       v-if="outcome === 'pending'"
@@ -86,24 +66,6 @@
         </template>
       </KitchenCollectionList>
 
-      <UAlert
-        v-if="loadMoreError"
-        color="error"
-        variant="soft"
-        icon="i-lucide-circle-alert"
-        title="More kitchens could not be loaded"
-        description="The kitchens already shown are still available."
-      />
-
-      <div v-if="hasMore" class="kitchen-directory__more">
-        <UButton
-          label="Load more kitchens"
-          color="neutral"
-          variant="soft"
-          :loading="loadingMore"
-          @click="loadMore"
-        />
-      </div>
     </div>
 
     <div v-else>
@@ -117,15 +79,6 @@
         "
       />
 
-      <div v-if="hasMore && !query" class="kitchen-directory__more">
-        <UButton
-          label="Check more kitchens"
-          color="neutral"
-          variant="soft"
-          :loading="loadingMore"
-          @click="loadMore"
-        />
-      </div>
     </div>
 
     <div>
@@ -182,21 +135,19 @@ const props = withDefaults(
     link: true,
     showBadges: false,
     devJsonTitle: 'Kitchens (JSON)',
-    devJsonContext: 'collection manager · kitchens · collection surface',
+    devJsonContext: 'collection manager · server-resolved Kitchen[]',
   }
 )
 
 const fetched = useKitchenCollection()
-const collectionSurface = computed<KitchenCollectionItem[]>(
-  () => fetched.collection.value ?? []
+const { interface: makeCard, pill: makePill, cell: makeCell, surface } =
+  useKitchenInterface()
+const collectionSurface = computed<KitchenCollectionItem[]>(() =>
+  fetched.collection.value
+    .map((kitchen) => surface({ kitchen, place: kitchen.place }))
+    .filter((kitchen): kitchen is KitchenCollectionItem => Boolean(kitchen))
 )
 const outcome = computed(() => fetched.outcome.value)
-const hasMore = computed(() => fetched.hasMore.value)
-const loadingMore = computed(() => fetched.loadingMore.value)
-const loadMoreError = computed(() => fetched.loadMoreError.value)
-const loadMore = async () => {
-  await fetched.loadMore()
-}
 const refreshCollection = async () => {
   await fetched.refresh()
 }
@@ -204,7 +155,7 @@ const isSettled = computed(
   () => outcome.value === 'ready' || outcome.value === 'empty'
 )
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collectionSurface)
+  useDevCollectionJson(fetched.collection)
 const title = computed(() => String(props.title || 'Kitchen collection'))
 const description = computed(() =>
   String(
@@ -217,7 +168,6 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(
   () => props.showBadges !== false || fetched.canViewHidden.value
 )
@@ -226,22 +176,16 @@ const devJsonTitle = computed(() =>
 )
 const devJsonContext = computed(() =>
   String(
-    props.devJsonContext || 'collection manager · kitchens · collection surface'
+    props.devJsonContext || 'collection manager · server-resolved Kitchen[]'
   ).trim()
 )
-const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
-} = useKitchenInterface()
-
 const collection = computed<KitchenCollectionItem[]>(() =>
   collectionSurface.value.filter((row): row is KitchenCollectionItem =>
     Boolean(makeCard(row))
   )
 )
 
-const { query, variant, toggleVariant, visibleItems, visibleCount } =
+const { query, variant, visibleItems, visibleCount } =
   useCollectionSearch<
     KitchenCollectionItem,
     NonNullable<ReturnType<typeof makeCard>>
@@ -260,11 +204,8 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 })
 
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(
-  () => showSearch.value && !hasMore.value && totalCount.value > 15
-)
 const countLabel = computed(() =>
-  showSearchInput.value && query.value
+  showSearch.value && query.value
     ? `${visibleCount.value} of ${totalCount.value} kitchens`
     : `${totalCount.value} kitchen${totalCount.value === 1 ? '' : 's'}`
 )
@@ -276,9 +217,36 @@ const countLabel = computed(() =>
   gap: calc(var(--spacing) * 5);
 }
 
+.kitchen-directory__toolbar {
+  display: flex;
+  gap: calc(var(--spacing) * 4);
+  align-items: center;
+  margin-bottom: calc(var(--spacing) * 8);
+  padding-block: calc(var(--spacing) * 4);
+  border-top: 1px solid var(--ui-border);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.kitchen-directory__search {
+  width: min(100%, 38rem);
+}
+
+.kitchen-directory__count {
+  margin-left: auto;
+  color: var(--ui-text-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .kitchen-directory__more {
   display: flex;
   justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .kitchen-directory__toolbar { align-items: stretch; flex-direction: column; }
+  .kitchen-directory__search { width: 100%; }
+  .kitchen-directory__count { margin-left: 0; }
 }
 
 </style>

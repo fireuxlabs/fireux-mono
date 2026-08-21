@@ -24,8 +24,7 @@ import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage } from '../../../models/kitchen.model.ts'
-import { composeKitchenScopedSurface } from '../../../utils/kitchen-spine'
+import { composeKitchenScopedSurface } from '../../../utils/kitchen-readers'
 import {
   useKitchenFetch,
   type KitchenFetchSource,
@@ -232,12 +231,12 @@ function createKitchenWorkspace() {
       : readRuntimeFirestoreDatabaseId() || ''
   )
   const firestore = useWorkspaceEntityFirestore({
-    family: KitchenStorage.collection,
+    family: 'kitchens',
     target: selectedKitchenTarget,
     appId: scopedAppId,
     mode: dataType,
     active: computed(() => Boolean(dataType.value)),
-    testCollectionPath: KitchenStorage.collection,
+    testCollectionPath: 'kitchens',
     useAppSupport: false,
   })
   const kitchenCollectionPath = firestore.writeCollection

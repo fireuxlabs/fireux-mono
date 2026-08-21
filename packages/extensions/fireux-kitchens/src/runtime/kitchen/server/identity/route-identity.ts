@@ -1,6 +1,5 @@
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 
@@ -18,7 +17,7 @@ export async function readKitchenByRouteSlug(
   if (!slug) return null
 
   const matches = await db
-    .collection(KitchenStorage.collection)
+    .collection('kitchens')
     .where('slug', '==', slug)
     .limit(2)
     .get()

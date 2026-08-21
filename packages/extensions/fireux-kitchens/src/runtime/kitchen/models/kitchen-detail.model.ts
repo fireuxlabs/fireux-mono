@@ -1,7 +1,5 @@
-import type {
-  MediaBackdropColor,
-  Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen } from './kitchen.model.ts'
 

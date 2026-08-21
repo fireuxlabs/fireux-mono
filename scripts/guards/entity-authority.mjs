@@ -134,11 +134,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       userModel,
       [
         'export type AppUserRole',
-        'export interface UserIdentity',
+        'export interface User extends FireuxStamped',
         'export interface AppUser',
         'export const UserStorage',
         'export const UserEntity',
-        'export const UserIdentityDefaults',
+        'export const UserDefaults',
         'export type UserCreateInput',
       ],
     ],
@@ -147,11 +147,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       appModel,
       [
         'export type AppStatus',
-        'export interface AppIdentity',
+        'export interface App extends FireuxStamped',
         'export interface AppMeta',
         'export const AppStorage',
         'export const AppEntity',
-        'export const AppIdentityDefaults',
+        'export const AppDefaults',
         'export type AppCreateInput',
       ],
     ],
@@ -160,11 +160,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       ecosystemModel,
       [
         'export type EcosystemStatus',
-        'export interface EcosystemIdentity',
+        'export interface Ecosystem extends FireuxStamped',
         'export interface EcosystemMeta',
         'export const EcosystemStorage',
         'export const EcosystemEntity',
-        'export const EcosystemIdentityDefaults',
+        'export const EcosystemDefaults',
         'export type EcosystemCreateInput',
       ],
     ],
@@ -173,11 +173,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       projectModel,
       [
         'export type ProjectStatus',
-        'export interface ProjectIdentity',
+        'export interface Project extends FireuxStamped',
         'export interface ProjectMeta',
         'export const ProjectStorage',
         'export const ProjectEntity',
-        'export const ProjectIdentityDefaults',
+        'export const ProjectDefaults',
         'export type ProjectCreateInput',
       ],
     ],
@@ -201,7 +201,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const appMetaEnd = appModel.indexOf('export const AppStorage', appMetaStart)
   assert.ok(appMetaStart >= 0 && appMetaEnd > appMetaStart)
   const appMetaContract = appModel.slice(appMetaStart, appMetaEnd)
-  assert.match(appMetaContract, /extends AppIdentity/)
+  assert.match(appMetaContract, /project_id:\s*string/)
   assert.match(appMetaContract, /website_url:\s*string/)
   assert.match(appMetaContract, /workspace_families:\s*AppWorkspaceFamily\[\]/)
   assert.doesNotMatch(
@@ -218,7 +218,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appModel, /ecosystem_id\?:\s*string/)
   assert.match(
     appModel,
-    /export interface App extends FireuxStamped, AppIdentity, AppPresentation/
+    /export interface App extends FireuxStamped/
   )
   assert.doesNotMatch(
     appModel,
@@ -229,7 +229,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(ecosystemModel, /project_id:\s*''/)
   assert.match(
     ecosystemModel,
-    /export interface Ecosystem[\s\S]*extends FireuxStamped,[\s\S]*EcosystemIdentity,[\s\S]*EcosystemPresentation/
+    /export interface Ecosystem extends FireuxStamped/
   )
   assert.match(
     ecosystemModel,
@@ -269,7 +269,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     projectModel,
-    /export interface Project[\s\S]*extends FireuxStamped,[\s\S]*ProjectIdentity,[\s\S]*ProjectPresentation/
+    /export interface Project extends FireuxStamped/
   )
   assert.doesNotMatch(projectModel, /WidenLiteral|^  slug:/m)
   assert.match(projectModel, /ProjectTeamMemberDefaults/)
@@ -280,7 +280,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     userModel,
-    /export interface User[\s\S]*extends FireuxStamped,[\s\S]*UserIdentity,[\s\S]*UserPresentation/
+    /export interface User extends FireuxStamped/
   )
   assert.match(userModel, /export interface AppUser extends FireuxStamped/)
   const canonicalUserModels = userModel.slice(

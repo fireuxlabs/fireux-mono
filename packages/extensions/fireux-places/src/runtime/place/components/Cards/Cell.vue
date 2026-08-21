@@ -1,37 +1,32 @@
 <template>
-  <PublicEntityDirectoryCard
+  <MoleculesActionSurface
     v-if="directory"
     :to="surfaceTo"
     :action="action"
-    :title="name"
-    :image-url="resolvedImageUrl"
-    image-alt=""
-    media-fit="cover"
-    fallback-icon="i-lucide-map-pin"
-    fallback-label="Venue photo not published"
-    @action="emit('action')"
+    class="place-directory-card"
+    @activate="emit('action')"
   >
-    <template v-if="showSource && sourceLabel" #badges>
+    <div class="place-directory-card__media">
+      <img v-if="resolvedImageUrl" :src="resolvedImageUrl" alt="" loading="lazy">
+      <UIcon v-else name="i-lucide-map-pin" aria-label="Venue photo not published" />
+    </div>
+    <div class="place-directory-card__body">
       <UBadge
+        v-if="showSource && sourceLabel"
         variant="soft"
         color="neutral"
         size="xs"
       >
         {{ sourceLabel }}
       </UBadge>
-    </template>
-
-    <template v-if="showSubtitle && resolvedAddress" #meta>
+      <h3>{{ name }}</h3>
       <span class="place-cell__address">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
         <span>{{ resolvedAddress }}</span>
       </span>
-    </template>
-
-    <p v-if="showTagline" class="place-cell__tagline">
-      {{ prop || 'Details not published' }}
-    </p>
-  </PublicEntityDirectoryCard>
+      <p v-if="showTagline && prop" class="place-cell__tagline">{{ prop }}</p>
+    </div>
+  </MoleculesActionSurface>
 
   <MoleculesActionSurface
     v-else
@@ -139,6 +134,12 @@ const sourceLabel = computed(() =>
 </script>
 
 <style scoped>
+.place-directory-card { display: block; overflow: hidden; padding: 0; }
+.place-directory-card__media { aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
+.place-directory-card__media > img { width: 100%; height: 100%; object-fit: cover; }
+.place-directory-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
+.place-directory-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 5); }
+.place-directory-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
 .place-cell__address {
   display: flex;
   min-width: 0;

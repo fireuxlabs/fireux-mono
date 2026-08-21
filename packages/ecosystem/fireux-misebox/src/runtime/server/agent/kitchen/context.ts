@@ -3,7 +3,7 @@ import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
-import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-spine'
+import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-readers'
 import {
   normalizeDish,
   type Dish,

@@ -1,9 +1,7 @@
 import { ref, watch } from 'vue'
-import {
-  type BasePlace,
-  type PlaceImageShade,
-  type PlaceSource,
-} from '../../../../models/place.model.ts'
+import type { PlaceSource } from '../../../../models/place.model.ts'
+import type { BasePlace } from './types'
+import type { PlaceImageShade } from '../../../../utils/place-spine'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'

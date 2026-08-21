@@ -14,7 +14,7 @@ import {
   readKitchenGrossSalesReport,
 } from '../../../../../kitchen/server/operations/finance/gross-sales-report.ts'
 import { requireKitchenReportReader } from '../../../../../kitchen/server/core/operator-access.ts'
-import { resolveKitchenOperationHours } from '../../../../../kitchen/utils/kitchen-spine.ts'
+import { resolveKitchenOperationHours } from '../../../../../kitchen/utils/kitchen-readers.ts'
 
 const validTimezone = (value: unknown) => {
   if (typeof value !== 'string' || !value || value !== value.trim())

@@ -456,12 +456,11 @@ requirement, report the exact missing seam before broad edits.
 - Nuxt UI is the universal App baseline. Core `main.scss` may own shared
   anatomy, rhythm, accessibility, and semantic browser contracts, but it does
   not impose an ecosystem aesthetic.
-- Core `PublicEntityDirectoryCard` is the shared image-led directory-card
-  presentation seam. Kitchen and Place are its proving siblings. Their detail
-  headers remain separately named and domain-owned as `KitchenHeader` and
-  `PlaceHeader`; similar anatomy does not create a cross-domain header API.
-  Keep the shared card seam flat and semantic: no decorative gradients, glass,
-  App selectors, or inferred media ownership.
+- Kitchen discovery cards are owned by `KitchenCardsCell`; Place cards remain
+  Place-owned. They may reuse proven lower-level Core and Nuxt UI primitives,
+  but visual similarity does not create a generic public-entity card or header
+  API. Their detail headers remain separately named and domain-owned as
+  `KitchenHeader` and `PlaceHeader`.
 - Core `LandingProductIndex` owns the Main App product-landing region
   vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
   `surfaces`, `workspace`, `specifics`, `ecosystems`, `apps`, `tools`,

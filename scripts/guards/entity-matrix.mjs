@@ -330,6 +330,33 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const ids = new Set()
   const declarationKeys = new Set()
   const declaredNames = new Set()
+  const placeModelPath = path.join(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts'
+  )
+  const placeModel = readFileSync(placeModelPath, 'utf8')
+  assert.match(
+    placeModel,
+    /export type Place\s*=\s*\{/,
+    'Place must remain the plain venue model.'
+  )
+  assert.doesNotMatch(
+    placeModel,
+    /defineFireuxEntity|PlaceStorage|PlaceEntity|PlaceDefaults|BasePlace|GooglePlace|PlaceStored|PlaceCreateInput|PlaceUpdateInput|PlaceUpsertInput/,
+    'Place model must answer only what a Place is.'
+  )
+  declaredNames.add('Place')
+  const kitchenModelPath = path.join(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts'
+  )
+  const kitchenModel = readFileSync(kitchenModelPath, 'utf8')
+  assert.match(
+    kitchenModel,
+    /export type Kitchen\s*=\s*\{/,
+    'Kitchen must remain the plain parent model for Kitchen-owned records.'
+  )
+  declaredNames.add('Kitchen')
 
   for (const row of entityMatrix) {
     assert.ok(

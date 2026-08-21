@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspaceDemoData } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDemoData'
-import type { PlaceStored } from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   usePortfolioInterface,
   type PortfolioSurface,
@@ -15,7 +15,9 @@ export type PropertiesWorkspaceDemoScenario = {
   appId: string
   portfolio: PortfolioSurface | null
   properties: PropertySurface[]
-  places: PlaceStored[]
+  places: Array<
+    Partial<Place> & Pick<Place, 'id' | 'name' | 'place_type' | 'source'>
+  >
 }
 
 export function usePropertiesWorkspaceDemoData(

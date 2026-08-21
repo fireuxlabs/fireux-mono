@@ -185,7 +185,7 @@ import {
   hasKitchenOperationHours,
   readKitchenOperationHours,
   resolveKitchenOperationHours,
-} from '../../../../utils/kitchen-spine'
+} from '../../../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null

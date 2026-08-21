@@ -59,23 +59,6 @@
         </UButton>
       </WorkspaceKitchenIdentityStage>
 
-      <WorkspaceKitchenIdentityStage
-        v-if="hasDedicatedApp"
-        number="04"
-        title="App identity"
-        description="Bonus App controls established during onboarding: five masters, the effective palette and two font families."
-        :percent="appPercent"
-        :complete="appComplete"
-        :locked="!workspaceComplete"
-        locked-title="Workspace identity is incomplete"
-        locked-description="Complete Place, Kitchen and Workspace identity before editing App identity."
-        :requirements="[]"
-      >
-        <WorkspaceKitchenIdentitySectionsApp
-          :kitchen-id="kitchenId"
-          @saved="refreshTargets"
-        />
-      </WorkspaceKitchenIdentityStage>
     </div>
 
     <MoleculesStateCard
@@ -92,7 +75,6 @@ import { computed } from 'vue'
 import { useKitchenIdentityProgression } from '../../../../composables/workspace/identity/useKitchenIdentityProgression'
 import { useKitchenInterface } from '../../../../composables/firestore/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../../composables/firestore/utils/view/useKitchenInterface'
-import WorkspaceKitchenIdentitySectionsApp from './App.vue'
 
 const {
   selectedKitchen,
@@ -109,11 +91,6 @@ const {
   workspaceRequirements,
   workspacePercent,
   workspaceComplete,
-  appRequirements,
-  appPercent,
-  appComplete,
-  hasDedicatedApp,
-  refreshTargets,
 } = useKitchenIdentityProgression()
 const { preview, surface } = useKitchenInterface()
 const kitchen = computed(() => selectedKitchen.value as KitchenSurface | null)

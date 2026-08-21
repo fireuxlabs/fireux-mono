@@ -10,7 +10,6 @@ import {
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import {
-  PlaceStorage,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -18,7 +17,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage, type Kitchen } from '../../../models/kitchen.model.ts'
+import type { Kitchen } from '../../../models/kitchen.model.ts'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
 export type KitchenFetchDoc = Partial<Kitchen> & {
@@ -33,7 +32,7 @@ type UseKitchenFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = KitchenStorage.collection
+const DEFAULT_COLLECTION_PATH = 'kitchens'
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {
@@ -121,7 +120,7 @@ export function useKitchenFetch(
       return null
 
     return fsq(
-      collection(resolveLiveDb(), PlaceStorage.collection),
+      collection(resolveLiveDb(), 'places'),
       where(documentId(), '==', resolvedPlaceId),
       limit(1)
     ) as Query<Place>
@@ -129,7 +128,7 @@ export function useKitchenFetch(
   const placeSource = liveRead.firestoreQuery<Place>(
     placeQuery,
     'kitchen-fetch-place',
-    PlaceStorage.collection
+    'places'
   )
   const testPlaceQuery = computed<Query<Place> | null>(() => {
     const resolvedPlaceId = String(placeId.value || '').trim()
@@ -137,7 +136,7 @@ export function useKitchenFetch(
       return null
 
     return fsq(
-      collection(resolveSimulationDb(), PlaceStorage.collection),
+      collection(resolveSimulationDb(), 'places'),
       where(documentId(), '==', resolvedPlaceId),
       limit(1)
     ) as Query<Place>
@@ -145,7 +144,7 @@ export function useKitchenFetch(
   const testPlaceSource = simulationRead.firestoreQuery<Place>(
     testPlaceQuery,
     'kitchen-fetch-test-place',
-    PlaceStorage.collection
+    'places'
   )
   const rootKitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()

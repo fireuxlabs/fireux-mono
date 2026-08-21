@@ -1,4 +1,20 @@
-import type { BasePlace } from '../../../../models/place.model.ts'
+import type { Place } from '../../../../models/place.model.ts'
+
+export type BasePlace = Pick<
+  Place,
+  | 'id'
+  | 'name'
+  | 'short_name'
+  | 'place_type'
+  | 'formatted_address'
+  | 'short_address'
+  | 'lat'
+  | 'lng'
+  | 'image_url'
+  | 'claimed_by'
+  | 'source'
+  | 'slug'
+> & { image_shade?: import('../../../../utils/place-spine').PlaceImageShade }
 
 export type BasePlaceRecord = BasePlace & { collection?: string }
 

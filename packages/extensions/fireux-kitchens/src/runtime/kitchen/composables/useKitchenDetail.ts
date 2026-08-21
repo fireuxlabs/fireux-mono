@@ -13,14 +13,13 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import {
-  PlaceStorage,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
 } from '../models/kitchen-detail.model.ts'
-import { KitchenStorage, type Kitchen } from '../models/kitchen.model.ts'
+import type { Kitchen } from '../models/kitchen.model.ts'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
 import { normalizeKitchen } from '../utils/normalize-kitchen.ts'
 
@@ -88,22 +87,18 @@ export function useKitchenDetail(
   )
   const { firestoreFetchDoc } = useFirestoreRead()
   const liveKitchenRead = firestoreFetchDoc<Kitchen>(
-    KitchenStorage.collection,
+    'kitchens',
     liveKitchenId
   )
   const livePlaceRead = firestoreFetchDoc<Place>(
-    PlaceStorage.collection,
+    'places',
     livePlaceId
-  )
-  const liveKitchen = computed(() =>
-    normalizeKitchen(
-      liveKitchenId.value,
-      liveKitchenRead.value,
-      fireux.ecosystem
-    )
   )
   const livePlace = computed(() =>
     normalizePlace(livePlaceId.value, livePlaceRead.value)
+  )
+  const liveKitchen = computed(() =>
+    normalizeKitchen(liveKitchenId.value, liveKitchenRead.value, livePlace.value)
   )
   const lastGoodKitchen = shallowRef<Kitchen | null>(null)
   const lastGoodPlace = shallowRef<Place | null>(null)

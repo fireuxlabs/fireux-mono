@@ -7,18 +7,13 @@ export const USER_ECOSYSTEM_AVATAR_SRC = '/img/ecosystem/avatar.png'
 export type AppUserRole = 'user' | 'admin'
 export type AppUserOnboardingStatus = 'pending' | 'completed' | 'skipped'
 
-export interface UserIdentity {
+export interface User extends FireuxStamped {
   id: string
   handle: string
-}
-
-export interface UserPresentation {
   display_name: string
   bio: string
   avatar: string
 }
-
-export interface User extends FireuxStamped, UserIdentity, UserPresentation {}
 
 export interface AppUser extends FireuxStamped {
   id: string
@@ -54,20 +49,12 @@ export const UserEntity = defineFireuxEntity({
   appSupportPath: AppUserStorage.path,
 })
 
-export const UserIdentityDefaults: UserIdentity = {
+export const UserDefaults: User = {
   id: '',
   handle: '',
-}
-
-export const UserPresentationDefaults: UserPresentation = {
   display_name: '',
   bio: '',
   avatar: USER_ECOSYSTEM_AVATAR_SRC,
-}
-
-export const UserDefaults: User = {
-  ...UserIdentityDefaults,
-  ...UserPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,

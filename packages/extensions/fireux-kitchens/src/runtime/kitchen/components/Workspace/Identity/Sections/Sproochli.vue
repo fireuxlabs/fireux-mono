@@ -75,7 +75,7 @@ import type {
 } from 'fireux-sproochli/runtime/sproochli'
 import { computed, ref } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
-import { readKitchenSproochliConfig } from '../../../../utils/kitchen-spine'
+import { readKitchenSproochliConfig } from '../../../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null

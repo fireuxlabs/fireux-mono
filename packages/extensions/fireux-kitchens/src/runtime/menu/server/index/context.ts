@@ -1,5 +1,4 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { KitchenMenuStorage } from '../../models/kitchen-menu.model.ts'
 import type { MenuDirectoryKitchen } from '../../models/menu-directory.model.ts'
 import {
@@ -50,7 +49,7 @@ export async function readMenuDirectoryContext(
   for (const { source } of sources) {
     if (!source.kitchen_id) continue
     const placeRef = db
-      .collection(PlaceStorage.collection)
+      .collection('places')
       .doc(source.kitchen_id)
     placeReferences.set(placeRef.path, placeRef)
   }
@@ -69,7 +68,7 @@ export async function readMenuDirectoryContext(
       const rootPath = `kitchens/${source.kitchen_id}`
       const rootData = dataByPath.get(rootPath) || {}
       const placeData =
-        dataByPath.get(`${PlaceStorage.collection}/${source.kitchen_id}`) || {}
+        dataByPath.get(`${'places'}/${source.kitchen_id}`) || {}
       const identity = menuKitchenIdentity(rootData, placeData)
       const kitchenOperationHours = menuKitchenOperationHours(
         rootData,

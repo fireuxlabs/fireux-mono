@@ -10,7 +10,7 @@ type WorkspaceMenuCascade = ReturnType<
 type FinanceModule =
   typeof import('fireux-kitchens/runtime/kitchen/utils/demo-finance')
 type KitchenSpineModule =
-  typeof import('fireux-kitchens/runtime/kitchen/utils/kitchen-spine')
+  typeof import('fireux-kitchens/runtime/kitchen/utils/kitchen-readers')
 
 const workspaceFinancePeriodLabels = {
   '7d': '7 days',

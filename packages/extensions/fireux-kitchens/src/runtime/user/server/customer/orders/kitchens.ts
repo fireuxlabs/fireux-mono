@@ -1,5 +1,4 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { menuKitchenIdentity } from '../../../../menu/server/ownership/kitchen-scope'
 
 export type CustomerOrderKitchenSummary = {
@@ -34,7 +33,7 @@ export async function readCustomerOrderKitchens(
   for (const link of links) {
     const kitchenId = text(link.kitchen_id)
     if (!kitchenId) continue
-    const placeRef = db.doc(`${PlaceStorage.collection}/${kitchenId}`)
+    const placeRef = db.doc(`${'places'}/${kitchenId}`)
     placeReferences.set(placeRef.path, placeRef)
   }
   if (placeReferences.size) {
@@ -53,7 +52,7 @@ export async function readCustomerOrderKitchens(
       if (!kitchenId) return []
       const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
       const placeData =
-        dataByPath.get(`${PlaceStorage.collection}/${kitchenId}`) || {}
+        dataByPath.get(`${'places'}/${kitchenId}`) || {}
       const identity = menuKitchenIdentity(rootData, placeData)
       const slug = text(rootData.slug)
       return [

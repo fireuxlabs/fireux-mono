@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { usePlace } from '../../composables/firestore/usePlace'
-import { PlaceDefaults as PlaceModelRuntime } from '../../models/place.model.ts'
+import { PlaceDefaults as PlaceModelRuntime } from '../../utils/normalize-place.ts'
 
 defineOptions({ name: 'DevPlaceSystem' })
 

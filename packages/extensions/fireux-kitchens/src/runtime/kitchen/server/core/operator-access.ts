@@ -6,8 +6,6 @@ import { AppUserStorage } from 'fireux-core/runtime/user/models/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
 import { KitchenTeamMemberStorage } from '../../models/team.model.ts'
 
 const linkedDocumentId = (value: unknown, label: string) => {
@@ -41,7 +39,7 @@ export async function requireKitchenReportReader(
   )
   const placeId = linkedDocumentId(input.kitchenId, 'Kitchen id')
   const rootPlaceSnapshot = await access.db
-    .collection(PlaceStorage.collection)
+    .collection('places')
     .doc(placeId)
     .get()
   if (!rootPlaceSnapshot.exists) {
@@ -69,7 +67,7 @@ export async function requireKitchenWriter(
     .collection(AppUserStorage.collection)
     .doc(user.uid)
   const rootKitchenRef = db
-    .collection(KitchenStorage.collection)
+    .collection('kitchens')
     .doc(input.kitchenId)
   const teamMemberRef = rootKitchenRef
     .collection(KitchenTeamMemberStorage.collection)

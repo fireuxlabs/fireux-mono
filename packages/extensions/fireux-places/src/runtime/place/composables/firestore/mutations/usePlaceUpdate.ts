@@ -17,10 +17,10 @@ import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 type UpdateCtx = { id: string | null | undefined }
 type PlaceBrowserPatch = Partial<
   Record<
-    Exclude<keyof Place, 'claimed_by' | 'created' | 'id' | 'updated'>,
+    Exclude<keyof Place, 'claimed_by' | 'id'>,
     unknown
   >
->
+> & { search_term?: unknown; brand_palette?: unknown }
 
 export type PlaceMutationAuthority = {
   appId?: string | null | undefined

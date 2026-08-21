@@ -160,7 +160,7 @@ import {
   usePlaceCollection,
   usePlaceInterface,
 } from '../../composables/firestore/usePlace'
-import type { BasePlace } from '../../models/place.model.ts'
+import type { BasePlace } from '../../composables/firestore/fetch/search/types'
 
 const props = withDefaults(
   defineProps<{

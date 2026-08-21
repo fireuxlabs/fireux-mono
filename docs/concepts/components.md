@@ -71,13 +71,13 @@ Map component folder and naming conventions.
   Cards; the public specialist-profile
   family composes Core `PublicProfileHero`, `PublicProfileSection`, and
   `PublicProfileDirectoryCard` presentation while each named domain retains
-  its content. The image-led public entity family composes Core
-  `PublicEntityDirectoryCard`; Kitchen and Place are the reference siblings for
+  its content. Image-led entity directories use their domain-owned
+  `Cards/Cell`; Kitchen and Place are reference siblings for
   whole-card directory interaction, photographic media, honest fallbacks,
   focus, and mobile-first composition. Their separately named `KitchenHeader`
   and `PlaceHeader` components retain detail identity, actions, media, and
-  future presentation differences. The Core card is a reusable presentation
-  seam, not a generic data-configured entity framework. Profile editors use Nuxt UI cards
+  future presentation differences. Shared lower-level primitives do not create
+  a generic data-configured entity-card framework. Profile editors use Nuxt UI cards
   and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
   regions. Core `LandingProductIndex` owns the product-led landing region

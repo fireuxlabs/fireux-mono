@@ -1,4 +1,4 @@
-import type { BasePlace } from '../../../../models/place.model.ts'
+import type { BasePlace } from '../../fetch/search/types'
 import type { LoadLogoOptions } from './place-logo.types.ts'
 import { toLogoCard } from './place-logo-card'
 import { fetchLogo } from './place-logo-network'

@@ -11,7 +11,6 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { SupplierStorage, type Supplier } from '../models/Supplier.model.ts'
 
@@ -85,7 +84,7 @@ export function useSupplierDetail(
     liveSupplierId
   )
   const livePlaceRead = firestoreFetchDoc<Place>(
-    PlaceStorage.collection,
+    'places',
     livePlaceId
   )
   const liveSupplier = computed<Supplier | null>(() => {

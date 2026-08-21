@@ -15,8 +15,6 @@ import {
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { KitchenStorage } from '../../../kitchen/models/kitchen.model.ts'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../models/menu-source-upload.model.ts'
 
@@ -162,7 +160,7 @@ export function kitchenMenuUploadKitchenPath(
   _appId: string,
   kitchenId: string
 ) {
-  return `${KitchenStorage.collection}/${kitchenId}`
+  return `kitchens/${kitchenId}`
 }
 
 export function kitchenMenuUploadPath(
@@ -179,7 +177,7 @@ export async function assertKitchenMenuUploadAccess(
   uid: string
 ) {
   const snap = await getRuntimeFirestore()
-    .doc(`${KitchenStorage.collection}/${kitchenId}/team/${uid}`)
+    .doc(`kitchens/${kitchenId}/team/${uid}`)
     .get()
 
   const role = text(snap.get('role'))
@@ -202,13 +200,13 @@ export async function assertKitchenMenuCurrencyCode(
 ) {
   const db = getRuntimeFirestore()
   const rootSnap = await db
-    .doc(`${KitchenStorage.collection}/${kitchenId}`)
+    .doc(`kitchens/${kitchenId}`)
     .get()
   if (!rootSnap.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
   const placeSnap = await db
-    .collection(PlaceStorage.collection)
+    .collection('places')
     .doc(kitchenId)
     .get()
   const currencyCode = readPlaceCurrencyCode(placeSnap.data())

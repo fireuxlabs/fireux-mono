@@ -1,9 +1,7 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { readKitchenManagementTarget } from '../../../utils/kitchen-spine'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
 
 type DetailItem = {
@@ -31,7 +29,6 @@ export type KitchenOverviewOperationCard = {
 const identityTo = '/workspace/kitchen/identity'
 
 export function useKitchenWorkspaceOverview() {
-  const fireux = useFireUXConfig()
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const { targets, selection, runtime, actions } = useKitchenWorkspace()
   const { pill, surface } = useKitchenInterface()
@@ -100,12 +97,6 @@ export function useKitchenWorkspaceOverview() {
       ? ('success' as const)
       : ('neutral' as const)
   )
-  const managementTarget = computed(() =>
-    readKitchenManagementTarget(kitchenSource.value, fireux.ecosystem)
-  )
-  const managementMode = computed(() => managementTarget.value.mode)
-  const managementAppId = computed(() => managementTarget.value.appId)
-  const hasDedicatedApp = computed(() => managementTarget.value.hasDedicatedApp)
   const operatorIds = computed(() =>
     Array.from(
       new Set(
@@ -319,11 +310,6 @@ export function useKitchenWorkspaceOverview() {
     rootCollection: runtime.rootCollection.value,
     readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
-    management: {
-      mode: managementMode.value,
-      appId: managementAppId.value,
-      hasDedicatedApp: hasDedicatedApp.value,
-    },
     operators: {
       ids: operatorIds.value,
       count: operatorIds.value.length,

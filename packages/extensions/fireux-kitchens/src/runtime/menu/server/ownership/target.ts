@@ -5,10 +5,9 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../models/menu.model.ts'
 import {
-  readKitchenManagementTarget,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
-} from '../../../kitchen/utils/kitchen-spine.ts'
+} from '../../../kitchen/utils/kitchen-readers.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import {
   menuKitchenFulfilment,
@@ -80,19 +79,8 @@ export const currentMenuAppId = () => text(runtimeApp().id)
 
 export const isTenantMenuApp = () => text(runtimeApp().role) === 'tenant'
 
-const managedKitchenAppId = (kitchenData: Record<string, unknown>) => {
-  const scope = readKitchenManagementTarget(
-    kitchenData,
-    text(runtimeApp().ecosystem)
-  )
-
-  return scope.mode === 'workspace' || scope.mode === 'app'
-    ? text(scope.appId)
-    : ''
-}
-
-const requireMenuAppId = (kitchenData: Record<string, unknown>) => {
-  const appId = managedKitchenAppId(kitchenData) || currentMenuAppId()
+const requireMenuAppId = (_kitchenData: Record<string, unknown>) => {
+  const appId = currentMenuAppId()
   if (appId) return appId
 
   throw configurationError('Menu App context is not configured.')

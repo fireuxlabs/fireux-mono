@@ -6,7 +6,7 @@ import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
 } from '../models/place.model.ts'
-import { PlaceStorage, type Place } from '../models/place.model.ts'
+import { type Place } from '../models/place.model.ts'
 import { normalizePlace } from '../utils/normalize-place'
 
 export function usePlaceDetail(props: { locator: string }) {
@@ -25,7 +25,7 @@ export function usePlaceDetail(props: { locator: string }) {
   const liveLocator = computed(() => (import.meta.client ? locator.value : ''))
   const { firestoreFetchDoc } = useFirestoreRead()
   const livePlaceRead = firestoreFetchDoc<Place>(
-    PlaceStorage.collection,
+    'places',
     liveLocator
   )
   const livePlace = computed(() => {
@@ -52,17 +52,14 @@ export function usePlaceDetail(props: { locator: string }) {
   )
   const showDebug = import.meta.dev
   const detailStyle = computed(() => {
-    const palette = place.value?.brand_palette
     const accent =
       place.value?.media_backdrop_color ||
-      palette?.primary_color ||
       'var(--ui-primary)'
     return {
       '--ui-primary': accent,
       '--fx-entity-accent': accent,
       '--fx-entity-media-bg':
         place.value?.media_backdrop_color ||
-        palette?.primary_color ||
         'var(--ui-bg-muted)',
     }
   })

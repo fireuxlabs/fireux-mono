@@ -10,6 +10,7 @@ import {
   type Supplier,
 } from '../../../../models/Supplier.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 
 const supplierCollection = SupplierStorage.collection
 
@@ -21,7 +22,7 @@ export namespace SupplierCard {
     avatarUrl: string
     logoImageUrl: string
     placeImageUrl: string
-    imageShade: Place['image_shade']
+    imageShade: PlaceImageShade
     title: string
     subtitle: string
     badges: string[]
@@ -111,7 +112,7 @@ export function useSupplierInterface() {
       avatarUrl: logoImageUrl || imageUrl,
       logoImageUrl,
       placeImageUrl,
-      imageShade: target.company_place?.image_shade || 'none',
+      imageShade: 'none',
       title: organizationName,
       subtitle: headline,
       badges,

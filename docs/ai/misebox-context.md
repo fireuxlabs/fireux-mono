@@ -46,17 +46,12 @@ Before each task:
   pages may present the neutral master and its treatments, while Kitchens
   purchase a treatment rather than copying the neutral asset or another
   owner's identity.
-- `/kitchens` is the Kitchen collection. It scans the canonical `kitchens`
-  root collection and excludes only a root whose boolean `visibility` is
-  explicitly `false` for ordinary visitors. A signed-in configured developer
-  or current-App admin receives the same root collection with hidden rows
-  included and labelled `Hidden`; App attachment and Team authority never
-  decide collection membership. The collection groups projected Kitchens by
-  canonical `management.mode`: Root, Workspace and App. Demo status never changes
-  that classification. Each collection row
-  joins its required Place only to resolve Place-owned presentation. Kitchen
-  detail resolves the same root and Place by authored slug during SSR; browser
-  code does not read broader authority records.
+- `/kitchens` is the server-resolved Kitchen collection. `/api/kitchens`
+  returns `Kitchen[]`, excluding only roots whose boolean `visibility` is
+  explicitly `false` for ordinary visitors; an authorized developer or App
+  admin may include and label hidden rows. Every resolved Kitchen contains its
+  canonical same-ID `place: Place`. The client searches, filters, and renders
+  that array without reading Firestore for the public route.
 - `/kitchens/**` is the Kitchen Entity route family, not the Kitchen Workspace.
   Its exact detail endpoint may return the canonical readable Kitchen and its
   same-id canonical Place plus a joined presentation view. That response never
@@ -66,22 +61,16 @@ Before each task:
   public response. An exact permitted listener may keep an already-open Entity
   current without changing that response or ownership contract.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
-  creates the required Place first, then creates the same-id canonical Kitchen
-  root. Management is explicit: `root` has no Workspace, `workspace` resolves to
-  the Misebox ecosystem App (`misebox-app`), and `app` names a dedicated
-  App with `app_id`. The Kitchen owns `team/{uid}`, Team requests, operations,
-  and protected support beneath its root. Management never changes those paths.
-- A Kitchen root uses the same document ID as its required Place and owns
-  `slug`, boolean `visibility`, sparse `identity`, `assets`, exact
-  `management`, and audit stamps.
-  Pre-release two-colour `brand_palette` data is compatibility input rather
-  than Workspace or App theme authority. The root does not duplicate
-  a Place id or generic lifecycle status. `identity` uses `name` and `tagline`;
-  `assets` uses `image`, `logo`, and `wordmark`. Place owns
-  location name/address, photography, gallery, contact details, currency,
-  timezone, and business hours. Collection cards resolve a Kitchen image
-  override first, then the linked Place cover, then the Place image; no Place
-  media is copied into Kitchen.
+  creates the required Place first, then creates the same-ID Kitchen root and
+  its Kitchen-owned Team authority. Kitchen is a plain parent model, not a
+  generic Entity/App/Workspace management classification.
+- A Kitchen owns its id/slug, status, visibility, fulfilment modes, and
+  estimated fulfilment minutes. Its resolved model contains the same-ID Place.
+  Place owns venue name and description, address/geo, photography and identity
+  media, classification/tags, price level, currency/timezone, and business
+  hours. Ratings require a separate authority; favourites are User-owned; Menu
+  and Dish search remains Menu/Dish data. No Place presentation is copied into
+  Kitchen.
   Place also owns the one identity colour used behind transparent identity
   media. Current Kitchen `assets.backdrop_color` data is migration input, not a
   second colour authority; bounded Kitchen reads receive the linked Place

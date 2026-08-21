@@ -1,4 +1,4 @@
-import type { BasePlace } from '../../../../models/place.model.ts'
+import type { BasePlace } from '../../fetch/search/types'
 import type { ComputedRef, Ref } from 'vue'
 import type { PlaceCard } from './usePlaceInterface.ts'
 

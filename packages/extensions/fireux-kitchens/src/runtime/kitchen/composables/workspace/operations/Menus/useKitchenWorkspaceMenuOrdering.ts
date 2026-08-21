@@ -10,7 +10,7 @@ import type {
   MenuServiceHoursConfig,
 } from '../../../../../menu/models/kitchen-menu.model.ts'
 import type { KitchenOrderType } from '../../../../models/order.model.ts'
-import { resolveKitchenOperationHours } from '../../../../utils/kitchen-spine'
+import { resolveKitchenOperationHours } from '../../../../utils/kitchen-readers'
 import {
   compactMenuServiceHoursDelta,
   resolveMenuServiceHours,

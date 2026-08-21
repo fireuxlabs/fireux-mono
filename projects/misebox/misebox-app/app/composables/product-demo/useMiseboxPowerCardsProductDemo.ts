@@ -9,7 +9,7 @@ import type {
 import type {
   MenuDirectoryEntry,
 } from 'fireux-kitchens/runtime/menu/models/menu-directory.model'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   projectSupplierDemoWorld,
 } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'

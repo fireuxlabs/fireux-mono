@@ -61,12 +61,10 @@ import {
     usePlaceLogoState,
 } from '../../composables/firestore/utils/view/usePlaceLogos'
 import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
-import type {
-    BasePlace,
-    PlaceImageShade,
-    PlaceSource,
-    PlaceUpsertInput,
-} from '../../models/place.model.ts'
+import type { PlaceSource } from '../../models/place.model.ts'
+import type { PlaceUpsertInput } from '../../models/place-onboarding.model.ts'
+import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import type { PlaceImageShade } from '../../utils/place-spine'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
 const props = withDefaults(

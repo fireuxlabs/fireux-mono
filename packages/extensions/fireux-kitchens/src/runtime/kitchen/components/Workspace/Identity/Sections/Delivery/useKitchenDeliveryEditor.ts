@@ -26,7 +26,7 @@ import {
   zonePlaceholder,
   type EditableZone,
 } from './kitchen-delivery-zones'
-import { readKitchenFulfilmentConfig } from '../../../../../utils/kitchen-spine'
+import { readKitchenFulfilmentConfig } from '../../../../../utils/kitchen-readers'
 import { useKitchenWorkspacePlace } from '../../../../../composables/workspace/identity/useKitchenWorkspacePlace'
 
 export function useKitchenDeliveryEditor(props: {

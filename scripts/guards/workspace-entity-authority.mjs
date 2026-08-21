@@ -11,13 +11,6 @@ const read = (repoRoot, relativePath) =>
 
 const families = [
   [
-    'Kitchen',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
-    'kitchens/{kitchenId}',
-    'kitchens/{kitchenId}/team/{memberId}',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts',
-  ],
-  [
     'Supplier',
     'packages/extensions/fireux-suppliers/src/runtime/supplier/models/Supplier.model.ts',
     'suppliers/{supplierId}',
@@ -92,6 +85,26 @@ const collections = [
 ]
 
 export async function run({ repoRoot = process.cwd() } = {}) {
+  const kitchenModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts'
+  )
+  const kitchenTeam = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts'
+  )
+  assert.match(kitchenModel, /export type Kitchen\s*=\s*\{/)
+  assert.match(kitchenModel, /place:\s*Place/)
+  assert.doesNotMatch(
+    kitchenModel,
+    /management|appSupport|management_mode|management_app_id|operator_ids|team_ids/,
+    'Kitchen must remain independent of generic Entity/App management metadata.'
+  )
+  assert.ok(
+    kitchenTeam.includes('kitchens/{kitchenId}/team/{memberId}'),
+    'Kitchen Team must declare its Kitchen-owned canonical path.'
+  )
+
   for (const [name, model, root, team, teamModel] of families) {
     const source = [
       read(repoRoot, model),

@@ -1,9 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
-import type {
-  Place,
-  PlaceStored,
-} from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { CompanyDefaults, type Company } from '../../models/company.model.ts'
 
@@ -14,7 +11,7 @@ const stamp: FirebaseTimestamp = {
 
 export type CompanyDemoTarget = {
   company: Company
-  place: PlaceStored
+  place: Partial<Place> & Pick<Place, 'id' | 'name' | 'place_type' | 'source'>
   resolvedPlace: Place
 }
 
@@ -29,7 +26,7 @@ type CompanyDemoSeed = {
 }
 
 const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
-  const place: PlaceStored = {
+  const place: CompanyDemoTarget['place'] = {
     id: seed.id,
     name: seed.name,
     short_name: seed.name,
@@ -39,7 +36,6 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     formatted_address: `${seed.postalCode} ${seed.city}, Switzerland`,
     short_address: seed.city,
     image_url: seed.imageUrl,
-    image_shade: 'dark',
     verified: false,
     address: {
       street: '',
@@ -53,14 +49,6 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     types: ['company'],
     tags: ['demo', 'supplier-company'],
     slug: seed.id,
-    created: {
-      at: stamp,
-      by: 'demo',
-    },
-    updated: {
-      at: stamp,
-      by: 'demo',
-    },
   }
   const resolvedPlace = normalizePlace(seed.id, place)
   if (!resolvedPlace) {

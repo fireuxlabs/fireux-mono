@@ -845,7 +845,7 @@ export async function run(ctx) {
       code: 'company-demo-place-pair',
       file: 'packages/extensions/fireux-companies/src/runtime/place/demo/company/scenarios.ts',
       markers: [
-        'place: PlaceStored',
+        "place: CompanyDemoTarget['place']",
         'resolvedPlace: Place',
         'normalizePlace(seed.id, place)',
         'item.resolvedPlace.id !== placeId',
@@ -882,7 +882,7 @@ export async function run(ctx) {
       file: 'packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts',
       markers: [
         'portfolio: PortfolioDemoTarget | null',
-        'place: PlaceStored',
+        'place: PropertyPlaceSeed',
         'target.place.id !== target.property.place_id',
         "'entity_families' in target.place",
         'validateRoot(scenario, target.property)',

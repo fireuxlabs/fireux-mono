@@ -5,46 +5,20 @@ import {
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
 } from 'fireux-core/runtime/server/utils/seo-sitemaps'
-import { KITCHEN_DIRECTORY_MAX_PAGE_SIZE } from '../../kitchen/models/kitchen-directory.model.ts'
-import { readKitchenDirectoryPage } from '../../kitchen/server/index/read.ts'
+import { readKitchens } from '../../kitchen/server/index/read.ts'
 
 const MAX_SITEMAP_URLS = 50_000
 
 export default defineEventHandler(async (event) => {
   const { siteUrl } = readRuntimeSeoSitemaps()
   const paths: string[] = []
-  const seenCursors = new Set<string>()
-  let cursor = ''
-  let hasMore = false
-
-  while (paths.length < MAX_SITEMAP_URLS) {
-    const page = await readKitchenDirectoryPage({
-      cursor,
-      limit: KITCHEN_DIRECTORY_MAX_PAGE_SIZE,
-    })
-    paths.push(
-      ...page.items.map((item) => `/kitchens/${encodeURIComponent(item.slug)}`)
+  const kitchens = await readKitchens()
+  paths.push(
+    ...kitchens.map(
+      (kitchen) => `/kitchens/${encodeURIComponent(kitchen.slug)}`
     )
-
-    hasMore = Boolean(page.nextCursor)
-    if (paths.length > MAX_SITEMAP_URLS) {
-      throw createError({
-        statusCode: 503,
-        statusMessage: 'Kitchen sitemap requires pagination.',
-      })
-    }
-    if (!page.nextCursor) break
-    if (seenCursors.has(page.nextCursor)) {
-      throw createError({
-        statusCode: 503,
-        statusMessage: 'Kitchen sitemap cursor did not advance.',
-      })
-    }
-    seenCursors.add(page.nextCursor)
-    cursor = page.nextCursor
-  }
-
-  if (paths.length >= MAX_SITEMAP_URLS && hasMore) {
+  )
+  if (paths.length > MAX_SITEMAP_URLS) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Kitchen sitemap requires pagination.',

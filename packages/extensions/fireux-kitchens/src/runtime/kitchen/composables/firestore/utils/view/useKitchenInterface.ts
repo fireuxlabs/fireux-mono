@@ -1,15 +1,13 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { toShortAddress } from 'fireux-places/runtime/place/composables/firestore/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
 import {
-  readKitchenManagementTarget,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
   readKitchenVisibility,
-} from '../../../../utils/kitchen-spine'
+} from '../../../../utils/kitchen-readers'
 import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
 import {
   meaningfulSurfaceDelta,
@@ -29,7 +27,6 @@ export type {
 } from './kitchen-interface.types.ts'
 
 export function useKitchenInterface() {
-  const fireux = useFireUXConfig()
   type KitchenIdentity = KitchenCard.Card
   type KitchenPill = KitchenCard.Card
   type KitchenProfile = KitchenCard.Profile
@@ -117,10 +114,6 @@ export function useKitchenInterface() {
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenPresentationIdentity(merged)
-    const managementTarget = readKitchenManagementTarget(
-      merged,
-      fireux.ecosystem
-    )
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -128,8 +121,6 @@ export function useKitchenInterface() {
     return {
       ...merged,
       id,
-      management: merged.management,
-      management_app_id: managementTarget.appId || undefined,
       visibility,
       display_name: identity.displayName || safeString(place.name),
       tagline: identity.tagline || safeString(place.brand_tagline),
@@ -184,8 +175,21 @@ export function useKitchenInterface() {
       shortName,
       formattedAddress,
       shortAddress,
+      tagline: safeString(kitchen.brand_tagline || kitchen.tagline),
+      about: safeString(kitchen.about),
+      priceLevel: safeString(kitchen.price_level),
+      fulfilmentModes: Array.isArray(kitchen.fulfilment?.modes)
+        ? kitchen.fulfilment.modes
+        : [],
+      ...(kitchen.fulfilment?.estimated_minutes
+        ? { estimatedMinutes: kitchen.fulfilment.estimated_minutes }
+        : {}),
 
       imageUrl,
+      logoImageUrl: safeString(kitchen.logo_image || kitchen.logo_image_url),
+      categoryLabels: [...(kitchen.tags || []), ...(kitchen.types || [])]
+        .filter((label) => !['establishment', 'food', 'point_of_interest'].includes(label))
+        .slice(0, 3),
 
       imageShade: cardImageUrl
         ? identity.imageShade
@@ -262,6 +266,8 @@ export function useKitchenInterface() {
       formattedAddress: '',
       shortAddress: '',
       imageUrl,
+      logoImageUrl: safeString(target.logo_image || target.logo_image_url),
+      categoryLabels: [],
       imageShade: cardImageUrl
         ? identity.imageShade
         : placeImageUrl

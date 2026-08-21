@@ -221,16 +221,14 @@ function validateMiseboxCardSpecimen(repoRoot, violations) {
 }
 
 function validateEntityDetailPresentation(repoRoot, violations) {
-  const coreDirectoryCardPath =
-    'packages/core/fireux-core/src/runtime/components/public/EntityDirectoryCard.vue'
   const consumers = new Map([
     [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards/Cell.vue',
-      'PublicEntityDirectoryCard',
+      'MoleculesActionSurface',
     ],
     [
       'packages/extensions/fireux-places/src/runtime/place/components/Cards/Cell.vue',
-      'PublicEntityDirectoryCard',
+      'MoleculesActionSurface',
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Detail/Index.vue',
@@ -246,23 +244,6 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     ],
   ])
 
-  for (const componentPath of [coreDirectoryCardPath]) {
-    const absolutePath = path.join(repoRoot, componentPath)
-    if (!existsSync(absolutePath)) {
-      violations.push(
-        `${componentPath} (missing shared public-entity presentation seam)`
-      )
-      continue
-    }
-
-    const source = readFileSync(absolutePath, 'utf8')
-    if (/gradient\s*\(|backdrop-filter\s*:/.test(source)) {
-      violations.push(
-        `${componentPath} (shared public-entity presentation must stay flat and semantic)`
-      )
-    }
-  }
-
   for (const componentPath of [
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Header.vue',
     'packages/extensions/fireux-places/src/runtime/place/components/Header.vue',
@@ -277,7 +258,10 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
     if (!source.includes(`<${componentName}`)) {
-      violations.push(`${consumerPath} (must consume Core ${componentName})`)
+      violations.push(`${consumerPath} (must retain ${componentName} anatomy)`)
+    }
+    if (source.includes('PublicEntityDirectoryCard')) {
+      violations.push(`${consumerPath} (must remain domain-owned)`)
     }
   }
 
@@ -418,8 +402,7 @@ function validateCardFamily(filePath, source, violations, repoRoot) {
     anatomyPattern &&
     !anatomyPattern.test(source) &&
     !source.includes('UserProfileDirectoryCard') &&
-    !source.includes('PublicProfileDirectoryCard') &&
-    !source.includes('PublicEntityDirectoryCard')
+    !source.includes('PublicProfileDirectoryCard')
   ) {
     violations.push(
       `${relative} (${fileName.replace('.vue', '')} must consume its shared Core card anatomy)`

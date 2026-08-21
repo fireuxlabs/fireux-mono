@@ -28,7 +28,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceImageShade, PlaceSource } from '../../../models/place.model.ts'
+import type { PlaceSource } from '../../../models/place.model.ts'
+import type { PlaceImageShade } from '../../../utils/place-spine'
 
 type Props = {
   name: string

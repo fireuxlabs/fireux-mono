@@ -91,23 +91,6 @@ export const entityMatrix = [
     },
   },
   {
-    id: 'place/place',
-    state: 'declared',
-    owner: 'fireux-places',
-    source:
-      'packages/extensions/fireux-places/src/runtime/place/models/place.model.ts',
-    export: 'PlaceEntity',
-    classification: {
-      kind: 'entity',
-      name: 'Place',
-      family: ['place'],
-      identity: 'root',
-      authority: 'domain-database',
-      appSupport: 'none',
-      workspace: false,
-    },
-  },
-  {
     id: 'place/company-role',
     state: 'declared',
     owner: 'fireux-companies',
@@ -176,23 +159,6 @@ export const entityMatrix = [
       appSupport: 'none',
       workspace: false,
       parent: 'MarketplaceStore',
-    },
-  },
-  {
-    id: 'kitchen/kitchen',
-    state: 'declared',
-    owner: 'fireux-kitchens',
-    source:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
-    export: 'KitchenEntity',
-    classification: {
-      kind: 'entity',
-      name: 'Kitchen',
-      family: ['kitchen', 'workspace-entity'],
-      identity: 'root',
-      authority: 'domain-database',
-      appSupport: 'none',
-      workspace: true,
     },
   },
   {

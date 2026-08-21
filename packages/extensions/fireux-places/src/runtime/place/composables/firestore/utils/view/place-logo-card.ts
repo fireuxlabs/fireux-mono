@@ -1,4 +1,3 @@
-import { PlaceStorage } from '../../../../models/place.model.ts'
 import type { PlaceLogoTarget } from './place-logo.types.ts'
 import type { PlaceCard } from './usePlaceInterface.ts'
 
@@ -18,7 +17,7 @@ export function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
 
   return {
     id,
-    to: `/${PlaceStorage.collection}/${encodeURIComponent(id)}`,
+    to: `/${'places'}/${encodeURIComponent(id)}`,
     title: (place as any).title ?? name,
     subtitle: (place as any).subtitle ?? formattedAddress,
     badges: (place as any).badges ?? [],

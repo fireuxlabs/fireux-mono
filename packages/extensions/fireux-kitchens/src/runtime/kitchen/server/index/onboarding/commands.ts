@@ -18,12 +18,10 @@ import {
   readAppPaletteLayer,
   readWorkspacePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model.ts'
-import { KitchenStorage } from '../../../models/kitchen.model.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
   assertKitchenOnboardingManagement,
@@ -66,7 +64,7 @@ async function kitchenForPlace(
   db: Firestore,
   placeId: string
 ): Promise<Locator> {
-  const collection = db.collection(KitchenStorage.collection)
+  const collection = db.collection('kitchens')
   const exact = await collection.doc(placeId).get()
   const exactData = exact.exists ? exact.data() || {} : null
   if (exactData) {
@@ -86,7 +84,7 @@ async function resolveLocator(
       'Kitchen id'
     )
     const snapshot = await db
-      .collection(KitchenStorage.collection)
+      .collection('kitchens')
       .doc(kitchenId)
       .get()
     if (!snapshot.exists) fail(404, 'Kitchen not found.')
@@ -118,7 +116,7 @@ export async function previewKitchenOnboarding(
     )
 
   const [place, teamMember] = await Promise.all([
-    current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
+    current.db.collection('places').doc(locator.placeId).get(),
     current.db.doc(`kitchens/${locator.kitchenId}/team/${current.uid}`).get(),
   ])
   if (!place.exists) fail(409, 'The linked Place does not exist.')

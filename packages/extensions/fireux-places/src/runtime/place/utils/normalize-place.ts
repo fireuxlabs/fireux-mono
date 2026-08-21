@@ -1,14 +1,48 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import {
-  PlaceDefaults,
-  type Place,
-  type PlaceAddress,
-  type PlaceSocialLinks,
+import type {
+  Place,
+  PlaceAddress,
+  PlaceSocialLinks,
 } from '../models/place.model.ts'
 import {
   normalizePlaceBusinessHours,
   readMediaBackdropColor,
 } from './place-spine'
+
+export const PlaceDefaults: Place = {
+  id: '',
+  slug: '',
+  name: '',
+  short_name: '',
+  brand_tagline: '',
+  about: '',
+  address: { street: '', city: '', region: '', postal_code: '', country_code: '' },
+  formatted_address: '',
+  short_address: '',
+  lat: 0,
+  lng: 0,
+  timezone: '',
+  image_url: '',
+  cover_image: '',
+  logo_image: '',
+  wordmark_image: '',
+  gallery_images: [],
+  media_backdrop_color: '',
+  phone: '',
+  email: '',
+  website: '',
+  google_maps_url: '',
+  social_links: { instagram: '', facebook: '', tiktok: '', linkedin: '', youtube: '' },
+  place_type: 'physical',
+  types: [],
+  tags: [],
+  price_level: '',
+  default_currency_code: '',
+  business_hours: { windows: [] },
+  claimed_by: '',
+  verified: false,
+  source: 'fireux',
+}
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -58,8 +92,5 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
       : [],
     types: Array.isArray(source.types) ? source.types : [],
     tags: Array.isArray(source.tags) ? source.tags : [],
-    entity_families: Array.isArray(source.entity_families)
-      ? source.entity_families
-      : [],
   } as Place
 }

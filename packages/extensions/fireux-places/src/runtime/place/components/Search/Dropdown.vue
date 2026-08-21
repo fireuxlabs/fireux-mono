@@ -40,7 +40,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface';
-import type { BasePlace, PlaceImageShade, PlaceSource } from '../../models/place.model.ts';
+import type { PlaceSource } from '../../models/place.model.ts'
+import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import type { PlaceImageShade } from '../../utils/place-spine'
 
 
 const props = withDefaults(

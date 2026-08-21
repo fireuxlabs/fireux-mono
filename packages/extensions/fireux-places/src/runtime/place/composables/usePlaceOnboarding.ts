@@ -11,7 +11,7 @@ import {
   fetchPlaceDetails,
 } from './firestore/fetch/google/usePlacesGoogle'
 import { usePlaceCreate } from './firestore/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from '../models/place.model.ts'
+import type { PlaceUpsertInput } from '../models/place-onboarding.model.ts'
 import type { PlaceOnboardingPreview } from '../models/place-onboarding.model.ts'
 import {
   normalizePlaceCurrencyCode,

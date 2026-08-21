@@ -2,7 +2,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
-import { KitchenStorage } from '../../../../models/kitchen.model.ts'
 
 export const normalizeString = (value: unknown): string =>
   String(value ?? '').trim()
@@ -20,11 +19,11 @@ type ResolveKitchenChildCollectionPathOptions = {
   appId?: string | null | undefined
 }
 
-export const ROOT_KITCHEN_COLLECTION_PATH = KitchenStorage.collection
+export const ROOT_KITCHEN_COLLECTION_PATH = 'kitchens'
 
 export const resolveKitchenScopeCollectionPath = (
   _appId?: string | null | undefined
-): string => KitchenStorage.collection
+): string => 'kitchens'
 
 export const resolveKitchenCollectionBasePath = (
   kitchenCollectionPath?: string | null | undefined,

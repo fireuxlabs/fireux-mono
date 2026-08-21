@@ -4,9 +4,11 @@ import type {
   PlaceBusinessHours,
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
-  MediaBackdropColor,
 } from '../models/place.model.ts'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
+
+export type MediaBackdropColor = `#${string}`
+export type PlaceImageShade = 'light' | 'dark' | 'none'
 
 const days = [
   'monday',

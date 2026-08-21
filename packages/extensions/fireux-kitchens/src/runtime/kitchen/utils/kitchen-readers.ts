@@ -24,7 +24,7 @@ import {
 } from '../../menu/utils/menu-ordering-policy'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 
-type KitchenSpineRecord = Record<string, unknown> | null | undefined
+type KitchenRecord = Record<string, unknown> | null | undefined
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -129,8 +129,8 @@ export const kitchenPaymentMethodsForOrderType = (
     .filter((policy) => policy.order_types.includes(orderType))
     .map((policy) => policy.method)
 export const composeKitchenScopedSurface = (
-  rootKitchen: KitchenSpineRecord,
-  scopedKitchen: KitchenSpineRecord
+  rootKitchen: KitchenRecord,
+  scopedKitchen: KitchenRecord
 ) => {
   const rootRecord = record(rootKitchen)
   const scopedRecord = record(scopedKitchen)
@@ -159,12 +159,12 @@ export const composeKitchenScopedSurface = (
   return composed
 }
 
-export const readKitchenVisibility = (value: KitchenSpineRecord) => {
+export const readKitchenVisibility = (value: KitchenRecord) => {
   const source = record(value)
   return source.visibility === true
 }
 
-export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
+export const readKitchenMenusConfig = (value: KitchenRecord) => {
   const source = record(value)
   const menus = record(source.menus)
   return {
@@ -180,18 +180,18 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 }
 
 export const readKitchenSproochliConfig = (
-  value: KitchenSpineRecord
+  value: KitchenRecord
 ): SproochliAttachmentConfig =>
   readSproochliAttachmentConfig(record(record(value).integrations).sproochli)
 
 export const readKitchenThemePalette = (
-  value: KitchenSpineRecord
+  value: KitchenRecord
 ): WorkspacePalette | null => {
   const theme = record(record(value).theme)
   return readWorkspacePalette(theme.palette)
 }
 
-export const readKitchenTableCount = (value: KitchenSpineRecord) => {
+export const readKitchenTableCount = (value: KitchenRecord) => {
   const source = record(value)
   const tables = record(source.tables)
   const count = Number(tables.count)
@@ -200,7 +200,7 @@ export const readKitchenTableCount = (value: KitchenSpineRecord) => {
 }
 
 export const readKitchenFulfilmentConfig = (
-  value: KitchenSpineRecord
+  value: KitchenRecord
 ): KitchenFulfilmentConfig => {
   const source = record(value)
   const fulfilment = record(source.fulfilment)
@@ -224,14 +224,14 @@ export const readKitchenFulfilmentConfig = (
   }
 }
 
-export const readKitchenOperationHours = (value: KitchenSpineRecord) => {
+export const readKitchenOperationHours = (value: KitchenRecord) => {
   const source = record(value)
   const orders = record(source.orders)
 
   return readWeekdayTimeWindowsConfig(orders.operation_hours)
 }
 
-export const hasKitchenOperationHours = (value: KitchenSpineRecord) => {
+export const hasKitchenOperationHours = (value: KitchenRecord) => {
   const source = record(value)
   const orders = record(source.orders)
 
@@ -239,8 +239,8 @@ export const hasKitchenOperationHours = (value: KitchenSpineRecord) => {
 }
 
 export const resolveKitchenOperationHours = (
-  kitchen: KitchenSpineRecord,
-  place: KitchenSpineRecord
+  kitchen: KitchenRecord,
+  place: KitchenRecord
 ) => {
   const kitchenHours = readKitchenOperationHours(kitchen)
   const placeHours = readPlaceBusinessHours(place)

@@ -3,7 +3,7 @@ import {
   sanitizeShortAddress,
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import type { CompanyView } from '../../models/company-directory.model.ts'
 import { CompanyStorage } from '../../models/company.model.ts'
 

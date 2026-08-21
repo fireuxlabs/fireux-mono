@@ -2,7 +2,7 @@ import { computed, type Ref } from 'vue'
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
 import {
   readKitchenVisibility,
-} from '../../../../utils/kitchen-spine'
+} from '../../../../utils/kitchen-readers'
 import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
 
 export function useKitchenComputed(

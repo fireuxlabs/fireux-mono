@@ -1,10 +1,7 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type { ThemePalette } from 'fireux-core/types/theme'
-import {
-  PlaceDefaults,
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
-import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import { normalizePlace, PlaceDefaults } from 'fireux-places/runtime/place/utils/normalize-place'
 import {
   KitchenDefaults,
   type Kitchen,
@@ -46,7 +43,7 @@ export type DemoPlaceInput = {
   imageUrl?: string
   coverImage?: string
   galleryImages?: string[]
-  imageShade?: Place['image_shade']
+  imageShade?: 'light' | 'dark' | 'none'
   businessHours?: Place['business_hours']
 }
 
@@ -99,10 +96,8 @@ export const place = (input: DemoPlaceInput): Place => ({
   image_url: input.imageUrl ?? '',
   cover_image: input.coverImage ?? '',
   gallery_images: input.galleryImages ?? [],
-  image_shade: input.imageShade ?? 'none',
   logo_image: input.logoImage ?? '',
   wordmark_image: input.wordmarkImage ?? '',
-  brand_palette: input.palette,
   types: ['restaurant'],
   tags: ['demo', 'restaurant'],
   price_level: '2',

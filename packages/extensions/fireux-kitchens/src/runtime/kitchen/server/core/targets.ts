@@ -5,7 +5,6 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   type KitchenWorkspaceTargetItem,
@@ -20,7 +19,7 @@ import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
   readKitchenThemePalette,
-} from '../../utils/kitchen-spine.ts'
+} from '../../utils/kitchen-readers.ts'
 
 type StoredRecord = Record<string, unknown>
 
@@ -167,7 +166,7 @@ export async function readKitchenWorkspaceTargets(
   for (const id of targetIds) {
     for (const ref of [
       db.doc(`kitchens/${id}/team/${uid}`),
-      db.doc(`${PlaceStorage.collection}/${id}`),
+      db.doc(`${'places'}/${id}`),
     ]) {
       relatedRefs.set(ref.path, ref)
     }
@@ -182,7 +181,7 @@ export async function readKitchenWorkspaceTargets(
     const root = rootSnapshot.data() || {}
     const teamPath = `kitchens/${id}/team/${uid}`
     const placeId = id
-    const placePath = `${PlaceStorage.collection}/${placeId}`
+    const placePath = `${'places'}/${placeId}`
     const teamSnapshot = related.get(teamPath)
     const placeSnapshot = related.get(placePath)
 

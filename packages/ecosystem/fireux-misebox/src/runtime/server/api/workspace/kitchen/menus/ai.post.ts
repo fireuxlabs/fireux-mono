@@ -13,7 +13,7 @@ import { requireKitchenWriter } from 'fireux-kitchens/runtime/kitchen/server/cor
 import { saveKitchenMenuSummaryContext } from 'fireux-kitchens/runtime/menu/server/ai/kitchen-context'
 import { writeKitchenMenuAgentUsage } from 'fireux-kitchens/runtime/menu/server/ai/agent-usage'
 import { readKitchenMenuSections } from 'fireux-kitchens/runtime/menu/server/manifest/sections'
-import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-spine'
+import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/kitchen-readers'
 
 const PROMPT_MAX_LENGTH = 2_000
 const MAX_MENUS = 12

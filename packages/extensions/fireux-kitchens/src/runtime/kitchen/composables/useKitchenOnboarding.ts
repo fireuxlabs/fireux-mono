@@ -56,7 +56,9 @@ export function useKitchenOnboarding() {
   )
   const canEditPalette = computed(() => preview.value?.existing === false)
   const inheritedPalette = computed<SparseBrandPalette>(
-    () => place.value?.brand_palette || {}
+    () =>
+      ((place.value as unknown as { brand_palette?: SparseBrandPalette } | null)
+        ?.brand_palette || {})
   )
 
   function validateIdentity() {

@@ -1,9 +1,5 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import {
-  readKitchenManagementTarget,
-} from '../../../utils/kitchen-spine'
 import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
@@ -30,7 +26,6 @@ const completionPercent = (requirements: KitchenIdentityRequirement[]) => {
  * used by onboarding. Each layer stores only its own additions or overrides.
  */
 export function useKitchenIdentityProgression() {
-  const fireux = useFireUXConfig()
   const identityState = useKitchenWorkspaceIdentity()
   const placeState = useKitchenWorkspacePlace(identityState)
   const kitchen = computed(
@@ -139,21 +134,6 @@ export function useKitchenIdentityProgression() {
     () => rootComplete.value && workspacePercent.value === 100
   )
 
-  const management = computed(() =>
-    readKitchenManagementTarget(kitchen.value, fireux.ecosystem)
-  )
-  const appRequirements = computed<KitchenIdentityRequirement[]>(() => [
-    {
-      key: 'app',
-      label: 'App attached',
-      detail: 'The Kitchen is managed by a dedicated tenant App.',
-      complete: management.value.hasDedicatedApp,
-    },
-  ])
-  const appPercent = computed(() =>
-    workspaceComplete.value ? completionPercent(appRequirements.value) : 0
-  )
-
   return {
     ...identityState,
     place,
@@ -168,11 +148,6 @@ export function useKitchenIdentityProgression() {
     workspaceRequirements,
     workspacePercent,
     workspaceComplete,
-    appRequirements,
-    appPercent,
-    appComplete: computed(() => appPercent.value === 100),
-    hasDedicatedApp: computed(() => management.value.hasDedicatedApp),
-    managementMode: computed(() => management.value.mode),
   }
 }
 

@@ -107,10 +107,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { PlaceHeaderPresentation } from '../models/place-presentation.model.ts'
+import type { Place } from '../models/place.model.ts'
 
 defineOptions({ name: 'PlaceHeader' })
-const props = defineProps<{ place: PlaceHeaderPresentation }>()
+const props = defineProps<{ place: Partial<Place> }>()
 
 type PlaceHeaderAction = {
   key: 'directions' | 'website'
@@ -159,7 +159,6 @@ const initials = computed(() =>
 const identityStyle = computed(() => {
   const background = String(
     props.place.media_backdrop_color ||
-      props.place.brand_palette?.primary_color ||
       ''
   ).trim()
   return background ? { '--fx-place-media-bg': background } : undefined

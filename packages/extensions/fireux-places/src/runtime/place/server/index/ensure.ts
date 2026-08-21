@@ -12,7 +12,6 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { PlaceStorage } from '../../models/place.model.ts'
 import { fetchVerifiedGooglePlacePayload } from '../integration/google/details'
 
 type PlaceEnsureRequest = {
@@ -58,7 +57,7 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
   const membershipRef = db.doc(
     `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
   )
-  const placeRef = db.collection(PlaceStorage.collection).doc(id)
+  const placeRef = db.collection('places').doc(id)
 
   // Reject non-members before spending provider quota. Existing Places are
   // still membership-scoped because this endpoint participates in Job and

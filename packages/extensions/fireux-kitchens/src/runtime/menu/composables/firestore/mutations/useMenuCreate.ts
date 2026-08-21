@@ -10,8 +10,6 @@ import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/fires
 import { MenuStorage, type Menu } from '../../../models/kitchen-menu.model.ts'
 import { useKitchenWorkspaceSelection } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
-import { KitchenStorage } from '../../../../kitchen/models/kitchen.model.ts'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { compactMenuServiceHoursDelta } from '../../../utils/menu-service-hours'
 
@@ -117,11 +115,11 @@ export function useMenuCreate(
 
   async function requireLinkedPlaceCurrency(kitchenId: string) {
     const kitchenSnap = await getDoc(
-      doc(db, KitchenStorage.collection, kitchenId)
+      doc(db, 'kitchens', kitchenId)
     )
     if (!kitchenSnap.exists()) throw new Error('Kitchen not found.')
 
-    const placeSnap = await getDoc(doc(db, PlaceStorage.collection, kitchenId))
+    const placeSnap = await getDoc(doc(db, 'places', kitchenId))
     if (!readPlaceCurrencyCode(placeSnap.data())) {
       throw new Error('Set the linked Place currency before creating menus.')
     }

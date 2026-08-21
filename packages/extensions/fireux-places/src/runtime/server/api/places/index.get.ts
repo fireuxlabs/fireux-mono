@@ -15,7 +15,6 @@ import {
   PLACE_INDEX_SCAN_BATCH_SIZE,
   type PlaceIndexPage,
 } from '../../../place/models/place-read.model.ts'
-import { PlaceStorage } from '../../../place/models/place.model.ts'
 import { normalizePlace } from '../../../place/utils/normalize-place'
 
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
@@ -91,7 +90,7 @@ export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
   if (ids.length) {
     const snapshots = await db
       .getAll(
-        ...ids.map((id) => db.collection(PlaceStorage.collection).doc(id))
+        ...ids.map((id) => db.collection('places').doc(id))
       )
       .catch(() => {
         throw createError({
@@ -120,7 +119,7 @@ export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
       })
     }
     const snapshot = await db
-      .collection(PlaceStorage.collection)
+      .collection('places')
       .where('search_term', '>=', q)
       .where('search_term', '<=', `${q}\uf8ff`)
       .orderBy('search_term')
@@ -165,7 +164,7 @@ export default defineEventHandler(async (event): Promise<PlaceIndexPage> => {
       PLACE_INDEX_MAX_SCAN_SIZE - scanned
     )
     let placesQuery = db
-      .collection(PlaceStorage.collection)
+      .collection('places')
       .orderBy(FieldPath.documentId())
       .limit(scanLimit)
     if (afterId) placesQuery = placesQuery.startAfter(afterId)

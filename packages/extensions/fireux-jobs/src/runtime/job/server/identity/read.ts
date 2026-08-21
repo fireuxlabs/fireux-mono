@@ -13,7 +13,6 @@ import {
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
 import { projectCompanyDirectoryEntry } from 'fireux-companies/runtime/place/server/company/projection'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   JobDetailResponse,
@@ -229,8 +228,8 @@ export async function readJobDetail(
     await db
       .getAll(
         db.collection(CompanyStorage.collection).doc(job.company_id),
-        db.collection(PlaceStorage.collection).doc(job.company_id),
-        db.collection(PlaceStorage.collection).doc(job.place_id),
+        db.collection('places').doc(job.company_id),
+        db.collection('places').doc(job.place_id),
         db.collection(AppStorage.collection).doc(job.source_app_id)
       )
       .catch(() => {

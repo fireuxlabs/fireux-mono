@@ -1,7 +1,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
-  PlaceStorage,
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { computed, ref, watch } from 'vue'
@@ -12,19 +11,15 @@ import { DishStorage } from '../../models/dish.model.ts'
 import { IngredientStorage } from '../../../ingredient/models/ingredient.model.ts'
 import { MenuStorage } from '../../../menu/models/menu.model.ts'
 import { RecipeStorage } from '../../models/recipe.model.ts'
-import {
-  KitchenDefaults,
-  KitchenStorage,
-  type Kitchen,
-} from '../../models/kitchen.model.ts'
+import type { Kitchen } from '../../models/kitchen.model.ts'
 
 export function useKitchenDevSystem() {
   const { firestoreFetchCollection } = useFirestoreRead()
   const kitchensCollection = firestoreFetchCollection<Kitchen>(
-    KitchenStorage.collection
+    'kitchens'
   )
   const placesCollection = firestoreFetchCollection<Place>(
-    PlaceStorage.collection
+    'places'
   )
   const { kitchens: hydratedKitchens } = useDevKitchenCollection()
   const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
@@ -41,7 +36,14 @@ export function useKitchenDevSystem() {
     buildCopyPayload: buildKitchensCopyPayload,
   } = useDevDriftFilter({
     collection: kitchensCollectionValue,
-    runtimeModel: KitchenDefaults,
+    runtimeModel: {
+      id: '',
+      slug: '',
+      status: 'active',
+      visibility: false,
+      place: {},
+      fulfilment: { modes: [] },
+    },
     driftMode: 'extras-only',
     requiredPaths: ['identity.display_name'],
   })
@@ -87,7 +89,7 @@ export function useKitchenDevSystem() {
   const kitchensDriftCopyPayload = buildKitchensCopyPayload({
     modelPath:
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts',
-    itemsKey: KitchenStorage.collection,
+    itemsKey: 'kitchens',
     items: filteredKitchensDriftPayload,
     total: computed(() => kitchensCollectionValue.value.length),
   })
@@ -109,7 +111,7 @@ export function useKitchenDevSystem() {
     { immediate: true }
   )
 
-  const kitchenCollectionPath = computed(() => KitchenStorage.collection)
+  const kitchenCollectionPath = computed(() => 'kitchens')
   const child = (collection: string) =>
     useKitchenChildCollection<Record<string, unknown>>(
       collection,
@@ -126,14 +128,14 @@ export function useKitchenDevSystem() {
     suppliers: child('suppliers'),
     team: child('team'),
   }
-  const selectedKitchenStorageJson = computed(() => ({
+  const selectedKitchenDocumentJson = computed(() => ({
     selectedKitchenId: selectedKitchenId.value || null,
     paths: {
       kitchen: selectedKitchenId.value
-        ? `${KitchenStorage.collection}/${selectedKitchenId.value}`
+        ? `kitchens/${selectedKitchenId.value}`
         : null,
       place: selectedKitchenId.value
-        ? `${PlaceStorage.collection}/${selectedKitchenId.value}`
+        ? `${'places'}/${selectedKitchenId.value}`
         : null,
     },
     kitchen: rawKitchenById.value.get(selectedKitchenId.value) ?? null,
@@ -168,6 +170,6 @@ export function useKitchenDevSystem() {
     selectedPlace: computed(
       () => placeById.value.get(selectedKitchenId.value) ?? null
     ),
-    selectedKitchenStorageJson,
+    selectedKitchenDocumentJson,
   }
 }

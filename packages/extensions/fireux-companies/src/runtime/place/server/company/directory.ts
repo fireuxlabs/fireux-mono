@@ -2,7 +2,6 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
 import {
   COMPANY_DIRECTORY_MAX_PAGE_SIZE,
   COMPANY_DIRECTORY_MAX_SCAN_SIZE,
@@ -82,7 +81,7 @@ export async function readCompanyDirectoryPage(input: {
     const places = await db
       .getAll(
         ...companies.docs.map((document) =>
-          db.collection(PlaceStorage.collection).doc(document.id)
+          db.collection('places').doc(document.id)
         )
       )
       .catch(() => {

@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import { computed } from 'vue'
 import type { CompanyCard } from '../../../composables/company/useCompanyInterface'
 
