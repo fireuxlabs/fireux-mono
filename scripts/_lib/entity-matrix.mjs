@@ -29,7 +29,7 @@ export const entityMatrix = [
     state: 'declared',
     owner: 'fireux-companies',
     source:
-      'packages/extensions/fireux-companies/src/runtime/place/models/company.model.ts',
+      'packages/extensions/fireux-companies/src/runtime/place/models/company.entity.ts',
     export: 'CompanyRoleRecord',
     classification: {
       kind: 'record',

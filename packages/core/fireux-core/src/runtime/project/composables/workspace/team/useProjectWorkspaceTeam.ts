@@ -3,7 +3,7 @@ import { computed, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
-export type ProjectTeamMember = {
+export type ProjectTeamMemberSummary = {
   id: string
   handle: string
   display_name: string
@@ -14,7 +14,7 @@ export type ProjectTeamMember = {
 type ProjectTeamResponse = {
   ok: true
   project_id: string
-  members: ProjectTeamMember[]
+  members: ProjectTeamMemberSummary[]
 }
 
 type ProjectWorkspace = ReturnType<typeof useProjectWorkspace>
@@ -22,7 +22,7 @@ type ProjectWorkspace = ReturnType<typeof useProjectWorkspace>
 export type ProjectWorkspaceTeam = {
   selectedProject: ProjectWorkspace['selection']['project']
   projectId: ProjectWorkspace['selection']['projectId']
-  members: ComputedRef<ProjectTeamMember[]>
+  members: ComputedRef<ProjectTeamMemberSummary[]>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: Ref<Error | undefined>

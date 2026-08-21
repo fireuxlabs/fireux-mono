@@ -209,7 +209,7 @@ import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firesto
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
+import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
 import {
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'

@@ -95,8 +95,8 @@ const selectableApps = computed(() =>
   (apps.value ?? [])
     .filter((entry) => clean(entry.id) && clean(entry.slug))
     .sort((a, b) =>
-      clean(a.app_name || a.app_short_name || a.slug).localeCompare(
-        clean(b.app_name || b.app_short_name || b.slug)
+      clean(a.name || a.short_name || a.slug).localeCompare(
+        clean(b.name || b.short_name || b.slug)
       )
     )
 )

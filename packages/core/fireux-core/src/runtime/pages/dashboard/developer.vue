@@ -79,7 +79,7 @@ const appSnapshot = computed(() =>
   appOutcome.value === 'ready' ? app.value ?? null : null
 )
 const appDisplayName = computed(
-  () => appSnapshot.value?.app_name || fireux.appName
+  () => appSnapshot.value?.name || fireux.appName
 )
 const isLocalDev = import.meta.dev
 

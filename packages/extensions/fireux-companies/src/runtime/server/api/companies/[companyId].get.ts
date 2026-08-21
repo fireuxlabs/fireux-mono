@@ -4,14 +4,12 @@ import { readCompanyDetail } from '../../../place/server/company/projection'
 
 export default defineEventHandler(
   async (event): Promise<CompanyDetailResponse> => {
-    const company = await readCompanyDetail(
-      getRouterParam(event, 'companyId')
-    )
+    const detail = await readCompanyDetail(getRouterParam(event, 'companyId'))
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control':
         'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
     })
-    return { company }
+    return detail
   }
 )

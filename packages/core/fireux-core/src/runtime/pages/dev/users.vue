@@ -102,7 +102,6 @@ import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
-import type { UserDetail } from '../../user/models/user-directory.model.ts'
 import type { User } from '../../user/models/user.model.ts'
 
 definePageMeta({
@@ -121,24 +120,11 @@ definePageMeta({
 })
 
 const directoryUsers = useFetch<{
-  items: UserDetail[]
-  users?: UserDetail[]
+  items: User[]
 }>('/api/users', { key: 'dev-users', query: { limit: 200 } })
 const users = computed<User[]>(() => {
   const payload = directoryUsers.data.value
-  const items = Array.isArray(payload?.users)
-    ? payload.users
-    : (payload?.items ?? [])
-  return items.map(
-    (user) =>
-      ({
-        id: user.id,
-        display_name: user.displayName,
-        bio: user.bio,
-        avatar: user.avatar,
-        handle: user.handle,
-      }) as User
-  )
+  return payload?.items ?? []
 })
 const usersError = directoryUsers.error
 

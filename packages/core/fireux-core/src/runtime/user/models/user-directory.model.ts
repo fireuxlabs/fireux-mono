@@ -1,19 +1,3 @@
-export type UserSeoPresentation = {
-  title: string
-  description: string
-  path: string
-  image?: string
-  updatedAt: string
-}
-
-export type UserDetail = UserSeoPresentation & {
-  id: string
-  handle: string
-  displayName: string
-  bio: string
-  avatar: string
-}
-
 export type UserIdentitySummary = {
   id: string
   display_name: string

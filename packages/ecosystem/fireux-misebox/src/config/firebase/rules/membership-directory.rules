@@ -324,7 +324,7 @@
         validOptionalText(data, 'description', 1000) &&
         validOptionalText(data, 'image_url', 2048) &&
         validOptionalText(data, 'website_url', 2048) &&
-        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        data.status in ['active', 'inactive', 'archived'] &&
         validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }

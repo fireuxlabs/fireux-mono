@@ -2,8 +2,8 @@ import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
   ecosystem: 'werkbox',
-  // Preserve deployed authority until a separately approved remote identity migration exists.
-  projectId: 'cleanbox',
+  // The logical Project is Werkbox; Firebase and database bindings retain their physical ids.
+  projectId: 'werkbox',
   ecosystemId: 'cleanbox',
   id: 'cleanbox-app',
   name: 'Werkbox',

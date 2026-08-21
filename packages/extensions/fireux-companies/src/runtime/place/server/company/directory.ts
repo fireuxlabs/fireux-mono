@@ -9,8 +9,9 @@ import {
   COMPANY_DIRECTORY_SCAN_BATCH_SIZE,
   type CompanyDirectoryPage,
 } from '../../models/company-directory.model.ts'
-import { CompanyStorage } from '../../models/company.model.ts'
-import { projectCompanyDirectoryEntry } from './projection'
+import { CompanyStorage } from '../../models/company.entity.ts'
+import { canonicalCompanyRole } from './canonical'
+import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 
 const text = (value: unknown) => (typeof value === 'string' ? value.trim() : '')
 const encodeCursor = (value: string) =>
@@ -49,14 +50,15 @@ export async function readCompanyDirectoryPage(input: {
   }
 
   const db = getRuntimeFirestore()
-  const items: CompanyDirectoryPage['items'] = []
+  const companies: CompanyDirectoryPage['companies'] = []
+  const places: CompanyDirectoryPage['places'] = []
   let afterId = cursor
   let scanned = 0
   let exhausted = false
   let nextCursor = ''
 
   while (
-    items.length < limit &&
+    companies.length < limit &&
     scanned < COMPANY_DIRECTORY_MAX_SCAN_SIZE &&
     !exhausted
   ) {
@@ -70,17 +72,17 @@ export async function readCompanyDirectoryPage(input: {
       .limit(scanLimit)
     if (afterId) companiesQuery = companiesQuery.startAfter(afterId)
 
-    const companies = await companiesQuery.get().catch(() => {
+    const companySnapshot = await companiesQuery.get().catch(() => {
       throw createError({
         statusCode: 503,
         statusMessage: 'Company directory could not be read.',
       })
     })
-    if (companies.empty) break
+    if (companySnapshot.empty) break
 
-    const places = await db
+    const placeSnapshots = await db
       .getAll(
-        ...companies.docs.map((document) =>
+        ...companySnapshot.docs.map((document) =>
           db.collection('places').doc(document.id)
         )
       )
@@ -91,26 +93,29 @@ export async function readCompanyDirectoryPage(input: {
         })
       })
     const placesById = new Map(
-      places.map((document) => [document.id, document])
+      placeSnapshots.map((document) => [document.id, document])
     )
 
-    for (const [index, company] of companies.docs.entries()) {
+    for (const [index, company] of companySnapshot.docs.entries()) {
       scanned += 1
       afterId = company.id
       const place = placesById.get(company.id)
-      const item = place?.exists
-        ? projectCompanyDirectoryEntry(
-            company.id,
-            company.data() || {},
-            place.data() || {}
-          )
+      const companyRecord = canonicalCompanyRole(
+        company.id,
+        company.data() || {}
+      )
+      const placeRecord = place?.exists
+        ? normalizePlace(company.id, place.data() || {})
         : null
-      if (item) items.push(item)
+      if (companyRecord && placeRecord) {
+        companies.push(companyRecord)
+        places.push(placeRecord)
+      }
 
-      if (items.length >= limit) {
+      if (companies.length >= limit) {
         if (
-          index < companies.docs.length - 1 ||
-          companies.docs.length === scanLimit
+          index < companySnapshot.docs.length - 1 ||
+          companySnapshot.docs.length === scanLimit
         ) {
           nextCursor = encodeCursor(afterId)
         } else {
@@ -120,13 +125,14 @@ export async function readCompanyDirectoryPage(input: {
       }
     }
 
-    if (items.length >= limit) break
-    if (companies.docs.length < scanLimit) exhausted = true
+    if (companies.length >= limit) break
+    if (companySnapshot.docs.length < scanLimit) exhausted = true
   }
 
   return {
-    items,
-    ...(!exhausted && items.length >= limit && nextCursor
+    companies,
+    places,
+    ...(!exhausted && companies.length >= limit && nextCursor
       ? { nextCursor }
       : {}),
   }

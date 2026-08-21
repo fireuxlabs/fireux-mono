@@ -5,9 +5,8 @@ import type {
 } from '../../models/ecosystem.model.ts'
 
 const ECOSYSTEM_STATUSES = new Set<EcosystemStatus>([
-  'draft',
   'active',
-  'paused',
+  'inactive',
   'archived',
 ])
 
@@ -31,6 +30,7 @@ export function projectEcosystemDirectoryEntry(
 
   return {
     id,
+    project_id: text(source.project_id),
     status,
     name,
     description: text(source.description),
@@ -47,6 +47,7 @@ export function toEcosystemDirectoryEntry(
 ): EcosystemDirectoryEntry {
   return {
     id: ecosystem.id,
+    project_id: ecosystem.project_id,
     status: ecosystem.status,
     name: ecosystem.name,
     description: ecosystem.description,

@@ -188,8 +188,8 @@ export async function run({ repoRoot }) {
     'projects/fireux/fireux-app/app/pages/apps/[id].vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
-    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/index.vue',
-    'projects/fireux/fireux-app/app/pages/ecosystems/werkbox/index.vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/explore.vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/werkbox/explore.vue',
     'projects/fireux/fireux-app/app/pages/solutions/index.vue',
     'projects/fireux/fireux-app/app/pages/solutions/cleaning.vue',
     'projects/fireux/fireux-app/app/pages/solutions/fireux-app.vue',
@@ -306,7 +306,7 @@ export async function run({ repoRoot }) {
   )
   const fireuxMiseboxPage = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/index.vue'
+    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/explore.vue'
   )
   const fireuxMiseboxRedirect = read(
     repoRoot,
@@ -324,7 +324,7 @@ export async function run({ repoRoot }) {
     }
   }
   for (const marker of [
-    "path: '/ecosystems/misebox'",
+    "path: '/ecosystems/misebox/explore'",
     'buildPublicPageJsonLd({',
     "entry.status === 'active'",
     "entry.ecosystem_id === 'misebox'",

@@ -103,7 +103,7 @@
         :title="'Users (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-        :derived="{}"
+        :derived="devJsonDerived"
         :default-open="false"
       />
     </div>
@@ -120,12 +120,9 @@ import { useUserInterface } from '../../composables/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import type { User } from '../../models/user.model.ts'
-import type { UserDetail } from '../../models/user-directory.model.ts'
 import type { CollectionResponse } from '../../../models/utils/directory.ts'
 
-type UserDirectoryResponse = CollectionResponse<UserDetail> & {
-  users: UserDetail[]
-}
+type UserDirectoryResponse = CollectionResponse<User>
 
 type UserCollectionOutcome = 'pending' | 'error' | 'empty' | 'ready'
 
@@ -161,7 +158,7 @@ const fetched = useFetch<UserDirectoryResponse>('/api/users', {
   query: { limit: 200 },
 })
 const { user: currentUser, appUser, appOutcome } = useUser()
-const liveSelfUser = computed<UserDetail | null>(() => {
+const liveSelfUser = computed<User | null>(() => {
   const user = currentUser.value
   if (!user) return null
   if (isTenant && (appOutcome.value !== 'ready' || !appUser.value)) {
@@ -173,30 +170,19 @@ const liveSelfUser = computed<UserDetail | null>(() => {
     .toLowerCase()
   if (!handle) return null
 
-  const displayName = String(user.display_name || '').trim() || `@${handle}`
-  const avatar = String(user.avatar || '').trim()
-
   return {
     id: String(user.id || '').trim(),
     handle,
-    displayName,
+    display_name: String(user.display_name || '').trim() || `@${handle}`,
     bio: String(user.bio || '').trim(),
-    avatar,
-    path: `/users/${encodeURIComponent(handle)}`,
-    title: displayName,
-    description: String(user.bio || '').trim() || `Profile for ${displayName}.`,
-    updatedAt: new Date(0).toISOString(),
+    avatar: String(user.avatar || '').trim(),
   }
 })
-const fetchedUsers = computed<UserDetail[]>(() => {
+const fetchedUsers = computed<User[]>(() => {
   const payload = fetched.data.value
-  return Array.isArray(payload?.users)
-    ? payload.users
-    : Array.isArray(payload?.items)
-      ? payload.items
-      : []
+  return Array.isArray(payload?.items) ? payload.items : []
 })
-const directoryUsers = computed<UserDetail[]>(() => {
+const directoryUsers = computed<User[]>(() => {
   const merged = [...fetchedUsers.value]
   const live = liveSelfUser.value
   if (!live) return merged
@@ -211,15 +197,7 @@ const directoryUsers = computed<UserDetail[]>(() => {
 
   return [live, ...merged]
 })
-const collection = computed<User[]>(() =>
-  directoryUsers.value.map((user) => ({
-    id: user.id,
-    display_name: user.displayName,
-    bio: user.bio,
-    avatar: user.avatar,
-    handle: user.handle,
-  }))
-)
+const collection = computed<User[]>(() => directoryUsers.value)
 const title = computed(() => String(props.title || 'Users'))
 const description = computed(() =>
   String(
@@ -273,20 +251,16 @@ const countLabel = computed(() =>
     : `${totalCount.value} user${totalCount.value === 1 ? '' : 's'}`
 )
 const devJsonContext = 'collection manager · users · Directory'
-const devJsonData = computed(() => ({
-  objects: {
-    users: directoryUsers.value,
-  },
-  derived: {
-    source: '/api/users',
-    scope: isTenant ? `app:${appId}` : 'global',
-    count: directoryUsers.value.length,
-    visibleCount: visibleCount.value,
-    variant: variant.value,
-    query: query.value,
-    link: linkEnabled.value,
-    pending: fetched.pending.value,
-    hasError: Boolean(fetched.error.value),
-  },
+const devJsonData = computed(() => directoryUsers.value)
+const devJsonDerived = computed(() => ({
+  source: '/api/users',
+  scope: isTenant ? `app:${appId}` : 'global',
+  count: directoryUsers.value.length,
+  visibleCount: visibleCount.value,
+  variant: variant.value,
+  query: query.value,
+  link: linkEnabled.value,
+  pending: fetched.pending.value,
+  hasError: Boolean(fetched.error.value),
 }))
 </script>

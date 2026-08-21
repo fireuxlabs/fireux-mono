@@ -1,3 +1,6 @@
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+
 export type PlaceSource = 'google' | 'fireux' | 'manual'
 export type PlaceType = 'physical' | 'non_physical'
 
@@ -36,6 +39,12 @@ export type PlaceBusinessHours = {
   windows: PlaceBusinessHoursWindow[]
 }
 
+export type PlaceStamp = {
+  at: FirebaseTimestamp
+  by?: string
+  app_id?: string
+}
+
 export type Place = {
   id: string
   slug: string
@@ -60,13 +69,18 @@ export type Place = {
   website: string
   google_maps_url: string
   social_links: PlaceSocialLinks
+  brand_palette: SparseBrandPalette
   place_type: PlaceType
   types: string[]
   tags: string[]
+  entity_families: string[]
+  search_term: string
   price_level: string
   default_currency_code: string
   business_hours: PlaceBusinessHours
   claimed_by: string
   verified: boolean
   source: PlaceSource
+  created: PlaceStamp
+  updated: PlaceStamp
 }

@@ -17,8 +17,6 @@ export type ProjectSurface = {
   description?: string
   image_url?: string
   status?: ProjectStatus
-  created?: Project['created']
-  updated?: Project['updated']
 }
 
 export type ProjectSurfaceParts<TProject extends object = Partial<Project>> = {

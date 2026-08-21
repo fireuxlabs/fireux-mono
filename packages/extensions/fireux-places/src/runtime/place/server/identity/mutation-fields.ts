@@ -15,7 +15,6 @@ export const optionalPlaceTextFields = new Map<string, number>([
 ])
 
 export const allowedPlaceSocialKeys = new Set([
-  'website',
   'instagram',
   'facebook',
   'tiktok',

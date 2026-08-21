@@ -5,7 +5,7 @@ import {
   type Place,
 } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
-import { CompanyStorage } from '../../models/company.model.ts'
+import { CompanyStorage } from '../../models/company.entity.ts'
 import { canonicalCompanyRole } from './canonical'
 
 export async function readCompanyPlace(idValue: unknown): Promise<Place> {

@@ -62,7 +62,7 @@ useSeo({
       items: appsController.apps.value
         .filter((app) => isDirectoryAppIndexable(app.id))
         .map((app) => ({
-          name: app.app_name,
+          name: app.name,
           url: context.absoluteUrl(app.detail_url),
         })),
     }),

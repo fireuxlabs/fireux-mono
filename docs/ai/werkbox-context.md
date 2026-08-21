@@ -75,9 +75,10 @@ remembered implementations are not authority.
 - Hospitality-specific composition remains under Misebox. Do not make Werkbox
   an umbrella for Kitchen/Menu behavior or move those authorities here.
 - The Werkbox logical ecosystem currently uses the existing Firebase project
-  `cleanbox-f15bc`, named database `cleanbox`, canonical Project/Ecosystem id
-  `cleanbox`, and main App id `cleanbox-app`. These are physical or stored
-  legacy authority identifiers, not current product names. Project Apps inherit
+  `cleanbox-f15bc`, named database `cleanbox`, canonical Project id `werkbox`,
+  canonical Ecosystem id `cleanbox`, and main App id `cleanbox-app`. The
+  Firebase, database, Ecosystem, and App identifiers remain physical or stored
+  legacy authority identifiers. Project Apps inherit
   that physical database binding from `fireux-werkbox`; they do not repeat it
   as an App-level `databaseId` override. Renaming, moving, or deleting remote
   resources requires an explicitly approved migration.

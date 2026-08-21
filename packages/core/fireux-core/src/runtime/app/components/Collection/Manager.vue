@@ -189,7 +189,9 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const devJsonContext = computed(
-  () => `collection manager · apps · source: ${props.controller.source}`
+const devJsonContext = computed(() =>
+  props.controller.source === 'platform'
+    ? 'App directory projection · source: server-aggregated ecosystem projections · canonical entity: App'
+    : `App collection · source: ${props.controller.source} · canonical entity: App`
 )
 </script>

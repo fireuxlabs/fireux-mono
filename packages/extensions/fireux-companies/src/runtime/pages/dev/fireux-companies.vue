@@ -6,35 +6,15 @@
     />
 
     <UPageBody class="pagebody">
-      <div class="space-y-4">
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Role defaults</div>
-            <UButton variant="ghost" size="xs" @click="modelOpen = !modelOpen">
-              {{ modelOpen ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <DevModel
-            v-if="modelOpen"
-            class="mt-4"
-            title="Company · defaults"
-            :model="CompanyDefaults"
-          />
-        </UCard>
-
-        <CompanyCollectionManager
-          title="Companies"
-          description="Valid Company roles joined to their same-ID Place projections."
-        />
-      </div>
+      <CompanyCollectionManager
+        title="Companies"
+        description="Canonical Company records with their same-ID Places."
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { CompanyDefaults } from '../../place/models/company.model.ts'
-
 definePageMeta({
   layout: 'dev',
   nav: {
@@ -47,5 +27,4 @@ definePageMeta({
   },
 })
 
-const modelOpen = ref(false)
 </script>

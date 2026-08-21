@@ -3,7 +3,7 @@ export type App = {
   project_id: string
   ecosystem_id?: string
   role: 'global' | 'tenant' | 'standalone'
-  status: 'draft' | 'active' | 'paused' | 'archived'
+  status: 'active' | 'inactive' | 'archived'
   name: string
   short_name: string
   tagline: string

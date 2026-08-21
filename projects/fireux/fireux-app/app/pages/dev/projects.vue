@@ -105,7 +105,7 @@ definePageMeta({
 
 const projectModelRuntime: Project = {
   id: '',
-  status: 'draft',
+  status: 'inactive',
   name: '',
   description: '',
   image_url: '',

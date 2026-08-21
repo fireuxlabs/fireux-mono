@@ -208,7 +208,7 @@ const firestoreAppGroups = computed<FirestoreAppGroup[]>(() => {
       const images = collectFirestoreImages(app)
       return {
         id: (app.id ?? '').toString(),
-        name: (app.app_name ?? app.id ?? 'App').toString().trim() || 'App',
+        name: (app.name ?? app.id ?? 'App').toString().trim() || 'App',
         images,
       }
     })

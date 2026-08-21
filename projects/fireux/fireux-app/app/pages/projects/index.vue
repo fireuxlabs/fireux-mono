@@ -1,121 +1,239 @@
 <template>
-  <UPage>
-    <UPageHeader
-      title="Projects"
-      description="Explore the Firebase Projects that host FireUX Ecosystems and Apps."
-    >
-      <template #links>
-        <UButton to="/ecosystems" color="neutral" variant="soft">
+  <DirectorySurface
+    eyebrow="Discover"
+    title="Projects"
+    description="Browse FireUX Projects and the Apps connected to each one."
+    icon="i-lucide-folders"
+  >
+    <template #actions>
+      <div class="flex flex-wrap gap-2">
+        <UButton
+          to="/ecosystems"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-orbit"
+        >
           Browse Ecosystems
         </UButton>
-      </template>
-    </UPageHeader>
-
-    <UPageBody>
-      <div
-        v-if="pending"
-        class="grid gap-5 md:grid-cols-2 xl:grid-cols-3"
-        aria-label="Loading Projects"
-      >
-        <UPageCard v-for="index in 6" :key="index" variant="subtle">
-          <div class="space-y-4">
-            <USkeleton class="size-14 rounded-2xl" />
-            <USkeleton class="h-7 w-2/5" />
-            <USkeleton class="h-16 w-full" />
-          </div>
-        </UPageCard>
+        <UButton
+          to="/apps"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-app-window"
+        >
+          Browse Apps
+        </UButton>
       </div>
+    </template>
 
-      <UAlert
-        v-else-if="error"
-        color="error"
-        variant="subtle"
-        icon="i-lucide-triangle-alert"
-        title="Projects could not be loaded"
-        description="Try loading your Project directory again."
-        :actions="[
-          {
-            label: 'Try again',
-            color: 'error',
-            variant: 'soft',
-            onClick: () => refresh(),
-          },
-        ]"
+    <template #hero>
+      <div class="project-summary" aria-label="Platform totals">
+        <div class="project-summary__heading">
+          <span class="project-summary__icon">
+            <UIcon name="i-lucide-network" aria-hidden="true" />
+          </span>
+          <div>
+            <p>Platform map</p>
+            <span>Projects connect the Apps you can explore.</span>
+          </div>
+        </div>
+        <dl class="project-summary__stats">
+          <div>
+            <dt>Projects</dt>
+            <dd>{{ projects.length }}</dd>
+          </div>
+          <div>
+            <dt>Apps</dt>
+            <dd>{{ appDirectory.count.value }}</dd>
+          </div>
+        </dl>
+      </div>
+    </template>
+
+    <section class="collection-directory project-directory">
+      <CollectionDirectoryHeader
+        title="Active Projects"
+        description="See the Apps connected to each Project."
       />
+
+      <CollectionDirectoryState
+        v-if="pending"
+        title="Loading Projects"
+        description="Finding Projects…"
+        icon="i-lucide-loader-circle"
+        loading
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      />
+
+      <CollectionDirectoryState
+        v-else-if="error"
+        title="Projects unavailable"
+        description="Projects could not be loaded. Please try again."
+        icon="i-lucide-triangle-alert"
+        role="alert"
+        aria-live="assertive"
+      >
+        <template #actions>
+          <UButton
+            label="Try again"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-refresh-cw"
+            @click="refresh"
+          />
+        </template>
+      </CollectionDirectoryState>
 
       <div
         v-else-if="projects.length"
-        class="grid gap-5 md:grid-cols-2 xl:grid-cols-3"
+        class="project-grid"
         aria-label="Projects"
       >
-        <UPageCard
-          v-for="project in projects"
+        <article
+          v-for="(project, index) in projects"
           :key="project.id"
-          variant="subtle"
-          class="h-full"
+          class="project-card"
+          :style="projectTone(index)"
         >
-          <div class="flex h-full flex-col gap-5">
-            <div class="flex items-start justify-between gap-4">
-              <div
-                class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-elevated text-muted"
-              >
-                <img
-                  v-if="project.image_url"
-                  :src="project.image_url"
-                  :alt="`${project.name || project.id} logo`"
-                  width="56"
-                  height="56"
-                  loading="lazy"
-                  class="size-full object-contain"
-                />
-                <UIcon
-                  v-else
-                  name="i-lucide-briefcase-business"
-                  class="size-7"
-                  aria-hidden="true"
-                />
+          <header class="project-card__header">
+            <div class="project-card__identity">
+              <UAvatar
+                :src="project.image_url || undefined"
+                :alt="project.name || project.id"
+                :text="project.name || project.id"
+                icon="i-lucide-folders"
+                size="2xl"
+                class="project-card__avatar"
+              />
+              <div class="min-w-0">
+                <p class="project-card__eyebrow">Project</p>
+                <h2>
+                  <NuxtLink :to="`/projects/${encodeURIComponent(project.id)}`">
+                    {{ project.name || project.id }}
+                  </NuxtLink>
+                </h2>
               </div>
-              <UBadge color="neutral" variant="soft">
-                {{ statusLabel(project.status) }}
-              </UBadge>
             </div>
+            <span class="project-card__count">
+              {{ appCountLabel(project.id) }}
+            </span>
+          </header>
 
-            <div class="flex flex-1 flex-col gap-3">
-              <h2 class="m-0 text-xl font-semibold text-highlighted">
-                {{ project.name || project.id }}
-              </h2>
-              <p class="m-0 line-clamp-3 text-sm leading-6 text-muted">
-                {{ project.description || 'No description yet.' }}
-              </p>
-              <p class="mt-auto pt-2 font-mono text-xs text-dimmed">
-                {{ project.id }}
+          <div class="project-card__body">
+            <p class="project-card__description">
+              {{ project.description || 'No description yet.' }}
+            </p>
+
+            <div class="project-card__apps">
+              <div class="project-card__apps-heading">
+                <span>Connected Apps</span>
+                <UIcon name="i-lucide-arrow-down-right" aria-hidden="true" />
+              </div>
+              <div
+                v-if="appsForProject(project.id).length"
+                class="project-card__app-grid"
+              >
+                <NuxtLink
+                  v-for="app in appsForProject(project.id)"
+                  :key="app.id"
+                  :to="app.detail_url"
+                  class="project-card__app"
+                >
+                  <UAvatar
+                    :src="app.media.logo_url || undefined"
+                    :text="app.name || app.short_name || app.id"
+                    :alt="app.name || app.short_name || app.id"
+                    size="xs"
+                  />
+                  <span>{{ app.name || app.short_name || app.id }}</span>
+                  <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+                </NuxtLink>
+              </div>
+              <p v-else class="project-card__empty">
+                No Apps connected yet.
               </p>
             </div>
           </div>
-        </UPageCard>
+        </article>
       </div>
 
-      <MoleculesStateCard
+      <CollectionDirectoryState
         v-else
-        entity="projects"
-        state="empty"
-        surface="bare"
-        title="No Projects available"
-        description="Active Projects will appear here when they are published by FireUX."
+        icon="i-lucide-folders"
+        title="No Projects yet"
+        description="Active Projects will display here once they are available."
       />
-    </UPageBody>
-  </UPage>
+
+      <DevDebugPanel
+        object-origin="fetched"
+        launcher
+        include-route
+        title="Projects (JSON)"
+        context="Project collection · source: server-read canonical Projects · canonical entity: Project"
+        :objects="devJsonData"
+        :derived="devDerived"
+        :default-open="false"
+        @opened="loadDevJson"
+        @closed="unloadDevJson"
+      />
+    </section>
+  </DirectorySurface>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectDirectory } from '../../composables/useProjectDirectory'
+import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
 
-const { projects, pending, error, refresh } = useProjectDirectory()
-const statusLabel = (value: unknown) => {
-  const status = String(value ?? '').trim()
-  return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Draft'
+const projectDirectory = useProjectDirectory()
+const appDirectory = usePlatformAppDirectory()
+const { projects } = projectDirectory
+const pending = computed(
+  () => projectDirectory.pending.value || appDirectory.pending.value
+)
+const error = computed(
+  () => projectDirectory.error.value || appDirectory.error.value
+)
+const refresh = async () => {
+  await Promise.all([projectDirectory.refresh(), appDirectory.refresh()])
 }
+const appsByProject = computed(() => {
+  const grouped = new Map<string, typeof appDirectory.apps.value>()
+  for (const app of appDirectory.apps.value) {
+    const current = grouped.get(app.project_id) ?? []
+    current.push(app)
+    grouped.set(app.project_id, current)
+  }
+  return grouped
+})
+const appsForProject = (projectId: string) =>
+  appsByProject.value.get(projectId) ?? []
+const appCountLabel = (projectId: string) => {
+  const count = appsForProject(projectId).length
+  return `${count} ${count === 1 ? 'App' : 'Apps'}`
+}
+const devDerived = computed(() => ({
+  apps_by_project: Object.fromEntries(
+    projects.value.map((project) => [
+      project.id,
+      appsForProject(project.id).map((app) => ({
+        id: app.id,
+        name: app.name,
+        detail_url: app.detail_url,
+      })),
+    ])
+  ),
+}))
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(projects)
+const projectTones = ['36 89% 55%', '197 74% 49%', '262 72% 62%', '145 63% 43%']
+const projectTone = (index: number) => ({
+  '--project-tone': projectTones[index % projectTones.length],
+})
 definePageMeta({
   tag: 'projects',
   nav: {
@@ -135,9 +253,10 @@ definePageMeta({
 
 useSeo({
   title: 'FireUX Projects',
-  description:
-    'Explore the Firebase Projects that host FireUX Ecosystems and Apps.',
+  description: 'Browse FireUX Projects and the Apps connected to each one.',
   path: '/projects',
   image: '/img/app/cover.png',
 })
 </script>
+
+<style scoped src="./index.css"></style>

@@ -14,6 +14,7 @@ export type BasePlace = Pick<
   | 'claimed_by'
   | 'source'
   | 'slug'
+  | 'entity_families'
 > & { image_shade?: import('../../../../utils/place-spine').PlaceImageShade }
 
 export type BasePlaceRecord = BasePlace & { collection?: string }

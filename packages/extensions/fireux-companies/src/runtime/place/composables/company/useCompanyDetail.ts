@@ -2,9 +2,10 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
-  CompanyDetail,
   CompanyDetailResponse,
 } from '../../models/company-directory.model.ts'
+import type { Company } from '../../models/company.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
 export type CompanyDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -14,7 +15,8 @@ type CompanyDetailControls = Pick<
 >
 
 export type UseCompanyDetailReturn = CompanyDetailControls & {
-  company: ComputedRef<CompanyDetail | null>
+  company: ComputedRef<Company | null>
+  place: ComputedRef<Place | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -51,15 +53,21 @@ export function useCompanyDetail(
     },
     { server: true, watch: [id] }
   )
-  const company = computed<CompanyDetail | null>(() => {
+  const company = computed<Company | null>(() => {
     const item = state.data.value?.company
+    return item && item.id === id.value && !state.pending.value ? item : null
+  })
+  const place = computed<Place | null>(() => {
+    const item = state.data.value?.place
     return item && item.id === id.value && !state.pending.value ? item : null
   })
   const statusCode = computed(() => readStatusCode(state.error.value))
   const missing = computed(
     () =>
       statusCode.value === 404 ||
-      (!state.pending.value && !state.error.value && !company.value)
+      (!state.pending.value &&
+        !state.error.value &&
+        (!company.value || !place.value))
   )
   const failed = computed(
     () => Boolean(state.error.value) && statusCode.value !== 404
@@ -73,6 +81,7 @@ export function useCompanyDetail(
 
   return {
     company,
+    place,
     ready: state.then(() => undefined),
     pending: state.pending,
     error: state.error,

@@ -5,9 +5,7 @@ import type { Place } from './place.model.ts'
 
 export type PlaceUpsertInput = Partial<Place> &
   Pick<Place, 'id' | 'name' | 'place_type' | 'source'> & {
-    brand_palette?: SparseBrandPalette
     image_shade?: 'light' | 'dark' | 'none'
-    search_term?: string
   }
 
 export type PlaceOnboardingDefaults = {

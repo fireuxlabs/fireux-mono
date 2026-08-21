@@ -1,6 +1,6 @@
 # FireUX concept map
 
-Updated: 2026-08-20
+Updated: 2026-08-21
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -36,6 +36,10 @@ Explain FireUX as the platform shape behind the repo.
 - Packages expose Nuxt modules and runtime surfaces.
 - Apps consume packages through `defineFireuxConfig`.
 - Shared domain truth belongs in the owning package.
+- Public App, Project, and Ecosystem collections use canonical index and detail
+  routes. Detail relationships derive from stored identity fields such as
+  `project_id` and `ecosystem_id`; product-specific Ecosystem literature lives
+  below the canonical identity route rather than replacing it.
 
 ## Package lanes
 
@@ -59,9 +63,10 @@ Explain FireUX as the platform shape behind the repo.
   product-neutral category inside Werkbox, not a separate ecosystem.
 - Shared Job, Company, Place, Agent, and Professional truth stays in its owning
   extension package rather than either ecosystem package.
-- Werkbox currently retains the legacy `cleanbox-f15bc` Firebase project,
-  `cleanbox` database, and canonical record IDs until an explicitly approved
-  remote migration changes that physical authority.
+- Werkbox uses canonical Project id `werkbox` while retaining the legacy
+  `cleanbox-f15bc` Firebase project, `cleanbox` database, `cleanbox` Ecosystem
+  id, and `cleanbox-app` main App id. Those remaining physical and stored
+  identifiers change only through an explicitly approved remote migration.
 
 ## Working rule
 

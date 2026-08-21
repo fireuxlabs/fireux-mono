@@ -6,9 +6,8 @@ import { fireuxAppUsersTarget } from 'fireux-core/runtime/utils/firestore-mutati
 import { createError, type H3Event } from 'h3'
 
 const PROJECT_STATUSES = new Set<ProjectStatus>([
-  'draft',
   'active',
-  'paused',
+  'inactive',
   'archived',
 ])
 

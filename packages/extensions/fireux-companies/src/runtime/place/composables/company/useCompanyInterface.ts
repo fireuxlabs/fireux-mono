@@ -4,8 +4,8 @@ import {
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
-import type { CompanyView } from '../../models/company-directory.model.ts'
-import { CompanyStorage } from '../../models/company.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import { CompanyStorage } from '../../models/company.entity.ts'
 
 export namespace CompanyCard {
   export type Card = {
@@ -71,7 +71,7 @@ export function useCompanyInterface() {
     prop?: string
   }
 
-  function map(company: CompanyView): CompanyCard.Card {
+  function map(company: Place): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
     const shortName = safeString(company.short_name)
@@ -104,7 +104,7 @@ export function useCompanyInterface() {
   }
 
   function buildInterface(
-    target?: CompanyView | null | undefined
+    target?: Place | null | undefined
   ): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
@@ -114,7 +114,7 @@ export function useCompanyInterface() {
   const toInterface = buildInterface
 
   function pill(
-    target?: CompanyView | null | undefined
+    target?: Place | null | undefined
   ): CompanyPill | null {
     const base = buildInterface(target)
     if (!base) return null
@@ -126,7 +126,7 @@ export function useCompanyInterface() {
   }
 
   function cell(
-    target?: CompanyView | null | undefined
+    target?: Place | null | undefined
   ): CompanyCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
@@ -142,7 +142,7 @@ export function useCompanyInterface() {
   }
 
   function preview(
-    target?: CompanyView | null | undefined
+    target?: Place | null | undefined
   ): CompanyPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
@@ -156,7 +156,7 @@ export function useCompanyInterface() {
   }
 
   function profile(
-    target?: CompanyView | null | undefined
+    target?: Place | null | undefined
   ): CompanyProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null

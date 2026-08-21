@@ -47,7 +47,7 @@
         <UPageCard
           v-for="app in publishedApps"
           :key="app.id"
-          :title="app.app_name"
+          :title="app.name"
           :description="appSummary(app)"
           :to="app.detail_url"
           icon="i-lucide-app-window"
@@ -97,20 +97,20 @@ const publishedApps = computed<AppDirectoryEntry[]>(() =>
     .sort((left: AppDirectoryEntry, right: AppDirectoryEntry) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
-      return left.app_name.localeCompare(right.app_name)
+      return left.name.localeCompare(right.name)
     })
 )
 const appSummary = (app: AppDirectoryEntry) =>
   app.tagline ||
   app.short_bio ||
   app.description ||
-  `${app.app_name} is a published ${app.role === 'global' ? 'main App' : 'tenant App'} in the Werkbox Ecosystem.`
+  `${app.name} is a published ${app.role === 'global' ? 'main App' : 'tenant App'} in the Werkbox Ecosystem.`
 
 useSeo({
   title: 'Werkbox · FireUX Ecosystem',
   description:
     'Explore Werkbox cleaning services and the active Apps connected to the FireUX practical-work Ecosystem.',
-  path: '/ecosystems/werkbox',
+  path: '/ecosystems/werkbox/explore',
   image: '/img/app/cover.png',
   jsonLdBuilder: (context) =>
     buildPublicPageJsonLd({
@@ -125,7 +125,7 @@ useSeo({
           url: context.absoluteUrl('/ecosystems/werkbox/cleaning'),
         },
         ...publishedApps.value.map((app) => ({
-          name: app.app_name,
+          name: app.name,
           url: context.absoluteUrl(app.detail_url),
         })),
       ],

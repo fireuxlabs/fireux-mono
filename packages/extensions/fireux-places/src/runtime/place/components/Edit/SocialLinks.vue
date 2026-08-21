@@ -77,7 +77,6 @@ const { updateSocialLinks } = usePlaceUpdate({
 })
 const sanitize = (value: string) => value.trim()
 const socialLinks = computed(() => ({
-	website: props.place?.social_links?.website ?? '',
 	instagram: props.place?.social_links?.instagram ?? '',
 	facebook: props.place?.social_links?.facebook ?? '',
 	tiktok: props.place?.social_links?.tiktok ?? '',

@@ -1,8 +1,8 @@
 import { defineEventHandler, getQuery, setResponseHeaders, type H3Event, } from 'h3'
 import {
-  asBoundedTrimmedString, asTrimmedString, buildDirectoryPath, resolveDirectoryDescription, toIsoUpdatedAt, } from '../../utils/projection/normalize'
+  asBoundedTrimmedString, asTrimmedString, } from '../../utils/projection/normalize'
 import type { CollectionResponse } from '../../../models/utils/directory'
-import type { UserDetail } from '../../../user/models/user-directory.model.ts'
+import type { User } from '../../../user/models/user.model.ts'
 import {
   readUserDirectoryScopeIds, resolveUserDirectoryScope, type UserDirectoryScope, } from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
@@ -20,55 +20,33 @@ function normalizeHandle(value: unknown): string {
   return asTrimmedString(value).toLowerCase()
 }
 
-function mapUserDetail(
+function mapUser(
   doc: FirebaseFirestore.DocumentSnapshot
-): UserDetail | null {
+): User | null {
   if (!doc.exists) return null
   const data = (doc.data() || {}) as Record<string, unknown>
   const handle = normalizeHandle(data.handle)
   if (!handle) return null
 
-  const displayName =
-    asTrimmedString(data.display_name) ||
-    asTrimmedString(data.displayName) ||
-    `@${handle}`
-  const avatar = resolveUserAvatarSource(data.avatar)
-  const bio = asBoundedTrimmedString(data.bio, 280)
-
-  const title = displayName
-  const description = resolveDirectoryDescription(
-    bio,
-    `Profile for ${displayName}.`
-  )
-  const path = buildDirectoryPath('/users', handle)
-  const updatedAt = toIsoUpdatedAt(
-    data.updatedAt || (data.updated as any)?.at || data.updated_at || data.createdAt
-  )
-
   return {
     id: doc.id,
     handle,
-    displayName,
-    bio,
-    avatar,
-    title,
-    description,
-    path,
-    image: avatar || undefined,
-    updatedAt,
+    display_name: asTrimmedString(data.display_name) || `@${handle}`,
+    bio: asBoundedTrimmedString(data.bio, 280),
+    avatar: resolveUserAvatarSource(data.avatar),
   }
 }
 
-async function readGlobalCanonicalUsers(limit: number): Promise<UserDetail[]> {
+async function readGlobalCanonicalUsers(limit: number): Promise<User[]> {
   const snapshot = await getRuntimeIdentityFirestore()
     .collection('users')
     .orderBy('handle')
     .limit(limit)
     .get()
 
-  const out: UserDetail[] = []
+  const out: User[] = []
   for (const doc of snapshot.docs) {
-    const dto = mapUserDetail(doc)
+    const dto = mapUser(doc)
     if (!dto) continue
     out.push(dto)
   }
@@ -79,7 +57,7 @@ async function readGlobalCanonicalUsers(limit: number): Promise<UserDetail[]> {
 async function readTenantCanonicalUsers(
   scope: Extract<UserDirectoryScope, { kind: 'tenant' }>,
   limit: number
-): Promise<UserDetail[]> {
+): Promise<User[]> {
   const userIds = await readUserDirectoryScopeIds(scope, limit)
   if (!userIds.length) return []
 
@@ -90,7 +68,7 @@ async function readTenantCanonicalUsers(
     )
   )
   const users = snapshots.flatMap((snapshot) => {
-    const dto = mapUserDetail(snapshot)
+    const dto = mapUser(snapshot)
     return dto ? [dto] : []
   })
 
@@ -114,12 +92,11 @@ export default defineEventHandler(async (event: H3Event) => {
       ? await readTenantCanonicalUsers(scope, limit)
       : await readGlobalCanonicalUsers(limit)
 
-  const response: CollectionResponse<UserDetail> & { users: UserDetail[] } = {
+  const response: CollectionResponse<User> = {
     ok: true,
     count: users.length,
     generatedAt: new Date().toISOString(),
     items: users,
-    users,
   }
 
   return response

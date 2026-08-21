@@ -58,7 +58,7 @@
     }
 
     function isExpectedAppAuthority(data, appId) {
-      return data.project_id == 'cleanbox' &&
+      return data.project_id == 'werkbox' &&
         data.ecosystem_id == 'cleanbox' &&
         data.database_id == 'cleanbox' &&
         data.slug == appId &&
@@ -83,7 +83,7 @@
           'moderation_state', 'ban_reasons', 'created', 'updated'
         ]) &&
         isExpectedAppAuthority(data, appId) &&
-        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        data.status in ['active', 'inactive', 'archived'] &&
         validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         validOptionalText(data, 'tagline', 120) &&

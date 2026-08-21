@@ -73,9 +73,9 @@
           object-origin="fetched"
           launcher
           include-route
-          title="Place"
+          title="Place (JSON)"
           context="Place detail page · places/[id] · canonical Entity"
-          :objects="place"
+          :objects="[place]"
           :derived="{}"
           :contract="placeDebugContract"
           :default-open="false"

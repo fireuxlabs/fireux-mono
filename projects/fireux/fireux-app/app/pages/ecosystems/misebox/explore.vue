@@ -98,7 +98,7 @@
             <img
               v-if="app.media.logo_url"
               :src="app.media.logo_url"
-              :alt="`${app.app_name} logo`"
+              :alt="`${app.name} logo`"
               width="48"
               height="48"
               loading="lazy"
@@ -108,7 +108,7 @@
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="m-0 font-semibold text-highlighted">
                   <NuxtLink :to="app.detail_url" class="hover:underline">
-                    {{ app.app_name }}
+                    {{ app.name }}
                   </NuxtLink>
                 </h3>
                 <UBadge color="neutral" variant="soft" size="sm">
@@ -205,7 +205,7 @@ const publishedApps = computed<AppDirectoryEntry[]>(() =>
     .sort((left: AppDirectoryEntry, right: AppDirectoryEntry) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
-      return left.app_name.localeCompare(right.app_name)
+      return left.name.localeCompare(right.name)
     })
 )
 const featuredSolutionSlugs = new Set<string>(
@@ -249,7 +249,7 @@ const appSummary = (app: AppDirectoryEntry) =>
 useSeo({
   title: miseboxEcosystemProfile.seo.title,
   description: miseboxEcosystemProfile.seo.description,
-  path: '/ecosystems/misebox',
+  path: '/ecosystems/misebox/explore',
   image: computed(() => ecosystem.value?.image_url || '/img/app/cover.png'),
   robots: computed(() =>
     ecosystem.value ? 'index, follow' : 'noindex, nofollow'
@@ -277,7 +277,7 @@ useSeo({
           url: `https://misebox.app/solutions/${solution.slug}`,
         })),
         ...publishedApps.value.map((app) => ({
-          name: app.app_name,
+          name: app.name,
           url: context.absoluteUrl(app.detail_url),
         })),
       ],

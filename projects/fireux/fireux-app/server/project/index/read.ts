@@ -6,9 +6,8 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 const PROJECT_STATUSES = new Set<ProjectStatus>([
-  'draft',
   'active',
-  'paused',
+  'inactive',
   'archived',
 ])
 
@@ -65,7 +64,7 @@ export async function readProjectIndex(event: H3Event) {
         name: text(source.name),
         description: text(source.description),
         image_url: text(source.image_url),
-        status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'draft',
+        status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'inactive',
       }
     })
     .sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id))

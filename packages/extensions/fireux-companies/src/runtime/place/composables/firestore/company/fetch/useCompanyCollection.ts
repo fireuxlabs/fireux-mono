@@ -1,19 +1,21 @@
 import { useAsyncData } from '#imports'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   useFirestoreCollectionState,
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
   COMPANY_DIRECTORY_MAX_PAGE_SIZE,
-  type CompanyDirectoryEntry,
   type CompanyDirectoryPage,
 } from '../../../../models/company-directory.model.ts'
-import { CompanyStorage } from '../../../../models/company.model.ts'
+import { CompanyStorage } from '../../../../models/company.entity.ts'
+import type { Company } from '../../../../models/company.model.ts'
 
-export type UseCompanyCollectionReturn<T> = {
+export type UseCompanyCollectionReturn = {
   collectionPath: ComputedRef<string>
-  collection: ComputedRef<T[]>
+  companies: ComputedRef<Company[]>
+  places: ComputedRef<Place[]>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -26,11 +28,7 @@ export type UseCompanyCollectionReturn<T> = {
   loadMore: () => Promise<boolean>
 }
 
-export function useCompanyCollection<
-  T extends Record<string, any> = Record<string, any>,
->(
-  _collectionPath: string = CompanyStorage.collection
-): UseCompanyCollectionReturn<T> {
+export function useCompanyCollection(): UseCompanyCollectionReturn {
   const collectionPath = computed(() => CompanyStorage.collection)
   const state = useAsyncData<CompanyDirectoryPage>(
     `company-directory|limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
@@ -39,14 +37,13 @@ export function useCompanyCollection<
         `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`
       )
   )
-  const collection = computed<T[]>(
-    () => (state.data.value?.items ?? []) as unknown as T[]
-  )
+  const companies = computed(() => state.data.value?.companies ?? [])
+  const places = computed(() => state.data.value?.places ?? [])
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
   const nextCursor = computed(() => state.data.value?.nextCursor ?? '')
   const hasMore = computed(() => Boolean(nextCursor.value))
-  const count = computed(() => collection.value.length)
+  const count = computed(() => companies.value.length)
   const pending = computed(() => state.pending.value)
   const error = computed<unknown | undefined>(
     () => state.error.value ?? undefined
@@ -66,12 +63,15 @@ export function useCompanyCollection<
       const current = state.data.value
       if (!current) return false
 
-      const items = new Map<string, CompanyDirectoryEntry>(
-        current.items.map((item: CompanyDirectoryEntry) => [item.id, item])
+      const companies = new Map(
+        current.companies.map((company) => [company.id, company])
       )
-      for (const item of page.items) items.set(item.id, item)
+      const places = new Map(current.places.map((place) => [place.id, place]))
+      for (const company of page.companies) companies.set(company.id, company)
+      for (const place of page.places) places.set(place.id, place)
       state.data.value = {
-        items: [...items.values()],
+        companies: [...companies.values()],
+        places: [...places.values()],
         ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
       }
       return true
@@ -85,7 +85,8 @@ export function useCompanyCollection<
 
   return {
     collectionPath,
-    collection,
+    companies,
+    places,
     count,
     pending,
     error,

@@ -47,14 +47,14 @@
         </template>
       </UPageCard>
 
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
-        title="User DTO"
-        context="User page · users/[handle] · endpoint-first SSR"
+        title="User (JSON)"
+        context="canonical User · source: server-read identity database"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="devJsonDerived"
         :default-open="false"
       />
     </UPageBody>
@@ -91,32 +91,28 @@ const isOwnProfile = computed(() =>
 const canEdit = computed(() => isOwnProfile.value)
 
 const title = computed(() =>
-  user.value?.displayName
-    ? `${user.value.displayName} | ${appName}`
+  user.value?.display_name
+    ? `${user.value.display_name} | ${appName}`
     : `User | ${appName}`
 )
-const description = computed(() => user.value?.description || 'User profile.')
-const path = computed(
-  () => user.value?.path || `/users/${encodeURIComponent(handle.value)}`
-)
+const description = computed(() => user.value?.bio || 'User profile.')
+const path = computed(() => `/users/${encodeURIComponent(handle.value)}`)
 
 useSeo({
   title,
   description,
   path,
-  image: computed(() => user.value?.image || user.value?.avatar),
+  image: computed(() => user.value?.avatar),
   robots: computed(() =>
     missing.value ? 'noindex, nofollow' : 'index, follow'
   ),
 })
 
-const devJsonData = computed(() => ({
-  objects: { user: user.value },
-  derived: {
+const devJsonData = computed(() => (user.value ? [user.value] : []))
+const devJsonDerived = computed(() => ({
     isOwnProfile: isOwnProfile.value,
     canEdit: canEdit.value,
     accessTier: isOwnProfile.value ? accessTier.value : null,
-  },
   page: { handle: handle.value },
 }))
 </script>

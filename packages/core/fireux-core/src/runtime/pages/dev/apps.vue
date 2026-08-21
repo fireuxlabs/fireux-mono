@@ -78,7 +78,7 @@ const appModelRuntime: App = {
   id: '',
   project_id: '',
   role: 'standalone',
-  status: 'draft',
+  status: 'inactive',
   name: '',
   short_name: '',
   description: '',
@@ -133,7 +133,7 @@ const filteredAppsDriftPayload = computed(() =>
     const drift = appsDriftById.value.get(app.id) ?? { missing: [], extra: [] }
     return {
       id: app.id,
-      displayName: app.app_name,
+      displayName: app.name,
       drift,
     }
   })

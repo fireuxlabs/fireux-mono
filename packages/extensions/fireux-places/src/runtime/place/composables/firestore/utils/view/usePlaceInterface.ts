@@ -88,15 +88,11 @@ export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
     const name = safeString(place.name)
-    const shortName = safeString((place as any)?.short_name)
-    const address = safeString((place as any)?.formatted_address)
-    const shortAddress = sanitizeShortAddress((place as any)?.short_address)
-    const image = safeString((place as any)?.image_url)
-    const entityFamilies = Array.isArray((place as any)?.entity_families)
-      ? (place as any).entity_families
-          .map((entry: unknown) => safeString(entry).trim())
-          .filter(Boolean)
-      : []
+    const shortName = safeString(place.short_name)
+    const address = safeString(place.formatted_address)
+    const shortAddress = sanitizeShortAddress(place.short_address)
+    const image = safeString(place.image_url)
+    const entityFamilies = place.entity_families
 
     return {
       id,
@@ -115,7 +111,7 @@ export function usePlaceInterface() {
       imageUrl: image,
       imageShade: place.image_shade ?? 'none',
       source: place.source,
-      claimedBy: safeString((place as any)?.claimed_by),
+      claimedBy: safeString(place.claimed_by),
     }
   }
 
@@ -151,8 +147,8 @@ export function usePlaceInterface() {
       formattedAddress: base.formattedAddress || base.shortAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      source: (target as any)?.source,
-      prop: (target as any)?.brand_tagline,
+      source: target.source,
+      prop: target.brand_tagline,
     }
   }
 
@@ -166,8 +162,8 @@ export function usePlaceInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress || base.shortAddress,
-      source: (target as any)?.source as PlaceSource | undefined,
-      prop: (target as any)?.brand_tagline,
+      source: target.source,
+      prop: target.brand_tagline,
     }
   }
 
@@ -176,34 +172,30 @@ export function usePlaceInterface() {
   ): PlaceProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
-    const source = (target as any)?.source as PlaceSource | undefined
-    const tags = (target as any)?.tags as string[] | undefined
-    const types = (target as any)?.types as string[] | undefined
-    const phone = (target as any)?.phone as string | undefined
-    const email = (target as any)?.email as string | undefined
-    const website = (target as any)?.website as string | undefined
-    const googleMapsUrl = safeString((target as any)?.google_maps_url)
-    const lat = Number((target as any)?.lat)
-    const lng = Number((target as any)?.lng)
+    const source = target.source
+    const tags = target.tags
+    const types = target.types
+    const phone = target.phone
+    const email = target.email
+    const website = target.website
+    const googleMapsUrl = safeString(target.google_maps_url)
+    const lat = Number(target.lat)
+    const lng = Number(target.lng)
     const coordinatesMapUrl =
       Number.isFinite(lat) && Number.isFinite(lng)
         ? `https://maps.google.com/?q=${lat},${lng}`
         : ''
-    const socialLinks = (target as any)?.social_links as
-      | Partial<PlaceSocialLinks>
-      | undefined
+    const socialLinks: Partial<PlaceSocialLinks> | undefined = target.social_links
     return {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      imageUrl: (target as any)?.image_url,
-      prop: (target as any)?.brand_tagline,
-      coverImage: (target as any)?.cover_image,
-      galleryImages: (
-        (target as any)?.gallery_images as string[] | undefined
-      )?.slice(0, 3),
-      about: (target as any)?.about,
-      priceLevel: (target as any)?.price_level,
+      imageUrl: target.image_url,
+      prop: target.brand_tagline,
+      coverImage: target.cover_image,
+      galleryImages: target.gallery_images?.slice(0, 3),
+      about: target.about,
+      priceLevel: target.price_level,
       tags: formatPlaceTypeList(tags),
       types: formatPlaceTypeList(types),
       phone,
@@ -211,9 +203,9 @@ export function usePlaceInterface() {
       website,
       googleMapsUrl: googleMapsUrl || coordinatesMapUrl,
       socialLinks,
-      verified: (target as any)?.verified,
-      timezone: (target as any)?.timezone,
-      defaultCurrencyCode: (target as any)?.default_currency_code,
+      verified: target.verified,
+      timezone: target.timezone,
+      defaultCurrencyCode: target.default_currency_code,
       source,
     }
   }

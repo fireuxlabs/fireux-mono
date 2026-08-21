@@ -844,7 +844,7 @@ service cloud.firestore {
         validOptionalText(data, 'description', 1000) &&
         validOptionalText(data, 'image_url', 2048) &&
         validOptionalText(data, 'website_url', 2048) &&
-        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        data.status in ['active', 'inactive', 'archived'] &&
         validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }
@@ -1004,7 +1004,7 @@ service cloud.firestore {
         validOptionalText(data, 'ecosystem_id', 120) &&
         validRequiredText(data, 'database_id', 1, 120) &&
         validRequiredText(data, 'slug', 3, 80) &&
-        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        data.status in ['active', 'inactive', 'archived'] &&
         validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         data.role in ['global', 'tenant', 'standalone', 'ecosystem', 'system'] &&

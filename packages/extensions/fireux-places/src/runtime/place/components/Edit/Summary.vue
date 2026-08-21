@@ -135,7 +135,7 @@ const { user: claimedUser } = useUserIdentitySummary(claimedUserId)
 const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const imageUrl = computed(
-  () => place.value?.image_url || (place.value as any)?.place_image || ''
+  () => place.value?.image_url || ''
 )
 const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {

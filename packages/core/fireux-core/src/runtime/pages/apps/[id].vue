@@ -72,7 +72,7 @@ if (import.meta.server) {
 
 const { model: appProfileModel } = useAppProfileView(app)
 
-const pageTitle = computed(() => app.value?.app_name || appId.value || 'App')
+const pageTitle = computed(() => app.value?.name || appId.value || 'App')
 const pageDescription = computed(
   () =>
     app.value?.description ||

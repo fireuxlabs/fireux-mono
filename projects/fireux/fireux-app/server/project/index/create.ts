@@ -38,7 +38,7 @@ export async function createProject(event: H3Event, input: unknown) {
       2000
     ),
     image_url: optionalProjectText(body.image_url, 'Project image URL', 2000),
-    status: projectStatus(body.status, 'draft'),
+    status: projectStatus(body.status, 'inactive'),
   }
   const current = await resolveProjectCommandActor(event)
   const team = fireuxProjectTeamMembersTarget(id)

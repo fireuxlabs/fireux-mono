@@ -4,8 +4,8 @@
       kind-label="User"
       icon="i-lucide-user-round"
       tone="primary"
-      :avatar-url="user.avatar || user.image || ''"
-      :display-name="user.displayName"
+      :avatar-url="user.avatar"
+      :display-name="user.display_name"
       :handle="`@${user.handle}`"
       summary=""
       :stats="[]"
@@ -75,11 +75,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserAccessTier } from '../composables/useUserPermissions'
-import type { UserDetail } from '../models/user-directory.model.ts'
+import type { User } from '../models/user.model.ts'
 
 const props = withDefaults(
   defineProps<{
-    user: UserDetail
+    user: User
     isOwnProfile?: boolean
     canEdit?: boolean
     accessTier?: UserAccessTier | null
@@ -94,6 +94,6 @@ const props = withDefaults(
 const bio = computed(() => props.user.bio.trim())
 const hasBio = computed(() => Boolean(bio.value))
 const bioText = computed(
-  () => bio.value || `${props.user.displayName} hasn’t added a bio yet.`
+  () => bio.value || `${props.user.display_name} hasn’t added a bio yet.`
 )
 </script>

@@ -6,9 +6,8 @@ import { asTrimmedString } from '../../../server/utils/projection/normalize.ts'
 import type { AppDetail } from '../../models/app-directory.model.ts'
 
 const APP_STATUSES = new Set<App['status']>([
-  'draft',
   'active',
-  'paused',
+  'inactive',
   'archived',
 ])
 
@@ -18,11 +17,6 @@ function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-}
-
-function asNonNegativeInt(value: unknown): number {
-  const number = typeof value === 'number' ? value : Number(value)
-  return Number.isFinite(number) ? Math.max(0, Math.trunc(number)) : 0
 }
 
 function asAppStatus(value: unknown): App['status'] | '' {
@@ -92,28 +86,23 @@ export function projectAppDetail(
 
   const source = asRecord(raw)
   const media = asRecord(source.media)
-  const derived = asRecord(source.derived)
   const created = asRecord(source.created)
   const createdAt = asTimestamp(created.at)
 
   return {
     id,
+    project_id: asTrimmedString(source.project_id),
     ecosystem_id: asTrimmedString(source.ecosystem_id),
     slug: asTrimmedString(source.slug),
     status: asAppStatus(source.status),
-    app_name: asTrimmedString(source.name) || asTrimmedString(source.app_name),
-    app_short_name:
-      asTrimmedString(source.short_name) ||
-      asTrimmedString(source.app_short_name),
+    name: asTrimmedString(source.name),
+    short_name: asTrimmedString(source.short_name),
     role: asAppRole(source.role),
     tagline: asTrimmedString(source.tagline),
     description: asTrimmedString(source.description),
     short_bio: asTrimmedString(source.short_bio),
     long_bio: asTrimmedString(source.long_bio),
     social_links: projectSocialLinks(source.social_links),
-    derived: {
-      user_count: asNonNegativeInt(derived.user_count),
-    },
     media: {
       thumbnail_url: asTrimmedString(media.thumbnail_url),
       logo_url: asTrimmedString(media.logo_url),
@@ -136,19 +125,17 @@ export function toAppDirectoryEntry(app: AppDetail): AppDirectoryEntry {
 
   return {
     id: app.id,
+    project_id: app.project_id,
     ecosystem_id: app.ecosystem_id,
     slug,
-    status: app.status || 'draft',
-    app_name: app.app_name,
-    app_short_name: app.app_short_name,
+    status: app.status || 'inactive',
+    name: app.name,
+    short_name: app.short_name,
     role: app.role,
     tagline: app.tagline,
     description: app.description,
     short_bio: app.short_bio,
     detail_url: `/apps/${encodeURIComponent(slug)}`,
-    derived: {
-      user_count: app.derived.user_count,
-    },
     media: {
       logo_url: app.media.logo_url,
       thumbnail_url: app.media.thumbnail_url,

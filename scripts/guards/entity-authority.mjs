@@ -108,6 +108,45 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Index.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
+  assert.deepEqual(typeFields(placeModel, 'Place'), [
+    'about',
+    'address',
+    'brand_palette',
+    'brand_tagline',
+    'business_hours',
+    'claimed_by',
+    'cover_image',
+    'created',
+    'default_currency_code',
+    'email',
+    'entity_families',
+    'formatted_address',
+    'gallery_images',
+    'google_maps_url',
+    'id',
+    'image_url',
+    'lat',
+    'lng',
+    'logo_image',
+    'media_backdrop_color',
+    'name',
+    'phone',
+    'place_type',
+    'price_level',
+    'search_term',
+    'short_address',
+    'short_name',
+    'slug',
+    'social_links',
+    'source',
+    'tags',
+    'timezone',
+    'types',
+    'updated',
+    'verified',
+    'website',
+    'wordmark_image',
+  ])
   assert.doesNotMatch(
     kitchenModel,
     /\n\s{2}(?:backdrop_color|logo_image|assets):/
@@ -422,16 +461,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.deepEqual(typeFields(directoryModel, 'AppDirectoryEntry'), [
-    'app_name',
-    'app_short_name',
-    'derived',
     'description',
     'detail_url',
     'ecosystem_id',
     'id',
     'media',
+    'name',
+    'project_id',
     'role',
     'short_bio',
+    'short_name',
     'slug',
     'status',
     'tagline',
@@ -443,6 +482,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'id',
     'image_url',
     'name',
+    'project_id',
     'status',
     'website_url',
   ])
@@ -531,7 +571,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(ownerAppDetailApi, /belongsToOwner/)
   assert.match(ownerAppDetailApi, /ecosystem_id/)
   assert.match(platformAppDetailPage, /PlatformDirectoryResponse/)
-  assert.match(platformAppDetailPage, /show-people="false"/)
+  assert.match(platformAppDetailPage, /app\.project_id/)
+  assert.match(platformAppDetailPage, /ecosystem_id/)
+  assert.match(platformAppDetailPage, /DevDebugPanel/)
   assert.doesNotMatch(ownerAppDetailApi, /PublicApp|\/api\/public\/apps/)
 
   const appInitialization = read(
@@ -660,8 +702,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ).filter((file) => file.endsWith('.vue'))
   assert.deepEqual(
     projectDirectoryPages.map((file) => path.basename(file)).sort(),
-    ['index.vue'],
-    'Project may expose only its Directory page; a Project detail route is not supported.'
+    ['[id].vue', 'index.vue'],
+    'Project discovery must provide canonical index and detail routes.'
   )
   const projectDirectory = read(
     repoRoot,
@@ -672,6 +714,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /requiresAuth|roles:\s*\[/,
     'The Project Directory must not carry an authentication or role gate.'
   )
+  const projectDirectoryDetail = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/projects/[id].vue'
+  )
+  assert.match(projectDirectoryDetail, /useProjectDirectory/)
+  assert.match(projectDirectoryDetail, /app\.project_id/)
+  assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
   assert.match(projectDirectory, /useProjectDirectory/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
   const projectDirectoryApi = read(
@@ -1144,8 +1193,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     placeNormalizer,
-    /\.\.\.PlaceDefaults,[\s\S]*\.\.\.source,[\s\S]*id,[\s\S]*name,[\s\S]*place_type:\s*placeType/,
-    'The shared Place normalizer must complete sparse stored truth without replacing the Entity.'
+    /id,[\s\S]*slug:\s*text\(source\.slug\)[\s\S]*name,[\s\S]*place_type:\s*placeType[\s\S]*created:\s*stamp\(source\.created\)[\s\S]*updated:\s*stamp\(source\.updated\)/,
+    'The shared Place normalizer must explicitly select the canonical Entity fields.'
+  )
+  assert.doesNotMatch(
+    placeNormalizer,
+    /\.\.\.source/,
+    'Place reads must not leak undeclared Firestore fields into the canonical Entity.'
   )
   assert.match(
     placeReader,
@@ -1222,6 +1276,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-companies/src/runtime/place/models/company.model.ts'
   )
+  const companyEntity = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/place/models/company.entity.ts'
+  )
   const canonicalCompany = read(
     repoRoot,
     'packages/extensions/fireux-companies/src/runtime/place/server/company/canonical.ts'
@@ -1238,10 +1296,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-companies/src/runtime/place/server/company/projection.ts'
   )
-  assert.match(companyModel, /kind:\s*'record'/)
-  assert.match(companyModel, /parent:\s*'Place'/)
-  assert.match(companyModel, /root:\s*CompanyStorage\.path/)
-  assert.match(companyModel, /export const CompanyDefaults\s*=/)
+  assert.match(companyModel, /export type Company\s*=\s*\{[\s\S]*id:\s*string[\s\S]*created:\s*CompanyStamp[\s\S]*updated:\s*CompanyStamp/)
+  assert.doesNotMatch(companyModel, /CompanyStorage|defineFireuxEntity|Defaults/)
+  assert.match(companyEntity, /kind:\s*'record'/)
+  assert.match(companyEntity, /parent:\s*'Place'/)
+  assert.match(companyEntity, /root:\s*CompanyStorage\.path/)
   assert.doesNotMatch(companyModel, /export const CompanyModel\s*=/)
   assert.doesNotMatch(companyModel, /CompanyUpdateInput/)
   assert.match(
@@ -1259,15 +1318,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     companyDirectoryModel,
-    /export type CompanyDirectoryEntry = Place/
+    /companies:\s*Company\[\]/
   )
-  assert.match(companyDirectoryModel, /export type CompanyDetail = Place/)
+  assert.match(companyDirectoryModel, /places:\s*Place\[\]/)
   assert.match(companyProjection, /canonicalCompanyRole\(id,\s*companyValue\)/)
   assert.match(
     companyProjection,
-    /projectCompanyDetail[\s\S]*normalizePlace\(id,\s*placeValue\)/
+    /return \{ company: companyRecord, place: placeRecord \}/
   )
-  assert.match(companyProjection, /return place/)
+  assert.match(companyProjection, /normalizePlace\(id, place\.data\(\) \|\| \{\}\)/)
   assert.doesNotMatch(
     companyProjection,
     /\.\.\.\(place\./,
@@ -1277,6 +1336,76 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     [companyDirectoryModel, companyProjection].join('\n'),
     /PublicCompany|public-projection/
   )
+
+  const entityDebugSurfaces = [
+    [
+      'packages/core/fireux-core/src/runtime/app/components/Collection/Manager.vue',
+      /useDevCollectionJson\(collection\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/projects/index.vue',
+      /useDevCollectionJson\(projects\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
+      /useDevCollectionJson\(ecosystems\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/user/components/Collection/Manager.vue',
+      /devJsonData = computed\(\(\) => directoryUsers\.value\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/apps/[id].vue',
+      /:objects="\[app\]"/,
+      /:derived="\{ project, ecosystem \}"/,
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/projects/[id].vue',
+      /:objects="\[project\]"/,
+      /:derived="\{ apps: projectApps \}"/,
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
+      /:objects="\[ecosystem\]"/,
+      /:derived="\{ project, apps: ecosystemApps \}"/,
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/pages/users/[handle].vue',
+      /devJsonData = computed\(\(\) => \(user\.value \? \[user\.value\] : \[\]\)\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/place/components/Collection/Manager.vue',
+      /useDevCollectionJson\(collection\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/place/components/Detail.vue',
+      /:objects="\[place\]"/,
+      /:derived="\{\}"/,
+    ],
+    [
+      'packages/extensions/fireux-companies/src/runtime/place/components/Company/Collection/Manager.vue',
+      /useDevCollectionJson\(companies\)/,
+      /:objects="devJsonData"/,
+    ],
+    [
+      'packages/extensions/fireux-companies/src/runtime/pages/companies/[id]/index.vue',
+      /:objects="company \? \[company\] : \[\]"/,
+      /:derived="\{ place \}"/,
+    ],
+  ]
+  for (const [surfacePath, objectsContract, debugBinding] of entityDebugSurfaces) {
+    const surface = read(repoRoot, surfacePath)
+    assert.match(surface, /<DevDebugPanel/)
+    assert.match(surface, /include-route/)
+    assert.match(surface, objectsContract)
+    assert.match(surface, debugBinding)
+  }
 
   assert.equal(
     existsSync(

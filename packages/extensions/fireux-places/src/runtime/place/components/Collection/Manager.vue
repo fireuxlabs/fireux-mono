@@ -134,14 +134,14 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Places (JSON)'"
         context="collection manager · places"
         :objects="devJsonData"
-  :derived="{}"
+        :derived="devJsonDerived"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -272,11 +272,7 @@ const countLabel = computed(() =>
 )
 
 function placeEntityFamilies(place: BasePlace) {
-  return Array.isArray((place as any)?.entity_families)
-    ? (place as any).entity_families
-        .map((entry: unknown) => String(entry || '').trim())
-        .filter(Boolean)
-    : []
+  return place.entity_families
 }
 
 function matchesEntityFamilyFilter(place: BasePlace) {
@@ -305,6 +301,17 @@ watch(
   },
   { immediate: true }
 )
+
+const devJsonDerived = computed(() => ({
+  source: '/api/places',
+  count: collection.value.length,
+  visibleCount: cardsFiltered.value.length,
+  filter: activeEntityFamily.value,
+  query: query.value,
+  hasMore: hasMore.value,
+  pending: outcome.value === 'pending',
+  hasError: outcome.value === 'error',
+}))
 
 const filterButtonLabel = (label: string, count?: number) => {
   const suffix = typeof count === 'number' ? ` (${count})` : ''

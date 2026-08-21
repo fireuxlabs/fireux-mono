@@ -1,12 +1,12 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { CompanyStorage } from '../../../../models/company.model.ts'
-import type { CompanyView } from '../../../../models/company-directory.model.ts'
+import { CompanyStorage } from '../../../../models/company.entity.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
-export function buildCompanyJsonLd(company: Partial<CompanyView> | null | undefined) {
+export function buildCompanyJsonLd(company: Partial<Place> | null | undefined) {
   const name = clean(company?.name)
   const id = clean(company?.id)
   if (!name || !id || (company as any)?.verified !== true) return null
@@ -22,7 +22,7 @@ export function buildCompanyJsonLd(company: Partial<CompanyView> | null | undefi
   }
 }
 
-export function useCompanySeo(company: MaybeRefOrGetter<Partial<CompanyView> | null | undefined>) {
+export function useCompanySeo(company: MaybeRefOrGetter<Partial<Place> | null | undefined>) {
   const entry = computed(() => toValue(company))
   const id = computed(() => clean(entry.value?.id))
   const isPublic = computed(() => Boolean((entry.value as any)?.verified === true && id.value))

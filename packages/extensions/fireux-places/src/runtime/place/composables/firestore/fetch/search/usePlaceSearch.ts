@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue'
 import type { PlaceSource } from '../../../../models/place.model.ts'
-import type { BasePlace } from './types'
+import type { BasePlace, BasePlaceRecord } from './types'
 import type { PlaceImageShade } from '../../../../utils/place-spine'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
@@ -16,31 +16,28 @@ type UsePlaceSearchOptions = {
 export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
   const query = ref('')
   const results = ref<PlaceSearchCell[]>([])
-  const selected = ref<BasePlace | null>(null)
+  const selected = ref<BasePlaceRecord | null>(null)
   const isSearching = ref(false)
 
   const debug = ref<Record<string, unknown> | null>(null)
 
   const mapToBasePlace = mapPlaceToBasePlace()
 
-  const toSearchCell = (base: any): PlaceSearchCell | null => {
+  const toSearchCell = (base: BasePlaceRecord): PlaceSearchCell | null => {
     if (!base) return null
-    const id = String((base as any)?.id ?? '').trim()
+    const id = String(base.id ?? '').trim()
     if (!id) return null
-    const name = String((base as any)?.name ?? '').trim()
-    const shortName = String((base as any)?.short_name ?? '').trim()
-    const formattedAddress = String(
-      (base as any)?.formatted_address ?? ''
-    ).trim()
-    const shortAddress = String((base as any)?.short_address ?? '').trim()
-    const imageUrl = String((base as any)?.image_url ?? '').trim()
-    const imageShade = (base as any)?.image_shade as PlaceImageShade | undefined
-    const source = (base as any)?.source as PlaceSource | undefined
-    const claimedBy = String((base as any)?.claimed_by ?? '').trim()
-    const collection =
-      String((base as any)?.collection ?? '').trim() || undefined
-    const lat = Number((base as any)?.lat)
-    const lng = Number((base as any)?.lng)
+    const name = String(base.name ?? '').trim()
+    const shortName = String(base.short_name ?? '').trim()
+    const formattedAddress = String(base.formatted_address ?? '').trim()
+    const shortAddress = String(base.short_address ?? '').trim()
+    const imageUrl = String(base.image_url ?? '').trim()
+    const imageShade = base.image_shade as PlaceImageShade | undefined
+    const source = base.source as PlaceSource | undefined
+    const claimedBy = String(base.claimed_by ?? '').trim()
+    const collection = String(base.collection ?? '').trim() || undefined
+    const lat = Number(base.lat)
+    const lng = Number(base.lng)
     return {
       id,
       name,
@@ -149,21 +146,12 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
 
   function select(place: BasePlace) {
     const id = canonicalPlaceId(place.id) || place.id
-    const lat = Number((place as any)?.lat)
-    const lng = Number((place as any)?.lng)
     selected.value = {
+      ...place,
       id,
-      name: String((place as any)?.name ?? ''),
-      short_name: String((place as any)?.short_name ?? ''),
-      formatted_address: String((place as any)?.formatted_address ?? ''),
-      short_address: String((place as any)?.short_address ?? ''),
-      ...(Number.isFinite(lat) ? { lat } : {}),
-      ...(Number.isFinite(lng) ? { lng } : {}),
-      source: (place as any)?.source as any,
-      image_url: String((place as any)?.image_url ?? ''),
-      claimed_by: String((place as any)?.claimed_by ?? ''),
-      collection: (place as any)?.collection,
-    } as any
+      lat: Number.isFinite(Number(place.lat)) ? Number(place.lat) : 0,
+      lng: Number.isFinite(Number(place.lng)) ? Number(place.lng) : 0,
+    }
   }
 
   function clear() {

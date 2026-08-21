@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-3">
     <ClientOnly>
-      <UCard v-if="!company" variant="subtle">
+      <UCard v-if="!place" variant="subtle">
         <p class="text-sm text-dimmed">Company data unavailable.</p>
       </UCard>
 
@@ -22,15 +22,13 @@
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { PlaceDefaults } from 'fireux-places/runtime/place/utils/normalize-place'
 import { computed } from 'vue'
-import type { CompanyDetail } from '../../models/company-directory.model.ts'
 
-const props = defineProps<{ company: CompanyDetail | null }>()
-const company = computed(() => props.company)
+const props = defineProps<{ place: Place | null }>()
+const place = computed(() => props.place)
 const { isAdmin } = useUser()
 const canEdit = computed(() => Boolean(isAdmin.value))
 const placeForEdit = computed<Place | null>(() =>
-  company.value ? { ...PlaceDefaults, ...company.value } : null
+  place.value
 )
 </script>

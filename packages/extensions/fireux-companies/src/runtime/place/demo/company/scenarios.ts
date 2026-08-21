@@ -2,7 +2,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
-import { CompanyDefaults, type Company } from '../../models/company.model.ts'
+import type { Company } from '../../models/company.model.ts'
 
 const stamp: FirebaseTimestamp = {
   seconds: 1_784_534_400,
@@ -57,7 +57,6 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
 
   return {
     company: {
-      ...CompanyDefaults,
       id: seed.id,
       created: { at: stamp },
       updated: { at: stamp },

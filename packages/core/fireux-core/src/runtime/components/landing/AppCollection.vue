@@ -198,7 +198,7 @@ async function refreshApps(): Promise<void> {
 }
 
 function displayName(app: AppDirectoryEntry): string {
-  return app.app_name || app.app_short_name || app.slug || app.id
+  return app.name || app.short_name || app.slug || app.id
 }
 
 function roleLabel(app: AppDirectoryEntry): string {

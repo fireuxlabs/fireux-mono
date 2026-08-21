@@ -631,7 +631,7 @@ function buildSecurityTests(databaseId) {
     created: { at: writeTime, app_id: '' },
   }
   const app = {
-    project_id: 'cleanbox',
+    project_id: 'werkbox',
     ecosystem_id: 'cleanbox',
     database_id: 'cleanbox',
     slug: 'cleanbox-app',

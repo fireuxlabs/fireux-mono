@@ -26,17 +26,16 @@ export type UserFetchOutcome =
   | 'error'
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
-  const anyRaw = raw as any
   return {
     ...raw,
     id: raw.id ?? fallbackId,
-    display_name: (raw as any).display_name ?? raw.id ?? fallbackId,
+    display_name: raw.display_name || raw.id || fallbackId,
     bio:
-      typeof anyRaw.bio === 'string' && anyRaw.bio.trim().length <= 280
-        ? anyRaw.bio.trim()
+      typeof raw.bio === 'string' && raw.bio.trim().length <= 280
+        ? raw.bio.trim()
         : '',
-    avatar: resolveUserAvatarSource((raw as any).avatar),
-    handle: (raw as any).handle ?? '',
+    avatar: resolveUserAvatarSource(raw.avatar),
+    handle: raw.handle || '',
   }
 }
 

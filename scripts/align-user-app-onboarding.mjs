@@ -642,13 +642,14 @@ async function planProjects(sessions, operations, issues, blockers) {
       continue
     }
     const authoredApp = appSource(globalApp)
-    const projectId = text(authoredApp.ecosystem_id) || session.ecosystemKey
+    const projectId = text(authoredApp.project_id) || session.ecosystemKey
+    const ecosystemId = text(authoredApp.ecosystem_id) || session.ecosystemKey
     const ecosystem = await getFirestore(
       session.app,
       session.identityDatabaseId
     )
       .collection('ecosystems')
-      .doc(projectId)
+      .doc(ecosystemId)
       .get()
     const canonical = await controlDb
       .collection('projects')

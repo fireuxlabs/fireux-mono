@@ -5,6 +5,7 @@ import { useAssets } from '../../composables/brand/useAssets'
 import { getRuntimeFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { normalizeSlug } from '../../../utils/slug/normalizeSlug'
 import { normalizePublicImgAsset } from '../../../../utils/brandAssets'
+import type { App } from '../../models/app.model'
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
@@ -67,19 +68,13 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {}
 }
 
-function asNonNegativeInt(value: unknown): number {
-  const n = typeof value === 'number' ? value : Number(value)
-  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0
-}
-
 function normalizeStatus(
   value: unknown
-): 'draft' | 'active' | 'paused' | 'archived' {
+): App['status'] {
   const raw = asString(value)
   if (
-    raw === 'draft' ||
     raw === 'active' ||
-    raw === 'paused' ||
+    raw === 'inactive' ||
     raw === 'archived'
   ) {
     return raw
@@ -99,7 +94,6 @@ export async function readAppInfo(event: H3Event) {
   const appData = appDoc?.exists ? asRecord(appDoc.data()) : {}
   const media = asRecord(appData.media)
   const socialLinks = asRecord(appData.social_links)
-  const derived = asRecord(appData.derived)
   const siteOrigin =
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
@@ -133,9 +127,9 @@ export async function readAppInfo(event: H3Event) {
       ecosystem_id: cfg.ecosystemId || '',
       slug: appSlug,
       status: normalizeStatus(appData.status),
-      app_name: asString(appData.app_name) || cfg.appName,
-      app_short_name:
-        asString(appData.app_short_name) || cfg.appShortName || cfg.appName,
+      name: asString(appData.name) || cfg.appName,
+      short_name:
+        asString(appData.short_name) || cfg.appShortName || cfg.appName,
       role: asString(appData.role),
       tagline: asString(appData.tagline),
       description: asString(appData.description),
@@ -153,9 +147,6 @@ export async function readAppInfo(event: H3Event) {
         facebook: asString(socialLinks.facebook),
         youtube: asString(socialLinks.youtube),
         email: asString(socialLinks.email),
-      },
-      derived: {
-        user_count: asNonNegativeInt(derived.user_count),
       },
       media: {
         thumbnail_url: thumbnailUrl || '',

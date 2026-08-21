@@ -9,7 +9,7 @@ import {
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { projectCompanyDirectoryEntry } from 'fireux-companies/runtime/place/server/company/projection'
+import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   AuthorJobListResponse,
@@ -109,16 +109,19 @@ export function assertCanonicalReferences(
       record(snapshots[index]?.data()),
     ])
   )
-  const company = projectCompanyDirectoryEntry(
+  const company = canonicalCompanyRole(
     job.company_id,
-    values.get(`companies/${job.company_id}`) || {},
+    values.get(`companies/${job.company_id}`) || {}
+  )
+  const companyPlace = normalizePlace(
+    job.company_id,
     values.get(`places/${job.company_id}`) || {}
   )
   const place = normalizePlace(
     job.place_id,
     values.get(`places/${job.place_id}`) || {}
   )
-  if (!company || !place) {
+  if (!company || !companyPlace || !place) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Job Company and Place relationships must be canonical.',

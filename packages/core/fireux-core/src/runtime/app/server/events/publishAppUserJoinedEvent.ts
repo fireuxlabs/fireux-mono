@@ -113,7 +113,7 @@ export async function publishAppUserJoinedEvent(
 
       const ecosystemId = String(input.ecosystemId || '').trim()
       const appName =
-        String(appSnapshot.data?.app_name || '').trim() || input.appId
+        String(appSnapshot.data?.name || '').trim() || input.appId
 
       mutations.create(events, eventId, {
         id: eventId,

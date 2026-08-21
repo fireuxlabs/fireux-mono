@@ -113,9 +113,9 @@
         launcher
         include-route
         :title="'Companies (JSON)'"
-        context="collection manager · companies"
+        context="Company collection · canonical Companies with same-id Places"
         :objects="devJsonData"
-        :derived="{}"
+        :derived="{ places: collection }"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -130,7 +130,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { CompanyDirectoryEntry } from '../../../models/company-directory.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useCompanyCollection } from '../../../composables/company/useCompanyCollection'
 import { useCompanyInterface } from '../../../composables/company/useCompanyInterface'
 
@@ -157,10 +157,9 @@ const props = withDefaults(
   }
 )
 
-const fetched = useCompanyCollection<CompanyDirectoryEntry>()
-const collection = computed<CompanyDirectoryEntry[]>(
-  () => fetched.collection.value ?? []
-)
+const fetched = useCompanyCollection()
+const companies = computed(() => fetched.companies.value)
+const collection = computed<Place[]>(() => fetched.places.value)
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
@@ -169,7 +168,7 @@ async function handleLoadMore(): Promise<void> {
   await fetched.loadMore()
 }
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collection)
+  useDevCollectionJson(companies)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>
   String(props.description || 'Browse companies and their business profiles.')
@@ -193,11 +192,11 @@ const {
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    CompanyDirectoryEntry,
+    Place,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (company: CompanyDirectoryEntry) => makeCard(company),
+    makeCard: (place: Place) => makeCard(place),
     initialVariant: props.initialVariant,
   })
 

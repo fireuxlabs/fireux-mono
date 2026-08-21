@@ -2,35 +2,20 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type {
-  CompanyDetail,
-  CompanyDirectoryEntry,
-} from '../../models/company-directory.model.ts'
-import { CompanyStorage } from '../../models/company.model.ts'
+import type { CompanyDetailResponse } from '../../models/company-directory.model.ts'
+import { CompanyStorage } from '../../models/company.entity.ts'
 import { canonicalCompanyRole } from './canonical'
 
-export function projectCompanyDirectoryEntry(
+export function projectCompany(
   id: string,
-  companyValue: Record<string, unknown>,
-  placeValue: Record<string, unknown>
-): CompanyDirectoryEntry | null {
-  if (!canonicalCompanyRole(id, companyValue)) return null
-  const place = normalizePlace(id, placeValue)
-  return place
-}
-
-export function projectCompanyDetail(
-  id: string,
-  companyValue: Record<string, unknown>,
-  placeValue: Record<string, unknown>
-): CompanyDetail | null {
-  if (!canonicalCompanyRole(id, companyValue)) return null
-  return normalizePlace(id, placeValue)
+  companyValue: Record<string, unknown>
+) {
+  return canonicalCompanyRole(id, companyValue)
 }
 
 export async function readCompanyDetail(
   idValue: unknown
-): Promise<CompanyDetail> {
+): Promise<CompanyDetailResponse> {
   const id = requireFirestoreDocumentId(idValue, 'Company id')
   const db = getRuntimeFirestore()
   const [company, place] = await db
@@ -44,12 +29,13 @@ export async function readCompanyDetail(
         statusMessage: 'Company could not be read.',
       })
     })
-  const item =
+  const companyRecord =
     company.exists && place.exists
-      ? projectCompanyDetail(id, company.data() || {}, place.data() || {})
+      ? projectCompany(id, company.data() || {})
       : null
-  if (!item) {
+  const placeRecord = place.exists ? normalizePlace(id, place.data() || {}) : null
+  if (!companyRecord || !placeRecord) {
     throw createError({ statusCode: 404, statusMessage: 'Company not found.' })
   }
-  return item
+  return { company: companyRecord, place: placeRecord }
 }

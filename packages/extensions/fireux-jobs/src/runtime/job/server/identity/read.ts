@@ -9,9 +9,8 @@ import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
+import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/place/server/company/canonical'
-import { projectCompanyDirectoryEntry } from 'fireux-companies/runtime/place/server/company/projection'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type {
   JobDetailResponse,
@@ -141,13 +140,13 @@ export function projectJobDirectoryEntry(
     scope,
     linked.sourceApp
   )
-  const company = projectCompanyDirectoryEntry(
+  const company = canonicalCompanyRole(
     job.company_id,
-    linked.company,
-    linked.companyPlace
+    linked.company
   )
+  const companyPlace = normalizePlace(job.company_id, linked.companyPlace)
   const place = normalizePlace(job.place_id, linked.place)
-  if (!company || !place) {
+  if (!company || !companyPlace || !place) {
     throw new Error(
       'Canonical Job has an invalid Company or Place relationship.'
     )
@@ -161,9 +160,13 @@ export function projectJobDirectoryEntry(
     visibility: 'public',
     status: 'open',
     company: {
-      name: company.name,
-      ...(company.short_name ? { short_name: company.short_name } : {}),
-      ...(company.image_url ? { image_url: company.image_url } : {}),
+      name: companyPlace.name,
+      ...(companyPlace.short_name
+        ? { short_name: companyPlace.short_name }
+        : {}),
+      ...(companyPlace.image_url
+        ? { image_url: companyPlace.image_url }
+        : {}),
     },
     place: {
       name: place.name,

@@ -5,6 +5,7 @@ import {
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
+  PLACE_INDEX_PAGE_SIZE,
   PLACE_INDEX_MAX_PAGE_SIZE,
   type PlaceIndexPage,
 } from '../../../models/place-read.model.ts'
@@ -27,9 +28,9 @@ export type UsePlaceCollectionReturn = {
 
 export function usePlaceCollection(): UsePlaceCollectionReturn {
   const state = useAsyncData<PlaceIndexPage>(
-    `place-index|limit=${PLACE_INDEX_MAX_PAGE_SIZE}`,
+    `place-index|limit=${PLACE_INDEX_PAGE_SIZE}`,
     () =>
-      $fetch<PlaceIndexPage>(`/api/places?limit=${PLACE_INDEX_MAX_PAGE_SIZE}`)
+      $fetch<PlaceIndexPage>(`/api/places?limit=${PLACE_INDEX_PAGE_SIZE}`)
   )
   const collection = computed<Place[]>(() => state.data.value?.items ?? [])
   const loadingMore = ref(false)

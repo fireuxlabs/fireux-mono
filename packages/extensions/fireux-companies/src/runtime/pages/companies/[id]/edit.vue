@@ -29,7 +29,7 @@
         </UPageCard>
 
         <UAlert
-          v-else-if="!company"
+          v-else-if="!place"
           color="error"
           variant="soft"
           title="Company not found"
@@ -65,7 +65,7 @@
             </template>
           </UAlert>
 
-          <CompanyEdit v-if="canEdit" :company="company" />
+          <CompanyEdit v-if="canEdit" :place="place" />
           <UAlert
             v-else
             color="warning"
@@ -107,7 +107,7 @@ const route = useRoute()
 const raw = route.params.id
 const companyId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { company, ready, pending: loading, missing, failed, statusCode } =
+const { place, ready, pending: loading, missing, failed, statusCode } =
   useCompanyDetail(companyId)
 
 await ready
@@ -121,9 +121,9 @@ const { isAdmin } = useUser()
 const canEdit = computed(() => Boolean(isAdmin.value))
 
 const { preview } = useCompanyInterface()
-const companyPreview = computed(() => preview(company.value))
+const companyPreview = computed(() => preview(place.value))
 const companyPreviewDetails = computed(() => {
-  const v = company.value
+  const v = place.value
   if (!v) return []
   const details = [
     { label: 'Short name', value: v.short_name ?? '' },
@@ -138,13 +138,13 @@ const companyPreviewDetails = computed(() => {
   return details.filter((item) => String(item.value ?? '').trim().length > 0)
 })
 const companyPreviewMapUrl = computed(() => {
-  const v = company.value
+  const v = place.value
   if (!v) return ''
   if (v.google_maps_url) return v.google_maps_url
   return ''
 })
 
-const pageTitle = computed(() => company.value?.name || 'Edit company')
+const pageTitle = computed(() => place.value?.name || 'Edit company')
 const pageSubtitle = computed(() =>
   companyId ? `Company ID: ${companyId}` : 'Edit a company'
 )

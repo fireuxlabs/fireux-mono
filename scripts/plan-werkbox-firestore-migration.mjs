@@ -1015,7 +1015,7 @@ function auditCanonicalEcosystem(snapshot, blockers) {
     data.name.trim().length > 120 ||
     typeof data.description !== 'string' ||
     data.description.length > 4_000 ||
-    !['draft', 'active', 'paused', 'archived'].includes(data.status) ||
+    !['active', 'inactive', 'archived'].includes(data.status) ||
     (data.image_url && !isHttpsUrl(data.image_url)) ||
     (data.website_url && !isHttpsUrl(data.website_url))
   ) {

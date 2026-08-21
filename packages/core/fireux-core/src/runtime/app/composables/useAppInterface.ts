@@ -32,7 +32,7 @@ export namespace AppCard {
     tagline: string
     shortName: string
     role: string
-    userCount: number
+    userCount: number | null
 
     description: string
     shortBio: string
@@ -60,13 +60,6 @@ export type AppViewSource = Partial<Omit<App, 'role' | 'status'>> & {
   detail_url?: string
   /** Narrow legacy read adapter. Canonical identity is ecosystem_id. */
   ecosystem?: string
-  app_name?: string
-  app_short_name?: string
-  tagline?: string
-  short_bio?: string
-  long_bio?: string
-  social_links?: AppSocialLinks
-  derived?: { user_count?: number }
 }
 
 function safeMedia(app: AppViewSource) {
@@ -82,9 +75,7 @@ function safeMedia(app: AppViewSource) {
 }
 
 function makeAvatarText(app: AppViewSource): string {
-  const source = safeString(
-    app.short_name || app.app_short_name || app.name || app.app_name || app.id
-  )
+  const source = safeString(app.short_name || app.name || app.id)
   if (!source) return ''
 
   return source
@@ -134,8 +125,8 @@ export function useAppInterface(
     })
     const id = safeString(app.id).trim()
     const ecosystemId = safeString(app.ecosystem_id || app.ecosystem)
-    const name = safeString(app.name || app.app_name)
-    const shortName = safeString(app.short_name || app.app_short_name)
+    const name = safeString(app.name)
+    const shortName = safeString(app.short_name)
 
     return {
       id,
@@ -164,7 +155,7 @@ export function useAppInterface(
       tagline: safeString(app.tagline),
       shortName,
       role: app.role != null ? String(app.role) : '',
-      userCount: Number(app.derived?.user_count) || 0,
+      userCount: null,
 
       description: safeString(app.description),
       shortBio: safeString(app.short_bio || app.description),

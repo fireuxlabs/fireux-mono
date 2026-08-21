@@ -182,8 +182,7 @@ const editableFields = computed(() => {
   if (!v) return null
   const base = compact({
     id: v.id,
-    image_url: v.image_url ?? (v as any).place_image,
-    image_shade: v.image_shade === 'none' ? undefined : v.image_shade,
+    image_url: v.image_url,
     short_name: v.short_name,
     brand_tagline: v.brand_tagline,
     about: v.about,

@@ -43,9 +43,9 @@
           launcher
           include-route
           title="Company"
-          context="Company detail page · companies/[id] · bounded projection"
-          :objects="company"
-  :derived="{}"
+          context="Company detail · canonical Company with same-id Place"
+          :objects="company ? [company] : []"
+          :derived="{ place }"
           :default-open="false"
         />
       </div>
@@ -71,7 +71,7 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { company, ready, outcome, missing, failed, statusCode, refresh } =
+const { company, place, ready, outcome, missing, failed, statusCode, refresh } =
   useCompanyDetail(docId)
 
 await ready
@@ -81,13 +81,13 @@ if (import.meta.server && missing.value) {
   setResponseStatus(statusCode.value || 503)
 }
 
-const pageTitle = computed(() => company.value?.name || 'Company')
+const pageTitle = computed(() => place.value?.name || 'Company')
 const pageDescription = computed(() =>
-  company.value?.short_address || 'Review the company profile.'
+  place.value?.short_address || 'Review the company profile.'
 )
 
 const { profile } = useCompanyInterface()
-const companyProfile = computed(() => profile(company.value))
+const companyProfile = computed(() => profile(place.value))
 
-useCompanySeo(company)
+useCompanySeo(place)
 </script>

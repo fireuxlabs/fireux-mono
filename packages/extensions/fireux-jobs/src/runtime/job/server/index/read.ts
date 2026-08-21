@@ -2,7 +2,7 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.model'
+import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
 import {
   JOB_DIRECTORY_MAX_PAGE_SIZE,
   JOB_DIRECTORY_MAX_SCAN_SIZE,

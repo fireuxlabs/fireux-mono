@@ -1,4 +1,4 @@
-export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
+export type EcosystemStatus = 'active' | 'inactive' | 'archived'
 
 export type Ecosystem = {
   id: string

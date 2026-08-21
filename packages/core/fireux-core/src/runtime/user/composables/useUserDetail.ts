@@ -8,7 +8,7 @@ import {
 } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import type { DetailResponse } from '../../models/utils/directory.ts'
-import type { UserDetail } from '../models/user-directory.model.ts'
+import type { User } from '../models/user.model.ts'
 
 export type UserDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -18,7 +18,7 @@ type UserDetailControls = Pick<
 >
 
 export type UseUserDetailReturn = UserDetailControls & {
-  user: ComputedRef<UserDetail | null>
+  user: ComputedRef<User | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -48,7 +48,7 @@ export function useUserDetail(
       .trim()
       .toLowerCase()
   )
-  const state = useAsyncData<DetailResponse<UserDetail> | null>(
+  const state = useAsyncData<DetailResponse<User> | null>(
     () => [
       'user-detail',
       fireux.appId,
@@ -56,14 +56,14 @@ export function useUserDetail(
     ].join('|'),
     async () => {
       if (!handle.value) return null
-      return $fetch<DetailResponse<UserDetail>>(
+      return $fetch<DetailResponse<User>>(
         `/api/users/${encodeURIComponent(handle.value)}`
       )
     },
     { server: true, watch: [handle] }
   )
 
-  const user = computed<UserDetail | null>(() => {
+  const user = computed<User | null>(() => {
     const item = state.data.value?.item ?? null
     return item?.handle === handle.value && !state.pending.value ? item : null
   })

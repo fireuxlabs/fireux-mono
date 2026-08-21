@@ -11,9 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { computed } from 'vue'
+import { useSeo } from '../../composables/fireux/seo/useSeo'
 
 definePageMeta({
   nav: {
@@ -32,42 +31,13 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const runtime = useRuntimeConfig()
 
 const pageTitle = 'Users'
 const pageDescription = `Discover users and the profiles connected across ${appName}.`
-const headTitle = `${appName} | ${pageTitle}`
-
-function normalizeSiteUrl(input: unknown): string {
-  const value = typeof input === 'string' ? input.trim() : ''
-  if (!value) return ''
-  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`
-  try {
-    return new URL(withProtocol).origin
-  } catch {
-    return ''
-  }
-}
-
-const canonicalUrl = computed(() => {
-  const fireux = (runtime.public as any)?.fireux || {}
-  const siteUrl =
-    normalizeSiteUrl(fireux?.seo?.siteUrl) ||
-    normalizeSiteUrl(fireux?.siteUrl) ||
-    normalizeSiteUrl(fireux?.domain)
-  return siteUrl ? `${siteUrl}/users` : '/users'
-})
-
-useSeoMeta({
-  title: headTitle,
+useSeo({
+  title: `${appName} | ${pageTitle}`,
   description: pageDescription,
-  ogTitle: headTitle,
-  ogDescription: pageDescription,
+  path: '/users',
   robots: 'index, follow',
-})
-
-useHead({
-  title: headTitle,
-  link: [{ rel: 'canonical', href: canonicalUrl.value }],
 })
 </script>

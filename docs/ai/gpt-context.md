@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-19
+Updated: 2026-08-21
 Ref: e23268507
 Role: living context
 Scope: repo-wide
@@ -317,6 +317,10 @@ requirement, report the exact missing seam before broad edits.
   `useXInterface` and named projectors create bounded view models; Profile,
   Detail, Order Ticket, Catalogue, and other specialist compositions remain
   separate families.
+- Entity debug is part of the completed surface check. Index debug passes the
+  canonical entity array directly as `objects`; detail debug passes its one
+  canonical entity as a one-item `objects` array. Relationships and page state
+  belong under `derived`, and `include-route` adds route metadata exactly once.
 - Existing guarded `Cards/Profile` paths are migration debt, not precedent for
   new Cards. See `docs/concepts/card-family.md` and
   `scripts/guards/components.mjs`.

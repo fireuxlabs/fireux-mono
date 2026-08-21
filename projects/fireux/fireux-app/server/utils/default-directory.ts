@@ -103,7 +103,7 @@ export async function readPlatformDirectory(): Promise<PlatformDirectoryResponse
     .filter((row): row is NonNullable<typeof row> => Boolean(row))
     .sort(
       (a, b) =>
-        a.order - b.order || a.entry.app_name.localeCompare(b.entry.app_name)
+        a.order - b.order || a.entry.name.localeCompare(b.entry.name)
     )
     .map(({ entry }) => entry)
 

@@ -1,8 +1,8 @@
 import { createError, defineEventHandler, setResponseHeaders, type H3Event, } from 'h3'
 import {
-  asBoundedTrimmedString, asTrimmedString, buildDirectoryPath, resolveDirectoryDescription, toIsoUpdatedAt, } from '../../utils/projection/normalize'
+  asBoundedTrimmedString, asTrimmedString, } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
-import type { UserDetail } from '../../../user/models/user-directory.model.ts'
+import type { User } from '../../../user/models/user.model.ts'
 import {
   resolveUserDirectoryScope, userBelongsToDirectoryScope, } from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
@@ -15,45 +15,25 @@ function normalizeHandle(value: unknown): string {
   return asTrimmedString(value).toLowerCase()
 }
 
-function mapUserDetail(
+function mapUser(
   doc: FirebaseFirestore.QueryDocumentSnapshot
-): UserDetail | null {
+): User | null {
   const data = (doc.data() || {}) as Record<string, unknown>
   const handle = normalizeHandle(data.handle)
   if (!handle) return null
 
-  const displayName =
-    asTrimmedString(data.display_name) ||
-    asTrimmedString(data.displayName) ||
-    `@${handle}`
-  const avatar = resolveUserAvatarSource(data.avatar)
-  const bio = asBoundedTrimmedString(data.bio, 280)
-
   return {
     id: doc.id,
     handle,
-    displayName,
-    bio,
-    avatar,
-    title: displayName,
-    description: resolveDirectoryDescription(
-      bio,
-      `Profile for ${displayName}.`
-    ),
-    path: buildDirectoryPath('/users', handle),
-    image: avatar || undefined,
-    updatedAt: toIsoUpdatedAt(
-      data.updatedAt ||
-        (data.updated as any)?.at ||
-        data.updated_at ||
-        data.createdAt
-    ),
+    display_name: asTrimmedString(data.display_name) || `@${handle}`,
+    bio: asBoundedTrimmedString(data.bio, 280),
+    avatar: resolveUserAvatarSource(data.avatar),
   }
 }
 
 async function readCanonicalUserByHandle(
   handle: string
-): Promise<UserDetail | null> {
+): Promise<User | null> {
   const snap = await getRuntimeIdentityFirestore()
     .collection('users')
     .where('handle', '==', handle)
@@ -61,7 +41,7 @@ async function readCanonicalUserByHandle(
     .get()
   const doc = snap.docs[0] || null
   if (!doc) return null
-  const dto = mapUserDetail(doc)
+  const dto = mapUser(doc)
   if (!dto) return null
   return dto
 }
@@ -94,7 +74,7 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const response: DetailResponse<UserDetail> = {
+  const response: DetailResponse<User> = {
     ok: true,
     generatedAt: new Date().toISOString(),
     item: user,
