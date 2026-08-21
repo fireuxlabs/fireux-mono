@@ -10,15 +10,10 @@ import type {
 } from '../../models/kitchen-detail.model.ts'
 import type { KitchenDirectoryEntry } from '../../models/kitchen-directory.model.ts'
 import {
-  readKitchenIdentity,
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../utils/kitchen-spine.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
 
@@ -27,23 +22,14 @@ export type KitchenRootRecord = {
   data: Record<string, unknown>
 }
 
-export type KitchenReadScope = {
-  ecosystem: string
-}
+export type KitchenReadScope = Record<string, never>
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 
-type CanonicalKitchenManagementTarget = {
-  mode: 'workspace' | 'app'
-  appId: string
-}
-
 type KitchenReadParts = {
   document: KitchenRootRecord
-  managementTarget: CanonicalKitchenManagementTarget | null
   placeData: Record<string, unknown>
   identity: ReturnType<typeof menuKitchenIdentity>
-  rootIdentity: ReturnType<typeof readKitchenIdentity>
   place: ReturnType<typeof readPlacePresentation>
   visible: boolean
 }
@@ -57,26 +43,6 @@ const number = (value: unknown) => {
   if (value === null || value === undefined || value === '') return null
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-function canonicalKitchenManagementTarget(
-  data: Record<string, unknown>,
-  ecosystem: string
-): CanonicalKitchenManagementTarget | null {
-  const hasRetiredScope = [
-    'app_scope',
-    'app_scope_state',
-    'app_scope_app_id',
-    'app_id',
-    'workspace',
-  ].some((key) => Object.hasOwn(data, key))
-  const management = readFireuxEntityManagement(data.management)
-
-  if (hasRetiredScope || !management || management.mode === 'root') return null
-  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
-  if (!isFirestoreDocumentId(appId)) return null
-
-  return { mode: management.mode, appId }
 }
 
 export async function readKitchenRelatedRecords(
@@ -105,7 +71,7 @@ export async function readKitchenRelatedRecords(
 function resolveKitchenReadParts(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
-  scope: KitchenReadScope
+  _scope: KitchenReadScope
 ): KitchenReadParts | null {
   const rootData = document.data
   const placeId = document.id
@@ -114,10 +80,6 @@ function resolveKitchenReadParts(
   const placeData = dataByPath.get(`${PlaceStorage.collection}/${placeId}`)
   if (!placeData) return null
 
-  const managementTarget = canonicalKitchenManagementTarget(
-    rootData,
-    scope.ecosystem
-  )
   const identity = menuKitchenIdentity(rootData, placeData)
   if (!text(identity.name)) return null
 
@@ -127,10 +89,8 @@ function resolveKitchenReadParts(
 
   return {
     document,
-    managementTarget,
     placeData,
     identity,
-    rootIdentity: readKitchenIdentity(rootData),
     place: readPlacePresentation(placeData),
     visible,
   }
@@ -148,31 +108,22 @@ export function projectKitchenDirectoryEntry(
   const name = text(parts.identity.name)
   const slug = readRecordString(rootData, 'slug')
   const shortName = readRecordString(parts.placeData, 'short_name')
-  const brandTagline = text(
-    parts.rootIdentity.tagline || parts.place.brandTagline
-  )
+  const brandTagline = text(parts.place.brandTagline)
   const formattedAddress = readRecordString(
     parts.placeData,
     'formatted_address'
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
-  const cardImageUrl = text(parts.rootIdentity.cardImageUrl)
-  const imageUrl = text(
-    cardImageUrl || parts.place.coverImage || parts.place.imageUrl
-  )
-  const mediaBackdropColor =
-    parts.rootIdentity.mediaBackdropColor || parts.place.mediaBackdropColor
-  const imageKind = cardImageUrl && mediaBackdropColor ? 'brand' : 'photograph'
-  const logoImageUrl = text(
-    parts.rootIdentity.logoImageUrl || parts.place.logoImage
-  )
+  const imageUrl = text(parts.place.coverImage || parts.place.imageUrl)
+  const mediaBackdropColor = parts.place.mediaBackdropColor
+  const imageKind = 'photograph'
+  const logoImageUrl = text(parts.place.logoImage)
 
   return {
     id: parts.document.id,
     name,
     slug,
     visible: parts.visible,
-    management_mode: parts.managementTarget?.mode || 'root',
     ...(shortName ? { short_name: shortName } : {}),
     ...(brandTagline ? { brand_tagline: brandTagline } : {}),
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
@@ -212,9 +163,6 @@ export function projectKitchenDetail(
 
   const presentation: KitchenDetailPresentation = {
     ...item,
-    ...(parts.managementTarget?.appId
-      ? { management_app_id: parts.managementTarget.appId }
-      : {}),
     route_scope: 'live',
     display_name: item.name,
     ...(sproochli.enabled
@@ -244,7 +192,7 @@ export function projectKitchenDetail(
     ...(latitude !== null ? { lat: latitude } : {}),
     ...(longitude !== null ? { lng: longitude } : {}),
   }
-  const kitchen = normalizeKitchen(document.id, document.data, scope.ecosystem)
+  const kitchen = normalizeKitchen(document.id, document.data)
   const canonicalPlace = normalizePlace(document.id, parts.placeData)
   if (!kitchen || !canonicalPlace) return null
 

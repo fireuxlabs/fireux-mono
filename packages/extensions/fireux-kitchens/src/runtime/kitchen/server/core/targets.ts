@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: project authorized roots without browser Firestore reads.
 // Concurrent edit — 2026-07-22 12:35 CEST — Canonical Kitchen theme write: project resolved style and server-authorized write capability.
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -12,30 +11,18 @@ import {
   type KitchenWorkspaceTargetItem,
   type KitchenWorkspaceTargetsResponse,
 } from '../../models/kitchen-index.model.ts'
-import type {
-  KitchenOrdersConfig,
-  KitchenTablesConfig,
-} from '../../models/kitchen.model.ts'
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
+import type { KitchenOrdersConfig } from '../../models/kitchen.model.ts'
 import { resolveKitchenWorkspaceTargetIds } from './workspace-targets.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import {
   readKitchenFulfilmentConfig,
-  readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
   readKitchenVisibility,
-  readKitchenWorkspacePalette,
+  readKitchenThemePalette,
 } from '../../utils/kitchen-spine.ts'
 
 type StoredRecord = Record<string, unknown>
-type CanonicalKitchenScope = {
-  management: KitchenWorkspaceTargetItem['management']
-  appId: string
-}
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): StoredRecord =>
@@ -45,38 +32,6 @@ const record = (value: unknown): StoredRecord =>
 
 function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
-}
-
-function readCanonicalKitchenScope(
-  kitchenId: string,
-  data: StoredRecord,
-  ecosystem: string
-): CanonicalKitchenScope {
-  const hasRetiredScope = [
-    'app_scope',
-    'app_scope_state',
-    'app_scope_app_id',
-    'app_id',
-    'workspace',
-  ].some((key) => Object.hasOwn(data, key))
-  const management = readFireuxEntityManagement(data.management)
-  const appId = management
-    ? resolveFireuxEntityManagementAppId(management, ecosystem)
-    : ''
-
-  if (
-    hasRetiredScope ||
-    !management ||
-    management.mode === 'root' ||
-    !isFirestoreDocumentId(appId)
-  ) {
-    conflict(`Kitchen ${kitchenId} has an invalid canonical App scope.`)
-  }
-
-  return {
-    management,
-    appId,
-  }
 }
 
 const optionalNumber = (value: unknown) => {
@@ -90,9 +45,7 @@ function projectKitchenTarget(input: {
   canWrite: boolean
   root: StoredRecord
   place: StoredRecord
-  scope: CanonicalKitchenScope
 }): KitchenWorkspaceTargetItem {
-  const rootIdentity = readKitchenIdentity(input.root)
   const place = readPlacePresentation(input.place)
   const resolvedIdentity = menuKitchenIdentity(input.root, input.place)
   const displayName = text(resolvedIdentity.name)
@@ -102,12 +55,10 @@ function projectKitchenTarget(input: {
 
   const visibility = readKitchenVisibility(input.root)
   const menus = readKitchenMenusConfig(input.root)
-  const resolvedMenuStyle = record(resolvedIdentity.page_style)
   const gallery = place.gallery
-  const tagline = rootIdentity.tagline || place.brandTagline
-  const workspacePalette = readKitchenWorkspacePalette(input.root)
+  const tagline = place.brandTagline
+  const themePalette = readKitchenThemePalette(input.root)
   const orders = record(input.root.orders)
-  const tables = record(input.root.tables)
   const shortName = place.shortName
   const brandTagline = place.brandTagline
   const formattedAddress = place.formattedAddress
@@ -118,15 +69,13 @@ function projectKitchenTarget(input: {
   const phone = place.phone
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
-  const logoImageUrl = rootIdentity.logoImageUrl || place.logoImage
-  const cardImageUrl = rootIdentity.cardImageUrl || resolvedIdentity.imageUrl
-  const mediaBackdropColor =
-    rootIdentity.mediaBackdropColor || place.mediaBackdropColor
+  const logoImageUrl = place.logoImage
+  const cardImageUrl = resolvedIdentity.imageUrl
+  const mediaBackdropColor = place.mediaBackdropColor
 
   return {
     id: input.id,
     can_write: input.canWrite,
-    management: input.scope.management,
     place_id: input.id,
     slug: readRecordString(input.root, 'slug'),
     visibility,
@@ -134,9 +83,6 @@ function projectKitchenTarget(input: {
       display_name: displayName,
       tagline,
       image_url: cardImageUrl,
-      ...(rootIdentity.cardImageUrl
-        ? { card_image_url: rootIdentity.cardImageUrl }
-        : {}),
       ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
       ...(mediaBackdropColor
         ? { media_backdrop_color: mediaBackdropColor }
@@ -156,18 +102,12 @@ function projectKitchenTarget(input: {
       ...(menus.specialsMenuId
         ? { specials_menu_id: menus.specialsMenuId }
         : {}),
-      ...(Object.keys(resolvedMenuStyle).length
-        ? { style: resolvedMenuStyle }
-        : {}),
     },
-    ...(workspacePalette
-      ? { workspace_theme: { palette: workspacePalette } }
+    ...(themePalette
+      ? { theme: { palette: themePalette } }
       : {}),
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
-      : {}),
-    ...(Object.keys(tables).length
-      ? { tables: tables as KitchenTablesConfig }
       : {}),
     fulfilment: readKitchenFulfilmentConfig(input.root),
     sproochli: readKitchenSproochliConfig(input.root),
@@ -179,9 +119,7 @@ function projectKitchenTarget(input: {
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
     ...(shortAddress ? { short_address: shortAddress } : {}),
     ...(cardImageUrl ? { image_url: cardImageUrl } : {}),
-    ...(rootIdentity.cardImageUrl && mediaBackdropColor
-      ? { media_backdrop_color: mediaBackdropColor }
-      : {}),
+    ...(mediaBackdropColor ? { media_backdrop_color: mediaBackdropColor } : {}),
     ...(gallery.length ? { food_gallery: gallery } : {}),
     ...(resolvedIdentity.currencyCode
       ? { currency_code: resolvedIdentity.currencyCode }
@@ -203,25 +141,11 @@ export async function readKitchenWorkspaceTargets(
     event,
     'Sign in to view Kitchen targets.'
   )
-  const { appId, ecosystem, isGlobal } = useFireUXConfig()
   const db = getRuntimeFirestore()
-  const currentMembershipRef = db.doc(`apps/${appId}/users/${uid}`)
-  const currentMembershipSnapshot = await currentMembershipRef.get()
-  const currentMembership = currentMembershipSnapshot.data() || {}
-  const currentRole = text(currentMembership.role)
-  if (
-    !currentMembershipSnapshot.exists ||
-    (currentRole !== 'admin' && currentRole !== 'user')
-  ) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'Current App membership is required.',
-    })
-  }
 
   const indexedTargetIds = await resolveKitchenWorkspaceTargetIds(uid)
   if (!indexedTargetIds.length) {
-    return { ok: true, appId, family: 'kitchen', items: [] }
+    return { ok: true, family: 'kitchen', items: [] }
   }
 
   const rootSnapshots = await db.getAll(
@@ -230,7 +154,6 @@ export async function readKitchenWorkspaceTargets(
   const roots = new Map(
     rootSnapshots.map((snapshot) => [snapshot.id, snapshot])
   )
-  const scopes = new Map<string, CanonicalKitchenScope>()
   const relatedRefs = new Map<string, ReturnType<typeof db.doc>>()
 
   for (const id of indexedTargetIds) {
@@ -238,14 +161,9 @@ export async function readKitchenWorkspaceTargets(
     if (!rootSnapshot?.exists) {
       conflict(`Kitchen target ${id} is missing its canonical root.`)
     }
-    const root = rootSnapshot.data() || {}
-    const scope = readCanonicalKitchenScope(id, root, ecosystem)
-    scopes.set(id, scope)
   }
 
-  const targetIds = isGlobal
-    ? indexedTargetIds
-    : indexedTargetIds.filter((id) => scopes.get(id)?.appId === appId)
+  const targetIds = indexedTargetIds
   for (const id of targetIds) {
     for (const ref of [
       db.doc(`kitchens/${id}/team/${uid}`),
@@ -262,7 +180,6 @@ export async function readKitchenWorkspaceTargets(
   const items = targetIds.map((id) => {
     const rootSnapshot = roots.get(id)!
     const root = rootSnapshot.data() || {}
-    const scope = scopes.get(id)!
     const teamPath = `kitchens/${id}/team/${uid}`
     const placeId = id
     const placePath = `${PlaceStorage.collection}/${placeId}`
@@ -293,9 +210,8 @@ export async function readKitchenWorkspaceTargets(
       canWrite: teamRole === 'owner' || teamRole === 'operator',
       root,
       place: placeSnapshot.data() || {},
-      scope,
     })
   })
 
-  return { ok: true, appId, family: 'kitchen', items }
+  return { ok: true, family: 'kitchen', items }
 }

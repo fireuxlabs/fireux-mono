@@ -9,19 +9,17 @@ export function resolveKitchenDetailPresentation(
   kitchen: Kitchen,
   place: Place
 ): KitchenDetailPresentation {
-  const name = text(kitchen.identity.display_name) || place.name
-  const tagline = text(kitchen.identity.tagline) || text(place.brand_tagline)
-  const image =
-    text(kitchen.assets.image) || text(place.cover_image || place.image_url)
-  const logo = text(kitchen.assets.logo) || text(place.logo_image)
-  const backdrop = kitchen.assets.backdrop_color || place.media_backdrop_color
+  const name = place.name
+  const tagline = text(place.brand_tagline)
+  const image = text(place.cover_image || place.image_url)
+  const logo = text(place.logo_image)
+  const backdrop = place.media_backdrop_color
 
   return {
     ...base,
     id: kitchen.id,
     slug: kitchen.slug,
     visible: kitchen.visibility,
-    management_mode: kitchen.management.mode,
     name,
     display_name: name,
     ...(text(place.short_name) ? { short_name: text(place.short_name) } : {}),

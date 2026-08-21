@@ -14,6 +14,8 @@ import {
   type FireuxServerHandler,
 } from 'fireux-core/config/module/module-helpers'
 
+// Changes to this registry automatically restart Nuxt through the shared App configuration,
+// keeping generated Nitro imports clear of moved or deleted handler paths.
 const baseServerHandlers = [
   {
     route: '/api/supply/suppliers',
@@ -54,16 +56,6 @@ const baseServerHandlers = [
     route: '/api/kitchens/:kitchen/fulfilment',
     method: 'get',
     handler: './runtime/server/api/kitchens/[kitchen]/fulfilment.get',
-  },
-  {
-    route: '/api/kitchens/:kitchen/identity',
-    method: 'get',
-    handler: './runtime/server/api/kitchens/[kitchen]/identity.get',
-  },
-  {
-    route: '/api/kitchens/:kitchen/identity',
-    method: 'patch',
-    handler: './runtime/server/api/kitchens/[kitchen]/identity.patch',
   },
   {
     route: '/api/kitchens/:kitchen/menu-presentation',

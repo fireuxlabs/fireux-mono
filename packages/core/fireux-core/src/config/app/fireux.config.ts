@@ -17,6 +17,7 @@ import { moduleName } from './modules'
 import {
   configureAppModules,
   configureDashboardPanelDefaults,
+  configureFireuxModuleRestartWatch,
   configureCoreCss,
   configureIconServerBundle,
   configureNitroBaseline,
@@ -58,6 +59,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   configureProjectPublicAssets(nuxt)
   configureNuxtRuntimeDefaults(nuxt)
   configureAppModules(nuxt, app, appDatabaseRuntimeModule)
+  configureFireuxModuleRestartWatch(nuxt)
   configureIconServerBundle(nuxt)
   configureDashboardPanelDefaults(nuxt)
   configureCoreCss(nuxt)

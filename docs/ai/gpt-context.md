@@ -191,6 +191,10 @@ requirement, report the exact missing seam before broad edits.
   for readiness. Use `pnpm dev:<app> -- --checked` when a fresh start must also
   run `nuxi prepare` and the app's route smoke suite; preparation and smoke are
   verification work, not a prerequisite for every local edit.
+- Shared App configuration watches each enabled FireUX package module entrypoint
+  and its current `src/config/module` sources. Registration edits therefore
+  restart Nuxt and regenerate Nitro imports instead of leaving a running App
+  bound to moved or deleted handlers.
 - Prefer user-owned IDE or toolbar servers. Start one from an agent task only
   when none exists and live verification needs it. Replace it with the explicit
   `pnpm kill:<app>` command only when the user asks or a concrete runtime change

@@ -72,7 +72,7 @@ export async function run(ctx) {
   )
 
   for (const [key, model] of Object.entries(source).filter(([key]) =>
-    ['kitchen', 'supplier', 'property', 'portfolio', 'blank'].includes(key)
+    ['supplier', 'property', 'portfolio', 'blank'].includes(key)
   )) {
     if (!/management:\s*FireuxEntityManagementDefaults/.test(model)) {
       violations.push(
@@ -88,6 +88,17 @@ export async function run(ctx) {
         `${relativeFiles[key]} still stores the retired App-scope shape`
       )
     }
+  }
+
+  if (!/appSupport:\s*['"]none['"]/.test(source.kitchen)) {
+    violations.push(
+      `${relativeFiles.kitchen} must declare that Apps do not own Kitchen`
+    )
+  }
+  if (/\bmanagement\s*:|FireuxEntityManagement/.test(source.kitchen)) {
+    violations.push(
+      `${relativeFiles.kitchen} must not store the shared management contract`
+    )
   }
 
   if (
@@ -129,7 +140,6 @@ export async function run(ctx) {
   }
 
   for (const key of [
-    'kitchenWriter',
     'supplierWriter',
     'propertyWriter',
     'portfolioWriter',
@@ -179,25 +189,21 @@ export async function run(ctx) {
     )
   }
 
+  if (/FireuxEntityManagement|\bmanagement\s*:/.test(source.kitchenTargetModel)) {
+    violations.push(
+      `${relativeFiles.kitchenTargetModel} must not project Kitchen management`
+    )
+  }
   if (
-    !/management:\s*Exclude<FireuxEntityManagement, \{ mode: 'root' \}>/.test(
-      source.kitchenTargetModel
+    /readFireuxEntityManagement|resolveFireuxEntityManagementAppId|\bmanagement\s*:/.test(
+      source.kitchenTargetApi
     )
   ) {
     violations.push(
-      `${relativeFiles.kitchenTargetModel} does not preserve the exact attached-management union`
+      `${relativeFiles.kitchenTargetApi} must resolve Kitchen targets from Team authority without App management`
     )
   }
-  if (!/management:\s*input\.scope\.management/.test(source.kitchenTargetApi)) {
-    violations.push(
-      `${relativeFiles.kitchenTargetApi} rewrites the canonical management DTO`
-    )
-  }
-  for (const key of [
-    'placeAuthority',
-    'kitchenThemeEditor',
-    'kitchenSproochliEditor',
-  ]) {
+  for (const key of ['placeAuthority']) {
     if (
       !/readFireuxEntityManagement/.test(source[key]) ||
       /\.app_scope\b/.test(source[key])

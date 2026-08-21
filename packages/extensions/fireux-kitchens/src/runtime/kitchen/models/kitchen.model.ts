@@ -3,11 +3,8 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import type { WorkspaceTheme } from 'fireux-core/types/theme'
+import type { Theme } from 'fireux-core/types/theme'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './order.model.ts'
@@ -34,8 +31,11 @@ type WidenLiteral<T> = T extends string
  * Child scope: /kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - The root owns Kitchen identity, management, configuration, Team, and operations.
- * - Management may associate the Kitchen with an App but never relocates it.
+ * - The root owns Kitchen lifecycle, operational configuration,
+ *   Team, and operations.
+ * - The Kitchen id is the linked Place id. Place owns venue identity and media;
+ *   Kitchen stores neither copied identity nor a redundant place_id.
+ * - Kitchen Team is the sole Kitchen Workspace access authority.
  * - Chef is an optional User-owned profile, not Kitchen authority.
  */
 export const KitchenStorage = {
@@ -43,43 +43,58 @@ export const KitchenStorage = {
   path: 'kitchens/{kitchenId}',
   collection: 'kitchens',
   idParam: 'kitchenId',
-  operationsRoot: 'kitchens/{kitchenId}',
-  operations: [
-    'overview',
-    'identity',
-    'menus',
-    'ingredients',
-    'mise',
-    'recipes',
-    'dishes',
-    'stations',
-    'suppliers',
-    'team',
-    'tables',
-    'orders',
-    'devices',
-  ],
+  identity: {
+    owner: 'Place',
+    path: 'places/{kitchenId}',
+    relation: 'same-id',
+  },
+  authority: {
+    owner: 'KitchenTeamMember',
+    path: 'kitchens/{kitchenId}/team/{memberId}',
+    relation: 'active-exact-user',
+  },
+  children: {
+    dishes: 'kitchens/{kitchenId}/dishes/{dishId}',
+    ingredients:
+      'kitchens/{kitchenId}/ingredients/{kitchenIngredientId}',
+    menus: 'kitchens/{kitchenId}/menus/{menuId}',
+    menuUploads: 'kitchens/{kitchenId}/menu-uploads/{uploadId}',
+    miseTasks: 'kitchens/{kitchenId}/mise-tasks/{taskId}',
+    orders: 'kitchens/{kitchenId}/orders/{orderId}',
+    prepItems: 'kitchens/{kitchenId}/prep-items/{prepItemId}',
+    recipes: 'kitchens/{kitchenId}/recipes/{recipeId}',
+    sales: 'kitchens/{kitchenId}/sales/{saleId}',
+    stations: 'kitchens/{kitchenId}/stations/{stationId}',
+    supplierIngredients:
+      'kitchens/{kitchenId}/supplier-ingredients/{supplierIngredientId}',
+    team: 'kitchens/{kitchenId}/team/{memberId}',
+    teamRequests: 'kitchens/{kitchenId}/team-requests/{requestId}',
+  },
 } as const
 
-export type KitchenOperationKey = (typeof KitchenStorage.operations)[number]
+export type KitchenChildKey = keyof typeof KitchenStorage.children
 
-/** @deprecated Read-only compatibility for unmigrated records and consumers. */
-export type KitchenImageShade = 'light' | 'dark' | 'none'
+/**
+ * Product capabilities are not Firestore collection names. A capability may
+ * coordinate several Kitchen children or derive evidence from them.
+ */
+export const KitchenCapabilities = [
+  'dishes',
+  'drinks',
+  'ingredients',
+  'menus',
+  'prep',
+  'service',
+  'recipes',
+  'stations',
+  'suppliers',
+  'team',
+  'sales',
+] as const
 
-export type KitchenIdentity = {
-  /** Sparse override; empty means inherit the linked Place name. */
-  display_name: string
-  tagline: string
-}
+export type KitchenCapabilityKey = (typeof KitchenCapabilities)[number]
 
-export type KitchenMediaBackdropColor = string
-
-export type KitchenAssets = {
-  image: string
-  logo: string
-  wordmark: string
-  backdrop_color: KitchenMediaBackdropColor
-}
+export type KitchenStatus = 'active' | 'inactive' | 'archived'
 
 export type KitchenMenusConfig = {
   /** Confirmed Kitchen-specific knowledge used by Menu AI and operators. */
@@ -90,7 +105,6 @@ export type KitchenMenusConfig = {
   primary_menu_id?: string
   specials_enabled?: boolean
   specials_menu_id?: string
-  style?: Partial<PageStyle>
 }
 
 export type KitchenOrdersConfig = {
@@ -101,10 +115,6 @@ export type KitchenOrdersConfig = {
   printing?: {
     ticket_device_id: string
   }
-}
-
-export type KitchenTablesConfig = {
-  count: number
 }
 
 export type KitchenDeliveryZone = {
@@ -156,21 +166,8 @@ export const KitchenEntity = defineFireuxEntity({
 export const KitchenDefaults = {
   id: '',
   slug: '',
+  status: 'active' as KitchenStatus,
   visibility: false,
-  management: FireuxEntityManagementDefaults,
-
-  identity: {
-    display_name: '',
-    tagline: '',
-  } as KitchenIdentity,
-
-  assets: {
-    image: '',
-    logo: '',
-    wordmark: '',
-    backdrop_color: '',
-  } as KitchenAssets,
-
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -182,17 +179,10 @@ export const KitchenDefaults = {
   },
 } as const
 
-export type Kitchen = Omit<
-  WidenLiteral<typeof KitchenDefaults>,
-  'identity' | 'assets'
-> & {
-  identity: KitchenIdentity
-  assets: KitchenAssets
-  management: FireuxEntityManagement
-  theme?: WorkspaceTheme
+export type Kitchen = WidenLiteral<typeof KitchenDefaults> & {
+  theme?: Theme
   menus?: KitchenMenusConfig
   orders?: KitchenOrdersConfig
-  tables?: KitchenTablesConfig
   fulfilment?: KitchenFulfilmentConfig
   integrations?: {
     sproochli?: SproochliAttachmentConfig
@@ -200,28 +190,18 @@ export type Kitchen = Omit<
 }
 
 export type KitchenCreateInput = Partial<
-  Pick<Kitchen, 'id' | 'slug' | 'identity' | 'assets' | 'management'>
+  Pick<Kitchen, 'id' | 'slug' | 'status'>
 >
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
     | 'slug'
-    | 'identity'
-    | 'assets'
+    | 'status'
     | 'visibility'
-    | 'management'
     | 'theme'
     | 'menus'
     | 'orders'
-    | 'tables'
     | 'fulfilment'
   >
-> & {
-  'identity.display_name'?: string
-  'identity.tagline'?: string
-  'assets.image'?: string
-  'assets.logo'?: string
-  'assets.wordmark'?: string
-  'assets.backdrop_color'?: KitchenMediaBackdropColor
-}
+>

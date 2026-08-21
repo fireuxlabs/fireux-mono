@@ -25,10 +25,14 @@
                 v-if="displayKitchen?.sproochli?.enabled"
                 :sproochli="displayKitchen.sproochli"
               />
-              <KitchenDetailIdentityEditor
-                v-if="canEditIdentity && displayKitchen"
-                :kitchen="displayKitchen"
-                @saved="applyIdentity"
+              <UButton
+                v-if="canEditPlace && kitchen"
+                :to="`/places/${encodeURIComponent(kitchen.id)}/edit`"
+                label="Edit identity"
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="soft"
+                size="sm"
               />
             </div>
           </nav>
@@ -83,18 +87,14 @@
 
 <script setup lang="ts">
 import { useFetch } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import type {
   Kitchen,
   KitchenFulfilmentConfig,
 } from '../../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type {
-  KitchenDetailPresentation,
-  KitchenIdentityEdit,
-} from '../../models/kitchen-detail.model.ts'
+import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
 import type { KitchenDetailOutcome } from '../../composables/useKitchenDetail'
 
 const props = defineProps<{
@@ -110,49 +110,11 @@ const emit = defineEmits<{
 
 const kitchen = computed(() => props.kitchen)
 const place = computed(() => props.place)
-const identityOverride = ref<KitchenIdentityEdit | null>(null)
-watch(
-  () => props.presentation,
-  () => {
-    identityOverride.value = null
-  }
-)
-const displayKitchen = computed<KitchenDetailPresentation | null>(() => {
-  if (!props.presentation) return null
-  const identity = identityOverride.value
-  if (!identity) return props.presentation
-  const displayName =
-    identity.display_name ||
-    props.presentation.name ||
-    props.presentation.display_name
-  const tagline = identity.tagline || props.presentation.brand_tagline
-  const imageUrl =
-    identity.card_image_url ||
-    props.presentation.display_image_url ||
-    props.presentation.image_url
-  return {
-    ...props.presentation,
-    name: displayName,
-    display_name: displayName,
-    ...(tagline ? { tagline, brand_tagline: tagline } : {}),
-    ...(identity.logo_image_url
-      ? { logo_image_url: identity.logo_image_url }
-      : {}),
-    ...(imageUrl ? { image_url: imageUrl, display_image_url: imageUrl } : {}),
-  }
-})
-const { appId, role } = useFireUXConfig()
+const displayKitchen = computed(() => props.presentation)
 const { isAdmin, isDeveloper } = useUser()
-const canEditIdentity = computed(() =>
-  Boolean(
-    (isAdmin.value || isDeveloper.value) &&
-      (role === 'global' || props.presentation?.management_app_id === appId)
-  )
+const canEditPlace = computed(() =>
+  Boolean(isAdmin.value || isDeveloper.value)
 )
-const applyIdentity = (identity: KitchenIdentityEdit) => {
-  identityOverride.value = identity
-  emit('refresh')
-}
 const locator = computed(() => String(props.presentation?.slug || '').trim())
 const kitchenName = computed(() =>
   String(

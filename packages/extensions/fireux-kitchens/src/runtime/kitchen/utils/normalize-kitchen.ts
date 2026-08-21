@@ -2,14 +2,9 @@ import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocume
 import {
   KitchenDefaults,
   type Kitchen,
-  type KitchenAssets,
-  type KitchenIdentity,
+  type KitchenStatus,
 } from '../models/kitchen.model.ts'
-import {
-  readKitchenIdentity,
-  readKitchenManagementTarget,
-  readKitchenVisibility,
-} from './kitchen-spine.ts'
+import { readKitchenVisibility } from './kitchen-spine.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -19,7 +14,7 @@ const record = (value: unknown): Record<string, unknown> =>
 export function normalizeKitchen(
   idValue: unknown,
   value: unknown,
-  ecosystem = ''
+  _ecosystem = ''
 ): Kitchen | null {
   const id = String(idValue ?? '').trim()
   const source = record(value)
@@ -28,28 +23,15 @@ export function normalizeKitchen(
     .toLowerCase()
   if (!isFirestoreDocumentId(id) || !slug) return null
 
-  const identity = readKitchenIdentity(source)
-  const management = readKitchenManagementTarget(source, ecosystem)
+  const status = String(source.status ?? '').trim()
+  if (!['active', 'inactive', 'archived'].includes(status)) return null
 
   return {
     ...KitchenDefaults,
     ...source,
     id,
     slug,
+    status: status as KitchenStatus,
     visibility: readKitchenVisibility(source),
-    management:
-      management.mode === 'app'
-        ? { mode: 'app', app_id: management.appId }
-        : { mode: management.mode },
-    identity: {
-      display_name: identity.displayName,
-      tagline: identity.tagline,
-    } satisfies KitchenIdentity,
-    assets: {
-      image: identity.imageUrl,
-      logo: identity.logoImageUrl,
-      wordmark: identity.wordmarkImageUrl,
-      backdrop_color: identity.mediaBackdropColor,
-    } satisfies KitchenAssets,
   } as Kitchen
 }

@@ -1,6 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
 const record = (value: unknown): Record<string, unknown> | null =>
@@ -14,17 +13,7 @@ function fail(message: string): never {
 
 const allowed = new Set([
   'slug',
-  'identity.display_name',
-  'identity.tagline',
-  'identity.card_image_url',
-  'identity.logo_image_url',
-  'identity.wordmark_no_logo_image_url',
-  'identity.wordmark_image_url',
-  'identity.media_backdrop_color',
-  'assets.image',
-  'assets.logo',
-  'assets.wordmark',
-  'assets.backdrop_color',
+  'status',
   'menus.currency_format',
   'menus.show_currency',
   'menus.available',
@@ -37,7 +26,7 @@ const allowed = new Set([
   'tables.count',
   'fulfilment',
 ])
-const groups = new Set(['identity', 'assets', 'menus', 'orders', 'tables'])
+const groups = new Set(['menus', 'orders', 'tables'])
 
 function flatten(source: Record<string, unknown>) {
   const out: Record<string, unknown> = {}
@@ -96,25 +85,12 @@ export function parseKitchenUpdate(value: unknown) {
       out.slug = validation.slug
       continue
     }
-    if (key.startsWith('identity.')) {
-      if (key === 'identity.media_backdrop_color') {
-        const color = normalizeHexColor(raw)
-        if (color === null) fail('Media backdrop must be a 6-digit hex colour.')
-        out[key] = color || FieldValue.delete()
-      } else {
-        out[key] = sparseString(raw, 'Kitchen identity value', 2048)
+    if (key === 'status') {
+      const status = boundedString(raw, 'Kitchen status', 20)
+      if (!['active', 'inactive', 'archived'].includes(status)) {
+        fail('Kitchen status must be active, inactive or archived.')
       }
-      continue
-    }
-    if (key.startsWith('assets.')) {
-      if (key === 'assets.backdrop_color') {
-        const color = normalizeHexColor(raw)
-        if (color === null)
-          fail('Kitchen backdrop must be a 6-digit hex colour.')
-        out[key] = color || FieldValue.delete()
-      } else {
-        out[key] = sparseString(raw, 'Kitchen asset URL', 2048)
-      }
+      out.status = status
       continue
     }
     if (key === 'menus.currency_format') {

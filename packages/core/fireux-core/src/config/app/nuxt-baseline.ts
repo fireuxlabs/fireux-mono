@@ -2,9 +2,10 @@
 import EslintModule from '@nuxt/eslint'
 import type { NuxtConfig } from '@nuxt/schema'
 import NuxtfireModule from 'fireux-nuxtfire'
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { withDefaultAppModules } from './modules'
+import { existsSync, readdirSync } from 'node:fs'
+import { createRequire } from 'node:module'
+import { dirname, resolve } from 'node:path'
+import { moduleName, withDefaultAppModules } from './modules'
 import type { FireuxAppConfig } from './types'
 
 export const FIREUX_PAGE_TRANSITION = {
@@ -80,6 +81,38 @@ export function configureAppModules(
     '@vite-pwa/nuxt',
     ...withDefaultAppModules(app.modules),
   ] as NonNullable<NuxtConfig['modules']>
+}
+
+export function configureFireuxModuleRestartWatch(nuxt: NuxtConfig) {
+  const require = createRequire(resolve(process.cwd(), 'package.json'))
+  const watch = (nuxt.watch ||= [])
+  const moduleNames = (nuxt.modules || [])
+    .map(moduleName)
+    .filter((name): name is string => Boolean(name?.startsWith('fireux-')))
+
+  for (const name of moduleNames) {
+    let modulePath = ''
+    try {
+      modulePath = require.resolve(name)
+    } catch {
+      continue
+    }
+
+    const configDirectory = resolve(dirname(modulePath), 'config/module')
+    const configSources = existsSync(configDirectory)
+      ? collectFiles(configDirectory)
+      : []
+    for (const source of [modulePath, ...configSources]) {
+      if (!watch.includes(source)) watch.push(source)
+    }
+  }
+}
+
+function collectFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const source = resolve(directory, entry.name)
+    return entry.isDirectory() ? collectFiles(source) : [source]
+  })
 }
 
 export function configureIconServerBundle(nuxt: NuxtConfig) {

@@ -1,7 +1,7 @@
 # Firestore Entity stack family
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-08-21
+Ref: f3c707663
 Role: map, not canon
 
 ## Purpose
@@ -94,8 +94,11 @@ only records and operations it genuinely owns.
 Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root
 Workspace Entities.
 
-- The root document owns identity, lifecycle, presentation, and the
-  `management` relationship.
+- The root document owns its lifecycle, operational presentation, and the
+  `management` relationship. It normally owns identity too. A Place-backed
+  Workspace Entity is the explicit exception: its root id is the linked Place
+  id and Place owns the shared venue identity. Kitchen must not copy that
+  identity or store a redundant `place_id`.
 - `management` selects the hosting product relationship: `root`, `workspace`,
   or a dedicated `app`. It never relocates the Entity.
 - `team/{uid}` is Workspace membership and access authority. A Team record may
@@ -157,6 +160,13 @@ root Workspace Entity even when one App is its current management host.
   it does not duplicate that Entity's content tree.
 - Directory entries, detail responses, cards, and joined views are transport
   Shapes. They do not replace or rename the canonical Entity.
+- A public Entity route is a server-owned read boundary, not permission for the
+  page to fetch protected records and hide them visually. It may return a
+  canonical readable root, named related canonical Entities, and a bounded
+  presentation Shape. Protected children are absent from that response and
+  require their own authorization. Kitchen detail proves this contract with
+  one canonical Kitchen, its required same-id Place, and a joined presentation;
+  Kitchen Team and operational children remain outside the Entity route.
 
 ## Firestore composable stack
 

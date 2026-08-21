@@ -68,37 +68,23 @@
     </CollectionDirectoryState>
 
     <div v-else-if="cardsFiltered.length" class="kitchen-directory__results">
-      <section
-        v-for="group in kitchenGroups"
-        :key="group.mode"
-        class="kitchen-directory__group"
-      >
-        <header class="kitchen-directory__group-header">
-          <div>
-            <p>{{ group.label }}</p>
-            <h2>{{ group.title }}</h2>
-          </div>
-          <span>{{ group.cards.length }}</span>
-        </header>
-
-        <KitchenCollectionList :cards="group.cards" :variant="variant">
-          <template #pill="{ card }">
-            <KitchenCardsPill
-              v-bind="card"
-              :link="linkEnabled"
-              :show-badges="showBadges"
-            />
-          </template>
-          <template #cell="{ card }">
-            <KitchenCardsCell
-              v-bind="card"
-              :link="linkEnabled"
-              :show-badges="showBadges"
-              directory
-            />
-          </template>
-        </KitchenCollectionList>
-      </section>
+      <KitchenCollectionList :cards="cardsFiltered" :variant="variant">
+        <template #pill="{ card }">
+          <KitchenCardsPill
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+          />
+        </template>
+        <template #cell="{ card }">
+          <KitchenCardsCell
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+            directory
+          />
+        </template>
+      </KitchenCollectionList>
 
       <UAlert
         v-if="loadMoreError"
@@ -273,29 +259,6 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
   makeCell,
 })
 
-const groupDefinitions = [
-  { mode: 'root', label: 'Root', title: 'Root kitchens' },
-  { mode: 'workspace', label: 'Workspace', title: 'Workspace kitchens' },
-  { mode: 'app', label: 'App', title: 'App kitchens' },
-] as const
-
-const kitchenModeById = computed(
-  () =>
-    new Map(
-      visibleItems.value.map((kitchen) => [kitchen.id, kitchen.management_mode])
-    )
-)
-const kitchenGroups = computed(() =>
-  groupDefinitions
-    .map((group) => ({
-      ...group,
-      cards: cardsFiltered.value.filter(
-        (card) => kitchenModeById.value.get(card.id) === group.mode
-      ),
-    }))
-    .filter((group) => group.cards.length)
-)
-
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && !hasMore.value && totalCount.value > 15
@@ -310,48 +273,12 @@ const countLabel = computed(() =>
 <style scoped>
 .kitchen-directory__results {
   display: grid;
-  gap: calc(var(--spacing) * 6);
-}
-
-.kitchen-directory__group {
-  display: grid;
-  gap: calc(var(--spacing) * 3);
-}
-
-.kitchen-directory__group-header {
-  display: flex;
-  gap: calc(var(--spacing) * 4);
-  align-items: end;
-  justify-content: space-between;
-  padding-bottom: calc(var(--spacing) * 2);
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.kitchen-directory__group-header p,
-.kitchen-directory__group-header h2 {
-  margin: 0;
-}
-
-.kitchen-directory__group-header p {
-  color: var(--ui-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-}
-
-.kitchen-directory__group-header h2 {
-  color: var(--ui-text-highlighted);
-  font-size: var(--text-xl);
-}
-
-.kitchen-directory__group-header > span {
-  color: var(--ui-text-muted);
-  font-variant-numeric: tabular-nums;
+  gap: calc(var(--spacing) * 5);
 }
 
 .kitchen-directory__more {
   display: flex;
   justify-content: center;
 }
+
 </style>

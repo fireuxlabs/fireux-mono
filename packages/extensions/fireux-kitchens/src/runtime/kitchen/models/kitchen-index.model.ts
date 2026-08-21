@@ -4,21 +4,18 @@
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
   KitchenFulfilmentConfig,
-  KitchenMediaBackdropColor,
   KitchenMenusConfig,
   KitchenOrdersConfig,
-  KitchenTablesConfig,
 } from './kitchen.model.ts'
+import type { MediaBackdropColor } from 'fireux-places/runtime/place/models/place.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import type { WorkspaceTheme } from 'fireux-core/types/theme'
+import type { Theme } from 'fireux-core/types/theme'
 
-export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
+export const KITCHEN_WORKSPACE_TARGET_LIMIT = 50
 
 export type KitchenWorkspaceTargetItem = {
   id: string
   can_write: boolean
-  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   place_id: string
   slug: string
   visibility: boolean
@@ -28,15 +25,14 @@ export type KitchenWorkspaceTargetItem = {
     image_url: string
     card_image_url?: string
     logo_image_url?: string
-    media_backdrop_color?: KitchenMediaBackdropColor
+    media_backdrop_color?: MediaBackdropColor
     wordmark_no_logo_image_url?: string
     wordmark_image_url?: string
     gallery: string[]
   }
   menus: KitchenMenusConfig
-  workspace_theme?: WorkspaceTheme
+  theme?: Theme
   orders?: KitchenOrdersConfig
-  tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig
   sproochli: SproochliAttachmentConfig
   display_name: string
@@ -47,7 +43,7 @@ export type KitchenWorkspaceTargetItem = {
   formatted_address?: string
   short_address?: string
   image_url?: string
-  media_backdrop_color?: KitchenMediaBackdropColor
+  media_backdrop_color?: MediaBackdropColor
   food_gallery?: string[]
   currency_code?: string
   claimed_by?: string
@@ -61,7 +57,6 @@ export type KitchenWorkspaceTargetItem = {
 
 export type KitchenWorkspaceTargetsResponse = {
   ok: true
-  appId: string
   family: 'kitchen'
   items: KitchenWorkspaceTargetItem[]
 }

@@ -41,29 +41,17 @@ import {
 } from 'fireux-places/runtime/place/composables/firestore/usePlace'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import { useMenuServiceComputed } from '../../../menu/composables/firestore/useMenu'
-import {
-  readKitchenIdentity,
-  readKitchenOperationHours,
-} from '../../utils/kitchen-spine'
+import { readKitchenOperationHours } from '../../utils/kitchen-spine'
 import { weekdayTimeLines } from '../../../utils/weekday-time'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
 }>()
 
-const placeId = computed(() => String(props.kitchen?.place_id || '').trim())
+const placeId = computed(() => String(props.kitchen?.id || '').trim())
 const { place, pending } = usePlaceFetch(placeId)
 const { profile } = usePlaceInterface()
-const placeWithKitchenLogoTone = computed(() => {
-  if (!place.value) return null
-  const kitchenIdentity = readKitchenIdentity(props.kitchen)
-
-  return {
-    ...place.value,
-    image_shade: kitchenIdentity.imageShade || place.value.image_shade,
-  }
-})
-const placeProfile = computed(() => profile(placeWithKitchenLogoTone.value))
+const placeProfile = computed(() => profile(place.value))
 const operationHours = computed(() => readKitchenOperationHours(props.kitchen))
 const operationHourLines = computed(() =>
   weekdayTimeLines(operationHours.value)

@@ -117,6 +117,34 @@ export async function run(ctx) {
   const violations = []
   const emptyHooks = findEmptyConfigurationHooks(repoRoot)
 
+  const appBaselinePath = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/nuxt-baseline.ts'
+  )
+  const fireuxConfigPath = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/fireux.config.ts'
+  )
+  const appBaselineSource = readFileSync(appBaselinePath, 'utf8')
+  const fireuxConfigSource = readFileSync(fireuxConfigPath, 'utf8')
+
+  if (
+    !/export function configureFireuxModuleRestartWatch/.test(appBaselineSource) ||
+    !/name\?\.startsWith\('fireux-'\)/.test(appBaselineSource) ||
+    !/resolve\(dirname\(modulePath\), 'config\/module'\)/.test(appBaselineSource) ||
+    !/collectFiles\(configDirectory\)/.test(appBaselineSource) ||
+    !/configureFireuxModuleRestartWatch\(nuxt\)/.test(fireuxConfigSource)
+  ) {
+    throw new Error(
+      [
+        '[guard] ❌ FireUX package module restart watching is incomplete.',
+        '- Resolve each enabled FireUX package before Nuxt starts.',
+        '- Watch its src/module.ts and current src/config/module files through defineFireuxConfig.',
+        '- Nuxt must regenerate Nitro handlers when package registrations move during development.',
+      ].join('\n')
+    )
+  }
+
   if (emptyHooks.length) {
     throw new Error(
       [

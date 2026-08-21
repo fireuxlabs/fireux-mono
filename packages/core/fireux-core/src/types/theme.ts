@@ -16,11 +16,21 @@ export const APP_PALETTE_KEYS = [
   'accent_contrast',
 ] as const
 
+export const THEME_PALETTE_KEYS = [
+  'canvas',
+  'text',
+  'accent',
+  'accent_contrast',
+] as const
+
 export type WorkspacePalette = Record<(typeof CONSOLE_PALETTE_KEYS)[number], string>
 export type AppPalette = Record<(typeof APP_PALETTE_KEYS)[number], string>
+export type ThemePalette = Record<(typeof THEME_PALETTE_KEYS)[number], string>
 /** Sparse App-owned delta over the Workspace palette. */
 export type AppPaletteLayer = Partial<AppPalette>
 export type WorkspaceTheme = { palette: WorkspacePalette }
+/** Domain-owned visual theme. Rendering surfaces consume it but do not own it. */
+export type Theme = { palette: ThemePalette }
 /** Complete reviewed palette authored by App source. */
 export type AppTheme = {
   palette: AppPalette

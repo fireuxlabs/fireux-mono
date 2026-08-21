@@ -1,9 +1,9 @@
 import { computed, type Ref } from 'vue'
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
 import {
-  readKitchenIdentity,
   readKitchenVisibility,
 } from '../../../../utils/kitchen-spine'
+import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
 
 export function useKitchenComputed(
   kitchen?: Ref<Partial<Kitchen> | null | undefined>
@@ -16,7 +16,7 @@ export function useKitchenComputed(
         | undefined
   )
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
-  const identity = computed(() => readKitchenIdentity(view.value))
+  const identity = computed(() => readKitchenPresentationIdentity(view.value))
   const visibility = computed(() => readKitchenVisibility(view.value))
   const hasMissingName = computed(
     () => !String(identity.value.displayName || view.value?.name || '').trim()

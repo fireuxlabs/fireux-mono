@@ -208,7 +208,6 @@ if (
       !scenario.orders.length ||
       !scenario.stations.length ||
       !scenario.miseTasks.length ||
-      Number(scenario.kitchen.tables.count) <= 0 ||
       !sameStringSet(
         scenario.supplierIngredientLinks.map((link) => link.supplier_id),
         miseboxDemoSupplierIds

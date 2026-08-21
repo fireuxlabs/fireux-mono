@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
@@ -12,8 +11,6 @@ import type {
   KitchenFulfilmentConfig,
   KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,
-  KitchenMediaBackdropColor,
-  KitchenImageShade,
   KitchenPaymentRequirement,
 } from '../models/kitchen.model.ts'
 import {
@@ -21,10 +18,6 @@ import {
   readPlaceBusinessHours,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOrderType } from '../models/order.model.ts'
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
 import {
   kitchenOrderTypes,
   readDeliveryZones,
@@ -136,17 +129,17 @@ export const kitchenPaymentMethodsForOrderType = (
     .filter((policy) => policy.order_types.includes(orderType))
     .map((policy) => policy.method)
 export const composeKitchenScopedSurface = (
-  publicKitchen: KitchenSpineRecord,
+  rootKitchen: KitchenSpineRecord,
   scopedKitchen: KitchenSpineRecord
 ) => {
-  const publicRecord = record(publicKitchen)
+  const rootRecord = record(rootKitchen)
   const scopedRecord = record(scopedKitchen)
 
-  if (!hasKeys(publicRecord)) return null
-  if (!hasKeys(scopedRecord)) return publicRecord
+  if (!hasKeys(rootRecord)) return null
+  if (!hasKeys(scopedRecord)) return rootRecord
 
   const composed: Record<string, unknown> = {
-    ...publicRecord,
+    ...rootRecord,
     ...(Array.isArray(scopedRecord.operator_ids)
       ? { operator_ids: scopedRecord.operator_ids }
       : {}),
@@ -157,50 +150,13 @@ export const composeKitchenScopedSurface = (
       ? { join_requests: scopedRecord.join_requests }
       : {}),
   }
-  if (Object.hasOwn(publicRecord, 'sproochli')) {
-    composed.sproochli = readSproochliAttachmentConfig(publicRecord.sproochli)
+  if (Object.hasOwn(rootRecord, 'sproochli')) {
+    composed.sproochli = readSproochliAttachmentConfig(rootRecord.sproochli)
   } else {
     delete composed.sproochli
   }
 
   return composed
-}
-
-export const readKitchenManagementTarget = (
-  value: KitchenSpineRecord,
-  ecosystem = ''
-) => {
-  const source = record(value)
-  const management = readFireuxEntityManagement(source.management) || {
-    mode: 'root' as const,
-  }
-  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
-
-  return {
-    mode: management.mode,
-    appId,
-    hasDedicatedApp: management.mode === 'app',
-  }
-}
-
-export const readKitchenIdentity = (value: KitchenSpineRecord) => {
-  const source = record(value)
-  const identity = record(source.identity)
-  const assets = record(source.assets)
-
-  return {
-    displayName: text(identity.display_name),
-    tagline: text(identity.tagline),
-    imageUrl: text(assets.image),
-    cardImageUrl: text(assets.image),
-    logoImageUrl: text(assets.logo),
-    wordmarkNoLogoImageUrl: text(assets.wordmark),
-    wordmarkImageUrl: text(assets.wordmark),
-    mediaBackdropColor: readMediaBackdropColor(assets.backdrop_color) as
-      | KitchenMediaBackdropColor
-      | '',
-    imageShade: 'none' as KitchenImageShade,
-  }
 }
 
 export const readKitchenVisibility = (value: KitchenSpineRecord) => {
@@ -211,14 +167,11 @@ export const readKitchenVisibility = (value: KitchenSpineRecord) => {
 export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
   const source = record(value)
   const menus = record(source.menus)
-  const style = optionalRecord(menus.style)
-
   return {
     context: text(menus.context),
     currencyFormat: (text(menus.currency_format) ||
       'dash') as CurrencyDisplayFormat,
     showCurrency: bool(menus.show_currency, true),
-    style: style as Partial<PageStyle> | undefined,
     available: bool(menus.available, true),
     primaryMenuId: text(menus.primary_menu_id),
     specialsEnabled: menus.specials_enabled === true,
@@ -231,21 +184,11 @@ export const readKitchenSproochliConfig = (
 ): SproochliAttachmentConfig =>
   readSproochliAttachmentConfig(record(record(value).integrations).sproochli)
 
-export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
-  readKitchenMenusConfig(value).style
-
-export const readKitchenWorkspacePalette = (
+export const readKitchenThemePalette = (
   value: KitchenSpineRecord
 ): WorkspacePalette | null => {
   const theme = record(record(value).theme)
   return readWorkspacePalette(theme.palette)
-}
-
-/** Read-only projection helper. Canonical currency is owned by linked Place. */
-export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
-  const source = record(value)
-
-  return text(source.currency_code).toUpperCase()
 }
 
 export const readKitchenTableCount = (value: KitchenSpineRecord) => {

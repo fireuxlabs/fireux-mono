@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-08-21
+Ref: f3c707663
 Role: map, not canon
 
 ## Purpose
@@ -110,6 +110,7 @@ Every Workspace Entity must share these rules:
 
 | Delta                                                               | State      | Why it exists                                                                                                                         | Evidence or owner                                                                                                      |
 | ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Kitchen identity is its same-id Place                               | `accepted` | Kitchen is the operation at one Place; the Kitchen root id is the Place id, Place owns venue identity, and Kitchen owns operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                        |
 | Kitchen renders Live and Demo target sources                        | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/workspace-indexes.mjs` and `scripts/guards/demo-data.mjs`                              |
 | Kitchen Team adds operational roles to shared Team authority       | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list          | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
 | Supplier, Portfolio, and Property Team are minimal today           | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                     | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
@@ -165,8 +166,9 @@ composition delta, not permission to fork the Workspace Index spine.
 
 ### Next
 
-- Keep Kitchen root + required Place + root-owned Team composition guarded
-  across Live, Demo, and Test sources.
+- Keep Kitchen root + required same-id Place + root-owned Team composition
+  guarded across Live, Demo, and Test sources. Reject copied Place identity,
+  Kitchen media overrides, and redundant `place_id` on the Kitchen root.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
   root identity and Team creation atomic.
 - Preserve canonical Supplier and related Place records in Workspace readers;

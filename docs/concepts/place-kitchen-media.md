@@ -1,33 +1,29 @@
 # Place and Kitchen media
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-21
+Ref: f3c707663
 Role: map, not canon
 
 ## Ownership
 
-Place is the physical venue and owns location photography: `image_url`,
-`cover_image`, and `gallery_images`. Place may also own its venue identity
-media through sparse `logo_image` and `wordmark_image` references when exact
-approved artwork exists. Kitchen is the food operation at that Place and owns
-sparse operational identity media in `assets.logo`, `assets.wordmark`, and the
-optional `assets.image` card override. Place media is never copied into those
-Kitchen fields.
+Place is the physical venue and owns its complete shared venue identity:
+`name`, story, location, `image_url`, `cover_image`, `gallery_images`,
+`logo_image`, `wordmark_image`, and its identity colour. Kitchen is the food
+operation at that Place. Its document id equals the Place id, so Kitchen owns
+no second identity or media object and stores no redundant `place_id`.
 
-Kitchen cards resolve the Kitchen card override, then Place cover, then Place
-image. They never copy Place media into Kitchen.
+Kitchen cards and detail pages join the canonical Kitchen with that same-id
+Place. They present Place identity without copying or overriding it on
+Kitchen.
 
-Workspace Kitchen targets are identity controls rather than public cards. They
-use only the Kitchen-owned logo, with a neutral Kitchen fallback when no logo
-exists; Place photography is never substituted as Workspace identity. Demo
-fixtures enforce the same ownership split.
+Workspace Kitchen targets use the linked Place identity. Demo fixtures create
+the same canonical Kitchen plus same-id Place pair.
 
-The bounded Kitchen directory projection declares the selected asset as
-`image_kind: photograph | brand`. Place cover and Place image remain
-photographic and render with cover treatment. A Kitchen card override is brand
-media only when it is transparent identity artwork; otherwise it is a
-photographic crop. Card components consume that typed role and do not guess
-from file names, aspect ratios, colours, or individual records.
+The bounded Kitchen directory projection declares the selected Place asset as
+`image_kind: photograph | brand`. Place cover and Place image are photographic;
+transparent Place identity artwork is brand media. Card components consume
+that typed role and do not guess from file names, aspect ratios, colours, or
+individual records.
 
 ## Place identity colour
 
@@ -43,10 +39,10 @@ keeps the owners explicit—for example, `place.identity_color` beside Kitchen
 identity/media—and consumers use the linked Place value. They do not copy the
 colour onto Kitchen or flatten it into a second authority.
 
-The colour may appear behind a transparent Place or Kitchen logo, either
-wordmark, and transparent Kitchen card identity artwork. It never overlays or
-tints Place image, cover, gallery, or other photographic media. Menu and App
-palettes remain separate presentation owners.
+The colour may appear behind a transparent Place logo or wordmark when that
+Place is presented as a Kitchen. It never overlays or tints Place image, cover,
+gallery, or other photographic media. Kitchen Workspace theme, Menu theme, and
+App theme remain separate presentation owners.
 
 Writers accept files and persist canonical Firebase Storage download URLs for
 the exact entity-owned targets. The Place colour writer accepts only
@@ -80,14 +76,13 @@ Google Place ID without storing Google photo content, preserves a complete
 pre-image, and updates the canonical Place only through the MCP/Skill mutation
 lane.
 
-## Compatibility and migration
+## Migration
 
-Current source still stores Place `media_backdrop_color` and may store Kitchen
-`assets.backdrop_color`. Both are migration input for the one Place-owned
-`identity_color`; new work must not add another Kitchen override. The guarded
-migration must update Place reads, writes, public projections, Kitchen joins,
-fixtures, guards, and stored data together, then remove the Kitchen field when
-its effective Place colour has been verified.
+Current Place source still names its colour `media_backdrop_color`; its
+separate Place migration owns the rename to `identity_color`. Kitchen
+`identity`, `assets`, `brand_palette`, and `place_id` are rejected root fields.
+The guarded Entity migration removes them only after the same-id Place retains
+the required identity and media.
 
 The pre-release `image_shade` values remain read-only compatibility input:
 `light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run

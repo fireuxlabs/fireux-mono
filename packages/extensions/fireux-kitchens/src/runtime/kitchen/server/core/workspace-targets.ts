@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-22 12:41 CEST — Kitchen palette workspace: share fixed-runtime target bounds between reads and trusted writes.
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { KITCHEN_CONSOLE_TARGET_LIMIT } from '../../models/kitchen-index.model.ts'
+import { KITCHEN_WORKSPACE_TARGET_LIMIT } from '../../models/kitchen-index.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -33,7 +33,7 @@ export async function resolveKitchenWorkspaceTargetIds(uid: string) {
     ),
   ]
 
-  if (ids.length > KITCHEN_CONSOLE_TARGET_LIMIT) {
+  if (ids.length > KITCHEN_WORKSPACE_TARGET_LIMIT) {
     conflict('Kitchen workspace targets exceed the supported limit.')
   }
   return ids

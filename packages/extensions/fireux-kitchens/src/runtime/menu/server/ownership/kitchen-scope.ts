@@ -12,9 +12,7 @@ import {
 import {
   readKitchenManagementTarget,
   readKitchenFulfilmentConfig,
-  readKitchenIdentity,
   readKitchenMenusConfig,
-  readKitchenMenuStyle,
   readKitchenWorkspacePalette,
   readKitchenSproochliConfig,
   resolveKitchenOperationHours,
@@ -22,8 +20,8 @@ import {
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type {
   KitchenFulfilmentConfig,
-  KitchenImageShade,
 } from '../../../kitchen/models/kitchen.model.ts'
+import type { PlaceImageShade } from 'fireux-places/runtime/place/models/place.model'
 import type { WorkspaceTheme } from 'fireux-core/types/theme'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
@@ -34,7 +32,7 @@ import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-i
 export type MenuKitchenScope = {
   kitchenId?: string
   kitchenPlaceId?: string
-  kitchenImageShade?: KitchenImageShade
+  kitchenImageShade?: PlaceImageShade
   kitchenImageUrl?: string
   kitchenLogoImageUrl?: string
   kitchenSlug?: string
@@ -62,9 +60,6 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {}
-
-const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
-  readRecordString(record(value.identity), 'display_name')
 
 export const resolveSourceAppId = (kitchenData: Record<string, unknown>) =>
   readKitchenManagementTarget(
@@ -101,7 +96,7 @@ export function menuKitchenIdentity(
   name: string
   tagline: string
   imageUrl: string
-  imageShade: KitchenImageShade
+  imageShade: PlaceImageShade
   logoImageUrl: string
   wordmarkImageUrl: string
   currencyCode: string
@@ -112,7 +107,6 @@ export function menuKitchenIdentity(
   placeLogoImageUrl: string
   placeWordmarkImageUrl: string
 } {
-  const rootIdentity = readKitchenIdentity(kitchenData)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(kitchenData)
@@ -138,21 +132,18 @@ export function menuKitchenIdentity(
     : {}
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeStyle },
-    { source: 'root-kitchen', style: kitchenData.brand_palette },
-    { source: 'workspace-theme', style: workspaceStyle },
-    { source: 'kitchen-menu', style: readKitchenMenuStyle(kitchenData) }
+    { source: 'workspace-theme', style: workspaceStyle }
   )
 
   return {
-    name: explicitKitchenDisplayName(kitchenData) || place.name,
-    tagline: rootIdentity.tagline || place.brandTagline,
+    name: place.name,
+    tagline: place.brandTagline,
     imageUrl: place.coverImage || place.imageUrl,
-    imageShade: place.imageShade as KitchenImageShade,
-    logoImageUrl: rootIdentity.logoImageUrl,
+    imageShade: place.imageShade,
+    logoImageUrl: place.logoImage,
     placeLogoImageUrl: place.logoImage,
     placeWordmarkImageUrl: place.wordmarkImage,
-    wordmarkImageUrl:
-      rootIdentity.wordmarkNoLogoImageUrl || rootIdentity.wordmarkImageUrl,
+    wordmarkImageUrl: place.wordmarkImage,
     currencyCode,
     currencyFormat: menuDisplay.currencyFormat,
     showCurrency: menuDisplay.showCurrency,

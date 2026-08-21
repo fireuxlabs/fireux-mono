@@ -2,9 +2,9 @@ import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
-  readKitchenIdentity,
   readKitchenManagementTarget,
 } from '../../../utils/kitchen-spine'
+import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspaceIdentity } from './useKitchenWorkspaceIdentity'
@@ -36,7 +36,7 @@ export function useKitchenIdentityProgression() {
   const kitchen = computed(
     () => identityState.selectedKitchen.value as Record<string, unknown> | null
   )
-  const identity = computed(() => readKitchenIdentity(kitchen.value))
+  const identity = computed(() => readKitchenPresentationIdentity(kitchen.value))
   const place = placeState.place
   const placePresentation = computed(() => readPlacePresentation(place.value))
   const resolvedName = computed(

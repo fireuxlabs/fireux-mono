@@ -35,15 +35,7 @@ const priceLabel = (price: number, currencyCode: string) =>
     showCurrency: true,
   })
 const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
-  const style = scenario.kitchen.menus.style
-  return {
-    palette: {
-      canvas: clean(style.background_color_light) || '#f8fafc',
-      text: clean(style.font_color_light) || '#0f172a',
-      accent: clean(style.primary_color) || '#0f766e',
-      accent_contrast: '#ffffff',
-    },
-  }
+  return scenario.kitchen.theme
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
@@ -157,11 +149,9 @@ export function kitchenDemoManifest(
       kitchenImageUrl: clean(
         scenario.place.cover_image || scenario.place.image_url
       ),
-      kitchenLogoImageUrl: clean(scenario.kitchen.assets.logo),
-      kitchenName:
-        scenario.kitchen.identity.display_name || scenario.place.name,
-      kitchenWordmarkImageUrl: clean(scenario.kitchen.assets.wordmark),
-      pageStyle: scenario.kitchen.menus.style,
+      kitchenLogoImageUrl: clean(scenario.place.logo_image),
+      kitchenName: scenario.place.name,
+      kitchenWordmarkImageUrl: clean(scenario.place.wordmark_image),
       theme: demoTheme(scenario),
       themeSource: 'place-default',
     },

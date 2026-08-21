@@ -1,6 +1,5 @@
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
@@ -69,10 +68,7 @@ export async function readKitchenDirectoryPage(
     })
   }
 
-  const fireux = useFireUXConfig()
-  const readScope: KitchenReadScope = {
-    ecosystem: fireux.ecosystem,
-  }
+  const readScope: KitchenReadScope = {}
   const db = getRuntimeFirestore()
   const collection = db.collection('kitchens')
   const items: KitchenDirectoryEntry[] = []

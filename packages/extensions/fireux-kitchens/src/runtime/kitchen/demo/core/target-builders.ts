@@ -1,5 +1,5 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { ThemePalette } from 'fireux-core/types/theme'
 import {
   PlaceDefaults,
   type Place,
@@ -24,14 +24,8 @@ export type KitchenDemoTarget = {
 
 export type DemoKitchenInput = {
   identity: KitchenDemoIdentity
-  management: FireuxEntityManagement
-  name: string
-  tagline: string
-  logoImageUrl: string
-  menuStyle: NonNullable<Kitchen['menus']['style']>
-  palette: SparseBrandPalette
+  themePalette: ThemePalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
-  tableCount: number
   operationHours?: KitchenOrdersConfig['operation_hours']
 }
 
@@ -47,6 +41,8 @@ export type DemoPlaceInput = {
   lat: number
   lng: number
   palette: SparseBrandPalette
+  logoImage?: string
+  wordmarkImage?: string
   imageUrl?: string
   coverImage?: string
   galleryImages?: string[]
@@ -58,32 +54,19 @@ export const kitchen = (input: DemoKitchenInput): Kitchen => ({
   ...KitchenDefaults,
   id: input.identity.kitchenId,
   slug: input.identity.kitchenSlug,
-  management: input.management,
+  status: 'active',
   visibility: true,
-  identity: {
-    display_name: input.name,
-    tagline: input.tagline,
-  },
-  assets: {
-    image: '',
-    logo: input.logoImageUrl,
-    wordmark: '',
-    backdrop_color: input.palette.primary_color || '',
-  },
+  theme: { palette: input.themePalette },
   menus: {
     currency_format: 'dash',
     show_currency: true,
     available: true,
-    style: input.menuStyle,
   },
   orders: {
     ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
     printing: {
       ticket_device_id: '',
     },
-  },
-  tables: {
-    count: input.tableCount,
   },
   fulfilment: {
     delivery_zones: [],
@@ -117,6 +100,8 @@ export const place = (input: DemoPlaceInput): Place => ({
   cover_image: input.coverImage ?? '',
   gallery_images: input.galleryImages ?? [],
   image_shade: input.imageShade ?? 'none',
+  logo_image: input.logoImage ?? '',
+  wordmark_image: input.wordmarkImage ?? '',
   brand_palette: input.palette,
   types: ['restaurant'],
   tags: ['demo', 'restaurant'],

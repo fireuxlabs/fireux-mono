@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
-// Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
 import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -13,13 +12,10 @@ import {
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   appPaletteLayersEqual,
-  compactBrandPalette,
   compactAppPalette,
   workspacePaletteFromApp,
-  parseBrandPalette,
   readAppPalette,
   readAppPaletteLayer,
-  readBrandPalette,
   readWorkspacePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { PlaceStorage } from 'fireux-places/runtime/place/models/place.model'
@@ -139,10 +135,8 @@ export async function previewKitchenOnboarding(
     canCreate: current.canCreate,
   })
   const slug = text(locator.kitchen?.slug)
-  const identity = record(locator.kitchen?.identity)
-  const displayName = text(identity.display_name)
+  const displayName = text(place.data()?.name)
   const published = locator.kitchen?.visibility === true
-  const paletteOverride = readBrandPalette(locator.kitchen?.brand_palette)
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -152,9 +146,6 @@ export async function previewKitchenOnboarding(
     ...(displayName ? { display_name: displayName } : {}),
     ...(locator.kitchen ? { published } : {}),
     ...(slug ? { slug } : {}),
-    ...(Object.keys(paletteOverride).length
-      ? { palette_override: paletteOverride }
-      : {}),
   }
 }
 
@@ -165,13 +156,7 @@ export async function completeKitchenOnboarding(
   const body = request(input, [
     'place_id',
     'kitchen_id',
-    'display_name',
-    'palette_override',
   ])
-  const displayName = text(body.display_name)
-  if (displayName.length > 120) fail(400, 'Kitchen name is too long.')
-  const requestedPalette = parseBrandPalette(body.palette_override)
-  if ('error' in requestedPalette) fail(400, requestedPalette.error)
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
@@ -223,11 +208,6 @@ export async function completeKitchenOnboarding(
     const placeName = text(place.data?.name)
     const slug =
       text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
-    const placePalette = readBrandPalette(place.data?.brand_palette)
-    const paletteOverride = compactBrandPalette(
-      requestedPalette.value,
-      placePalette
-    )
     const storedAppPaletteValue = record(record(app.data?.theme).palette)
     const appPalette =
       current.configuredAppPalette || readAppPalette(storedAppPaletteValue)
@@ -248,10 +228,6 @@ export async function completeKitchenOnboarding(
         ? compactAppPalette(appPalette, workspacePalette)
         : null
 
-    if (!createdRoot && Object.keys(requestedPalette.value).length) {
-      fail(409, 'Existing Kitchen colours are preserved during onboarding.')
-    }
-
     const creatorName = text(user.data?.display_name) || current.authDisplayName
     if (createdRoot && !creatorName) {
       fail(409, 'Finish your User name before creating a Kitchen.')
@@ -260,22 +236,9 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         slug,
+        status: 'active',
         visibility: false,
         management: current.management,
-        identity: {
-          display_name:
-            displayName && displayName !== placeName ? displayName : '',
-          tagline: '',
-        },
-        assets: {
-          image: '',
-          logo: '',
-          wordmark: '',
-          backdrop_color: '',
-        },
-        ...(Object.keys(paletteOverride).length
-          ? { brand_palette: paletteOverride }
-          : {}),
         ...(inheritedWorkspaceTheme ? { theme: inheritedWorkspaceTheme } : {}),
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
@@ -339,9 +302,6 @@ export async function completeKitchenOnboarding(
       created_root: createdRoot,
       created_team_member: createdTeamMember,
       ...(slug ? { slug } : {}),
-      ...(createdRoot && Object.keys(paletteOverride).length
-        ? { palette_override: paletteOverride }
-        : {}),
     }
   })
 }

@@ -99,27 +99,25 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts'
   )
-  const kitchenLogoEditor = read(
-    repoRoot,
+  const kitchenLogoEditorPath =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Edit/Logo.vue'
-  )
-  const kitchenIdentityEditor = read(
-    repoRoot,
+  const kitchenIdentityEditorPath =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Edit/Identity.vue'
-  )
   const kitchenWorkspaceIdentity = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Sections/Index.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
-  assert.match(kitchenModel, /backdrop_color/)
-  assert.match(kitchenLogoEditor, /type="color"/)
-  assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
-  assert.match(kitchenWorkspaceIdentity, /<KitchenEditIdentity/)
-  assert.match(kitchenIdentityEditor, /<KitchenEditFields/)
   assert.doesNotMatch(
-    kitchenIdentityEditor,
-    /updateCoverImage|updateGalleryImages|places\//
+    kitchenModel,
+    /\n\s{2}(?:backdrop_color|logo_image|assets):/
+  )
+  assert.equal(existsSync(path.join(repoRoot, kitchenLogoEditorPath)), false)
+  assert.equal(existsSync(path.join(repoRoot, kitchenIdentityEditorPath)), false)
+  assert.match(kitchenWorkspaceIdentity, /<WorkspaceKitchenIdentityPlace/)
+  assert.doesNotMatch(
+    kitchenWorkspaceIdentity,
+    /<KitchenEditIdentity|<KitchenEditLogo/
   )
   const appModel = read(repoRoot, APP_MODEL)
   const ecosystemModel = read(repoRoot, ECOSYSTEM_MODEL)

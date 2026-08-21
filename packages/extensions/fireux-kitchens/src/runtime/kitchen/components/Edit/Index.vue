@@ -51,7 +51,7 @@
             <div
               class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
             >
-              <KitchenEditIdentity
+              <KitchenEditPublication
                 :kitchen="rootKitchen"
                 :kitchen-id="kitchenId"
                 :can-write="canEdit"
@@ -138,7 +138,7 @@ const address = computed(
     clean(hydratedKitchen.value?.formatted_address) ||
     clean(hydratedKitchen.value?.short_address)
 )
-const placeLocator = computed(() => clean(hydratedKitchen.value?.place_id))
+const placeLocator = computed(() => kitchenId.value)
 const placeEditTo = computed(() =>
   placeLocator.value
     ? `/places/${encodeURIComponent(placeLocator.value)}/edit`

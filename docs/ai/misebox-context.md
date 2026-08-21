@@ -57,6 +57,14 @@ Before each task:
   joins its required Place only to resolve Place-owned presentation. Kitchen
   detail resolves the same root and Place by authored slug during SSR; browser
   code does not read broader authority records.
+- `/kitchens/**` is the Kitchen Entity route family, not the Kitchen Workspace.
+  Its exact detail endpoint may return the canonical readable Kitchen and its
+  same-id canonical Place plus a joined presentation view. That response never
+  includes Team, Orders, prep, Sales, private configuration, or other protected
+  operational children. Vue presentation is not a privacy boundary: protected
+  material lives in separately authorized records and is absent from the
+  public response. An exact permitted listener may keep an already-open Entity
+  current without changing that response or ownership contract.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
   creates the required Place first, then creates the same-id canonical Kitchen
   root. Management is explicit: `root` has no Workspace, `workspace` resolves to

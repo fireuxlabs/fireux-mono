@@ -6,11 +6,11 @@ import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-s
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
 import {
   readKitchenManagementTarget,
-  readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../../../utils/kitchen-spine'
+import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
 import {
   meaningfulSurfaceDelta,
   placeBaselineKeys,
@@ -116,7 +116,7 @@ export function useKitchenInterface() {
     if (placeCurrencyCode) merged.currency_code = placeCurrencyCode
     const id = safeString(merged.id).trim()
     if (!id) return null
-    const identity = readKitchenIdentity(merged)
+    const identity = readKitchenPresentationIdentity(merged)
     const managementTarget = readKitchenManagementTarget(
       merged,
       fireux.ecosystem
@@ -150,7 +150,7 @@ export function useKitchenInterface() {
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString(kitchen.slug).trim()
-    const identity = readKitchenIdentity(kitchen)
+    const identity = readKitchenPresentationIdentity(kitchen)
     const name = safeString(identity.displayName || kitchen.name)
     const shortName = safeString(kitchen.short_name)
     const formattedAddress = safeString(kitchen.formatted_address)
@@ -225,7 +225,7 @@ export function useKitchenInterface() {
 
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const identity = readKitchenIdentity(target)
+    const identity = readKitchenPresentationIdentity(target)
     const displayName = safeString(identity.displayName || target.name).trim()
     const tagline = safeString(identity.tagline).trim()
     const placeImageUrl = safeString(
@@ -313,7 +313,7 @@ export function useKitchenInterface() {
   ): KitchenCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
-    const kitchenIdentity = readKitchenIdentity(target)
+    const kitchenIdentity = readKitchenPresentationIdentity(target)
 
     return {
       id: base.id,

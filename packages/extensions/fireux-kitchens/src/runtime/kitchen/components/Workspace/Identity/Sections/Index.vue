@@ -22,16 +22,16 @@
 
       <WorkspaceKitchenIdentityStage
         number="02"
-        title="Kitchen identity"
-        description="Kitchen additions and deliberate overrides above the linked Place."
+        title="Kitchen profile"
+        description="Kitchen lifecycle, route and directory visibility. Identity remains on the linked Place."
         :percent="rootPercent"
         :complete="rootComplete"
         :locked="!placeComplete"
         locked-title="Place identity is incomplete"
-        locked-description="Finish the linked Place identity before adding Kitchen overrides."
+        locked-description="Finish the linked Place identity before publishing this Kitchen."
         :requirements="rootRequirements"
       >
-        <KitchenEditIdentity
+        <KitchenEditPublication
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
           :can-write="canWrite"

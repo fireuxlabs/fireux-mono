@@ -1330,7 +1330,7 @@ export async function run(ctx) {
         'for (const scenario of kitchenDemoScenarios) {',
         '  const kitchenId = String(scenario.kitchen.id || "")',
         '  const placeId = String(scenario.place.id || "")',
-        '  objectPath(scenario.kitchen.assets.logo, `kitchens/${kitchenId}/`)',
+        '  objectPath(scenario.place.logo_image, `places/${placeId}/`)',
         '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
         '  for (const value of [scenario.place.image_url, scenario.place.cover_image, ...(scenario.place.gallery_images || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
         '}',

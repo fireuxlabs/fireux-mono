@@ -80,9 +80,7 @@ export function useKitchenDevSystem() {
     map: ({ id, drift }) => ({
       id,
       display_name:
-        hydratedById.value.get(id)?.display_name ??
-        rawKitchenById.value.get(id)?.identity.display_name ??
-        '',
+        hydratedById.value.get(id)?.display_name ?? '',
       drift,
     }),
   })

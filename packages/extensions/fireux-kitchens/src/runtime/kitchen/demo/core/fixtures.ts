@@ -10,7 +10,7 @@ export const deanosKitchenDemoIdentity = {
   appId: 'misebox-app',
   kitchenId: 'deanos',
   kitchenSlug: 'deanos',
-  placeId: 'demo-deanos-place',
+  placeId: 'deanos',
   menuId: 'deanos-menu',
   serviceId: 'deanos-service-2026-07-26',
 } as const satisfies KitchenDemoIdentity
@@ -35,7 +35,7 @@ export const miseboxRestaurantKitchenDemoIdentity = {
   appId: 'misebox-app',
   kitchenId: 'misebox-restaurant',
   kitchenSlug: 'misebox-restaurant',
-  placeId: 'demo-misebox-restaurant-place',
+  placeId: 'misebox-restaurant',
   menuId: 'misebox-restaurant-menu',
   serviceId: 'misebox-restaurant-demo-lunch-service',
 } as const satisfies KitchenDemoIdentity
@@ -44,7 +44,7 @@ export const pizzaTheActionKitchenDemoIdentity = {
   appId: 'misebox-app',
   kitchenId: 'pizza-the-action',
   kitchenSlug: 'pizza-the-action',
-  placeId: 'demo-pizza-the-action-place',
+  placeId: 'pizza-the-action',
   menuId: 'pizza-the-action-menu',
   serviceId: 'pizza-the-action-demo-evening-service',
 } as const satisfies KitchenDemoIdentity
