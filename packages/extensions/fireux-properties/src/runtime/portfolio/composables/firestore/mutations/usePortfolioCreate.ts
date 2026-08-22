@@ -90,8 +90,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     const snap = await getDoc(ref)
     if (snap.exists()) return slug
 
-    const payload: Portfolio = {
-      id: slug,
+    const payload: Omit<Portfolio, 'id' | 'created' | 'updated'> = {
       management: { mode: 'root' },
       name,
       tagline: normalizeString(input?.tagline),
@@ -102,15 +101,6 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       strategy_label: normalizeString(input?.strategy_label),
       region_label: normalizeString(input?.region_label),
       notes: normalizeString(input?.notes),
-      created: {
-        at: {} as any,
-        by: undefined,
-        app_id: undefined,
-      },
-      updated: {
-        at: {} as any,
-        by: undefined,
-      },
     }
 
     await create(
@@ -147,8 +137,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       return { id: slug, created: false }
     }
 
-    const payload: Portfolio = {
-      id: slug,
+    const payload: Omit<Portfolio, 'id' | 'created' | 'updated'> = {
       management: { mode: 'root' },
       name,
       tagline: normalizeString(input?.tagline),
@@ -159,15 +148,6 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       strategy_label: normalizeString(input?.strategy_label),
       region_label: normalizeString(input?.region_label),
       notes: normalizeString(input?.notes),
-      created: {
-        at: {} as any,
-        by: undefined,
-        app_id: undefined,
-      },
-      updated: {
-        at: {} as any,
-        by: undefined,
-      },
     }
 
     await create(

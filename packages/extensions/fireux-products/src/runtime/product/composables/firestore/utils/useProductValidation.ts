@@ -40,10 +40,6 @@ export function useProductValidation() {
       }
     }
 
-    if (product.prices && product.prices.length === 0) {
-      errors.push('At least one price is required')
-    }
-
     if (product.images) {
       for (const image of product.images) {
         const url = typeof image === 'string' ? image : image.url
@@ -56,10 +52,6 @@ export function useProductValidation() {
 
     if (product.features && product.features.length > 20) {
       errors.push('Maximum 20 features allowed')
-    }
-
-    if (product.metadata && typeof product.metadata !== 'object') {
-      errors.push('Metadata must be an object')
     }
 
     return {

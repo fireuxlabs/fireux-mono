@@ -104,6 +104,11 @@ or storage changes begin.
 
 - `fireux-blogs` owns canonical BlogPost shape, storage, projection, and
   Sproochli attachment.
+- The named Firestore database owns ecosystem partitioning. BlogPost stores
+  source App provenance and publication state, not duplicate ecosystem or
+  generic owner scope.
+- The document id is reader-supplied. The authored byline snapshot is public
+  article content and excludes author email.
 - The source App owns the authored story and its review.
 - A tenant feed may reference a canonical post by slug; it does not copy the
   title, body, translation, or media.

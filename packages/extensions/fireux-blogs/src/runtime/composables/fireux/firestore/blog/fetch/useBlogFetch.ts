@@ -6,6 +6,7 @@ import {
   type BlogPost,
 } from '../../../../../models/blogPost.model'
 import { isBlogPostInRuntimeScope } from '../utils/blogScope'
+import { normalizeBlogPost } from '../../../../../utils/normalize-blog-post'
 
 export function useBlogFetch() {
   const fireux = useFireUXConfig()
@@ -22,7 +23,7 @@ export function useBlogFetch() {
       slug
     ) as Ref<BlogPost | null | undefined>
     return computed(() => {
-      const post = source.value
+      const post = source.value ? normalizeBlogPost(slug, source.value) : source.value
       if (!post || isBlogPostInRuntimeScope(post, fireux)) return post
       return null
     })

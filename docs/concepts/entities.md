@@ -277,7 +277,12 @@ membership, Kitchen, and workflow joins without writing data.
 
 Product is a declared commercial root owned by `fireux-products`. It has an
 independent lifecycle, route identity, pricing children, authorship, and
-provider identity. Supplier Item is a Supplier-owned scoped Record: it must
+App provenance. `source_app_id` partitions tenant catalogues; `visibility`
+owns publication state while `active` independently controls commercial
+availability. The named database already supplies ecosystem scope. Generic
+owner fields are not Product authority. ProductPrice children are the sole
+pricing authority, and Product readers join them without embedding prices or a
+default price into the root. Supplier Item is a Supplier-owned scoped Record: it must
 link to Product with `product_id`, owns the Supplier's offer/SKU/packaging and
 procurement terms, and may link to Ingredient when the offer represents
 culinary stock. Neither wrapper copies Product or Ingredient identity.
@@ -289,8 +294,7 @@ Run `scripts/audit-misebox-product-supplier-items.mjs` to verify Product,
 Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
 Misebox owner database without writing data.
 
-Kitchen root identity, its required Place, root-owned Team, and management
-relationship are verified by
+Kitchen root shape, its required same-id Place, and root-owned Team are verified by
 `scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
 operational identity; authored slugs resolve through the Kitchen
 server route seam. The owner-first migration must retain a protected preimage
@@ -325,10 +329,10 @@ Directory and Entity Detail family maps.
 | Existing domain concepts exceed the executable matrix          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                             |
 | Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                        |
 | Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth |
-| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration and Team authority, while Place owns location presentation                                      |
+| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration       |
 | Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                        |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                 |
-| Product root plus Supplier Item relationship                   | `accepted` | Product owns commercial identity and ProductPrice children; Supplier Item is a Supplier-owned offer Record with required `product_id` and optional `ingredient_id`                         |
+| Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
 | Supplier location chain                                        | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                        |
 | Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                      |
 

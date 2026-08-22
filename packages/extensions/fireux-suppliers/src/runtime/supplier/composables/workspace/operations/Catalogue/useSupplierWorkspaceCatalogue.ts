@@ -13,10 +13,13 @@ export function useSupplierWorkspaceCatalogue() {
   const { selection, runtime } = useSupplierWorkspace()
 
   const supplierLabel = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_organization_name)
+    normalizeString(
+      selection.supplier.value?.company_place?.short_name ||
+        selection.supplier.value?.company_place?.name
+    )
   )
 
-  const state = computed(() => normalizeString(selection.supplier.value?.state))
+  const state = computed(() => normalizeString(selection.supplier.value?.status))
   const catalogueState = computed(() =>
     normalizeString(selection.supplier.value?.catalogue_state)
   )
@@ -75,7 +78,7 @@ export function useSupplierWorkspaceCatalogue() {
     () => catalogueState.value === 'integrated'
   )
   const isPublicOnlySupplier = computed(
-    () => catalogueState.value === 'public_only'
+    () => catalogueState.value === 'directory_only'
   )
 
   const emptyTitle = computed(() => {

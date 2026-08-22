@@ -18,6 +18,16 @@ const serverHandlers = [
     handler: './runtime/server/api/properties/onboarding/complete.post',
   },
   {
+    route: '/api/portfolios',
+    method: 'get',
+    handler: './runtime/server/api/portfolios/index.get',
+  },
+  {
+    route: '/api/portfolios/:id',
+    method: 'get',
+    handler: './runtime/server/api/portfolios/[id].get',
+  },
+  {
     route: '/api/portfolios/onboarding/complete',
     method: 'post',
     handler: './runtime/server/api/portfolios/onboarding/complete.post',

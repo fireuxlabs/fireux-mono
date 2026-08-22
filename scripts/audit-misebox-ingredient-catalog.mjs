@@ -44,7 +44,6 @@ const REQUIRED_KEYS = new Set([
   'aliases',
   'category',
   'created',
-  'id',
   'image_url',
   'kind',
   'name',
@@ -54,6 +53,9 @@ const REQUIRED_KEYS = new Set([
   'updated',
 ])
 const OPTIONAL_KEYS = new Set([
+  // Legacy redundant document id. Reader-supplied identity is canonical;
+  // removal remains gated on a retained managed export/preimage.
+  'id',
   'parent_ingredient_id',
   'replaced_by_ingredient_id',
 ])
@@ -164,7 +166,7 @@ function validateRoot(document) {
   }
   if (!isDocumentId(id))
     issue(issues, id, 'document_id', 'document id is invalid.')
-  if (text(data.id) !== id)
+  if (Object.hasOwn(data, 'id') && text(data.id) !== id)
     issue(issues, id, 'id_mismatch', `stored id ${text(data.id) || '(empty)'} does not match document id.`)
   if (data.schema_version !== EXPECTED_SCHEMA_VERSION) {
     issue(

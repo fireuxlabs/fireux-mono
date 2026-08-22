@@ -179,7 +179,7 @@ const {
   maxZones,
   boundaryTypeOptions,
   collectionPath,
-  updateKitchen,
+  updateKitchenFulfilment,
   place,
   currencyCode,
   toast,

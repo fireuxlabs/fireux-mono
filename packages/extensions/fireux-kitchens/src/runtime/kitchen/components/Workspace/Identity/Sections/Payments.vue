@@ -28,12 +28,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenUpdate } from '../../../../composables/firestore/mutations/useKitchenUpdate'
+import { useKitchenFulfilmentUpdate } from '../../../../composables/workspace/identity/mutations/useKitchenFulfilmentUpdate'
 import type {
   KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,
-  KitchenUpdateInput,
-} from '../../../../models/kitchen.model.ts'
+} from '../../../../models/fulfilment.model.ts'
 import type { KitchenOrderType } from '../../../../models/order.model.ts'
 import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-readers'
 
@@ -187,7 +186,7 @@ const groups: PaymentGroup[] = [
 ]
 
 const collectionPath = computed(() => props.collectionPath)
-const { updateKitchen } = useKitchenUpdate()
+const { updateKitchenFulfilment } = useKitchenFulfilmentUpdate()
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
 
 const methodsFor = (orderTypes: KitchenOrderType[]) =>
@@ -243,14 +242,10 @@ const updateGroup = (group: PaymentGroup, selectedMethods: string[]) => {
     const paymentMethods: KitchenFulfilmentPaymentPolicy[] = [
       ...policies.values(),
     ]
-    const patch: KitchenUpdateInput = {
-      fulfilment: {
-        delivery_zones: current.delivery_zones,
-        payment_methods: paymentMethods,
-      },
-    }
-
-    await updateKitchen({ kitchenId: props.kitchenId, changes: patch })
+    await updateKitchenFulfilment({
+      kitchenId: props.kitchenId,
+      changes: { payment_methods: paymentMethods },
+    })
   })
 
   return updateQueue

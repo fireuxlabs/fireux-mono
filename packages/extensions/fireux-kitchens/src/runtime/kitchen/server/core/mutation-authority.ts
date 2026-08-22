@@ -3,13 +3,11 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { readKitchenOnboardingManagement } from '../index/onboarding/onboarding-policy.ts'
 
 export async function readKitchenMutationActor(event: H3Event) {
   const fireux = useFireUXConfig(event)
@@ -67,14 +65,6 @@ export async function requireKitchenMutationAuthority(
   }
 
   const rootData = root.data || {}
-  const management = readKitchenOnboardingManagement(rootData)
-  const ownerAppId =
-    management.mode === 'root'
-      ? actor.runtimeAppId
-      : requireFirestoreDocumentId(
-          resolveFireuxEntityManagementAppId(management, actor.ecosystem),
-          'Kitchen App id'
-        )
 
   const place = await mutations.read(
     FIRESTORE_MUTATION_TARGETS.places,
@@ -88,7 +78,7 @@ export async function requireKitchenMutationAuthority(
   }
   return {
     ownerRole: String(runtimeMembership.data?.role) as 'admin' | 'user',
-    ownerAppId,
+    ownerAppId: actor.runtimeAppId,
     placeData: place.data || {},
     rootData,
     teamRole: teamRole as 'owner' | 'operator',

@@ -7,6 +7,7 @@ import {
 } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { resolveKitchenChildCollectionBasePath } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
@@ -73,7 +74,7 @@ export function useKitchenSupplierFetch(
       : ''
   )
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const supplierNetwork = useFetch<{ suppliers: Supplier[] }>(
+  const supplierNetwork = useFetch<{ suppliers: Supplier[]; places: Place[] }>(
     '/api/supply/suppliers',
     {
       key: 'bringli-suppliers',
@@ -85,7 +86,15 @@ export function useKitchenSupplierFetch(
     () => supplierLinksRef.value ?? []
   )
   const networkSuppliers = computed<SupplierDoc[]>(
-    () => (supplierNetwork.data.value?.suppliers ?? []) as SupplierDoc[]
+    () => {
+      const places = new Map(
+        (supplierNetwork.data.value?.places ?? []).map((place) => [place.id, place])
+      )
+      return (supplierNetwork.data.value?.suppliers ?? []).map((supplier) => ({
+        ...supplier,
+        company_place: places.get(String(supplier.company_id || '').trim()),
+      })) as SupplierDoc[]
+    }
   )
 
   const canonicalSupplierById = computed(() => {
@@ -131,12 +140,11 @@ export function useKitchenSupplierFetch(
         merged.source_supplier_id = supplierRefId
       }
 
+      const companyPlace = (canonical as any)?.company_place
       const resolvedName = firstNonEmpty(
         (overlay as any).name,
-        (canonical as any)?.name,
-        (canonical as any)?.supplier_organization_name,
-        (canonical as any)?.supplier_headline,
-        (canonical as any)?.title,
+        companyPlace?.short_name,
+        companyPlace?.name,
         supplierRefId,
         overlayId
       )

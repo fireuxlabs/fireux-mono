@@ -178,7 +178,6 @@ export function isPublishedBlogCandidate(
   scope: BlogRuntimeScope
 ) {
   if (!isFirestoreDocumentId(id) || data.visibility !== 'public') return false
-  if (text(data.source_ecosystem_id, 120) !== scope.ecosystemId) return false
   const sourceAppId = text(data.source_app_id, 1_500)
   return isFirestoreDocumentId(sourceAppId)
 }

@@ -8,7 +8,6 @@ import type {
   TargetCollectionFilter,
   TargetCollectionFilterValue,
 } from '../../../../composables/fireux/firestore/collection-selection'
-import type { PortfolioSurface } from '../utils/view/usePortfolioInterface'
 
 export type PortfolioCollectionFilterValue = TargetCollectionFilterValue
 export type PortfolioCollectionFilter = TargetCollectionFilter
@@ -17,7 +16,7 @@ export type PortfolioCollectionDoc = Partial<Portfolio> & {
   id?: string
 }
 
-export type PortfolioCollectionItem = PortfolioSurface & { id?: string }
+export type PortfolioCollectionItem = Portfolio
 
 export const DEFAULT_COLLECTION_PATH = PortfolioStorage.rootCollection
 

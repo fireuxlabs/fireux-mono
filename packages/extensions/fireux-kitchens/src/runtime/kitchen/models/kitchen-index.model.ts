@@ -2,11 +2,11 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: define the bounded authenticated target projection.
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette workspace: project server-authorized write capability with resolved Menu style.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
+import type { KitchenFulfilment } from './fulfilment.model.ts'
 import type {
-  KitchenFulfilmentConfig,
   KitchenMenusConfig,
   KitchenOrdersConfig,
-} from './kitchen.model.ts'
+} from './kitchen-configuration.model.ts'
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Theme } from 'fireux-core/types/theme'
@@ -33,7 +33,7 @@ export type KitchenWorkspaceTargetItem = {
   menus: KitchenMenusConfig
   theme?: Theme
   orders?: KitchenOrdersConfig
-  fulfilment: KitchenFulfilmentConfig
+  fulfilment: KitchenFulfilment
   sproochli: SproochliAttachmentConfig
   display_name: string
   name: string

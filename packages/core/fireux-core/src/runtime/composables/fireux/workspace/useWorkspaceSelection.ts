@@ -109,14 +109,29 @@ export function useWorkspaceSelection<TTarget = never>(
     )
   })
 
-  // Selection owns only typed workspace state. Target readers may resolve that
-  // state, but they never clear or rewrite it as their loading outcome changes.
+  // Selection owns only typed workspace state. Pending and failed target reads
+  // never invalidate persisted state; a settled authoritative read may prove
+  // that the typed target no longer exists.
   watch(
     selectedType,
     (type: WorkspaceDataType | null) => {
       if (type && workspaceRoot.source.value !== type) {
         workspaceRoot.setSource(type)
       }
+    },
+    { immediate: true }
+  )
+
+  watch(
+    () => ({
+      id: selectedId.value,
+      type: selectedType.value,
+      target: selectedTarget.value,
+      outcome: targetOutcome.value,
+    }),
+    ({ id, target, outcome }) => {
+      if (!id || target || (outcome !== 'ready' && outcome !== 'empty')) return
+      clearSelection()
     },
     { immediate: true }
   )
@@ -130,7 +145,13 @@ export function useWorkspaceSelection<TTarget = never>(
         currentId: selectedId.value,
         currentType: selectedType.value,
       }),
-      ({ enforcedId, items, outcome, currentId, currentType }: {
+      ({
+        enforcedId,
+        items,
+        outcome,
+        currentId,
+        currentType,
+      }: {
         enforcedId: string
         items: TTarget[]
         outcome: WorkspaceTargetOutcome

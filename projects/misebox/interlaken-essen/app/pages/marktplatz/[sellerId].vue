@@ -7,6 +7,17 @@
       v-if="canonicalStore"
       :store="canonicalStore"
     />
+    <DevDebugPanel
+      v-if="canonicalStore"
+      object-origin="fetched"
+      launcher
+      include-route
+      title="Marketplace Store detail (JSON)"
+      context="marketplace detail · Store projection with published Offers as joined child transport"
+      :objects="[canonicalStore]"
+      :derived="{ sellerId }"
+      :default-open="false"
+    />
   </section>
 </template>
 

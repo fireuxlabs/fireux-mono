@@ -1,22 +1,21 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { ProductStorage, type Product } from '../models/product.model.ts'
+import { ProductStorage, type Product, type ProductPrice } from '../models/product.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>
   clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
 export function buildProductJsonLd(
-  product: Partial<Product> | null | undefined
+  product: Partial<Product> | null | undefined,
+  defaultPrice?: Partial<ProductPrice> | null
 ) {
   const name = clean(product?.name)
   const slug = clean(product?.slug)
   if (!name || !slug || (product as any)?.visibility !== 'public') return null
 
-  const amount = Number(product?.default_price?.unit_amount ?? 0)
-  const currency = clean(
-    (product as any)?.default_price?.currency || (product as any)?.currency
-  )
+  const amount = Number(defaultPrice?.unit_amount ?? 0)
+  const currency = clean(defaultPrice?.currency)
 
   return {
     '@context': 'https://schema.org',
@@ -42,7 +41,8 @@ export function buildProductJsonLd(
 }
 
 export function useProductSeo(
-  product: MaybeRefOrGetter<Partial<Product> | null | undefined>
+  product: MaybeRefOrGetter<Partial<Product> | null | undefined>,
+  defaultPrice?: MaybeRefOrGetter<Partial<ProductPrice> | null | undefined>
 ) {
   const entry = computed(() => toValue(product))
   const slug = computed(() => clean(entry.value?.slug))
@@ -75,6 +75,6 @@ export function useProductSeo(
     robots: computed(() =>
       isPublic.value ? 'index, follow' : 'noindex, nofollow'
     ),
-    jsonLd: computed(() => buildProductJsonLd(entry.value)),
+    jsonLd: computed(() => buildProductJsonLd(entry.value, toValue(defaultPrice))),
   })
 }

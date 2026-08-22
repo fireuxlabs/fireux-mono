@@ -94,11 +94,11 @@ only records and operations it genuinely owns.
 Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root
 Workspace Entities.
 
-- The root document owns its lifecycle, operational presentation, and the
-  `management` relationship. It normally owns identity too. A Place-backed
-  Workspace Entity is the explicit exception: its root id is the linked Place
-  id and Place owns the shared venue identity. Kitchen must not copy that
-  identity or store a redundant `place_id`.
+- The root document owns only the fields declared by its canonical entity
+  model. A Place-backed Workspace Entity uses the same document id as its Place;
+  Place owns the shared venue identity. Kitchen therefore stores only
+  `id`, `slug`, `status`, and `visibility`: it must not copy Place identity,
+  store `place_id`, or absorb capability configuration.
 - `management` selects the hosting product relationship: `root`, `workspace`,
   or a dedicated `app`. It never relocates the Entity.
 - `team/{uid}` is Workspace membership and access authority. A Team record may

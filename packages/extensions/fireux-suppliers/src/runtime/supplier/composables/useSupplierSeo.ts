@@ -1,18 +1,19 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { SupplierStorage, type Supplier } from '../models/Supplier.model.ts'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>
   clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
 export function buildSupplierJsonLd(
-  supplier: Partial<Supplier> | null | undefined
+  supplier: Partial<Supplier> | null | undefined,
+  place: Partial<Place> | null | undefined
 ) {
-  const name = clean(supplier?.supplier_organization_name)
+  const name = clean(place?.short_name || place?.name)
   const id = clean(supplier?.id)
-  const state = clean(supplier?.state)
-  if (!name || !id || (state && !['public', 'official'].includes(state))) {
+  if (!name || !id || supplier?.status !== 'active' || !supplier.visibility) {
     return null
   }
 
@@ -20,42 +21,41 @@ export function buildSupplierJsonLd(
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    description: excerpt(
-      supplier?.supplier_headline || supplier?.summary || supplier?.supplier_bio
-    ),
-    image: clean(supplier?.supplier_image) || undefined,
+    description: excerpt(place?.about || place?.brand_tagline),
+    image: clean(place?.logo_image || place?.image_url) || undefined,
   }
 }
 
 export function useSupplierSeo(
-  supplier: MaybeRefOrGetter<Partial<Supplier> | null | undefined>
+  supplier: MaybeRefOrGetter<Partial<Supplier> | null | undefined>,
+  place: MaybeRefOrGetter<Partial<Place> | null | undefined>
 ) {
   const entry = computed(() => toValue(supplier))
+  const location = computed(() => toValue(place))
   const id = computed(() => clean(entry.value?.id))
   const slug = computed(() => clean(entry.value?.slug))
-  const state = computed(() => clean(entry.value?.state))
   const routeId = computed(() => slug.value || id.value)
   const isPublished = computed(() =>
     Boolean(
       id.value &&
         routeId.value &&
-        (!state.value || ['public', 'official'].includes(state.value))
+        entry.value?.status === 'active' &&
+        entry.value?.visibility === true
     )
   )
 
   return useSeo({
     title: computed(
-      () => clean(entry.value?.supplier_organization_name) || 'Supplier'
+      () => clean(location.value?.short_name || location.value?.name) || 'Supplier'
     ),
     description: computed(() =>
       excerpt(
-        entry.value?.supplier_headline ||
-          entry.value?.summary ||
-          entry.value?.supplier_bio ||
+        location.value?.about ||
+          location.value?.brand_tagline ||
           'Supplier details.'
       )
     ),
-    image: computed(() => clean(entry.value?.supplier_image)),
+    image: computed(() => clean(location.value?.logo_image || location.value?.image_url)),
     path: computed(() =>
       routeId.value
         ? `/${SupplierStorage.collection}/${encodeURIComponent(routeId.value)}`
@@ -64,6 +64,6 @@ export function useSupplierSeo(
     robots: computed(() =>
       isPublished.value ? 'index, follow' : 'noindex, nofollow'
     ),
-    jsonLd: computed(() => buildSupplierJsonLd(entry.value)),
+    jsonLd: computed(() => buildSupplierJsonLd(entry.value, location.value)),
   })
 }

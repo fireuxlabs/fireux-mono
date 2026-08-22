@@ -25,7 +25,8 @@ const emit = defineEmits<{
 // Supplier workspace selection displays the interface identity, not a raw `name` field.
 const supplierName = computed(() =>
   String(
-    props.supplier?.supplier_organization_name ||
+    props.supplier?.company_place?.short_name ||
+      props.supplier?.company_place?.name ||
       props.supplier?.slug ||
       props.supplier?.id ||
       ''

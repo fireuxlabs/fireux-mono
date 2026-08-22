@@ -1,9 +1,7 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry resolved Kitchen fulfilment into public payload construction.
 import type { MenuRouteContext } from '../../models/menu-context.model.ts'
-import type {
-  KitchenFulfilmentConfig,
-  KitchenImageShade,
-} from '../../../kitchen/models/kitchen.model.ts'
+import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
+import type { KitchenImageShade } from '../../../kitchen/models/kitchen-configuration.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model.ts'
@@ -38,7 +36,7 @@ export type MenuPayloadScope = {
   sections?: unknown[]
   specials?: MenuManifestContent
   sourceMenu?: Record<string, unknown>
-  fulfilment?: KitchenFulfilmentConfig
+  fulfilment?: KitchenFulfilment
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
   sproochli?: SproochliAttachmentConfig
   sproochliLanguage?: SproochliLanguageCode

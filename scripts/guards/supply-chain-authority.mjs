@@ -31,6 +31,29 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(ingredientModel, /export const IngredientDefaults\b/)
   assert.match(productModel, /export const ProductEntity\s*=\s*defineFireuxEntity/)
   assert.match(productModel, /export const ProductDefaults\b/)
+  assert.match(productModel, /export type ProductRead\s*=\s*\{\s*product:/)
+  assert.doesNotMatch(
+    productModel,
+    /source_ecosystem_id|owner_type|owner_id|default_price|track_stock|\bstock:|prices:\s*\[\]/
+  )
+  const productNormalizer = read(
+    repoRoot,
+    'packages/extensions/fireux-products/src/runtime/product/utils/normalize-product.ts'
+  )
+  assert.match(productNormalizer, /export function normalizeProduct\(/)
+  assert.match(productNormalizer, /export function normalizeProductPrice\(/)
+  assert.match(productNormalizer, /export function joinProductRead\(/)
+  const productDetailApi = read(
+    repoRoot,
+    'packages/extensions/fireux-products/src/runtime/server/api/products/[id].get.ts'
+  )
+  assert.match(productDetailApi, /joinProductRead\(product, prices\)/)
+  assert.doesNotMatch(productDetailApi, /\.\.\.product,\s*prices/)
+  const checkoutApi = read(
+    repoRoot,
+    'packages/extensions/fireux-products/src/runtime/server/api/stripe/create-checkout-session.post.ts'
+  )
+  assert.doesNotMatch(checkoutApi, /embeddedPrices|default_price|metadata\?\.stripe/)
   assert.match(supplierItemModel, /export const SupplierItemRecord\s*=\s*defineFireuxEntity/)
   assert.match(supplierItemModel, /parent:\s*'Supplier'/)
   assert.match(supplierItemModel, /product_id:\s*''/)

@@ -9,6 +9,18 @@
 
       <BlogViewPage v-else-if="post" :post="post" />
 
+      <DevDebugPanel
+        v-if="post"
+        object-origin="fetched"
+        launcher
+        include-route
+        title="Blog detail (JSON)"
+        context="blog detail · public projection · root: blogs"
+        :objects="[post]"
+        :derived="{}"
+        :default-open="false"
+      />
+
       <div v-else class="space-y-2">
         <h1 class="text-xl font-semibold">404 – Blog post not found</h1>
         <p class="text-sm text-muted">

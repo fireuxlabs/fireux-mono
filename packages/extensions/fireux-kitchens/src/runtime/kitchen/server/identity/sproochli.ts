@@ -1,16 +1,16 @@
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { serverKitchenIntegrationsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import { readKitchenOnboardingManagement } from '../index/onboarding/onboarding-policy.ts'
+import { readKitchenSproochliConfig } from '../../utils/kitchen-readers.ts'
+import {
+  readKitchenMutationActor,
+  requireKitchenMutationAuthority,
+} from '../core/mutation-authority.ts'
 
 const allowedDefaultLanguages = [
   'mixed',
@@ -56,111 +56,41 @@ function request(value: unknown) {
   }
 }
 
-function memberRole(
-  exists: boolean,
-  value: unknown,
-  statusMessage: string
-): 'admin' | 'user' {
-  const role = String(value ?? '').trim()
-  if (!exists || (role !== 'admin' && role !== 'user')) {
-    throw createError({ statusCode: 403, statusMessage })
-  }
-  return role
-}
-
 export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   const requested = request(input)
-  const fireux = useFireUXConfig(event)
-  const runtimeAppId = requireFirestoreDocumentId(
-    fireux.appId,
-    'Runtime App id'
+  const actor = await readKitchenMutationActor(event)
+
+  const sproochli = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const authority = await requireKitchenMutationAuthority(
+        mutations,
+        actor,
+        requested.kitchenId
+      )
+      const target = serverKitchenIntegrationsTarget(requested.kitchenId)
+      const attachment = await mutations.read(target, 'sproochli')
+      const current = attachment.exists
+        ? readSproochliAttachmentConfig(attachment.data)
+        : readKitchenSproochliConfig(authority.rootData)
+      const next = readSproochliAttachmentConfig({
+        ...current,
+        enabled: requested.enabled,
+        ...(requested.defaultLanguage
+          ? { default_language: requested.defaultLanguage }
+          : { default_language: undefined }),
+      })
+
+      if (attachment.exists) mutations.update(target, 'sproochli', next)
+      else mutations.create(target, 'sproochli', next)
+      return next
+    }
   )
-  const { uid } = await requireFirebaseBearerUser(
-    event,
-    'Sign in to manage this Kitchen.'
-  )
-  const db = getRuntimeFirestore()
-  const rootRef = db
-    .collection('kitchens')
-    .doc(requested.kitchenId)
-  const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
-  const teamMemberRef = rootRef.collection('team').doc(uid)
-
-  const result = await db.runTransaction(async (transaction) => {
-    const [root, runtimeMembership, teamMember] = await Promise.all([
-      transaction.get(rootRef),
-      transaction.get(runtimeMembershipRef),
-      transaction.get(teamMemberRef),
-    ])
-    if (!root.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
-    memberRole(
-      runtimeMembership.exists,
-      runtimeMembership.get('role'),
-      'Current App membership is required to manage this Kitchen.'
-    )
-    const teamRole = String(teamMember.get('role') ?? '').trim()
-    if (
-      !teamMember.exists ||
-      String(teamMember.get('user_id') ?? '').trim() !== uid ||
-      String(teamMember.get('status') ?? '').trim() !== 'active' ||
-      (teamRole !== 'owner' && teamRole !== 'operator')
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Kitchen owner or operator access is required.',
-      })
-    }
-
-    const management = readKitchenOnboardingManagement(root.data() || {})
-    if (management.mode === 'root') {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'The Kitchen is not attached to an App.',
-      })
-    }
-    const ownerAppId = requireFirestoreDocumentId(
-      resolveFireuxEntityManagementAppId(management, fireux.ecosystem),
-      'Kitchen owner App id'
-    )
-    const ownerMembershipRef = db.doc(`apps/${ownerAppId}/users/${uid}`)
-    const ownerMembership =
-      ownerMembershipRef.path === runtimeMembershipRef.path
-        ? Promise.resolve(runtimeMembership)
-        : transaction.get(ownerMembershipRef)
-    const resolvedOwnerMembership = await ownerMembership
-    memberRole(
-      resolvedOwnerMembership.exists,
-      resolvedOwnerMembership.get('role'),
-      'Kitchen owner App membership is required.'
-    )
-
-    const current = readSproochliAttachmentConfig(root.get('sproochli'))
-    const sproochli = readSproochliAttachmentConfig(
-      requested.enabled
-        ? {
-            ...current,
-            enabled: true,
-            default_language: requested.defaultLanguage,
-          }
-        : undefined
-    )
-    transaction.update(rootRef, {
-      sproochli: requested.enabled ? sproochli : FieldValue.delete(),
-      updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
-    })
-
-    return { appId: ownerAppId, sproochli }
-  })
 
   return {
     ok: true as const,
-    app_id: result.appId,
+    app_id: actor.runtimeAppId,
     kitchen_id: requested.kitchenId,
-    sproochli: result.sproochli,
+    sproochli,
   }
 }

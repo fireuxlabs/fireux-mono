@@ -1,10 +1,10 @@
 // FILE: packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
-import { FireuxRootScope } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'
 export type BlogPublicationScope = 'app' | 'ecosystem'
+export type BlogVisibility = 'app' | 'public'
 export type BlogPostTranslationStatus =
   | 'draft'
   | 'review'
@@ -58,7 +58,6 @@ export type BlogAuthor = {
   display_name: string
   avatar: string
   handle?: string
-  email?: string
 }
 
 /**
@@ -68,11 +67,12 @@ export type BlogAuthor = {
  * Storage: root-first canonical model
  * Root path: /blogs/<slug>
  * Workspace use: may be authored or managed through a workspace, but does not need a stored overlay by default
- * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
+ * Root scope: source App provenance plus publication state
  *
  * Decision note:
  * - BlogPost is root canonical truth.
- * - App and ecosystem surfaces should filter root blog posts through shared root scoping fields.
+ * - The named Firestore database owns ecosystem partitioning.
+ * - source_app_id records App provenance; publication_scope controls optional feed promotion.
  * - Do not create app-local blog post storage unless real app-local state appears later.
  * - If that changes, update the models README first, then this file.
  */
@@ -85,7 +85,8 @@ export const BlogPostStorage = {
 
 export const BlogPostModel = {
   id: '',
-  ...FireuxRootScope,
+  source_app_id: '',
+  visibility: 'app' as BlogVisibility,
   publication_scope: 'app' as BlogPublicationScope,
   title: '',
   content: '',
@@ -96,7 +97,6 @@ export const BlogPostModel = {
     display_name: '',
     avatar: '',
     handle: '',
-    email: '',
   } as BlogAuthor,
   keywords: [] as string[],
   tags: [] as string[],
@@ -131,7 +131,7 @@ export const BlogPost = BlogPostModel
 
 export type BlogPost = WidenLiteral<typeof BlogPostModel>
 
-export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
+export type BlogPostCreateInput = Omit<BlogPost, 'id' | 'created' | 'updated'>
 export type BlogPostUpdateInput = Partial<
   Omit<BlogPost, 'id' | 'slug' | 'created' | 'updated'>
 >

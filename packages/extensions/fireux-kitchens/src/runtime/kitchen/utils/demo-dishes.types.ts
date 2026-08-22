@@ -62,7 +62,10 @@ export type KitchenDemoDishesOperation = {
 export type KitchenDemoDishesSupplierScenario = {
   supplier: {
     id?: string | null
-    supplier_organization_name?: string | null
+    company_place?: {
+      name?: string | null
+      short_name?: string | null
+    }
   }
   ingredients: readonly SupplierIngredient[]
   items: readonly SupplierItem[]

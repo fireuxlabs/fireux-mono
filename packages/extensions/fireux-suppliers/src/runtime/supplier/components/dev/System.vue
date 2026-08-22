@@ -6,10 +6,10 @@
           <div class="text-sm font-semibold">Supplier model</div>
           <div class="flex flex-wrap gap-2">
             <UBadge variant="soft">Total: {{ totalCount }}</UBadge>
-            <UBadge variant="soft">Official: {{ officialCount }}</UBadge>
-            <UBadge variant="soft">Public: {{ publicCount }}</UBadge>
+            <UBadge variant="soft">Active: {{ officialCount }}</UBadge>
+            <UBadge variant="soft">Visible: {{ publicCount }}</UBadge>
             <UBadge variant="soft">Integrated: {{ integratedCount }}</UBadge>
-            <UBadge variant="soft">Public only: {{ publicOnlyCount }}</UBadge>
+            <UBadge variant="soft">Directory only: {{ publicOnlyCount }}</UBadge>
           </div>
         </div>
       </template>
@@ -51,7 +51,7 @@
           </div>
           <div class="mt-2 flex flex-wrap gap-1">
             <UBadge variant="soft" color="neutral">
-              {{ supplier.state || 'missing state' }}
+              {{ supplier.status || 'missing status' }}
             </UBadge>
             <UBadge variant="soft" color="neutral">
               {{ supplier.catalogue_state || 'missing catalogue' }}
@@ -136,23 +136,23 @@
               </UButton>
               <UButton
                 :variant="
-                  supplierIngredientStateFilter === 'official'
+                    supplierIngredientStateFilter === 'active'
                     ? 'solid'
                     : 'ghost'
                 "
                 color="neutral"
-                @click="setSupplierIngredientStateFilter('official')"
+                @click="setSupplierIngredientStateFilter('active')"
               >
-                Official
+                Active
               </UButton>
               <UButton
                 :variant="
-                  supplierIngredientStateFilter === 'public' ? 'solid' : 'ghost'
+                  supplierIngredientStateFilter === 'inactive' ? 'solid' : 'ghost'
                 "
                 color="neutral"
-                @click="setSupplierIngredientStateFilter('public')"
+                @click="setSupplierIngredientStateFilter('inactive')"
               >
-                Public
+                Inactive
               </UButton>
             </UFieldGroup>
             <UInput
@@ -244,7 +244,7 @@
             Supplier: {{ selectedSupplierLabel }}
           </UBadge>
           <UBadge variant="soft">
-            State: {{ selectedSupplier.state || 'missing' }}
+            Status: {{ selectedSupplier.status || 'missing' }}
           </UBadge>
           <UBadge variant="soft">
             Catalogue: {{ selectedSupplier.catalogue_state || 'missing' }}

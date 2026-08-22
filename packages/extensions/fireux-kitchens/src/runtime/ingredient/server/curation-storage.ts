@@ -77,7 +77,6 @@ export function canonicalStoredIngredient(
   }
 
   return {
-    id,
     schema_version: 2,
     name,
     aliases: aliases(

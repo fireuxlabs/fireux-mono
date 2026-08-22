@@ -72,19 +72,9 @@ function assertModeMatchesPrice(price: CheckoutPriceMatch, mode: CheckoutMode) {
   }
 }
 
-function priceMatchesRequestedStripePrice(
-  price: Record<string, unknown>,
-  priceId: string
-) {
-  const id = normalizeString(price.id)
-  const providerPriceId = normalizeString(price.provider_price_id)
-  return id === priceId || providerPriceId === priceId
-}
-
 async function findCheckoutPriceMatch(
   db: FirebaseFirestore.Firestore,
   productId: string,
-  product: Record<string, any>,
   priceId: string
 ): Promise<CheckoutPriceMatch | null> {
   const pricesPath = `${ProductStorage.collection}/${productId}/${ProductPriceStorage.collection}`
@@ -109,31 +99,6 @@ async function findCheckoutPriceMatch(
 
   if (!providerPriceSnap.empty) {
     return providerPriceSnap.docs[0]?.data() as CheckoutPriceMatch
-  }
-
-  const embeddedPrices = Array.isArray(product.prices) ? product.prices : []
-  const embeddedPrice = embeddedPrices.find(
-    (price: unknown) =>
-      !!price &&
-      typeof price === 'object' &&
-      priceMatchesRequestedStripePrice(price as Record<string, unknown>, priceId)
-  )
-  if (embeddedPrice && typeof embeddedPrice === 'object') {
-    return embeddedPrice as CheckoutPriceMatch
-  }
-
-  const stripePriceIds = Array.isArray(product.metadata?.stripe?.price_ids)
-    ? product.metadata.stripe.price_ids
-        .map((id: unknown) => normalizeString(id))
-        .filter(Boolean)
-    : []
-  if (stripePriceIds.includes(priceId)) {
-    return { provider: 'stripe' }
-  }
-
-  const defaultPriceId = normalizeString(product.default_price?.id)
-  if (defaultPriceId === priceId) {
-    return { provider: 'stripe' }
   }
 
   return null
@@ -196,7 +161,6 @@ async function assertCheckoutProductAndPrice(input: {
   const price = await findCheckoutPriceMatch(
     db,
     input.productId,
-    product,
     input.priceId
   )
   if (!price) {

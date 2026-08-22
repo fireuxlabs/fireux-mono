@@ -41,11 +41,9 @@ export function useKitchenDevSystem() {
       slug: '',
       status: 'active',
       visibility: false,
-      place: {},
-      fulfilment: { modes: [] },
     },
     driftMode: 'extras-only',
-    requiredPaths: ['identity.display_name'],
+    requiredPaths: ['id', 'slug', 'status', 'visibility'],
   })
 
   const hydratedById = computed(
@@ -154,7 +152,12 @@ export function useKitchenDevSystem() {
   }))
 
   return {
-    kitchenModelRuntime: KitchenDefaults,
+    kitchenModelRuntime: {
+      id: '',
+      slug: '',
+      status: 'active' as const,
+      visibility: false,
+    },
     kitchensDriftKind,
     setKitchensDriftKind,
     kitchensSelectedField,

@@ -14,6 +14,16 @@ export type WorkspaceTargetOutcome =
   | 'empty'
   | 'ready'
 
+export function resolveWorkspaceSelectedTargetOutcome(input: {
+  selectedId?: unknown
+  selectedTarget?: unknown
+  targetOutcome: WorkspaceTargetOutcome
+}): WorkspaceTargetOutcome {
+  if (!normalizeString(input.selectedId)) return input.targetOutcome
+  if (input.selectedTarget) return 'ready'
+  return input.targetOutcome === 'error' ? 'error' : 'pending'
+}
+
 type UseWorkspaceIndexOptions<
   TTarget,
   TSelection extends Record<string, unknown>,
@@ -36,9 +46,7 @@ export function useWorkspaceIndex<
   TTarget,
   TSelection extends Record<string, unknown> = Record<string, unknown>,
   TRuntime extends Record<string, unknown> = Record<string, unknown>,
->(
-  options: UseWorkspaceIndexOptions<TTarget, TSelection, TRuntime>
-) {
+>(options: UseWorkspaceIndexOptions<TTarget, TSelection, TRuntime>) {
   const targetItems = computed<TTarget[]>(() => {
     const targets = options.targets ? unref(options.targets) : []
     return Array.isArray(targets)
@@ -54,12 +62,13 @@ export function useWorkspaceIndex<
   const targetOutcome = computed<WorkspaceTargetOutcome>(() =>
     unref(options.outcome)
   )
-  const targetIds = computed(() =>
-    new Set(
-      targetItems.value
-        .map((target) => normalizeString(options.getTargetId(target)))
-        .filter(Boolean)
-    )
+  const targetIds = computed(
+    () =>
+      new Set(
+        targetItems.value
+          .map((target) => normalizeString(options.getTargetId(target)))
+          .filter(Boolean)
+      )
   )
   const sections = computed(() => ({
     targets: {
@@ -72,7 +81,16 @@ export function useWorkspaceIndex<
     targets: targetItems.value.length,
   }))
   const debug = computed(() => ({
-    ...(options.debug ? unref(options.debug) ?? {} : {}),
+    ...(options.debug ? (unref(options.debug) ?? {}) : {}),
+    workspaceIndex: {
+      selection: selection.value,
+      runtime: runtime.value,
+      targets: {
+        show: sections.value.targets.show,
+        outcome: targetOutcome.value,
+        count: counts.value.targets,
+      },
+    },
     counts: counts.value,
   }))
 

@@ -11,8 +11,10 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { Company } from 'fireux-companies/runtime/place/models/company.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import { SupplierStorage, type Supplier } from '../models/Supplier.model.ts'
+import { normalizeSupplier } from '../utils/normalize-supplier'
 
 export type SupplierDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -23,6 +25,7 @@ type SupplierDetailControls = Pick<
 
 export type UseSupplierDetailReturn = SupplierDetailControls & {
   supplier: ComputedRef<Supplier | null>
+  company: ComputedRef<Company | null>
   place: ComputedRef<Place | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
@@ -54,12 +57,13 @@ export function useSupplierDetail(
   )
   const state = useAsyncData<{
     supplier: Supplier
+    company: Company
     place: Place
   } | null>(
     () => ['supplier-detail', fireux.appId, id.value || 'none'].join('|'),
     async () => {
       if (!id.value) return null
-      return $fetch<{ supplier: Supplier; place: Place }>(
+      return $fetch<{ supplier: Supplier; company: Company; place: Place }>(
         `/api/suppliers/${encodeURIComponent(id.value)}`
       )
     },
@@ -71,6 +75,9 @@ export function useSupplierDetail(
   })
   const loadedPlace = computed<Place | null>(() =>
     loadedSupplier.value ? state.data.value?.place || null : null
+  )
+  const company = computed<Company | null>(() =>
+    loadedSupplier.value ? state.data.value?.company || null : null
   )
   const liveSupplierId = computed(() =>
     import.meta.client ? loadedSupplier.value?.id || '' : ''
@@ -87,12 +94,9 @@ export function useSupplierDetail(
     'places',
     livePlaceId
   )
-  const liveSupplier = computed<Supplier | null>(() => {
-    const value = liveSupplierRead.value
-    return value && liveSupplierId.value
-      ? { ...value, id: liveSupplierId.value }
-      : null
-  })
+  const liveSupplier = computed<Supplier | null>(() =>
+    normalizeSupplier(liveSupplierId.value, liveSupplierRead.value)
+  )
   const livePlace = computed(() =>
     normalizePlace(livePlaceId.value, livePlaceRead.value)
   )
@@ -138,6 +142,7 @@ export function useSupplierDetail(
 
   return {
     supplier,
+    company,
     place,
     ready: state.then(() => undefined),
     pending: state.pending,

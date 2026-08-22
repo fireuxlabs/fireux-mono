@@ -2,11 +2,13 @@ import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/fi
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   ProductStorage,
-  type FirebaseProduct,
+  type Product,
+  type ProductUpdateInput,
 } from '../../../models/product.model.ts'
+import { normalizeProductUpdate } from '../../../utils/normalize-product.ts'
 
 export function useProductUpdate() {
-  const base = useDocumentUpdateBase<FirebaseProduct>(
+  const base = useDocumentUpdateBase<Product>(
     ProductStorage.collection,
     {
       resolvePath: true,
@@ -16,10 +18,10 @@ export function useProductUpdate() {
 
   async function updateProduct(input: {
     productId: string
-    changes: Partial<FirebaseProduct>
+    changes: ProductUpdateInput
   }): Promise<boolean> {
     const productId = String(input.productId || '').trim()
-    const updates = input.changes
+    const updates = normalizeProductUpdate(input.changes)
     if (!productId) {
       throw new Error('Product id is required')
     }

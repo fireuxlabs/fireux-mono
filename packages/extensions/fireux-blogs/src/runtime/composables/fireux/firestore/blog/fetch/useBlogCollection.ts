@@ -7,6 +7,7 @@ import {
   type BlogPost,
 } from '../../../../../models/blogPost.model'
 import { isBlogPostInRuntimeScope } from '../utils/blogScope'
+import { normalizeBlogPost } from '../../../../../utils/normalize-blog-post'
 
 const timestampToMillis = (value: unknown): number => {
   if (!value) return 0
@@ -28,9 +29,10 @@ export function useBlogCollection() {
   const source = firestoreFetchCollection<BlogPost>(BlogPostStorage.collection)
 
   const collection = computed(() => {
-    const posts = (source.value ?? []).filter((post) =>
-      isBlogPostInRuntimeScope(post, fireux)
-    )
+    const posts = (source.value ?? [])
+      .map(post => normalizeBlogPost(post.id || post.slug, post))
+      .filter((post): post is BlogPost => Boolean(post))
+      .filter(post => isBlogPostInRuntimeScope(post, fireux))
     return posts.slice().sort((a, b) => {
       const createdA = timestampToMillis(a.created?.at)
       const createdB = timestampToMillis(b.created?.at)

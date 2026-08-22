@@ -83,7 +83,7 @@
       include-route
       title="Drivers (JSON)"
       context="collection manager · drivers"
-      :objects="devJsonData"
+      :objects="{ profiles: devJsonData, users: profileUsers }"
       :derived="{}"
       :default-open="false"
       @opened="loadDevJson"
@@ -129,7 +129,7 @@ const props = withDefaults(
 )
 
 const fetched = useDriverFetch()
-const { outcome } = fetched
+const { outcome, profileUsers } = fetched
 const collection = computed<DriverEntry[]>(() => fetched.drivers.value)
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)

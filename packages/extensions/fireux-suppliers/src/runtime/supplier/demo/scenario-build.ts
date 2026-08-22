@@ -18,7 +18,7 @@ export const buildSupplierDemoScenario = (
   const ingredients = items.map((item) => supplierIngredient(input.id, item))
   const scenario: SupplierDemoScenario = {
     appId,
-    supplier: supplierRoot(input, ingredients),
+    supplier: supplierRoot(input),
     ingredients,
     items,
     catalogues: input.catalogue

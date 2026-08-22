@@ -33,6 +33,17 @@
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
         </NuxtLink>
       </div>
+
+      <DevDebugPanel
+        object-origin="fetched"
+        launcher
+        include-route
+        title="Marketplace Stores (JSON)"
+        context="marketplace directory · Store projections with Offers kept as joined child transport"
+        :objects="stores"
+        :derived="{ truncated: Boolean((preview || data)?.truncated), preview: Boolean(preview) }"
+        :default-open="false"
+      />
     </div>
   </section>
 </template>

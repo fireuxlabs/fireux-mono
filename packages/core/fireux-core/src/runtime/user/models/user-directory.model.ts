@@ -1,9 +1,9 @@
-export type UserIdentitySummary = {
-  id: string
-  display_name: string
-  avatar: string
-  handle: string
-}
+import type { User } from './user.model.ts'
+
+export type UserIdentitySummary = Pick<
+  User,
+  'id' | 'display_name' | 'avatar' | 'handle'
+>
 
 export type ProfileUser = UserIdentitySummary
 

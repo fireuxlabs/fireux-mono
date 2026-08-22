@@ -21,23 +21,13 @@ import type { SupplierUpdateInput } from '../../models/Supplier.model.ts'
 const STRING_FIELDS = new Set([
   'company_id',
   'slug',
-  'supplier_organization_name',
-  'tagline',
-  'supplier_headline',
-  'summary',
-  'supplier_bio',
-  'supplier_image',
-  'hello',
 ])
-const ARRAY_FIELDS = new Set([
-  'supplier_item_categories',
-  'supplier_delivery_areas',
-  'linked_ingredient_ids',
-])
+const ARRAY_FIELDS = new Set(['delivery_areas'])
 const ALLOWED_FIELDS = new Set([
   ...STRING_FIELDS,
   ...ARRAY_FIELDS,
-  'state',
+  'status',
+  'visibility',
   'catalogue_state',
 ])
 
@@ -80,8 +70,16 @@ function parsePatch(value: unknown): SupplierUpdateInput {
       ]
       continue
     }
-    if (field === 'state' && raw !== 'official' && raw !== 'published') {
-      fail(400, 'Supplier state is invalid.')
+    if (
+      field === 'status' &&
+      raw !== 'active' &&
+      raw !== 'inactive' &&
+      raw !== 'archived'
+    ) {
+      fail(400, 'Supplier status is invalid.')
+    }
+    if (field === 'visibility' && typeof raw !== 'boolean') {
+      fail(400, 'Supplier visibility must be a boolean.')
     }
     if (
       field === 'catalogue_state' &&

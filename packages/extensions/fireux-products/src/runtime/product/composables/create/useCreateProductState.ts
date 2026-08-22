@@ -24,9 +24,6 @@ export function useCreateProductState() {
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
     id: '',
     source_app_id: tenantId,
-    source_ecosystem_id: useFireUXConfig().ecosystemId || '',
-    owner_type: 'app',
-    owner_id: tenantId,
     visibility: 'app',
     name: '',
     tagline: '',
@@ -38,16 +35,17 @@ export function useCreateProductState() {
     slug: '',
     product_type: defaultKind,
     features: [],
-    metadata: {},
+    categories: [],
+    brands: [],
+    source_url: '',
+    requires_template: false,
+    fulfillment_requirements: [],
   })
 
   const applyBlankDefaults = () => {
     product.value = {
       id: '',
       source_app_id: tenantId,
-      source_ecosystem_id: useFireUXConfig().ecosystemId || '',
-      owner_type: 'app',
-      owner_id: tenantId,
       visibility: 'app',
       name: '',
       tagline: '',
@@ -59,7 +57,11 @@ export function useCreateProductState() {
       slug: '',
       product_type: defaultKind,
       features: [],
-      metadata: {},
+      categories: [],
+      brands: [],
+      source_url: '',
+      requires_template: false,
+      fulfillment_requirements: [],
     }
     mainImageData.value = ''
   }
@@ -88,7 +90,6 @@ export function useCreateProductState() {
     applyBlankDefaults()
     if (tenantId) {
       product.value.source_app_id = tenantId
-      product.value.owner_id = tenantId
     }
   })
 

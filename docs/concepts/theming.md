@@ -29,12 +29,12 @@ artwork, typography, photography or presentation-specific scene chrome.
 An App brand belongs to a genuine tenant App and uses the canonical
 `public/img/app/*` runtime asset contract. Friiites is a Misebox tenant App and
 therefore owns a real App brand. A Kitchen logo alone does not create an App
-brand; ordinary Kitchens retain their bounded Workspace theme and consume their
-linked Place identity colour without copying or overriding it.
+brand; Kitchen presentation capabilities consume the linked Place identity and
+their own configuration without adding theme or media fields to Kitchen.
 
-Media stays with the entity whose truth it depicts. Place owns location
-photography, Kitchen owns operational identity overrides, Dish owns Dish
-imagery, and App owns genuinely App-wide identity and artwork. Concept art is
+Media stays with the entity whose truth it depicts. Place owns location and
+Kitchen venue identity, Dish owns Dish imagery, and App owns genuinely App-wide
+identity and artwork. Concept art is
 not Live entity evidence.
 
 A brand injection is preview/configuration data: approved tokens, type intent,
@@ -107,9 +107,8 @@ guarded neutral Nuxt starter App; it is not the landing catalogue.
 Template One begins at `/templates/template-one` with a four-Kitchen toggle:
 the Live Seehotel Bönigen Root Kitchen, the Pizza the Action Workspace Demo, the
 Friiites App Kitchen and the Deano's Demo App emulation. The public `/kitchens`
-collection classifies real Kitchen records
-directly from `Kitchen.management.mode`: Root, Workspace and App. Demo status
-never changes that capability classification. The Root input is only the Place
+collection does not classify Kitchen records as Root, Workspace, or App. Demo
+status never changes the Kitchen entity shape. The Root input is only the Place
 primary colour; Seehotel is as complete as Friiites at that level. It is the
 first agreed fallback, used behind poor or transparent identity media and
 overridden by richer resolved Workspace or App presentation.
@@ -280,10 +279,10 @@ that duplicates its Place, and refuses to overwrite a different App or Kitchen
 palette. That removal is migration evidence, not an accepted Kitchen colour
 seam.
 
-The Kitchen root owns its functional theme; its linked Place identity colour
-provides the fallback behind transparent identity uploads. The workspace
-unlocks editing that theme but never a template. App extends that effective
-Kitchen theme with one App-owned
+Kitchen presentation configuration owns its functional theme outside the
+Kitchen root; its linked Place identity colour provides the fallback behind
+transparent identity uploads. The workspace unlocks editing that capability
+but never a template. App extends that effective theme with one App-owned
 template and Brand System. The App assignment governs all of its tenant and
 franchise Kitchens; individual Kitchens do not select or fork the App template.
 

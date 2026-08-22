@@ -5,7 +5,7 @@
     :description="pageDescription"
     icon="i-lucide-users-round"
   >
-    <!-- Directory family: use the bounded User projection, not raw identity docs. -->
+    <!-- Directory family: use bounded canonical Users, not raw identity docs. -->
     <UserCollectionManager />
   </DirectorySurface>
 </template>

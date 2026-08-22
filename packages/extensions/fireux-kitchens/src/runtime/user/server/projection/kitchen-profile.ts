@@ -57,7 +57,6 @@ export const mapChefProfile: ProfileDirectoryMapper = (data, mode) => ({
     ? {
         chef_signature_dishes: strings(data.chef_signature_dishes, 20, 240),
         chef_gallery: gallery(data.chef_gallery),
-        kitchen_ids: strings(data.kitchen_ids, 20, 1_500),
         chef_organization_name: text(data.chef_organization_name, 160),
       }
     : {}),

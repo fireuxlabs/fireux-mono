@@ -45,8 +45,8 @@
         include-route
         title="Professional (Public DTO)"
         context="Professional detail · professionals/[handle] · endpoint-first SSR"
-        :objects="devPayload"
-  :derived="{}"
+        :objects="devObjects"
+        :derived="devDerived"
         :default-open="false"
       />
     </div>
@@ -205,9 +205,11 @@ useProfessionalSeo(professionalProfile, {
   displayName,
 })
 
-const devPayload = computed(() => ({
+const devObjects = computed(() => ({
   profile: professionalProfile.value,
   user: profileUser.value,
+}))
+const devDerived = computed(() => ({
   outcome: outcome.value,
   canonicalPath: canonicalPath.value,
 }))

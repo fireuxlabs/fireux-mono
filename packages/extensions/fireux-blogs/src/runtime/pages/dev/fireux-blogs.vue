@@ -94,9 +94,7 @@ const blogPostModelRuntime = BlogPostModelRuntime
 
 const { collection } = useBlogCollection()
 
-const blogsCollection = computed<Array<BlogPost & { id: string }>>(() =>
-  (collection.value ?? []).map((post) => ({ ...post, id: post.slug }))
-)
+const blogsCollection = computed<BlogPost[]>(() => collection.value ?? [])
 
 const {
   driftKind: blogsDriftKind,
@@ -105,7 +103,7 @@ const {
   driftById: blogsDriftById,
   filterOptions: blogsFilterOptions,
   filteredCollection: filteredBlogs,
-} = useDevDriftFilter<BlogPost & { id: string }>({
+} = useDevDriftFilter<BlogPost>({
   collection: blogsCollection,
   runtimeModel: blogPostModelRuntime,
 })

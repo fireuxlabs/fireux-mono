@@ -9,8 +9,8 @@
           {{ display(product?.name) || 'Unnamed Product' }}
         </h3>
         <p class="cell-description">{{ display(product?.description) }}</p>
-        <p v-if="product?.default_price" class="cell-price">
-          {{ formatDefaultPrice(product) }}
+        <p v-if="defaultPrice" class="cell-price">
+          {{ formatDefaultPrice(defaultPrice) }}
         </p>
         <div class="purchase-buttons">
           <UButton
@@ -29,7 +29,7 @@
         <strong>{{ display(product?.name) }}</strong>
       </p>
       <p>{{ display(product?.description) }}</p>
-      <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
+      <p v-if="defaultPrice">{{ formatDefaultPrice(defaultPrice) }}</p>
       <div class="purchase-buttons">
         <UButton
           :disabled="props.mode === 'preview' || isBuying"
@@ -49,30 +49,20 @@
         <li><strong>Created:</strong> {{ displayTimestamp(product?.created?.at) }}</li>
         <li><strong>Updated:</strong> {{ displayTimestamp(product?.updated?.at) }}</li>
         <li><strong>Source App:</strong> {{ display(product?.source_app_id) }}</li>
-        <li><strong>Owner:</strong> {{ display(product?.owner_id) }}</li>
+        <li><strong>Visibility:</strong> {{ display(product?.visibility) }}</li>
         <li>
           <strong>Image Supplied:</strong>
           {{ product?.main_image ? 'Yes' : 'No' }}
         </li>
         <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
-        <li>
-          <strong>Stock:</strong>
-          <span :class="{ 'text-error': product?.stock == null }">{{
-            product?.stock ?? '!'
-          }}</span>
-        </li>
-        <li>
-          <strong>Track Stock:</strong>
-          {{ display(product?.track_stock ? 'Yes' : 'No') }}
-        </li>
         <li><strong>Content:</strong> {{ display(product?.content) }}</li>
         <li>
           <strong>Default Price:</strong>
           <span
             :class="{
-              'text-error': product?.default_price?.unit_amount == null,
+              'text-error': defaultPrice?.unit_amount == null,
             }"
-            >{{ product?.default_price?.unit_amount ?? '!' }}</span
+            >{{ defaultPrice?.unit_amount ?? '!' }}</span
           >
         </li>
       </ul>
@@ -87,8 +77,8 @@
               <p class="product-summary">{{ display(product?.description) }}</p>
             </div>
             <div class="product-price">
-              <span class="price-label">{{ priceLabel(product) }}</span>
-              <span class="price-value">{{ formatDefaultPrice(product) || 'Custom' }}</span>
+              <span class="price-label">{{ priceLabel(defaultPrice) }}</span>
+              <span class="price-value">{{ formatDefaultPrice(defaultPrice) || 'Custom' }}</span>
             </div>
           </header>
 
@@ -113,13 +103,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { FirebaseProduct } from '../../models/product.model.ts';
+import type { FirebaseProduct, ProductPrice } from '../../models/product.model.ts';
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
+  prices?: ProductPrice[]
+  defaultPrice?: ProductPrice | null
   variant?: 'customer' | 'info' | 'cell' | 'page'
   mode?: 'preview' | 'fetch'
 }>()
@@ -151,17 +143,16 @@ function formatMoney(unitAmount: number, currency?: string): string {
   }).format(Number(unitAmount ?? 0) / 100)
 }
 
-function formatDefaultPrice(product?: Partial<FirebaseProduct>): string {
-  if (!product?.default_price) return ''
-  const currency = product.prices?.[0]?.currency
-  const base = formatMoney(product.default_price.unit_amount, currency)
-  return product.default_price.interval
-    ? `${base}/${product.default_price.interval}`
+function formatDefaultPrice(price?: Partial<ProductPrice> | null): string {
+  if (!price) return ''
+  const base = formatMoney(Number(price.unit_amount || 0), price.currency)
+  return price.interval
+    ? `${base}/${price.interval}`
     : base
 }
 
-function priceLabel(product?: Partial<FirebaseProduct>): string {
-  return product?.default_price?.interval ? 'From' : 'Price'
+function priceLabel(price?: Partial<ProductPrice> | null): string {
+  return price?.interval ? 'From' : 'Price'
 }
 
 const notify = (
@@ -186,20 +177,14 @@ const notify = (
   console.warn(`${title}: ${description}`)
 }
 
-function resolveCheckoutPriceId(product?: Partial<FirebaseProduct>): string {
-  const stripe = (product?.metadata as any)?.stripe || {}
-  const ids = Array.isArray(stripe?.price_ids)
-    ? stripe.price_ids.map((id: unknown) => String(id || '').trim()).filter(Boolean)
-    : []
-  if (ids.length) return ids[0]
-
-  const fallback = String(product?.default_price?.id || '').trim()
+function resolveCheckoutPriceId(): string {
+  const fallback = String(props.defaultPrice?.provider_price_id || props.defaultPrice?.id || '').trim()
   if (!fallback || fallback.startsWith('local_')) return ''
   return fallback
 }
 
-function resolveCheckoutMode(product?: Partial<FirebaseProduct>) {
-  const firstType = String(product?.prices?.[0]?.type || '').trim()
+function resolveCheckoutMode() {
+  const firstType = String(props.defaultPrice?.type || '').trim()
   return firstType === 'recurring' ? 'subscription' : 'payment'
 }
 
@@ -210,7 +195,7 @@ async function startCheckout() {
   const appId = String(product?.source_app_id || '').trim()
   const productId = String(product?.id || '').trim()
   const slug = productId
-  const priceId = resolveCheckoutPriceId(product)
+  const priceId = resolveCheckoutPriceId()
 
   if (!appId || !productId || !slug) {
     notify('Checkout unavailable', 'Product data is incomplete for checkout.', 'error')
@@ -237,7 +222,7 @@ async function startCheckout() {
           productId,
           slug,
           priceId,
-          mode: resolveCheckoutMode(product),
+          mode: resolveCheckoutMode(),
         },
       }
     )

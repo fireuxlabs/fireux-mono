@@ -1,14 +1,10 @@
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import { buildSupplierDemoScenario } from './scenario-build'
 
 export const pantryHouse = buildSupplierDemoScenario({
   id: 'pantry-house',
   companyId: 'pantry-house-hq',
   name: 'Pantry House',
-  headline: 'Dry goods, condiments and drinks for busy kitchens',
-  logoImageUrl: miseboxDemoMediaUrl('suppliers/pantry-house/logo.png'),
-  categories: ['Dry goods', 'Condiments', 'Drinks'],
-  state: 'official',
+  status: 'active',
   catalogueState: 'integrated',
   catalogue: {
     id: 'pantry-house-core-range',

@@ -4,10 +4,8 @@ import type { CurrencyDisplayFormat } from '../../../../../models/shared/currenc
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type {
-  Kitchen,
-  KitchenFulfilmentMode,
-} from '../../../../models/kitchen.model.ts'
+import type { Kitchen } from '../../../../models/kitchen.model.ts'
+import type { KitchenFulfilmentMode } from '../../../../models/fulfilment.model.ts'
 
 export namespace KitchenCard {
   export type Card = {
@@ -113,7 +111,7 @@ export type KitchenSurface = {
 export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
   kitchen?: TKitchen | null | undefined
   place?:
-    | Partial<
+    | (Partial<
         Pick<
           Place,
           | 'name'
@@ -145,7 +143,7 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
           | 'verified'
           | 'slug'
         >
-      > & { image_shade?: PlaceImageShade }
+      > & { image_shade?: PlaceImageShade })
     | null
     | undefined
   scope?: Record<string, unknown> | null | undefined

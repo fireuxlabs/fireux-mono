@@ -10,13 +10,14 @@ import {
   type KitchenWorkspaceTargetItem,
   type KitchenWorkspaceTargetsResponse,
 } from '../../models/kitchen-index.model.ts'
-import type { KitchenOrdersConfig } from '../../models/kitchen.model.ts'
+import type { KitchenOrdersConfig } from '../../models/kitchen-configuration.model.ts'
+import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
+import { readKitchenFulfilment } from './fulfilment.ts'
+import { readKitchenSproochliAttachment } from './sproochli-attachment.ts'
 import { resolveKitchenWorkspaceTargetIds } from './workspace-targets.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import {
-  readKitchenFulfilmentConfig,
   readKitchenMenusConfig,
-  readKitchenSproochliConfig,
   readKitchenVisibility,
   readKitchenThemePalette,
 } from '../../utils/kitchen-readers.ts'
@@ -42,6 +43,8 @@ const optionalNumber = (value: unknown) => {
 function projectKitchenTarget(input: {
   id: string
   canWrite: boolean
+  fulfilment: KitchenFulfilment
+  sproochli: KitchenWorkspaceTargetItem['sproochli']
   root: StoredRecord
   place: StoredRecord
 }): KitchenWorkspaceTargetItem {
@@ -102,14 +105,12 @@ function projectKitchenTarget(input: {
         ? { specials_menu_id: menus.specialsMenuId }
         : {}),
     },
-    ...(themePalette
-      ? { theme: { palette: themePalette } }
-      : {}),
+    ...(themePalette ? { theme: { palette: themePalette } } : {}),
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
       : {}),
-    fulfilment: readKitchenFulfilmentConfig(input.root),
-    sproochli: readKitchenSproochliConfig(input.root),
+    fulfilment: input.fulfilment,
+    sproochli: input.sproochli,
     display_name: displayName,
     name: displayName,
     ...(tagline ? { tagline } : {}),
@@ -176,41 +177,45 @@ export async function readKitchenWorkspaceTargets(
   const related = new Map(
     relatedSnapshots.map((snapshot) => [snapshot.ref.path, snapshot])
   )
-  const items = targetIds.map((id) => {
-    const rootSnapshot = roots.get(id)!
-    const root = rootSnapshot.data() || {}
-    const teamPath = `kitchens/${id}/team/${uid}`
-    const placeId = id
-    const placePath = `${'places'}/${placeId}`
-    const teamSnapshot = related.get(teamPath)
-    const placeSnapshot = related.get(placePath)
+  const items = await Promise.all(
+    targetIds.map(async (id) => {
+      const rootSnapshot = roots.get(id)!
+      const root = rootSnapshot.data() || {}
+      const teamPath = `kitchens/${id}/team/${uid}`
+      const placeId = id
+      const placePath = `${'places'}/${placeId}`
+      const teamSnapshot = related.get(teamPath)
+      const placeSnapshot = related.get(placePath)
 
-    if (!teamSnapshot?.exists) {
-      conflict(`Kitchen target ${id} is missing its Team membership.`)
-    }
-    if (!placeSnapshot?.exists) {
-      conflict(`Kitchen target ${id} is missing its canonical Place.`)
-    }
-    const member = teamSnapshot.data() || {}
-    const teamRole = text(member.role)
-    if (
-      text(member.user_id) !== uid ||
-      member.status !== 'active' ||
-      !['owner', 'operator', 'member'].includes(teamRole)
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: `Kitchen target ${id} requires active Team membership.`,
+      if (!teamSnapshot?.exists) {
+        conflict(`Kitchen target ${id} is missing its Team membership.`)
+      }
+      if (!placeSnapshot?.exists) {
+        conflict(`Kitchen target ${id} is missing its canonical Place.`)
+      }
+      const member = teamSnapshot.data() || {}
+      const teamRole = text(member.role)
+      if (
+        text(member.user_id) !== uid ||
+        member.status !== 'active' ||
+        !['owner', 'operator', 'member'].includes(teamRole)
+      ) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: `Kitchen target ${id} requires active Team membership.`,
+        })
+      }
+
+      return projectKitchenTarget({
+        id,
+        canWrite: teamRole === 'owner' || teamRole === 'operator',
+        fulfilment: await readKitchenFulfilment(db, id),
+        sproochli: await readKitchenSproochliAttachment(db, id, root),
+        root,
+        place: placeSnapshot.data() || {},
       })
-    }
-
-    return projectKitchenTarget({
-      id,
-      canWrite: teamRole === 'owner' || teamRole === 'operator',
-      root,
-      place: placeSnapshot.data() || {},
     })
-  })
+  )
 
   return { ok: true, family: 'kitchen', items }
 }

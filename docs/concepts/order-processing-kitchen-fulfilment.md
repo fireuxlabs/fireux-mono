@@ -1,17 +1,21 @@
 # Order processing and kitchen fulfilment spine
-Updated: 2026-08-20
+
+Updated: 2026-08-22
 Ref: d1a7d5eec
 Role: map, not canon
 
 ## Purpose
+
 Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilment rules so the next Order patches do not spread business truth across unrelated surfaces.
 
 ## Vertical links
+
 - Parent: menu-ordering.md
 - Parent: workspace.md
 - Parent: firestore-entity.md
 
 ## Horizontal links
+
 - entities.md
 - family-menu.md
 - family-workspace-entity.md
@@ -19,11 +23,13 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - components.md
 
 ## Family
+
 - Menu ordering creates the customer promise.
 - Kitchen fulfilment owns venue service rules.
 - Kitchen order processing owns operational tickets.
 
 ## Entity checkpoint
+
 - KitchenOrder is a kitchen-scoped operational record.
 - It lives below its root Kitchen at `kitchens/{kitchenId}/orders/{orderId}`.
 - It is not a root directory Entity.
@@ -32,13 +38,24 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - KitchenOrder is the active Order canon for menu ordering and kitchen processing.
 
 ## Core split
+
 - Menu content is readable by default; no stored view marker is needed.
 - `Menu.ordering.order_types[]`: what kind of Order the Menu can create.
-- `Kitchen.fulfilment`: reusable venue rules such as delivery zones, payment methods, and deposits.
+- `kitchens/{kitchenId}/fulfilment/policy`: the singular Kitchen-owned
+  fulfilment record containing delivery zones and payment methods. Root
+  `fulfilment` is a retained migration preimage only; live readers use the child
+  exclusively and return an empty policy when it is absent. The
+  trusted Kitchen command transactionally writes the complete child aggregate;
+  Delivery and Payment editors each replace their owned half while preserving
+  the other half from the child-first policy. Runtime writers never update the
+  root preimage. The protected create-only copy lives at
+  `scripts/migrate-misebox-kitchen-fulfilment.mjs`; root retirement remains a
+  separate deletion gate.
 - `KitchenOrder`: what the customer actually sent and what the kitchen must now process.
 - `Workspace/Kitchen/Operations/Orders`: operator board and ticket actions.
 
 ## Creation flow
+
 1. Every order source submits through the server-owned menu order route; Staff POS is an authenticated channel, not a direct Firestore writer.
 2. The route resolves the source app, kitchen, and scoped menu.
 3. Menu ordering config is read and merged with Kitchen fulfilment where appropriate.
@@ -51,6 +68,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 10. Kitchen workspace sends authenticated transition commands; it does not patch order lifecycle fields directly.
 
 ## Intake contract
+
 - `KitchenOrderIntakePolicies` is the exhaustive order-type matrix for allowed channels, default channel, and automatic versus operator acceptance.
 - Payment is the first gate. An unpaid required payment produces `pending_payment`.
 - After payment, dine-in, eat-in, takeaway, and room service produce `accepted`
@@ -61,6 +79,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - Ordering maps and Kitchen ticket examples consume the same shared intake policy instead of restating status strings.
 
 ## Working vocabulary
+
 - `order_type`: customer-facing service promise such as delivery, collection, dine-in, pre-order, or room service.
 - `fulfilment_policy`: rules the customer ordered under, copied for audit history.
 - `fulfilment_match`: concrete resolved result, such as the matched delivery zone and fee.
@@ -68,6 +87,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - `board_stage`: workspace rail derived from stored order state, not a separate truth source.
 
 ## Current V1 order states
+
 - `pending_payment`: payment must finish before the order can continue.
 - `pending_acceptance`: the kitchen must accept or reject the request.
 - `changes_requested`: the Kitchen sent the same Order back for the customer's
@@ -80,6 +100,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - `trashed`: explicit cleanup; the board excludes the order.
 
 ## Current V1 operator transitions
+
 - `accept`: `pending_acceptance` to `accepted`.
 - `reject`: `pending_acceptance` to `changes_requested` with a reason.
 - `mark_ready`: `accepted` to `ready`.
@@ -88,6 +109,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 - `trash`: any stored order to `trashed`.
 
 ## Execution loop
+
 1. Accepted orders enter Queue.
 2. `mark_ready` moves an order to Ready and therefore Pass.
 3. The Pass action uses fulfilment-specific wording such as Served, Collected, Dispatched, or Delivered, but every action applies the same `complete` transition.
@@ -99,6 +121,7 @@ Map the boundary between Menu ordering, Kitchen-owned Order records, and fulfilm
 There is no stored Preparing state in V1. Queue already means the kitchen owns the work; add another state only when a real start/hold preparation action exists.
 
 ## Fulfilment ownership
+
 - Kitchen owns reusable fulfilment defaults.
 - Menu opts into order types and can add type-specific policy.
 - Order stores the exact policy and match used at creation.
@@ -107,16 +130,16 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 
 ## Delta register
 
-| Delta | Classification | Why | Alignment recommendation |
-| --- | --- | --- | --- |
-| Order types collect different customer fields | `accepted` | Destination, timing, party, and handoff requirements genuinely differ | Keep input local to each funnel and submit through one creation contract |
-| Operator copy differs by fulfilment type | `accepted` | Served, Collected, Dispatched, and Delivered describe different handoffs | Map copy to shared transitions; do not fork lifecycle states |
-| The board presents Incoming, Queue, Pass, and Recent rails | `accepted` | Rails are projections of operator work | Keep `board_stage` derived from the single stored status |
-| Static fulfilment setup can sit under Kitchen Identity | `accepted` | Zones and payment capability are venue setup, not daily work | Move only real pause/load commands into Operations |
-| No stored Preparing state exists | `accepted` | Queue already means the Kitchen owns the work in V1 | Add a state only with a real start/hold command and transition tests |
-| Daily pause/load authority is unsettled | `to-confirm` | Capability and current operational availability are different truths | Introduce persistence only with the first real operator control |
-| Customer cancellation/refund vocabulary is incomplete | `to-confirm` | Payment lifecycle is not yet fully specified | Extend the shared state machine before adding surface-local status |
-| Payment ownership may outgrow KitchenOrder | `to-confirm` | Capture/refund audit may earn a separate record | Make a fresh entity/record decision when payment history requires it |
+| Delta                                                      | Classification | Why                                                                      | Alignment recommendation                                                 |
+| ---------------------------------------------------------- | -------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Order types collect different customer fields              | `accepted`     | Destination, timing, party, and handoff requirements genuinely differ    | Keep input local to each funnel and submit through one creation contract |
+| Operator copy differs by fulfilment type                   | `accepted`     | Served, Collected, Dispatched, and Delivered describe different handoffs | Map copy to shared transitions; do not fork lifecycle states             |
+| The board presents Incoming, Queue, Pass, and Recent rails | `accepted`     | Rails are projections of operator work                                   | Keep `board_stage` derived from the single stored status                 |
+| Static fulfilment setup can sit under Kitchen Identity     | `accepted`     | Zones and payment capability are venue setup, not daily work             | Move only real pause/load commands into Operations                       |
+| No stored Preparing state exists                           | `accepted`     | Queue already means the Kitchen owns the work in V1                      | Add a state only with a real start/hold command and transition tests     |
+| Daily pause/load authority is unsettled                    | `to-confirm`   | Capability and current operational availability are different truths     | Introduce persistence only with the first real operator control          |
+| Customer cancellation/refund vocabulary is incomplete      | `to-confirm`   | Payment lifecycle is not yet fully specified                             | Extend the shared state machine before adding surface-local status       |
+| Payment ownership may outgrow KitchenOrder                 | `to-confirm`   | Capture/refund audit may earn a separate record                          | Make a fresh entity/record decision when payment history requires it     |
 
 ## Source evidence
 
@@ -155,6 +178,7 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
    second intake lifecycle.
 
 ## Guardrails
+
 - Do not put delivery zones or payment defaults on Menu as canonical truth.
 - Do not create a new mode just because one restaurant uses different wording.
 - Do not infer delivery, collection, or opening rules from Place hours.

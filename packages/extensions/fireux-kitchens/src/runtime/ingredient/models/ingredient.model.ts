@@ -45,6 +45,8 @@ export const IngredientEntity = defineFireuxEntity({
 })
 
 export const IngredientDefaults = {
+  // Runtime identity is supplied by the `ingredients/{ingredientId}` reader.
+  // Canonical documents do not need to repeat their Firestore document id.
   id: '' as string,
   schema_version: 2 as const,
   name: '' as string,

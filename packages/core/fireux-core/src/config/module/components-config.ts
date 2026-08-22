@@ -19,17 +19,18 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Ecosystem',
   })
 
+  registerComponentsDir(resolver, './runtime/project/components/Workspace', {
+    global: false,
+    pathPrefix: true,
+    prefix: 'WorkspaceProject',
+    priority: 20,
+  })
+
   registerComponentsDir(resolver, './runtime/project/components', {
     global: false,
     pathPrefix: true,
     prefix: 'Project',
     ignore: ['Workspace/**'],
-  })
-
-  registerComponentsDir(resolver, './runtime/project/components/Workspace', {
-    global: false,
-    pathPrefix: true,
-    prefix: 'WorkspaceProject',
   })
 
   registerComponentsDir(resolver, './runtime/user/components', {

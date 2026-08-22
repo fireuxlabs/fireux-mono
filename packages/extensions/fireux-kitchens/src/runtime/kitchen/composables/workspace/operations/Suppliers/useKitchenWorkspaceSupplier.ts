@@ -40,7 +40,7 @@ export function useKitchenWorkspaceSupplier() {
       (line) => normalizeString(line.link.supplier_id) === supplierId.value
     )
   )
-  const supplierState = computed(() => normalizeString(supplier.value?.state))
+  const supplierState = computed(() => normalizeString(supplier.value?.status))
   const catalogueState = computed(() =>
     normalizeString(supplier.value?.catalogue_state)
   )
@@ -48,7 +48,7 @@ export function useKitchenWorkspaceSupplier() {
     () => catalogueState.value === 'integrated'
   )
   const isEcosystemSupplier = computed(
-    () => supplierState.value === 'official' || hasIntegratedCatalogue.value
+    () => supplierState.value === 'active' || hasIntegratedCatalogue.value
   )
   const supplierBasePath = computed(() =>
     supplierId.value

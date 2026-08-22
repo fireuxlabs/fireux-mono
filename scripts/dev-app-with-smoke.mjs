@@ -305,6 +305,11 @@ async function reuseExistingApp(listenerPids) {
   }
 }
 
+// Nuxt config imports resolve through fireux-core/dist even when an existing
+// same-checkout server is reused. Restore those generated helpers before the
+// health check so cleanup cannot leave a live server with a broken config graph.
+ensureFireuxCoreConfigHelpers()
+
 const existingListenerPids = getPortListenerPids(app.port)
 if (await reuseExistingApp(existingListenerPids)) process.exit(0)
 
@@ -330,12 +335,6 @@ if (goQrProvider) {
   devEnv.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL = goQrProvider
   console.log(`[dev] Go QR provider: ${goQrProvider}`)
 }
-
-// Dev app Nuxt configs resolve fireux-core config exports through dist unless
-// the runtime enables package "development" conditions. Rebuild immediately
-// before spawning the dev server so guard/preflight cleanup cannot leave the
-// child app without config helpers.
-ensureFireuxCoreConfigHelpers()
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
 const child = spawnPnpm(

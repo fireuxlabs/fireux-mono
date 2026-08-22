@@ -212,6 +212,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(directoryApi, /MAX_EXACT_IDS\s*=\s*100/)
   assert.match(detailApi, /\bgetRuntimeFirestore\s*\(/)
   assert.match(detailApi, /\bnormalizeIngredient\b/)
+  assert.match(detailApi, /ingredient\.status !== 'active'/)
   assert.doesNotMatch(
     `${directoryApi}\n${detailApi}`,
     /firebase\/firestore/,
@@ -219,10 +220,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(ingredientNormalizer, /schema_version:\s*2/)
   assert.doesNotMatch(
+    ingredientNormalizer,
+    /\.\.\.source/,
+    'Ingredient normalization must project canonical fields explicitly.'
+  )
+  assert.doesNotMatch(
     `${ingredientNormalizer}\n${directoryApi}\n${detailApi}\n${collection}\n${detail}`,
     /PublicIngredient|ingredient-public|public-projection|public-ingredient/
   )
-  assert.match(curation, /return\s*{\s*id,\s*schema_version:\s*2/)
+  assert.match(curation, /return\s*{\s*schema_version:\s*2/)
+  assert.match(curation, /Object\.hasOwn\(existing\.data \|\| {}, 'id'\)/)
   assert.match(curation, /assertUniqueActiveIngredientIdentity/)
   assert.match(curation, /candidateTerms/)
   assert.match(curation, /ingredient\.status !== 'active'/)

@@ -76,6 +76,10 @@ export const serverKitchenDishesTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.dishes', 'dishes')
 export const serverKitchenTeamMembersTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.team', 'team')
+export const serverKitchenFulfilmentTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.fulfilment', 'fulfilment')
+export const serverKitchenIntegrationsTarget = (kitchenId: string) =>
+  serverKitchenChildTarget(kitchenId, 'kitchens.integrations', 'integrations')
 export const serverKitchenOrdersTarget = (kitchenId: string) =>
   serverKitchenChildTarget(kitchenId, 'kitchens.orders', 'orders')
 export const serverKitchenOrderServiceTarget = (kitchenId: string) =>

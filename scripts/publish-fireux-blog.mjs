@@ -150,11 +150,7 @@ function readPost(filePath, source) {
   const content = markdownToHtml(markdown)
   const words = markdown.replace(/^#.*$/gm, '').trim().split(/\s+/).filter(Boolean).length
   const post = {
-    id: slug,
     source_app_id: APP_ID,
-    source_ecosystem_id: ECOSYSTEM_ID,
-    owner_type: 'app',
-    owner_id: APP_ID,
     visibility: 'public',
     publication_scope: 'app',
     title,

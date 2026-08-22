@@ -340,7 +340,7 @@ behaviour; the map does not require empty symmetry.
 ## Similarities
 
 - All workspace entities need target selection or a selected target.
-- Workspace Entities always own Team authority, while a Console Team editor is
+- Workspace Entities always own Team authority, while a Workspace Team editor is
   exposed only when its lifecycle is implemented.
 - All workspace indexes should stay thin.
 

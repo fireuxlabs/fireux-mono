@@ -1,4 +1,3 @@
-import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
@@ -14,32 +13,13 @@ function fail(message: string): never {
 const allowed = new Set([
   'slug',
   'status',
-  'menus.currency_format',
-  'menus.show_currency',
-  'menus.available',
   'visibility',
-  'orders.modes',
-  'orders.default_lead_time_minutes',
-  'orders.acceptance_required',
-  'orders.operation_hours',
-  'orders.printing',
-  'tables.count',
-  'fulfilment',
 ])
-const groups = new Set(['menus', 'orders', 'tables'])
 
 function flatten(source: Record<string, unknown>) {
   const out: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(source)) {
-    if (!groups.has(key)) {
-      out[key] = value
-      continue
-    }
-    const nested = record(value)
-    if (!nested) fail(`Kitchen ${key} update must be an object.`)
-    for (const [child, childValue] of Object.entries(nested)) {
-      out[`${key}.${child}`] = childValue
-    }
+    out[key] = value
   }
   const unsupported = Object.keys(out).find((key) => !allowed.has(key))
   if (unsupported)
@@ -47,22 +27,10 @@ function flatten(source: Record<string, unknown>) {
   return out
 }
 
-function boundedJson(value: unknown, label: string, max = 30_000) {
-  if (!record(value)) fail(`${label} must be an object.`)
-  const encoded = JSON.stringify(value)
-  if (!encoded || encoded.length > max) fail(`${label} is too large.`)
-  return value
-}
-
 function boundedString(value: unknown, label: string, max: number) {
   const result = text(value)
   if (result.length > max) fail(`${label} is too long.`)
   return result
-}
-
-function sparseString(value: unknown, label: string, max: number) {
-  const result = boundedString(value, label, max)
-  return result || FieldValue.delete()
 }
 
 export function parseKitchenUpdate(value: unknown) {
@@ -93,53 +61,10 @@ export function parseKitchenUpdate(value: unknown) {
       out.status = status
       continue
     }
-    if (key === 'menus.currency_format') {
-      const format = boundedString(raw, 'Kitchen currency format', 40)
-      out[key] = !format || format === 'dash' ? FieldValue.delete() : format
-      continue
-    }
-    if (key === 'menus.show_currency' || key === 'menus.available') {
-      if (typeof raw !== 'boolean') fail(`${key} must be boolean.`)
-      out[key] = raw === true ? FieldValue.delete() : false
-      continue
-    }
     if (key === 'visibility') {
       if (typeof raw !== 'boolean') fail('Kitchen visibility must be boolean.')
       out.visibility = raw
       continue
-    }
-    if (key === 'orders.modes') {
-      if (!Array.isArray(raw) || raw.length > 20)
-        fail('Kitchen order modes are invalid.')
-      const modes = (raw as unknown[]).map((item) =>
-        boundedString(item, 'Kitchen order mode', 50)
-      )
-      if (modes.some((item) => !item) || new Set(modes).size !== modes.length) {
-        fail('Kitchen order modes are invalid.')
-      }
-      out[key] = modes.length ? modes : FieldValue.delete()
-      continue
-    }
-    if (key === 'orders.default_lead_time_minutes' || key === 'tables.count') {
-      const number = Number(raw)
-      if (!Number.isInteger(number) || number < 0 || number > 10_000) {
-        fail(`${key} must be a bounded whole number.`)
-      }
-      out[key] = number
-      continue
-    }
-    if (key === 'orders.acceptance_required') {
-      if (typeof raw !== 'boolean') fail(`${key} must be boolean.`)
-      out[key] = raw
-      continue
-    }
-    if (key === 'orders.operation_hours' || key === 'orders.printing') {
-      out[key] =
-        raw === null ? FieldValue.delete() : boundedJson(raw, key, 15_000)
-      continue
-    }
-    if (key === 'fulfilment') {
-      out[key] = boundedJson(raw, 'Kitchen fulfilment')
     }
   }
   return out

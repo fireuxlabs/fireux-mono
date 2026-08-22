@@ -85,8 +85,8 @@
           include-route
           title="Supplier DTO"
           context="Supplier detail page · suppliers/[slug] · canonical Supplier and linked Place"
-          :objects="{ supplier, place }"
-          :derived="{ headerPresentation }"
+          :objects="supplier ? [supplier] : []"
+          :derived="{ company, place, headerPresentation }"
           :default-open="false"
         />
       </article>
@@ -97,11 +97,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
+import type { Company } from 'fireux-companies/runtime/place/models/company.model'
 import type { SupplierDetailOutcome } from '../composables/useSupplierDetail'
 import type { Supplier } from '../models/Supplier.model'
 
 const props = defineProps<{
   supplier: Supplier | null
+  company: Company | null
   place: Place | null
   outcome: SupplierDetailOutcome
 }>()
@@ -109,19 +111,13 @@ const emit = defineEmits<{ refresh: [] }>()
 const clean = (value: unknown) => String(value ?? '').trim()
 const supplier = computed(() => props.supplier)
 const name = computed(
-  () => clean(supplier.value?.supplier_organization_name) || 'Supplier'
+  () => clean(props.place?.short_name || props.place?.name) || 'Supplier'
 )
-const about = computed(() =>
-  clean(supplier.value?.supplier_bio || supplier.value?.summary)
-)
-const categories = computed<string[]>(() =>
-  Array.isArray(supplier.value?.supplier_item_categories)
-    ? supplier.value.supplier_item_categories.map(clean).filter(Boolean)
-    : []
-)
+const about = computed(() => clean(props.place?.about))
+const categories = computed<string[]>(() => [])
 const deliveryAreas = computed<string[]>(() =>
-  Array.isArray(supplier.value?.supplier_delivery_areas)
-    ? supplier.value.supplier_delivery_areas.map(clean).filter(Boolean)
+  Array.isArray(supplier.value?.delivery_areas)
+    ? supplier.value.delivery_areas.map(clean).filter(Boolean)
     : []
 )
 const headerPresentation = computed<Place | null>(() => {
@@ -130,13 +126,9 @@ const headerPresentation = computed<Place | null>(() => {
   return {
     ...place,
     name: name.value,
-    brand_tagline: clean(
-      supplier.value?.tagline ||
-        supplier.value?.supplier_headline ||
-        place.brand_tagline
-    ),
-    about: about.value || place.about,
-    logo_image: clean(supplier.value?.supplier_image) || place.logo_image,
+    brand_tagline: clean(place.brand_tagline),
+    about: place.about,
+    logo_image: place.logo_image,
   }
 })
 const detailStyle = computed(() => {

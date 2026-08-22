@@ -84,8 +84,8 @@
         include-route
         :title="'Agents (JSON)'"
         context="collection manager · agents"
-        :objects="devJsonData"
-  :derived="{}"
+        :objects="{ profiles: devJsonData, users: profileUsers }"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -133,7 +133,7 @@ const props = withDefaults(
 )
 
 const fetched = useAgentFetch()
-const { outcome } = fetched
+const { outcome, profileUsers } = fetched
 const collection = fetched.coreAgents
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)

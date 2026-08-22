@@ -6,28 +6,32 @@ export function useSupplierWorkspaceIdentity() {
   const { selection, runtime, actions } = useSupplierWorkspace()
 
   const name = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_organization_name)
+    normalizeString(
+      selection.supplier.value?.company_place?.short_name ||
+        selection.supplier.value?.company_place?.name
+    )
   )
   const tagline = computed(() =>
-    normalizeString((selection.supplier.value as any)?.tagline)
+    normalizeString(selection.supplier.value?.company_place?.brand_tagline)
   )
   const headline = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_headline)
+    normalizeString(selection.supplier.value?.company_place?.brand_tagline)
   )
   const summary = computed(() =>
-    normalizeString(selection.supplier.value?.summary)
+    normalizeString(selection.supplier.value?.company_place?.about)
   )
   const imageUrl = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_image)
+    normalizeString(
+      selection.supplier.value?.company_place?.logo_image ||
+        selection.supplier.value?.company_place?.image_url
+    )
   )
   const categories = computed(() =>
-    Array.isArray(selection.supplier.value?.supplier_item_categories)
-      ? selection.supplier.value?.supplier_item_categories
-      : []
+    []
   )
   const deliveryAreas = computed(() =>
-    Array.isArray(selection.supplier.value?.supplier_delivery_areas)
-      ? selection.supplier.value?.supplier_delivery_areas
+    Array.isArray(selection.supplier.value?.delivery_areas)
+      ? selection.supplier.value?.delivery_areas
       : []
   )
   const debug = computed(() => ({

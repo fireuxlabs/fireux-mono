@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
-  menuKitchenFulfilment,
+  readMenuKitchenFulfilment,
   readMenuKitchenBySlug,
 } from '../../../../menu/server/ownership/kitchen-scope.ts'
 
@@ -28,5 +28,5 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return menuKitchenFulfilment(kitchen.data)
+  return readMenuKitchenFulfilment(kitchen.id)
 })

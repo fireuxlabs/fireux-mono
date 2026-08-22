@@ -76,28 +76,17 @@ export const supplierIngredient = (
 })
 
 export const supplierRoot = (
-  input: SupplierDemoScenarioSeed,
-  ingredients: SupplierIngredient[]
+  input: SupplierDemoScenarioSeed
 ): Supplier => ({
   ...SupplierDefaults,
   id: input.id,
   management: { mode: 'workspace' },
   company_id: input.companyId,
   slug: input.id,
-  supplier_organization_name: input.name,
-  tagline: input.headline,
-  supplier_headline: input.headline,
-  supplier_image: input.logoImageUrl,
-  summary: `${input.name} is a deterministic read-only Supplier Workspace example.`,
-  supplier_bio: `${input.name} supplies connected Demo Kitchens through one shared read-only Misebox world.`,
-  supplier_item_categories: [...input.categories],
-  supplier_delivery_areas: ['Switzerland'],
-  state: input.state,
+  status: input.status,
+  visibility: true,
   catalogue_state: input.catalogueState,
-  linked_ingredient_ids: ingredients.map(
-    (ingredient) => ingredient.ingredient_id
-  ),
-  hello: `Welcome to ${input.name}.`,
+  delivery_areas: ['Switzerland'],
   created,
   updated,
 })

@@ -63,6 +63,7 @@ export const ProfessionalConstraints = {
 } as const
 
 export const ProfessionalModel = {
+  // Reader-supplied parent User uid; never stored in the profile record.
   id: '' as string,
   kind: 'professional' as const,
   title: '' as string,

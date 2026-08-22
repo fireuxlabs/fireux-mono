@@ -89,10 +89,8 @@
 import { useFetch } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { computed } from 'vue'
-import type {
-  Kitchen,
-  KitchenFulfilmentConfig,
-} from '../../models/kitchen.model.ts'
+import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
 import type { KitchenDetailOutcome } from '../../composables/useKitchenDetail'
@@ -112,9 +110,7 @@ const kitchen = computed(() => props.kitchen)
 const place = computed(() => props.place)
 const displayKitchen = computed(() => props.presentation)
 const { isAdmin, isDeveloper } = useUser()
-const canEditPlace = computed(() =>
-  Boolean(isAdmin.value || isDeveloper.value)
-)
+const canEditPlace = computed(() => Boolean(isAdmin.value || isDeveloper.value))
 const locator = computed(() => String(props.presentation?.slug || '').trim())
 const kitchenName = computed(() =>
   String(
@@ -139,7 +135,7 @@ const detailStyle = computed(() => {
     ? { '--fx-entity-accent': color, '--fx-entity-media-bg': color }
     : undefined
 })
-const emptyFulfilment: KitchenFulfilmentConfig = {
+const emptyFulfilment: KitchenFulfilment = {
   delivery_zones: [],
   payment_methods: [],
 }
@@ -149,13 +145,10 @@ const fulfilmentPath = computed(() =>
     : ''
 )
 
-const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
-  fulfilmentPath,
-  {
-    immediate: Boolean(fulfilmentPath.value),
-    watch: [fulfilmentPath],
-  }
-)
+const { data: fulfilmentData } = useFetch<KitchenFulfilment>(fulfilmentPath, {
+  immediate: Boolean(fulfilmentPath.value),
+  watch: [fulfilmentPath],
+})
 const resolvedFulfilment = computed(
   () => fulfilmentData.value || emptyFulfilment
 )

@@ -2,6 +2,7 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import {
   ProductStorage,
   type Product,
+  type ProductPrice,
 } from '../models/product.model.ts'
 
 export namespace ProductCard {
@@ -54,8 +55,7 @@ export function useProductInterface() {
     return `${symbol}${rounded}`
   }
 
-  const buildBadges = (product: Product): string[] => {
-    const prices = Array.isArray(product.prices) ? product.prices : []
+  const buildBadges = (prices: ProductPrice[]): string[] => {
     const setup = prices.find(
       (price) =>
         price?.metadata?.kind === 'setup_fee' || price?.type === 'one_time'
@@ -74,7 +74,7 @@ export function useProductInterface() {
     return badges
   }
 
-  function map(product: Product): ProductCard.Card {
+  function map(product: Product, prices: ProductPrice[] = []): ProductCard.Card {
     const imageUrl =
       safeString(product.main_image) ||
       safeString(product.images?.[0]?.url)
@@ -106,15 +106,16 @@ export function useProductInterface() {
 
       name,
       description,
-      badges: buildBadges(product),
+      badges: buildBadges(prices),
     }
   }
 
   function buildInterface(
-    target?: Product | null | undefined
+    target?: Product | null | undefined,
+    prices: ProductPrice[] = []
   ): ProductCard.Card | null {
     if (!target) return null
-    const mapped = map(target)
+    const mapped = map(target, prices)
     return mapped.id ? mapped : null
   }
 

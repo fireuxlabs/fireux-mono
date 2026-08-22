@@ -63,8 +63,7 @@ const accordionSteps = [
 const { requiredAssetsComplete, requiredContentComplete } = useProductFulfillmentOnboarding(computed(() => props.product))
 
 const requirements = computed<string[]>(() => {
-  const value = props.product?.metadata?.delivery?.requirements
-  return Array.isArray(value) ? value.map((entry) => String(entry || '')) : []
+  return props.product?.fulfillment_requirements || []
 })
 
 const stepIsComplete = (value: string) => {

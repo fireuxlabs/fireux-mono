@@ -24,19 +24,44 @@ still needed to remove unexplained drift.
 The exact peer and Operation lists live once in the source-backed capability
 map in `workspace.md`. The family deltas are:
 
-| Member    | Status and reason                                                                                                                                         |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank     | `accepted`: App-local minimal harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations                  |
-| Kitchen   | `accepted`: Place-backed root, dual Live/Demo targets, root-owned Team, and a large operational domain                                                  |
-| Supplier  | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                               |
-| Portfolio | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                  |
-| Property  | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                       |
-| Project   | `accepted`: FireUX control-plane root with Team authority and no production Create flow                                                                    |
-| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Console surface remains future product work                                               |
+| Member            | Status and reason                                                                                                                       |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Blank             | `accepted`: App-local minimal harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations |
+| Kitchen           | `accepted`: Place-backed root, dual Live/Demo targets, root-owned Team, and a large operational domain                                  |
+| Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                              |
+| Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                |
+| Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                    |
+| Project           | `accepted`: FireUX control-plane root with Team authority and no production Create flow                                                 |
+| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                 |
 
 ## Shared spine
 
 Every Workspace Entity must share these rules:
+
+### Kitchen and Project proving siblings
+
+Kitchen and Project prove the Workspace Entity family beyond their shared
+Index anatomy. Both use the canonical `/workspace/{family}` route, one
+request-scoped `useXWorkspace` runtime, outcome-bound selection, root-owned
+Team authority, the shared shell and navigation groups, and entity-owned
+Overview, Identity, Team, Operations, and debug adapters.
+
+Their material differences remain domain-owned. Project is a private FireUX
+control-plane Entity with Apps and Ecosystem Operations and no production
+Create flow. Kitchen is a domain-database Entity with Live and Demo sources,
+trusted onboarding, food-service Operations, and same-ID Place identity. Those
+differences prove that Workspace is a shared product surface rather than a
+field on either root or a generic owner of their records.
+
+Canonical storage follows the Entity boundary. Project owns
+`projects/{projectId}/team/{uid}`. Kitchen owns
+`kitchens/{kitchenId}/team/{uid}` while its four-field root remains exactly
+`id`, `slug`, `status`, and `visibility`, and same-ID Place owns venue
+identity. A Kitchen capability owns its configuration and records beneath the
+Kitchen only after that destination and its consumers are proved. Existing
+Kitchen root fields and App-nested support are migration preimages, not a
+second authority; retain them until the capability-owned reader, writer,
+migration verification, and protected Workspace consumer are complete.
 
 - Entity server capabilities under the entity-scoped destination follow the
   Workspace's vertical product slices: `core/`,
@@ -108,27 +133,27 @@ Every Workspace Entity must share these rules:
 
 ## Accepted deltas
 
-| Delta                                                               | State      | Why it exists                                                                                                                         | Evidence or owner                                                                                                      |
-| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Kitchen identity is its same-id Place                               | `accepted` | Kitchen is the operation at one Place; the Kitchen root id is the Place id, Place owns venue identity, and Kitchen owns operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                        |
-| Kitchen renders Live and Demo target sources                        | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract | Kitchen core plus `scripts/guards/workspace-indexes.mjs` and `scripts/guards/demo-data.mjs`                              |
-| Kitchen Team adds operational roles to shared Team authority       | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list          | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
-| Supplier, Portfolio, and Property Team are minimal today           | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                     | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
-| Blank has no child Operations                                       | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools          | `projects/fireux/fireux-blank`                                                                                         |
-| Project has no Create                                               | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                      | Project entity declaration and internal control-plane APIs                                                             |
-| Operation folders differ by domain                                  | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | current source uses each owner's `components/Workspace/Operations` and `composables/workspace/operations` capability paths |
+| Delta                                                        | State      | Why it exists                                                                                                                                               | Evidence or owner                                                                                                          |
+| ------------------------------------------------------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Kitchen identity is its same-id Place                        | `accepted` | Kitchen is the operation at one Place; the Kitchen root id is the Place id, Place owns venue identity, and capability records own operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                          |
+| Kitchen renders Live and Demo target sources                 | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract                       | Kitchen core plus `scripts/guards/workspace-indexes.mjs` and `scripts/guards/demo-data.mjs`                                |
+| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                               | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
+| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                          | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
+| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                | `projects/fireux/fireux-blank`                                                                                             |
+| Project has no Create                                        | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                                            | Project entity declaration and internal control-plane APIs                                                                 |
+| Operation folders differ by domain                           | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                                              | current source uses each owner's `components/Workspace/Operations` and `composables/workspace/operations` capability paths |
 
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
 ## Migration and drift register
 
-| Difference                                                                          | State        | Required direction                                                                                                                   |
-| ----------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Supplier readers return canonical Supplier and related Place Entities               | `accepted`   | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                     |
-| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
-| Kitchen authored route slug differs from stable root identity                       | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID      |
-| Workspace Entity implementation uses `runtime/<entity>/<technical role>`              | `accepted`   | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                  |
+| Difference                                                                          | State      | Required direction                                                                                                                   |
+| ----------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Supplier readers return canonical Supplier and related Place Entities               | `accepted` | Preserve both canonical records; Workspace consumers must not manufacture replacement Entity DTOs                                    |
+| Team presentation does not yet resolve polished people consistently outside Kitchen | `drift`    | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
+| Kitchen authored route slug differs from stable root identity                       | `accepted` | Resolve the slug through the bounded Kitchen route resolver while Workspace and operation relationships retain the stable root ID    |
+| Workspace Entity implementation uses `runtime/<entity>/<technical role>`            | `accepted` | Preserve Nuxt pages/API entrypoints and established component/composable names through explicit scoped registration                  |
 
 ## Component and composable naming
 
@@ -166,7 +191,7 @@ composition delta, not permission to fork the Workspace Index spine.
 
 ### Next
 
-- Keep Kitchen root + required same-id Place + root-owned Team composition
+- Keep the four-field Kitchen root + required same-id Place + root-owned Team composition
   guarded across Live, Demo, and Test sources. Reject copied Place identity,
   Kitchen media overrides, and redundant `place_id` on the Kitchen root.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep

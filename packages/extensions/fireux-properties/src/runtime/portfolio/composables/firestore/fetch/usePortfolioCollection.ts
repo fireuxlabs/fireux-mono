@@ -2,13 +2,13 @@ import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useTargetCollectionSelection } from '../../../../composables/fireux/firestore/collection-selection'
-import { usePortfolioInterface } from '../utils/view/usePortfolioInterface'
+import type { Portfolio } from '../../../models/portfolio.model.ts'
+import { normalizePortfolio } from '../../../utils/normalize-portfolio'
 import {
   DEFAULT_COLLECTION_PATH,
   UNSUPPORTED_TEST_SOURCE_MESSAGE,
   resolvePortfolioId,
   type PortfolioCollectionDoc,
-  type PortfolioCollectionItem,
   type UsePortfolioCollectionOptions,
 } from './portfolio-collection-contract'
 
@@ -25,7 +25,6 @@ export function usePortfolioCollection(
     useTargetCollectionSelection(options, 'live')
   const { firestoreFetchCollection, firestoreLoadDocsByIds } =
     useFirestoreRead()
-  const { surface } = usePortfolioInterface()
   const targeted = computed(() => hasFilter.value || hasOperatorFilter.value)
   const collection = firestoreFetchCollection<PortfolioCollectionDoc>(
     computed(() =>
@@ -45,11 +44,11 @@ export function usePortfolioCollection(
   const source = computed(() =>
     targeted.value ? (documents.docs.value ?? []) : (collection.value ?? [])
   )
-  const portfolios = computed<PortfolioCollectionItem[]>(() =>
-    source.value.reduce<PortfolioCollectionItem[]>((items, portfolio) => {
+  const portfolios = computed<Portfolio[]>(() =>
+    source.value.reduce<Portfolio[]>((items, portfolio) => {
       const id = resolvePortfolioId(portfolio)
       if (!id || (hasFilter.value && !filterIdSet.value.has(id))) return items
-      const item = surface({ portfolio: { ...portfolio, id } })
+      const item = normalizePortfolio(id, portfolio)
       if (item) items.push(item)
       return items
     }, [])

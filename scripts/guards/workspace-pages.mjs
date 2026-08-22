@@ -42,7 +42,10 @@ const STANDARD_SURFACES = new Set([
   'live',
 ])
 const NON_DIRECT_PAGES = new Map([
-  ['packages/core/fireux-core/src/runtime/pages/workspace/index.vue', 'redirect'],
+  [
+    'packages/core/fireux-core/src/runtime/pages/workspace/index.vue',
+    'redirect',
+  ],
   [
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity.vue',
     'router',
@@ -477,7 +480,8 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
     }
 
     if (family === 'kitchen') {
-      const searchHeadlines = catalogue.match(/\bheadline:\s*['"][^'"]+['"]/g) || []
+      const searchHeadlines =
+        catalogue.match(/\bheadline:\s*['"][^'"]+['"]/g) || []
       if (searchHeadlines.length !== contract.operations.length) {
         violations.push(
           `${contract.catalogue} (every Kitchen Operation requires one search-language customer-job headline)`
@@ -754,6 +758,41 @@ function validateWorkspaceLayout(repoRoot, violations) {
     violations.push(
       `${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`
     )
+  }
+  for (const pattern of [
+    /useWorkspaceRouteTargetAccess\s*\(/,
+    /selectionAccessPending/,
+    /selectionAccessError/,
+    /workspace-selection-pending/,
+    /workspace-selection-unavailable/,
+  ]) {
+    if (!pattern.test(source)) {
+      violations.push(
+        `${CONSOLE_LAYOUT} (live selected-target routes must wait for exact family target authority and fail closed on pending, error, or settled missing access)`
+      )
+    }
+  }
+
+  const accessRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceRouteTargetAccess.ts'
+  const accessPath = path.join(repoRoot, accessRelative)
+  const accessSource = existsSync(accessPath)
+    ? readFileSync(accessPath, 'utf8')
+    : ''
+  for (const pattern of [
+    /useWorkspaceTargetRequest\(family/,
+    /type !== ['"]demo['"] &&\s*type !== ['"]test['"]/,
+    /activeRequest\.value\?\.outcome\.value === ['"]pending['"]/,
+    /activeRequest\.value\?\.outcome\.value === ['"]error['"]/,
+    /normalizeString\(item\.id\) === selectedId\.value/,
+    /outcome !== ['"]ready['"] && outcome !== ['"]empty['"]/,
+    /selections\.get\(family\)\?\.clearSelection\(\)/,
+  ]) {
+    if (!pattern.test(accessSource)) {
+      violations.push(
+        `${accessRelative} (live selected-target routes must wait for exact family target authority and fail closed on pending, error, or settled missing access)`
+      )
+    }
   }
 }
 

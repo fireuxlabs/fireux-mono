@@ -4,15 +4,13 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../models/menu.model.ts'
-import {
-  readKitchenMenusConfig,
-  readKitchenSproochliConfig,
-} from '../../../kitchen/utils/kitchen-readers.ts'
+import { readKitchenMenusConfig } from '../../../kitchen/utils/kitchen-readers.ts'
+import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import {
-  menuKitchenFulfilment,
   menuKitchenIdentity,
   menuKitchenOperationHours,
+  readMenuKitchenFulfilment,
   readMenuKitchenPlaceData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
@@ -209,12 +207,16 @@ const scopedTarget = async (
   ])
   const identity = menuKitchenIdentity(input.rootKitchenData, placeData)
   const kitchenPlaceId = input.kitchenId
-  const fulfilment = menuKitchenFulfilment(input.rootKitchenData)
+  const fulfilment = await readMenuKitchenFulfilment(input.kitchenId)
   const kitchenOperationHours = menuKitchenOperationHours(
     input.rootKitchenData,
     placeData
   )
-  const sproochli = readKitchenSproochliConfig(input.rootKitchenData)
+  const sproochli = await readKitchenSproochliAttachment(
+    getRuntimeFirestore(),
+    input.kitchenId,
+    input.rootKitchenData
+  )
   const menus = readKitchenMenusConfig(input.rootKitchenData)
 
   return {

@@ -14,7 +14,7 @@
         <dl class="yv-shop-hero__stats">
           <div>
             <dt>In the shop</dt>
-            <dd>{{ products.length }}</dd>
+            <dd>{{ productReads.length }}</dd>
           </div>
           <div>
             <dt>Bicycles</dt>
@@ -83,24 +83,24 @@
         aria-label="Yellow Velo products"
       >
         <NuxtLink
-          v-for="product in filteredProducts"
-          :key="product.id"
-          :to="`/products/${product.slug}`"
+          v-for="entry in filteredProducts"
+          :key="entry.product.id"
+          :to="`/products/${entry.product.slug}`"
           class="yv-product-card"
         >
           <div class="yv-product-card__media">
             <img
-              :src="product.main_image"
-              :alt="product.name"
+              :src="entry.product.main_image"
+              :alt="entry.product.name"
               loading="lazy"
             >
-            <span>{{ primaryCategory(product) }}</span>
+            <span>{{ primaryCategory(entry.product) }}</span>
           </div>
           <div class="yv-product-card__body">
-            <h3>{{ product.name }}</h3>
-            <p>{{ productSummary(product) }}</p>
+            <h3>{{ entry.product.name }}</h3>
+            <p>{{ productSummary(entry.product) }}</p>
             <div>
-              <strong>{{ formatPrice(product) }}</strong>
+              <strong>{{ formatPrice(entry.defaultPrice) }}</strong>
               <span>View item <UIcon name="i-lucide-arrow-up-right" /></span>
             </div>
           </div>
@@ -121,7 +121,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
-import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
+import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({
   layout: 'landing',
@@ -145,7 +145,7 @@ useSeoMeta({
 })
 
 const fetched = useProductCollection()
-const products = computed(() => fetched.products.value ?? [])
+const productReads = computed(() => fetched.reads.value ?? [])
 const pending = computed(() => fetched.pending.value)
 const error = computed(() => fetched.error.value)
 const search = ref('')
@@ -167,25 +167,22 @@ const categoryDefinitions = [
 ] as const
 
 const productCategories = (product: FirebaseProduct) => {
-  const metadata = product.metadata as { categories?: unknown } | undefined
-  return Array.isArray(metadata?.categories)
-    ? metadata.categories.map(value => String(value))
-    : []
+  return product.categories
 }
 
 const categories = computed(() =>
   categoryDefinitions.map(category => ({
     ...category,
     count: category.value === 'all'
-      ? products.value.length
-      : products.value.filter(product =>
+      ? productReads.value.length
+      : productReads.value.filter(({ product }) =>
           productCategories(product).includes(category.value)
         ).length,
   }))
 )
 
 const bicycleCount = computed(() =>
-  products.value.filter(product =>
+  productReads.value.filter(({ product }) =>
     productCategories(product).includes('Bicycles')
   ).length
 )
@@ -197,7 +194,8 @@ const activeCategoryLabel = computed(() =>
 
 const filteredProducts = computed(() => {
   const query = search.value.trim().toLowerCase()
-  return products.value.filter((product) => {
+  return productReads.value.filter((entry) => {
+    const product = entry.product
     const categories = productCategories(product)
     const matchesCategory =
       activeCategory.value === 'all' || categories.includes(activeCategory.value)
@@ -207,7 +205,7 @@ const filteredProducts = computed(() => {
       product.name,
       product.description,
       ...(categories || []),
-      ...(((product.metadata as any)?.brands as string[] | undefined) || []),
+      ...product.brands,
     ].join(' ').toLowerCase().includes(query)
   })
 })
@@ -224,9 +222,9 @@ const productSummary = (product: FirebaseProduct) => {
   return summary.length > 116 ? `${summary.slice(0, 113).trimEnd()}…` : summary
 }
 
-const formatPrice = (product: FirebaseProduct) => {
-  const amount = Number(product.default_price?.unit_amount ?? 0)
-  const currency = String(product.prices?.[0]?.currency || 'CHF').toUpperCase()
+const formatPrice = (price: ProductPrice | null) => {
+  const amount = Number(price?.unit_amount ?? 0)
+  const currency = String(price?.currency || 'CHF').toUpperCase()
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency,

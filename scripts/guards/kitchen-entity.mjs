@@ -16,6 +16,87 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
   )
   const kitchenBase = `${base}kitchen/`
+  const kitchenModel = read(repoRoot, `${kitchenBase}models/kitchen.model.ts`)
+  const fulfilmentModel = read(
+    repoRoot,
+    `${kitchenBase}models/fulfilment.model.ts`
+  )
+  const fulfilmentReader = read(
+    repoRoot,
+    `${kitchenBase}server/core/fulfilment.ts`
+  )
+  const fulfilmentUpdate = read(
+    repoRoot,
+    `${kitchenBase}server/core/fulfilment-update.ts`
+  )
+  const sproochliReader = read(
+    repoRoot,
+    `${kitchenBase}server/core/sproochli-attachment.ts`
+  )
+  const sproochliUpdate = read(
+    repoRoot,
+    `${kitchenBase}server/identity/sproochli.ts`
+  )
+  const serverTargets = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/utils/firestore-mutations/server-targets.ts'
+  )
+  const kitchenRules = read(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules'
+  )
+  const fulfilmentMigration = read(
+    repoRoot,
+    'scripts/migrate-misebox-kitchen-fulfilment.mjs'
+  )
+  const sproochliMigration = read(
+    repoRoot,
+    'scripts/migrate-misebox-kitchen-sproochli.mjs'
+  )
+  const fulfilmentDeletion = read(
+    repoRoot,
+    'scripts/delete-misebox-kitchen-root-fulfilment.mjs'
+  )
+  const kitchenOwnershipMigration = read(
+    repoRoot,
+    'scripts/migrate-misebox-kitchen-ownership.mjs'
+  )
+  const entityCanonMigration = read(
+    repoRoot,
+    'scripts/migrate-firestore-entity-canon.mjs'
+  )
+  const fulfilmentUpdateApi = read(
+    repoRoot,
+    `${base}server/api/workspace/kitchen/fulfilment.patch.ts`
+  )
+  const fulfilmentUpdateComposable = read(
+    repoRoot,
+    `${kitchenBase}composables/workspace/identity/mutations/useKitchenFulfilmentUpdate.ts`
+  )
+  const deliveryEditor = read(
+    repoRoot,
+    `${kitchenBase}components/Workspace/Identity/Sections/Delivery/useKitchenDeliveryEditor.ts`
+  )
+  const paymentEditor = read(
+    repoRoot,
+    `${kitchenBase}components/Workspace/Identity/Sections/Payments.vue`
+  )
+  const kitchenUpdateInput = read(
+    repoRoot,
+    `${kitchenBase}server/identity/update-input.ts`
+  )
+  const fulfilmentApi = read(
+    repoRoot,
+    `${base}server/api/kitchens/[kitchen]/fulfilment.get.ts`
+  )
+  const workspaceTargets = read(
+    repoRoot,
+    `${kitchenBase}server/core/targets.ts`
+  )
+  const menuKitchenScope = read(
+    repoRoot,
+    `${base}menu/server/ownership/kitchen-scope.ts`
+  )
   const canonicalCollectionPath = `${kitchenBase}composables/firestore/fetch/useKitchenCollection.ts`
   const retiredCollectionPath = `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
   const retiredIdentityReadPath = `${kitchenBase}server/identity/public-projection.ts`
@@ -37,7 +118,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const indexApi = read(repoRoot, `${base}server/api/kitchens/index.get.ts`)
   const indexReader = read(repoRoot, `${kitchenBase}server/index/read.ts`)
-  const detailApi = read(repoRoot, `${base}server/api/kitchens/[kitchen].get.ts`)
+  const detailApi = read(
+    repoRoot,
+    `${base}server/api/kitchens/[kitchen].get.ts`
+  )
   const operatorPanel = read(
     repoRoot,
     `${kitchenBase}components/Detail/OperatorPanel.vue`
@@ -46,6 +130,115 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const sproochli = read(
     repoRoot,
     `${kitchenBase}components/Detail/Sproochli.vue`
+  )
+  assert.equal(
+    kitchenModel.replace(/\s+/g, ' ').trim(),
+    "export type Kitchen = { id: string slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
+    'Kitchen must remain the minimal canonical root; Place and capability data belong to their own models.'
+  )
+  assert.match(
+    fulfilmentModel,
+    /export type KitchenFulfilment = \{\s*delivery_zones: KitchenDeliveryZone\[\]\s*payment_methods: KitchenFulfilmentPaymentPolicy\[\]\s*\}/
+  )
+  assert.doesNotMatch(
+    fulfilmentModel,
+    /kitchen_id|created|updated|Storage|registry/i
+  )
+  assert.match(
+    fulfilmentReader,
+    /kitchens\/\$\{kitchenId\}\/fulfilment\/policy/
+  )
+  assert.match(fulfilmentReader, /delivery_zones: \[\], payment_methods: \[\]/)
+  assert.doesNotMatch(
+    fulfilmentReader,
+    /rootKitchenData|db\.doc\(`kitchens\/\$\{kitchenId\}`\)/
+  )
+  assert.match(fulfilmentUpdate, /requireKitchenMutationAuthority\(/)
+  assert.match(fulfilmentUpdate, /serverKitchenFulfilmentTarget\(/)
+  assert.match(fulfilmentUpdate, /mutations\.read\(target, 'policy'\)/)
+  assert.doesNotMatch(fulfilmentUpdate, /authority\.rootData/)
+  assert.match(fulfilmentUpdate, /mutations\.update\(target, 'policy', next\)/)
+  assert.match(fulfilmentUpdate, /mutations\.create\(target, 'policy', next\)/)
+  assert.doesNotMatch(fulfilmentUpdate, /FIRESTORE_MUTATION_TARGETS\.kitchens/)
+  assert.match(
+    sproochliReader,
+    /kitchens\/\$\{kitchenId\}\/integrations\/sproochli/
+  )
+  assert.match(sproochliReader, /readKitchenSproochliConfig\(root\)/)
+  assert.match(sproochliUpdate, /requireKitchenMutationAuthority\(/)
+  assert.match(sproochliUpdate, /serverKitchenIntegrationsTarget\(/)
+  assert.match(sproochliUpdate, /mutations\.read\(target, 'sproochli'\)/)
+  assert.match(
+    sproochliUpdate,
+    /mutations\.update\(target, 'sproochli', next\)/
+  )
+  assert.match(
+    sproochliUpdate,
+    /mutations\.create\(target, 'sproochli', next\)/
+  )
+  assert.doesNotMatch(
+    sproochliUpdate,
+    /FIRESTORE_MUTATION_TARGETS\.kitchens|transaction\.update\(root|FieldValue|serverAuditStamp|management/i
+  )
+  assert.match(
+    serverTargets,
+    /serverKitchenIntegrationsTarget[\s\S]*'kitchens\.integrations', 'integrations'/
+  )
+  assert.match(kitchenRules, /match \/integrations\/\{integrationId\}/)
+  assert.match(
+    kitchenRules,
+    /match \/integrations\/\{integrationId\} \{\s*allow get, list, create, update, delete: if false;/
+  )
+  assert.match(kitchenRules, /'ingredients',\s*'integrations',/)
+  assert.match(fulfilmentUpdateApi, /updateKitchenFulfilment/)
+  assert.match(fulfilmentUpdateComposable, /method: 'PATCH'/)
+  assert.doesNotMatch(fulfilmentUpdateComposable, /firebase\/firestore/)
+  assert.match(
+    deliveryEditor,
+    /changes: \{ delivery_zones: nextDeliveryZones \}/
+  )
+  assert.match(paymentEditor, /changes: \{ payment_methods: paymentMethods \}/)
+  assert.doesNotMatch(deliveryEditor, /useKitchenUpdate|changes: patch/)
+  assert.doesNotMatch(paymentEditor, /useKitchenUpdate|changes: patch/)
+  assert.doesNotMatch(kitchenUpdateInput, /fulfilment/)
+  assert.doesNotMatch(kitchenUpdateInput, /integrations|sproochli/i)
+  assert.match(fulfilmentMigration, /EXPECTED_KITCHENS = 15/)
+  assert.match(fulfilmentMigration, /readKitchenFulfilmentConfig\(rootData\)/)
+  assert.match(fulfilmentMigration, /verbs: \['create'\]/)
+  assert.match(fulfilmentMigration, /mcpSkillCreate\(/)
+  assert.match(fulfilmentMigration, /writeProtectedJsonArtifact\(/)
+  assert.doesNotMatch(fulfilmentMigration, /mcpSkillUpdate|mcpSkillDelete/)
+  assert.match(sproochliMigration, /EXPECTED_KITCHENS = 15/)
+  assert.match(sproochliMigration, /readSproochliAttachmentConfig\(/)
+  assert.match(sproochliMigration, /normalizeValidAttachment\(/)
+  assert.match(sproochliMigration, /verbs: \['create'\]/)
+  assert.match(sproochliMigration, /mcpSkillCreate\(/)
+  assert.match(sproochliMigration, /writeProtectedJsonArtifact\(/)
+  assert.match(
+    sproochliMigration,
+    /kitchens\/\$\{root\.id\}\/integrations\/sproochli/
+  )
+  assert.doesNotMatch(
+    sproochliMigration,
+    /mcpSkillUpdate|mcpSkillDelete|FieldValue|transaction\.(?:set|update|delete)|\.doc\([^)]*\)\.(?:set|update|delete)/
+  )
+  assert.match(fulfilmentDeletion, /EXPECTED_DELETIONS = 2/)
+  assert.match(fulfilmentDeletion, /rootPolicySha256 !== childSha256/)
+  assert.match(fulfilmentDeletion, /retained managed export URI/)
+  assert.match(fulfilmentDeletion, /writeProtectedJsonArtifact\(/)
+  assert.match(
+    kitchenOwnershipMigration,
+    /CHILD_OWNED_FIELDS = \['fulfilment'\]/
+  )
+  assert.match(
+    entityCanonMigration,
+    /Kitchen fulfilment must use kitchens\/\{kitchenId\}\/fulfilment\/policy\./
+  )
+  assert.match(fulfilmentApi, /readMenuKitchenFulfilment\(kitchen\.id\)/)
+  assert.match(workspaceTargets, /readKitchenFulfilment\(db, id\)/)
+  assert.match(
+    menuKitchenScope,
+    /readKitchenFulfilment\(getRuntimeFirestore\(\), kitchenId\)/
   )
   assert.equal(
     existsSync(file(repoRoot, retiredCollectionPath)),
@@ -82,7 +275,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /where\(FieldPath\.documentId\(\), '==', requestedPlaceId\)/
   )
   assert.equal(
-    existsSync(file(repoRoot, `${kitchenBase}models/kitchen-directory.model.ts`)),
+    existsSync(
+      file(repoRoot, `${kitchenBase}models/kitchen-directory.model.ts`)
+    ),
     false,
     'Kitchen collections must return Kitchen[] without a directory-entry model.'
   )
@@ -93,7 +288,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detailModel, /presentation:\s*KitchenDetailPresentation/)
   assert.doesNotMatch(
     detailModel,
-    /Team|Order|KitchenSale|MiseTask|PrepItem|private/i,
+    /Team|Order|KitchenSale|MiseTask|PrepItem|Fulfilment|AuditStamp|private/i,
     'Kitchen Entity detail must not expose protected Workspace children.'
   )
   assert.doesNotMatch(
@@ -116,10 +311,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
   assert.match(detail, /KitchenDetailState/)
   assert.match(detail, /:objects="\{ kitchen, place \}"/)
-  assert.match(detail, /\/places\/\$\{encodeURIComponent\(kitchen\.id\)\}\/edit/)
+  assert.match(
+    detail,
+    /\/places\/\$\{encodeURIComponent\(kitchen\.id\)\}\/edit/
+  )
   assert.match(detail, /KitchenDetailSproochli/)
   assert.match(detail, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
-  assert.match(identityReader, /readKitchenSproochliConfig/)
+  assert.doesNotMatch(identityReader, /readKitchenSproochliConfig/)
+  assert.match(detailApi, /readKitchenSproochliAttachment/)
   assert.match(identityReader, /normalizeKitchen/)
   assert.match(identityReader, /normalizePlace/)
   assert.match(identityReader, /resolveKitchenDetailPresentation/)
@@ -129,20 +328,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /const imageUrl = kitchen\.place\.cover_image \|\| kitchen\.place\.image_url/
   )
   assert.match(identityReader, /image_kind:\s*'photograph'/)
-  assert.match(
+  assert.match(identityReader, /const placeId = document\.id/)
+  assert.doesNotMatch(
     identityReader,
-    /const placeId = document\.id/
+    /managementTarget|management_mode|management_app_id/
   )
-  assert.doesNotMatch(identityReader, /managementTarget|management_mode|management_app_id/)
   assert.doesNotMatch(identityReader, /profile_id/)
   assert.match(sproochli, /SproochliLanguageTrigger/)
   assert.match(sproochli, /resolveSproochliLanguageOptions/)
   assert.equal(
-    existsSync(file(repoRoot, `${kitchenBase}components/Detail/IdentityEditor.vue`)),
+    existsSync(
+      file(repoRoot, `${kitchenBase}components/Detail/IdentityEditor.vue`)
+    ),
     false
   )
   assert.equal(
-    existsSync(file(repoRoot, `${kitchenBase}server/identity/identity-edit.ts`)),
+    existsSync(
+      file(repoRoot, `${kitchenBase}server/identity/identity-edit.ts`)
+    ),
     false
   )
   assert.match(detailPage, /\buseKitchenDetail\s*\(/)

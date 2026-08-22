@@ -4,7 +4,10 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: load live targets through the authenticated server projection.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: make the server projection the sole live authority.
 import { computed } from 'vue'
-import { useWorkspaceIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import {
+  resolveWorkspaceSelectedTargetOutcome,
+  useWorkspaceIndex,
+} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
 import type { KitchenFetchSource } from '../../firestore/fetch/useKitchenFetch'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceDemoData } from '../core/useKitchenWorkspaceDemoData'
@@ -22,12 +25,17 @@ export function useKitchenWorkspaceIndex() {
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
   const targetOutcome = targetCollection.outcome
+  const selectedTargetOutcome = computed(() =>
+    workspaceSelection.kitchenSource.value === 'demo'
+      ? demoCollection.outcome.value
+      : targetOutcome.value
+  )
   const selectedOutcome = computed(() =>
-    workspaceSelection.hasSelection.value
-      ? 'ready'
-      : workspaceSelection.kitchenSource.value === 'demo'
-        ? demoCollection.outcome.value
-        : targetOutcome.value
+    resolveWorkspaceSelectedTargetOutcome({
+      selectedId: workspaceSelection.kitchenId.value,
+      selectedTarget: workspaceSelection.kitchen.value,
+      targetOutcome: selectedTargetOutcome.value,
+    })
   )
   const selection = computed(() => ({
     kitchen: workspaceSelection.kitchen.value,
@@ -69,6 +77,7 @@ export function useKitchenWorkspaceIndex() {
     readOnly: workspaceRuntime.readOnly.value,
     canWrite: workspaceRuntime.canWrite.value,
     selectedKitchen: workspaceSelection.kitchen.value,
+    selectedOutcome: selectedOutcome.value,
     targetCount: targetKitchens.value.length,
     demoTargetCount: demoKitchens.value.length,
     targetSource: {

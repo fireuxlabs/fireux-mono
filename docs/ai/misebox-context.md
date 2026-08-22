@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-20
+Updated: 2026-08-22
 Ref: d1a7d5eec
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -64,8 +64,9 @@ Before each task:
   creates the required Place first, then creates the same-ID Kitchen root and
   its Kitchen-owned Team authority. Kitchen is a plain parent model, not a
   generic Entity/App/Workspace management classification.
-- A Kitchen owns its id/slug, status, visibility, fulfilment modes, and
-  estimated fulfilment minutes. Its resolved model contains the same-ID Place.
+- A Kitchen root owns exactly its id/slug, status, and visibility. Its resolved
+  public read contains the same-ID Place. Fulfilment and other operational
+  configuration are capability data, not properties of the Kitchen entity.
   Place owns venue name and description, address/geo, photography and identity
   media, classification/tags, price level, currency/timezone, and business
   hours. Ratings require a separate authority; favourites are User-owned; Menu
@@ -76,16 +77,29 @@ Before each task:
   second colour authority; bounded Kitchen reads receive the linked Place
   colour instead of copying or overriding it.
 - Kitchen Team owns bounded membership, roles, permissions, and audit stamps.
-  Kitchen owns its `theme`, `menus`, `orders`, `tables`,
-  `fulfilment`, and `integrations` configuration. A missing Kitchen theme may
-  be seeded from the owning App's reviewed semantic palette during trusted
-  attachment; existing Kitchen colours are preserved. The Kitchen Identity
-  surface mirrors onboarding as
-  Place → Kitchen → Workspace → App: Place identity colour first, sparse Kitchen
-  identity media second, Kitchen palette and optional font choices on Kitchen,
-  then dedicated App controls only for `management.mode === 'app'`. App writes
-  retain only the palette delta over Kitchen and exactly two typography family
-  inputs; the five App masters remain the universal readiness gate.
+  Kitchen capabilities own `theme`, `menus`, `orders`, `tables`,
+  `fulfilment`, and `integrations` configuration outside the Kitchen root.
+  Fulfilment is the singular `KitchenFulfilment` record at
+  `kitchens/{kitchenId}/fulfilment/policy`; its model contains only
+  `delivery_zones` and `payment_methods`. Trusted readers prefer that child and
+  return the canonical empty policy when that child is missing and never read
+  root `fulfilment`; root retirement requires a separate deletion gate. The guarded create-only
+  audit and migration entrypoint is
+  `scripts/migrate-misebox-kitchen-fulfilment.mjs`. Delivery-zone and
+  payment-method editors use the trusted Kitchen fulfilment command, which
+  transactionally replaces the complete child policy while preserving the
+  editor-independent half from the child policy; no runtime writer updates or
+  falls back to root `fulfilment`. Remaining root `theme`, `menus`, and
+  `orders` maps are migration preimages,
+  not permission to keep capability state on Kitchen. Their child destinations
+  remain unproved until a named owner and every reader/writer are reconciled;
+  do not invent a generic configuration document. In particular,
+  `order-service/current` is the live Order sequence record and is not an
+  operation-hours policy. The Kitchen Identity surface follows Place →
+  Workspace → App: Place owns venue identity and its identity colour,
+  Workspace may own a separately proved presentation capability, and a real
+  App owns only App presentation. Current root palette/font readers and writers
+  are transitional consumers, not Kitchen entity authority.
   Menu colour presentation resolves an optional KitchenMenu
   `theme.palette` over the Kitchen palette, deleting the Menu field
   to restore inheritance. The bounded DTO exposes the effective palette and
@@ -583,8 +597,11 @@ Before each task:
   approved `de-CH` templates and an explicit recipient preference on their
   eventual canonical contact authority, never the browser cookie or live AI
   generation.
-- Kitchen Sproochli participation is configured only on the canonical root
-  Kitchen through the trusted Kitchen Workspace endpoint. Shared Menu projections
+- Kitchen Sproochli participation is configured at the fixed trusted child
+  `kitchens/{kitchenId}/integrations/sproochli` through the Kitchen Workspace
+  endpoint. The trusted reader temporarily falls back to the retained root
+  `integrations.sproochli` preimage; ordinary clients cannot read or write the
+  child, and the command never writes the Kitchen root. Shared Menu projections
   and the bounded Kitchen detail show its Default/language trigger;
   a language selected on the Kitchen route follows the visitor into its
   published Menu doorways. Structured Menus

@@ -57,8 +57,8 @@
           include-route
           :title="'Ingredient (Doc)'"
           context="Ingredient detail page · ingredients/[id] · ingredient doc"
-          :objects="ingredient"
-          :derived="{}"
+          :objects="{ ingredient }"
+          :derived="{ docId, outcome: ingredient ? 'found' : 'not-found' }"
           :default-open="false"
         />
 

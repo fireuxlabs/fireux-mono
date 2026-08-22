@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import type { KitchenFulfilmentConfig } from '../../models/kitchen.model.ts'
+import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import {
   readKitchenCurrencyCode,
   readKitchenFulfilmentConfig,
@@ -29,7 +29,7 @@ import {
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
-  fulfilment?: KitchenFulfilmentConfig | null
+  fulfilment?: KitchenFulfilment | null
 }>()
 
 const deliveryZones = computed(

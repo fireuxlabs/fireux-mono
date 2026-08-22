@@ -57,9 +57,6 @@
     <!-- Pricing -->
     <ProductCreatePrices />
 
-    <!-- Stock & Capacity Management -->
-    <ProductCreateStock />
-
     <!-- Main Product Image -->
     <div class="image-section">
       <MoleculesFormsStateImagePicker

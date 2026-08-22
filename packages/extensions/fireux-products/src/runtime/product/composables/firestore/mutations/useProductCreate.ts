@@ -9,6 +9,7 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
   FirebaseProduct,
+  ProductCreateInput as CanonicalProductCreateInput,
   ProductPrice,
   StripePriceInput,
 } from '../../../models/product.model.ts'
@@ -23,8 +24,7 @@ type StripeProvisionResult = {
 }
 
 export type ProductCreateInput = {
-  payload: Omit<FirebaseProduct, 'created' | 'updated'> &
-    Partial<Pick<FirebaseProduct, 'created' | 'updated'>>
+  payload: Partial<CanonicalProductCreateInput>
   priceInputs: StripePriceInput[]
 }
 
@@ -37,9 +37,6 @@ export type ProductCreateResult = {
 export const ProductPayload = {
   id: '',
   source_app_id: '',
-  source_ecosystem_id: '',
-  owner_type: 'app',
-  owner_id: '',
   visibility: 'app',
   name: '',
   Q: '',
@@ -51,16 +48,7 @@ export const ProductPayload = {
   main_image: '',
   images: [] as Array<Record<string, any>>,
   features: [] as Array<Record<string, any>>,
-  prices: [] as Array<Record<string, any>>,
-  default_price: {
-    id: '',
-    unit_amount: 0,
-    interval: '',
-  },
   product_type: '',
-  track_stock: false,
-  stock: 0 as number | null,
-  metadata: {} as Record<string, any>,
 }
 
 export const ProductStampOptions = {
@@ -113,14 +101,6 @@ export function useProductCreate() {
       provider_price_id: priceIds[index] || '',
       metadata: price.metadata ?? {},
     }))
-  }
-
-  const chooseDefaultPrice = (normalizedPrices: ProductPrice[]) => {
-    const recurringMonthlyIndex = normalizedPrices.findIndex(
-      (price) => price.type === 'recurring' && price.interval === 'month'
-    )
-    const defaultIndex = recurringMonthlyIndex >= 0 ? recurringMonthlyIndex : 0
-    return normalizedPrices[defaultIndex]
   }
 
   const provisionStripeProduct = async (input: {
@@ -233,13 +213,7 @@ export function useProductCreate() {
       }
 
       const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
-      const sourceEcosystemId = normalizeString(
-        payload.source_ecosystem_id || fireux.ecosystemId
-      )
-      const ownerType = normalizeString(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem'))
-      const ownerId = normalizeString(
-        payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
-      )
+      if (!sourceAppId) throw new Error('Product source App is required')
 
       const stripeProvision = await provisionStripeProduct({
         payload,
@@ -253,36 +227,27 @@ export function useProductCreate() {
         stripeProvision.priceIds,
         slug
       )
-      const defaultPriceCandidate = chooseDefaultPrice(normalizedPrices)
-
       const data = {
-        ...payload,
-        id: slug,
-        slug,
         source_app_id: sourceAppId,
-        source_ecosystem_id: sourceEcosystemId,
-        owner_type: ownerType,
-        owner_id: ownerId,
         visibility: payload.visibility || 'app',
-        prices: normalizedPrices,
-        default_price: defaultPriceCandidate
-          ? {
-              id: defaultPriceCandidate.id || '',
-              unit_amount: defaultPriceCandidate.unit_amount || 0,
-              ...(defaultPriceCandidate.interval
-                ? { interval: defaultPriceCandidate.interval }
-                : {}),
-            }
-          : payload.default_price,
-        metadata: {
-          ...(payload.metadata ?? {}),
-          stripe: {
-            product_id: stripeProvision.productId,
-            price_ids: stripeProvision.priceIds,
-            configured: true,
-          },
-        },
-      } as Omit<FirebaseProduct, 'created' | 'updated'>
+        name: normalizeString(payload.name),
+        tagline: normalizeString(payload.tagline),
+        Q: normalizeString(payload.Q),
+        A: normalizeString(payload.A),
+        description: normalizeString(payload.description),
+        content: normalizeString(payload.content),
+        slug,
+        active: payload.active !== false,
+        main_image: normalizeString(payload.main_image),
+        images: Array.isArray(payload.images) ? payload.images : [],
+        features: Array.isArray(payload.features) ? payload.features : [],
+        categories: Array.isArray(payload.categories) ? payload.categories : [],
+        brands: Array.isArray(payload.brands) ? payload.brands : [],
+        source_url: normalizeString(payload.source_url),
+        requires_template: payload.requires_template === true,
+        fulfillment_requirements: Array.isArray(payload.fulfillment_requirements) ? payload.fulfillment_requirements : [],
+        product_type: normalizeString(payload.product_type),
+      } as CanonicalProductCreateInput
 
       await create(
         defineRuntimeClientCreateTarget('project.products', collectionPath),

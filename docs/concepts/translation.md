@@ -47,8 +47,9 @@ human-reviewed public copy.
   profiles carry locale, region, style, and glossary metadata.
 - Apps own tenant-specific language profiles and phrase packs. Generic packages
   own the workflow contract, never a tenant's vocabulary.
-- A sparse `sproochli` attachment on the canonical root Kitchen owns whether
-  its shared Menu surfaces participate and which source state they present.
+- A sparse Kitchen translation capability configuration owns whether its
+  shared Menu surfaces participate and which source state they present; it is
+  not a Kitchen root field.
 - A Menu manifest exposes only its final Sproochli `state`, selected
   `language`, nullable `readyLanguages`, and resolved shared surface copy.
   Menu records carry no source language: canonical authored content is always

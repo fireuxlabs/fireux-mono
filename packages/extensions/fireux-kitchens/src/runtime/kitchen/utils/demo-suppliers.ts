@@ -8,17 +8,16 @@ export type KitchenDemoSupplierScenarioLike = {
   supplier: {
     id?: string | null
     company_id?: string | null
-    supplier_organization_name?: string | null
-    supplier_headline?: string | null
-    supplier_image?: string | null
+    delivery_areas?: readonly string[] | null
     company_place?: {
       id?: string | null
       name?: string | null
+      short_name?: string | null
       short_address?: string | null
       image_url?: string | null
+      logo_image?: string | null
+      brand_tagline?: string | null
     } | null
-    supplier_item_categories?: readonly string[] | null
-    supplier_delivery_areas?: readonly string[] | null
   }
   ingredients: readonly {
     ingredient_id?: string | null
@@ -131,9 +130,11 @@ export function buildKitchenDemoSuppliersOperation(
       )
     }
 
-    const name = clean(scenario.supplier.supplier_organization_name)
+    const name =
+      clean(scenario.supplier.company_place?.short_name) ||
+      clean(scenario.supplier.company_place?.name)
     const companyPlaceId = clean(scenario.supplier.company_place?.id)
-    const logoImageUrl = clean(scenario.supplier.supplier_image)
+    const logoImageUrl = clean(scenario.supplier.company_place?.logo_image)
     const placeImageUrl = clean(scenario.supplier.company_place?.image_url)
     const headquartersLabel =
       clean(scenario.supplier.company_place?.short_address) ||
@@ -154,13 +155,13 @@ export function buildKitchenDemoSuppliersOperation(
     return {
       id: supplierId,
       name,
-      headline: clean(scenario.supplier.supplier_headline),
+      headline: clean(scenario.supplier.company_place?.brand_tagline),
       imageUrl: placeImageUrl || logoImageUrl,
       logoImageUrl,
       placeImageUrl,
       headquartersLabel,
-      categories: cleanList(scenario.supplier.supplier_item_categories),
-      deliveryAreas: cleanList(scenario.supplier.supplier_delivery_areas),
+      categories: [],
+      deliveryAreas: cleanList(scenario.supplier.delivery_areas),
       linkedIngredientCount: linkedIngredientIdSet.size,
       catalogueCount: scenario.catalogues.length,
     }

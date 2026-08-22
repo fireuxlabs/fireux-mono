@@ -4,7 +4,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useWorkspaceDemoData } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDemoData'
 import { type SupplierSurface } from '../../firestore/utils/view/useSupplierInterface'
 import { projectSupplierDemoWorld } from '../../../utils/supplier-demo-world'
-import type { CompanyDirectoryEntry } from 'fireux-companies/runtime/place/models/company-directory.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   SupplierCatalogue,
   SupplierIngredient,
@@ -14,7 +14,7 @@ import type {
 export type SupplierWorkspaceDemoScenario = {
   appId: string
   supplier: SupplierSurface
-  companyPlace: CompanyDirectoryEntry
+  companyPlace: Place
   ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]

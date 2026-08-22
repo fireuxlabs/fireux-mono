@@ -13,18 +13,19 @@ export function useSupplierWorkspaceItems() {
   const { selection, runtime } = useSupplierWorkspace()
 
   const supplierLabel = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_organization_name)
+    normalizeString(
+      selection.supplier.value?.company_place?.short_name ||
+        selection.supplier.value?.company_place?.name
+    )
   )
 
   const linkedIngredientIds = computed(() =>
-    Array.isArray(selection.supplier.value?.linked_ingredient_ids)
-      ? selection.supplier.value.linked_ingredient_ids
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      : []
+    supplierItems.value
+      .map((item) => normalizeString(item.ingredient_id))
+      .filter(Boolean)
   )
 
-  const state = computed(() => normalizeString(selection.supplier.value?.state))
+  const state = computed(() => normalizeString(selection.supplier.value?.status))
   const catalogueState = computed(() =>
     normalizeString(selection.supplier.value?.catalogue_state)
   )

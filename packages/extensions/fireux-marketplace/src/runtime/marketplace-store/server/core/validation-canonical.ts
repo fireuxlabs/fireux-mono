@@ -34,7 +34,6 @@ export function canonicalMarketplaceStore(
   keysOnly(
     data,
     [
-      'id',
       'management',
       'slug',
       'name',

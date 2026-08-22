@@ -28,7 +28,8 @@ export function useKitchenWorkspaceSupplierCatalogue() {
   const pending = computed(() => false)
   const supplierName = computed(
     () =>
-      normalizeString(supplier.value?.supplier_organization_name) ||
+      normalizeString((supplier.value?.company_place as any)?.short_name) ||
+      normalizeString((supplier.value?.company_place as any)?.name) ||
       normalizeString(supplier.value?.name) ||
       supplierId.value
   )

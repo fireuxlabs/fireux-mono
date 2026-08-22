@@ -64,28 +64,28 @@
           <h2>Worth a closer look.</h2>
         </div>
         <NuxtLink to="/products" class="yv-text-link">
-          Shop all {{ products.length || 94 }} pieces
+          Shop all {{ productReads.length || 94 }} pieces
         </NuxtLink>
       </header>
 
       <div v-if="featuredProducts.length" class="yv-featured__grid">
         <NuxtLink
-          v-for="(product, index) in featuredProducts"
-          :key="product.id"
-          :to="`/products/${product.slug}`"
+          v-for="(entry, index) in featuredProducts"
+          :key="entry.product.id"
+          :to="`/products/${entry.product.slug}`"
           class="yv-feature"
           :class="{ 'yv-feature--hero': index === 0 }"
         >
           <div class="yv-feature__image">
-            <img :src="product.main_image" :alt="product.name">
+            <img :src="entry.product.main_image" :alt="entry.product.name">
             <span>{{ String(index + 1).padStart(2, '0') }}</span>
           </div>
           <div class="yv-feature__meta">
             <div>
-              <p>{{ primaryCategory(product) }}</p>
-              <h3>{{ product.name }}</h3>
+              <p>{{ primaryCategory(entry.product) }}</p>
+              <h3>{{ entry.product.name }}</h3>
             </div>
-            <strong>{{ formatPrice(product) }}</strong>
+            <strong>{{ formatPrice(entry.defaultPrice) }}</strong>
           </div>
         </NuxtLink>
       </div>
@@ -153,7 +153,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
-import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
+import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/product/models/product.model'
 
 const description =
   'Independent bike shop in Interlaken for vintage bicycles, adventure builds, rare components and considered cycling goods.'
@@ -181,32 +181,29 @@ useSeoMeta({
 })
 
 const fetched = useProductCollection()
-const products = computed(() => fetched.products.value ?? [])
+const productReads = computed(() => fetched.reads.value ?? [])
 const featuredProducts = computed(() => {
-  const bikes = products.value.filter(product =>
+  const bikes = productReads.value.filter(({ product }) =>
     productCategories(product).includes('Bicycles')
   )
-  const apparel = products.value.find(product =>
+  const apparel = productReads.value.find(({ product }) =>
     productCategories(product).includes('Apparel')
   )
   return [...bikes.slice(0, 2), ...(apparel ? [apparel] : [])].slice(0, 3)
 })
 
 const productCategories = (product: FirebaseProduct) => {
-  const metadata = product.metadata as { categories?: unknown } | undefined
-  return Array.isArray(metadata?.categories)
-    ? metadata.categories.map(value => String(value))
-    : []
+  return product.categories
 }
 
 const primaryCategory = (product: FirebaseProduct) =>
   productCategories(product)[0] || 'Yellow Velo'
 
-const formatPrice = (product: FirebaseProduct) => {
-  const amount = Number(product.default_price?.unit_amount ?? 0)
+const formatPrice = (price: ProductPrice | null) => {
+  const amount = Number(price?.unit_amount ?? 0)
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: String(product.prices?.[0]?.currency || 'CHF').toUpperCase(),
+    currency: String(price?.currency || 'CHF').toUpperCase(),
     maximumFractionDigits: amount % 100 === 0 ? 0 : 2,
   }).format(amount / 100)
 }

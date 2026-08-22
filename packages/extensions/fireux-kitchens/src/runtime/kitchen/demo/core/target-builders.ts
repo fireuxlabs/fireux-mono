@@ -1,13 +1,16 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type { ThemePalette } from 'fireux-core/types/theme'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import { normalizePlace, PlaceDefaults } from 'fireux-places/runtime/place/utils/normalize-place'
 import {
-  KitchenDefaults,
-  type Kitchen,
-  type KitchenFulfilmentPaymentPolicy,
-  type KitchenOrdersConfig,
-} from '../../models/kitchen.model.ts'
+  normalizePlace,
+  PlaceDefaults,
+} from 'fireux-places/runtime/place/utils/normalize-place'
+import type { Kitchen } from '../../models/kitchen.model.ts'
+import type {
+  KitchenConfiguration,
+  KitchenOrdersConfig,
+} from '../../models/kitchen-configuration.model.ts'
+import type { KitchenFulfilmentPaymentPolicy } from '../../models/fulfilment.model.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoAccess, KitchenDemoIdentity } from './types'
 
@@ -16,6 +19,7 @@ export type KitchenDemoTarget = {
   access: KitchenDemoAccess
   identity: KitchenDemoIdentity
   kitchen: Kitchen
+  configuration: KitchenConfiguration
   place: Place
 }
 
@@ -47,30 +51,31 @@ export type DemoPlaceInput = {
   businessHours?: Place['business_hours']
 }
 
-export const kitchen = (input: DemoKitchenInput): Kitchen => ({
-  ...KitchenDefaults,
-  id: input.identity.kitchenId,
-  slug: input.identity.kitchenSlug,
-  status: 'active',
-  visibility: true,
-  theme: { palette: input.themePalette },
-  menus: {
-    currency_format: 'dash',
-    show_currency: true,
-    available: true,
-  },
-  orders: {
-    ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
-    printing: {
-      ticket_device_id: '',
+export const kitchen = (input: DemoKitchenInput) => ({
+  kitchen: {
+    id: input.identity.kitchenId,
+    slug: input.identity.kitchenSlug,
+    status: 'active',
+    visibility: true,
+  } satisfies Kitchen,
+  configuration: {
+    theme: { palette: input.themePalette },
+    menus: {
+      currency_format: 'dash',
+      show_currency: true,
+      available: true,
     },
-  },
-  fulfilment: {
-    delivery_zones: [],
-    payment_methods: input.paymentMethods,
-  },
-  created: kitchenDemoCreated(input.identity),
-  updated: kitchenDemoUpdated(),
+    orders: {
+      ...(input.operationHours
+        ? { operation_hours: input.operationHours }
+        : {}),
+      printing: { ticket_device_id: '' },
+    },
+    fulfilment: {
+      delivery_zones: [],
+      payment_methods: input.paymentMethods,
+    },
+  } satisfies KitchenConfiguration,
 })
 
 export const place = (input: DemoPlaceInput): Place => ({
@@ -133,7 +138,7 @@ export const place = (input: DemoPlaceInput): Place => ({
 
 export const target = (
   identity: KitchenDemoIdentity,
-  targetKitchen: Kitchen,
+  targetKitchen: ReturnType<typeof kitchen>,
   targetPlace: Place,
   access: {
     teamIds?: readonly string[]
@@ -153,7 +158,8 @@ export const target = (
       operatorIds: [...(access.operatorIds ?? [])],
     },
     identity,
-    kitchen: targetKitchen,
+    kitchen: targetKitchen.kitchen,
+    configuration: targetKitchen.configuration,
     place: resolvedPlace,
   }
 }

@@ -85,42 +85,8 @@ export function useProductFormatting() {
     return `${symbol}${amount}`
   }
 
-  function formatPriceRange(product: FirebaseProduct): string {
-    if (!product.prices || product.prices.length === 0)
-      return 'Price not available'
-    if (product.prices.length === 1) {
-      const onlyPrice = product.prices[0]
-      return onlyPrice ? formatPrice(onlyPrice) : 'Price not available'
-    }
-
-    const amounts = product.prices
-      .map((price: Price | undefined) =>
-        price ? price.unit_amount : undefined
-      )
-      .filter((value: unknown): value is number => typeof value === 'number')
-      .sort((a: number, b: number) => a - b)
-
-    const minPrice = amounts[0]
-    const maxPrice = amounts[amounts.length - 1]
-    const currency = product.prices[0]?.currency?.toUpperCase() || 'USD'
-    const symbol = getCurrencySymbol(currency)
-
-    if (minPrice === undefined || maxPrice === undefined) {
-      return 'Price not available'
-    }
-
-    return `${symbol}${(minPrice / 100).toFixed(2)} - ${symbol}${(
-      maxPrice / 100
-    ).toFixed(2)}`
-  }
-
   function formatAvailabilityStatus(product: FirebaseProduct): string {
     if (product.active === false) return 'Unavailable'
-    if ((product as any).metadata?.stock_quantity) {
-      const stock = parseInt((product as any).metadata.stock_quantity)
-      if (stock <= 0) return 'Out of Stock'
-      if (stock <= 5) return 'Limited Stock'
-    }
     return 'Available'
   }
 
@@ -190,7 +156,6 @@ export function useProductFormatting() {
     formatProductName,
     formatProductExcerpt,
     formatPrice,
-    formatPriceRange,
     formatAvailabilityStatus,
     formatFeatures,
     uploadProductImage,

@@ -25,7 +25,6 @@ function getAuthor(
     display_name: user?.display_name || '',
     handle: user?.handle || '',
     avatar: user?.avatar || '/img/core/defaults/default-thumbnail.png',
-    email: user?.email || '',
   }
 }
 

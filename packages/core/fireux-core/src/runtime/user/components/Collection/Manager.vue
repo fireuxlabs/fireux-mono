@@ -121,6 +121,10 @@ import { useCollectionSearch } from '../../../composables/shared/useCollectionSe
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import type { User } from '../../models/user.model.ts'
 import type { CollectionResponse } from '../../../models/utils/directory.ts'
+import {
+  isUserDirectoryEligible,
+  normalizeUser,
+} from '../../utils/normalize-user'
 
 type UserDirectoryResponse = CollectionResponse<User>
 
@@ -165,18 +169,8 @@ const liveSelfUser = computed<User | null>(() => {
     return null
   }
 
-  const handle = String(user.handle || '')
-    .trim()
-    .toLowerCase()
-  if (!handle) return null
-
-  return {
-    id: String(user.id || '').trim(),
-    handle,
-    display_name: String(user.display_name || '').trim() || `@${handle}`,
-    bio: String(user.bio || '').trim(),
-    avatar: String(user.avatar || '').trim(),
-  }
+  const normalized = normalizeUser(user.id, user)
+  return normalized && isUserDirectoryEligible(normalized) ? normalized : null
 })
 const fetchedUsers = computed<User[]>(() => {
   const payload = fetched.data.value

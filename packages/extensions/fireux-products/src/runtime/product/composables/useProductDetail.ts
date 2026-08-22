@@ -1,7 +1,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type { Product } from '../models/product.model.ts'
+import type { Product, ProductPrice, ProductRead } from '../models/product.model.ts'
 
 export type ProductDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -12,6 +12,8 @@ type ProductDetailControls = Pick<
 
 export type UseProductDetailReturn = ProductDetailControls & {
   product: ComputedRef<Product | null>
+  prices: ComputedRef<ProductPrice[]>
+  defaultPrice: ComputedRef<ProductPrice | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -35,18 +37,20 @@ export function useProductDetail(
   productId: MaybeRef<string | null | undefined>
 ): UseProductDetailReturn {
   const id = computed(() => String(unref(productId) ?? '').trim())
-  const state = useAsyncData<Product | null>(
+  const state = useAsyncData<ProductRead | null>(
     () => `product-detail|${id.value || 'none'}`,
     async () => {
       if (!id.value) return null
-      return $fetch<Product>(`/api/products/${encodeURIComponent(id.value)}`)
+      return $fetch<ProductRead>(`/api/products/${encodeURIComponent(id.value)}`)
     },
     { server: true, watch: [id] }
   )
   const product = computed<Product | null>(() => {
-    const item = state.data.value
+    const item = state.data.value?.product
     return item && item.id === id.value && !state.pending.value ? item : null
   })
+  const prices = computed(() => state.data.value?.prices ?? [])
+  const defaultPrice = computed(() => state.data.value?.defaultPrice ?? null)
   const statusCode = computed(() => readStatusCode(state.error.value))
   const missing = computed(
     () =>
@@ -65,6 +69,8 @@ export function useProductDetail(
 
   return {
     product,
+    prices,
+    defaultPrice,
     ready: state.then(() => undefined),
     pending: state.pending,
     error: state.error,

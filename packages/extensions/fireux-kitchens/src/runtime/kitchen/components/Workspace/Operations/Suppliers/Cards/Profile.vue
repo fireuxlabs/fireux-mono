@@ -100,15 +100,16 @@ const normalizeStringArray = (value: unknown) =>
 
 const title = computed(
   () =>
-    normalizeString(props.supplier?.supplier_organization_name) ||
+    normalizeString(companyPlace.value?.short_name) ||
+    normalizeString(companyPlace.value?.name) ||
     normalizeString(props.supplier?.id) ||
     'Untitled supplier'
 )
 const headline = computed(() =>
-  normalizeString(props.supplier?.supplier_headline)
+  normalizeString(companyPlace.value?.brand_tagline)
 )
 const summary = computed(() =>
-  normalizeString((props.supplier as { summary?: unknown } | null)?.summary)
+  normalizeString(companyPlace.value?.about)
 )
 const companyPlace = computed(() => {
   const value = props.supplier?.company_place
@@ -119,7 +120,7 @@ const companyPlace = computed(() => {
 const imageUrl = computed(
   () =>
     normalizeString(companyPlace.value?.image_url) ||
-    normalizeString(props.supplier?.supplier_image)
+    normalizeString(companyPlace.value?.logo_image)
 )
 const headquartersLabel = computed(
   () =>
@@ -127,12 +128,12 @@ const headquartersLabel = computed(
     normalizeString(companyPlace.value?.name)
 )
 const status = computed(() =>
-  normalizeString((props.supplier as { state?: unknown } | null)?.state)
+  normalizeString((props.supplier as { status?: unknown } | null)?.status)
 )
 const categories = computed(() =>
-  normalizeStringArray(props.supplier?.supplier_item_categories)
+  []
 )
 const deliveryAreas = computed(() =>
-  normalizeStringArray(props.supplier?.supplier_delivery_areas)
+  normalizeStringArray(props.supplier?.delivery_areas)
 )
 </script>

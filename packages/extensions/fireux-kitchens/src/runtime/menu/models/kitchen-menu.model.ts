@@ -6,7 +6,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
   KitchenDeliveryZone,
   KitchenFulfilmentPaymentMethod,
-} from '../../kitchen/models/kitchen.model.ts'
+} from '../../kitchen/models/fulfilment.model.ts'
 import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model.ts'
 import type { MenuRouteContext, MenuSurface } from './menu-context.model.ts'

@@ -68,8 +68,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-blogs/src/runtime/components/Blog/Create/Images.vue'
   )
   const localPublisher = read(repoRoot, 'scripts/publish-fireux-blog.mjs')
+  const createWriter = read(
+    repoRoot,
+    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogCreate.ts'
+  )
 
   for (const token of [
+    'source_app_id',
+    "visibility: 'app'",
     "publication_scope: 'app'",
     'BlogPostFeedReference',
     "kind: 'blog-post'",
@@ -80,9 +86,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ]) {
     assert.ok(model.includes(token), `Blog root model must retain ${token}.`)
   }
+  for (const retiredField of [
+    'source_ecosystem_id',
+    'owner_type',
+    'owner_id',
+    'email?: string',
+  ]) {
+    assert.ok(
+      !model.includes(retiredField),
+      `Blog root model must not retain redundant/private field ${retiredField}.`
+    )
+  }
+  for (const source of [createWriter, localPublisher]) {
+    assert.doesNotMatch(
+      source,
+      /\b(?:source_ecosystem_id|owner_type|owner_id)\b/,
+      'Blog writers must not restore redundant ecosystem or generic owner scope.'
+    )
+  }
+  assert.doesNotMatch(localPublisher, /\bid:\s*slug\b/)
   for (const token of [
     "data.visibility !== 'public'",
-    'source_ecosystem_id',
     'isFirestoreDocumentId(sourceAppId)',
     'httpsUrl(data.featuredImage)',
     'httpsUrl(data.socialImage)',
@@ -121,6 +145,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(adminIndex, /<BlogCollectionManager\s*\/>/)
   assert.match(devIndex, /<BlogCollectionManager\s*\/>/)
   assert.match(detail, /useBlogDetail/)
+  assert.match(detail, /Blog detail \(JSON\)/)
   assert.doesNotMatch(detail, /fetchBySlug|useBlog\(/)
   assert.match(images, /`blogs\/\$\{blogId\}\/featured\.jpg`/)
   assert.match(images, /`blogs\/\$\{blogId\}\/social\.jpg`/)

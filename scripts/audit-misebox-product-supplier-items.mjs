@@ -66,21 +66,12 @@ let supplierIngredientCount = 0
 let supplierItemCount = 0
 for (const supplierDoc of supplierSnapshot.docs) {
   const supplierId = supplierDoc.id
-  const supplier = supplierDoc.data() || {}
   const [supplierIngredientSnapshot, supplierItemSnapshot] = await Promise.all([
     supplierDoc.ref.collection('ingredients').get(),
     supplierDoc.ref.collection('items').get(),
   ])
   supplierIngredientCount += supplierIngredientSnapshot.size
   supplierItemCount += supplierItemSnapshot.size
-
-  for (const ingredientId of Array.isArray(supplier.linked_ingredient_ids)
-    ? supplier.linked_ingredient_ids.map(text).filter(Boolean)
-    : []) {
-    if (!ingredientIds.has(ingredientId)) {
-      issue('supplier_linked_ingredient_missing', { supplier_id: supplierId, ingredient_id: ingredientId })
-    }
-  }
 
   for (const doc of supplierIngredientSnapshot.docs) {
     const value = doc.data() || {}

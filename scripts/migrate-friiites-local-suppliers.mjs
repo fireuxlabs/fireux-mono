@@ -225,6 +225,7 @@ for (const supplier of manifest.suppliers) {
     source: 'fireux',
     name: place.name,
     short_name: supplier.organization_name,
+    about: supplier.summary,
     slug: place.slug,
     place_type: 'physical',
     lat: place.lat,
@@ -251,18 +252,10 @@ for (const supplier of manifest.suppliers) {
     management: { mode: 'root' },
     company_id: place.id,
     slug: supplier.id,
-    supplier_organization_name: supplier.organization_name,
-    tagline: '',
-    supplier_headline: '',
-    summary: supplier.summary,
-    supplier_bio: '',
-    supplier_image: '',
-    supplier_item_categories: [],
-    supplier_delivery_areas: [],
-    state: 'public',
-    catalogue_state: 'public_only',
-    linked_ingredient_ids: supplier.ingredient_ids,
-    hello: '',
+    status: 'active',
+    visibility: true,
+    catalogue_state: 'directory_only',
+    delivery_areas: [],
     created: stamp,
     updated: stamp,
   })
@@ -309,9 +302,10 @@ for (const path of operations.deletes) {
 for (const supplier of manifest.suppliers) {
   const root = await db.doc(`suppliers/${supplier.id}`).get()
   const place = await db.doc(`places/${supplier.place.id}`).get()
+  const supplierIngredients = await db.collection(`suppliers/${supplier.id}/ingredients`).get()
   if (
     text(root.data()?.company_id) !== supplier.place.id ||
-    JSON.stringify([...(root.data()?.linked_ingredient_ids || [])].sort()) !== JSON.stringify([...supplier.ingredient_ids].sort()) ||
+    JSON.stringify(supplierIngredients.docs.map(document => document.id).sort()) !== JSON.stringify([...supplier.ingredient_ids].sort()) ||
     text(place.data()?.formatted_address) !== supplier.place.formatted_address ||
     text(place.data()?.timezone) !== manifest.target.timezone ||
     text(place.data()?.default_currency_code) !== manifest.target.currency_code

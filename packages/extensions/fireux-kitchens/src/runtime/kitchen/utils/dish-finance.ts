@@ -33,7 +33,9 @@ export type KitchenDishFinanceMenuUsage = {
 export type KitchenDishFinanceSupplyLine = {
   ingredient: { name?: string | null }
   supplierScenario: {
-    supplier: { supplier_organization_name?: string | null }
+    supplier: {
+      company_place?: { name?: string | null; short_name?: string | null }
+    }
   }
   supplierItem: {
     currency_code?: string | null
@@ -210,7 +212,8 @@ export function estimateKitchenDishFinance(input: {
       quantity: requiredAmount.quantity,
       unit: requiredAmount.unit,
       supplierName: clean(
-        line.supplierScenario.supplier.supplier_organization_name
+        line.supplierScenario.supplier.company_place?.short_name ||
+          line.supplierScenario.supplier.company_place?.name
       ),
       supplierPackLabel: clean(line.supplierItem.pack_size_label),
       costMinorExact:

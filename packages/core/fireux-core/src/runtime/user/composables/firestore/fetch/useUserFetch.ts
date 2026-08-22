@@ -11,7 +11,7 @@ import {
   type UserAccount,
   UserAccountModel,
 } from '../../../models/user-account.model.ts'
-import { resolveUserAvatarSource } from '../../../utils/user-avatar'
+import { normalizeUser } from '../../../utils/normalize-user'
 import type { CurrentAppMembership } from '../../../../app/models/app-context.model.ts'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
@@ -26,16 +26,12 @@ export type UserFetchOutcome =
   | 'error'
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
-  return {
-    ...raw,
-    id: raw.id ?? fallbackId,
-    display_name: raw.display_name || raw.id || fallbackId,
-    bio:
-      typeof raw.bio === 'string' && raw.bio.trim().length <= 280
-        ? raw.bio.trim()
-        : '',
-    avatar: resolveUserAvatarSource(raw.avatar),
-    handle: raw.handle || '',
+  return normalizeUser(raw.id || fallbackId, raw) ?? {
+    id: fallbackId,
+    display_name: '',
+    bio: '',
+    avatar: '',
+    handle: '',
   }
 }
 

@@ -1,8 +1,5 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import type {
-  Kitchen,
-  KitchenFulfilmentMode,
-} from '../models/kitchen.model.ts'
+import type { Kitchen } from '../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { readKitchenVisibility } from './kitchen-readers.ts'
 
@@ -27,33 +24,11 @@ export function normalizeKitchen(
 
   const status = String(source.status ?? '').trim()
   if (!['active', 'inactive', 'archived'].includes(status)) return null
-  const fulfilment = record(source.fulfilment)
-  const modes = Array.isArray(fulfilment.modes)
-    ? fulfilment.modes.filter(
-        (mode): mode is KitchenFulfilmentMode =>
-          mode === 'delivery' ||
-          mode === 'collection' ||
-          mode === 'dine_in' ||
-          mode === 'takeaway'
-      )
-    : []
-  const estimate = record(fulfilment.estimated_minutes)
-  const min = Number(estimate.min)
-  const max = Number(estimate.max)
-  const hasEstimate =
-    Number.isFinite(min) && Number.isFinite(max) && min >= 0 && max >= min
-
   return {
     id,
     slug,
     status: status as Kitchen['status'],
     visibility: readKitchenVisibility(source),
     place,
-    fulfilment: {
-      modes,
-      ...(hasEstimate
-        ? { estimated_minutes: { min, max } }
-        : {}),
-    },
   }
 }

@@ -23,6 +23,7 @@ type CompanyDemoSeed = {
   region: string
   postalCode: string
   imageUrl: string
+  logoImageUrl: string
 }
 
 const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
@@ -36,6 +37,7 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     formatted_address: `${seed.postalCode} ${seed.city}, Switzerland`,
     short_address: seed.city,
     image_url: seed.imageUrl,
+    logo_image: seed.logoImageUrl,
     verified: false,
     address: {
       street: '',
@@ -75,6 +77,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
     region: 'Bern',
     postalCode: '3800',
     imageUrl: miseboxDemoMediaUrl('places/alpine-foodservice-hq/place.jpg'),
+    logoImageUrl: miseboxDemoMediaUrl('suppliers/alpine-foodservice/logo.png'),
   }),
   target({
     id: 'pantry-house-hq',
@@ -84,6 +87,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
     region: 'Bern',
     postalCode: '3000',
     imageUrl: miseboxDemoMediaUrl('places/pantry-house-hq/place.jpg'),
+    logoImageUrl: miseboxDemoMediaUrl('suppliers/pantry-house/logo.png'),
   }),
   target({
     id: 'bern-market-garden-hq',
@@ -93,6 +97,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
     region: 'Bern',
     postalCode: '3013',
     imageUrl: miseboxDemoMediaUrl('places/bern-market-garden-hq/place.jpg'),
+    logoImageUrl: miseboxDemoMediaUrl('suppliers/bern-market-garden/logo.png'),
   }),
 ]
 

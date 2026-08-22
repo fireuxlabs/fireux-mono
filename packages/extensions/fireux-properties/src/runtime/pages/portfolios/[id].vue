@@ -28,6 +28,16 @@
         <PortfolioPublicOperatorPanel :portfolio="portfolio" />
 
         <!-- dev -->
+        <DevDebugPanel
+          object-origin="fetched"
+          launcher
+          include-route
+          title="Portfolio detail (JSON)"
+          context="portfolio detail · canonical root"
+          :objects="[portfolio]"
+          :derived="{ routeKey }"
+          :default-open="false"
+        />
       </div>
     </UPageBody>
   </UPage>
@@ -36,7 +46,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { usePortfolioFetch } from '../../portfolio/composables/firestore/fetch/usePortfolioFetch'
+import { usePortfolioDetail } from '../../portfolio/composables/usePortfolioDetail'
 import { usePortfolioSeo } from '../../portfolio/composables/usePortfolioSeo'
 import { usePortfolioInterface } from '../../portfolio/composables/firestore/utils/view/usePortfolioInterface'
 
@@ -48,7 +58,7 @@ definePageMeta({
 })
 
 const routeKey = useRouteParam('id')
-const { portfolio, pending } = usePortfolioFetch(routeKey)
+const { portfolio, pending } = await usePortfolioDetail(routeKey)
 const { profile } = usePortfolioInterface()
 const profileCard = computed(() => profile(portfolio.value))
 const pageTitle = computed(() =>

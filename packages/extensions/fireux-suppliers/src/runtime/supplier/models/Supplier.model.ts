@@ -12,7 +12,7 @@ import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export type SupplierState = 'official' | 'published'
+export type SupplierStatus = 'active' | 'inactive' | 'archived'
 export type SupplierCatalogueState = 'integrated' | 'directory_only'
 
 export {
@@ -54,7 +54,10 @@ type WidenLiteral<T> = T extends string
  * - Supplier-owned ingredient coverage lives beneath the root supplier record and links to Ingredient.
  * - Supplier-owned item offers live beneath the root supplier record and link to Product.
  * - Supplier catalogue records, when introduced, should present/group supplier item offers rather than replace them.
- * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
+ * - Supplier stays intentionally small: Company relationship, route/publication
+ *   state, catalogue mode, delivery areas, management, and audit stamps.
+ * - Company/Place owns public identity and media. Supplier child collections
+ *   own Ingredients, Items, Catalogues, and Team; the root does not index them.
  * - If that changes later, update the models README first, then this file.
  */
 export const SupplierStorage = {
@@ -88,20 +91,10 @@ export const SupplierDefaults = {
   management: FireuxEntityManagementDefaults,
   company_id: '',
   slug: '',
-
-  // Supplier identity
-  supplier_organization_name: '',
-  tagline: '',
-  supplier_headline: '',
-  summary: '',
-  supplier_bio: '',
-  supplier_image: '',
-  supplier_item_categories: [] as string[],
-  supplier_delivery_areas: [] as string[],
-  state: 'published' as SupplierState,
+  status: 'active' as SupplierStatus,
+  visibility: true,
   catalogue_state: 'directory_only' as SupplierCatalogueState,
-  linked_ingredient_ids: [] as string[],
-  hello: '',
+  delivery_areas: [] as string[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -127,9 +120,9 @@ export type SupplierTeamMember = FireuxWorkspaceTeamMember
 
 export type SupplierCreateInput = Omit<
   Supplier,
-  'id' | 'created' | 'updated' | 'management' | 'tagline' | 'slug'
+  'id' | 'created' | 'updated' | 'management' | 'slug'
 > &
-  Partial<Pick<Supplier, 'tagline' | 'slug'>>
+  Partial<Pick<Supplier, 'slug'>>
 
 export type SupplierUpdateInput = Partial<
   Omit<Supplier, 'id' | 'created' | 'updated' | 'management'>

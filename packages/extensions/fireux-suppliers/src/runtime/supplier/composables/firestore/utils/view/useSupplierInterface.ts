@@ -91,12 +91,14 @@ export function useSupplierInterface() {
   function map(target: SupplierSurface): SupplierCard.Card {
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const organizationName = safeString(target.supplier_organization_name)
-    const badges = safeStringArray(target.supplier_item_categories)
-    const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
-    const headline = safeString(target.supplier_headline)
-    const summary = safeString(target.summary)
-    const logoImageUrl = safeString(target.supplier_image)
+    const organizationName =
+      safeString(target.company_place?.short_name) ||
+      safeString(target.company_place?.name)
+    const deliveryAreas = safeStringArray(target.delivery_areas)
+    const badges = deliveryAreas
+    const headline = safeString(target.company_place?.brand_tagline)
+    const summary = safeString(target.company_place?.about)
+    const logoImageUrl = safeString(target.company_place?.logo_image)
     const placeImageUrl = safeString(target.company_place?.image_url)
     const imageUrl = placeImageUrl || logoImageUrl
     const headquartersLabel =
@@ -119,7 +121,7 @@ export function useSupplierInterface() {
       organizationName,
       locationsLabel,
       summary,
-      status: safeString(target.state),
+      status: safeString(target.status),
       shortName: slug,
       ownerLabel: organizationName,
       locationLabel: headquartersLabel,

@@ -14,7 +14,10 @@ export function useSupplierWorkspaceIngredients() {
   const { selection, runtime } = useSupplierWorkspace()
 
   const supplierLabel = computed(() =>
-    normalizeString(selection.supplier.value?.supplier_organization_name)
+    normalizeString(
+      selection.supplier.value?.company_place?.short_name ||
+        selection.supplier.value?.company_place?.name
+    )
   )
   const supplierIngredientsEnabled = computed(
     () =>

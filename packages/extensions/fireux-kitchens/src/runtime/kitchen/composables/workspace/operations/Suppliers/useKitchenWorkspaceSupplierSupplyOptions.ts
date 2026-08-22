@@ -2,15 +2,11 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceSupplier } from './useKitchenWorkspaceSupplier'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeStringArray = (value: unknown) =>
-  Array.isArray(value) ? value.map(normalizeString).filter(Boolean) : []
-
 export function useKitchenWorkspaceSupplierSupplyOptions() {
   const supplierState = useKitchenWorkspaceSupplier()
   const {
     supplier,
     supplierId,
-    supplierScenario,
     hasIntegratedCatalogue,
     isEcosystemSupplier,
     cataloguePath,
@@ -19,14 +15,13 @@ export function useKitchenWorkspaceSupplierSupplyOptions() {
 
   const supplierName = computed(
     () =>
-      normalizeString(supplier.value?.supplier_organization_name) ||
+      normalizeString((supplier.value?.company_place as any)?.short_name) ||
+      normalizeString((supplier.value?.company_place as any)?.name) ||
       normalizeString(supplier.value?.name) ||
       supplierId.value
   )
   const linkedIngredientIds = computed(() =>
-    supplierScenario.value
-      ? supplierSupplyLines.value.map((line) => line.ingredient.id)
-      : normalizeStringArray(supplier.value?.linked_ingredient_ids)
+    supplierSupplyLines.value.map((line) => line.ingredient.id)
   )
   const supplyOptionLines = computed(() =>
     supplierSupplyLines.value.map((line) => {

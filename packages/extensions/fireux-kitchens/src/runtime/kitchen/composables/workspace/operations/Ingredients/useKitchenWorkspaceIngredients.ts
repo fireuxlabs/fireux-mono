@@ -177,7 +177,9 @@ export function useKitchenWorkspaceIngredients() {
           ? {
               supplier_id: line.link.supplier_id,
               supplier_item_id: supplierItem?.id,
-              supplier_name: supplier?.supplier_organization_name,
+              supplier_name:
+                supplier?.company_place?.short_name ||
+                supplier?.company_place?.name,
               supplier_pack_label: supplierItem?.pack_size_label,
               supplier_pack_cost_minor: supplierItem?.pack_cost_minor,
               supplier_currency_code: supplierItem?.currency_code,

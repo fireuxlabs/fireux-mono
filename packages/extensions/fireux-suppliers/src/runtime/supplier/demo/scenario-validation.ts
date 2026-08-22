@@ -19,7 +19,8 @@ export const validateSupplierDemoScenario = (
   if (
     !scenario.appId ||
     !scenario.supplier.company_id ||
-    !scenario.supplier.supplier_image ||
+    scenario.supplier.status !== 'active' ||
+    scenario.supplier.visibility !== true ||
     'place_id' in scenario.supplier ||
     scenario.supplier.management?.mode !== 'workspace' ||
     scenario.supplier.created.app_id !== scenario.appId ||
@@ -27,12 +28,6 @@ export const validateSupplierDemoScenario = (
   ) {
     throw new Error(
       `Supplier Demo ${supplierId} requires one canonical root Supplier.`
-    )
-  }
-
-  if (!sameStringSet(scenario.supplier.linked_ingredient_ids, ingredientIds)) {
-    throw new Error(
-      `Supplier Demo ${supplierId} root ingredient index is inconsistent.`
     )
   }
 

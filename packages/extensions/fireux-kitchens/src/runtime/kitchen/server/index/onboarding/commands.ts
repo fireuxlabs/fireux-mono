@@ -10,25 +10,14 @@ import {
   serverAppUsersTarget,
   serverKitchenTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  appPaletteLayersEqual,
-  compactAppPalette,
-  workspacePaletteFromApp,
-  readAppPalette,
-  readAppPaletteLayer,
-  readWorkspacePalette,
-} from 'fireux-core/runtime/utils/brand-palette'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model.ts'
 import {
   assertKitchenOnboardingPlaceDefaults,
-  assertKitchenOnboardingManagement,
   kitchenOnboardingAccessDecision,
-  onboardingRecord as record,
   onboardingText as text,
-  readKitchenOnboardingManagement,
   requireOnboardingMemberRole,
 } from './onboarding-policy'
 import {
@@ -108,13 +97,6 @@ export async function previewKitchenOnboarding(
   const body = request(input, ['place_id', 'kitchen_id'])
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
-  if (locator.kitchen)
-    assertKitchenOnboardingManagement(
-      locator.kitchen,
-      current.appId,
-      current.ecosystem
-    )
-
   const [place, teamMember] = await Promise.all([
     current.db.collection('places').doc(locator.placeId).get(),
     current.db.doc(`kitchens/${locator.kitchenId}/team/${current.uid}`).get(),
@@ -161,10 +143,9 @@ export async function completeKitchenOnboarding(
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, user, app, place, root, teamMember] = await Promise.all([
+    const [membership, user, place, root, teamMember] = await Promise.all([
       mutations.read(memberships, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
       mutations.read(teamMembers, current.uid),
@@ -177,13 +158,7 @@ export async function completeKitchenOnboarding(
     assertKitchenOnboardingPlaceDefaults(place.data || {})
 
     const rootData = root.exists ? root.data || {} : null
-    if (rootData) {
-      assertKitchenOnboardingManagement(
-        rootData,
-        current.appId,
-        current.ecosystem
-      )
-    } else if (!current.canCreate) {
+    if (!rootData && !current.canCreate) {
       fail(403, 'Kitchen creation is disabled for this App.')
     }
 
@@ -206,26 +181,6 @@ export async function completeKitchenOnboarding(
     const placeName = text(place.data?.name)
     const slug =
       text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
-    const storedAppPaletteValue = record(record(app.data?.theme).palette)
-    const appPalette =
-      current.configuredAppPalette || readAppPalette(storedAppPaletteValue)
-    const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
-    const storedTheme = record(rootData?.theme)
-    const existingWorkspacePalette = readWorkspacePalette(storedTheme.palette)
-    const maySeedWorkspace = createdTeamMember || role === 'admin'
-    const workspacePalette =
-      existingWorkspacePalette ||
-      (appPalette && maySeedWorkspace
-        ? workspacePaletteFromApp(appPalette)
-        : null)
-    const inheritedWorkspaceTheme = appPalette
-      ? { palette: workspacePaletteFromApp(appPalette) }
-      : null
-    const compactAppLayer =
-      appPalette && workspacePalette
-        ? compactAppPalette(appPalette, workspacePalette)
-        : null
-
     const creatorName = text(user.data?.display_name) || current.authDisplayName
     if (createdRoot && !creatorName) {
       fail(409, 'Finish your User name before creating a Kitchen.')
@@ -236,26 +191,6 @@ export async function completeKitchenOnboarding(
         slug,
         status: 'active',
         visibility: false,
-        management: current.management,
-        ...(inheritedWorkspaceTheme ? { theme: inheritedWorkspaceTheme } : {}),
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
-        updated: serverAuditStamp({ by: current.uid }),
-      })
-    } else {
-      const management = readKitchenOnboardingManagement(rootData || {})
-      if (JSON.stringify(management) !== JSON.stringify(current.management)) {
-        fail(409, 'Kitchen management does not match this App.')
-      }
-    }
-
-    if (
-      !createdRoot &&
-      inheritedWorkspaceTheme &&
-      !readWorkspacePalette(storedTheme.palette)
-    ) {
-      mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
-        theme: inheritedWorkspaceTheme,
-        updated: serverAuditStamp({ by: current.uid, appId: current.appId }),
       })
     }
 
@@ -274,17 +209,6 @@ export async function completeKitchenOnboarding(
           userId: current.uid,
         })
       )
-    }
-
-    if (
-      compactAppLayer &&
-      (!storedAppPaletteLayer ||
-        !appPaletteLayersEqual(storedAppPaletteLayer, compactAppLayer))
-    ) {
-      mutations.update(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId, {
-        'theme.palette': compactAppLayer,
-        updated: serverAuditStamp({ by: current.uid }),
-      })
     }
 
     mutations.update(memberships, current.uid, {

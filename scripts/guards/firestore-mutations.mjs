@@ -40,7 +40,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
   '10484b476023427fedf10a770b83c5c71f19583e3e8ec7ee1e30f1c20b438899'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
-  '18945b1edbb56799f570318a723732e8e417e74c26f16d6a805b31e9511f4b7b'
+  'ed37db6128cde1dd64751d14aebf87f5e875eb620ec00357612a3c154102e326'
 
 function sourceFiles(repoRoot) {
   const files = []
@@ -441,6 +441,15 @@ export function run({ repoRoot }) {
     assert.match(source, /mutations\.update|mutations\.create/)
     assert.doesNotMatch(source, /\.runTransaction\(|transaction\./)
   }
+  const marketplaceStoreWriter = readFileSync(
+    path.join(repoRoot, marketplaceStoreWriters[1]),
+    'utf8'
+  )
+  assert.doesNotMatch(
+    marketplaceStoreWriter,
+    /mutations\.create\(stores,\s*intent\.slug,\s*\{[\s\S]*?\bid:\s*intent\.slug/,
+    'MarketplaceStore writer must let the reader supply the root document id.'
+  )
   const marketplaceAdminWriter = readFileSync(
     path.join(repoRoot, marketplaceStoreWriters[0]),
     'utf8'

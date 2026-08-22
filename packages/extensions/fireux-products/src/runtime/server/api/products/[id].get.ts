@@ -7,6 +7,7 @@ import {
 import { useRuntimeConfig } from '#imports'
 import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
 import { getProductsFirestore } from '../../../product/server/core/getAdmin'
+import { joinProductRead, normalizeProduct, normalizeProductPrice } from '../../../product/utils/normalize-product.ts'
 
 function assertSafeDocumentSegment(value: string) {
   if (!value || value.includes('/') || value === '.' || value === '..') {
@@ -64,12 +65,14 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const product = productSnap.data() || {}
+  const rawProduct = productSnap.data() || {}
+  const product = normalizeProduct(productSnap.id, rawProduct)
+  if (!product) throw createError({ statusCode: 404, statusMessage: 'Product not found' })
   const runtime = useRuntimeConfig(event)
   const fireux = (runtime.public?.fireux || {}) as Record<string, unknown>
   const role = String(fireux.role || '').trim()
   const appId = String(fireux.id || '').trim()
-  const sourceAppId = String(product.source_app_id || '').trim()
+  const sourceAppId = product.source_app_id
   const isAppScopedRuntime = role === 'tenant' || role === 'standalone'
   if (
     product.visibility !== 'public' ||
@@ -83,16 +86,9 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const pricesSnap = await productRef.collection(ProductPriceStorage.collection).get()
-  const prices = pricesSnap.docs.map((doc) =>
-    serializeFirestoreValue({
-      id: doc.id,
-      ...doc.data(),
-    })
-  )
+  const prices = pricesSnap.docs
+    .map((doc) => normalizeProductPrice(product.id, doc.id, doc.data()))
+    .filter((price): price is NonNullable<typeof price> => Boolean(price))
 
-  return serializeFirestoreValue({
-    id: productSnap.id,
-    ...product,
-    prices,
-  })
+  return serializeFirestoreValue(joinProductRead(product, prices))
 })

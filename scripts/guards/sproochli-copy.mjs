@@ -685,9 +685,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ),
     false
   )
-  assert.match(kitchenSproochliEndpoint, /transaction\.update\(rootRef/)
-  assert.match(kitchenSproochliEndpoint, /FieldValue\.delete\(\)/)
-  assert.match(kitchenSproochliEndpoint, /serverAuditStamp/)
+  assert.match(kitchenSproochliEndpoint, /requireKitchenMutationAuthority\(/)
+  assert.match(kitchenSproochliEndpoint, /serverKitchenIntegrationsTarget\(/)
+  assert.match(kitchenSproochliEndpoint, /mutations\.read\(target, 'sproochli'\)/)
+  assert.match(
+    kitchenSproochliEndpoint,
+    /mutations\.update\(target, 'sproochli', next\)/
+  )
+  assert.match(
+    kitchenSproochliEndpoint,
+    /mutations\.create\(target, 'sproochli', next\)/
+  )
+  assert.doesNotMatch(
+    kitchenSproochliEndpoint,
+    /transaction\.update\(rootRef|FieldValue|serverAuditStamp|management/i
+  )
   assert.match(menuBrowse, /SproochliLanguageTrigger/)
   assert.match(menuBrowse, /show-when-single-option/)
   assert.match(menuBrowse, /resolveSproochliLanguageState/)
@@ -885,7 +897,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(menuRootEntry, /source_language/)
   assert.doesNotMatch(menuPayloadTypes, /sourceLanguage/)
   assert.doesNotMatch(menuEndpoint, /source_language|sourceLanguage/)
-  assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(kitchenData\)/)
+  assert.match(kitchenMenuScope, /readKitchenSproochliAttachment\(/)
+  assert.doesNotMatch(kitchenMenuScope, /readKitchenSproochliConfig/)
   assert.equal(TranslationMemoryStorage.collection, 'translation_memory')
   assert.equal(TranslationMemoryStorage.access, 'server-only')
   assert.match(

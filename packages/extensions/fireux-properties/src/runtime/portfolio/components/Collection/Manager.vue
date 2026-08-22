@@ -75,6 +75,16 @@
       </template>
     </PortfolioCollectionList>
 
+    <div v-if="hasMore" class="flex justify-center">
+      <UButton
+        label="Load more portfolios"
+        color="neutral"
+        variant="soft"
+        :loading="loadingMore"
+        @click="fetched.loadMore"
+      />
+    </div>
+
     <CollectionDirectoryState
       v-else
       icon="i-lucide-building-2"
@@ -109,7 +119,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import { usePortfolioCollection } from '../../composables/firestore/usePortfolio'
+import { usePortfolioDirectory } from '../../composables/usePortfolioDirectory'
 import { usePortfolioInterface } from '../../composables/firestore/utils/view/usePortfolioInterface'
 import type { Portfolio } from '../../models/portfolio.model.ts'
 import PortfolioCardsCell from '../Cards/Cell.vue'
@@ -150,9 +160,11 @@ const {
   pill: makePill,
   cell: makeCell,
 } = usePortfolioInterface()
-const fetched = usePortfolioCollection()
+const fetched = usePortfolioDirectory()
 const rawCollection = computed(() => fetched.portfolios.value)
 const outcome = computed(() => fetched.outcome.value)
+const hasMore = computed(() => fetched.hasMore.value)
+const loadingMore = computed(() => fetched.loadingMore.value)
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Available Portfolios'))

@@ -28,8 +28,8 @@
         include-route
         title="Chef (Public DTO)"
         context="Chef detail · chefs/[handle] · endpoint-first SSR"
-        :objects="devPayload"
-        :derived="{}"
+        :objects="devObjects"
+        :derived="devDerived"
         :default-open="false"
       />
     </div>
@@ -108,9 +108,11 @@ if (import.meta.server) {
 
 useChefSeo(profile, { routeKey: canonicalHandle, displayName })
 
-const devPayload = computed(() => ({
+const devObjects = computed(() => ({
   profile: profile.value,
   user: profileUser.value,
+}))
+const devDerived = computed(() => ({
   outcome: outcome.value,
   canonicalPath: canonicalPath.value,
 }))

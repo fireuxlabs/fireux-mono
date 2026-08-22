@@ -84,7 +84,67 @@
     </UDashboardSidebar>
 
     <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
-      <UDashboardPanel v-if="selectionBlocked" id="workspace-selection-required">
+      <UDashboardPanel
+        v-if="selectionAccessPending"
+        id="workspace-selection-pending"
+      >
+        <template #header>
+          <LayoutsWorkspaceNavbar :title="`Checking ${familyLabel} access`" />
+        </template>
+
+        <template #body>
+          <section class="flex min-h-[55vh] items-center">
+            <UAlert
+              class="w-full max-w-2xl"
+              color="neutral"
+              variant="subtle"
+              icon="i-lucide-loader-circle"
+              :title="`Checking ${familyLabel} access`"
+              description="The selected workspace is being verified before this page opens."
+            />
+          </section>
+        </template>
+      </UDashboardPanel>
+
+      <UDashboardPanel
+        v-else-if="selectionAccessError"
+        id="workspace-selection-unavailable"
+      >
+        <template #header>
+          <LayoutsWorkspaceNavbar
+            :title="`${familyLabel} access unavailable`"
+          />
+        </template>
+
+        <template #body>
+          <section class="flex min-h-[55vh] items-center">
+            <UAlert
+              class="w-full max-w-2xl"
+              color="error"
+              variant="subtle"
+              icon="i-lucide-triangle-alert"
+              :title="`${familyLabel} access could not be verified`"
+              description="This protected workspace page stays closed until access can be verified."
+            >
+              <template #actions>
+                <UButton
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-refresh-cw"
+                  @click="refreshTargetAccess"
+                >
+                  Retry
+                </UButton>
+              </template>
+            </UAlert>
+          </section>
+        </template>
+      </UDashboardPanel>
+
+      <UDashboardPanel
+        v-else-if="selectionBlocked"
+        id="workspace-selection-required"
+      >
         <template #header>
           <LayoutsWorkspaceNavbar :title="selectionRequiredTitle" />
         </template>
@@ -165,31 +225,29 @@ import {
   toWorkspaceFamilyPath,
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
-import {
-  normalizeWorkspaceFamily,
-  useWorkspace,
-} from '../composables/fireux/workspace/useWorkspace'
-import { useWorkspaceSelection } from '../composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspaceRouteTargetAccess } from '../composables/fireux/workspace/useWorkspaceRouteTargetAccess'
 defineOptions({ name: 'workspace' })
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const open = ref(false)
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
 const workspaceRoot = useWorkspace()
-const familyNames = workspaceRoot.families
-  .map((value) => normalizeWorkspaceFamily(value))
-  .filter(Boolean)
-const familyWorkspaces = new Map(
-  familyNames.map((familyName) => [familyName, useWorkspace(familyName)] as const)
+const route = useRoute()
+const family = computed(
+  () =>
+    workspaceFamilyFromRouteContext(
+      String(route.path || ''),
+      route.query.family
+    ) || workspaceRoot.activeFamily.value
 )
-const familySelections = new Map(
-  familyNames.map(
-    (familyName) => [familyName, useWorkspaceSelection(familyName)] as const
+const requiresSelection = computed(() => {
+  const nav = route.meta.nav as Record<string, unknown> | undefined
+  return (
+    route.meta.requiresSelection === true || nav?.requiresSelection === true
   )
-)
+})
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
@@ -206,22 +264,20 @@ const familyRootNav = computed(() =>
   )
 )
 
-const route = useRoute()
 watch(
   () => String(route.path || ''),
   (path) => {
-    const routeFamily = workspaceFamilyFromRouteContext(path, route.query.family)
+    const routeFamily = workspaceFamilyFromRouteContext(
+      path,
+      route.query.family
+    )
     if (!routeFamily) return
-    workspaceRoot.setActiveContext(routeFamily, workspaceOperationFromPath(path))
+    workspaceRoot.setActiveContext(
+      routeFamily,
+      workspaceOperationFromPath(path)
+    )
   },
   { immediate: true }
-)
-const family = computed(
-  () =>
-    workspaceFamilyFromRouteContext(
-      String(route.path || ''),
-      route.query.family
-    ) || workspaceRoot.activeFamily.value
 )
 const familyLabel = computed(
   () => toWorkspaceFamilyLabel(family.value) || 'Workspace'
@@ -229,20 +285,14 @@ const familyLabel = computed(
 const familyPath = computed(() =>
   family.value ? toWorkspaceFamilyPath(family.value) : '/workspace'
 )
-const activeSelectionId = computed(() => {
-  const activeFamily = family.value
-  if (!activeFamily) return ''
-  return familySelections.get(activeFamily)?.selectedId.value ?? ''
+const targetAccess = useWorkspaceRouteTargetAccess({
+  family,
+  requiresSelection,
 })
-const requiresSelection = computed(() => {
-  const nav = route.meta.nav as Record<string, unknown> | undefined
-  return (
-    route.meta.requiresSelection === true || nav?.requiresSelection === true
-  )
-})
-const selectionBlocked = computed(
-  () => requiresSelection.value && !normalizeString(activeSelectionId.value)
-)
+const selectionAccessPending = targetAccess.pending
+const selectionAccessError = targetAccess.error
+const selectionBlocked = targetAccess.blocked
+const refreshTargetAccess = targetAccess.refresh
 const selectionRequiredTitle = computed(
   () => `Select ${familyLabel.value} first`
 )

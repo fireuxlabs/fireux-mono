@@ -10,14 +10,11 @@ import {
   type BlogPost,
   type BlogPostCreateInput,
 } from '../../../../../models/blogPost.model'
+import { normalizeBlogPostCreate } from '../../../../../utils/normalize-blog-post'
 
 export const BlogPayload = {
-  id: '',
   slug: '',
   source_app_id: '',
-  source_ecosystem_id: '',
-  owner_type: 'app',
-  owner_id: '',
   visibility: 'app',
   publication_scope: 'app',
   title: '',
@@ -28,7 +25,6 @@ export const BlogPayload = {
     display_name: '',
     avatar: '',
     handle: '',
-    email: '',
   },
   keywords: [] as string[],
   tags: [] as string[],
@@ -74,27 +70,13 @@ export function useBlogCreate() {
 
     const fireux = useFireUXConfig()
     const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
-    const sourceEcosystemId = normalizeString(
-      payload.source_ecosystem_id || fireux.ecosystemId
-    )
-    const ownerType = normalizeString(
-      payload.owner_type || (sourceAppId ? 'app' : 'ecosystem')
-    )
-    const ownerId = normalizeString(
-      payload.owner_id ||
-        (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
-    )
-    const data = {
+    const data = normalizeBlogPostCreate({
       ...payload,
-      id: validatedSlug,
       slug: validatedSlug,
       source_app_id: sourceAppId,
-      source_ecosystem_id: sourceEcosystemId,
-      owner_type: ownerType,
-      owner_id: ownerId,
       visibility: payload.visibility || 'app',
       publication_scope: payload.publication_scope || 'app',
-    } as Omit<BlogPost, 'created' | 'updated'>
+    })
 
     await create(
       defineRuntimeClientCreateTarget(

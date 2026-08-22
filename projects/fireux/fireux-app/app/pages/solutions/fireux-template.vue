@@ -157,27 +157,15 @@ watch(
   { immediate: true }
 )
 
-const product = computed(() =>
-  productSource.value
-    ? {
-        ...productSource.value,
-        prices: productPrices.value,
-      }
-    : null
-)
+const product = computed(() => productSource.value || null)
 
 const activeFeatures = computed(() =>
   (product.value?.features ?? []).filter((feature) => feature.available)
 )
 
 const chosenPrice = computed<Price | null>(() => {
-  if (!product.value?.prices?.length) return null
-  const byDefaultId = product.value.default_price?.id
-    ? product.value.prices.find(
-        (price: Price) => price.id === product.value?.default_price.id
-      )
-    : null
-  return byDefaultId || product.value.prices[0] || null
+  const activePrices = productPrices.value.filter((price) => price.active !== false)
+  return activePrices.find((price) => price.default) || activePrices[0] || null
 })
 
 const priceLabel = computed(() => {

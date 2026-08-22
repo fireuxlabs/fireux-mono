@@ -4,6 +4,7 @@ import {
   BlogPostStorage,
   type BlogPost,
 } from '../../../../../models/blogPost.model'
+import { normalizeBlogPostUpdate } from '../../../../../utils/normalize-blog-post'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -40,9 +41,7 @@ export function useBlogUpdate() {
       throw new Error('Blog post slug must match blog post id.')
     }
 
-    const nextUpdates = (
-      updates.slug === undefined ? updates : { ...updates, slug: blogPostId }
-    ) as Partial<BlogPost>
+    const nextUpdates = normalizeBlogPostUpdate(updates)
 
     await updateDocument(BlogPostStorage.collection, blogPostId, nextUpdates)
     if (import.meta.dev) {

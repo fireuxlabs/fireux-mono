@@ -43,7 +43,6 @@ export function validateKitchenDemoServiceAndFinance(
       ...completedOrders.map((order) => Date.parse(order.placedAt))
     )
     const sourceCreatedAtMs = [
-      input.kitchen,
       ...menus.flatMap((menu) => [
         menu.rootMenu,
         menu.kitchenMenu,

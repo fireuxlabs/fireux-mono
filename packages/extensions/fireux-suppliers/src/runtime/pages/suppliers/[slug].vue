@@ -1,6 +1,7 @@
 <template>
   <SupplierDetail
     :supplier="supplier"
+    :company="company"
     :place="place"
     :outcome="outcome"
     @refresh="refresh"
@@ -24,6 +25,7 @@ const routeKey = useRouteParam('slug')
 
 const {
   supplier,
+  company,
   place,
   ready,
   refresh,
@@ -40,5 +42,5 @@ if (import.meta.server && missing.value) {
   setResponseStatus(statusCode.value || 503)
 }
 
-useSupplierSeo(supplier)
+useSupplierSeo(supplier, place)
 </script>

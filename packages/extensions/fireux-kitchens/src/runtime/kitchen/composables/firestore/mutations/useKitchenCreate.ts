@@ -8,7 +8,7 @@ import type {
 } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { KitchenCreateInput } from '../../../models/kitchen.model.ts'
+import type { KitchenCreateInput } from '../../../models/kitchen-input.model.ts'
 import type {
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
@@ -99,9 +99,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
   ): Promise<KitchenCreateResult> {
     const existingRootId = normalizeString(createOptions.existingRootId)
     const placeId = normalizeString(input.place_id || input.place?.id)
-    const displayName = normalizeString(
-      input.identity?.display_name || input.display_name
-    )
+    const displayName = normalizeString(input.display_name)
     if (!existingRootId && !placeId) {
       throw new Error(
         'A linked Place is required to create a Kitchen workspace.'

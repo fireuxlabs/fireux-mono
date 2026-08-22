@@ -11,6 +11,7 @@ export function useSupplierSystem() {
     id?: string
     supplier_id?: string
     name?: string
+    company_place?: { name?: string; short_name?: string }
   }
   type SupplierIngredientRow = {
     key: string
@@ -20,7 +21,7 @@ export function useSupplierSystem() {
     state: string
     catalogueState: string
   }
-  type SupplierIngredientStateFilter = 'all' | 'official' | 'public'
+  type SupplierIngredientStateFilter = 'all' | 'active' | 'inactive'
 
   const supplierModelRuntime = SupplierModelRuntime
   const sourceMode = ref<SupplierCollectionSource>('demo')
@@ -38,7 +39,8 @@ export function useSupplierSystem() {
     normalizeString(supplier.id || supplier.supplier_id)
   const getSupplierLabel = (supplier: SupplierDevRecord) =>
     normalizeString(
-      supplier.supplier_organization_name ||
+      supplier.company_place?.short_name ||
+        supplier.company_place?.name ||
         supplier.name ||
         supplier.id ||
         supplier.supplier_id
@@ -57,36 +59,27 @@ export function useSupplierSystem() {
 
   const selectedSupplierLabel = computed(() =>
     normalizeString(
-      selectedSupplier.value?.supplier_organization_name ||
+      selectedSupplier.value?.company_place?.short_name ||
+        selectedSupplier.value?.company_place?.name ||
         selectedSupplier.value?.name ||
         selectedSupplier.value?.id
     )
   )
 
-  const selectedLinkedIngredientIds = computed(() =>
-    Array.isArray(selectedSupplier.value?.linked_ingredient_ids)
-      ? selectedSupplier.value.linked_ingredient_ids
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      : []
-  )
+  const selectedLinkedIngredientIds = computed<string[]>(() => [])
 
   const buildSupplierIngredientRows = () =>
     suppliers.value.flatMap<SupplierIngredientRow>((supplier) => {
       const supplierId = getSupplierId(supplier)
       const supplierLabel = getSupplierLabel(supplier) || supplierId
-      const ingredientIds = Array.isArray(supplier.linked_ingredient_ids)
-        ? supplier.linked_ingredient_ids
-            .map((value) => normalizeString(value))
-            .filter(Boolean)
-        : []
+      const ingredientIds: string[] = []
 
       return ingredientIds.map((ingredientId) => ({
         key: `${supplierId}:${ingredientId}`,
         supplierId,
         supplierLabel,
         ingredientId,
-        state: normalizeString(supplier.state),
+        state: normalizeString(supplier.status),
         catalogueState: normalizeString(supplier.catalogue_state),
       }))
     })
@@ -131,11 +124,11 @@ export function useSupplierSystem() {
   const totalCount = computed(() => suppliers.value.length)
   const officialCount = computed(
     () =>
-      suppliers.value.filter((supplier) => supplier.state === 'official').length
+      suppliers.value.filter((supplier) => supplier.status === 'active').length
   )
   const publicCount = computed(
     () =>
-      suppliers.value.filter((supplier) => supplier.state === 'public').length
+      suppliers.value.filter((supplier) => supplier.visibility === true).length
   )
   const integratedCount = computed(
     () =>
@@ -146,7 +139,7 @@ export function useSupplierSystem() {
   const publicOnlyCount = computed(
     () =>
       suppliers.value.filter(
-        (supplier) => supplier.catalogue_state === 'public_only'
+        (supplier) => supplier.catalogue_state === 'directory_only'
       ).length
   )
 
@@ -154,7 +147,7 @@ export function useSupplierSystem() {
     source: sourceMode.value,
     supplierId: selectedSupplierId.value || null,
     supplier: selectedSupplier.value,
-    linked_ingredient_ids: selectedLinkedIngredientIds.value,
+    ingredient_ids: selectedLinkedIngredientIds.value,
   }))
   const supplierIngredientsDebug = computed(() => ({
     source: sourceMode.value,

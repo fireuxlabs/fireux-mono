@@ -94,7 +94,7 @@
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-        :derived="{}"
+        :derived="{ companies: fetched.companies.value, places: fetched.places.value }"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -139,15 +139,17 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     devJsonTitle: 'Suppliers (JSON)',
-    devJsonContext: 'collection manager · suppliers · raw collection',
+    devJsonContext:
+      'Supplier collection · canonical Suppliers with Companies and Places',
   }
 )
 
 const fetched = useSupplierCollection()
 const rawCollection = computed(() => fetched.suppliers.value)
+const canonicalSuppliers = computed(() => fetched.roots.value)
 const outcome = computed(() => fetched.outcome.value)
 const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(rawCollection)
+  useDevCollectionJson(canonicalSuppliers)
 const title = computed(() => String(props.title || 'Suppliers'))
 const description = computed(() =>
   String(
@@ -171,7 +173,8 @@ const devJsonTitle = computed(() =>
 )
 const devJsonContext = computed(() =>
   String(
-    props.devJsonContext || 'collection manager · suppliers · raw collection'
+    props.devJsonContext ||
+      'Supplier collection · canonical Suppliers with Companies and Places'
   ).trim()
 )
 const {

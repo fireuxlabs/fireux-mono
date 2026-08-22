@@ -9,10 +9,8 @@ import type {
 } from '../../models/kitchen-detail.model.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import {
-  readKitchenSproochliConfig,
-  readKitchenVisibility,
-} from '../../utils/kitchen-readers.ts'
+import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
+import { readKitchenVisibility } from '../../utils/kitchen-readers.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import { normalizeKitchen } from '../../utils/normalize-kitchen.ts'
 import { resolveKitchenDetailPresentation } from '../../utils/kitchen-detail-presentation.ts'
@@ -113,7 +111,8 @@ export function resolveKitchen(
 export function projectKitchenDetail(
   document: KitchenRootRecord,
   dataByPath: Map<string, Record<string, unknown>>,
-  scope: KitchenReadScope
+  scope: KitchenReadScope,
+  sproochli: SproochliAttachmentConfig
 ): KitchenDetailResponse | null {
   const kitchen = resolveKitchen(document, dataByPath, scope)
   const parts = resolveKitchenReadParts(document, dataByPath, scope)
@@ -134,8 +133,6 @@ export function projectKitchenDetail(
   const tagline = kitchen.place.brand_tagline || ''
   const imageUrl = kitchen.place.cover_image || kitchen.place.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
-  const sproochli = readKitchenSproochliConfig(parts.document.data)
-
   const presentation: KitchenDetailPresentation = {
     id: kitchen.id,
     name: kitchen.place.name,

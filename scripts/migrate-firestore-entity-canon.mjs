@@ -285,14 +285,16 @@ async function planWorkspaceFamily(appRef, family) {
 
     if (family.rootCollection === 'kitchens') {
       const owned = record(source.console)
-      const allowed = [
-        'theme',
-        'menus',
-        'orders',
-        'tables',
-        'fulfilment',
-        'integrations',
-      ]
+      const allowed = ['theme', 'menus', 'orders', 'tables', 'integrations']
+      if ('fulfilment' in owned) {
+        blockers.push({
+          path: rootRef.path,
+          sourcePath: support.ref.path,
+          reason:
+            'Kitchen fulfilment must use kitchens/{kitchenId}/fulfilment/policy.',
+          fields: ['fulfilment'],
+        })
+      }
       const unknown = Object.keys(owned).filter(
         (field) => !allowed.includes(field)
       )
@@ -384,6 +386,11 @@ async function planProducts() {
   const providers = productRoots.docs.filter((document) =>
     document.id.startsWith('prod_')
   )
+  const canonicalById = new Map(
+    productRoots.docs
+      .filter((document) => !document.id.startsWith('prod_'))
+      .map((document) => [document.id, document])
+  )
   const providerBySlug = new Map(
     providers.map((document) => [
       text(document.get('stripe_metadata_slug')) ||
@@ -413,31 +420,92 @@ async function planProducts() {
       sourcePath: document.ref.path,
     }))
     const sourceData = source.data() || {}
-    const defaultPrice = canonicalPrices[0]
-    const product = {
-      ...sourceData,
-      metadata: {
-        ...record(sourceData.metadata),
-        stripe: {
-          product_id: provider.id,
-          price_ids: canonicalPrices.map((price) => price.id),
-          configured: true,
-        },
-      },
-      prices: canonicalPrices.map((price) => ({ id: price.id, ...price.data })),
-      ...(defaultPrice
-        ? {
-            default_price: {
-              id: defaultPrice.id,
-              unit_amount: defaultPrice.data.unit_amount,
-              ...(defaultPrice.data.interval
-                ? { interval: defaultPrice.data.interval }
-                : {}),
-            },
-          }
-        : {}),
+    const metadata = record(sourceData.metadata)
+    const allowedMetadata = new Set([
+      'stripe',
+      'categories',
+      'brands',
+      'source_url',
+      'availability',
+      'delivery',
+      // Legacy catalogue transport: route/category/status are derived from
+      // canonical Product fields; pricing/provider truth lives on ProductPrice.
+      'category',
+      'cta',
+      'ecosystem',
+      'kind',
+      'module',
+      'pricing',
+      'route',
+      'status',
+    ])
+    const unknownMetadata = Object.keys(metadata).filter(
+      (key) => !allowedMetadata.has(key)
+    )
+    if (unknownMetadata.length) {
+      blockers.push({
+        path: `products/${source.id}`,
+        sourcePath: source.ref.path,
+        reason: 'Product metadata contains unclassified fields.',
+        fields: unknownMetadata.sort(),
+      })
+      continue
     }
-    await planCreate(`products/${source.id}`, product, source.ref.path)
+    const product = {
+      source_app_id: 'fireux-app',
+      visibility: 'public',
+      name: text(sourceData.name),
+      tagline: text(sourceData.tagline),
+      Q: text(sourceData.Q),
+      A: text(sourceData.A),
+      description: text(sourceData.description),
+      content: text(sourceData.content),
+      slug: text(sourceData.slug) || source.id,
+      active: sourceData.active === true,
+      main_image: text(sourceData.main_image),
+      images: Array.isArray(sourceData.images) ? sourceData.images : [],
+      features: Array.isArray(sourceData.features) ? sourceData.features : [],
+      categories: strings(sourceData.categories || metadata.categories),
+      brands: strings(sourceData.brands || metadata.brands),
+      source_url: text(sourceData.source_url || metadata.source_url),
+      requires_template:
+        sourceData.requires_template === true ||
+        metadata.availability?.requires_template === true,
+      fulfillment_requirements: strings(
+        sourceData.fulfillment_requirements || metadata.delivery?.requirements
+      ),
+      product_type: text(sourceData.product_type),
+      created: sourceData.created || {
+        at: sourceData.created_at,
+        by: sourceData.creator_id,
+        app_id: 'fireux-app',
+      },
+      updated: sourceData.updated || { at: sourceData.updated_at },
+    }
+    const targetPath = `products/${source.id}`
+    await planCreate(targetPath, product, source.ref.path, { targetWins: true })
+    await planPatch(targetPath, product, source.ref.path)
+    const canonical = canonicalById.get(source.id)
+    if (canonical) {
+      const redundantFields = [
+        'id',
+        'source_ecosystem_id',
+        'owner_type',
+        'owner_id',
+        'prices',
+        'default_price',
+        'track_stock',
+        'stock',
+        'metadata',
+        'appId',
+        'created_at',
+        'updated_at',
+        'creator_id',
+      ].filter((field) => field in (canonical.data() || {}))
+      if (redundantFields.length) {
+        retireUpdates.push({ path: targetPath, deleteFields: redundantFields })
+      }
+    }
     retireDeletes.push({
       path: source.ref.path,
       targetPath: `products/${source.id}`,

@@ -129,25 +129,16 @@ function newSupplierRoot(
   policy: RuntimePolicy,
   uid: string,
   supplierId: string,
-  organizationName: string,
   companyId: string
 ): Record<string, unknown> {
   return {
     management: policy.management,
     company_id: companyId,
     slug: supplierId,
-    supplier_organization_name: organizationName,
-    tagline: '',
-    supplier_headline: '',
-    summary: '',
-    supplier_bio: '',
-    supplier_image: '',
-    supplier_item_categories: [],
-    supplier_delivery_areas: [],
-    state: 'published',
+    status: 'active',
+    visibility: true,
     catalogue_state: 'directory_only',
-    linked_ingredient_ids: [],
-    hello: '',
+    delivery_areas: [],
     created: serverAuditStamp({ by: uid }),
     updated: serverAuditStamp({ by: uid }),
   }
@@ -248,7 +239,7 @@ export async function completeSupplierOnboarding(
       mutations.create(
         suppliers,
         supplierId,
-        newSupplierRoot(policy, uid, supplierId, organizationName, companyId)
+        newSupplierRoot(policy, uid, supplierId, companyId)
       )
     } else {
       const management = readRootManagement(rootData || {})

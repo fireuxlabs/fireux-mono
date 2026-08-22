@@ -27,6 +27,8 @@ export const MarketplaceStoreEntity = defineFireuxEntity({
   notes: [
     'Store identity is root-owned even when management names an App.',
     'Team records own Store authority.',
+    'The reader supplies the root document id; writers do not store it.',
+    'Public directory/detail transport may join published Offer children without embedding them in Store.',
   ],
 })
 

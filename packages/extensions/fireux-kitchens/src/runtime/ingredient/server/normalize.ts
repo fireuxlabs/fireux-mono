@@ -48,8 +48,6 @@ export function normalizeIngredient(document: {
   const replacedByIngredientId = text(source.replaced_by_ingredient_id)
 
   return {
-    ...IngredientDefaults,
-    ...source,
     id,
     schema_version: 2,
     slug: text(source.slug) || id,
@@ -67,6 +65,8 @@ export function normalizeIngredient(document: {
       'active'
     ),
     image_url: text(source.image_url),
+    created: (source.created || IngredientDefaults.created) as Ingredient['created'],
+    updated: (source.updated || IngredientDefaults.updated) as Ingredient['updated'],
     ...(isFirestoreDocumentId(parentIngredientId)
       ? { parent_ingredient_id: parentIngredientId }
       : {}),

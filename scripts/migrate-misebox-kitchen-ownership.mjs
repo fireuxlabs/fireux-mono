@@ -19,21 +19,15 @@ import { defineFirestoreMutationTarget } from '../packages/core/fireux-core/src/
 const ECOSYSTEM = 'misebox'
 const DATABASE_ID = 'misebox'
 const LEGACY_SUPPORT_FIELD = 'console'
-const OWNED_FIELDS = [
-  'theme',
-  'menus',
-  'orders',
-  'tables',
-  'fulfilment',
-  'integrations',
-]
+const OWNED_FIELDS = ['theme', 'menus', 'orders', 'tables', 'integrations']
+const CHILD_OWNED_FIELDS = ['fulfilment']
 
 const args = parseArgs(process.argv.slice(2))
 const apply = args.apply === true
-const text = value => String(value ?? '').trim()
-const record = value =>
+const text = (value) => String(value ?? '').trim()
+const record = (value) =>
   value && typeof value === 'object' && !Array.isArray(value) ? value : {}
-const stable = value => {
+const stable = (value) => {
   if (value == null || typeof value !== 'object') return value
   if (Array.isArray(value)) return value.map(stable)
   if (typeof value.toDate === 'function') {
@@ -45,8 +39,10 @@ const stable = value => {
       .map(([key, child]) => [key, stable(child)])
   )
 }
-const sha256 = value =>
-  createHash('sha256').update(JSON.stringify(stable(value))).digest('hex')
+const sha256 = (value) =>
+  createHash('sha256')
+    .update(JSON.stringify(stable(value)))
+    .digest('hex')
 const equal = (left, right) => sha256(left) === sha256(right)
 
 if (args.help) {
@@ -73,7 +69,10 @@ const auth = await resolveFirebaseAdminCredential({
   projectId: target.projectId,
 })
 const app = initializeApp(
-  { credential: auth.credential, projectId: target.projectId || auth.projectId },
+  {
+    credential: auth.credential,
+    projectId: target.projectId || auth.projectId,
+  },
   `migrate-misebox-kitchen-ownership-${Date.now()}`
 )
 
@@ -109,14 +108,22 @@ try {
         else if (!equal(root[field], legacy[field])) conflicts.push(field)
       }
       const unknownFields = Object.keys(legacy)
-        .filter(field => !OWNED_FIELDS.includes(field))
+        .filter(
+          (field) =>
+            !OWNED_FIELDS.includes(field) && !CHILD_OWNED_FIELDS.includes(field)
+        )
         .sort()
-      if (conflicts.length || unknownFields.length) {
+      const childOwnedFields = CHILD_OWNED_FIELDS.filter((field) =>
+        Object.hasOwn(legacy, field)
+      )
+      if (conflicts.length || unknownFields.length || childOwnedFields.length) {
         blockers.push({
           path: supportDocument.ref.path,
           conflicts,
           unknownFields,
-          reason: 'Legacy Workspace data cannot be moved without a human decision.',
+          childOwnedFields,
+          reason:
+            'Legacy Workspace data cannot be moved without a human decision.',
         })
         continue
       }
@@ -145,31 +152,40 @@ try {
   const plan = { ...planBase, planSha256 }
 
   if (!apply) {
-    console.log(JSON.stringify(
-      args.summary
-        ? {
-            mode: 'dry-run',
-            projectId: plan.projectId,
-            databaseId: DATABASE_ID,
-            planSha256,
-            operations: operations.length,
-            blockers,
-          }
-        : { mode: 'dry-run', ...plan },
-      null,
-      2
-    ))
+    console.log(
+      JSON.stringify(
+        args.summary
+          ? {
+              mode: 'dry-run',
+              projectId: plan.projectId,
+              databaseId: DATABASE_ID,
+              planSha256,
+              operations: operations.length,
+              blockers,
+            }
+          : { mode: 'dry-run', ...plan },
+        null,
+        2
+      )
+    )
     process.exitCode = blockers.length ? 2 : 0
   } else {
     if (blockers.length) {
-      throw new Error(`Apply blocked by ${blockers.length} unresolved record(s).`)
+      throw new Error(
+        `Apply blocked by ${blockers.length} unresolved record(s).`
+      )
     }
     if (text(args.confirm) !== planSha256) {
       throw new Error(`Apply requires --confirm ${planSha256}`)
     }
     const backupPath = text(args.backup)
-    if (!backupPath.startsWith('/private/tmp/') || !backupPath.endsWith('.json')) {
-      throw new Error('Apply requires a new --backup /private/tmp/<name>.json path.')
+    if (
+      !backupPath.startsWith('/private/tmp/') ||
+      !backupPath.endsWith('.json')
+    ) {
+      throw new Error(
+        'Apply requires a new --backup /private/tmp/<name>.json path.'
+      )
     }
 
     const preimage = []
@@ -223,7 +239,10 @@ try {
         if (
           Object.hasOwn(operation.patch, field) &&
           !equal(canonical[field], operation.patch[field])
-        ) throw new Error(`Canonical verification failed: ${operation.rootPath}.${field}`)
+        )
+          throw new Error(
+            `Canonical verification failed: ${operation.rootPath}.${field}`
+          )
       }
 
       const supportTarget = defineFirestoreMutationTarget({
@@ -237,19 +256,26 @@ try {
         [LEGACY_SUPPORT_FIELD]: FieldValue.delete(),
         updated: { at: FieldValue.serverTimestamp(), by: actor },
       })
-      const verifiedSupport = (await db.doc(operation.supportPath).get()).data() || {}
+      const verifiedSupport =
+        (await db.doc(operation.supportPath).get()).data() || {}
       if (Object.hasOwn(verifiedSupport, LEGACY_SUPPORT_FIELD)) {
         throw new Error(`Support cleanup failed: ${operation.supportPath}`)
       }
     }
 
-    console.log(JSON.stringify({
-      mode: 'apply',
-      migrated: operations.length,
-      planSha256,
-      backup,
-      postWriteVerified: true,
-    }, null, 2))
+    console.log(
+      JSON.stringify(
+        {
+          mode: 'apply',
+          migrated: operations.length,
+          planSha256,
+          backup,
+          postWriteVerified: true,
+        },
+        null,
+        2
+      )
+    )
   }
 } finally {
   await deleteApp(app)

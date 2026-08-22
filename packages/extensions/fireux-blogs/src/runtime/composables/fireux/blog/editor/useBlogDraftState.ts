@@ -6,11 +6,7 @@ import type { BlogPostCreateInput } from '../../../../models/blogPost.model'
 import { useBlogUtils } from '../../firestore/blog/utils/useBlogUtils'
 
 const defaultBlogPost: BlogPostCreateInput = {
-  id: '',
   source_app_id: '',
-  source_ecosystem_id: '',
-  owner_type: 'app',
-  owner_id: '',
   visibility: 'app',
   publication_scope: 'app',
   title: '',
@@ -86,7 +82,6 @@ export function useBlogDraftState() {
     const defaults = getDefaultImages()
 
     blogPost.value = {
-      id: '',
       title: '',
       content: '',
       metaDescription: '',
@@ -110,9 +105,6 @@ export function useBlogDraftState() {
       },
       sproochli: undefined,
       source_app_id: tenantId,
-      source_ecosystem_id: useFireUXConfig().ecosystemId || '',
-      owner_type: 'app',
-      owner_id: tenantId,
       visibility: 'app',
       publication_scope: 'app',
     }
@@ -122,13 +114,9 @@ export function useBlogDraftState() {
   }
 
   function getBlogPostPayload(): BlogPostCreateInput {
-    const ecosystemId = useFireUXConfig().ecosystemId || ''
     return {
       ...blogPost.value,
       source_app_id: tenantId,
-      source_ecosystem_id: ecosystemId,
-      owner_type: 'app',
-      owner_id: tenantId || ecosystemId,
       visibility: blogPost.value.visibility || 'app',
       publication_scope: blogPost.value.publication_scope || 'app',
     }

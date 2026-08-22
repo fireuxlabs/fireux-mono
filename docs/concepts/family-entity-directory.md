@@ -150,13 +150,13 @@ When this family changes:
 - Supplier, Portfolio, Property, and Company are aligned ordinary Directory
   siblings. Their collection authority and management doorways remain
   Entity-owned.
+- Portfolio public index transport pages canonical `Portfolio[]`; the reader
+  supplies document ids and does not create a second directory-entry model.
 - Place index transport pages canonical `Place[]`; it no longer maintains a
   second Place projection model.
-- Kitchen uses one bounded `KitchenDirectoryEntry` view because its cards join
-  canonical Kitchen and Place records while management surfaces authorize
-  against root-owned Team. The API and sitemap
-  delegate to the same `readKitchenDirectoryPage` owner; neither introduces a
-  replacement Kitchen Entity.
+- Kitchen index transport returns canonical `Kitchen[]` values enriched with
+  each same-ID canonical Place. It does not introduce a directory-entry model;
+  management surfaces authorize against root-owned Team separately.
 - Supplier Directory reads canonical `Supplier[]` through its live root
   collection. Its different transport does not change the shared outcome
   anatomy.

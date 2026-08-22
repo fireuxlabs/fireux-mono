@@ -84,7 +84,7 @@
         include-route
         :title="'Chefs (JSON)'"
         context="collection manager · chefs"
-        :objects="devJsonData"
+        :objects="{ profiles: devJsonData, users: profileUsers }"
         :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
@@ -132,7 +132,7 @@ const props = withDefaults(
 )
 
 const fetched = useChefFetch()
-const { outcome } = fetched
+const { outcome, profileUsers } = fetched
 const collection = fetched.coreChefs
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)

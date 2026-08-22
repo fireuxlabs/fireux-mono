@@ -1,5 +1,7 @@
 import { useAsyncData } from '#imports'
 import { computed } from 'vue'
+import type { Company } from 'fireux-companies/runtime/place/models/company.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
@@ -12,6 +14,13 @@ import {
   type UseSupplierCollectionOptions,
 } from './supplier-collection-contract'
 import { useSupplierCollectionSelection } from './supplier-collection-selection'
+import type { Supplier } from '../../../models/Supplier.model'
+
+type SupplierDirectoryResponse = {
+  suppliers: Supplier[]
+  companies: Company[]
+  places: Place[]
+}
 
 export type {
   SupplierCollectionFilter,
@@ -32,12 +41,12 @@ export function useSupplierCollection(
       ? DEFAULT_COLLECTION_PATH
       : ''
   )
-  const directory = useAsyncData<SupplierRootDoc[]>(
+  const directory = useAsyncData<SupplierDirectoryResponse>(
     'supplier-directory',
     () =>
       sourceMode.value === 'live' && !usesTargetedRootRead.value
-        ? $fetch<SupplierRootDoc[]>('/api/suppliers')
-        : Promise.resolve([]),
+        ? $fetch<SupplierDirectoryResponse>('/api/suppliers')
+        : Promise.resolve({ suppliers: [], companies: [], places: [] }),
     { watch: [sourceMode, usesTargetedRootRead] }
   )
   const rootDocuments = firestoreLoadDocsByIds<SupplierRootDoc>({
@@ -47,13 +56,22 @@ export function useSupplierCollection(
   const source = computed(() =>
     usesTargetedRootRead.value
       ? (rootDocuments.docs.value ?? [])
-      : (directory.data.value ?? [])
+      : (directory.data.value?.suppliers ?? [])
+  )
+  const places = computed(() => directory.data.value?.places ?? [])
+  const companies = computed(() => directory.data.value?.companies ?? [])
+  const placesById = computed(
+    () => new Map(places.value.map((place) => [place.id, place]))
   )
   const suppliers = computed<SupplierCollectionDoc[]>(() =>
     source.value.reduce<SupplierCollectionDoc[]>((items, supplier) => {
       const id = resolveSupplierId(supplier)
       if (!id || (hasFilter.value && !filterIdSet.value.has(id))) return items
-      const item = surface({ supplier: { ...supplier, id } })
+      const companyId = String(supplier.company_id ?? '').trim()
+      const item = surface({
+        supplier: { ...supplier, id },
+        companyPlace: placesById.value.get(companyId),
+      })
       if (item) items.push(item)
       return items
     }, [])
@@ -81,5 +99,14 @@ export function useSupplierCollection(
     pending,
   })
 
-  return { suppliers, count, pending, error, outcome }
+  return {
+    suppliers,
+    roots: computed(() => source.value as Supplier[]),
+    companies,
+    places,
+    count,
+    pending,
+    error,
+    outcome,
+  }
 }

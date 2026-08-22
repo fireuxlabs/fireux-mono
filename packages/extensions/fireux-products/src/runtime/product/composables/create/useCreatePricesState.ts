@@ -1,7 +1,6 @@
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import type {
-	DefaultPrice,
 	Price,
 	StripePriceInput,
 } from '../../models/product.model.ts'
@@ -58,7 +57,7 @@ export function useCreatePricesState() {
 
 	const defaultUnitPrice = computed(() => prices.value[0]?.unit_amount ?? 0)
 
-	const defaultPrice = computed<DefaultPrice | undefined>(() => {
+	const defaultPrice = computed<Partial<Price> | undefined>(() => {
 		const price = prices.value[0]
 		if (!price) return undefined
 		return {

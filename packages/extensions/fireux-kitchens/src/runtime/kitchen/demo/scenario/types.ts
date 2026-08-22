@@ -23,6 +23,7 @@ export type KitchenDemoScenarioInput = {
   identity: KitchenDemoIdentity
   access: KitchenDemoScenario['access']
   kitchen: KitchenDemoScenario['kitchen']
+  configuration: KitchenDemoScenario['configuration']
   place: KitchenDemoScenario['place']
   menu: KitchenDemoMenu
   menuModes?: Readonly<Record<string, KitchenDemoMenuMode>>

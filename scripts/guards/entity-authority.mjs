@@ -217,6 +217,38 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     userModel,
     /app_ids|project_ids|kitchen_ids|workspace_enabled|profiles\??:\s*string\[\]|UserAccount|UserNotification|rootCollection/
   )
+  assert.deepEqual(typeFields(userModel, 'User'), [
+    'avatar',
+    'bio',
+    'display_name',
+    'handle',
+    'id',
+  ])
+  const userNormalizer = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/utils/normalize-user.ts'
+  )
+  assert.match(userNormalizer, /export function normalizeUser/)
+  assert.match(userNormalizer, /export function isUserDirectoryEligible/)
+  assert.match(userNormalizer, /A User may legitimately be incomplete/)
+  for (const readerPath of [
+    'packages/core/fireux-core/src/runtime/server/api/users/index.get.ts',
+    'packages/core/fireux-core/src/runtime/server/api/users/[handle].get.ts',
+    'packages/core/fireux-core/src/runtime/user/server/identity/summary.ts',
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useUserFetch.ts',
+  ]) {
+    assert.match(
+      read(repoRoot, readerPath),
+      /normalizeUser/,
+      `${readerPath} must return the canonical normalized User.`
+    )
+  }
+  const userDirectoryModel = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/models/user-directory.model.ts'
+  )
+  assert.match(userDirectoryModel, /UserIdentitySummary\s*=\s*Pick</)
+  assert.doesNotMatch(userDirectoryModel, /UserDirectoryEntry/)
 
   const appUserModel = read(
     repoRoot,

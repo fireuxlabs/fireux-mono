@@ -1,5 +1,5 @@
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { KitchenUpdateInput } from '../../../models/kitchen.model.ts'
+import type { KitchenUpdateInput } from '../../../models/kitchen-input.model.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

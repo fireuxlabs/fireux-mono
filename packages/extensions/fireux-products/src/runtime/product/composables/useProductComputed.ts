@@ -5,8 +5,8 @@ export function useProductComputed(
   product?: Ref<Product | null | undefined>
 ) {
   const hasProduct = computed(() => Boolean(product?.value?.id))
-  const isPublished = computed(() => product?.value?.active === true)
-  const isDraft = computed(() => product?.value?.active === false)
+  const isPublished = computed(() => product?.value?.visibility === 'public')
+  const isDraft = computed(() => product?.value?.visibility !== 'public')
   const displayStatus = computed(() =>
     isPublished.value ? 'Published' : isDraft.value ? 'Draft' : 'Unknown'
   )

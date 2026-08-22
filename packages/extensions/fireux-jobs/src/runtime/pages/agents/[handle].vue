@@ -28,8 +28,8 @@
         include-route
         title="Agent (Public DTO)"
         context="Agent detail · agents/[handle] · endpoint-first SSR"
-        :objects="devPayload"
-  :derived="{}"
+        :objects="devObjects"
+        :derived="devDerived"
         :default-open="false"
       />
     </div>
@@ -110,9 +110,11 @@ if (import.meta.server) {
 
 useAgentSeo(agentProfile, { routeKey: canonicalHandle, displayName })
 
-const devPayload = computed(() => ({
+const devObjects = computed(() => ({
   profile: agentProfile.value,
   user: profileUser.value,
+}))
+const devDerived = computed(() => ({
   outcome: outcome.value,
   canonicalPath: canonicalPath.value,
 }))

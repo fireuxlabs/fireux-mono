@@ -153,22 +153,22 @@ definePageMeta({
 
 const slug = useRouteParam('id')
 
-const { products } = useProductCollection()
+const { reads } = useProductCollection()
 const { preview: toCard } = useProductInterface()
 
-const moduleProduct = computed(() => {
-  const items = products.value ?? []
-  return items.find((product) => {
+const moduleRead = computed(() => {
+  const items = reads.value ?? []
+  return items.find(({ product }) => {
     const id = String(product.id ?? '').trim()
     const productSlug = String(product.slug ?? '').trim()
     const type = String(product.product_type ?? '').trim()
-    const category = String((product as any)?.metadata?.category ?? '').trim()
     return (
       (id === slug.value || productSlug === slug.value) &&
-      (type === 'module' || category === 'module')
+      type === 'module'
     )
   })
 })
+const moduleProduct = computed(() => moduleRead.value?.product || null)
 
 const moduleTitle = computed(() => moduleProduct.value?.name || 'Module')
 const moduleTagline = computed(() => moduleProduct.value?.tagline || 'FireUX module')
@@ -182,7 +182,7 @@ const moduleFeatures = computed(() =>
   moduleProduct.value?.features?.map((feature) => feature.title).filter(Boolean) ?? []
 )
 const moduleCard = computed(() =>
-  toCard(moduleProduct.value as FirebaseProduct) ?? {
+  toCard(moduleProduct.value as FirebaseProduct, moduleRead.value?.prices || []) ?? {
     id: moduleProduct.value?.id || '',
     to: '',
     avatarUrl: moduleProduct.value?.main_image || '',
@@ -198,8 +198,8 @@ const moduleCard = computed(() =>
 )
 
 const priceLabel = computed(() => {
-  const price = moduleProduct.value?.default_price?.unit_amount
-  const currency = moduleProduct.value?.prices?.[0]?.currency || 'chf'
+  const price = moduleRead.value?.defaultPrice?.unit_amount
+  const currency = moduleRead.value?.defaultPrice?.currency || 'chf'
   if (!price) return 'Custom'
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -207,7 +207,7 @@ const priceLabel = computed(() => {
   }).format(price / 100)
 })
 const requiresTemplate = computed(() =>
-  Boolean((moduleProduct.value as any)?.metadata?.availability?.requires_template)
+  moduleProduct.value?.requires_template === true
 )
 const ctaHint = computed(() =>
   requiresTemplate.value
@@ -235,14 +235,8 @@ const notify = (title: string, description: string) => {
   }
 }
 
-function resolveCheckoutPriceId(product?: Partial<FirebaseProduct>): string {
-  const stripe = (product?.metadata as any)?.stripe || {}
-  const ids = Array.isArray(stripe?.price_ids)
-    ? stripe.price_ids.map((id: unknown) => String(id || '').trim()).filter(Boolean)
-    : []
-  if (ids.length) return ids[0]
-
-  const fallback = String(product?.default_price?.id || '').trim()
+function resolveCheckoutPriceId(): string {
+  const fallback = String(moduleRead.value?.defaultPrice?.provider_price_id || moduleRead.value?.defaultPrice?.id || '').trim()
   if (!fallback || fallback.startsWith('local_')) return ''
   return fallback
 }
@@ -251,13 +245,11 @@ async function startCheckout() {
   const product = moduleProduct.value
   const appId = String(
     product?.source_app_id ||
-      product?.created?.app_id ||
-      product?.metadata?.app_id ||
       ''
   ).trim()
   const productId = String(product?.id || '').trim()
   const productSlug = String(product?.slug || '').trim()
-  const priceId = resolveCheckoutPriceId(product ?? undefined)
+  const priceId = resolveCheckoutPriceId()
 
   if (!appId || !productId || !productSlug) {
     notify('Checkout unavailable', 'Product data is incomplete for checkout.')

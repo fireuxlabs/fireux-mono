@@ -22,6 +22,7 @@ export type DriverCoverage = {
 }
 
 export type Driver = FireuxStamped & {
+  /** Reader-supplied parent User uid; never stored in the profile record. */
   id: string
   kind: 'driver'
   title: string
@@ -73,7 +74,10 @@ export const DriverProfileRecord = defineFireuxEntity({
   workspace: false,
   parent: 'User',
   scoped: DriverStorage.profile,
-  notes: ['User owns person identity; DriverProfile owns delivery capability.'],
+  notes: [
+    'User owns person identity; DriverProfile owns delivery capability.',
+    'The same uid joins User and DriverProfile; public reads never expose App state.',
+  ],
 })
 
 export const DriverAppStateRecord = defineFireuxEntity({

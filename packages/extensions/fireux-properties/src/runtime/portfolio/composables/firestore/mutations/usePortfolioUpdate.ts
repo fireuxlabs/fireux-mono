@@ -5,6 +5,7 @@ import type {
   PortfolioUpdateInput,
 } from '../../../models/portfolio.model.ts'
 import { PortfolioStorage } from '../../../models/portfolio.model.ts'
+import { normalizePortfolioUpdate } from '../../../utils/normalize-portfolio'
 
 export function usePortfolioUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -19,7 +20,7 @@ export function usePortfolioUpdate() {
     await updateDocument<Portfolio>(
       PortfolioStorage.rootCollection,
       id,
-      input.changes
+      normalizePortfolioUpdate(input.changes)
     )
   }
 

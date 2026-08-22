@@ -5,24 +5,32 @@
       mode="preview"
       variant="cell"
       :product="previewProduct"
+      :prices="prices"
+      :default-price="defaultPrice"
     />
     <h1>Customer</h1>
     <ProductViewProduct
       mode="preview"
       variant="customer"
       :product="previewProduct"
+      :prices="prices"
+      :default-price="defaultPrice"
     />
     <h1>Info</h1>
     <ProductViewProduct
       mode="preview"
       variant="info"
       :product="previewProduct"
+      :prices="prices"
+      :default-price="defaultPrice"
     />
     <h1>Page</h1>
     <ProductViewProduct
       mode="preview"
       variant="page"
       :product="previewProduct"
+      :prices="prices"
+      :default-price="defaultPrice"
     />
   </div>
 </template>
@@ -44,11 +52,8 @@ const previewProduct = computed(
   () =>
     ({
       ...product.value,
-      // Fix: Connect the prices from useCreatePricesState to the product
-      prices: prices.value,
       // Use main_image field from FirebaseProduct model
       main_image: mainImageData.value || '/img/placeholder-product.png',
-      default_price: defaultPrice.value,
     } as Partial<FirebaseProduct>)
 )
 </script>

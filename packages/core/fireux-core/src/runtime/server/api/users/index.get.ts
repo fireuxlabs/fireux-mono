@@ -1,12 +1,13 @@
 import { defineEventHandler, getQuery, setResponseHeaders, type H3Event, } from 'h3'
-import {
-  asBoundedTrimmedString, asTrimmedString, } from '../../utils/projection/normalize'
 import type { CollectionResponse } from '../../../models/utils/directory'
 import type { User } from '../../../user/models/user.model.ts'
 import {
   readUserDirectoryScopeIds, resolveUserDirectoryScope, type UserDirectoryScope, } from '../../../user/server/directory/scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
-import { resolveUserAvatarSource } from '../../../user/utils/user-avatar.ts'
+import {
+  isUserDirectoryEligible,
+  normalizeUser,
+} from '../../../user/utils/normalize-user.ts'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -16,25 +17,12 @@ function normalizeLimit(value: unknown): number {
   return Math.max(1, Math.min(1000, Math.trunc(parsed)))
 }
 
-function normalizeHandle(value: unknown): string {
-  return asTrimmedString(value).toLowerCase()
-}
-
 function mapUser(
   doc: FirebaseFirestore.DocumentSnapshot
 ): User | null {
   if (!doc.exists) return null
-  const data = (doc.data() || {}) as Record<string, unknown>
-  const handle = normalizeHandle(data.handle)
-  if (!handle) return null
-
-  return {
-    id: doc.id,
-    handle,
-    display_name: asTrimmedString(data.display_name) || `@${handle}`,
-    bio: asBoundedTrimmedString(data.bio, 280),
-    avatar: resolveUserAvatarSource(data.avatar),
-  }
+  const user = normalizeUser(doc.id, doc.data())
+  return user && isUserDirectoryEligible(user) ? user : null
 }
 
 async function readGlobalCanonicalUsers(limit: number): Promise<User[]> {

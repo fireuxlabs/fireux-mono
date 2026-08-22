@@ -1,209 +1,77 @@
-// FILE: packages/extensions/fireux-products/src/runtime/product/models/product.model.ts
-
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import { FireuxRootScope } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends null ? null
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+type WidenLiteral<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T extends null ? null : T extends readonly (infer U)[] ? WidenLiteral<U>[] : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> } : T
 
-/**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
- *
- * Family: Domain Root
- * Storage: root-first canonical model
- * Root path: /products/<productId>
- * Workspace use: may be managed or linked inside workspaces without requiring a stored overlay by default
- * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
- *
- * Decision note:
- * - Product is shared root truth first.
- * - App and ecosystem product pages should filter root products through shared root scoping fields.
- * - Do not create app-local product storage unless real app-local workflow state appears later.
- * - If that changes, update the models README first, then this file.
- */
 export const ProductStorage = {
-  shape: 'root',
-  path: 'products/{productId}',
-  collection: 'products',
-  idParam: 'productId',
-  children: {
-    prices: 'products/{productId}/prices/{priceId}',
-  },
+  shape: 'root', path: 'products/{productId}', collection: 'products', idParam: 'productId',
+  children: { prices: 'products/{productId}/prices/{priceId}' },
 } as const
 
 export const ProductEntity = defineFireuxEntity({
-  kind: 'entity',
-  name: 'Product',
-  family: 'commerce',
-  identity: 'root',
-  authority: 'domain-database',
-  appSupport: 'none',
-  workspace: false,
+  kind: 'entity', name: 'Product', family: 'commerce', identity: 'root',
+  authority: 'domain-database', appSupport: 'none', workspace: false,
   root: ProductStorage.path,
   notes: [
-    'Product owns commercial identity and its ProductPrice children.',
+    'Product owns commercial identity, App provenance, publication state, and authored content.',
+    'ProductPrice children are the sole pricing authority.',
     'SupplierItem is a Supplier-owned offer that links to Product by product_id.',
-    'Kitchen and marketplace records reference Product rather than duplicating Product identity.',
   ],
 })
 
-export interface ProductFeature {
-  title: string
-  description?: string
-  available: boolean
-}
-
-export interface ProductImage {
-  url: string
-  alt?: string
-  order?: number
-}
-
+export interface ProductFeature { title: string; description?: string; available: boolean }
+export interface ProductImage { url: string; alt?: string; order?: number }
+export type ProductVisibility = 'app' | 'public'
+export type ProductType = string
 export type PriceInterval = 'day' | 'week' | 'month' | 'year'
 export type PriceType = 'one_time' | 'recurring'
 export type BillingScheme = 'per_unit' | 'tiered'
 export type ProductPriceProvider = 'stripe' | 'manual' | string
 
-/**
- * Family: Product child
- * Storage: canonical pricing terms for a root product
- * Path: /products/<productId>/prices/<priceId>
- *
- * Decision note:
- * - ProductPrice owns pricing terms for Product.
- * - Product identity should not be overloaded with plan names such as Pro or Enterprise
- *   when those are price/package terms for the same commercial product.
- * - Provider-specific ids stay on the price record rather than defining Product identity.
- */
 export const ProductPriceStorage = {
-  shape: 'scoped',
-  path: 'products/{productId}/prices/{priceId}',
-  collection: 'prices',
-  parent: 'product',
-  idParam: 'priceId',
+  shape: 'scoped', path: 'products/{productId}/prices/{priceId}',
+  collection: 'prices', parent: 'product', idParam: 'priceId',
 } as const
 
 export const ProductPriceDefaults = {
-  id: '',
-  product_id: '',
-  label: '',
-  currency: '',
-  unit_amount: 0 as number,
+  id: '', product_id: '', label: '', currency: '', unit_amount: 0,
   type: 'one_time' as PriceType,
   interval: undefined as PriceInterval | undefined,
   interval_count: undefined as number | undefined,
   billing_scheme: 'per_unit' as BillingScheme,
-  active: true as boolean,
-  default: false as boolean,
-  provider: 'manual' as ProductPriceProvider,
-  provider_price_id: '',
-  metadata: {} as Record<string, any>,
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  active: true, default: false,
+  provider: 'manual' as ProductPriceProvider, provider_price_id: '',
+  metadata: {} as Record<string, unknown>,
+  created: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['created']['by'], app_id: undefined as FireuxStamped['created']['app_id'] },
+  updated: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['updated']['by'] },
 } as const
 
-export interface ProductPrice {
-  id?: string
-  product_id?: string
-  label?: string
-  currency: string
-  unit_amount: number
-  type?: PriceType
-  interval?: PriceInterval
-  interval_count?: number
-  billing_scheme?: BillingScheme
-  active?: boolean
-  default?: boolean
-  provider?: ProductPriceProvider
-  provider_price_id?: string
-  metadata?: Record<string, any>
-  created?: typeof ProductPriceDefaults.created
-  updated?: typeof ProductPriceDefaults.updated
-}
+export type ProductPrice = WidenLiteral<typeof ProductPriceDefaults>
 export type ProductPriceCreateInput = Omit<ProductPrice, 'id' | 'created' | 'updated'>
-export type ProductPriceUpdateInput = Partial<
-  Omit<ProductPrice, 'id' | 'product_id' | 'created' | 'updated'>
->
-
-// Compatibility alias kept while pricing runtime migrates to ProductPrice naming.
-export type Price = ProductPrice
-
-export interface DefaultPrice {
-  id: string
-  unit_amount: number
-  interval?: PriceInterval
-}
+export type ProductPriceUpdateInput = Partial<Omit<ProductPrice, 'id' | 'product_id' | 'created' | 'updated'>>
 
 export interface StripePriceInput {
-  currency: string
-  unit_amount: number
-  type?: PriceType
-  interval?: PriceInterval
-  interval_count?: number
-  billing_scheme?: BillingScheme
-  metadata?: Record<string, any>
+  currency: string; unit_amount: number; type?: PriceType; interval?: PriceInterval
+  interval_count?: number; billing_scheme?: BillingScheme; metadata?: Record<string, unknown>
 }
 
-export type ProductType = string
 export const ProductDefaults = {
-  id: '',
-  ...FireuxRootScope,
-  name: '',
-  tagline: '',
-  Q: '',
-  A: '',
-  description: '',
-  content: '',
-  slug: '',
-  active: true as boolean,
-  main_image: '',
-  images: [] as ProductImage[],
-  features: [] as ProductFeature[],
-  // Compatibility: canonical pricing terms live in /products/<productId>/prices.
-  prices: [] as ProductPrice[],
-  // Compatibility: use a default ProductPrice record for canonical reads.
-  default_price: {
-    id: '',
-    unit_amount: 0,
-    interval: 'month',
-  } as DefaultPrice,
-  product_type: 'service' as ProductType,
-  // Compatibility: stock/capacity belongs in seller or fulfillment records.
-  track_stock: false as boolean,
-  stock: null as number | null,
-  metadata: {} as Record<string, any>,
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  id: '', source_app_id: '', visibility: 'app' as ProductVisibility,
+  name: '', tagline: '', Q: '', A: '', description: '', content: '', slug: '',
+  active: true, main_image: '', images: [] as ProductImage[],
+  features: [] as ProductFeature[], categories: [] as string[], brands: [] as string[],
+  source_url: '', requires_template: false, fulfillment_requirements: [] as string[],
+  product_type: '' as ProductType,
+  created: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['created']['by'], app_id: undefined as FireuxStamped['created']['app_id'] },
+  updated: { at: {} as FirebaseTimestamp, by: undefined as FireuxStamped['updated']['by'] },
 } as const
 
 export type Product = WidenLiteral<typeof ProductDefaults>
-
 export type ProductCreateInput = Omit<Product, 'id' | 'created' | 'updated'>
-export type ProductUpdateInput = Partial<
-  Omit<Product, 'id' | 'created' | 'updated'>
->
+export type ProductUpdateInput = Partial<Omit<Product, 'id' | 'source_app_id' | 'created' | 'updated'>>
+export type ProductRead = { product: Product; prices: ProductPrice[]; defaultPrice: ProductPrice | null }
 
-// Compatibility type kept while consumers migrate from implementation-first naming.
+// Transitional vocabulary aliases; both carry only canonical shapes.
 export type FirebaseProduct = Product
+export type Price = ProductPrice

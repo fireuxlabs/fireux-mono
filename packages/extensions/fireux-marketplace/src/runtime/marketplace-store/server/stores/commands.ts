@@ -52,7 +52,6 @@ export async function createMarketplaceStore(
       })
     }
     mutations.create(stores, intent.slug, {
-      id: intent.slug,
       management: { mode: 'app', app_id: current.appId },
       ...intent,
       publication_state: 'draft',

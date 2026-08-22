@@ -93,8 +93,9 @@ repository-wide template rewrite.
 | App                               | id                | `accepted`: canonical App identity is already a public platform key                                                                                                                    |
 | Agent, Chef, Driver, Professional | User handle       | `accepted`: public identity uses the canonical User handle; the trusted projection resolves it to the uid-keyed profile and legacy uid requests redirect permanently to the handle URL |
 | Place                             | document id       | `accepted`: exact reads return `{ place: Place }`; the stable document id remains the route key                                                                                        |
-| Company, Job, Portfolio           | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
-| Property                          | slug today        | `to-confirm`: keep the route stable while public-detail and publication behavior are completed                                                                                         |
+| Company, Job                      | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
+| Portfolio                         | document id       | `accepted`: endpoint-first exact reads use the stable root id; authored slug remains canonical content and currently matches that id                                                    |
+| Property                          | slug today        | `parked`: public detail remains deliberately unavailable until a product decision defines a privacy-safe contract for the governance/valuation-bearing canonical root                  |
 | Project                           | no public detail  | `accepted`: private FireUX control-plane entity                                                                                                                                        |
 
 Do not mechanically rename `[id]` to `[slug]` or the reverse. A route-key
@@ -115,6 +116,7 @@ review.
 | Place detail stays current after its server render                     | `accepted`  | The server API supplies the initial canonical Place; every browser visitor then exact-subscribes to that same record, while transient listener failures retain the last good Place                            |
 | Menu detail can render a photo/PDF root Menu or structured KitchenMenu | `accepted`  | Root Menu and scoped KitchenMenu are distinct entities sharing public doorway behavior                                                                                                                        |
 | Portfolio keeps Finance and operations outside its root                | `accepted`  | Portfolio remains the readable Entity; Finance and operational children stay in their own scoped owners                                                                                                       |
+| Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                            |
 | Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
 
@@ -126,7 +128,7 @@ review.
 | Identity/profile/main ordering varies across older pages                     | `drift`      | Align when touching the page, using the emerging order and existing domain components                                    |
 | Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                                  |
 | Some root Entity readers still expose duplicate prefixed types               | `migration`  | Place, Supplier, and Job are reconciled; replace the remaining duplicates incrementally with canonical Entity types      |
-| Property public detail is partly app-specific today                          | `migration`  | Move reusable bounded detail behavior to the owning package while preserving tenant presentation deltas                  |
+| Property public detail is deliberately unavailable                           | `parked`     | Do not expose the governance/valuation-bearing canonical root or invent a replacement public-entry model without an explicit product/privacy decision |
 | Kitchen route slug and stable root ID have different jobs                    | `accepted`   | Resolve the authored route key only at the bounded server boundary; keep operational relationships on the stable root ID |
 
 ## Alignment roadmap

@@ -869,8 +869,8 @@ export async function run(ctx) {
       markers: [
         "management: { mode: 'workspace' }",
         'company_id: input.companyId',
-        'supplier_image: input.logoImageUrl',
-        '!scenario.supplier.supplier_image',
+        'status: input.status',
+        'scenario.supplier.visibility !== true',
         "'place_id' in scenario.supplier",
         'const companyIds = supplierDemoScenarios.map',
       ],
@@ -1334,7 +1334,7 @@ export async function run(ctx) {
         '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
         '  for (const value of [scenario.place.image_url, scenario.place.cover_image, ...(scenario.place.gallery_images || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
         '}',
-        'for (const scenario of supplierDemoScenarios) objectPath(scenario.supplier.supplier_image, `suppliers/${scenario.supplier.id}/`)',
+        'for (const target of companyDemoTargets) if (target.place.logo_image) objectPath(target.place.logo_image, `suppliers/${target.place.id.replace(/-hq$/, "")}/`)',
         'for (const target of companyDemoTargets) objectPath(target.place.image_url, `places/${target.place.id}/`)',
         'const templateAssets = ["apps/deanos/img/app/logo.png", "apps/deanos/img/app/wordmark-light.png", "apps/deanos/img/app/wordmark-dark.png", "apps/deanos/img/app/cover.png", "apps/deanos/img/app/thumbnail.png"]',
         'for (const value of templateAssets) found.push(value)',
@@ -1841,7 +1841,7 @@ export async function run(ctx) {
       'buildKitchenDemoSuppliersOperation',
       'KitchenSupplierIngredient',
       'linkedIngredientCount',
-      'supplier_item_categories',
+      'company_place?.logo_image',
       'catalogueCount',
       'coverage is unresolved',
     ]) {

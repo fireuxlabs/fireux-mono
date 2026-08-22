@@ -11,11 +11,13 @@ export type ChefGalleryItem = {
 }
 
 export type Chef = FireuxStamped & {
+  /** Reader-supplied parent User uid; never stored in the profile record. */
   id: string
   kind: 'chef'
   title: string
   summary: string
   chef_bio: string
+  /** Chef-owned editorial media, distinct from the canonical User avatar. */
   chef_image: string
   chef_signature_dishes: string[]
   chef_gallery: ChefGalleryItem[]
@@ -57,6 +59,7 @@ export const ChefProfileRecord = defineFireuxEntity({
   notes: [
     'User owns person identity; ChefProfile owns only Chef capability and presentation.',
     'The same uid joins User and ChefProfile.',
+    'Kitchen membership is resolved from Kitchen Team and is never indexed on ChefProfile.',
   ],
 })
 

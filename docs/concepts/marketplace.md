@@ -17,6 +17,8 @@ identity, Team, operations, and a future Dashboard/Console lifecycle. The
 current App-nested prototype is migration input, not a compatibility contract.
 
 - `marketplace-stores/{storeId}` owns Store identity and management.
+- The Store reader supplies `storeId`; root writers do not duplicate it as a
+  stored `id` field.
 - `marketplace-stores/{storeId}/team/{uid}` owns Store access.
 - `marketplace-stores/{storeId}/offers/{offerId}` owns Store publication of a
   canonical Supplier Item.
@@ -36,6 +38,9 @@ current App-nested prototype is migration input, not a compatibility contract.
   records. All
   authoring, moderation and Order reads/writes use trusted fixed-runtime
   endpoints.
+- Public Store directory/detail transport contains presentation-safe Store
+  fields and may join published Offer children. It never embeds those Offers
+  back into the canonical Store root or exposes Store management/audit truth.
 - Marketplace directory routes never merge source-authored preview sellers,
   fixtures, or seed records into those projections. The directory renders its
   bounded published projection first. A signed-in current-App admin may then

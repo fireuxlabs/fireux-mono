@@ -4,6 +4,7 @@
     <WorkspaceProjectIndexSelected
       :project="selection.project"
       :project-id="selection.projectId"
+      :outcome="selection.outcome"
       @clear="actions.clear"
     />
 
@@ -18,7 +19,10 @@
       title="Project workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedProject: selection.project, projects: sections.targets.collection }"
+      :objects="{
+        selectedProject: selection.project,
+        projects: sections.targets.collection,
+      }"
       :derived="debug"
       :default-open="false"
     />
@@ -28,10 +32,5 @@
 <script setup lang="ts">
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
-const {
-  selection,
-  sections,
-  actions,
-  debug,
-} = useProjectWorkspaceIndex()
+const { selection, sections, actions, debug } = useProjectWorkspaceIndex()
 </script>

@@ -57,7 +57,7 @@
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductSeo } from 'fireux-products/runtime/product/composables/useProductSeo'
-import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductRead } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({
   layout: 'landing',
@@ -65,38 +65,29 @@ definePageMeta({
 
 const route = useRoute()
 const slug = readRouteParam(route.params.slug)
-const { data: product } = await useAsyncData(
+const { data: read } = await useAsyncData(
   `yellow-velo-product-${slug}`,
-  () => $fetch<FirebaseProduct>(`/api/products/${encodeURIComponent(slug)}`)
+  () => $fetch<ProductRead>(`/api/products/${encodeURIComponent(slug)}`)
 )
+const product = computed(() => read.value?.product || null)
+const defaultPrice = computed(() => read.value?.defaultPrice || null)
 
-useProductSeo(product)
+useProductSeo(product, defaultPrice)
 
-const metadata = computed(() =>
-  (product.value?.metadata || {}) as Record<string, unknown>
-)
-const categories = computed(() =>
-  Array.isArray(metadata.value.categories)
-    ? metadata.value.categories.map(value => String(value))
-    : []
-)
-const brands = computed(() =>
-  Array.isArray(metadata.value.brands)
-    ? metadata.value.brands.map(value => String(value))
-    : []
-)
+const categories = computed(() => product.value?.categories || [])
+const brands = computed(() => product.value?.brands || [])
 const primaryCategory = computed(() =>
   categories.value.find(category =>
     ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(category)
   ) || categories.value[0] || 'Shop'
 )
 const sourceUrl = computed(() => {
-  const value = String(metadata.value.source_url || '')
+  const value = String(product.value?.source_url || '')
   return value.startsWith('https://yellow-velo.ch/') ? value : ''
 })
 const formattedPrice = computed(() => {
-  const amount = Number(product.value?.default_price?.unit_amount ?? 0)
-  const currency = String(product.value?.prices?.[0]?.currency || 'CHF').toUpperCase()
+  const amount = Number(defaultPrice.value?.unit_amount ?? 0)
+  const currency = String(defaultPrice.value?.currency || 'CHF').toUpperCase()
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency,

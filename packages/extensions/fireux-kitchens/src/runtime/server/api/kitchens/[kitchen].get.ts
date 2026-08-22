@@ -13,6 +13,7 @@ import {
   type KitchenReadScope,
 } from '../../../kitchen/server/identity/read.ts'
 import { readKitchenByRouteSlug } from '../../../kitchen/server/identity/route-identity.ts'
+import { readKitchenSproochliAttachment } from '../../../kitchen/server/core/sproochli-attachment.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -65,7 +66,13 @@ export default defineEventHandler(
         statusMessage: 'Kitchen relationships could not be read.',
       })
     })
-    const detail = projectKitchenDetail(document, dataByPath, readScope)
+    const sproochli = await readKitchenSproochliAttachment(db, kitchen.id, data)
+    const detail = projectKitchenDetail(
+      document,
+      dataByPath,
+      readScope,
+      sproochli
+    )
     if (!detail) {
       throw createError({
         statusCode: 503,

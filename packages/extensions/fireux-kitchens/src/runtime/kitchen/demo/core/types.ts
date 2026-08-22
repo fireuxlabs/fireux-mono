@@ -9,6 +9,7 @@ import type { KitchenOrder } from '../../models/order.model.ts'
 import type { KitchenStation } from '../../models/station.model.ts'
 import type { KitchenSupplierIngredient } from '../../models/supplier-ingredient.model.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
+import type { KitchenConfiguration } from '../../models/kitchen-configuration.model.ts'
 import type { KitchenMenu } from '../../../menu/models/kitchen-menu.model.ts'
 import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
 import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
@@ -67,6 +68,7 @@ export type KitchenDemoScenario = {
   appId: string
   access: KitchenDemoAccess
   kitchen: Kitchen
+  configuration: KitchenConfiguration
   place: Place
   menus: KitchenDemoMenu[]
   menuModes: Readonly<Record<string, KitchenDemoMenuMode>>

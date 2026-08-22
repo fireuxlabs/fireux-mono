@@ -84,8 +84,8 @@
         include-route
         :title="'Professionals (JSON)'"
         context="collection manager · professionals"
-        :objects="devJsonData"
-  :derived="{}"
+        :objects="{ profiles: devJsonData, users: profileUsers }"
+        :derived="{}"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -134,7 +134,7 @@ const props = withDefaults(
 )
 
 const fetched = useProfessionalFetch()
-const { outcome } = fetched
+const { outcome, profileUsers } = fetched
 const collection = fetched.coreProfessionals
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)

@@ -931,11 +931,14 @@ Found` page. An app may pass `--verify-text` for one public source-defined
 - `fireux-blogs` owns one canonical root BlogPost truth and a bounded
   server-side public projection. Public browser routes do not read raw Blog
   roots.
-- Every BlogPost names its source App and ecosystem. Every App in an ecosystem
-  sees that ecosystem's complete public Blog catalogue; source App remains
-  provenance, not public Blog visibility.
+- Every BlogPost names its source App. The selected named Firestore database is
+  ecosystem authority, so BlogPost does not duplicate ecosystem or generic
+  owner scope. Every App in that database sees its complete public Blog
+  catalogue; source App remains provenance, not public Blog visibility.
 - `publication_scope` is available to optional feed-promotion adapters; it
   does not narrow the ecosystem-wide public `/blog` catalogue.
+- The reader supplies the BlogPost document id. The canonical byline snapshot
+  contains only public presentation fields and never stores author email.
 - Blog media is shared durable HTTPS media. Project `/img/app` assets are
   presentation/source material, not canonical Blog media URLs.
 - A BlogPost may carry one sparse Sproochli attachment with its default

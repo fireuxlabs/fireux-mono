@@ -2,12 +2,8 @@
 import type { RadioGroupItem } from '@nuxt/ui'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenUpdate } from '../../../../../composables/firestore/mutations/useKitchenUpdate'
-import type {
-  KitchenDeliveryZone,
-  KitchenFulfilmentConfig,
-  KitchenUpdateInput,
-} from '../../../../../models/kitchen.model.ts'
+import { useKitchenFulfilmentUpdate } from '../../../../../composables/workspace/identity/mutations/useKitchenFulfilmentUpdate'
+import type { KitchenDeliveryZone } from '../../../../../models/fulfilment.model.ts'
 import {
   compactList,
   editableZone,
@@ -45,7 +41,7 @@ export function useKitchenDeliveryEditor(props: {
 
   const collectionPath = computed(() => props.collectionPath)
 
-  const { updateKitchen } = useKitchenUpdate()
+  const { updateKitchenFulfilment } = useKitchenFulfilmentUpdate()
 
   const { place, currencyCode } = useKitchenWorkspacePlace()
 
@@ -241,15 +237,10 @@ export function useKitchenDeliveryEditor(props: {
       const nextZone = normalizedZone(zone, index)
       if (nextZone) nextDeliveryZones.push(nextZone)
     }
-    const nextFulfilment: KitchenFulfilmentConfig = {
-      delivery_zones: nextDeliveryZones,
-      payment_methods: paymentMethods.value,
-    }
-    const patch: KitchenUpdateInput = {
-      fulfilment: nextFulfilment,
-    }
-
-    await updateKitchen({ kitchenId, changes: patch })
+    await updateKitchenFulfilment({
+      kitchenId,
+      changes: { delivery_zones: nextDeliveryZones },
+    })
     saveState.value = 'Saved'
     toast.add({
       title: successTitle,
@@ -262,7 +253,7 @@ export function useKitchenDeliveryEditor(props: {
     maxZones,
     boundaryTypeOptions,
     collectionPath,
-    updateKitchen,
+    updateKitchenFulfilment,
     place,
     currencyCode,
     toast,

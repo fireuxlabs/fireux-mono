@@ -47,16 +47,8 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
             canonicalCollectionPath: 'suppliers',
             routePrefix: '/suppliers',
             routeIdentity: 'document-id',
-            publicField: 'state',
-            publicValue: 'public',
-          })
-          ctx.addEntity({
-            entityKey: 'suppliers-official',
-            canonicalCollectionPath: 'suppliers',
-            routePrefix: '/suppliers',
-            routeIdentity: 'document-id',
-            publicField: 'state',
-            publicValue: 'official',
+            publicField: 'status',
+            publicValue: 'active',
           })
         }
       )

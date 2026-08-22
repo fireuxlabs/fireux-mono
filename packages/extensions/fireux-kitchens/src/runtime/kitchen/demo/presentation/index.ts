@@ -35,13 +35,13 @@ const priceLabel = (price: number, currencyCode: string) =>
     showCurrency: true,
   })
 const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
-  return scenario.kitchen.theme
+  return scenario.configuration.theme || { palette: {} }
 }
 
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...scenario.kitchenMenu.ordering,
   order_types: scenario.kitchenMenu.ordering.order_types.map((config) => {
-    const paymentMethods = scenario.kitchen.fulfilment.payment_methods
+    const paymentMethods = scenario.configuration.fulfilment?.payment_methods || []
       .filter((policy) => policy.order_types.includes(config.type))
       .map((policy) => policy.method)
 
@@ -143,8 +143,8 @@ export function kitchenDemoManifest(
     },
     presentation: {
       currencyCode: clean(scenario.place.default_currency_code) || 'CHF',
-      currencyFormat: scenario.kitchen.menus.currency_format,
-      showCurrency: scenario.kitchen.menus.show_currency,
+      currencyFormat: scenario.configuration.menus?.currency_format || 'dash',
+      showCurrency: scenario.configuration.menus?.show_currency !== false,
       kitchenImageShade: imageShade(scenario.place.image_shade),
       kitchenImageUrl: clean(
         scenario.place.cover_image || scenario.place.image_url

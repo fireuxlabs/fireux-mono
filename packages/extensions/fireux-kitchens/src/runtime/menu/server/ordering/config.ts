@@ -4,7 +4,7 @@ import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
 } from '../../models/menu.model.ts'
-import type { KitchenFulfilmentConfig } from '../../../kitchen/models/kitchen.model.ts'
+import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {
   readMenuOrderTypeConfig,
@@ -42,7 +42,7 @@ const orderingType = (value: unknown): MenuOrderTypeConfig | null => {
 const mergeFulfilmentPolicy = (
   orderType: MenuOrderTypeConfig['type'],
   menuPolicy: MenuOrderFulfilmentPolicy | undefined,
-  kitchenPolicy: KitchenFulfilmentConfig | undefined
+  kitchenPolicy: KitchenFulfilment | undefined
 ): MenuOrderFulfilmentPolicy | undefined => {
   if (!menuPolicy && !kitchenPolicy) return undefined
 
@@ -71,7 +71,7 @@ const mergeFulfilmentPolicy = (
 
 const withKitchenFulfilment = (
   type: MenuOrderTypeConfig,
-  kitchenFulfilment?: KitchenFulfilmentConfig,
+  kitchenFulfilment?: KitchenFulfilment,
   menuOperationHours?: WeekdayTimeWindowsConfig,
   kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderTypeConfig => {
@@ -96,7 +96,7 @@ const withKitchenFulfilment = (
 // Menu ordering spine: docs/concepts/family-menu.md. Menus are readable by default; order_types are the order creation policy.
 export function readMenuOrderingConfig(
   data: Record<string, unknown>,
-  kitchenFulfilment?: KitchenFulfilmentConfig,
+  kitchenFulfilment?: KitchenFulfilment,
   kitchenOperationHours?: WeekdayTimeWindowsConfig
 ): MenuOrderingConfig {
   const ordering = record(data.ordering)

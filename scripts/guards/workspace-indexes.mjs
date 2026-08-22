@@ -12,7 +12,9 @@ import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
-const INDEX_COMPONENT_RE = /\/components\/Workspace\/([^/]+)\/Index\/Index\.vue$/
+const SCOPED_INDEX_COMPONENT_RE =
+  /\/runtime\/([^/]+)\/components\/Workspace\/Index\.vue$/
+const APP_INDEX_COMPONENT_RE = /\/components\/Workspace\/([^/]+)\/Index\.vue$/
 const MEMBERSHIP_TARGET_FAMILIES = new Set([
   'Blank',
   'Portfolio',
@@ -36,7 +38,7 @@ const MUTATION_EFFECT_CALLS = new Set([
   'uploadString',
   'writeBatch',
 ])
-const CONSOLE_WRITE_GATE_RE =
+const WORKSPACE_WRITE_GATE_RE =
   /^(?:requireWritableData|require[A-Z][A-Za-z0-9]*WorkspaceWrite)$/
 const SOURCE_TYPE_VIEW_BRANCH_RE =
   /\bsource(?:\.value)?\s*(?:===|!==)\s*['"](?:demo|live|test)['"]|['"](?:demo|live|test)['"]\s*(?:===|!==)\s*\bsource(?:\.value)?/
@@ -54,8 +56,14 @@ export async function run(ctx) {
 
   const indexComponents = files.flatMap((fullPath) => {
     const normalized = normalizePath(fullPath)
-    const match = normalized.match(INDEX_COMPONENT_RE)
-    return match ? [{ fullPath, family: match[1] }] : []
+    const scopedMatch = normalized.match(SCOPED_INDEX_COMPONENT_RE)
+    if (scopedMatch) {
+      return [{ fullPath, family: toFamilyName(scopedMatch[1]) }]
+    }
+    const appMatch = normalized.includes('/app/components/Workspace/')
+      ? normalized.match(APP_INDEX_COMPONENT_RE)
+      : null
+    return appMatch ? [{ fullPath, family: appMatch[1] }] : []
   })
 
   for (const index of indexComponents) {
@@ -258,6 +266,8 @@ function validateWorkspaceTargetEndpoints({ repoRoot, violations }) {
 }
 
 function validateWorkspaceDataContract({ files, repoRoot, violations }) {
+  const indexRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceIndex.ts'
   const dataRelative =
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceData.ts'
   const selectionRelative =
@@ -268,6 +278,12 @@ function validateWorkspaceDataContract({ files, repoRoot, violations }) {
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceWriteGuard.ts'
   const dataAuthorityRelative =
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceDataAuthority.ts'
+  const indexSource = readRequiredSource(
+    repoRoot,
+    indexRelative,
+    'missing shared Workspace index adapter',
+    violations
+  )
   const dataSource = readRequiredSource(
     repoRoot,
     dataRelative,
@@ -298,6 +314,39 @@ function validateWorkspaceDataContract({ files, repoRoot, violations }) {
     'missing resolved Workspace data authority',
     violations
   )
+
+  for (const pattern of [
+    /workspaceIndex:\s*\{/,
+    /selection:\s*selection\.value/,
+    /runtime:\s*runtime\.value/,
+    /show:\s*sections\.value\.targets\.show/,
+    /outcome:\s*targetOutcome\.value/,
+    /count:\s*counts\.value\.targets/,
+  ]) {
+    assertMatch(
+      indexSource,
+      pattern,
+      indexRelative,
+      'must expose the shared selection, runtime, and target debug anatomy',
+      violations
+    )
+  }
+
+  for (const pattern of [
+    /target:\s*selectedTarget\.value/,
+    /outcome:\s*targetOutcome\.value/,
+    /outcome !== ['"]ready['"] && outcome !== ['"]empty['"]/,
+    /if \(!id \|\| target \|\|/,
+    /clearSelection\(\)/,
+  ]) {
+    assertMatch(
+      selectionSource,
+      pattern,
+      selectionRelative,
+      'must preserve unsettled selections and clear only a settled missing typed target',
+      violations
+    )
+  }
 
   if (dataSource) {
     assertMatch(
@@ -533,7 +582,7 @@ function validateMutationWriteGates({ files, repoRoot, violations }) {
     )
     const calls = collectCallExpressions(sourceFile)
     const gates = calls.filter((call) =>
-      CONSOLE_WRITE_GATE_RE.test(callExpressionName(call))
+      WORKSPACE_WRITE_GATE_RE.test(callExpressionName(call))
     )
 
     for (const effect of calls.filter((call) =>
@@ -625,13 +674,16 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   const relative = relativePath(repoRoot, fullPath)
   const indexDir = path.dirname(fullPath)
   const source = readFileSync(fullPath, 'utf8')
-  const selectedPath = path.join(indexDir, 'Selected.vue')
-  const targetsPath = path.join(indexDir, 'Targets.vue')
+  const selectedPath = path.join(indexDir, 'Index', 'Selected.vue')
+  const targetsPath = path.join(indexDir, 'Index', 'Targets.vue')
   const selectedTag = readSelfClosingTag(
     source,
     `Workspace${family}IndexSelected`
   )
-  const targetsTag = readSelfClosingTag(source, `Workspace${family}IndexTargets`)
+  const targetsTag = readSelfClosingTag(
+    source,
+    `Workspace${family}IndexTargets`
+  )
   const debugTag = readSelfClosingTag(source, 'DevDebugPanel')
 
   assertMatch(
@@ -646,6 +698,15 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   } else if (!/@clear=["']actions\.clear["']/.test(selectedTag)) {
     violations.push(
       `${relative} (selected wrapper must forward @clear="actions.clear")`
+    )
+  }
+  if (selectedTag && (family === 'Kitchen' || family === 'Project')) {
+    assertMatch(
+      selectedTag,
+      /:outcome=["']selection\.outcome["']/,
+      relative,
+      'Kitchen and Project selected wrappers must receive selection.outcome',
+      violations
     )
   }
   if (!targetsTag) {
@@ -747,6 +808,15 @@ function validateSelected({ selectedPath, family, repoRoot, violations }) {
     `selected wrapper must identify ${family}`,
     violations
   )
+  if (family === 'Kitchen' || family === 'Project') {
+    assertMatch(
+      source,
+      /:outcome=["']outcome["']/,
+      relative,
+      'Kitchen and Project selected wrappers must forward the selected outcome',
+      violations
+    )
+  }
 }
 
 function validateTargets({
@@ -847,24 +917,49 @@ function validateComposable({ family, files, repoRoot, violations }) {
       )
     }
   }
+
+  if (family === 'Kitchen' || family === 'Project') {
+    for (const candidate of candidates) {
+      const source = readFileSync(candidate, 'utf8')
+      const relative = relativePath(repoRoot, candidate)
+      assertMatch(
+        source,
+        /resolveWorkspaceSelectedTargetOutcome\s*\(/,
+        relative,
+        'Kitchen and Project must derive selected state through the shared outcome resolver',
+        violations
+      )
+      assertMatch(
+        source,
+        /selectedOutcome:\s*selectedOutcome\.value/,
+        relative,
+        'Kitchen and Project debug must expose the selected outcome',
+        violations
+      )
+    }
+  }
 }
 
 function validateTargetAuthority({ family, files, repoRoot, violations }) {
   const coreFilename = `use${family}Workspace.ts`
   const indexFilename = `use${family}WorkspaceIndex.ts`
-  const familySegment = `/workspace/${family.toLowerCase()}/`
+  const scopedCoreSegment = `/runtime/${family.toLowerCase()}/composables/workspace/core/`
+  const scopedIndexSegment = `/runtime/${family.toLowerCase()}/composables/workspace/index/`
+  const appFamilySegment = `/workspace/${family.toLowerCase()}/`
   const coreCandidates = files.filter((candidate) => {
     const normalized = normalizePath(candidate)
     return (
       path.basename(candidate) === coreFilename &&
-      normalized.includes(`${familySegment}core/`)
+      (normalized.includes(scopedCoreSegment) ||
+        normalized.includes(`${appFamilySegment}core/`))
     )
   })
   const indexCandidates = files.filter((candidate) => {
     const normalized = normalizePath(candidate)
     return (
       path.basename(candidate) === indexFilename &&
-      normalized.includes(`${familySegment}index/`)
+      (normalized.includes(scopedIndexSegment) ||
+        normalized.includes(`${appFamilySegment}index/`))
     )
   })
 
@@ -964,7 +1059,10 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   }
 
   if (family !== 'Kitchen') {
-    const runtimeCalls = findCallSources(coreSource, 'useWorkspaceEntityRuntime')
+    const runtimeCalls = findCallSources(
+      coreSource,
+      'useWorkspaceEntityRuntime'
+    )
     if (runtimeCalls.length !== 1) {
       violations.push(
         `${coreRelative} (family core must create exactly one outcome-bound entity runtime)`
@@ -989,8 +1087,8 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   }
 
   if (
-    findCallSources(coreSource, 'useKitchenWorkspaceTargetCollection').length !==
-    1
+    findCallSources(coreSource, 'useKitchenWorkspaceTargetCollection')
+      .length !== 1
   ) {
     violations.push(
       `${coreRelative} (Kitchen core must own exactly one authenticated live target collection)`
@@ -1255,6 +1353,14 @@ function relativePath(repoRoot, fullPath) {
 
 function normalizePath(value) {
   return value.split(path.sep).join('/')
+}
+
+function toFamilyName(value) {
+  return value
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join('')
 }
 
 function escapeRegex(value) {

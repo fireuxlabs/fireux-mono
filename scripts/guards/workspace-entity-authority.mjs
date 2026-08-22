@@ -79,6 +79,17 @@ const collections = [
 ]
 
 export async function run({ repoRoot = process.cwd() } = {}) {
+  for (const conceptPath of [
+    'docs/concepts/family-workspace-entity.md',
+    'docs/concepts/workspace.md',
+  ]) {
+    assert.doesNotMatch(
+      read(repoRoot, conceptPath),
+      /\bConsole\b/,
+      `${conceptPath} must use Workspace product vocabulary.`
+    )
+  }
+
   const kitchenModel = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen.model.ts'
@@ -159,7 +170,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const supplierCollection = read(repoRoot, collections[1][1])
   assert.match(
     supplierCollection,
-    /\$fetch<SupplierRootDoc\[]>\('\/api\/suppliers'\)/
+    /\$fetch<SupplierDirectoryResponse>\('\/api\/suppliers'\)/
   )
   assert.doesNotMatch(supplierCollection, /firestoreFetchCollection/)
   const supplierUpdate = read(

@@ -1,14 +1,10 @@
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import { buildSupplierDemoScenario } from './scenario-build'
 
 export const bernMarketGarden = buildSupplierDemoScenario({
   id: 'bern-market-garden',
   companyId: 'bern-market-garden-hq',
   name: 'Bern Market Garden',
-  headline: 'Fresh produce, fruit and herbs from the region',
-  logoImageUrl: miseboxDemoMediaUrl('suppliers/bern-market-garden/logo.png'),
-  categories: ['Produce', 'Fruit', 'Herbs'],
-  state: 'official',
+  status: 'active',
   catalogueState: 'integrated',
   catalogue: {
     id: 'bern-market-garden-core-range',

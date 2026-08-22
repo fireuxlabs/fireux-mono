@@ -1,14 +1,10 @@
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import { buildSupplierDemoScenario } from './scenario-build'
 
 export const alpineFoodservice = buildSupplierDemoScenario({
   id: 'alpine-foodservice',
   companyId: 'alpine-foodservice-hq',
   name: 'Alpine Foodservice',
-  headline: 'Fresh meat, dairy, bakery and frozen kitchen essentials',
-  logoImageUrl: miseboxDemoMediaUrl('suppliers/alpine-foodservice/logo.png'),
-  categories: ['Meat', 'Poultry', 'Dairy', 'Bakery', 'Frozen'],
-  state: 'official',
+  status: 'active',
   catalogueState: 'integrated',
   catalogue: {
     id: 'alpine-foodservice-core-range',

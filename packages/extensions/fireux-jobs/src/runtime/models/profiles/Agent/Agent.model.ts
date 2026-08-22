@@ -25,6 +25,7 @@ export const AgentStorage = {
 } as const
 
 export const AgentModel = {
+  // Reader-supplied parent User uid; never stored in the profile record.
   id: '' as string,
   kind: 'agent' as const,
   title: '' as string,
@@ -33,7 +34,7 @@ export const AgentModel = {
   agent_image: '' as string,
   agent_placement_types: [] as string[],
   agent_coverage_areas: [] as string[],
-  // Deliberately published business contacts shown on Agent directory and profile surfaces.
+  // Deliberately published business contacts, distinct from private User contact.
   agent_contact_email: '' as string,
   agent_contact_phone: '' as string,
   agent_website_url: '' as string,

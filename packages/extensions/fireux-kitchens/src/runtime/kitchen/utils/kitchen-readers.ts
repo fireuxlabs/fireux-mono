@@ -7,22 +7,17 @@ import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
 } from 'fireux-sproochli/runtime/sproochli'
-import type {
-  KitchenFulfilmentConfig,
-  KitchenFulfilmentPaymentMethod,
-  KitchenFulfilmentPaymentPolicy,
-  KitchenPaymentRequirement,
-} from '../models/kitchen.model.ts'
 import {
   readMediaBackdropColor,
   readPlaceBusinessHours,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOrderType } from '../models/order.model.ts'
-import {
-  kitchenOrderTypes,
-  readDeliveryZones,
-} from '../../menu/utils/menu-ordering-policy'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
+import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
+export {
+  KitchenPaymentMethodDefaultOrderTypes,
+  readKitchenFulfilmentConfig,
+} from './kitchen-fulfilment-reader.ts'
 
 type KitchenRecord = Record<string, unknown> | null | undefined
 
@@ -44,85 +39,8 @@ const stringArray = (value: unknown) =>
 const hasKeys = (value: Record<string, unknown>) =>
   Boolean(Object.keys(value).length)
 
-const kitchenPaymentMethods = [
-  'cash',
-  'card_at_pickup',
-  'card_to_driver',
-  'room_charge',
-  'online_card',
-] as const satisfies readonly KitchenFulfilmentPaymentMethod[]
-
-const kitchenPaymentRequirements = [
-  'verified_room',
-] as const satisfies readonly KitchenPaymentRequirement[]
-
-export const KitchenPaymentMethodDefaultOrderTypes = {
-  cash: [
-    'collection',
-    'delivery',
-    'dine_in',
-    'eat_in',
-    'takeaway',
-    'pre_order',
-  ],
-  card_at_pickup: ['collection', 'eat_in', 'takeaway', 'pre_order'],
-  card_to_driver: ['delivery'],
-  room_charge: ['room_service'],
-  online_card: [
-    'collection',
-    'delivery',
-    'dine_in',
-    'eat_in',
-    'takeaway',
-    'pre_order',
-    'room_service',
-  ],
-} as const satisfies Record<
-  KitchenFulfilmentPaymentMethod,
-  readonly KitchenOrderType[]
->
-
-const readKitchenPaymentMethod = (value: unknown) => {
-  const method = text(value) as KitchenFulfilmentPaymentMethod
-
-  return kitchenPaymentMethods.includes(method) ? method : null
-}
-
-const readKitchenPaymentPolicy = (
-  value: unknown
-): KitchenFulfilmentPaymentPolicy | null => {
-  // 2026-07-19 16:35 CEST — Normalize current flat Kitchen data while the
-  // workspace rewrites it into the Kitchen-owned applicability policy.
-  const flatMethod = readKitchenPaymentMethod(value)
-  const row = record(value)
-  const method = flatMethod || readKitchenPaymentMethod(row.method)
-  if (!method) return null
-
-  const configuredTypes = stringArray(row.order_types).filter(
-    (type): type is KitchenOrderType =>
-      kitchenOrderTypes.includes(type as KitchenOrderType)
-  )
-  const orderTypes = configuredTypes.length
-    ? configuredTypes
-    : [...KitchenPaymentMethodDefaultOrderTypes[method]]
-  const requirements = stringArray(row.requirements).filter(
-    (requirement): requirement is KitchenPaymentRequirement =>
-      kitchenPaymentRequirements.includes(
-        requirement as KitchenPaymentRequirement
-      )
-  )
-
-  return {
-    method,
-    order_types: [...new Set(orderTypes)],
-    ...(requirements.length
-      ? { requirements: [...new Set(requirements)] }
-      : {}),
-  }
-}
-
 export const kitchenPaymentMethodsForOrderType = (
-  fulfilment: KitchenFulfilmentConfig | null | undefined,
+  fulfilment: KitchenFulfilment | null | undefined,
   orderType: KitchenOrderType
 ) =>
   (fulfilment?.payment_methods || [])
@@ -197,31 +115,6 @@ export const readKitchenTableCount = (value: KitchenRecord) => {
   const count = Number(tables.count)
 
   return Number.isSafeInteger(count) && count > 0 ? Math.min(count, 500) : 0
-}
-
-export const readKitchenFulfilmentConfig = (
-  value: KitchenRecord
-): KitchenFulfilmentConfig => {
-  const source = record(value)
-  const fulfilment = record(source.fulfilment)
-  const paymentPolicies = Array.isArray(fulfilment.payment_methods)
-    ? fulfilment.payment_methods
-        .map(readKitchenPaymentPolicy)
-        .filter((policy): policy is KitchenFulfilmentPaymentPolicy =>
-          Boolean(policy)
-        )
-        .filter(
-          (policy, index, policies) =>
-            policies.findIndex(
-              (candidate) => candidate.method === policy.method
-            ) === index
-        )
-    : []
-
-  return {
-    delivery_zones: readDeliveryZones(fulfilment.delivery_zones),
-    payment_methods: paymentPolicies,
-  }
 }
 
 export const readKitchenOperationHours = (value: KitchenRecord) => {

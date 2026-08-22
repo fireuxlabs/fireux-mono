@@ -5,24 +5,32 @@
     label="Project"
     :selected-id="projectId"
     :description="projectName"
+    :outcome="outcome"
     @clear="emit('clear')"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/useWorkspaceIndex'
 import type { ProjectSurface } from '../../../composables/useProjectInterface'
 
-const props = defineProps<{
-  project?: ProjectSurface | null
-  projectId?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    project?: ProjectSurface | null
+    projectId?: string
+    outcome?: WorkspaceTargetOutcome
+  }>(),
+  {
+    project: null,
+    projectId: '',
+    outcome: 'ready',
+  }
+)
 
 const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
-const projectName = computed(() =>
-  String(props.project?.name || '').trim()
-)
+const projectName = computed(() => String(props.project?.name || '').trim())
 </script>

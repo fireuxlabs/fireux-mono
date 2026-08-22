@@ -17,7 +17,7 @@ export default defineEventHandler(
     )
     const snapshot = await getRuntimeFirestore().doc(`ingredients/${id}`).get()
     const ingredient = snapshot.exists ? normalizeIngredient(snapshot) : null
-    if (!ingredient) {
+    if (!ingredient || ingredient.status !== 'active') {
       throw createError({
         statusCode: 404,
         statusMessage: 'Ingredient not found.',

@@ -129,6 +129,9 @@ export async function updateIngredient(
       )
       await assertReferencedIngredients(mutations, ingredients, id, payload)
       const replacement: DocumentData = { ...payload }
+      // Retain the legacy redundant id until its protected cleanup has a
+      // retained export/preimage. New Ingredient documents do not store it.
+      if (Object.hasOwn(existing.data || {}, 'id')) replacement.id = id
       for (const field of Object.keys(existing.data || {})) {
         if (!Object.hasOwn(payload, field))
           replacement[field] = FieldValue.delete()

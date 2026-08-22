@@ -1,5 +1,5 @@
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import type { KitchenDeliveryZone } from '../../../../../models/kitchen.model.ts'
+import type { KitchenDeliveryZone } from '../../../../../models/fulfilment.model.ts'
 
 export type BoundaryType = 'radius' | 'postal_codes' | 'polygon'
 

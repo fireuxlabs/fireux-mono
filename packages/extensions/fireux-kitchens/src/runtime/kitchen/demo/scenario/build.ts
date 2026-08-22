@@ -46,6 +46,7 @@ export function buildKitchenDemoScenario(
     appId: input.identity.appId,
     access: input.access,
     kitchen: input.kitchen,
+    configuration: input.configuration,
     place: input.place,
     menus,
     menuModes,
