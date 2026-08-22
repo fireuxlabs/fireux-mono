@@ -92,7 +92,7 @@ import {
   KITCHEN_MISE_STATUS_OPTIONS,
   kitchenMisePriorityLabel,
   type KitchenMiseTask,
-} from '../../../../../models/mise.model.ts'
+} from '../../../../../utils/mise.ts'
 import { projectKitchenMiseTask } from '../../../../../models/mise-presentation'
 
 const props = defineProps<{

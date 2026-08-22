@@ -105,7 +105,7 @@ import { computed } from 'vue'
 import type {
   KitchenTableTab,
   KitchenTableTabStatus,
-} from '../../../../models/table-tab.model.ts'
+} from '../../../../utils/table-tab.ts'
 import { useKitchenWorkspaceTables } from '../../../../composables/workspace/operations/Tables/useKitchenWorkspaceTables'
 
 const { activeTabs, stagingTabs, billingTabs, tableCount, pending, debug } =

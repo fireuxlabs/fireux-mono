@@ -215,7 +215,7 @@ import {
 } from 'fireux-places/runtime/place/models/place.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
-import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
+import type { ExperienceItem } from '../../../utils/profiles/Professional/professional'
 import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
 import {
   experienceItemDate as itemDate,

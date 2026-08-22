@@ -3,7 +3,7 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
 import { menuOrderTypeStrategiesList } from './order-types/index.ts'
 
 const orderTypes = new Set<KitchenOrderType>(

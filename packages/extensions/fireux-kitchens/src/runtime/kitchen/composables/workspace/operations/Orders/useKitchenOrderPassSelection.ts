@@ -1,5 +1,5 @@
 import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
-import type { KitchenOrder } from '../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../utils/order.ts'
 
 type KitchenOrderPassSelectionOptions = {
   canOperate: MaybeRefOrGetter<boolean>

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: expose focused Pre-order configuration.
-import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../kitchen/utils/order.ts'
 
 export type MenuOrderTypeChoice = {
   type: KitchenOrderType

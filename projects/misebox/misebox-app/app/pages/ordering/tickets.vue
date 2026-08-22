@@ -172,7 +172,7 @@ import {
   KitchenOrderDefaults,
   resolveKitchenOrderIntakeStatus,
   type KitchenOrder,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 type AutomaticTicket = {
   description: string

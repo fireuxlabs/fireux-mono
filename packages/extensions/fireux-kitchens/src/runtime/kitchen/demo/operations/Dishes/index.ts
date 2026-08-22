@@ -1,4 +1,4 @@
-import type { Dish } from '../../../models/dish.model.ts'
+import type { Dish } from '../../../utils/dish.ts'
 import {
   deanosKitchenDemoIdentity,
   miseboxRestaurantKitchenDemoIdentity,

@@ -1,4 +1,4 @@
-import type { DishItemKind } from '../../models/dish.model.ts'
+import type { DishItemKind } from '../../utils/dish.ts'
 import {
   KitchenOrderDefaults,
   type KitchenOrder,
@@ -8,7 +8,7 @@ import {
   type KitchenOrderPaymentMethod,
   type KitchenOrderStatus,
   type KitchenOrderType,
-} from '../../models/order.model.ts'
+} from '../../utils/order.ts'
 import {
   kitchenDemoCreated,
   kitchenDemoTimestamp,

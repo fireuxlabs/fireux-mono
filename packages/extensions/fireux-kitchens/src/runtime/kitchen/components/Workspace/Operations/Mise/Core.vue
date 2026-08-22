@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenMiseTask } from '../../../../models/mise.model.ts'
+import type { KitchenMiseTask } from '../../../../utils/mise.ts'
 
 const props = withDefaults(
   defineProps<{

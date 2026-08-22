@@ -40,7 +40,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
-import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
+import type { Product } from 'fireux-products/runtime/product/models/product.model'
 
 definePageMeta({
   layout: 'default',
@@ -80,7 +80,7 @@ const selectedProduct = computed(() =>
 
 watch(
   () => products.value,
-  (list: FirebaseProduct[] | undefined) => {
+  (list: Product[] | undefined) => {
     if (!selectedSlug.value && list?.length) {
       selectedSlug.value = list[0]?.slug || ''
     }

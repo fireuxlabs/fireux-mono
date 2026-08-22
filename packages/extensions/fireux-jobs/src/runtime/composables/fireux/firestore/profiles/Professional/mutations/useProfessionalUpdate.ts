@@ -12,7 +12,7 @@ import {
   ProfessionalConstraints,
   ProfessionalStorage,
   type Professional,
-} from '../../../../../../models/profiles/Professional/Professional.model'
+} from '../../../../../../utils/profiles/Professional/professional'
 import type {
   CertificationItem,
   EducationItem,

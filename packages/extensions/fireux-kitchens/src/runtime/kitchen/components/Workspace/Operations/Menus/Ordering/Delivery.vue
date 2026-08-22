@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { MenuOrderTypeConfig } from '../../../../../../menu/models/menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../../../../../menu/utils/menu.ts'
 import { useKitchenWorkspaceMenuOrdering } from '../../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenuOrdering'
 import {
   kitchenPaymentMethodsForOrderType,

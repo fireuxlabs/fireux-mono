@@ -1,8 +1,8 @@
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { MenuStorage } from '../../models/menu.model.ts'
-import { KitchenMenuStorage } from '../../models/kitchen-menu.model.ts'
+import { MenuStorage } from '../../utils/menu.ts'
+import { KitchenMenuStorage } from '../../utils/kitchen-menu.ts'
 import {
   MENU_DIRECTORY_MAX_PAGE_SIZE,
   MENU_DIRECTORY_PAGE_SIZE,

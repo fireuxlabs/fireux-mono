@@ -1,7 +1,7 @@
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { ProductStorage } from '../../../models/product.model.ts'
+import { ProductStorage } from '../../../utils/product.ts'
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()

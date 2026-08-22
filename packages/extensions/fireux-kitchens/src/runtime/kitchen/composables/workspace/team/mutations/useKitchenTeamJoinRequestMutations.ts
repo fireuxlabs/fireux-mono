@@ -8,7 +8,7 @@ import { unref, type Ref } from 'vue'
 import {
   KitchenTeamJoinRequestStorage,
   type KitchenTeamJoinRequest,
-} from '../../../../models/team.model.ts'
+} from '../../../../utils/team.ts'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

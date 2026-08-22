@@ -1,7 +1,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type { Product, ProductPrice, ProductRead } from '../models/product.model.ts'
+import type { Product, ProductPrice, ProductRead } from '../utils/product.ts'
 
 export type ProductDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 

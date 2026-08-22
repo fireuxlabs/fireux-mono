@@ -7,7 +7,7 @@ import {
   type KitchenSurface,
 } from '../../firestore/utils/view/useKitchenInterface'
 import type { KitchenDemoScenario } from '../../../demo/core/types'
-import type { Dish } from '../../../models/dish.model.ts'
+import type { Dish } from '../../../utils/dish.ts'
 
 export type KitchenWorkspaceDemoScenario = Omit<
   KitchenDemoScenario,

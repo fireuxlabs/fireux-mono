@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useKitchenWorkspaceOrders } from '../../../../composables/workspace/operations/Orders/useKitchenWorkspaceOrders'
-import type { KitchenOrder } from '../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../utils/order.ts'
 
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersPreOrders' })
 

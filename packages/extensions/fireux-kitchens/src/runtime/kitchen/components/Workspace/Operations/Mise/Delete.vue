@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { navigateTo, useToast } from '#imports'
 import { ref } from 'vue'
-import type { KitchenMiseTask } from '../../../../models/mise.model.ts'
+import type { KitchenMiseTask } from '../../../../utils/mise.ts'
 import { kitchenMisePrepTaskDeleteTool } from '../../../../tools/mise'
 import { useKitchenMiseDelete } from '../../../../composables/workspace/operations/Mise/mutations/useKitchenMiseDelete'
 import { useKitchenMiseTaskWorkspace } from '../../../../composables/workspace/operations/Mise/useKitchenMiseTaskWorkspace'

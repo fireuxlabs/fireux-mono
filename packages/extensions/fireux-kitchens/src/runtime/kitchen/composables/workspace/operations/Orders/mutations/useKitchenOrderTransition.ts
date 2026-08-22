@@ -2,7 +2,7 @@ import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
-import type { KitchenOrderTransition } from '../../../../../models/order.model.ts'
+import type { KitchenOrderTransition } from '../../../../../utils/order.ts'
 
 type KitchenOrderTransitionOptions = {
   estimatedMinutes?: number | null

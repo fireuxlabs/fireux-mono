@@ -4,7 +4,7 @@ import type {
   MenuOrderContactField,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
-} from '../../models/menu.model.ts'
+} from '../../utils/menu.ts'
 import type {
   MenuOrderingCollectionState,
   MenuOrderingRoomServiceState,
@@ -15,7 +15,7 @@ import type {
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
 import { isMenuOrderingEnabled } from './config.ts'
 import { readMenuOrderChannel } from './order-channels.ts'
 import { readMenuOrderDestination } from './order-destination.ts'

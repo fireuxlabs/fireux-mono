@@ -197,7 +197,7 @@ import {
   kitchenMisePriorityLabel,
   normalizeKitchenMiseStatus,
   type KitchenMiseStatus,
-} from '../../models/mise.model.ts'
+} from '../../utils/mise.ts'
 
 const props = withDefaults(
   defineProps<{

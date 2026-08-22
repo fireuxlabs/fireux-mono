@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { MenuOrderTypeConfig } from '../../../../../../menu/models/kitchen-menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../../../../../menu/utils/kitchen-menu.ts'
 
 type UpdateFn = (patch: Partial<MenuOrderTypeConfig>) => Promise<void>
 

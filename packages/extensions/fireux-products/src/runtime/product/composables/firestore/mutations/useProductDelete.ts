@@ -1,6 +1,6 @@
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { ProductStorage } from '../../../models/product.model.ts'
+import { ProductStorage } from '../../../utils/product.ts'
 
 export function useProductDelete() {
   const { deleteDocument } = useFirestoreManager()

@@ -2,7 +2,7 @@ import { useAsyncData } from '#imports'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
 import {
   kitchenMisePriorityLabel,
-} from 'fireux-kitchens/runtime/kitchen/models/mise.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/mise'
 import type {
   MenuManifestItem,
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'

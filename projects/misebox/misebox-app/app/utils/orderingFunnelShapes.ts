@@ -16,11 +16,11 @@ import type {
   KitchenOrderPayment,
   KitchenOrderStatus,
   KitchenOrderType,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 import {
   KitchenOrderDefaults,
   resolveKitchenOrderIntakeStatus,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 type DraftModePatch = Partial<
   Pick<

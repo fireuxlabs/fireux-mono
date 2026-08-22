@@ -12,8 +12,8 @@ import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
-} from '../../../models/menu-item.model.ts'
-import { DishStorage } from '../../../../kitchen/models/dish.model.ts'
+} from '../../../utils/menu-item.ts'
+import { DishStorage } from '../../../../kitchen/utils/dish.ts'
 import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { menuItemsPath } from '../utils/paths'
 

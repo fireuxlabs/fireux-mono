@@ -62,7 +62,7 @@ import { computed } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { ProfessionalProfilePayload } from '../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfilePayload } from '../../utils/profiles/Professional/professional'
 
 definePageMeta({
   visibility: { profiles: ['professional'] },

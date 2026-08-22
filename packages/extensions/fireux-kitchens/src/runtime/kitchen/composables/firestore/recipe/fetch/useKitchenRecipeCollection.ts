@@ -7,7 +7,7 @@ import {
   RecipeStorage,
   normalizeRecipe,
   type Recipe,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 import { resolveKitchenChildCollectionBasePath } from '../../utils/paths/useKitchenChildCollection'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>

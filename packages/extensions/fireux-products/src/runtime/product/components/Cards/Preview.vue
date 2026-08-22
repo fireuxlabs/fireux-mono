@@ -63,11 +63,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ProductCard } from '../../composables/useProductInterface'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 
 type Props = {
   card: ProductCard.Card
-  product?: FirebaseProduct | null
+  product?: Product | null
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean

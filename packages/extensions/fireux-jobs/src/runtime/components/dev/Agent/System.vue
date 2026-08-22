@@ -71,7 +71,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import { AgentModel as AgentModelRuntime } from '../../../models/profiles/Agent/Agent.model'
+import { AgentDefaults as AgentModelRuntime } from '../../../utils/profiles/Agent/agent'
 
 defineOptions({ name: 'DevAgentSystem' })
 

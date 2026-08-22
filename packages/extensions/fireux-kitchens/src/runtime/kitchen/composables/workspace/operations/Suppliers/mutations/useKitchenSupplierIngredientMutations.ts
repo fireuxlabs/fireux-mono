@@ -10,7 +10,7 @@ import {
   type KitchenSupplierIngredient,
   type KitchenSupplierIngredientCreateInput,
   type KitchenSupplierIngredientUpdateInput,
-} from '../../../../../models/supplier-ingredient.model.ts'
+} from '../../../../../utils/kitchen-supplier-ingredient.ts'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

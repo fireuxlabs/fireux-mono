@@ -1,4 +1,4 @@
-import type { BlogPostFeedReference } from 'fireux-blogs/runtime/models/blogPost.model'
+import type { BlogPostFeedReference } from 'fireux-blogs/runtime/utils/blog-post'
 import type { InterlakenPublicCopyKey } from './sproochli-copy-public'
 import type { InterlakenSiteLanguage } from './sproochli-site'
 

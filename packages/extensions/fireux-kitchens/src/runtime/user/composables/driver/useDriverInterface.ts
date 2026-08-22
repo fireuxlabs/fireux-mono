@@ -11,7 +11,7 @@ import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type {
   Driver,
   DriverDirectoryProfile,
-} from '../../models/driver.model.ts'
+} from '../../utils/driver.ts'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

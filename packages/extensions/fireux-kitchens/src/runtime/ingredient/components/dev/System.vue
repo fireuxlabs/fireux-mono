@@ -54,7 +54,7 @@ import {
   IngredientStorage,
   IngredientDefaults,
   type Ingredient,
-} from '../../models/ingredient.model.ts'
+} from '../../utils/ingredient.ts'
 
 defineOptions({ name: 'DevIngredientSystem' })
 
@@ -92,7 +92,7 @@ const filteredDriftPayload = buildDriftPayload({
 
 const driftCopyPayload = buildCopyPayload({
   modelPath:
-    'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/utils/ingredient.ts',
   itemsKey: IngredientStorage.collection,
   items: filteredDriftPayload,
   total: computed(() => ingredientsCollection.value.length),

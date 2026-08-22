@@ -7,7 +7,7 @@ import {
   normalizeKitchenMiseWorkflowStage,
   type KitchenMiseTaskUpdateInput,
   type KitchenMiseTask,
-} from '../../../../../models/mise.model.ts'
+} from '../../../../../utils/mise.ts'
 
 type UpdateKitchenMiseInput = {
   kitchenId: string

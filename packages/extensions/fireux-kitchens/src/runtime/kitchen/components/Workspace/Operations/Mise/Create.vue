@@ -65,7 +65,7 @@ import {
   KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS,
   type KitchenMisePriority,
   type KitchenMiseWorkflowStage,
-} from '../../../../models/mise.model.ts'
+} from '../../../../utils/mise.ts'
 import { useKitchenMiseCreate } from '../../../../composables/workspace/operations/Mise/mutations/useKitchenMiseCreate'
 import { useKitchenMiseWorkspace } from '../../../../composables/workspace/operations/Mise/useKitchenMiseWorkspace'
 

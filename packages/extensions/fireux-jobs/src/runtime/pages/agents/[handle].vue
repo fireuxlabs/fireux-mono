@@ -44,7 +44,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { computed } from 'vue'
 import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { AgentProfilePayload } from '../../models/profiles/Agent/Agent.model'
+import type { AgentProfilePayload } from '../../utils/profiles/Agent/agent'
 
 definePageMeta({
   visibility: { profiles: ['agent'] },

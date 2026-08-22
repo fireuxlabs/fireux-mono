@@ -3,7 +3,7 @@ import {
   DishStorage,
   normalizeDish,
   type Dish,
-} from '../../../models/dish.model.ts'
+} from '../../../utils/dish.ts'
 
 export type KitchenFlagshipDishProjection = Pick<
   Dish,

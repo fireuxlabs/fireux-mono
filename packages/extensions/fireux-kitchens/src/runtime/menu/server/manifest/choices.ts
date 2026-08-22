@@ -1,6 +1,6 @@
 import type { Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { MenuChoice } from '../../models/menu.model.ts'
+import type { MenuChoice } from '../../utils/menu.ts'
 import { menuOrderTypeLabel } from '../../utils/menu-ordering-ui.ts'
 import { menuChoiceContextForOrderType } from '../../utils/menu-context.ts'
 import {

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import {
   KitchenStationStorage,
   type KitchenStation,
-} from '../../../../models/station.model.ts'
+} from '../../../../utils/station.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
 import {

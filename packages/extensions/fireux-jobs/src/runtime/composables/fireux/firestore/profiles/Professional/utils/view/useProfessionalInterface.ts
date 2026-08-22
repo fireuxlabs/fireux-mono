@@ -14,7 +14,7 @@ import type { Ref } from 'vue'
 import type {
   Professional,
   ProfessionalDirectoryProfile,
-} from '../../../../../../../models/profiles/Professional/Professional.model'
+} from '../../../../../../../utils/profiles/Professional/professional'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

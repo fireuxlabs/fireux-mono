@@ -1,4 +1,4 @@
-import type { KitchenOrder } from '../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../utils/order.ts'
 import { deanosKitchenDemoIdentity } from '../../core/fixtures'
 import {
   DEANOS_KITCHEN_DEMO_AS_OF_DATE,

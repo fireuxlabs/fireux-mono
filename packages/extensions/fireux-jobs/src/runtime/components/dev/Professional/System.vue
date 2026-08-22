@@ -76,9 +76,9 @@ import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import {
-  ProfessionalModel as ProfessionalModelRuntime,
+  ProfessionalDefaults as ProfessionalModelRuntime,
   type Professional,
-} from '../../../models/profiles/Professional/Professional.model'
+} from '../../../utils/profiles/Professional/professional'
 
 defineOptions({ name: 'DevProfessionalSystem' })
 

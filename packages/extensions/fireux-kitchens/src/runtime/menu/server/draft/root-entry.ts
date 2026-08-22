@@ -9,7 +9,7 @@ import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutatio
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { MenuStorage } from '../../models/menu.model.ts'
+import { MenuStorage } from '../../utils/menu.ts'
 
 type RootMenuEntryInput = {
   appId: string

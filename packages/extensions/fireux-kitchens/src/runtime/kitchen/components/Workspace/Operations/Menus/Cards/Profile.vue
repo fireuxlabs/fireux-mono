@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenMenu as Menu } from '../../../../../../menu/models/kitchen-menu.model.ts'
+import type { KitchenMenu as Menu } from '../../../../../../menu/utils/kitchen-menu.ts'
 
 const props = withDefaults(
   defineProps<{

@@ -87,7 +87,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useKitchenDishesWorkspace } from '../../../../composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
-import type { Dish } from '../../../../models/dish.model.ts'
+import type { Dish } from '../../../../utils/dish.ts'
 
 const {
   dishes,

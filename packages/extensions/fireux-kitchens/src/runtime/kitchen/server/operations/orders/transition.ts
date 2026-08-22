@@ -5,7 +5,7 @@ import {
   kitchenOrderTransitionRule,
   type KitchenOrder,
   type KitchenOrderTransition,
-} from '../../../models/order.model.ts'
+} from '../../../utils/order.ts'
 
 export type KitchenOrderTransitionOptions = {
   estimatedMinutes?: number | null

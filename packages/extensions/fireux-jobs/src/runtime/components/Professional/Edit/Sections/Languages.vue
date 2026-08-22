@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { LanguageProficiency } from '../../../../models/profiles/Professional/Professional.model';
+import type { LanguageProficiency } from '../../../../utils/profiles/Professional/professional';
 
 const props = defineProps<{
   items: LanguageProficiency[]

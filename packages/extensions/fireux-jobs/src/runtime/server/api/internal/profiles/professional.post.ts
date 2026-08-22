@@ -3,7 +3,7 @@
 import { createProfileProvisionHandler } from 'fireux-core/runtime/server/utils/profile/provision'
 import {
   createProfessionalProfileSeed,
-} from '../../../../models/profiles/Professional/Professional.model.ts'
+} from '../../../../utils/profiles/Professional/professional.ts'
 
 export default createProfileProvisionHandler({
   kind: 'professional',

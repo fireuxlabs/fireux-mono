@@ -91,7 +91,7 @@ import type {
   MenuManifestItem,
   MenuManifestSection,
 } from '../../../models/menu-detail.model.ts'
-import type { KitchenOrderType } from '../../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../../kitchen/utils/order.ts'
 
 type GroupId = 'food' | 'drink' | 'deal'
 type Group = {

@@ -16,11 +16,11 @@ import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 import { type IngredientDirectoryPage } from '../../../../../../ingredient/models/ingredient-directory.model.ts'
-import type { Ingredient } from '../../../../../../ingredient/models/ingredient.model.ts'
+import type { Ingredient } from '../../../../../../ingredient/utils/ingredient.ts'
 import {
   KitchenIngredientStorage,
   type KitchenIngredient,
-} from '../../../../../models/ingredient.model.ts'
+} from '../../../../../utils/kitchen-ingredient.ts'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`

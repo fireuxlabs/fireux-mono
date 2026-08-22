@@ -5,7 +5,7 @@ import {
   type DateValue,
 } from '@internationalized/date'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
-import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
+import type { ExperienceItem } from '../../../utils/profiles/Professional/professional'
 
 export type ExperienceCalendarUpdateValue =
   | DateValue

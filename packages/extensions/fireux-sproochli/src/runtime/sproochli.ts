@@ -16,7 +16,7 @@ export {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
   type SproochliDefaultLanguage,
-} from './attachment.ts'
+} from './utils/attachment.ts'
 
 export {
   sproochliProviderBaseUrl,

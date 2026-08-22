@@ -2,7 +2,7 @@ import type {
   KitchenOrderChannel,
   KitchenOrderInitialStatus,
   KitchenOrderType,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 export type OrderingMode = {
   label: string

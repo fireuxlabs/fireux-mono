@@ -3,7 +3,7 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderingConfig,
   MenuOrderTypeConfig,
-} from '../../models/menu.model.ts'
+} from '../../utils/menu.ts'
 import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {

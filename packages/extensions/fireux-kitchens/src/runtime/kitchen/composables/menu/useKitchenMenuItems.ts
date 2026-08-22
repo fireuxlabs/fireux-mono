@@ -1,8 +1,8 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { ref, watch, type Ref } from 'vue'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+import type { MenuItem } from '../../../menu/utils/menu-item.ts'
+import type { MenuSection } from '../../../menu/utils/menu-section.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const isActive = (item: MenuItem) => text(item.status) !== 'archived'

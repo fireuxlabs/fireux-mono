@@ -5,9 +5,9 @@ import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/w
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { unref, type Ref } from 'vue'
 import {
-  MenuSectionModel,
+  MenuSectionDefaults,
   type MenuSection,
-} from '../../../models/menu-section.model.ts'
+} from '../../../utils/menu-section.ts'
 import { menuSectionsPath } from '../utils/paths'
 
 type Options = {
@@ -54,7 +54,7 @@ export function useMenuSectionMutations(options: Options = {}) {
         collectionPath
       ),
       {
-        ...MenuSectionModel,
+        ...MenuSectionDefaults,
         kitchen_id: clean(input.kitchenId),
         menu_id: clean(input.menuId),
         label,

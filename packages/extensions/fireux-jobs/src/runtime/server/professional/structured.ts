@@ -9,7 +9,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { serverUserProfileTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   ProfessionalConstraints,
-} from '../../models/profiles/Professional/Professional.model.ts'
+} from '../../utils/profiles/Professional/professional.ts'
 import {
   assertProfessionalStructuredKeys,
   failProfessionalStructuredInput,

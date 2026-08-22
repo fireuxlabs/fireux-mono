@@ -1732,7 +1732,7 @@ export async function run(ctx) {
   }
 
   const kitchenMiseModelFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/mise.ts'
   const kitchenMisePresentationFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
   const kitchenDemoOperationsFile =

@@ -3,7 +3,7 @@ import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../models/menu-item.model.ts'
+} from '../../utils/menu-item.ts'
 
 const asRecord = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)

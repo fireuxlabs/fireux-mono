@@ -130,7 +130,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ValidationResult } from 'fireux-core/runtime/composables/forms/useEditableStringField'
-import type { MenuOrderTypeConfig } from '../../../../../../menu/models/menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../../../../../menu/utils/menu.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../../../../models/shared/weekday-time.model.ts'
 import {
   formatWeekdayTimeText,

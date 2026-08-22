@@ -44,7 +44,7 @@ import { useProductCollection } from '../../composables/firestore/fetch/useProdu
 import {
   ProductDefaults,
   type Product,
-} from '../../models/product.model.ts'
+} from '../../utils/product.ts'
 
 defineOptions({ name: 'DevProductSystem' })
 

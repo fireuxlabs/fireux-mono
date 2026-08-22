@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue'
-import type { KitchenOrder } from '../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../utils/order.ts'
 import { kitchenOrderTicketFooterLabel } from '../../../../utils/kitchen-order-label'
 
 export interface KitchenOrderTicketProps {

@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { CreatedMenuOrder } from '../../models/menu-ordering.model.ts'
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import type { MenuOrderLifecycleStatus } from '../../composables/order/useMenuOrderLifecycle'
 
 const props = defineProps<{

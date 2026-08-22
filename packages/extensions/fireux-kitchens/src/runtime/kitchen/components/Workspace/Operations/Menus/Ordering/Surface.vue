@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrderType } from '../../../../../models/order.model.ts'
+import type { KitchenOrderType } from '../../../../../utils/order.ts'
 import type { MenuOrderSurfaceOption } from '../../../../../../menu/utils/menu-workspace-ordering-surfaces'
 
 const props = defineProps<{

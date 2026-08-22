@@ -6,7 +6,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   type DriverDirectoryProfile,
   type DriverProfilePayload,
-} from '../../../../../models/driver.model.ts'
+} from '../../../../../utils/driver.ts'
 
 // Public Driver directory source. App-scoped operational rows never enter this read.
 export function useDriverFetch() {

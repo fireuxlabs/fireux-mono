@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 import { Timestamp } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverIdentityUserNotificationsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import type { KitchenOrderType } from '../../../models/order.model.ts'
+import type { KitchenOrderType } from '../../../utils/order.ts'
 
 type AcceptedOrderCustomerNotificationInput = {
   appId: string

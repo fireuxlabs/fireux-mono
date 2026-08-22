@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProductFulfillmentOnboarding } from '../../composables/app-onboarding/useProductFulfillmentOnboarding'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 import ProductViewOnboardingAssets from './OnboardingAssets.vue'
 import ProductViewOnboardingContent from './OnboardingContent.vue'
 import ProductViewOnboardingLaunch from './OnboardingLaunch.vue'
 import ProductViewOnboardingReview from './OnboardingReview.vue'
 
 const props = defineProps<{
-  product?: Partial<FirebaseProduct>
+  product?: Partial<Product>
 }>()
 
 const accordionSteps = [

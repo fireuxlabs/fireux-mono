@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useStorage } from '@vueuse/core'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 
 export type AssetKey =
   | 'onboardingAssetLogo'
@@ -54,7 +54,7 @@ export const onboardingAssetSpecs: Array<{
 ]
 
 export function useProductFulfillmentOnboarding(
-  productRef?: Ref<Partial<FirebaseProduct> | undefined>
+  productRef?: Ref<Partial<Product> | undefined>
 ) {
   const appName = useStorage('onboardingAppName', '')
   const appSlug = useStorage('onboardingAppSlug', '')

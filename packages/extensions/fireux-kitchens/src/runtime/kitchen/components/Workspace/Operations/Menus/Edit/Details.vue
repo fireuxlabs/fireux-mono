@@ -61,7 +61,7 @@ import { computed } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceMenu } from '../../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenu'
-import type { KitchenMenuUpdateInput as MenuUpdateInput } from '../../../../../../menu/models/kitchen-menu.model.ts'
+import type { KitchenMenuUpdateInput as MenuUpdateInput } from '../../../../../../menu/utils/kitchen-menu.ts'
 
 const { menu, kitchenId, menuId, canWrite, updateMenu, renameMenu } =
   useKitchenWorkspaceMenu()

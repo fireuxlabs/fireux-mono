@@ -151,9 +151,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
-import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/product/models/product.model'
+import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
+import type { Product } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductPrice } from 'fireux-products/runtime/product/models/product-price.model'
+import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
+import { joinProductRead } from 'fireux-products/runtime/product/utils/normalize-product'
 
 const description =
   'Independent bike shop in Interlaken for vintage bicycles, adventure builds, rare components and considered cycling goods.'
@@ -181,7 +185,19 @@ useSeoMeta({
 })
 
 const fetched = useProductCollection()
-const productReads = computed(() => fetched.reads.value ?? [])
+const { fetchProductPrices } = useProductPrices()
+const productReads = ref<ProductRead[]>([])
+watch(
+  fetched.products,
+  async (products) => {
+    productReads.value = await Promise.all(
+      products.map(async (product) =>
+        joinProductRead(product, await fetchProductPrices(product.id))
+      )
+    )
+  },
+  { immediate: true }
+)
 const featuredProducts = computed(() => {
   const bikes = productReads.value.filter(({ product }) =>
     productCategories(product).includes('Bicycles')
@@ -192,11 +208,11 @@ const featuredProducts = computed(() => {
   return [...bikes.slice(0, 2), ...(apparel ? [apparel] : [])].slice(0, 3)
 })
 
-const productCategories = (product: FirebaseProduct) => {
+const productCategories = (product: Product) => {
   return product.categories
 }
 
-const primaryCategory = (product: FirebaseProduct) =>
+const primaryCategory = (product: Product) =>
   productCategories(product)[0] || 'Yellow Velo'
 
 const formatPrice = (price: ProductPrice | null) => {

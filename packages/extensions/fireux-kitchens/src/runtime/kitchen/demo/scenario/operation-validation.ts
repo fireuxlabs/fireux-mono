@@ -1,4 +1,4 @@
-import { KITCHEN_MISE_WORKFLOW_STAGES } from '../../models/mise.model.ts'
+import { KITCHEN_MISE_WORKFLOW_STAGES } from '../../utils/mise.ts'
 import { deanosKitchenDemoOrderNumber } from '../operations/Orders/history'
 import type {
   KitchenDemoScenarioAssembly,

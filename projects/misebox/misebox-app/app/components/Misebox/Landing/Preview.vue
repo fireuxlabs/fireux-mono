@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrder } from 'fireux-kitchens/runtime/kitchen/models/order.model'
+import type { KitchenOrder } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 const {
   data: productDemo,

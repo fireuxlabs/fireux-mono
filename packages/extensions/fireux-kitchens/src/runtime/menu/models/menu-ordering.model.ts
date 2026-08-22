@@ -10,7 +10,7 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../kitchen/models/order.model.ts'
+} from '../../kitchen/utils/order.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: carry the one-time customer capability only in canonical creation/tracking responses.
 

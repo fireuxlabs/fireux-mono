@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: fail radius-origin lookup closed when the explicit Place reference is absent.
 import { createError } from 'h3'
-import type { MenuDeliveryZone } from '../../models/menu.model.ts'
+import type { MenuDeliveryZone } from '../../utils/menu.ts'
 import {
   geocodeMenuDeliveryAddress,
   readMenuDeliveryPlaceDetails,

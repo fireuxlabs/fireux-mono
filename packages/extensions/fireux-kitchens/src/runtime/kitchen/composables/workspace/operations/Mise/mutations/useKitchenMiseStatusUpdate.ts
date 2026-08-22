@@ -9,7 +9,7 @@ import {
   normalizeKitchenMiseStatus,
   type KitchenMiseStatus,
   type KitchenMiseTask,
-} from '../../../../../models/mise.model.ts'
+} from '../../../../../utils/mise.ts'
 
 type UpdateKitchenMiseStatusInput = {
   kitchenId: string

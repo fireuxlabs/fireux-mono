@@ -15,7 +15,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   isKitchenOrderPostPaymentStatus,
   type KitchenOrderType,
-} from '../../../../../../kitchen/models/order.model.ts'
+} from '../../../../../../kitchen/utils/order.ts'
 import { readMenuOrderContext } from '../../../../../../menu/server/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,

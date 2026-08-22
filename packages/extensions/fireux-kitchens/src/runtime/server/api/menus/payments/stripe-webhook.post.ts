@@ -12,7 +12,7 @@ import {
   isKitchenOrderPostPaymentStatus,
   isKitchenOrderStatus,
   isKitchenOrderType,
-} from '../../../../kitchen/models/order.model.ts'
+} from '../../../../kitchen/utils/order.ts'
 import { statusAfterPayment } from '../../../../menu/server/ordering/payment.ts'
 import {
   allowUnsignedStripeWebhook,

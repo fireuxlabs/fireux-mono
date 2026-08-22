@@ -9,7 +9,7 @@ import {
 import {
   isKitchenOrderType,
   type KitchenOrderType,
-} from '../../../../models/order.model.ts'
+} from '../../../../utils/order.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
 import { menuOrderTypeLabel } from '../../../../../menu/utils/menu-ordering-ui'
 import {

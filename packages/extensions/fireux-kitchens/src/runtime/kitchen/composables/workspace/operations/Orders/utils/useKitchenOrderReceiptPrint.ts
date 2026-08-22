@@ -2,7 +2,7 @@ import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceipt,
 } from '../../../../../../menu/models/menu-ordering.model.ts'
-import type { KitchenOrder } from '../../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../../utils/order.ts'
 
 const escapeHtml = (value: unknown) =>
   String(value ?? '')

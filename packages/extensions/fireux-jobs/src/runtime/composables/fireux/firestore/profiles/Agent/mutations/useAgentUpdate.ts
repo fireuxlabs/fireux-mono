@@ -5,7 +5,7 @@ import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/httpsUrl'
 import {
   AgentStorage,
   type Agent,
-} from '../../../../../../models/profiles/Agent/Agent.model'
+} from '../../../../../../utils/profiles/Agent/agent'
 
 /**
  * useAgentUpdate

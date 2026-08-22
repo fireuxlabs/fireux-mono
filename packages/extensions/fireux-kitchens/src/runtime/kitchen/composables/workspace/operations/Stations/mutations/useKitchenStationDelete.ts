@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { KitchenStationStorage } from '../../../../../models/station.model.ts'
+import { KitchenStationStorage } from '../../../../../utils/station.ts'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

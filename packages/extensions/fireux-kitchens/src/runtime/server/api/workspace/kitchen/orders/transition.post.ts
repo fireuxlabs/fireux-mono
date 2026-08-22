@@ -12,7 +12,7 @@ import {
 import {
   isKitchenOrderTransition,
   type KitchenOrder,
-} from '../../../../../kitchen/models/order.model.ts'
+} from '../../../../../kitchen/utils/order.ts'
 import { requireKitchenOperator } from '../../../../../kitchen/server/core/operator-access.ts'
 import { buildKitchenOrderTransitionPatch } from '../../../../../kitchen/server/operations/orders/transition.ts'
 import { publishAcceptedOrderCustomerNotification } from '../../../../../kitchen/server/operations/orders/customer-notification.ts'

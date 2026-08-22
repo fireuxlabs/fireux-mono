@@ -43,7 +43,7 @@ import { computed } from 'vue'
 import type {
   MenuOrderContactField,
   MenuOrderTypeConfig,
-} from '../../../../../../menu/models/kitchen-menu.model.ts'
+} from '../../../../../../menu/utils/kitchen-menu.ts'
 
 type UpdateFn = (patch: Partial<MenuOrderTypeConfig>) => Promise<void>
 

@@ -7,7 +7,7 @@ import {
   KitchenStationStorage,
   type KitchenStation,
   type KitchenStationUpdateInput,
-} from '../../../../../models/station.model.ts'
+} from '../../../../../utils/station.ts'
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,

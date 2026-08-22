@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter, type Ref } from 'vue'
-import type { KitchenMenu as Menu } from '../../../../models/kitchen-menu.model.ts'
+import type { KitchenMenu as Menu } from '../../../../utils/kitchen-menu.ts'
 import { readWeekdayTimeOpenState } from '../../../../../utils/weekday-time'
 import { useKitchenServiceNow } from '../../../../../kitchen/composables/useKitchenServiceNow'
 import { useMenuInterface } from './useMenuInterface'

@@ -1,4 +1,4 @@
-import type { Professional } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+import type { Professional } from 'fireux-jobs/runtime/utils/profiles/Professional/professional'
 
 export type DemoSeoProviderEntityType = 'professional'
 export type DemoSeoProviderType = 'consultant' | 'agency'

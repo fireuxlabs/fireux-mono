@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: support optional requested-time strategies.
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 
 export type MenuOrderDestinationKind =
   | 'none'

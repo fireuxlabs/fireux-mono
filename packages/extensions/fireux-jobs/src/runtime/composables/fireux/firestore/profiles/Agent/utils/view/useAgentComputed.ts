@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { Agent } from '../../../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../../../utils/profiles/Agent/agent'
 import { computed } from 'vue'
 
 /**

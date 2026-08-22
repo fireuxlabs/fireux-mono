@@ -80,7 +80,7 @@ import { useKitchenWorkspaceIngredients } from '../../../../composables/workspac
 import { useKitchenIngredientSelection } from '../../../../composables/workspace/operations/Ingredients/mutations/useKitchenIngredientSelection'
 import { useIngredientCollection } from '../../../../../ingredient/composables/firestore/fetch/useIngredientCollection'
 import { ingredientCategoryLabel } from '../../../../../ingredient/models/ingredient-taxonomy'
-import type { Ingredient } from '../../../../../ingredient/models/ingredient.model.ts'
+import type { Ingredient } from '../../../../../ingredient/utils/ingredient.ts'
 
 const {
   kitchenId,

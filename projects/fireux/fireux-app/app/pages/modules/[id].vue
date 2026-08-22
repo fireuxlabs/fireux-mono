@@ -135,11 +135,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
+import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import { useProductInterface } from 'fireux-products/runtime/product/composables/useProductInterface'
-import type { FirebaseProduct } from 'fireux-products/runtime/product/models/product.model'
+import type { Product } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
+import { joinProductRead } from 'fireux-products/runtime/product/utils/normalize-product'
 import { roadmapBySlug } from '../../content/module-roadmaps'
 
 definePageMeta({
@@ -153,7 +156,20 @@ definePageMeta({
 
 const slug = useRouteParam('id')
 
-const { reads } = useProductCollection()
+const { products } = useProductCollection()
+const { fetchProductPrices } = useProductPrices()
+const reads = ref<ProductRead[]>([])
+watch(
+  products,
+  async (items) => {
+    reads.value = await Promise.all(
+      items.map(async (product) =>
+        joinProductRead(product, await fetchProductPrices(product.id))
+      )
+    )
+  },
+  { immediate: true }
+)
 const { preview: toCard } = useProductInterface()
 
 const moduleRead = computed(() => {
@@ -182,7 +198,7 @@ const moduleFeatures = computed(() =>
   moduleProduct.value?.features?.map((feature) => feature.title).filter(Boolean) ?? []
 )
 const moduleCard = computed(() =>
-  toCard(moduleProduct.value as FirebaseProduct, moduleRead.value?.prices || []) ?? {
+  toCard(moduleProduct.value as Product, moduleRead.value?.prices || []) ?? {
     id: moduleProduct.value?.id || '',
     to: '',
     avatarUrl: moduleProduct.value?.main_image || '',

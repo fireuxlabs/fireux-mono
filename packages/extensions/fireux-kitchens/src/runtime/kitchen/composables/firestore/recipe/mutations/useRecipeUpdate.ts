@@ -7,7 +7,7 @@ import {
   RecipeStorage,
   type Recipe,
   type RecipeUpdateInput,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 

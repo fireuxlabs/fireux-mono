@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: snapshot source item identity for validated amend resubmission.
 import { createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
-import type { DishItemKind } from '../../../kitchen/models/dish.model.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
+import type { DishItemKind } from '../../../kitchen/utils/dish.ts'
 import { readKitchenMenuSections } from '../manifest/sections.ts'
 import { isMenuOrderingEnabled, readMenuOrderingConfig } from './config.ts'
 import type { MenuOrderContext } from './context.ts'

@@ -110,10 +110,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type {
-  FirebaseProduct,
-  Price,
-} from 'fireux-products/runtime/product/models/product.model'
+import type { Product } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductPrice } from 'fireux-products/runtime/product/models/product-price.model'
 import { useProductFetch } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductFetch'
 import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
 import {
@@ -145,11 +143,11 @@ const { fetchProductBySlug } = useProductFetch()
 const { fetchProductPrices } = useProductPrices()
 
 const productSource = fetchProductBySlug('fireux-template')
-const productPrices = ref<Price[]>([])
+const productPrices = ref<ProductPrice[]>([])
 
 watch(
   productSource,
-  async (nextProduct: FirebaseProduct | undefined) => {
+  async (nextProduct: Product | undefined) => {
     productPrices.value = nextProduct?.id
       ? await fetchProductPrices(nextProduct.id)
       : []
@@ -163,7 +161,7 @@ const activeFeatures = computed(() =>
   (product.value?.features ?? []).filter((feature) => feature.available)
 )
 
-const chosenPrice = computed<Price | null>(() => {
+const chosenPrice = computed<ProductPrice | null>(() => {
   const activePrices = productPrices.value.filter((price) => price.active !== false)
   return activePrices.find((price) => price.default) || activePrices[0] || null
 })

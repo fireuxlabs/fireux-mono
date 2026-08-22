@@ -4,7 +4,7 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { KitchenTeamMemberStorage } from '../../models/team.model.ts'
+import { KitchenTeamMemberStorage } from '../../utils/team.ts'
 
 const linkedDocumentId = (value: unknown, label: string) => {
   const id = typeof value === 'string' ? value.trim() : ''

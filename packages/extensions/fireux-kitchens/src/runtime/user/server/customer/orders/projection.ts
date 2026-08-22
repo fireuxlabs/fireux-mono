@@ -3,7 +3,7 @@ import {
   isKitchenOrderType,
   type KitchenOrderPaymentMethod,
   type KitchenOrderPaymentStatus,
-} from '../../../../kitchen/models/order.model.ts'
+} from '../../../../kitchen/utils/order.ts'
 import type { CustomerOrderSummary } from '../../../models/customer/order.model.ts'
 import type { CustomerOrderKitchenSummary } from './kitchens'
 

@@ -108,7 +108,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AgentCard } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { AgentProfile } from '../../../models/profiles/Agent/Agent.model'
+import type { AgentProfile } from '../../../utils/profiles/Agent/agent'
 
 const props = withDefaults(
   defineProps<{

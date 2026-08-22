@@ -1,5 +1,5 @@
 import { computed, inject, provide, type InjectionKey } from 'vue'
-import type { KitchenOrder } from '../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../utils/order.ts'
 import { useKitchenWorkspaceOrders } from './useKitchenWorkspaceOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
 import { useKitchenOrderServiceState } from './useKitchenOrderServiceState'

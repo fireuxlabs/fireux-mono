@@ -1,18 +1,18 @@
-import { DishDefaults, type Dish } from '../../../models/dish.model.ts'
+import { DishDefaults, type Dish } from '../../../utils/dish.ts'
 import {
-  KitchenMenuModel,
+  KitchenMenuDefaults,
   type KitchenMenu,
   type MenuOrderTypeConfig,
-} from '../../../../menu/models/kitchen-menu.model.ts'
+} from '../../../../menu/utils/kitchen-menu.ts'
 import {
   MenuItemDefaults,
   type MenuItem,
-} from '../../../../menu/models/menu-item.model.ts'
+} from '../../../../menu/utils/menu-item.ts'
 import {
-  MenuSectionModel,
+  MenuSectionDefaults,
   type MenuSection,
-} from '../../../../menu/models/menu-section.model.ts'
-import type { Menu } from '../../../../menu/models/menu.model.ts'
+} from '../../../../menu/utils/menu-section.ts'
+import type { Menu } from '../../../../menu/utils/menu.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../../core/fixtures'
 import type { KitchenDemoIdentity } from '../../core/types'
 
@@ -66,7 +66,7 @@ export const kitchenMenu = (
   menu: Menu,
   orderTypes: MenuOrderTypeConfig[]
 ): KitchenMenu => ({
-  ...KitchenMenuModel,
+  ...KitchenMenuDefaults,
   id: identity.menuId,
   kitchen_id: identity.kitchenId,
   name: menu.name,
@@ -89,7 +89,7 @@ export const menuSection = (
   label: string,
   sortOrder: number
 ): MenuSection => ({
-  ...MenuSectionModel,
+  ...MenuSectionDefaults,
   id,
   kitchen_id: identity.kitchenId,
   menu_id: identity.menuId,

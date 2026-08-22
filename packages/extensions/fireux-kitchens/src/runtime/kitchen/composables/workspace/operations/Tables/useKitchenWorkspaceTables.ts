@@ -3,7 +3,7 @@ import { useKitchenChildCollection } from '../../../firestore/utils/paths/useKit
 import {
   KitchenTableTabStorage,
   type KitchenTableTab,
-} from '../../../../models/table-tab.model.ts'
+} from '../../../../utils/table-tab.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
 import { readKitchenTableCount } from '../../../../utils/kitchen-readers'

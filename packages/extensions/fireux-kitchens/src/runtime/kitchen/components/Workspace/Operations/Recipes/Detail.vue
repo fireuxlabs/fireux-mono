@@ -102,7 +102,7 @@ import { useRecipeUpdate } from '../../../../composables/firestore/recipe/mutati
 import {
   normalizeTranslatedText,
   type Recipe,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 
 const {
   recipe,

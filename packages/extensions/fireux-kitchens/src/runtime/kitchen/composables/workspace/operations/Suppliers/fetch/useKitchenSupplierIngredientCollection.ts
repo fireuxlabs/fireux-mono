@@ -3,7 +3,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   KitchenSupplierIngredientStorage,
   type KitchenSupplierIngredient,
-} from '../../../../../models/supplier-ingredient.model.ts'
+} from '../../../../../utils/kitchen-supplier-ingredient.ts'
 import { useKitchenChildCollection } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 
 export function useKitchenSupplierIngredientCollection(

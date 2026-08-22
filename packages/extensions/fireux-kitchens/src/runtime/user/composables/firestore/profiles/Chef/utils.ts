@@ -1,4 +1,4 @@
-import type { Chef } from '../../../../models/chef.model.ts'
+import type { Chef } from '../../../../utils/chef.ts'
 // Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: validate canonical Chef fields without aliases.
 
 export function useChefValidation() {

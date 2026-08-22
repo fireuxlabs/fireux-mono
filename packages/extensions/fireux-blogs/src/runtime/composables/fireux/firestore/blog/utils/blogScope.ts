@@ -1,4 +1,4 @@
-import type { BlogPost } from '../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../../utils/blog-post'
 
 type BlogRuntimeScope = {
   appId: string

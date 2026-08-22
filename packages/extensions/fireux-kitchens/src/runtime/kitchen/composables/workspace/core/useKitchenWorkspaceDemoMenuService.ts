@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { KitchenMiseTask } from '../../../models/mise.model.ts'
+import type { KitchenMiseTask } from '../../../utils/mise.ts'
 import {
   projectKitchenDemoMenuCascade,
   projectKitchenDemoMiseTaskMenuIds,

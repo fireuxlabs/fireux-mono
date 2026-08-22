@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: normalize the configured Kitchen alert recipient once.
-import type { MenuOrderWhatsAppNotificationPolicy } from '../models/kitchen-menu.model.ts'
+import type { MenuOrderWhatsAppNotificationPolicy } from '../utils/kitchen-menu.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

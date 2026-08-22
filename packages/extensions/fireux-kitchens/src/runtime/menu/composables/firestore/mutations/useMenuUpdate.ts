@@ -8,12 +8,12 @@ import { useRuntimeConfig } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { DishStorage } from '../../../../kitchen/models/dish.model.ts'
-import { type MenuStatus } from '../../../models/menu.model.ts'
+import { DishStorage } from '../../../../kitchen/utils/dish.ts'
+import { type MenuStatus } from '../../../utils/menu.ts'
 import {
   type KitchenMenu as Menu,
   type KitchenMenuUpdateInput as MenuUpdateInput,
-} from '../../../models/kitchen-menu.model.ts'
+} from '../../../utils/kitchen-menu.ts'
 import { menuPath } from '../utils/paths'
 import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { assertMenuCanPublish } from './assertMenuCanPublish'

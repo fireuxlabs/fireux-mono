@@ -8,8 +8,8 @@ import type {
   MenuOrderingConfig,
   MenuOrderTypeConfig,
   MenuServiceHoursConfig,
-} from '../../../../../menu/models/kitchen-menu.model.ts'
-import type { KitchenOrderType } from '../../../../models/order.model.ts'
+} from '../../../../../menu/utils/kitchen-menu.ts'
+import type { KitchenOrderType } from '../../../../utils/order.ts'
 import { resolveKitchenOperationHours } from '../../../../utils/kitchen-readers'
 import {
   compactMenuServiceHoursDelta,

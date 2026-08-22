@@ -96,7 +96,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenTeam = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/team.model.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/team.ts'
   )
   assert.match(kitchenModel, /export type Kitchen\s*=\s*\{/)
   assert.doesNotMatch(

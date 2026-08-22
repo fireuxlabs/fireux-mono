@@ -1,8 +1,8 @@
 import type {
   KitchenOrderCustomer,
   KitchenOrderType,
-} from '../../kitchen/models/order.model.ts'
-import type { MenuOrderDepositPolicy } from '../models/menu.model.ts'
+} from '../../kitchen/utils/order.ts'
+import type { MenuOrderDepositPolicy } from '../utils/menu.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

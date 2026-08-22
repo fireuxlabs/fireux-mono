@@ -7,7 +7,10 @@ import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import { MenuStorage, type Menu } from '../../../models/kitchen-menu.model.ts'
+import {
+  KitchenMenuStorage as MenuStorage,
+  type KitchenMenu as Menu,
+} from '../../../utils/kitchen-menu.ts'
 import { useKitchenWorkspaceSelection } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'

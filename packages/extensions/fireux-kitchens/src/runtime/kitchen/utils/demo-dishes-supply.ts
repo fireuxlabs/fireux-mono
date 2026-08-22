@@ -1,4 +1,4 @@
-import type { Ingredient } from '../../ingredient/models/ingredient.model.ts'
+import type { Ingredient } from '../../ingredient/utils/ingredient.ts'
 import type { KitchenDishFinanceSupplyLine } from './dish-finance'
 import type {
   KitchenDemoDishesScenario,

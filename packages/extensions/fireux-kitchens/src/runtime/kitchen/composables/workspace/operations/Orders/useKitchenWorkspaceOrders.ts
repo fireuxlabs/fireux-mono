@@ -7,7 +7,7 @@ import {
   type KitchenOrder,
   type KitchenOrderBoardStage,
   type KitchenOrderTransition,
-} from '../../../../models/order.model.ts'
+} from '../../../../utils/order.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
 import {

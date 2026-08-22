@@ -6,7 +6,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { computed, type ComputedRef } from 'vue'
 import type { IngredientDirectoryPage } from '../../../models/ingredient-directory.model.ts'
-import type { Ingredient } from '../../../models/ingredient.model.ts'
+import type { Ingredient } from '../../../utils/ingredient.ts'
 
 export type UseIngredientCollectionResult = {
   ingredients: ComputedRef<Ingredient[] | undefined>

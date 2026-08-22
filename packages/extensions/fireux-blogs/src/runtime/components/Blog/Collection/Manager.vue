@@ -104,7 +104,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { BlogPost } from '../../../models/blogPost.model'
+import type { BlogPost } from '../../../utils/blog-post'
 import { useBlogCollection } from '../../../composables/fireux/firestore/blog/fetch/useBlogCollection'
 import { useBlogInterface } from '../../../composables/fireux/blog/useBlogInterface'
 

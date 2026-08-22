@@ -147,7 +147,7 @@ import type { CustomerOrderSummary } from '../../../models/customer/order.model.
 import type {
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../../../kitchen/models/order.model.ts'
+} from '../../../../kitchen/utils/order.ts'
 import { kitchenOrderPaymentMethodLabel } from '../../../../menu/utils/menu-order-payment'
 
 const { debug, error, hasMore, loadMore, loadingMore, orders, pending } =

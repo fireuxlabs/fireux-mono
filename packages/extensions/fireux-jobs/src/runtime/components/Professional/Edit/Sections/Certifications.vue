@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CertificationItem } from '../../../../models/profiles/Professional/Professional.model';
+import type { CertificationItem } from '../../../../utils/profiles/Professional/professional';
 
 type ObjectArrayField = {
   key: string

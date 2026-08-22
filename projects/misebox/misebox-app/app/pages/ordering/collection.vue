@@ -59,8 +59,8 @@ import type {
   MenuOrderingProcessing,
   MenuOrderingSending,
 } from 'fireux-kitchens/runtime/menu/models/menu-ordering.model'
-import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/menu/models/menu.model'
-import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/models/order.model'
+import type { MenuServiceHoursConfig } from 'fireux-kitchens/runtime/menu/utils/menu'
+import { resolveKitchenOrderPostPaymentStatus } from 'fireux-kitchens/runtime/kitchen/utils/order'
 
 const basketItems: MenuOrderingBasketItem[] = [
   {

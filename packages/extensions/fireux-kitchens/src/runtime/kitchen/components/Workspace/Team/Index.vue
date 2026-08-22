@@ -113,7 +113,7 @@ import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/use
 import { useKitchenMemberInvitationCreate } from '../../../composables/workspace/team/mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberUpdate'
 import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'
-import type { KitchenTeamMember } from '../../../models/team.model.ts'
+import type { KitchenTeamMember } from '../../../utils/team.ts'
 
 const { teamMembers, joinRequests, pending, debug, kitchenId } =
   useKitchenWorkspaceTeam()

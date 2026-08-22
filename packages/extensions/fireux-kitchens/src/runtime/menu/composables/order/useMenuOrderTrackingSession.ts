@@ -6,7 +6,7 @@ import {
   type MaybeRefOrGetter,
   type Ref,
 } from 'vue'
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceiptLine,

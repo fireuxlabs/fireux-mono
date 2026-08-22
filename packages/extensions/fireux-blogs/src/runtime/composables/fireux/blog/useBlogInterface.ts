@@ -3,7 +3,7 @@ import type {
   BlogDirectoryEntry,
   BlogDetail,
 } from '../../../models/blog-directory.model'
-import type { BlogPost } from '../../../models/blogPost.model'
+import type { BlogPost } from '../../../utils/blog-post'
 
 type BlogViewPost = BlogPost | BlogDirectoryEntry | BlogDetail
 

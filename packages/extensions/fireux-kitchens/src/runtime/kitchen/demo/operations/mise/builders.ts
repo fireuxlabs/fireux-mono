@@ -1,7 +1,7 @@
 import {
   KitchenMiseTaskDefaults,
   type KitchenMiseTask,
-} from '../../../models/mise.model.ts'
+} from '../../../utils/mise.ts'
 import {
   deanosKitchenDemoIdentity,
   kitchenDemoCreated,

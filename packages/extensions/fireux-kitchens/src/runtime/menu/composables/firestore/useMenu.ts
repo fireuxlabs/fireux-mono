@@ -6,12 +6,12 @@ import { useMenuCreate } from './mutations/useMenuCreate'
 import { useMenuUpdate } from './mutations/useMenuUpdate'
 import { useMenuDelete } from './mutations/useMenuDelete'
 
-export type { KitchenMenu as Menu } from '../../models/kitchen-menu.model.ts'
+export type { KitchenMenu as Menu } from '../../utils/kitchen-menu.ts'
 export type {
   MenuItem,
   MenuItemPriceOption,
-} from '../../models/menu-item.model.ts'
-export type { MenuSection } from '../../models/menu-section.model.ts'
+} from '../../utils/menu-item.ts'
+export type { MenuSection } from '../../utils/menu-section.ts'
 export { useKitchenMenuCollection } from './fetch/useKitchenMenuCollection'
 export { useMenuFetch } from './fetch/useMenuFetch'
 export { useMenuSectionCollection } from './fetch/useMenuSectionCollection'

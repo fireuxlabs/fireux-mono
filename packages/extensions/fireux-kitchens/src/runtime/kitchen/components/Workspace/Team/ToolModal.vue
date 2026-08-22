@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import SelectedMember from './SelectedMember.vue'
-import type { KitchenTeamMember } from '../../../models/team.model.ts'
+import type { KitchenTeamMember } from '../../../utils/team.ts'
 import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 import { useKitchenMemberInvitationCreate } from '../../../composables/workspace/team/mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'

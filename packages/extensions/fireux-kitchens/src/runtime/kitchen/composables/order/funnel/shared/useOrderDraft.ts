@@ -11,7 +11,7 @@ import type {
   MenuOrderingPayment,
   MenuOrderingSubmitPayload,
 } from '../../../../../menu/models/menu-ordering.model.ts'
-import type { KitchenOrderType } from '../../../../models/order.model.ts'
+import type { KitchenOrderType } from '../../../../utils/order.ts'
 import { notifyOrderSessionChanged } from './useOrderSession'
 import { useOrderCreate } from './useOrderCreate'
 import { useOrderStatus } from './useOrderStatus'

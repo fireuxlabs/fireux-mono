@@ -1,5 +1,5 @@
-import type { KitchenMiseTask } from '../../models/mise.model.ts'
-import type { KitchenOrder } from '../../models/order.model.ts'
+import type { KitchenMiseTask } from '../../utils/mise.ts'
+import type { KitchenOrder } from '../../utils/order.ts'
 import {
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,

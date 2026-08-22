@@ -11,7 +11,7 @@ import {
   RecipeStorage,
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 

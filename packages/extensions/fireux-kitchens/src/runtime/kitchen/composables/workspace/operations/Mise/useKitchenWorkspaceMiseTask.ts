@@ -1,6 +1,6 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { KitchenMiseTask } from '../../../../models/mise.model.ts'
+import type { KitchenMiseTask } from '../../../../utils/mise.ts'
 import { useKitchenWorkspaceMise } from './useKitchenWorkspaceMise'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

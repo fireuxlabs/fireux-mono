@@ -14,13 +14,13 @@ import {
   isKitchenOrderChannel,
   isKitchenOrderType,
   type KitchenOrder,
-} from '../../../models/order.model.ts'
+} from '../../../utils/order.ts'
 import {
   KitchenSaleSchemaVersion,
   kitchenSalePath,
   type KitchenSale,
   type KitchenSaleLine,
-} from '../../../models/sale.model.ts'
+} from '../../../utils/sale.ts'
 import { requireKitchenOrderPricing } from './pricing.ts'
 
 export class KitchenSaleInvariantError extends Error {

@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenStation } from '../../../../models/station.model.ts'
+import type { KitchenStation } from '../../../../utils/station.ts'
 import { useKitchenWorkspaceStations } from '../../../../composables/workspace/operations/Stations/useKitchenWorkspaceStations'
 
 const { stations, debug } = useKitchenWorkspaceStations()

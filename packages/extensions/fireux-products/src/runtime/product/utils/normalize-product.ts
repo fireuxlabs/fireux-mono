@@ -1,4 +1,4 @@
-import type { Product, ProductFeature, ProductImage, ProductPrice, ProductRead, ProductUpdateInput, ProductVisibility } from '../models/product.model.ts'
+import type { Product, ProductFeature, ProductImage, ProductPrice, ProductRead, ProductUpdateInput, ProductVisibility } from './product.ts'
 
 const record = (value: unknown): Record<string, any> | null => value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, any> : null
 const text = (value: unknown) => String(value ?? '').trim()

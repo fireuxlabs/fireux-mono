@@ -11,22 +11,26 @@ const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const orderModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts'
-  )
-  const saleModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/sale.model.ts'
-  )
-  const customerModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer.model.ts'
-  )
-  const linkModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer/order.model.ts'
-  )
+  const orderModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/order.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const saleModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/sale.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/sale.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/sale.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const customerModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/utils/customer.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const linkModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer/order.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/utils/customer-order-link.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/user/models/customer-order-link.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
   const transition = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/orders/transition.post.ts'

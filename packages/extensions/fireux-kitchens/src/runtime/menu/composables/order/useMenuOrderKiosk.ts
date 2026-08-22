@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: place the Kiosk delta under the shared MenuOrder prefix.
 import type { MaybeRefOrGetter } from 'vue'
 import type { CustomerOrderSummary } from '../../../user/models/customer/order.model.ts'
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import { menuOrderRequestItems } from '../../utils/menu-order-request-items'
 import {
   menuOrderPaymentLabel,

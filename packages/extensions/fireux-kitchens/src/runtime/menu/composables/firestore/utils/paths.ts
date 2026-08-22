@@ -2,9 +2,9 @@ import {
   normalizeString,
   resolveKitchenChildCollectionPath,
 } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
-import { MenuItemStorage } from '../../../models/menu-item.model.ts'
-import { MenuSectionStorage } from '../../../models/menu-section.model.ts'
-import { KitchenMenuStorage as MenuStorage } from '../../../models/kitchen-menu.model.ts'
+import { MenuItemStorage } from '../../../utils/menu-item.ts'
+import { MenuSectionStorage } from '../../../utils/menu-section.ts'
+import { KitchenMenuStorage as MenuStorage } from '../../../utils/kitchen-menu.ts'
 
 type MenuPathOptions = {
   kitchenCollectionPath?: string | null | undefined

@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenMiseTask } from '../../../../../../models/mise.model.ts'
+import type { KitchenMiseTask } from '../../../../../../utils/mise.ts'
 
 const MISSING_TITLE = 'Missing mise title'
 

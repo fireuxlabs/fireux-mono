@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Ingredient } from '../models/ingredient.model.ts'
+import type { Ingredient } from '../utils/ingredient.ts'
 
 export function useIngredientComputed(
   ingredient?: Ref<Ingredient | null | undefined>

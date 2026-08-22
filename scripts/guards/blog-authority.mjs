@@ -11,10 +11,10 @@ const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const model = read(
-    repoRoot,
-    'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts'
-  )
+  const model = [
+    'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
+    'packages/extensions/fireux-blogs/src/runtime/utils/blog-post.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
   const projection = read(
     repoRoot,
     'packages/extensions/fireux-blogs/src/runtime/server/blog/read.ts'

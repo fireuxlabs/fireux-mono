@@ -4,7 +4,7 @@ import type { IngredientDetailResponse } from '../../../models/ingredient-direct
 import type {
   Ingredient,
   IngredientCreateInput,
-} from '../../../models/ingredient.model.ts'
+} from '../../../utils/ingredient.ts'
 
 type IngredientCreateDraft = Partial<IngredientCreateInput>
 

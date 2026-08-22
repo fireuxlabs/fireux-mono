@@ -1,7 +1,7 @@
 import { useAsyncData } from '#imports'
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import type { IngredientDirectoryPage } from '../../../../../../ingredient/models/ingredient-directory.model.ts'
-import type { Ingredient } from '../../../../../../ingredient/models/ingredient.model.ts'
+import type { Ingredient } from '../../../../../../ingredient/utils/ingredient.ts'
 
 type KitchenIngredientRootsState = {
   roots: ComputedRef<Ingredient[]>

@@ -1,4 +1,4 @@
-import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/models/ingredient.model'
+import type { Ingredient } from 'fireux-kitchens/runtime/ingredient/utils/ingredient'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
 import { projectKitchenMiseTasks } from 'fireux-kitchens/runtime/kitchen/models/mise-presentation'
 import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'

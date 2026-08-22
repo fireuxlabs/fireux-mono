@@ -18,6 +18,8 @@ export const kitchenOperations = [
       'Create and manage dishes used across kitchen menus and recipes.',
     to: '/workspace/kitchen/dishes',
     workspace: kitchenWorkspace,
+    group: 'Food & Drink',
+    landingQuestion: 'Which Dishes need their specification or price reviewed?',
     icon: 'i-lucide-utensils',
     keywords: [
       'restaurant dish management software',
@@ -44,6 +46,9 @@ export const kitchenOperations = [
     description: 'Create and manage drinks used across kitchen menus.',
     to: '/workspace/kitchen/drinks',
     workspace: kitchenWorkspace,
+    group: 'Food & Drink',
+    landingQuestion:
+      'Which Drinks need their recipe, price, or availability reviewed?',
     icon: 'i-lucide-glass-water',
     keywords: [
       'bar inventory management software',
@@ -71,6 +76,8 @@ export const kitchenOperations = [
     description: 'Create and manage the ingredients used by this kitchen.',
     to: '/workspace/kitchen/ingredients',
     workspace: kitchenWorkspace,
+    group: 'Food & Drink',
+    landingQuestion: 'Which Ingredients are used by the Kitchen today?',
     icon: 'i-lucide-carrot',
     keywords: [
       'restaurant inventory management software',
@@ -97,6 +104,9 @@ export const kitchenOperations = [
     description: 'Create, structure, publish, and manage kitchen menus.',
     to: '/workspace/kitchen/menus',
     workspace: kitchenWorkspace,
+    group: 'Food & Drink',
+    landingQuestion:
+      'Which Menus need to be structured, reviewed, or published?',
     icon: 'i-lucide-book-open',
     keywords: [
       'restaurant menu management software',
@@ -124,6 +134,8 @@ export const kitchenOperations = [
     description: 'Plan and track kitchen preparation work.',
     to: '/workspace/kitchen/mise',
     workspace: kitchenWorkspace,
+    group: 'Operations',
+    landingQuestion: 'What preparation work needs attention before service?',
     icon: 'i-lucide-list-checks',
     keywords: [
       'restaurant prep list app',
@@ -150,6 +162,9 @@ export const kitchenOperations = [
     description: 'Run the live kitchen order board and service queue.',
     to: '/workspace/kitchen/orders',
     workspace: kitchenWorkspace,
+    group: 'Operations',
+    landingQuestion:
+      'Which Orders are waiting, in preparation, or ready for service?',
     icon: 'i-lucide-receipt-text',
     keywords: [
       'kitchen display system',
@@ -176,6 +191,9 @@ export const kitchenOperations = [
     description: 'Create and manage kitchen recipes.',
     to: '/workspace/kitchen/recipes',
     workspace: kitchenWorkspace,
+    group: 'Food & Drink',
+    landingQuestion:
+      'Which Recipes need their ingredients, method, or yield reviewed?',
     icon: 'i-lucide-notebook-tabs',
     keywords: [
       'restaurant recipe management software',
@@ -202,6 +220,9 @@ export const kitchenOperations = [
     description: 'Create and manage kitchen stations.',
     to: '/workspace/kitchen/stations',
     workspace: kitchenWorkspace,
+    group: 'Kitchen Setup',
+    landingQuestion:
+      "Which Stations are responsible for today's preparation and service?",
     icon: 'i-lucide-layout-grid',
     keywords: [
       'kitchen station management',
@@ -228,6 +249,8 @@ export const kitchenOperations = [
     description: 'Connect kitchen suppliers, catalogues, and supply options.',
     to: '/workspace/kitchen/suppliers',
     workspace: kitchenWorkspace,
+    group: 'Kitchen Setup',
+    landingQuestion: 'Which Suppliers and supply options support the Kitchen?',
     icon: 'i-lucide-truck',
     keywords: [
       'restaurant supplier management software',
@@ -254,6 +277,9 @@ export const kitchenOperations = [
     description: 'Manage the kitchen table setup used by ordering.',
     to: '/workspace/kitchen/tables',
     workspace: kitchenWorkspace,
+    group: 'Front of House',
+    landingQuestion: 'Which Tables are configured for ordering?',
+    landing: false,
     icon: 'i-lucide-grid-2x2',
     keywords: [
       'restaurant table management software',
@@ -281,6 +307,9 @@ export const kitchenOperations = [
       'Review gross sales, completed sales, and average sale for a selected period.',
     to: '/workspace/kitchen/finance',
     workspace: kitchenWorkspace,
+    group: 'Reports',
+    landingQuestion:
+      'What do gross sales and completed Sales show for the selected period?',
     icon: 'i-lucide-chart-line',
     keywords: [
       'restaurant financial reporting software',

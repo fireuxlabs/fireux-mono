@@ -1,13 +1,13 @@
 import { createError } from 'h3'
-import type { MenuOrderTypeConfig } from '../../models/menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../utils/menu.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
   KitchenOrderPaymentMethod,
   KitchenOrderPostPaymentStatus,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
-import { resolveKitchenOrderPostPaymentStatus } from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
+import { resolveKitchenOrderPostPaymentStatus } from '../../../kitchen/utils/order.ts'
 import { normalizePaymentMethod, text } from './order-request.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 

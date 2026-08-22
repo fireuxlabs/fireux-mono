@@ -8,7 +8,7 @@ import type {
   MenuManifestItem,
   MenuManifestSection,
 } from '../../../menu/models/menu-detail.model.ts'
-import type { MenuItem } from '../../../menu/models/menu-item.model.ts'
+import type { MenuItem } from '../../../menu/utils/menu-item.ts'
 import {
   featuredKioskDemoScenario,
   featuredMenuDemoScenario,

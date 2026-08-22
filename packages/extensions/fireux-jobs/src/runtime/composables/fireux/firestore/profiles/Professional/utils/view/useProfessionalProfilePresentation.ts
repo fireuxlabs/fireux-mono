@@ -5,7 +5,7 @@ import type {
   ProfessionalProfileRelevantExperience,
   ProfessionalProfileViewModel,
 } from './useProfessionalProfileView'
-import type { ProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../../../../../utils/profiles/Professional/professional'
 import type { ProjectItem } from '../../../../../../../models/profiles/Professional/supporting'
 
 export interface ProfessionalProfilePresentationProps {

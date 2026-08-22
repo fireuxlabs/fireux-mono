@@ -5,7 +5,7 @@ import { computed } from 'vue'
 import {
   BlogPostStorage,
   type BlogPost,
-} from '../../../../../models/blogPost.model'
+} from '../../../../../utils/blog-post'
 import { isBlogPostInRuntimeScope } from '../utils/blogScope'
 import { normalizeBlogPost } from '../../../../../utils/normalize-blog-post'
 

@@ -3,7 +3,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import {
   IngredientStorage,
   type Ingredient,
-} from '../models/ingredient.model.ts'
+} from '../utils/ingredient.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

@@ -1,12 +1,12 @@
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import type {
-	Price,
+	ProductPrice,
 	StripePriceInput,
-} from '../../models/product.model.ts'
+} from '../../utils/product.ts'
 
 export function useCreatePricesState() {
-	const prices = useStorage<Partial<Price>[]>('createProductPrices', [])
+	const prices = useStorage<Partial<ProductPrice>[]>('createProductPrices', [])
 	prices.value = []
 
 	function addPrice() {
@@ -35,10 +35,10 @@ export function useCreatePricesState() {
 
 		return prices.value.map((price, index) => {
 			if (!price.unit_amount || price.unit_amount <= 0) {
-				throw new Error(`Price ${index + 1} must have a value greater than 0`)
+				throw new Error(`ProductPrice ${index + 1} must have a value greater than 0`)
 			}
 			if (!price.currency) {
-				throw new Error(`Price ${index + 1} requires a currency`)
+				throw new Error(`ProductPrice ${index + 1} requires a currency`)
 			}
 
 			const isRecurring = price.type === 'recurring'
@@ -57,7 +57,7 @@ export function useCreatePricesState() {
 
 	const defaultUnitPrice = computed(() => prices.value[0]?.unit_amount ?? 0)
 
-	const defaultPrice = computed<Partial<Price> | undefined>(() => {
+	const defaultPrice = computed<Partial<ProductPrice> | undefined>(() => {
 		const price = prices.value[0]
 		if (!price) return undefined
 		return {

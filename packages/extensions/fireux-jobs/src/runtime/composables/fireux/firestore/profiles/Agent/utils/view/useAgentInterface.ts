@@ -15,7 +15,7 @@ import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type {
   Agent,
   AgentDirectoryProfile,
-} from '../../../../../../../models/profiles/Agent/Agent.model'
+} from '../../../../../../../utils/profiles/Agent/agent'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

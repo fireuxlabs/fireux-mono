@@ -7,7 +7,7 @@ import {
   KitchenMiseTaskStorage,
   normalizeKitchenMiseTask,
   type KitchenMiseTask,
-} from '../../../../../models/mise.model.ts'
+} from '../../../../../utils/mise.ts'
 import { resolveKitchenChildCollectionBasePath } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 
 const resolveMisePath = (kitchenCollectionPath: string, kitchenId: string) =>

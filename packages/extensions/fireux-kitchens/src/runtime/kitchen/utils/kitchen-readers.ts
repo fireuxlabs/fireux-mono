@@ -11,7 +11,7 @@ import {
   readMediaBackdropColor,
   readPlaceBusinessHours,
 } from 'fireux-places/runtime/place/utils/place-spine'
-import type { KitchenOrderType } from '../models/order.model.ts'
+import type { KitchenOrderType } from '../utils/order.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import type { KitchenFulfilment } from '../models/fulfilment.model.ts'
 export {

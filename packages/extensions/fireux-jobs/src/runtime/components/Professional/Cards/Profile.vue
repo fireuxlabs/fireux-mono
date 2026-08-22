@@ -348,7 +348,7 @@
 <script setup lang="ts">
 import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalProfileViewModel } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { ProfessionalProfile } from '../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../utils/profiles/Professional/professional'
 import ProfessionalProfileEvidence from '../Profile/Evidence.vue'
 import { useProfessionalProfilePresentation } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfilePresentation'
 

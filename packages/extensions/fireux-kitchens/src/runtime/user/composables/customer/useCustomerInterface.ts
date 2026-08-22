@@ -3,7 +3,7 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/user/models/user.model'
-import type { Customer } from '../../models/customer.model.ts'
+import type { Customer } from '../../utils/customer.ts'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

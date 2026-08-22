@@ -9,7 +9,7 @@ import {
   BlogPostStorage,
   type BlogPost,
   type BlogPostCreateInput,
-} from '../../../../../models/blogPost.model'
+} from '../../../../../utils/blog-post'
 import { normalizeBlogPostCreate } from '../../../../../utils/normalize-blog-post'
 
 export const BlogPayload = {

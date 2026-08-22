@@ -103,13 +103,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { FirebaseProduct, ProductPrice } from '../../models/product.model.ts';
+import type { Product, ProductPrice } from '../../utils/product.ts';
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 
 const props = defineProps<{
-  product?: Partial<FirebaseProduct>
+  product?: Partial<Product>
   prices?: ProductPrice[]
   defaultPrice?: ProductPrice | null
   variant?: 'customer' | 'info' | 'cell' | 'page'

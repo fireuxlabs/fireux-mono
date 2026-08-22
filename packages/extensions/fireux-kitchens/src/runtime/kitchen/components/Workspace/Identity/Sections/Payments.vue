@@ -33,7 +33,7 @@ import type {
   KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,
 } from '../../../../models/fulfilment.model.ts'
-import type { KitchenOrderType } from '../../../../models/order.model.ts'
+import type { KitchenOrderType } from '../../../../utils/order.ts'
 import { readKitchenFulfilmentConfig } from '../../../../utils/kitchen-readers'
 
 type PaymentGroup = {

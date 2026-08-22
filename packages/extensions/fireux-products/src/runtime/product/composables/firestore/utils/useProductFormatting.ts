@@ -1,8 +1,8 @@
 import type {
-  FirebaseProduct,
-  Price,
-} from '../../../models/product.model.ts'
-import { ProductStorage } from '../../../models/product.model.ts'
+  Product,
+  ProductPrice,
+} from '../../../utils/product.ts'
+import { ProductStorage } from '../../../utils/product.ts'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -13,9 +13,9 @@ export function useProductFormatting() {
   const { firestoreGetDoc } = useFirestoreManager()
 
   function formatProductData(
-    product: Partial<FirebaseProduct>
-  ): Partial<FirebaseProduct> {
-    const formatted: Partial<FirebaseProduct> = { ...product }
+    product: Partial<Product>
+  ): Partial<Product> {
+    const formatted: Partial<Product> = { ...product }
 
     if (formatted.name) formatted.name = formatted.name.trim()
     if (formatted.description)
@@ -65,12 +65,12 @@ export function useProductFormatting() {
     return { success: true, slug }
   }
 
-  function formatProductName(product: FirebaseProduct): string {
+  function formatProductName(product: Product): string {
     return product.name || 'Unnamed Product'
   }
 
   function formatProductExcerpt(
-    product: FirebaseProduct,
+    product: Product,
     maxLength = 150
   ): string {
     const description = product.description || ''
@@ -78,19 +78,19 @@ export function useProductFormatting() {
     return description.substring(0, maxLength).replace(/\s+\S*$/, '') + '...'
   }
 
-  function formatPrice(price: Price): string {
+  function formatPrice(price: ProductPrice): string {
     const currency = price.currency?.toUpperCase() || 'USD'
     const symbol = getCurrencySymbol(currency)
     const amount = (price.unit_amount / 100).toFixed(2)
     return `${symbol}${amount}`
   }
 
-  function formatAvailabilityStatus(product: FirebaseProduct): string {
+  function formatAvailabilityStatus(product: Product): string {
     if (product.active === false) return 'Unavailable'
     return 'Available'
   }
 
-  function formatFeatures(product: FirebaseProduct): string[] {
+  function formatFeatures(product: Product): string[] {
     const features: any[] = (product.features as any[]) || []
     return features
       .map((feature: any) =>

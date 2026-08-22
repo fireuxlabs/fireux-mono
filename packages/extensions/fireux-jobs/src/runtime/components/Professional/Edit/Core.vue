@@ -125,7 +125,7 @@ import {
   type ProjectItem,
   type RelevantExperienceItem,
   type VolunteeringItem,
-} from '../../../models/profiles/Professional/Professional.model'
+} from '../../../utils/profiles/Professional/professional'
 
 const toast = useToastify()
 const {

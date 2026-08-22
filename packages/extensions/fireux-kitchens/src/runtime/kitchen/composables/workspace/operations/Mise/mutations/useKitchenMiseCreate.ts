@@ -14,7 +14,7 @@ import {
   type KitchenMiseStatus,
   type KitchenMiseWorkflowStage,
   type KitchenMiseTask as KitchenMiseTaskDoc,
-} from '../../../../../models/mise.model.ts'
+} from '../../../../../utils/mise.ts'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenMiseTaskStorage.collection}`
 

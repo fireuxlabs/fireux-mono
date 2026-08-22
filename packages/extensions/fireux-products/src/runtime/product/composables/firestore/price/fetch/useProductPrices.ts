@@ -2,7 +2,7 @@ import {
   ProductPriceStorage,
   ProductStorage,
   type ProductPrice,
-} from '../../../../models/product.model.ts'
+} from '../../../../utils/product.ts'
 import { normalizeProductPrice } from '../../../../utils/normalize-product.ts'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 

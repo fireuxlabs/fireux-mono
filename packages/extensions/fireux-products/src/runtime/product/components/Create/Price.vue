@@ -53,7 +53,7 @@ import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
 import { computed } from 'vue';
 import { useCreatePricesState } from '../../composables/create/useCreatePricesState';
 import { useCreateProductState } from '../../composables/create/useCreateProductState';
-import type { PriceInterval } from '../../models/product.model.ts'
+import type { PriceInterval } from '../../utils/product.ts'
 
 const props = defineProps<{
   index: number

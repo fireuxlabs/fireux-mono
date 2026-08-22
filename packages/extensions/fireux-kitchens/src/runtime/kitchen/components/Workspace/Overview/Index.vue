@@ -168,30 +168,71 @@
           </div>
         </UCard>
 
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          <UCard
-            v-for="card in operationCards"
-            :key="card.key"
-            :ui="{ body: 'space-y-3' }"
-          >
-            <div class="flex items-start gap-3">
-              <div class="min-w-0">
-                <div
-                  class="flex items-center gap-2 text-sm font-semibold text-highlighted"
-                >
-                  <UIcon :name="card.icon" class="size-4 text-dimmed" />
-                  <span>{{ card.label }}</span>
-                </div>
-                <p class="mt-1 text-xs text-dimmed">
-                  {{ card.detail }}
-                </p>
-              </div>
+        <div class="space-y-5">
+          <section aria-labelledby="kitchen-hot-questions">
+            <h3
+              id="kitchen-hot-questions"
+              class="text-sm font-semibold text-highlighted"
+            >
+              Questions to start with
+            </h3>
+            <div class="mt-3 grid gap-2 sm:grid-cols-2">
+              <UButton
+                v-for="question in hotQuestions"
+                :key="question.to"
+                :to="question.to"
+                :icon="question.icon"
+                color="neutral"
+                variant="soft"
+                class="h-auto justify-start py-3 text-left"
+              >
+                {{ question.question }}
+              </UButton>
             </div>
+          </section>
 
-            <UButton size="xs" color="neutral" variant="soft" :to="card.to">
-              Open
-            </UButton>
-          </UCard>
+          <section
+            v-for="group in operationGroups"
+            :key="group.label"
+            :aria-labelledby="`kitchen-group-${group.label}`"
+          >
+            <h3
+              :id="`kitchen-group-${group.label}`"
+              class="text-sm font-semibold text-highlighted"
+            >
+              {{ group.label }}
+            </h3>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <UCard
+                v-for="card in group.operations"
+                :key="card.key"
+                :ui="{ body: 'space-y-3' }"
+              >
+                <div class="flex items-start gap-3">
+                  <div class="min-w-0">
+                    <div
+                      class="flex items-center gap-2 text-sm font-semibold text-highlighted"
+                    >
+                      <UIcon :name="card.icon" class="size-4 text-dimmed" />
+                      <span>{{ card.label }}</span>
+                    </div>
+                    <p class="mt-1 text-xs text-dimmed">
+                      {{ card.detail }}
+                    </p>
+                  </div>
+                </div>
+
+                <UButton
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  :to="card.to"
+                >
+                  Open
+                </UButton>
+              </UCard>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -201,7 +242,7 @@
         title="Kitchen overview"
         scope="workspace"
         object-origin="fetched"
-        :objects="{ selectedKitchen }"
+        :objects="selectedKitchen ? [selectedKitchen] : []"
         :derived="pageDebug"
         :default-open="false"
       />
@@ -229,6 +270,8 @@ const {
   missingIdentityFields,
   priorityIdentityFields,
   operationCards,
+  operationGroups,
+  hotQuestions,
   debug,
 } = useKitchenWorkspaceOverview()
 const pageDebug = debug

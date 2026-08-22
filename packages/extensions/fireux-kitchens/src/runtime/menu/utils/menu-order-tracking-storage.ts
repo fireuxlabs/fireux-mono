@@ -4,7 +4,7 @@ import {
   type KitchenOrderChannel,
   type KitchenOrderStatus,
   type KitchenOrderType,
-} from '../../kitchen/models/order.model.ts'
+} from '../../kitchen/utils/order.ts'
 import type {
   CreatedMenuOrder,
   CreatedMenuOrderReceiptLine,

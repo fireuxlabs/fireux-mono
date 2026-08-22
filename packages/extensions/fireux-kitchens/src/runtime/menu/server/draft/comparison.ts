@@ -2,7 +2,7 @@ import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../models/menu-item.model.ts'
+} from '../../utils/menu-item.ts'
 import type { KitchenMenuCurrentShape } from './current'
 import type { KitchenMenuDraftSection } from './sections'
 import { hasIncludedMenuChoiceCue } from '../ai/choices'

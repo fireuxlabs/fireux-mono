@@ -1,11 +1,11 @@
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: preserve Menu operations on reconfirm and omit absent catalogue fields.
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: never persist a source image candidate on MenuItem.
-import { KitchenMenuStorage as MenuStorage } from '../../models/kitchen-menu.model.ts'
+import { KitchenMenuStorage as MenuStorage } from '../../utils/kitchen-menu.ts'
 import type { DocumentData } from 'firebase-admin/firestore'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../models/menu-item.model.ts'
+} from '../../utils/menu-item.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'

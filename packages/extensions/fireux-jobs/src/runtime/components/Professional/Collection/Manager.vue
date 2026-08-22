@@ -103,7 +103,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalDirectoryProfile } from '../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalDirectoryProfile } from '../../../utils/profiles/Professional/professional'
 import ProfessionalCardsCell from '../Cards/Cell.vue'
 import ProfessionalCardsPill from '../Cards/Pill.vue'
 import ProfessionalCollectionList from './List.vue'

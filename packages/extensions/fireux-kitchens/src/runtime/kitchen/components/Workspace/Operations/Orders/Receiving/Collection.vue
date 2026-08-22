@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrder } from '../../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../../utils/order.ts'
 import {
   formatKitchenOrderRequestedTime,
   kitchenOrderTimestampMs,

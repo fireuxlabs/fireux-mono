@@ -1,4 +1,4 @@
-import type { KitchenOrderType } from '../../../../kitchen/models/order.model.ts'
+import type { KitchenOrderType } from '../../../../kitchen/utils/order.ts'
 import type { MenuOrderTypeStrategy } from '../order-type.ts'
 import { collectionOrderType } from './collection.ts'
 import { eatInOrderType, takeawayOrderType } from './counter.ts'

@@ -5,7 +5,7 @@ import {
   type CustomerDeliveryAddressPrediction,
 } from '../../../../../user/composables/customer/useCustomerDeliveryAddressAutocomplete'
 import { useCustomerAutofill } from '../../../../../user/composables/customer/useCustomerAutofill'
-import type { MenuDeliveryZone } from '../../../../../menu/models/menu.model.ts'
+import type { MenuDeliveryZone } from '../../../../../menu/utils/menu.ts'
 import type {
   MenuOrderingDeliveryState,
   MenuOrderingFunnelState,

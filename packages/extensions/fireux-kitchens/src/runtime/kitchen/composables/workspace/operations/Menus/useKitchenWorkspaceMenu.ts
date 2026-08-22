@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project sections for an unresolved Menu detail route.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { KitchenMenu as Menu } from '../../../../../menu/models/kitchen-menu.model.ts'
-import type { MenuItemPriceOption } from '../../../../../menu/models/menu-item.model.ts'
+import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
+import type { MenuItemPriceOption } from '../../../../../menu/utils/menu-item.ts'
 import { useKitchenWorkspaceMenus } from './useKitchenWorkspaceMenus'
 import { useMenuSectionCollection } from '../../../../../menu/composables/firestore/fetch/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../../menu/composables/firestore/mutations/useMenuSectionMutations'

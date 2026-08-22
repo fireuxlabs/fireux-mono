@@ -7,10 +7,10 @@ import { computed, ref, watch } from 'vue'
 import { useDevKitchenCollection } from '../../composables/firestore/fetch/useDevKitchenCollection'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import { DishStorage } from '../../models/dish.model.ts'
-import { IngredientStorage } from '../../../ingredient/models/ingredient.model.ts'
-import { MenuStorage } from '../../../menu/models/menu.model.ts'
-import { RecipeStorage } from '../../models/recipe.model.ts'
+import { DishStorage } from '../../utils/dish.ts'
+import { IngredientStorage } from '../../../ingredient/utils/ingredient.ts'
+import { KitchenMenuStorage } from '../../../menu/utils/kitchen-menu.ts'
+import { RecipeStorage } from '../../utils/recipe.ts'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 
 export function useKitchenDevSystem() {
@@ -117,7 +117,7 @@ export function useKitchenDevSystem() {
       { kitchenCollectionPath }
     )
   const childCollections = {
-    menus: child(MenuStorage.collection),
+    menus: child(KitchenMenuStorage.collection),
     dishes: child(DishStorage.collection),
     recipes: child(RecipeStorage.collection),
     ingredients: child(IngredientStorage.collection),

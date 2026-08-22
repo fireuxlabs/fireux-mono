@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import type { KitchenOrder } from '../../../../../models/order.model.ts'
+import type { KitchenOrder } from '../../../../../utils/order.ts'
 
 defineOptions({ name: 'WorkspaceKitchenOperationsOrdersReceivingDesk' })
 

@@ -119,9 +119,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useProductCollection } from 'fireux-products/runtime/product/composables/firestore/fetch/useProductCollection'
-import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/product/models/product.model'
+import { useProductPrices } from 'fireux-products/runtime/product/composables/firestore/price/fetch/useProductPrices'
+import type { Product } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductPrice } from 'fireux-products/runtime/product/models/product-price.model'
+import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
+import { joinProductRead } from 'fireux-products/runtime/product/utils/normalize-product'
 
 definePageMeta({
   layout: 'landing',
@@ -145,7 +149,19 @@ useSeoMeta({
 })
 
 const fetched = useProductCollection()
-const productReads = computed(() => fetched.reads.value ?? [])
+const { fetchProductPrices } = useProductPrices()
+const productReads = ref<ProductRead[]>([])
+watch(
+  fetched.products,
+  async (products) => {
+    productReads.value = await Promise.all(
+      products.map(async (product) =>
+        joinProductRead(product, await fetchProductPrices(product.id))
+      )
+    )
+  },
+  { immediate: true }
+)
 const pending = computed(() => fetched.pending.value)
 const error = computed(() => fetched.error.value)
 const search = ref('')
@@ -166,7 +182,7 @@ const categoryDefinitions = [
   { label: 'Accessories', value: 'Accessories' },
 ] as const
 
-const productCategories = (product: FirebaseProduct) => {
+const productCategories = (product: Product) => {
   return product.categories
 }
 
@@ -210,14 +226,14 @@ const filteredProducts = computed(() => {
   })
 })
 
-const primaryCategory = (product: FirebaseProduct) => {
+const primaryCategory = (product: Product) => {
   const categories = productCategories(product)
   return categories.find(category =>
     ['Bicycles', 'Apparel', 'Components', 'Tyres', 'Accessories'].includes(category)
   ) || categories[0] || 'Shop'
 }
 
-const productSummary = (product: FirebaseProduct) => {
+const productSummary = (product: Product) => {
   const summary = String(product.description || '').replace(/\s+/g, ' ').trim()
   return summary.length > 116 ? `${summary.slice(0, 113).trimEnd()}…` : summary
 }

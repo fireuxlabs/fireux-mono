@@ -2,7 +2,7 @@ import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/fires
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { RecipeStorage } from '../../../../models/recipe.model.ts'
+import { RecipeStorage } from '../../../../utils/recipe.ts'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 

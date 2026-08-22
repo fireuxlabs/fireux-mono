@@ -1,7 +1,7 @@
 import {
   normalizeDishDealFlag,
   readDishItemKind,
-} from '../../../kitchen/models/dish.model.ts'
+} from '../../../kitchen/utils/dish.ts'
 import type {
   MenuManifestAddOn,
   MenuManifestPriceOption,

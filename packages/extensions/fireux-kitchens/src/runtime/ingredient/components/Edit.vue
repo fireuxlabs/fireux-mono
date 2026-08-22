@@ -113,7 +113,7 @@ import {
 import type {
   Ingredient,
   IngredientUpdateInput,
-} from '../models/ingredient.model.ts'
+} from '../utils/ingredient.ts'
 
 const props = defineProps<{
   ingredientId: string

@@ -5,7 +5,7 @@ import type {
   KitchenFulfilmentPaymentPolicy,
   KitchenPaymentRequirement,
 } from '../models/fulfilment.model.ts'
-import type { KitchenOrderType } from '../models/order.model.ts'
+import type { KitchenOrderType } from '../utils/order.ts'
 
 type KitchenRecord = Record<string, unknown> | null | undefined
 const text = (value: unknown) => String(value ?? '').trim()

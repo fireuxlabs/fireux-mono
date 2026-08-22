@@ -8,7 +8,7 @@ import {
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { IngredientDirectoryPage } from '../../../ingredient/models/ingredient-directory.model.ts'
-import type { Ingredient } from '../../../ingredient/models/ingredient.model.ts'
+import type { Ingredient } from '../../../ingredient/utils/ingredient.ts'
 import { normalizeIngredient } from '../../../ingredient/server/normalize.ts'
 
 const MAX_LIBRARY_SIZE = 500

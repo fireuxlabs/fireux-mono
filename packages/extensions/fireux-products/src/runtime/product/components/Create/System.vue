@@ -40,7 +40,7 @@ import { ref } from 'vue'
 import { useCreatePricesState } from '../../composables/create/useCreatePricesState'
 import { useCreateProductState } from '../../composables/create/useCreateProductState'
 import { useProductCreate } from '../../composables/firestore/mutations/useProductCreate'
-import type { StripePriceInput } from '../../models/product.model.ts'
+import type { StripePriceInput } from '../../utils/product.ts'
 
 const {
   product,

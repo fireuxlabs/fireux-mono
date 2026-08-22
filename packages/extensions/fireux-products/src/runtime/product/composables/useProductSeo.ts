@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { ProductStorage, type Product, type ProductPrice } from '../models/product.model.ts'
+import { ProductStorage, type Product, type ProductPrice } from '../utils/product.ts'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>

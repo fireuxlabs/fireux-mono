@@ -1,6 +1,6 @@
 import { createError } from 'h3'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { ProfessionalConstraints } from '../../models/profiles/Professional/Professional.model.ts'
+import { ProfessionalConstraints } from '../../utils/profiles/Professional/professional.ts'
 
 export type ProfessionalStructuredField =
   | 'relevant_experience'

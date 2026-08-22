@@ -5,7 +5,7 @@ import {
   KitchenStationStorage,
   KitchenStationDefaults,
   type KitchenStation,
-} from '../../../../../models/station.model.ts'
+} from '../../../../../utils/station.ts'
 
 type CreateKitchenStationInput = {
   kitchenId: string

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Chef } from '../../../models/chef.model.ts'
+import type { Chef } from '../../../utils/chef.ts'
 
 defineProps<{
   chef: Partial<Chef> | null | undefined

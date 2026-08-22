@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Recipe } from '../../models/recipe.model.ts'
+import type { Recipe } from '../../utils/recipe.ts'
 
 export namespace RecipeCard {
   export type Card = {

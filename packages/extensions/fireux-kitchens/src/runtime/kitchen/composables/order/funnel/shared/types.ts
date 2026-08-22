@@ -5,7 +5,7 @@ import type {
   KitchenOrderPaymentMethod,
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../../../models/order.model.ts'
+} from '../../../../utils/order.ts'
 import type { MenuRouteContext } from '../../../../../menu/models/menu-context.model.ts'
 import type { MenuManifest } from '../../../../../menu/models/menu-detail.model.ts'
 import type { MenuRouteScope } from '../../../../utils/kitchen-menu-route'

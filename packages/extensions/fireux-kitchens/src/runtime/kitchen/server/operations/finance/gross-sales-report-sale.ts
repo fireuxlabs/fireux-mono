@@ -7,8 +7,8 @@ import {
 import {
   isKitchenOrderChannel,
   isKitchenOrderType,
-} from '../../../models/order.model.ts'
-import { KitchenSaleSchemaVersion } from '../../../models/sale.model.ts'
+} from '../../../utils/order.ts'
+import { KitchenSaleSchemaVersion } from '../../../utils/sale.ts'
 import { requireKitchenOrderPricing } from '../orders/pricing.ts'
 import {
   KITCHEN_GROSS_SALES_REPORT_MAX_LINES_PER_SALE,

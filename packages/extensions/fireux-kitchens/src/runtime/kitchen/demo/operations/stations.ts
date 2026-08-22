@@ -1,4 +1,4 @@
-import type { KitchenStation } from '../../models/station.model.ts'
+import type { KitchenStation } from '../../utils/station.ts'
 import {
   deanosKitchenDemoIdentity,
   miseboxRestaurantKitchenDemoIdentity,

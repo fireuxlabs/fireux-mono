@@ -40,7 +40,7 @@ import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
 import { useCreatePricesState } from '../../composables/create/useCreatePricesState'
 import { useCreateProductState } from '../../composables/create/useCreateProductState'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 
 const { product } = await useCreateProductState()
 const { prices, defaultPrice } = useCreatePricesState()
@@ -52,9 +52,9 @@ const previewProduct = computed(
   () =>
     ({
       ...product.value,
-      // Use main_image field from FirebaseProduct model
+      // Use main_image field from Product model
       main_image: mainImageData.value || '/img/placeholder-product.png',
-    } as Partial<FirebaseProduct>)
+    } as Partial<Product>)
 )
 </script>
 

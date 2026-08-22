@@ -1,4 +1,4 @@
-import type { KitchenOrderCustomer } from '../../../../models/order.model.ts'
+import type { KitchenOrderCustomer } from '../../../../utils/order.ts'
 import type { MenuOrderingDeliveryState } from '../../../../../menu/models/menu-ordering.model.ts'
 import type {
   MenuOrderAddOn,

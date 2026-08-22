@@ -7,9 +7,9 @@ import type {
   SupplierItem,
 } from 'fireux-suppliers/runtime/supplier/models/Supplier.model'
 import { computed } from 'vue'
-import type { Ingredient } from '../../../../../ingredient/models/ingredient.model.ts'
-import type { KitchenIngredient } from '../../../../models/ingredient.model.ts'
-import type { KitchenSupplierIngredient } from '../../../../models/supplier-ingredient.model.ts'
+import type { Ingredient } from '../../../../../ingredient/utils/ingredient.ts'
+import type { KitchenIngredient } from '../../../../utils/kitchen-ingredient.ts'
+import type { KitchenSupplierIngredient } from '../../../../utils/kitchen-supplier-ingredient.ts'
 import { selectKitchenDemoSupplierScenarios } from '../../../../utils/demo-suppliers'
 import {
   findKitchenWorkspaceDemoScenario,

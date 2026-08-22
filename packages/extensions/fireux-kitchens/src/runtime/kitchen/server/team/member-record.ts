@@ -1,5 +1,5 @@
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { KitchenTeamMemberDefaults } from '../../models/team.model.ts'
+import { KitchenTeamMemberDefaults } from '../../utils/team.ts'
 import type { FireuxWorkspaceTeamRole } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 
 export function buildKitchenTeamMemberRecord(input: {

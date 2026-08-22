@@ -2,11 +2,11 @@ import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../models/menu-item.model.ts'
+} from '../../utils/menu-item.ts'
 import {
   normalizeDishDealFlag,
   normalizeDishItemKind,
-} from '../../../kitchen/models/dish.model.ts'
+} from '../../../kitchen/utils/dish.ts'
 import { defaultMenuLanguageText } from '../language/default-text'
 import {
   normalizeSproochliLanguage,

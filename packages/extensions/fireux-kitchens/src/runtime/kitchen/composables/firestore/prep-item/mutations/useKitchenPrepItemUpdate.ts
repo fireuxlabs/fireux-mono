@@ -9,7 +9,7 @@ import {
   normalizeKitchenPrepItemUnit,
   type KitchenPrepItem,
   type KitchenPrepItemUpdateInput,
-} from '../../../../models/prep-item.model.ts'
+} from '../../../../utils/prep-item.ts'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 

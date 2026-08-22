@@ -2,7 +2,7 @@ import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 // Concurrent edit — 2026-07-20 19:32 CEST — Repo Efficiency Pass 2 of 6: constrain Professional meta and JSON-LD images to HTTPS.
 import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../utils/profiles/Professional/professional'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) =>

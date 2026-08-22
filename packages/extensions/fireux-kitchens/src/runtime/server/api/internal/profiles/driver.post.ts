@@ -4,7 +4,7 @@ import { createProfileProvisionHandler } from 'fireux-core/runtime/server/utils/
 import {
   createDriverAppStateSeed,
   createDriverProfileSeed,
-} from '../../../../user/models/driver.model.ts'
+} from '../../../../user/utils/driver.ts'
 
 export default createProfileProvisionHandler({
   kind: 'driver',

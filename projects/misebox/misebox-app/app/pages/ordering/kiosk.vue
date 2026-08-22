@@ -109,7 +109,7 @@ import { useMenuThemeSurface } from 'fireux-kitchens/runtime/menu/composables/us
 import {
   KitchenOrderDefaults,
   type KitchenOrder,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 import type {
   MenuOrderingBasketItem,
   MenuOrderingFunnelController,

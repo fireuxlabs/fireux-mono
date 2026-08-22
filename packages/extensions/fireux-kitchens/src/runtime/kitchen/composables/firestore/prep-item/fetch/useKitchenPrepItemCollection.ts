@@ -6,7 +6,7 @@ import {
   KitchenPrepItemStorage,
   normalizeKitchenPrepItem,
   type KitchenPrepItem,
-} from '../../../../models/prep-item.model.ts'
+} from '../../../../utils/prep-item.ts'
 import { resolveKitchenChildCollectionBasePath } from '../../utils/paths/useKitchenChildCollection'
 
 type UseKitchenPrepItemCollectionOptions = {

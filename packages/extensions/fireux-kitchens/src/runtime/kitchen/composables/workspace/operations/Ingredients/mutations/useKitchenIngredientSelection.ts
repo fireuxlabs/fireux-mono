@@ -4,9 +4,9 @@ import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/w
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenIngredientStorage,
-  KitchenIngredientModel,
+  KitchenIngredientDefaults,
   type KitchenIngredient as KitchenIngredientDoc,
-} from '../../../../../models/ingredient.model.ts'
+} from '../../../../../utils/kitchen-ingredient.ts'
 
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/${KitchenIngredientStorage.collection}`
@@ -14,7 +14,7 @@ const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
 const buildKitchenIngredientPayload = (
   ingredientId: string
 ): KitchenIngredientDoc => ({
-  ...KitchenIngredientModel,
+  ...KitchenIngredientDefaults,
   id: ingredientId,
   ingredient_id: ingredientId,
 })

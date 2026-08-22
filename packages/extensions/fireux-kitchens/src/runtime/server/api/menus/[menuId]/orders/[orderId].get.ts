@@ -9,7 +9,7 @@ import {
 import {
   isKitchenOrderStatus,
   isKitchenOrderType,
-} from '../../../../../kitchen/models/order.model.ts'
+} from '../../../../../kitchen/utils/order.ts'
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../menu/utils/menu-order-capability.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: make status private to the customer UID or opaque same-device capability.

@@ -95,7 +95,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useCustomerFetch } from '../../../composables/firestore/profiles/Customer/fetch/useCustomerFetch'
 import { useCustomerInterface } from '../../../composables/customer/useCustomerInterface'
-import type { Customer } from '../../../models/customer.model.ts'
+import type { Customer } from '../../../utils/customer.ts'
 
 type CustomerEntry = Partial<Customer> & {
   id: string

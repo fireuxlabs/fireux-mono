@@ -1,12 +1,12 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: never infer a delivery origin from Kitchen identity.
 import { createError } from 'h3'
-import type { MenuOrderingConfig } from '../../models/menu.model.ts'
+import type { MenuOrderingConfig } from '../../utils/menu.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderPayment,
   KitchenOrderStatus,
-} from '../../../kitchen/models/order.model.ts'
-import { resolveKitchenOrderIntakeStatus } from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
+import { resolveKitchenOrderIntakeStatus } from '../../../kitchen/utils/order.ts'
 import {
   checkMenuDeliveryAddress,
   checkMenuDeliveryPlaceId,

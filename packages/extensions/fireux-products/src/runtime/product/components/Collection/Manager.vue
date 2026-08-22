@@ -104,7 +104,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useProductCollection } from '../../composables/firestore/fetch/useProductCollection'
 import { useProductInterface } from '../../composables/useProductInterface'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 
 const props = withDefaults(
   defineProps<{
@@ -130,7 +130,7 @@ const props = withDefaults(
 )
 
 const fetched = useProductCollection()
-const collection = computed<FirebaseProduct[]>(
+const collection = computed<Product[]>(
   () => fetched.products.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
@@ -161,11 +161,11 @@ const {
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    FirebaseProduct,
+    Product,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (product: FirebaseProduct) => makeCard(product),
+    makeCard: (product: Product) => makeCard(product),
     initialVariant: props.initialVariant,
   })
 

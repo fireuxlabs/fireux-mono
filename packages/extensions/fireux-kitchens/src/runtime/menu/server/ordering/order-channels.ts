@@ -2,8 +2,8 @@ import { createError } from 'h3'
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
-import { kitchenOrderIntakePolicy } from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
+import { kitchenOrderIntakePolicy } from '../../../kitchen/utils/order.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

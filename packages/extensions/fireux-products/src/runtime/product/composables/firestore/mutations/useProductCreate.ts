@@ -8,15 +8,15 @@ import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/fires
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
-  FirebaseProduct,
+  Product,
   ProductCreateInput as CanonicalProductCreateInput,
   ProductPrice,
   StripePriceInput,
-} from '../../../models/product.model.ts'
+} from '../../../utils/product.ts'
 import {
   ProductPriceStorage,
   ProductStorage,
-} from '../../../models/product.model.ts'
+} from '../../../utils/product.ts'
 
 type StripeProvisionResult = {
   productId: string
@@ -104,7 +104,7 @@ export function useProductCreate() {
   }
 
   const provisionStripeProduct = async (input: {
-    payload: Pick<FirebaseProduct, 'name' | 'description'>
+    payload: Pick<Product, 'name' | 'description'>
     slug: string
     sourceAppId: string
     priceInputs: StripePriceInput[]
@@ -251,7 +251,7 @@ export function useProductCreate() {
 
       await create(
         defineRuntimeClientCreateTarget('project.products', collectionPath),
-        data as FirebaseProduct,
+        data as Product,
         { id: slug, creator: true }
       )
 

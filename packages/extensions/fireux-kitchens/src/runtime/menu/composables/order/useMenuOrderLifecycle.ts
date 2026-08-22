@@ -15,7 +15,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import type {
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
 import type { CreatedMenuOrder } from '../../models/menu-ordering.model.ts'
 import type { CustomerOrderSummary } from '../../../user/models/customer/order.model.ts'
 import { menuOrderAccessHeaders } from '../../utils/menu-order-capability'

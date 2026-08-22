@@ -3,7 +3,7 @@ import {
   ProductStorage,
   type Product,
   type ProductPrice,
-} from '../models/product.model.ts'
+} from '../utils/product.ts'
 
 export namespace ProductCard {
   export type Card = {

@@ -3,7 +3,7 @@ import type {
   KitchenOrderChannel,
   KitchenOrderCustomer,
   KitchenOrderPaymentMethod,
-} from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
 
 export type MenuOrderVariantInput = {
   id?: string

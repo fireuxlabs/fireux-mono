@@ -8,7 +8,7 @@ import type {
 } from 'fireux-core/runtime/user/server/directory/profile-directory'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
-import { ProfessionalConstraints } from '../../../models/profiles/Professional/Professional.model'
+import { ProfessionalConstraints } from '../../../utils/profiles/Professional/professional'
 
 function text(value: unknown, max: number): string {
   return typeof value === 'string' ? value.trim().slice(0, max) : ''

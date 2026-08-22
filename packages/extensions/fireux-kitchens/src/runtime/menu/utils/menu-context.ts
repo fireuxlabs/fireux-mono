@@ -1,14 +1,14 @@
 import type {
   KitchenOrderChannel,
   KitchenOrderType,
-} from '../../kitchen/models/order.model.ts'
+} from '../../kitchen/utils/order.ts'
 import {
   MenuRouteContexts,
   type MenuRouteContext,
   type MenuSurface,
 } from '../models/menu-context.model.ts'
 import type { MenuManifestBehaviour } from '../models/menu-detail.model.ts'
-import type { MenuOrderingConfig } from '../models/kitchen-menu.model.ts'
+import type { MenuOrderingConfig } from '../utils/kitchen-menu.ts'
 import {
   menuRoutePath,
   type MenuRouteScope,

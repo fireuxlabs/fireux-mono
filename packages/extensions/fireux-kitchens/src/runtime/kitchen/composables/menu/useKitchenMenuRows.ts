@@ -1,12 +1,12 @@
 // Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: derive row media only from its Dish.
 import { computed, type Ref } from 'vue'
-import type { Dish } from '../../models/dish.model.ts'
+import type { Dish } from '../../utils/dish.ts'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
-} from '../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../menu/models/menu-section.model.ts'
+} from '../../../menu/utils/menu-item.ts'
+import type { MenuSection } from '../../../menu/utils/menu-section.ts'
 import type { KitchenMenuSectionRow } from './types'
 
 type MenuRowOptions = {

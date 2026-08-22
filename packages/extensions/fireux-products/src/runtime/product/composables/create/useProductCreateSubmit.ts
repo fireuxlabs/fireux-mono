@@ -1,7 +1,7 @@
 import { useCreateProductState } from './useCreateProductState'
 import { useCreatePricesState } from './useCreatePricesState'
 import { useProductCreate } from '../firestore/mutations/useProductCreate'
-import type { StripePriceInput } from '../../models/product.model.ts'
+import type { StripePriceInput } from '../../utils/product.ts'
 
 export function useProductCreateSubmit() {
   const { product, getProductPayload } = useCreateProductState()

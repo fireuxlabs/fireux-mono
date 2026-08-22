@@ -8,7 +8,7 @@ import {
   type Firestore,
 } from 'firebase/firestore'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { MenuSourceUploadStorage } from '../../../models/menu-source-upload.model.ts'
+import { MenuSourceUploadStorage } from '../../../utils/menu-source-upload.ts'
 import { resolveKitchenCollectionBasePath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 import { menuItemsPath, menuSectionsPath } from '../utils/paths'
 

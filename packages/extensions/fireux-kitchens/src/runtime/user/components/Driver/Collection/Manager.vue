@@ -101,7 +101,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/driver/useDriverInterface'
-import type { DriverDirectoryProfile } from '../../../models/driver.model.ts'
+import type { DriverDirectoryProfile } from '../../../utils/driver.ts'
 
 type DriverEntry = DriverDirectoryProfile
 

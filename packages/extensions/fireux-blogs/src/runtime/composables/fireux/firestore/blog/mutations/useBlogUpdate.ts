@@ -3,7 +3,7 @@ import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePubli
 import {
   BlogPostStorage,
   type BlogPost,
-} from '../../../../../models/blogPost.model'
+} from '../../../../../utils/blog-post'
 import { normalizeBlogPostUpdate } from '../../../../../utils/normalize-blog-post'
 
 export function useBlogUpdate() {

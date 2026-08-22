@@ -89,7 +89,7 @@ import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useKitchenWorkspaceDish } from '../../../../composables/workspace/operations/Dishes/useKitchenWorkspaceDish'
 import { useDishImageUpload } from '../../../../composables/firestore/dish/mutations/useDishImageUpload'
 import { useDishUpdate } from '../../../../composables/firestore/dish/mutations/useDishUpdate'
-import type { DishUpdateInput } from '../../../../models/dish.model.ts'
+import type { DishUpdateInput } from '../../../../utils/dish.ts'
 
 const {
   dish,

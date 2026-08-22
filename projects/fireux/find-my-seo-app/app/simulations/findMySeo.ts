@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: move Find My SEO fixtures to their app owner.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: make the preview self-contained and remove delivery claims.
 
-import type { Professional } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+import type { Professional } from 'fireux-jobs/runtime/utils/profiles/Professional/professional'
 import { demoSeoCaseStudyList } from './findMySeo.case-studies'
 import { demoSeoAgencySeeds } from './findMySeo.provider-agencies'
 import { demoSeoConsultantSeeds } from './findMySeo.provider-consultants'

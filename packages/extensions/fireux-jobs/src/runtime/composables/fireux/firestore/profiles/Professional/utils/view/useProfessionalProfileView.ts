@@ -8,7 +8,7 @@ import { usePlaceInterface } from 'fireux-places/runtime/place/composables/fires
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
-import type { ProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalProfile } from '../../../../../../../utils/profiles/Professional/professional'
 import type {
   CertificationItem,
   EducationItem,

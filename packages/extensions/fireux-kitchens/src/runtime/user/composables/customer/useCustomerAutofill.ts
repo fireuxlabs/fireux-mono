@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { CustomerSavedAddress } from '../../models/customer.model.ts'
+import type { CustomerSavedAddress } from '../../utils/customer.ts'
 import { useCustomer as useCustomerProfile } from './useCustomer'
 
 const text = (value: unknown) => String(value ?? '').trim()

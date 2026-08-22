@@ -57,7 +57,7 @@
 import { computed } from 'vue'
 import { readRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductSeo } from 'fireux-products/runtime/product/composables/useProductSeo'
-import type { ProductRead } from 'fireux-products/runtime/product/models/product.model'
+import type { ProductRead } from 'fireux-products/runtime/product/utils/product'
 
 definePageMeta({
   layout: 'landing',

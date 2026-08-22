@@ -6,7 +6,7 @@ import {
   type CustomerDeliveryAddressPrediction,
 } from '../../../user/composables/customer/useCustomerDeliveryAddressAutocomplete'
 import { useCustomerAutofill } from '../../../user/composables/customer/useCustomerAutofill'
-import type { MenuDeliveryZone } from '../../models/menu.model.ts'
+import type { MenuDeliveryZone } from '../../utils/menu.ts'
 
 export type MenuDeliveryAddressCheckResult = {
   deliverable: boolean

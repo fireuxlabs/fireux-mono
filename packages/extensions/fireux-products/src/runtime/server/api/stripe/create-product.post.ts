@@ -8,7 +8,7 @@ import {
 } from 'h3'
 import { createRequire } from 'node:module'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
+import { ProductPriceStorage, ProductStorage } from '../../../product/utils/product.ts'
 import { STRIPE_API_VERSION } from '../../../product/server/integration/stripe/version'
 import { assertProductsServiceAccess } from '../../../product/server/core/assertProductsServiceAccess'
 

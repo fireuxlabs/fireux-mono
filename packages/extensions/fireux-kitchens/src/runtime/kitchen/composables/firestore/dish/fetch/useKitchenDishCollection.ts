@@ -7,7 +7,7 @@ import {
   DishStorage,
   normalizeDish,
   type Dish,
-} from '../../../../models/dish.model.ts'
+} from '../../../../utils/dish.ts'
 import { resolveKitchenChildCollectionBasePath } from '../../utils/paths/useKitchenChildCollection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>

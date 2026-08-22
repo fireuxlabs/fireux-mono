@@ -10,7 +10,7 @@ import {
   serverUserProfileAppStateTarget,
   serverUserProfileTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import type { DriverKitchenLink } from '../../models/driver.model.ts'
+import type { DriverKitchenLink } from '../../utils/driver.ts'
 import {
   DRIVER_KITCHEN_LINK_LIMIT,
   type DriverKitchenAccessInput,

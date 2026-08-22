@@ -12,7 +12,7 @@ import { useKitchenChildCollection } from '../../../firestore/utils/paths/useKit
 import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
-} from '../../../../../menu/models/menu-source-upload.model.ts'
+} from '../../../../../menu/utils/menu-source-upload.ts'
 import {
   findKitchenWorkspaceDemoScenario,
   useKitchenWorkspaceDemoData,

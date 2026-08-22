@@ -13,7 +13,7 @@ import type {
   Ingredient,
   IngredientCreateInput,
   IngredientUpdateInput,
-} from '../models/ingredient.model.ts'
+} from '../utils/ingredient.ts'
 import { assertCurator, curatorContext } from './curation-authority'
 import {
   CREATE_FIELDS,

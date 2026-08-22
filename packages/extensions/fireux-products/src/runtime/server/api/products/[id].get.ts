@@ -5,7 +5,7 @@ import {
   type H3Event,
 } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { ProductPriceStorage, ProductStorage } from '../../../product/models/product.model.ts'
+import { ProductPriceStorage, ProductStorage } from '../../../product/utils/product.ts'
 import { getProductsFirestore } from '../../../product/server/core/getAdmin'
 import { joinProductRead, normalizeProduct, normalizeProductPrice } from '../../../product/utils/normalize-product.ts'
 

@@ -1,37 +1,11 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: project requested time and verified Delivery details to customers.
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: make absent customer Order projection values truly optional.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type {
   KitchenOrderPaymentMethod,
   KitchenOrderPaymentStatus,
   KitchenOrderStatus,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
-
-export const CustomerOrderLinkStorage = {
-  shape: 'child',
-  path: 'users/{userId}/orders/{orderId}',
-  collection: 'orders',
-  parent: 'user',
-  idParam: 'orderId',
-} as const
-
-export const CustomerOrderLinkRecord = defineFireuxEntity({
-  kind: 'record',
-  name: 'CustomerOrderLink',
-  family: ['identity', 'commerce'],
-  identity: 'parent-scoped',
-  authority: 'parent',
-  appSupport: 'none',
-  workspace: false,
-  parent: 'User',
-  scoped: CustomerOrderLinkStorage.path,
-  notes: [
-    'CustomerOrderLink points from one User to a canonical App/Kitchen Order.',
-    'It does not require the optional CustomerProfile preferences record.',
-    'It stores discovery metadata but never copies mutable Order lifecycle state.',
-  ],
-})
+} from '../../../kitchen/utils/order.ts'
 
 export type CustomerOrderItemSummary = {
   id: string

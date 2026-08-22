@@ -4,7 +4,7 @@ import {
   KitchenStationStorage,
   normalizeKitchenStation,
   type KitchenStation,
-} from '../../../../../models/station.model.ts'
+} from '../../../../../utils/station.ts'
 import { useKitchenChildCollection } from '../../../../firestore/utils/paths/useKitchenChildCollection'
 
 export function useKitchenStationCollection(

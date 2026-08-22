@@ -18,7 +18,7 @@ import type {
   PublishAuthorJobResponse,
 } from '../../models/job-author.model.ts'
 import { JobStorage, type Job } from '../../models/job.model.ts'
-import { AgentStorage } from '../../../models/profiles/Agent/Agent.model.ts'
+import { AgentStorage } from '../../../utils/profiles/Agent/agent.ts'
 import { readJobServerScope } from '../core/runtime.ts'
 import { canonicalJobRoot } from '../core/validation.ts'
 import {

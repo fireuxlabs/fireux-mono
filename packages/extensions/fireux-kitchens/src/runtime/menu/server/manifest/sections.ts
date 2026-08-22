@@ -3,11 +3,11 @@ import type { Firestore } from 'firebase-admin/firestore'
 import {
   normalizeDishDealFlag,
   readDishItemKind,
-} from '../../../kitchen/models/dish.model.ts'
+} from '../../../kitchen/utils/dish.ts'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
-} from '../../models/menu-item.model.ts'
+} from '../../utils/menu-item.ts'
 import {
   readRecord,
   readRecordString,

@@ -6,7 +6,7 @@ import { readKitchenMenusConfig } from 'fireux-kitchens/runtime/kitchen/utils/ki
 import {
   normalizeDish,
   type Dish,
-} from 'fireux-kitchens/runtime/kitchen/models/dish.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/dish'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 
 const MAX_MENUS = 12

@@ -102,7 +102,7 @@ import type { KitchenSurface } from '../../composables/firestore/utils/view/useK
 import {
   KitchenTeamMemberStorage,
   type KitchenTeamMember,
-} from '../../models/team.model.ts'
+} from '../../utils/team.ts'
 
 const props = defineProps<{
   kitchen?: KitchenSurface | null

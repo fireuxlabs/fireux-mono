@@ -94,7 +94,7 @@
 import { computed } from 'vue'
 import { useKitchenDishesWorkspace } from '../../../../composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
 import type { KitchenDishMenuUsage } from '../../../../composables/workspace/operations/Dishes/useKitchenWorkspaceDishes'
-import type { Dish } from '../../../../models/dish.model.ts'
+import type { Dish } from '../../../../utils/dish.ts'
 
 const props = withDefaults(
   defineProps<{

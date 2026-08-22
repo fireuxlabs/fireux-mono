@@ -11,30 +11,36 @@ const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const recipeModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts'
-  )
-  const dishModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.model.ts'
-  )
-  const menuItemModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts'
-  )
-  const stationModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts'
-  )
-  const miseModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts'
-  )
-  const prepItemModel = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts'
-  )
+  const recipeModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/recipe.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const dishModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/dish.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const menuItemModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-item.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const stationModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/station.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const miseModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/mise.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
+  const prepItemModel = [
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/prep-item.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.entity.ts',
+  ].map(file => read(repoRoot, file)).join('\n')
   const menuItemWriter = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuItemMutations.ts'

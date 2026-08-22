@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import {
   collection,
   query,
@@ -11,11 +11,8 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import {
   ProductStorage,
   type Product,
-  type ProductRead,
-} from '../../../models/product.model.ts'
+} from '../../../utils/product.ts'
 import { normalizeProduct } from '../../../utils/normalize-product.ts'
-import { joinProductRead } from '../../../utils/normalize-product.ts'
-import { useProductPrices } from '../price/fetch/useProductPrices.ts'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetches the products collection for the current runtime scope. */
@@ -44,19 +41,6 @@ export function useProductCollection() {
       .filter((product) => !fireux.isTenant || product.source_app_id === fireux.appId)
   })
   const count = computed(() => products.value.length)
-  const reads = ref<ProductRead[]>([])
-  const pricesPending = ref(false)
-  const { fetchProductPrices } = useProductPrices()
-  watch(products, async (next) => {
-    pricesPending.value = true
-    try {
-      reads.value = await Promise.all(
-        next.map(async (product) => joinProductRead(product, await fetchProductPrices(product.id)))
-      )
-    } finally {
-      pricesPending.value = false
-    }
-  }, { immediate: true })
   const pending = computed(() => source.pending.value)
   const error = computed(() => source.error.value)
   const { outcome } = useFirestoreCollectionState({
@@ -65,5 +49,5 @@ export function useProductCollection() {
     pending,
   })
 
-  return { products, reads, pricesPending, count, pending, error, outcome }
+  return { products, count, pending, error, outcome }
 }

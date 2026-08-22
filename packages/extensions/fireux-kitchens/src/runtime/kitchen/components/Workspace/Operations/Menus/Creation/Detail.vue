@@ -148,7 +148,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import type {
   MenuSourceUploadKind,
   MenuSourceUploadStatus,
-} from '../../../../../../menu/models/menu-source-upload.model.ts'
+} from '../../../../../../menu/utils/menu-source-upload.ts'
 import { useKitchenWorkspaceMenus } from '../../../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
 
 const {

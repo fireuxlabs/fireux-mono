@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import type { KitchenOrderPaymentMethod } from '../../../../kitchen/models/order.model.ts'
+import type { KitchenOrderPaymentMethod } from '../../../../kitchen/utils/order.ts'
 import type { MenuOrderingFunnelController } from '../../../models/menu-ordering.model.ts'
 
 const props = defineProps<{

@@ -3,6 +3,7 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspacePlace } from '../identity/useKitchenWorkspacePlace'
+import { kitchenOperations } from '../../../models/operations'
 
 type DetailItem = {
   key: string
@@ -24,6 +25,18 @@ export type KitchenOverviewOperationCard = {
   detail: string
   icon: string
   to: string
+  group: string
+}
+
+export type KitchenOverviewOperationGroup = {
+  label: string
+  operations: KitchenOverviewOperationCard[]
+}
+
+export type KitchenOverviewQuestion = {
+  question: string
+  to: string
+  icon: string
 }
 
 const identityTo = '/workspace/kitchen/identity'
@@ -239,71 +252,43 @@ export function useKitchenWorkspaceOverview() {
       ['currency', 'cover', 'tagline'].includes(field.key)
     )
   )
-  const operationCards = computed<KitchenOverviewOperationCard[]>(() => [
-    {
-      key: 'menus',
-      label: 'Menus',
-      detail: 'Published and working menu surfaces.',
-      icon: 'i-lucide-book-open',
-      to: '/workspace/kitchen/menus',
-    },
-    {
-      key: 'ingredients',
-      label: 'Ingredients',
-      detail: 'Ingredient records available to recipes and dishes.',
-      icon: 'i-lucide-wheat',
-      to: '/workspace/kitchen/ingredients',
-    },
-    {
-      key: 'dishes',
-      label: 'Dishes',
-      detail: 'Sellable dishes and menu items.',
-      icon: 'i-lucide-utensils',
-      to: '/workspace/kitchen/dishes',
-    },
-    {
-      key: 'recipes',
-      label: 'Recipes',
-      detail: 'Kitchen prep recipes connected to dishes.',
-      icon: 'i-lucide-notebook-tabs',
-      to: '/workspace/kitchen/recipes',
-    },
-    {
-      key: 'tables',
-      label: 'Tables',
-      detail: 'Configured tables; open tabs remain separate.',
-      icon: 'i-lucide-layout-grid',
-      to: '/workspace/kitchen/tables',
-    },
-    {
-      key: 'orders',
-      label: 'Orders',
-      detail: 'Visible kitchen order tickets.',
-      icon: 'i-lucide-receipt-text',
-      to: '/workspace/kitchen/orders',
-    },
-    {
-      key: 'suppliers',
-      label: 'Suppliers',
-      detail: 'Supplier links for purchasing.',
-      icon: 'i-lucide-truck',
-      to: '/workspace/kitchen/suppliers',
-    },
-    {
-      key: 'mise',
-      label: 'Mise',
-      detail: 'Prep tasks and service setup.',
-      icon: 'i-lucide-list-checks',
-      to: '/workspace/kitchen/mise',
-    },
-    {
-      key: 'stations',
-      label: 'Stations',
-      detail: 'Kitchen station setup.',
-      icon: 'i-lucide-panels-top-left',
-      to: '/workspace/kitchen/stations',
-    },
-  ])
+  const operationCards = computed<KitchenOverviewOperationCard[]>(() =>
+    kitchenOperations
+      .filter((operation) => operation.landing !== false)
+      .map((operation) => ({
+        key: operation.slug,
+        label: operation.title,
+        detail: operation.description,
+        icon: operation.icon,
+        to: operation.to,
+        group: operation.group,
+      }))
+  )
+  const operationGroups = computed<KitchenOverviewOperationGroup[]>(() =>
+    ['Food & Drink', 'Operations', 'Kitchen Setup', 'Reports'].flatMap(
+      (label) => {
+        const operations = operationCards.value.filter(
+          (operation) => operation.group === label
+        )
+        return operations.length ? [{ label, operations }] : []
+      }
+    )
+  )
+  const hotQuestions = computed<KitchenOverviewQuestion[]>(() => {
+    const priority = ['mise', 'orders', 'menus', 'finance']
+    return priority.flatMap((slug) => {
+      const operation = kitchenOperations.find((entry) => entry.slug === slug)
+      return operation
+        ? [
+            {
+              question: operation.landingQuestion,
+              to: operation.to,
+              icon: operation.icon,
+            },
+          ]
+        : []
+    })
+  })
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
     activeKitchenAppId: runtime.appId.value,
@@ -322,7 +307,17 @@ export function useKitchenWorkspaceOverview() {
         .filter((field) => !field.complete)
         .map((field) => field.key),
     },
-    operations: operationCards.value.map((card) => card.key),
+    operations: {
+      doorways: operationCards.value.map((card) => card.key),
+      groups: operationGroups.value.map((group) => ({
+        label: group.label,
+        operations: group.operations.map((operation) => operation.key),
+      })),
+      hotQuestions: hotQuestions.value.map((question) => ({
+        question: question.question,
+        to: question.to,
+      })),
+    },
   }))
 
   return {
@@ -343,6 +338,8 @@ export function useKitchenWorkspaceOverview() {
     priorityIdentityFields,
     identityPercent,
     operationCards,
+    operationGroups,
+    hotQuestions,
     activeKitchenAppId: runtime.appId,
     rootCollection: runtime.rootCollection,
     readOnly: runtime.readOnly,

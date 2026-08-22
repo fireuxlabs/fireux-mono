@@ -9,7 +9,7 @@ import {
   RecipeStorage,
   normalizeRecipe,
   type Recipe,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 

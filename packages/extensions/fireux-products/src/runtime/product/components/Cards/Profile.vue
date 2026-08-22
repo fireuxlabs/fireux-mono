@@ -53,13 +53,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ProductCard } from '../../composables/useProductInterface'
-import type { FirebaseProduct } from '../../models/product.model.ts'
+import type { Product } from '../../utils/product.ts'
 
 const props = defineProps<{
   card: ProductCard.Card
   avatar?: string | null
   prop?: string
-  product?: FirebaseProduct | null
+  product?: Product | null
 }>()
 
 const title = computed(() => props.card.title)

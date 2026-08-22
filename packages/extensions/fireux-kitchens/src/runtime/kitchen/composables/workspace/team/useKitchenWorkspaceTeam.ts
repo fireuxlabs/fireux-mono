@@ -6,7 +6,7 @@ import {
   KitchenTeamMemberStorage,
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
-} from '../../../models/team.model.ts'
+} from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../operations/Shared/useKitchenWorkspaceReadPage'
 import {

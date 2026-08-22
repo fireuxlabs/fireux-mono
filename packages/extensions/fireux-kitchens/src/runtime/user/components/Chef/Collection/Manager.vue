@@ -104,7 +104,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/chef/useChefInterface'
-import type { ChefDirectoryProfile } from '../../../models/chef.model.ts'
+import type { ChefDirectoryProfile } from '../../../utils/chef.ts'
 
 type ChefEntry = ChefDirectoryProfile
 

@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import { computed, ref } from 'vue'
-import type { KitchenTeamMember } from '../../../models/team.model.ts'
+import type { KitchenTeamMember } from '../../../utils/team.ts'
 import { resolveKitchenTeamMemberAnchor } from '../../../utils/team-member-anchor'
 
 const props = withDefaults(

@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project Demo Dishes and their Menu usage without opening a Firestore path.
 import { computed } from 'vue'
 import { useKitchenDishCollection } from '../../../firestore/dish/fetch/useKitchenDishCollection'
-import { DishStorage, type Dish } from '../../../../models/dish.model.ts'
+import { DishStorage, type Dish } from '../../../../utils/dish.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
 import {

@@ -6,7 +6,7 @@ import type {
 import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../../kitchen/models/order.model.ts'
+} from '../../../kitchen/utils/order.ts'
 import {
   customerOrderRequestError,
   isTerminalMenuOrderStatus,

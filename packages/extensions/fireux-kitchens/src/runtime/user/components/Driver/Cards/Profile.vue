@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { DriverCard } from '../../../composables/driver/useDriverInterface'
-import type { DriverProfile } from '../../../models/driver.model.ts'
+import type { DriverProfile } from '../../../utils/driver.ts'
 
 const props = defineProps<{
   card: DriverCard.Card

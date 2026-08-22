@@ -7,8 +7,8 @@ import {
   menuOrderChannelForContext,
   normalizeMenuRouteContext,
 } from '../../../../../menu/utils/menu-context'
-import type { KitchenOrderType } from '../../../../models/order.model.ts'
-import type { MenuChoice } from '../../../../../menu/models/menu.model.ts'
+import type { KitchenOrderType } from '../../../../utils/order.ts'
+import type { MenuChoice } from '../../../../../menu/utils/menu.ts'
 import { text } from './order-input'
 import type {
   MenuChoiceOption,

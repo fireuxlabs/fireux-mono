@@ -64,6 +64,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const deploy = read(repoRoot, 'scripts/deploy-misebox-firestore-rules.mjs')
   const model = read(repoRoot, `${ingredientBase}models/ingredient.model.ts`)
+  const entity = read(repoRoot, `${ingredientBase}models/ingredient.entity.ts`)
   const foodGroupModel = read(
     repoRoot,
     `${ingredientBase}models/ingredient-food-group.ts`
@@ -157,7 +158,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     read(repoRoot, 'scripts/data/misebox-ingredient-catalog-completion.json')
   )
 
-  assert.match(model, /identity:\s*'root'/)
+  assert.match(entity, /identity:\s*'root'/)
   assert.match(foodGroupModel, /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/)
   assert.match(foodGroupModel, /\bexport const resolveIngredientFoodGroup\b/)
   assert.match(

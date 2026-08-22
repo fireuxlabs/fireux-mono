@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { formatFirestoreTimestamp } from 'fireux-core/runtime/utils/formatTimestamp'
 import { useKitchenMenusWorkspace } from '../../../../composables/workspace/operations/Menus/useKitchenMenusWorkspace'
-import type { KitchenMenu as Menu } from '../../../../../menu/models/kitchen-menu.model.ts'
+import type { KitchenMenu as Menu } from '../../../../../menu/utils/kitchen-menu.ts'
 
 const { menus, pending, readOnly } = useKitchenMenusWorkspace()
 

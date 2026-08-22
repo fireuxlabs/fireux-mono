@@ -81,7 +81,7 @@ import { useProductPermissions } from '../../../../product/composables/useProduc
 import { useProductCreate } from '../../../../product/composables/firestore/mutations/useProductCreate'
 import { useCreatePricesState } from '../../../../product/composables/create/useCreatePricesState'
 import { useCreateProductState } from '../../../../product/composables/create/useCreateProductState'
-import type { StripePriceInput } from '../../../../product/models/product.model.ts'
+import type { StripePriceInput } from '../../../../product/utils/product.ts'
 
 definePageMeta({
   layout: 'dashboard',

@@ -6,13 +6,13 @@
  * the bounded public Ingredient projection.
  */
 import {
-  KitchenIngredientModel,
+  KitchenIngredientDefaults,
   type KitchenIngredient,
-} from '../../../models/ingredient.model.ts'
+} from '../../../utils/kitchen-ingredient.ts'
 import {
-  KitchenSupplierIngredientModel,
+  KitchenSupplierIngredientDefaults,
   type KitchenSupplierIngredient,
-} from '../../../models/supplier-ingredient.model.ts'
+} from '../../../utils/kitchen-supplier-ingredient.ts'
 import {
   deanosKitchenDemoIdentity,
   kitchenDemoCreated,
@@ -129,7 +129,7 @@ const kitchenIngredientWorld = (
   const definitions = selectIngredientLinks(ids)
   const kitchenIngredients: KitchenIngredient[] = definitions.map(
     (definition) => ({
-      ...KitchenIngredientModel,
+      ...KitchenIngredientDefaults,
       id: definition.ingredientId,
       ingredient_id: definition.ingredientId,
       created: kitchenDemoCreated(identity),
@@ -138,7 +138,7 @@ const kitchenIngredientWorld = (
   )
   const supplierIngredientLinks: KitchenSupplierIngredient[] = definitions.map(
     (definition) => ({
-      ...KitchenSupplierIngredientModel,
+      ...KitchenSupplierIngredientDefaults,
       id: `${definition.supplierId}:${definition.ingredientId}`,
       kitchen_id: identity.kitchenId,
       supplier_id: definition.supplierId,

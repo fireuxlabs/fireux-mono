@@ -14,7 +14,7 @@ import {
 } from '../../../models/job-engagement.model.ts'
 import type { JobApplicationResponse } from '../../../models/job-hiring.model.ts'
 import { JobStorage } from '../../../models/job.model.ts'
-import { ProfessionalStorage } from '../../../../models/profiles/Professional/Professional.model.ts'
+import { ProfessionalStorage } from '../../../../utils/profiles/Professional/professional.ts'
 import {
   nextApplicationStatus,
   sameFirestoreTimestamp,

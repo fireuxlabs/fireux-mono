@@ -4,7 +4,7 @@ import {
   ProductStorage,
   type Product,
   type ProductUpdateInput,
-} from '../../../models/product.model.ts'
+} from '../../../utils/product.ts'
 import { normalizeProductUpdate } from '../../../utils/normalize-product.ts'
 
 export function useProductUpdate() {

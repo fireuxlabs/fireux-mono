@@ -1,6 +1,6 @@
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
-import { BlogPostStorage } from '../../../../../models/blogPost.model'
+import { BlogPostStorage } from '../../../../../utils/blog-post'
 
 export type BlogPublishInput = {
   slug: string

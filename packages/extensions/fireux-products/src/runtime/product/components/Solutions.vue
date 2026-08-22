@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FirebaseProduct } from '../models/product.model.ts'
+import type { Product } from '../utils/product.ts'
 import { useProductCollection } from '../composables/firestore/fetch/useProductCollection'
 import { useProductInterface } from '../composables/useProductInterface'
 
@@ -56,7 +56,7 @@ const solutionItems = computed(() =>
     .map((productId) =>
       (products.value ?? []).find((product) => product.id === productId)
     )
-    .filter((product): product is FirebaseProduct => Boolean(product))
+    .filter((product): product is Product => Boolean(product))
     .map((product) => {
       const card = mapCard(product)
       return card ? { product, card } : null
@@ -65,13 +65,13 @@ const solutionItems = computed(() =>
       (
         item
       ): item is {
-        product: FirebaseProduct
+        product: Product
         card: NonNullable<ReturnType<typeof mapCard>>
       } => Boolean(item)
     )
 )
 
-const resolveSolutionRoute = (product: FirebaseProduct) => {
+const resolveSolutionRoute = (product: Product) => {
   const id = String(product.id || '').trim()
   if (SOLUTION_ROUTES[id]) return SOLUTION_ROUTES[id]
   return id ? `/products/${id}` : '/products'

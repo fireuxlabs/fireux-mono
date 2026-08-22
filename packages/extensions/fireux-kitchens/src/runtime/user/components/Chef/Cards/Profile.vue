@@ -119,7 +119,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ChefCard } from '../../../composables/chef/useChefInterface'
-import type { ChefProfile } from '../../../models/chef.model.ts'
+import type { ChefProfile } from '../../../utils/chef.ts'
 
 const props = withDefaults(
   defineProps<{

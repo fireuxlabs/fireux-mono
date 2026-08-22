@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: isolate shared customer recovery projections and request helpers.
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: reconstruct an amendable basket from the safe local receipt snapshot.
 import type { CustomerOrderSummary } from '../../user/models/customer/order.model.ts'
-import type { KitchenOrderStatus } from '../../kitchen/models/order.model.ts'
-import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
+import type { KitchenOrderStatus } from '../../kitchen/utils/order.ts'
+import type { KitchenOrderType } from '../../kitchen/utils/order.ts'
 import type { CreatedMenuOrder } from '../models/menu-ordering.model.ts'
 import type { CreatedMenuOrderReceiptLine } from '../models/menu-ordering.model.ts'
 import type { MenuOrderTrackingStatus } from '../composables/order/useMenuOrderTrackingSession'

@@ -10,7 +10,7 @@ import {
 import {
   IngredientDefaults,
   type Ingredient,
-} from '../models/ingredient.model.ts'
+} from '../utils/ingredient.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

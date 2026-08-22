@@ -122,7 +122,7 @@ import {
   type KitchenMiseStatus,
   type KitchenMiseTask,
   type KitchenMiseWorkflowStage,
-} from '../../../../models/mise.model.ts'
+} from '../../../../utils/mise.ts'
 import { useKitchenMiseTaskWorkspace } from '../../../../composables/workspace/operations/Mise/useKitchenMiseTaskWorkspace'
 import { useKitchenMiseUpdate } from '../../../../composables/workspace/operations/Mise/mutations/useKitchenMiseUpdate'
 import { kitchenMisePrepTaskUpdateTool } from '../../../../tools/mise'

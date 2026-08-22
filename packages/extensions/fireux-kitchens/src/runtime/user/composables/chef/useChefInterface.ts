@@ -14,7 +14,7 @@ import type {
   Chef,
   ChefDirectoryProfile,
   ChefProfile,
-} from '../../models/chef.model.ts'
+} from '../../utils/chef.ts'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

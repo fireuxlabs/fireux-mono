@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenTeamMember } from '../../../models/team.model.ts'
+import type { KitchenTeamMember } from '../../../utils/team.ts'
 
 const props = defineProps<{ member: KitchenTeamMember }>()
 const text = (value: unknown) => String(value ?? '').trim()

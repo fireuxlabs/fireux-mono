@@ -6,7 +6,7 @@ import type {
   ProfileDirectoryMapper,
 } from 'fireux-core/runtime/user/server/directory/profile-directory'
 import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
-import { CHEF_GALLERY_MAX_ITEMS } from '../../models/chef.model.ts'
+import { CHEF_GALLERY_MAX_ITEMS } from '../../utils/chef.ts'
 
 function text(value: unknown, max: number): string {
   return typeof value === 'string' ? value.trim().slice(0, max) : ''

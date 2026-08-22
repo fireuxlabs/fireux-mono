@@ -96,7 +96,7 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: connect address, timing, checkout, and lifecycle through shared Menu Order seams.
 // Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Delivery order delta.
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
-import type { MenuOrderTypeConfig } from '../../models/menu.model.ts'
+import type { MenuOrderTypeConfig } from '../../utils/menu.ts'
 import type { MenuManifestSection } from '../../models/menu-detail.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
 import {

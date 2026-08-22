@@ -2,15 +2,15 @@
 // Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project items for unresolved Menu or MenuSection detail routes.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { Dish } from '../../../../models/dish.model.ts'
+import type { Dish } from '../../../../utils/dish.ts'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
   type MenuItemAddOnOption,
   type MenuItemPriceOption,
-} from '../../../../../menu/models/menu-item.model.ts'
-import type { MenuSection } from '../../../../../menu/models/menu-section.model.ts'
+} from '../../../../../menu/utils/menu-item.ts'
+import type { MenuSection } from '../../../../../menu/utils/menu-section.ts'
 import { useKitchenWorkspaceDishes } from '../Dishes/useKitchenWorkspaceDishes'
 import { useKitchenWorkspaceMenu } from './useKitchenWorkspaceMenu'
 import { useDishUpdate } from '../../../firestore/dish/mutations/useDishUpdate'

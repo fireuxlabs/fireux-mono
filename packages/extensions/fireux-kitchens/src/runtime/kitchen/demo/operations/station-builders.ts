@@ -1,7 +1,7 @@
 import {
   KitchenStationDefaults,
   type KitchenStation,
-} from '../../models/station.model.ts'
+} from '../../utils/station.ts'
 import { kitchenDemoCreated, kitchenDemoUpdated } from '../core/fixtures'
 import type { KitchenDemoIdentity } from '../core/types'
 

@@ -4,7 +4,7 @@ import {
   normalizeRecipe,
   RecipeStorage,
   type Recipe,
-} from '../../../../models/recipe.model.ts'
+} from '../../../../utils/recipe.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import {
   findKitchenWorkspaceDemoScenario,

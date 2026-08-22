@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: carry dine-in party size through shared checkout and label settlement accurately.
-import type { MenuPaymentMethod } from '../models/menu.model.ts'
+import type { MenuPaymentMethod } from '../utils/menu.ts'
 import type {
   KitchenOrderPaymentMethod,
   KitchenOrderType,
-} from '../../kitchen/models/order.model.ts'
+} from '../../kitchen/utils/order.ts'
 
 export type MenuOrderPaymentSelection = Extract<
   KitchenOrderPaymentMethod,

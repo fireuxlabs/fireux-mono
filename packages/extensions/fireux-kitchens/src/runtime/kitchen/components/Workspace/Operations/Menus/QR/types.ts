@@ -1,4 +1,4 @@
-import type { MenuStatus } from '../../../../../../menu/models/menu.model.ts'
+import type { MenuStatus } from '../../../../../../menu/utils/menu.ts'
 
 export type MenuQrTarget = {
   id: string

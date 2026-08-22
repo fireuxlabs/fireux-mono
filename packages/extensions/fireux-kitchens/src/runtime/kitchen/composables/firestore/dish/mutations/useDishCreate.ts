@@ -13,7 +13,7 @@ import {
   normalizeDishItemKind,
   type Dish,
   type DishCreateInput,
-} from '../../../../models/dish.model.ts'
+} from '../../../../utils/dish.ts'
 import { resolveKitchenScopeCollectionPath } from '../../utils/paths/useKitchenChildCollection'
 import { useKitchenWorkspaceSelection } from '../../../workspace/core/useKitchenWorkspaceSelection'
 

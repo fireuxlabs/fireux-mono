@@ -44,7 +44,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { computed } from 'vue'
 import { useDriverSeo } from '../../user/composables/driver/useDriverSeo'
 import { useDriverInterface } from '../../user/composables/driver/useDriverInterface'
-import type { DriverProfilePayload } from '../../user/models/driver.model.ts'
+import type { DriverProfilePayload } from '../../user/utils/driver.ts'
 
 definePageMeta({
   visibility: { profiles: ['driver'] },

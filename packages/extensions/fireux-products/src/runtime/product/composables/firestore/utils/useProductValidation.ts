@@ -2,11 +2,11 @@ import { useRuntimeConfig } from '#imports'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   ProductStorage,
-  type FirebaseProduct,
-} from '../../../models/product.model.ts'
+  type Product,
+} from '../../../utils/product.ts'
 
 export function useProductValidation() {
-  function validateProduct(product: Partial<FirebaseProduct>) {
+  function validateProduct(product: Partial<Product>) {
     const errors: string[] = []
 
     if (!product.name?.trim()) {

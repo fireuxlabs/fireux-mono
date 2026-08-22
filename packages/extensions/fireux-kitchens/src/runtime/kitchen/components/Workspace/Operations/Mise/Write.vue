@@ -88,7 +88,7 @@ import {
   KITCHEN_MISE_STATUS_OPTIONS,
   normalizeKitchenMiseStatus,
   type KitchenMiseTask,
-} from '../../../../models/mise.model.ts'
+} from '../../../../utils/mise.ts'
 
 const { miseTasks, canUpdateMiseStatus, setStatus } = useKitchenMiseWorkspace()
 const tool = kitchenMisePrepStatusChangeTool.surfaces.human

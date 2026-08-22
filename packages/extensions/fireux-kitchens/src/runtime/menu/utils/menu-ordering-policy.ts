@@ -5,9 +5,9 @@ import type {
   MenuOrderFulfilmentPolicy,
   MenuOrderTypeConfig,
   MenuServiceHoursConfig,
-} from '../models/menu.model.ts'
-import { MenuOrderContactFields } from '../models/menu.model.ts'
-import type { KitchenOrderType } from '../../kitchen/models/order.model.ts'
+} from '../utils/menu.ts'
+import { MenuOrderContactFields } from '../utils/menu.ts'
+import type { KitchenOrderType } from '../../kitchen/utils/order.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 import { readMenuOrderWhatsAppNotificationPolicy } from './menu-order-whatsapp'
 

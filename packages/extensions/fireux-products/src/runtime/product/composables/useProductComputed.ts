@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Product } from '../models/product.model.ts'
+import type { Product } from '../utils/product.ts'
 
 export function useProductComputed(
   product?: Ref<Product | null | undefined>

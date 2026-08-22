@@ -7,7 +7,7 @@ import {
   financialMoneyFromDecimal,
   requireFinancialMoney,
 } from 'fireux-finance/runtime/utils/money'
-import type { KitchenOrderPricing } from '../../../models/order.model.ts'
+import type { KitchenOrderPricing } from '../../../utils/order.ts'
 
 function requireMinorUnitDigits(value: unknown): number {
   if (!Number.isSafeInteger(value) || Number(value) < 0 || Number(value) > 6) {

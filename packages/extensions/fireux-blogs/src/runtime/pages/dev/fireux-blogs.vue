@@ -66,8 +66,8 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
 import { useBlogCollection } from '../../composables/fireux/firestore/blog/fetch/useBlogCollection'
-import type { BlogPost } from '../../models/blogPost.model'
-import { BlogPost as BlogPostModelRuntime } from '../../models/blogPost.model'
+import type { BlogPost } from '../../utils/blog-post'
+import { BlogPostDefaults as BlogPostModelRuntime } from '../../utils/blog-post'
 
 definePageMeta({
   layout: 'dev',
@@ -124,7 +124,7 @@ const filteredBlogsDriftPayload = computed(() =>
 
 const blogsDriftCopyPayload = computed(() => ({
   modelPath:
-    'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
+    'packages/extensions/fireux-blogs/src/runtime/utils/blog-post.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
   totalBlogs: filteredBlogs.value.length,

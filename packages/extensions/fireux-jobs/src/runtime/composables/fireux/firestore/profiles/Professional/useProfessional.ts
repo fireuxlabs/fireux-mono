@@ -5,7 +5,7 @@ import { useUserFetch } from 'fireux-core/runtime/user/composables/firestore/fet
 import { computed } from 'vue'
 
 import { professionalConfig } from './config/professionalConfig'
-import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../utils/profiles/Professional/professional'
 
 import { useProfessionalComputed } from './utils/view/useProfessionalComputed'
 import { useProfessionalCreate } from './mutations/useProfessionalCreate'

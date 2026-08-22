@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-21 16:24 CEST — FireUX Finance pass: persist currency-aware minor-unit pricing with every new Order.
 import { FieldValue } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { KitchenOrderFulfilmentMatch } from '../../../kitchen/models/order.model.ts'
+import type { KitchenOrderFulfilmentMatch } from '../../../kitchen/utils/order.ts'
 import { menuRoutePath } from '../../../kitchen/utils/kitchen-menu-route.ts'
 import { normalizeMenuOrderWhatsAppPhone } from '../../utils/menu-order-whatsapp.ts'
 import type { MenuOrderCommand } from './order-command.ts'

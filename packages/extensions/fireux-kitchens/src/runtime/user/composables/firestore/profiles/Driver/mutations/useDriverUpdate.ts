@@ -9,7 +9,7 @@ import {
   DriverStorage,
   type DriverAppState,
   type Driver,
-} from '../../../../../models/driver.model.ts'
+} from '../../../../../utils/driver.ts'
 
 type UpdateOptions = { id?: string | null }
 

@@ -1,4 +1,4 @@
-import type { BlogPostCreateInput } from '../models/blogPost.model'
+import type { BlogPostCreateInput } from '../utils/blog-post'
 
 export type BlogEditorialFinding = {
   kind: 'blocker' | 'warning'

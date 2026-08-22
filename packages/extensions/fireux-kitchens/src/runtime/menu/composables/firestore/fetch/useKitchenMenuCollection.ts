@@ -4,7 +4,7 @@ import { computed, unref, type Ref } from 'vue'
 import {
   KitchenMenuStorage as MenuStorage,
   type KitchenMenu as Menu,
-} from '../../../models/kitchen-menu.model.ts'
+} from '../../../utils/kitchen-menu.ts'
 import { resolveKitchenChildCollectionPath } from '../../../../kitchen/composables/firestore/utils/paths/useKitchenChildCollection'
 
 type UseKitchenMenuCollectionOptions = {

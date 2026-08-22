@@ -1,7 +1,7 @@
 import {
   KitchenTeamMemberDefaults,
   type KitchenTeamMember,
-} from '../models/team.model.ts'
+} from '../utils/team.ts'
 import {
   deanosKitchenDemoIdentity,
   kitchenDemoCreated,

@@ -171,7 +171,7 @@
 import {
   resolveKitchenOrderIntakeStatus,
   type KitchenOrderInitialStatus,
-} from 'fireux-kitchens/runtime/kitchen/models/order.model'
+} from 'fireux-kitchens/runtime/kitchen/utils/order'
 import {
   intakeSteps,
   orderingSurfaces,

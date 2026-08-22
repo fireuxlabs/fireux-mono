@@ -5,7 +5,7 @@ import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/fir
 import {
   CustomerStorage,
   type Customer,
-} from '../../../../../models/customer.model.ts'
+} from '../../../../../utils/customer.ts'
 
 type CustomerPatch = Partial<Customer> & Record<string, unknown>
 

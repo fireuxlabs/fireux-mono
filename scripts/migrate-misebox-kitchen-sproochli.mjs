@@ -18,7 +18,7 @@ import { defineFirestoreMutationTarget } from '../packages/core/fireux-core/src/
 import {
   normalizeSproochliDefaultLanguage,
   readSproochliAttachmentConfig,
-} from '../packages/extensions/fireux-sproochli/src/runtime/attachment.ts'
+} from '../packages/extensions/fireux-sproochli/src/runtime/utils/attachment.ts'
 
 const ECOSYSTEM = 'misebox'
 const DATABASE_ID = 'misebox'

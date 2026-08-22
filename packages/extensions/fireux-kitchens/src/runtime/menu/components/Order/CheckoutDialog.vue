@@ -136,8 +136,8 @@ import { computed, ref, watch } from 'vue'
 import type {
   MenuOrderContactField,
   MenuPaymentMethod,
-} from '../../models/menu.model.ts'
-import type { KitchenOrderType } from '../../../kitchen/models/order.model.ts'
+} from '../../utils/menu.ts'
+import type { KitchenOrderType } from '../../../kitchen/utils/order.ts'
 import {
   menuOrderPaymentOptions,
   type MenuOrderCheckoutInput,

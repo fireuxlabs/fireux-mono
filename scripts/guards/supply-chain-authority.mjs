@@ -15,9 +15,25 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.model.ts'
   )
+  const ingredientRuntime = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/utils/ingredient.ts'
+  )
+  const ingredientEntity = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/ingredient/models/ingredient.entity.ts'
+  )
   const productModel = read(
     repoRoot,
     'packages/extensions/fireux-products/src/runtime/product/models/product.model.ts'
+  )
+  const productRuntime = read(
+    repoRoot,
+    'packages/extensions/fireux-products/src/runtime/product/utils/product.ts'
+  )
+  const productEntity = read(
+    repoRoot,
+    'packages/extensions/fireux-products/src/runtime/product/models/product.entity.ts'
   )
   const supplierItemModel = read(
     repoRoot,
@@ -28,10 +44,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-suppliers/src/runtime/supplier/server/operations/items/item.ts'
   )
 
-  assert.match(ingredientModel, /export const IngredientDefaults\b/)
-  assert.match(productModel, /export const ProductEntity\s*=\s*defineFireuxEntity/)
-  assert.match(productModel, /export const ProductDefaults\b/)
-  assert.match(productModel, /export type ProductRead\s*=\s*\{\s*product:/)
+  assert.match(ingredientRuntime, /export const IngredientDefaults\b/)
+  assert.match(productEntity, /export const ProductEntity\s*=\s*defineFireuxEntity/)
+  assert.match(productRuntime, /export const ProductDefaults\b/)
+  assert.match(productRuntime, /export type ProductRead\s*=\s*\{\s*product:/)
   assert.doesNotMatch(
     productModel,
     /source_ecosystem_id|owner_type|owner_id|default_price|track_stock|\bstock:|prices:\s*\[\]/

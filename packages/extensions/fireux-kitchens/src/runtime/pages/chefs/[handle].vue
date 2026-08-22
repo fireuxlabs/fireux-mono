@@ -44,7 +44,7 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { computed } from 'vue'
 import { useChefSeo } from '../../user/composables/chef/useChefSeo'
 import { useChefInterface } from '../../user/composables/chef/useChefInterface'
-import type { ChefProfilePayload } from '../../user/models/chef.model.ts'
+import type { ChefProfilePayload } from '../../user/utils/chef.ts'
 
 definePageMeta({
   visibility: { profiles: ['chef'] },

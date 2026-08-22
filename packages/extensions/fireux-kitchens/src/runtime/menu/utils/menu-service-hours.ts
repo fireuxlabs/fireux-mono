@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 16:24 CEST — Pre-order planning repair: make missing child schedules inherit through the canonical Kitchen → Menu → surface chain.
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: persist only valid custom Menu-hours deltas.
-import type { MenuServiceHoursConfig } from '../models/kitchen-menu.model.ts'
+import type { MenuServiceHoursConfig } from '../utils/kitchen-menu.ts'
 import type { WeekdayTimeWindowsConfig } from '../../models/shared/weekday-time.model.ts'
 import { readWeekdayTimeWindowsConfig } from '../../utils/weekday-time'
 

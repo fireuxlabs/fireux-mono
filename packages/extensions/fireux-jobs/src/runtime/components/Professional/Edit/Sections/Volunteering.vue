@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { VolunteeringItem } from '../../../../models/profiles/Professional/Professional.model';
+import type { VolunteeringItem } from '../../../../utils/profiles/Professional/professional';
 
 type ObjectArrayField = {
   key: string

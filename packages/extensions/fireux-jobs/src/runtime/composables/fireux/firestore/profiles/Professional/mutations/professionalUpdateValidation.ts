@@ -2,7 +2,7 @@ import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocume
 import {
   ProfessionalConstraints,
   type ExperienceItem,
-} from '../../../../../../models/profiles/Professional/Professional.model'
+} from '../../../../../../utils/profiles/Professional/professional'
 
 type DateSortFields = {
   ongoingKey?: string

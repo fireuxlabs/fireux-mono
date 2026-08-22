@@ -4,7 +4,7 @@ import type {
   BlogPostCreateInput,
   BlogPostUpdateInput,
   BlogVisibility,
-} from '../models/blogPost.model'
+} from '../utils/blog-post'
 
 const record = (value: unknown): Record<string, any> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
