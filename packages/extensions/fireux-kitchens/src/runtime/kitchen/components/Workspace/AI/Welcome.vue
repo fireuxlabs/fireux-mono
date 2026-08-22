@@ -45,6 +45,7 @@ import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
+import { isPurchasingAIHelloPrompt } from '../../../models/purchasing-ai'
 import CommandResult from './CommandResult.vue'
 import Composer from './Composer.vue'
 import Intro from './Intro.vue'
@@ -73,7 +74,7 @@ const props = withDefaults(
   }
 )
 
-const { appName } = useFireUXConfig()
+const { appId: configuredAppId, appName } = useFireUXConfig()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
   agentLabel: resolvedAgentLabel,
@@ -124,8 +125,11 @@ async function sendPrompt() {
 }
 
 async function runPrompt(text: string) {
-  const { appId, kitchenId } = selectedLiveScope.value
-  if (!appId || !kitchenId) {
+  const selected = selectedLiveScope.value
+  const purchasingHello = isPurchasingAIHelloPrompt(text)
+  const appId = selected.appId || configuredAppId
+  const kitchenId = selected.kitchenId
+  if (!appId || (!kitchenId && !purchasingHello)) {
     showResult(
       kitchenWorkspace.runtime.isDemo.value
         ? 'This Demo Kitchen is read-only. Select a Live Kitchen before running a command.'
@@ -136,8 +140,11 @@ async function runPrompt(text: string) {
 
   submitting.value = true
   try {
-    const user = await useRequireUser()
-    const token = await user.getIdToken()
+    const headers: Record<string, string> = {}
+    if (!purchasingHello) {
+      const user = await useRequireUser()
+      headers.Authorization = `Bearer ${await user.getIdToken()}`
+    }
     const response = await $fetch<{
       ok: true
       answer: string
@@ -151,10 +158,10 @@ async function runPrompt(text: string) {
       resultAction?: KitchenAIResultAction
     }>('/api/workspace/kitchen/agent', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers,
       body: {
         appId,
-        kitchenId,
+        ...(kitchenId ? { kitchenId } : {}),
         prompt: text,
         ...(resolvedOperation.value
           ? { operation: resolvedOperation.value }

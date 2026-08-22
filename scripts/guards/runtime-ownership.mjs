@@ -174,7 +174,7 @@ const RETIRED_ENTITY_IMPORTS = new Map([
     ['server/kitchen/operations/sales/gross-sales-report.ts'],
   ],
   [
-    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/index.ts',
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/run.ts',
     ['fireux-kitchens/runtime/server/kitchen/'],
   ],
   [

@@ -527,9 +527,13 @@ Before each task:
   composes the real Core Workspace layout and page shell, while `fireux-kitchens`
   owns the inner `WorkspaceKitchenAIWelcome` domain surface. Anonymous visitors
   receive no selected-Kitchen reads or commands; the existing Kitchen selector
-  mounts only for authenticated Users. Prompts and menu-file selection remain
-  browser-local prototype interactions with no upload, provider execution, or
-  persistence, and account creation begins only at the explicit
+  mounts only for authenticated Users. The one unscoped development handshake
+  routes a PurchasingAI-directed prompt through KitchenAI, receives the literal
+  child greeting, and presents `PurchasingAI says hello.` It reads no data,
+  invokes no provider or Tool, and writes nothing. Every other prompt still
+  requires an authorized selected Live Kitchen. Menu-file selection remains a
+  browser-local prototype interaction with no upload or persistence, and
+  account creation begins only at the explicit
   `Save my Kitchen` doorway. The previous product-led landing remains intact at
   `/product` as the comparison and explanatory surface. The welcome must never
   imply that a selected file was uploaded or analysed before the corresponding
