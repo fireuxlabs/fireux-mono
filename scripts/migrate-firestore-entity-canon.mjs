@@ -47,11 +47,20 @@ const phase = String(args.phase || 'copy').trim()
 const apply = args.apply === true
 const summary = args.summary === true
 const config = CONFIG[ecosystem]
+const family = String(args.family || '').trim()
+const repair = String(args.repair || '').trim()
 
 if (args.help) {
   console.log(`
 Plan one ecosystem:
   node scripts/migrate-firestore-entity-canon.mjs --ecosystem misebox --summary
+
+Plan only FireUX Products:
+  node scripts/migrate-firestore-entity-canon.mjs --ecosystem fireux --family products --summary
+
+Plan only the bounded ProductPrice timestamp representation repair:
+  node scripts/migrate-firestore-entity-canon.mjs --ecosystem fireux \
+    --family products --repair product-price-timestamps --summary
 
 Capture a protected, read-only cutover attestation:
   node scripts/migrate-firestore-entity-canon.mjs --ecosystem misebox \
@@ -77,6 +86,18 @@ if (!config) {
   throw new Error(
     `Choose --ecosystem from: ${Object.keys(CONFIG).sort().join(', ')}.`
   )
+}
+if (family && family !== 'products') {
+  throw new Error('--family currently supports only products.')
+}
+if (family === 'products' && config.products !== true) {
+  throw new Error(`The ${ecosystem} migration does not own Product records.`)
+}
+if (repair && repair !== 'product-price-timestamps') {
+  throw new Error('--repair currently supports only product-price-timestamps.')
+}
+if (repair && (family !== 'products' || ecosystem !== 'fireux')) {
+  throw new Error('ProductPrice timestamp repair requires FireUX --family products.')
 }
 if (phase !== 'copy' && phase !== 'retire') {
   throw new Error('--phase must be copy or retire.')
@@ -379,6 +400,103 @@ function canonicalProductPrice(raw, priceId, productId, isDefault) {
   }
 }
 
+function snapshotTimestamp(snapshot, field) {
+  const value = snapshot[field]
+  return value && typeof value.toDate === 'function' ? value : null
+}
+
+function canonicalProductPriceStamp(snapshot, field) {
+  const source = snapshot.data() || {}
+  const stamp = record(source[field])
+  const allowed =
+    field === 'created' ? new Set(['at', 'by', 'app_id']) : new Set(['at', 'by'])
+  const unknown = Object.keys(stamp).filter((key) => !allowed.has(key))
+  if (unknown.length) {
+    return {
+      blocker: `Canonical ProductPrice ${field} stamp contains unsupported fields: ${unknown.sort().join(', ')}.`,
+    }
+  }
+  if (Object.hasOwn(stamp, 'at')) {
+    if (typeof stamp.at?.toDate !== 'function') {
+      return {
+        blocker: `Canonical ProductPrice ${field}.at is not a Firestore timestamp.`,
+      }
+    }
+    return { value: stamp }
+  }
+  const fallback = snapshotTimestamp(
+    snapshot,
+    field === 'created' ? 'createTime' : 'updateTime'
+  )
+  return fallback
+    ? { value: { ...stamp, at: fallback } }
+    : {
+        blocker: `Canonical ProductPrice ${field} snapshot metadata is unavailable.`,
+      }
+}
+
+function nativeTimestampFromTag(value) {
+  const source = record(value)
+  const keys = Object.keys(source)
+  if (keys.length !== 1 || keys[0] !== '__timestamp') return null
+  const date = typeof source.__timestamp === 'string'
+    ? new Date(source.__timestamp)
+    : null
+  if (
+    !date ||
+    Number.isNaN(date.valueOf()) ||
+    date.toISOString() !== source.__timestamp
+  ) {
+    return null
+  }
+  return Timestamp.fromDate(date)
+}
+
+async function planProductPriceTimestampRepair() {
+  const roots = await db.collection('products').get()
+  for (const root of roots.docs.filter((entry) => !entry.id.startsWith('prod_'))) {
+    const prices = await root.ref.collection('prices').get()
+    for (const price of prices.docs) {
+      const source = price.data() || {}
+      const created = record(source.created)
+      const updated = record(source.updated)
+      const createdAt = nativeTimestampFromTag(created.at)
+      const updatedAt = nativeTimestampFromTag(updated.at)
+      if (!createdAt && !updatedAt) {
+        if (
+          typeof created.at?.toDate === 'function' &&
+          typeof updated.at?.toDate === 'function'
+        ) {
+          verified.push({ path: price.ref.path, sourcePath: price.ref.path })
+          continue
+        }
+        blockers.push({
+          path: price.ref.path,
+          sourcePath: price.ref.path,
+          reason: 'ProductPrice stamps are neither native timestamps nor exact migration tags.',
+        })
+        continue
+      }
+      if (!createdAt || !updatedAt) {
+        blockers.push({
+          path: price.ref.path,
+          sourcePath: price.ref.path,
+          reason: 'ProductPrice timestamp repair requires both exact migration tags.',
+        })
+        continue
+      }
+      updates.push({
+        path: price.ref.path,
+        sourcePath: price.ref.path,
+        patch: stable({
+          created: { ...created, at: createdAt },
+          updated: { ...updated, at: updatedAt },
+        }),
+      })
+    }
+  }
+}
+
 async function planProducts() {
   const appRef = db.doc('apps/fireux-app')
   const nested = await appRef.collection('products').get()
@@ -409,16 +527,39 @@ async function planProducts() {
       continue
     }
     const prices = await provider.ref.collection('prices').get()
-    const canonicalPrices = prices.docs.map((document, index) => ({
-      id: document.id,
-      data: canonicalProductPrice(
-        document.data(),
-        document.id,
-        source.id,
-        index === 0
-      ),
-      sourcePath: document.ref.path,
-    }))
+    const canonicalPrices = []
+    for (const [index, document] of prices.docs.entries()) {
+      const targetPath = `products/${source.id}/prices/${document.id}`
+      const targetPrice = await db.doc(targetPath).get()
+      const created = targetPrice.exists
+        ? canonicalProductPriceStamp(targetPrice, 'created')
+        : { blocker: 'Canonical ProductPrice document is missing.' }
+      const updated = targetPrice.exists
+        ? canonicalProductPriceStamp(targetPrice, 'updated')
+        : { blocker: 'Canonical ProductPrice document is missing.' }
+      if (!created.value || !updated.value) {
+        blockers.push({
+          path: targetPath,
+          sourcePath: document.ref.path,
+          reason: created.blocker || updated.blocker,
+        })
+        continue
+      }
+      canonicalPrices.push({
+        id: document.id,
+        data: {
+          ...canonicalProductPrice(
+            document.data(),
+            document.id,
+            source.id,
+            index === 0
+          ),
+          created: created.value,
+          updated: updated.value,
+        },
+        sourcePath: document.ref.path,
+      })
+    }
     const sourceData = source.data() || {}
     const metadata = record(sourceData.metadata)
     const allowedMetadata = new Set([
@@ -451,6 +592,11 @@ async function planProducts() {
       })
       continue
     }
+    const categories = [
+      ...strings(sourceData.categories),
+      ...strings(metadata.categories),
+      text(metadata.category),
+    ].filter(Boolean)
     const product = {
       source_app_id: 'fireux-app',
       visibility: 'public',
@@ -465,7 +611,7 @@ async function planProducts() {
       main_image: text(sourceData.main_image),
       images: Array.isArray(sourceData.images) ? sourceData.images : [],
       features: Array.isArray(sourceData.features) ? sourceData.features : [],
-      categories: strings(sourceData.categories || metadata.categories),
+      categories: [...new Set(categories)],
       brands: strings(sourceData.brands || metadata.brands),
       source_url: text(sourceData.source_url || metadata.source_url),
       requires_template:
@@ -512,7 +658,7 @@ async function planProducts() {
     })
     for (const price of canonicalPrices) {
       const targetPath = `products/${source.id}/prices/${price.id}`
-      await planCreate(targetPath, price.data, price.sourcePath)
+      await planPatch(targetPath, price.data, price.sourcePath)
       retireDeletes.push({ path: price.sourcePath, targetPath })
     }
     retireDeletes.push({
@@ -746,17 +892,23 @@ async function planIgnition(appRef) {
   }
 }
 
-const apps = await db.collection('apps').get()
-for (const appRef of apps.docs) {
-  for (const family of config.workspace) {
-    await planWorkspaceFamily(appRef.ref, family)
+if (!family && !repair) {
+  const apps = await db.collection('apps').get()
+  for (const appRef of apps.docs) {
+    for (const workspaceFamily of config.workspace) {
+      await planWorkspaceFamily(appRef.ref, workspaceFamily)
+    }
+    if (config.marketplace) await planMarketplace(appRef.ref)
+    if (config.ignition) await planIgnition(appRef.ref)
   }
-  if (config.marketplace) await planMarketplace(appRef.ref)
-  if (config.ignition) await planIgnition(appRef.ref)
 }
-if (config.products) await planProducts()
-if (config.profiles) await planProfiles()
-await resolvePlannedCreates()
+if (repair === 'product-price-timestamps') {
+  await planProductPriceTimestampRepair()
+} else {
+  if (config.products && (!family || family === 'products')) await planProducts()
+  if (config.profiles && !family) await planProfiles()
+  await resolvePlannedCreates()
+}
 
 retireDeletes.sort((left, right) => {
   const depth = right.path.split('/').length - left.path.split('/').length
@@ -769,6 +921,8 @@ retireUpdates.sort((left, right) => left.path.localeCompare(right.path))
 const planBase = {
   format: 'fireux-firestore-entity-canon-plan/1',
   ecosystem,
+  family: family || 'all',
+  repair: repair || 'none',
   projectId: target.projectId || auth.projectId,
   databaseId: config.databaseId,
   phase,
@@ -805,6 +959,8 @@ if (!apply) {
         format: 'fireux-firestore-entity-canon-evidence/1',
         capturedAt: new Date().toISOString(),
         ecosystem,
+        family: family || 'all',
+        repair: repair || 'none',
         projectId: target.projectId || auth.projectId,
         databaseId: config.databaseId,
         phase,
@@ -826,6 +982,8 @@ if (!apply) {
         ? {
             mode: 'dry-run',
             ecosystem,
+            family: family || 'all',
+            repair: repair || 'none',
             phase,
             planSha256,
             creates: creates.length,

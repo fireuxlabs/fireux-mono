@@ -163,7 +163,7 @@ const surfaces = [
     ],
     icon: 'i-lucide-panels-top-left',
     action: 'Open Kitchen Workspace',
-    to: '/workspace/kitchen',
+    to: '/',
     preview: 'workspace',
   },
 ] as const satisfies readonly OrderingSurface[]

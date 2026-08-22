@@ -8,6 +8,8 @@ import assert from 'node:assert/strict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { isGeneratedArtifactPath } from './_lib/filesystem-policy.mjs'
+import { Timestamp } from 'firebase-admin/firestore'
+import { materializeMcpSkillValue } from '../_lib/firestore-mutations/mcp-skill-common.mjs'
 
 const SOURCE_ROOTS = ['packages', 'projects', 'scripts', 'tools']
 const SOURCE_EXTENSIONS = new Set(['.ts', '.js', '.mjs', '.vue'])
@@ -83,6 +85,67 @@ function fingerprint(files) {
 }
 
 export function run({ repoRoot }) {
+  const taggedIso = '2026-08-20T19:35:20.587Z'
+  const ordinary = {
+    label: 'preserved',
+    nested: [{ at: { __timestamp: taggedIso }, count: 2 }],
+  }
+  const materialized = materializeMcpSkillValue(ordinary)
+  assert.equal(materialized.label, ordinary.label)
+  assert.equal(materialized.nested[0].count, 2)
+  assert.ok(materialized.nested[0].at instanceof Timestamp)
+  assert.equal(materialized.nested[0].at.toDate().toISOString(), taggedIso)
+  assert.deepEqual(ordinary.nested[0].at, { __timestamp: taggedIso })
+  assert.deepEqual(
+    materializeMcpSkillValue({ __timestamp: taggedIso, note: 'ordinary' }),
+    { __timestamp: taggedIso, note: 'ordinary' },
+    'Objects with additional fields must not be treated as timestamp tags.'
+  )
+  const entityCanonMigration = readFileSync(
+    path.join(repoRoot, 'scripts/migrate-firestore-entity-canon.mjs'),
+    'utf8'
+  )
+  assert.match(entityCanonMigration, /family\s*=\s*String\(args\.family/)
+  assert.match(
+    entityCanonMigration,
+    /family\s*&&\s*family\s*!==\s*'products'/,
+    'Entity canon migration must reject unimplemented family selectors.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /repair === 'product-price-timestamps'[\s\S]*planProductPriceTimestampRepair/,
+    'ProductPrice timestamp repair must use its bounded Product-only planner.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /if\s*\(!family\s*&&\s*!repair\)\s*\{[\s\S]*?db\.collection\('apps'\)/,
+    'Product-only migration must exclude App-owned non-Product planning.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /Object\.hasOwn\(stamp,\s*'at'\)[\s\S]*return \{ value: stamp \}[\s\S]*snapshotTimestamp/,
+    'Stored canonical ProductPrice stamps must win over snapshot metadata fallbacks.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /field === 'created' \? 'createTime' : 'updateTime'/,
+    'Missing ProductPrice stamps must fall back to the corresponding Firestore snapshot metadata.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /Canonical ProductPrice \$\{field\}\.at is not a Firestore timestamp/,
+    'Existing ProductPrice stamps must be validated rather than silently replaced.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /text\(metadata\.category\)[\s\S]*categories:\s*\[\.\.\.new Set\(categories\)\]/,
+    'Product migration must preserve and deduplicate the authored singular category.'
+  )
+  assert.match(
+    entityCanonMigration,
+    /await planPatch\(targetPath,\s*price\.data,\s*price\.sourcePath\)/,
+    'Existing canonical ProductPrice children must receive their missing stamps through a patch.'
+  )
   assert.equal(
     existsSync(
       path.join(
@@ -117,16 +180,7 @@ export function run({ repoRoot }) {
     /ecosystemMeta:[\s\S]*lane:\s*'mcp-skill'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'ecosystem'/,
     'The default Ecosystem metadata target must remain MCP/Skill-owned at (default)/ecosystem.'
   )
-  assert.match(
-    targetsSource,
-    /appMeta:[\s\S]*lane:\s*'mcp-skill'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'apps'/,
-    'The default App metadata target must remain MCP/Skill-owned at (default)/apps.'
-  )
-  assert.match(
-    targetsSource,
-    /runtimeAppMeta:[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'apps'/,
-    'The authenticated runtime App writer must maintain its local AppMeta projection through the Server lane.'
-  )
+  assert.doesNotMatch(targetsSource, /appMeta|runtimeAppMeta|app-directory/)
   assert.match(
     targetsSource,
     /fireuxProjects:[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'named', databaseId:\s*'fireux' \}[\s\S]*collectionPath:\s*'projects'/,
@@ -148,7 +202,7 @@ export function run({ repoRoot }) {
   assert.doesNotMatch(
     appUpdateSource,
     /useFirestoreUpdate|updateDocument/,
-    'Canonical App edits must use the trusted writer that also maintains AppMeta.'
+    'Canonical App edits must use the trusted Server writer.'
   )
   assert.match(
     serverTargetsSource,
@@ -455,30 +509,20 @@ export function run({ repoRoot }) {
     'utf8'
   )
   assert.match(marketplaceAdminWriter, /serverAppUsersTarget/)
-  const projectMutationsSource = [
+  for (const retiredProjectMutation of [
     'projects/fireux/fireux-app/server/project/index/create.ts',
     'projects/fireux/fireux-app/server/project/identity/update.ts',
     'projects/fireux/fireux-app/server/project/identity/delete.ts',
-  ]
-    .map((file) => readFileSync(path.join(repoRoot, file), 'utf8'))
-    .join('\n')
-  assert.match(projectMutationsSource, /export async function createProject/)
-  assert.match(projectMutationsSource, /export async function updateProject/)
-  assert.match(projectMutationsSource, /export async function deleteProject/)
-  assert.match(
-    projectMutationsSource,
-    /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/
-  )
-  assert.match(projectMutationsSource, /runGuardedServerTransaction/)
-  assert.match(
-    projectMutationsSource,
-    /FIRESTORE_MUTATION_TARGETS\.fireuxApps[\s\S]*FIRESTORE_MUTATION_TARGETS\.fireuxEcosystems/
-  )
-  assert.doesNotMatch(
-    projectMutationsSource,
-    /FIRESTORE_MUTATION_TARGETS\.(?:projectMeta|ecosystemMeta|appMeta)/,
-    'Project Workspace mutations must not write default metadata projections.'
-  )
+    'projects/fireux/fireux-app/server/api/internal/control/projects.post.ts',
+    'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId].patch.ts',
+    'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId].delete.ts',
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, retiredProjectMutation)),
+      false,
+      `Project mutation without ProjectMeta synchronization must not return: ${retiredProjectMutation}`
+    )
+  }
   assert.equal(
     existsSync(
       path.join(

@@ -56,9 +56,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-menus',
     label: 'Menus',
+    group: 'Food & Drink',
     icon: 'i-lucide-book-open',
     position: 'top',
-    order: 1,
+    order: 10,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

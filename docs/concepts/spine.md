@@ -16,6 +16,9 @@ shape is visible.
 The Place/Kitchen media ownership and single Place identity-colour spine is
 mapped in `docs/concepts/place-kitchen-media.md`.
 
+The hard-cutover evidence required before an Entity migration is complete is
+mapped in [Entity canonical migration](entity-canonical-migration.md).
+
 ## Family growth lifecycle
 
 FireUX grows a family through controlled named-sibling evolution:

@@ -1,10 +1,13 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { readProjectDirectoryPage } from '../../project/index/directory'
+import type { CollectionResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import { readProjects } from '../../project/index/directory'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'public, max-age=60, s-maxage=300',
   })
-  return readProjectDirectoryPage()
+  const items = await readProjects()
+  return { ok: true, count: items.length, generatedAt: new Date().toISOString(), items } satisfies CollectionResponse<Project>
 })

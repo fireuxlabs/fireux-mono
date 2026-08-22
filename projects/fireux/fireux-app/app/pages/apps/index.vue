@@ -2,14 +2,14 @@
   <DirectorySurface
     eyebrow="Discover"
     title="Apps"
-    description="Browse published Apps across the FireUX platform."
+    description="Browse every App across the FireUX platform."
     icon="i-lucide-app-window"
     secondary-label="Your Apps"
   >
     <AppCollectionManager
       :controller="appsController"
       title="Platform Apps"
-      description="Published App projections from their owning Projects and Ecosystems."
+      description="All Apps from their canonical ecosystem collections."
     />
 
     <template #secondary>
@@ -24,10 +24,10 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
-const appsController = usePlatformAppDirectory()
+const appsController = useApps('/api/platform/apps')
 
 definePageMeta({
   tag: 'apps',
@@ -41,7 +41,7 @@ definePageMeta({
     layouts: ['default', 'landing'],
   },
   title: 'Apps',
-  description: 'Browse published FireUX apps.',
+  description: 'Browse all FireUX Apps.',
   layout: 'default',
   name: 'FireuxAppsIndexPage',
 })
@@ -49,7 +49,7 @@ definePageMeta({
 useSeo({
   title: 'FireUX Apps',
   description:
-    'Browse published apps across the FireUX platform, including direct Project Apps and Ecosystem Apps.',
+    'Browse Apps across the FireUX platform, including direct Project Apps and Ecosystem Apps.',
   path: '/apps',
   image: '/img/app/cover.png',
   jsonLdBuilder: (context) =>

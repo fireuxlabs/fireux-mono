@@ -79,7 +79,7 @@ import { ref, watch } from 'vue'
 import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
 const miseboxHomeUrl = 'https://misebox.app'
-const tenantWorkspaceTo = `/auth?redirect=${encodeURIComponent('/workspace/kitchen')}`
+const tenantWorkspaceTo = `/auth?redirect=${encodeURIComponent('/')}`
 const panelId = 'misebox-tenant-footer-panel'
 const titleId = 'misebox-tenant-footer-title'
 const triggerId = 'misebox-tenant-footer-trigger'

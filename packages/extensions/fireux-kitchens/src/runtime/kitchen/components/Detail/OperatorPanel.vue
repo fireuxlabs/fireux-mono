@@ -93,11 +93,7 @@ const subjectUserPill = computed(() =>
   hasWorkspaceAccess.value ? pill(currentUser.value) : null
 )
 const operatorAppName = computed(() =>
-  String(
-    (operatorApp.value as any)?.app_short_name ||
-      (operatorApp.value as any)?.app_name ||
-      ''
-  ).trim()
+  String(operatorApp.value?.short_name || operatorApp.value?.name || '').trim()
 )
 const panelDescription = computed(() =>
   hasWorkspaceAccess.value && isTenantWorkspaceHandoff.value
@@ -124,7 +120,7 @@ const canActivateWorkspace = computed(() =>
 const showPanel = computed(() =>
   Boolean(hasWorkspaceAccess.value || canActivateWorkspace.value)
 )
-const workspacePath = '/workspace/kitchen'
+const workspacePath = '/'
 const workspaceCreatePath = `${workspacePath}/create`
 const workspaceCreateTo = computed(() =>
   kitchenId.value

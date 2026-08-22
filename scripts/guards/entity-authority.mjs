@@ -180,13 +180,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
     assert.doesNotMatch(
       source,
-      /defineFireuxEntity|\b\w+Storage\b|\b\w+Defaults\b|\b\w+(?:Create|Update)Input\b|FireuxStamped|FirebaseTimestamp|WidenLiteral/,
+      /defineFireuxEntity|\b\w+Storage\b|\b\w+Defaults\b|\b\w+(?:Create|Update)Input\b|FireuxStamped|WidenLiteral/,
       `${name} canonical model must contain data fields, not infrastructure.`
     )
   }
 
   assert.match(appModel, /project_id:\s*string/)
   assert.match(appModel, /ecosystem_id\?:\s*string/)
+  assert.match(appModel, /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string/)
   for (const field of [
     'tagline',
     'description',
@@ -197,7 +198,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ]) {
     assert.match(
       appModel,
-      new RegExp(`\\b${field}:`),
+      new RegExp(`\\b${field}\\?:`),
       `App must contain its ${field} public identity field.`
     )
   }
@@ -208,9 +209,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
 
   assert.doesNotMatch(projectModel, /^  slug:/m)
+  assert.match(
+    projectModel,
+    /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp/
+  )
   assert.doesNotMatch(
     projectModel,
     /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|workspace_endpoint_url|project_type|primary_project):/m
+  )
+  const projectReader = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/utils/readProject.ts'
+  )
+  assert.match(projectReader, /return \{ \.\.\.raw, id \} as Project/)
+  assert.doesNotMatch(
+    projectReader,
+    /PROJECT_FIELDS\s*=\s*new Set\(\[[\s\S]*?['"]id['"]/,
+    'Stored canonical Project must take id from its Firestore path.'
   )
 
   assert.doesNotMatch(
@@ -259,7 +274,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appUserModel, /role:\s*AppUserRole/)
   assert.doesNotMatch(
     appUserModel,
-    /defineFireuxEntity|Storage|Defaults|FireuxStamped|FirebaseTimestamp/
+    /defineFireuxEntity|Storage|Defaults|FireuxStamped/
+  )
+  assert.match(
+    appUserModel,
+    /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp/
   )
 
   const projectTeamMemberModel = read(
@@ -492,21 +511,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Professional experience must assign place_id only after Place exists.'
   )
 
-  assert.deepEqual(typeFields(directoryModel, 'AppDirectoryEntry'), [
-    'description',
-    'detail_url',
-    'ecosystem_id',
-    'id',
-    'media',
-    'name',
-    'project_id',
-    'role',
-    'short_bio',
-    'short_name',
-    'slug',
-    'status',
-    'tagline',
-  ])
+  assert.doesNotMatch(directoryModel, /AppDirectoryEntry/)
   assert.deepEqual(typeFields(directoryModel, 'EcosystemDirectoryEntry'), [
     'app_count',
     'description',
@@ -541,7 +546,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(ecosystemFetch, /\/api\/ecosystems\//)
   assert.doesNotMatch(ecosystemFetch, /\buseFirestore\s*\(|\bfirestoreFetch\b/)
-  assert.match(appManager, /controller:\s*AppDirectoryController/)
+  assert.match(appManager, /controller:\s*AppCollectionController/)
   assert.doesNotMatch(appManager, /useAppCollection/)
   assert.match(ecosystemManager, /controller:\s*EcosystemDirectoryController/)
   assert.doesNotMatch(ecosystemManager, /useEcosystemCollection/)
@@ -588,8 +593,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/ecosystems/index.vue'
   )
-  assert.match(coreAppsPage, /useEcosystemAppCollection/)
-  assert.match(fireuxAppsPage, /usePlatformAppDirectory/)
+  assert.match(coreAppsPage, /useApps\(\)/)
+  assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(fireuxEcosystemsPage, /usePublishedPlatformEcosystemDirectory/)
 
   const ownerAppDetailApi = read(
@@ -602,10 +607,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(ownerAppDetailApi, /belongsToOwner/)
   assert.match(ownerAppDetailApi, /ecosystem_id/)
-  assert.match(platformAppDetailPage, /PlatformDirectoryResponse/)
+  assert.match(platformAppDetailPage, /DetailResponse<App>/)
+  assert.match(platformAppDetailPage, /\/api\/platform\/apps\//)
   assert.match(platformAppDetailPage, /app\.project_id/)
   assert.match(platformAppDetailPage, /ecosystem_id/)
   assert.match(platformAppDetailPage, /DevDebugPanel/)
+  assert.doesNotMatch(platformAppDetailPage, /AppDirectoryEntry|PlatformDirectoryResponse/)
   assert.doesNotMatch(ownerAppDetailApi, /PublicApp|\/api\/public\/apps/)
 
   const appInitialization = read(
@@ -619,7 +626,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(appInitialization, /runGuardedServerTransaction/)
   assert.match(appInitialization, /FIRESTORE_MUTATION_TARGETS\.runtimeApps/)
   assert.match(appInitialization, /serverAppUsersTarget/)
-  assert.match(appInitialization, /ensureRuntimeAppMeta/)
+  assert.doesNotMatch(appInitialization, /AppMeta|projection/)
   assert.match(appInitializationEndpoint, /requireDevDeveloper\(event\)/)
   const appInitializationState = read(
     repoRoot,
@@ -642,7 +649,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(appSettingsEndpoint, /requireFirebaseBearerUser/)
   assert.match(appSettingsEndpoint, /App admin access is required/)
-  assert.match(appSettingsEndpoint, /ensureRuntimeAppMeta/)
+  assert.doesNotMatch(
+    appSettingsEndpoint,
+    /AppMeta|projection|wordmark_url:\s*FieldValue\.delete|avatar_url:\s*FieldValue\.delete|thumbnail_url:\s*FieldValue\.delete|logo_url:\s*FieldValue\.delete|cover_url:\s*FieldValue\.delete/,
+    'Canonical App settings must not retain a legacy-field cleanup adapter.'
+  )
+  const appContextReader = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
+  )
+  assert.doesNotMatch(
+    appContextReader,
+    /coalescing legacy|value\.app_id/,
+    'Canonical App context must reject invalid memberships rather than coalesce a legacy shape.'
+  )
   const appUserJoinedPublisher = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/app/server/events/publishAppUserJoinedEvent.ts'
@@ -750,10 +770,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/projects/[id].vue'
   )
-  assert.match(projectDirectoryDetail, /useProjectDirectory/)
+  assert.match(projectDirectoryDetail, /DetailResponse<Project>/)
+  assert.match(projectDirectoryDetail, /\/api\/projects\//)
   assert.match(projectDirectoryDetail, /app\.project_id/)
   assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
-  assert.match(projectDirectory, /useProjectDirectory/)
+  assert.match(projectDirectory, /useProjects\(\)/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
   const projectDirectoryApi = read(
     repoRoot,
@@ -763,16 +784,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/server/project/index/directory.ts'
   )
-  const projectDirectoryModel = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/project/models/project-directory.model.ts'
-  )
-  assert.match(projectDirectoryApi, /readProjectDirectoryPage/)
+  assert.match(projectDirectoryApi, /readProjects/)
+  assert.match(projectDirectoryApi, /CollectionResponse<Project>/)
   assert.doesNotMatch(projectDirectoryApi, /ProjectStorage|\.collection\(/)
   assert.match(projectDirectoryReader, /collection\(['"]projects['"]\)/)
-  assert.match(projectDirectoryReader, /status !== 'active'/)
-  assert.match(projectDirectoryModel, /export type ProjectDirectoryEntry/)
-  assert.match(projectDirectoryModel, /export type ProjectDirectoryPage/)
+  assert.match(projectDirectoryReader, /readProjectDocument/)
+  assert.match(projectDirectoryReader, /Invalid canonical Project/)
+  assert.doesNotMatch(
+    projectDirectoryReader,
+    /filter\(\(project\).*Boolean\(project\)/,
+    'Project collection must fail on an invalid canonical record rather than silently omit it.'
+  )
+  assert.match(projectDirectoryReader, /project\.status === 'active'/)
+  assert.equal(
+    existsSync(path.join(repoRoot, 'packages/core/fireux-core/src/runtime/project/models/project-directory.model.ts')),
+    false,
+    'ProjectDirectoryEntry must not duplicate canonical Project.'
+  )
   assert.doesNotMatch(
     projectDirectoryReader,
     /operator_ids|team_ids|private\/targets|requireFirebaseBearerUser/
@@ -842,7 +870,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectCollection, /\/api\/internal\/control\/projects/)
   assert.match(projectDetail, /useProjectCollection/)
   assert.doesNotMatch(projectDetail, /useFirestoreRead|firestoreFetch/)
-  assert.match(projectInterface, /Project has no public detail route/)
+  assert.match(projectInterface, /\/projects\/\$\{encodeURIComponent\(id\)\}/)
   for (const retiredProjectComposable of [
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/project/useProject.ts',
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch.ts',

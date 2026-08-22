@@ -44,9 +44,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-ingredients',
     label: 'Ingredients',
+    group: 'Food & Drink',
     icon: 'i-lucide-carrot',
     position: 'top',
-    order: 2,
+    order: 14,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

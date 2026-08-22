@@ -1,4 +1,4 @@
-import type { AppSocialLinks } from '../../../../models/app-directory.model.ts'
+import type { App } from '../../../../models/app.model.ts'
 
 /** Validates app description field */
 export function validateAppDescription(value: string): string | null {
@@ -24,7 +24,7 @@ export function validateUrl(url: string, platform: string): string | null {
 
 /** Validates social links object */
 export function validateSocialLinks(
-  socialLinks: AppSocialLinks
+  socialLinks: App['social_links']
 ): string | null {
   if (!socialLinks || typeof socialLinks !== 'object') {
     return 'Social links must be an object'

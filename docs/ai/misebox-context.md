@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
 Updated: 2026-08-22
-Ref: d1a7d5eec
+Ref: da689ed54
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -413,10 +413,11 @@ Before each task:
   `LandingWorkspacePreviewFrame` owns the shared target rail, navigation,
   selected heading, responsive shell, and full-Workspace doorway. Misebox's thin
   root owns the single Product Demo load and local operation/page selection;
-  named operation children receive typed read-only projections. Menus, Dishes,
-  Ingredients, Recipes, Mise, Orders, Stations, Suppliers, and Tables own
-  truthful projected bodies;
-  future unsupported operations use one named empty canvas. Dishes separates
+  named operation children receive typed read-only projections. The canonical
+  catalogue groups Food & Drink, Operations, Kitchen Setup, and Reports.
+  Existing operation children own truthful projected bodies; newly identified
+  capability doorways use one named empty canvas until deeper demand work proves
+  their tools. Dishes separates
   Collection, Overview, and five named Finance/Spec/Prep/Recipes/Mise child
   pages beneath one persistent image-backed Dish context. Ingredients presents
   the Deanos Kitchen usage-link set through the adapter's canonical root
@@ -461,7 +462,7 @@ Before each task:
   Kitchen catalogue and its operational vocabulary.
   The preview header keeps one `Open full Workspace` doorway visible across
   every operation. It selects Deanos as the read-only Demo Kitchen before
-  entering `/workspace/kitchen`; the landing preview does not acquire Workspace
+  entering `/`; the landing preview does not acquire Workspace
   target authority. The Kitchen index continues to present the bounded Live
   and Demo target choosers together, so this doorway never hides the user's
   real Kitchens.
@@ -474,11 +475,10 @@ Before each task:
   pure adapter into Supplier-owned identity and coverage. It receives the
   Supplier-owned logo and the linked Company/Place image from the shared
   Supplier Demo projector; no Supplier or Place truth is copied into the
-  Kitchen fixture or rebuilt by the project. Tables projects
-  only the canonical Deanos `Kitchen.tables.count`, so the eight configured
-  tables are available and no active Table Tab is invented. The separate
-  Reports navigation exposes the Kitchen Finance sheet without adding Finance
-  to `kitchenOperations` or `KitchenDemoOperation`; it receives the Deanos
+  Kitchen fixture or rebuilt by the project. Tables remains a Front-of-House
+  boundary and is not projected as a Kitchen capability. The Reports group
+  exposes bounded Sales evidence plus truthful Cost, Waste, and Performance
+  doorways; the Sales preview receives the Deanos
   completed-Order projection through the same Kitchen-owned reconciled
   transaction/period projector as Workspace Demo.
   The root
@@ -517,13 +517,13 @@ Before each task:
   new development is quoted separately.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the
-  existing `useEcosystemAppCollection` controller. It shows only active Apps
-  from the current Misebox ecosystem's bounded public DTO projection, links to
+  shared `useApps()` collection. It shows only active Apps fetched by the
+  current Misebox ecosystem's Server endpoint, links to
   canonical `/apps/:slug` details, and excludes the current global Misebox App
-  from its own proof grid. It does not hard-code tenant Apps or read canonical
-  App documents in the browser.
-- Misebox `/` is itself the browse-only public Kitchen Workspace; it is not a
-  landing doorway or redirect into `/workspace/kitchen`. The root page directly
+  from its own proof grid. It does not hard-code tenant Apps or read Firestore
+  in the browser.
+- Misebox `/` is itself the browse-only public Kitchen Workspace; there is no
+  separate `/workspace/kitchen` index. The root page directly
   composes the real Core Workspace layout and page shell, while `fireux-kitchens`
   owns the inner `WorkspaceKitchenAIWelcome` domain surface. Anonymous visitors
   receive no selected-Kitchen reads or commands; the existing Kitchen selector
@@ -533,7 +533,9 @@ Before each task:
   `Save my Kitchen` doorway. The previous product-led landing remains intact at
   `/product` as the comparison and explanatory surface. The welcome must never
   imply that a selected file was uploaded or analysed before the corresponding
-  trusted boundary exists.
+  trusted boundary exists. The Workspace sidebar exposes one prominent
+  singular `Kitchen` control that returns to `/`; Kitchen capability pages
+  remain under `/workspace/kitchen/*`.
 - `jobs.misebox.app` is a focused product doorway over the existing
   `misebox-app` authority, not a second canonical App. It may give public Job,
   Professional, and Agent routes a Jobs-only project layout while retaining

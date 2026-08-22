@@ -22,9 +22,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-today',
     label: 'Today',
-    icon: 'i-lucide-house',
+    group: 'Workspace',
+    icon: 'i-lucide-calendar-check',
     position: 'top',
-    order: 0,
+    order: 1,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

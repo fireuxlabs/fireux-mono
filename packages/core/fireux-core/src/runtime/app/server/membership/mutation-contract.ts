@@ -2,7 +2,6 @@ import { createError } from 'h3'
 import {
   FieldValue,
   type DocumentData,
-  type UpdateData,
 } from 'firebase-admin/firestore'
 import type {
   AppMembershipMutationInput,
@@ -49,7 +48,6 @@ export function stamp(actorUid: string) {
 }
 
 export function initialMembership(
-  appId: string,
   actorUid: string,
   role: AppUserRole
 ) {
@@ -57,28 +55,17 @@ export function initialMembership(
     role,
     is_premium: false,
     onboarding_status: 'pending',
-    created: { at: FieldValue.serverTimestamp(), by: actorUid, app_id: appId },
+    created: stamp(actorUid),
     updated: stamp(actorUid),
   }
 }
 
-export function membershipRepairPatch(
-  data: DocumentData,
-  actorUid: string
-): UpdateData<DocumentData> {
-  const patch: UpdateData<DocumentData> = {}
-  if (typeof data.is_premium !== 'boolean') patch.is_premium = false
+export function requireCanonicalMembership(data: DocumentData) {
+  if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
+  if (typeof data.is_premium !== 'boolean')
+    forbidden(409, 'The App membership has an invalid premium flag.')
   if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
-    patch.onboarding_status = 'pending'
-  for (const field of [
-    'workspace_enabled',
-    'profiles',
-    'notifications',
-    'workspace_targets',
-  ])
-    if (field in data) patch[field] = FieldValue.delete()
-  if (Object.keys(patch).length) patch.updated = stamp(actorUid)
-  return patch
+    forbidden(409, 'The App membership has an invalid onboarding status.')
 }
 
 export function roleFrom(data: DocumentData | undefined): AppUserRole | null {

@@ -57,7 +57,7 @@
           >Dev details</UButton
         >
         <UButton
-          to="/workspace/kitchen"
+          to="/"
           color="neutral"
           variant="soft"
           icon="i-lucide-layout-dashboard"

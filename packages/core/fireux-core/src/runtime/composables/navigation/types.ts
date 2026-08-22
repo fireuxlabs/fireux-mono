@@ -21,6 +21,7 @@ export interface NavMeta {
   order?: number | string
   profileId?: string
   requiresSelection?: boolean
+  prominent?: boolean
   hidden?: boolean
   parked?: boolean
   desktop?: boolean
@@ -43,6 +44,7 @@ export interface NavItem {
   layouts: string[]
   requiresAuth?: boolean
   requiresSelection?: boolean
+  prominent?: boolean
   parked?: boolean
   roles?: string[]
   tenant?: string

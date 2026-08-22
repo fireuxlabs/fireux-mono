@@ -1,10 +1,10 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useUser } from '../../../../user/composables/useUser'
 import { useFireUXConfig } from '../../config/FireUXConfig'
-import type { AppViewSource } from '../../useAppInterface'
+import type { App } from '../../../models/app.model'
 
 export function useMyApps(
-  apps: MaybeRef<AppViewSource[] | null | undefined>
+  apps: MaybeRef<App[] | null | undefined>
 ) {
   const { appUser } = useUser()
   const { appId } = useFireUXConfig()
@@ -14,7 +14,7 @@ export function useMyApps(
       new Set(appUser.value ? [String(appId).trim()].filter(Boolean) : [])
     )
   )
-  const myApps = computed<AppViewSource[]>(() => {
+  const myApps = computed<App[]>(() => {
     if (!appIds.value.length) return []
 
     const ids = new Set(appIds.value)

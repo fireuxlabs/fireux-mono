@@ -14,7 +14,7 @@
         <template #right>
           <div id="kitchen-orders-actions" />
           <UButton
-            to="/workspace/kitchen"
+            to="/"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -35,7 +35,7 @@
           :actions="[
             {
               label: 'Choose Kitchen',
-              to: '/workspace/kitchen',
+              to: '/',
               icon: 'i-lucide-arrow-right',
             },
           ]"

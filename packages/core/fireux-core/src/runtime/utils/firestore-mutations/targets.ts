@@ -28,20 +28,6 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'default' },
     collectionPath: 'ecosystem',
   }),
-  appMeta: defineFirestoreMutationTarget({
-    key: 'default.app-meta',
-    lane: 'mcp-skill',
-    verbs: allVerbs,
-    database: { kind: 'default' },
-    collectionPath: 'apps',
-  }),
-  runtimeAppMeta: defineFirestoreMutationTarget({
-    key: 'runtime.app-meta',
-    lane: 'server',
-    verbs: allVerbs,
-    database: { kind: 'default' },
-    collectionPath: 'apps',
-  }),
   fireuxProjects: defineFirestoreMutationTarget({
     key: 'fireux.projects',
     lane: 'server',

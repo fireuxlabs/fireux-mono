@@ -184,8 +184,6 @@ const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
     'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Stations.vue',
   suppliers:
     'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Suppliers.vue',
-  tables:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Tables.vue',
   finance:
     'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Finance.vue',
   emptyCanvas:
@@ -1300,9 +1298,9 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    'AppDirectoryController',
+    'AppCollectionController',
     '<UPageCard',
-    'app.detail_url',
+    'App',
     "app.status === 'active'",
     'minimumItems',
     'shouldRender',
@@ -1316,7 +1314,7 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    'useEcosystemAppCollection',
+    'useApps',
     'eligibleApps',
     'eligibleApps.value.length > 1',
     ':exclude-ids="[appId]"',
@@ -1350,7 +1348,7 @@ export async function run(ctx) {
     'label="Interactive Kitchen Workspace preview"',
     ':items="operations"',
     'navigation-label="Kitchen Operations"',
-    'workspace-to="/workspace/kitchen"',
+    'workspace-to="/"',
     '@update:model-value="selectSurface"',
     '@open-workspace="openFullKitchenWorkspace"',
     '<UAvatar',
@@ -1359,10 +1357,10 @@ export async function run(ctx) {
     "MiseboxProductDemo['workspace']['kitchenPill']",
     'productDemo.value?.workspace.kitchenPill',
     'size="md"',
-    "id: 'kitchen.finance'",
+    "selectedSurface?.id === 'kitchen.finance'",
     'useKitchenWorkspaceSelection',
     "type: 'demo'",
-    "await navigateTo('/workspace/kitchen')",
+    "await navigateTo('/')",
     "const selectedDishId = ref('')",
     "const selectedDishPage = ref<DishChildPage>('detail')",
     '<MiseboxLandingWorkspacePreviewMenus',
@@ -1385,8 +1383,6 @@ export async function run(ctx) {
     ':stations="productDemo?.workspace.stations || []"',
     '<MiseboxLandingWorkspacePreviewSuppliers',
     ':suppliers="productDemo?.workspace.suppliers || []"',
-    '<MiseboxLandingWorkspacePreviewTables',
-    ':tables="productDemo?.workspace.tables || emptyTables"',
     '<MiseboxLandingWorkspacePreviewFinance',
     ':finance="productDemo?.workspace.finance || emptyFinance"',
     '<MiseboxLandingWorkspacePreviewEmptyCanvas',
@@ -1516,12 +1512,6 @@ export async function run(ctx) {
       ':data-supplier-id="supplier.id"',
       'supplier.linkedIngredientCount',
       "MiseboxProductDemo['workspace']['suppliers'][number]",
-    ],
-    tables: [
-      'aria-label="Tables preview"',
-      ':data-table-number="tableNumber"',
-      'tables.configuredCount',
-      "MiseboxProductDemo['workspace']['tables']",
     ],
     finance: [
       'aria-label="Kitchen Finance preview"',
@@ -2194,7 +2184,7 @@ export async function run(ctx) {
         'title="Misebox\'s Apps"',
         ':minimum-items="2"',
         'wordmarkUrl:',
-        'useEcosystemAppCollection',
+        'useApps',
         ':operations="operationRailItems"',
         'MiseboxLandingPricingStrip',
         "operation.workspace.id === 'kitchen'",
@@ -2207,7 +2197,7 @@ export async function run(ctx) {
         'operationsCatalogue',
         "to: '/tools/ordering'",
         ':limit="3"',
-        "to: '/workspace/kitchen'",
+        "to: '/'",
         "to: '/operations'",
         'Get started',
         'Go to workspace',

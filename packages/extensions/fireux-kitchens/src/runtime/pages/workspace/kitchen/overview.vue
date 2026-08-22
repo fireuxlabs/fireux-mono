@@ -23,9 +23,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-overview',
     label: 'Overview',
-    icon: 'i-lucide-house',
+    group: 'Workspace',
+    icon: 'i-lucide-layout-dashboard',
     position: 'top',
-    order: 0,
+    order: 2,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

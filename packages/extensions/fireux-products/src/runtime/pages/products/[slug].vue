@@ -51,8 +51,7 @@ useProductSeo(product, defaultPrice)
 
 const devJsonData = computed(() => product.value ? [product.value] : [])
 const devJsonDerived = computed(() => ({
-  prices: prices.value,
+  productPrices: prices.value,
   defaultPrice: defaultPrice.value,
-  page: { slug },
 }))
 </script>

@@ -99,7 +99,7 @@
             <h2 class="fx-type-card-heading">Primary surfaces</h2>
           </template>
           <div class="flex flex-wrap gap-2">
-            <UButton to="/workspace/kitchen" color="primary" variant="soft" icon="i-lucide-terminal">Kitchen workspace</UButton>
+            <UButton to="/" color="primary" variant="soft" icon="i-lucide-terminal">Kitchen workspace</UButton>
             <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-app-window">Your App</UButton>
             <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
           </div>

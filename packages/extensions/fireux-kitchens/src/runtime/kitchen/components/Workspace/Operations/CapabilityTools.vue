@@ -1,5 +1,9 @@
 <template>
-  <section class="space-y-3" :aria-labelledby="`${operation}-tools-title`">
+  <section
+    v-if="capabilities.length"
+    class="space-y-3"
+    :aria-labelledby="`${operation}-tools-title`"
+  >
     <WorkspaceKitchenOperationsMiseTools v-if="operation === 'mise'" />
 
     <div class="grid gap-3">
@@ -57,8 +61,11 @@ import {
 import { kitchenOperations } from '../../../models/operations'
 
 const props = defineProps<{ operation: KitchenOperationCapabilitySlug }>()
-const capabilities = computed(
-  () => kitchenOperationToolCapabilities[props.operation]
+const capabilities = computed(() =>
+  kitchenOperationToolCapabilities[props.operation].filter(
+    (capability) =>
+      capability.status === 'available' || capability.status === 'agent-ready'
+  )
 )
 const title = computed(
   () =>

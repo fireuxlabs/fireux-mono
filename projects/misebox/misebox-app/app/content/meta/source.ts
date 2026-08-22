@@ -267,7 +267,7 @@ export const sourceMeta = {
         { label: 'Jobs', path: '/jobs', kind: 'public' },
         { label: 'Professionals', path: '/professionals', kind: 'public' },
         { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
-        { label: 'Kitchen Workspace', path: '/workspace/kitchen', kind: 'workspace' },
+        { label: 'Kitchen Workspace', path: '/', kind: 'workspace' },
       ],
     },
     relationshipMap: `

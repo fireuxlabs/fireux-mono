@@ -138,7 +138,6 @@ const DOMAIN_ROOTS = [
     root: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/server',
     slices: ['ai', 'core', 'identity', 'index', 'operations', 'team'],
     surfaces: [
-      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/overview.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team.vue',

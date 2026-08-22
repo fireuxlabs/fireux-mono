@@ -1,6 +1,6 @@
 import type { AppUserAccessTier } from '../utils/app-user-access'
 import type { UserIdentitySummary } from '../../user/models/user-directory.model.ts'
-import type { AppDetail } from './app-directory.model.ts'
+import type { App } from './app.model.ts'
 
 export type AppAdminMember = {
   id: string
@@ -32,13 +32,9 @@ export type CurrentAppMembership = {
   profiles: string[]
 }
 
-export type CurrentApp = AppDetail & {
-  self_join_enabled: boolean
-}
-
 export type CurrentAppContextResponse = {
   ok: true
   appId: string
-  app: CurrentApp | null
+  app: App | null
   membership: CurrentAppMembership | null
 }

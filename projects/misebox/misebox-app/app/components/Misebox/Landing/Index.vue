@@ -81,7 +81,7 @@ import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
 } from 'fireux-core/config/app/meta-content'
-import { useEcosystemAppCollection } from 'fireux-core/runtime/ecosystem/composables/useEcosystemAppCollection'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { metaContent } from '../../../meta'
 import MiseboxLandingWorkspacePreview from './WorkspacePreview/Index.vue'
 import MiseboxLandingHeroImage from './HeroImage.vue'
@@ -96,7 +96,7 @@ import {
   type WorkspaceSurfaceCopy,
 } from './landing-content'
 
-const appsController = useEcosystemAppCollection()
+const appsController = useApps()
 const showApps = computed(
   () =>
     appsController.outcome.value === 'pending' ||

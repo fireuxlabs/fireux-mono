@@ -85,9 +85,9 @@ import {
   useAppInterface,
   type AppCard,
 } from 'fireux-core/runtime/app/composables/useAppInterface'
-import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
-const { apps, outcome: directoryOutcome } = usePlatformAppDirectory()
+const { apps, outcome: directoryOutcome } = useApps('/api/platform/apps')
 const { cell: appCell } = useAppInterface()
 const clean = (value: unknown) => String(value ?? '').trim()
 

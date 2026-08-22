@@ -16,7 +16,7 @@
             mode="workspace"
             :existing-root-id="existingRootId"
             :return-to="returnTo"
-            cancel-to="/workspace/kitchen"
+            cancel-to="/"
           />
 
           <UPageCard

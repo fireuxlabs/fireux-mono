@@ -7,10 +7,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOperationCapabilitySlug } from '../../../models/operation-capabilities'
-import { kitchenOperations } from '../../../models/operations'
+import {
+  kitchenOperations,
+  type KitchenOperationSlug,
+} from '../../../models/operations'
 
-const props = defineProps<{ operation: KitchenOperationCapabilitySlug }>()
+const props = defineProps<{ operation: KitchenOperationSlug }>()
 const description = computed(
   () =>
     kitchenOperations.find((entry) => entry.slug === props.operation)

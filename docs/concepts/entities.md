@@ -204,7 +204,7 @@ Entity as a privacy mechanism.
 - `FinancialFact`: immutable App-owned Record derived from a source operation.
 - `KitchenSale`: Kitchen-owned Record derived from a completed KitchenOrder.
 - `AppUser`, `UserAccount`, and App access rows: support Records.
-- `AppDirectoryEntry` and `EcosystemDirectoryEntry`: Directory Shapes
+- `EcosystemDirectoryEntry`: bounded Ecosystem directory transport
   or Records.
 - Menu choice, fulfilment policy, and presentation objects: Shapes unless a
   separate lifecycle is later proved.

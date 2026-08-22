@@ -16,9 +16,9 @@
       <section class="ecosystem-detail__section">
         <CollectionDirectoryHeader :title="`Apps in ${ecosystem.name}`" :description="`${ecosystemApps.length} ${ecosystemApps.length === 1 ? 'App is' : 'Apps are'} connected through canonical App.ecosystem_id.`" />
         <div v-if="ecosystemApps.length" class="ecosystem-detail__apps">
-          <NuxtLink v-for="app in ecosystemApps" :key="app.id" :to="app.detail_url" class="ecosystem-detail__app">
-            <div class="ecosystem-detail__visual"><img v-if="app.media.cover_url" :src="app.media.cover_url" alt="" loading="lazy"><UIcon v-else name="i-lucide-app-window" aria-hidden="true" /></div>
-            <div class="ecosystem-detail__app-copy"><UAvatar :src="app.media.logo_url || undefined" :text="app.name || app.id" :alt="app.name || app.id" size="md" /><div><h2>{{ app.name }}</h2><p>{{ app.description || app.short_bio || app.tagline || 'Published FireUX App.' }}</p></div><UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></div>
+          <NuxtLink v-for="app in ecosystemApps" :key="app.id" :to="`/apps/${app.id}`" class="ecosystem-detail__app">
+            <div class="ecosystem-detail__visual"><img v-if="app.media?.cover_url" :src="app.media.cover_url" alt="" loading="lazy"><UIcon v-else name="i-lucide-app-window" aria-hidden="true" /></div>
+            <div class="ecosystem-detail__app-copy"><UAvatar :src="app.media?.logo_url || undefined" :text="app.name || app.id" :alt="app.name || app.id" size="md" /><div><h2>{{ app.name }}</h2><p>{{ app.description || app.short_bio || app.tagline || 'Published FireUX App.' }}</p></div><UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></div>
           </NuxtLink>
         </div>
       </section>
@@ -39,22 +39,24 @@ import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { buildPublicPageJsonLd, useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
-import { useProjectDirectory } from '../../composables/useProjectDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
 
 definePageMeta({ layout: 'default', title: 'Ecosystem', description: 'View a FireUX Ecosystem and its connected Apps.', name: 'FireuxEcosystemDetailPage' })
 const routeId = useRouteParam('id')
 const { data, pending: directoryPending, error } = await useAsyncData<PlatformDirectoryResponse>('fireux-default-directory', () => $fetch('/api/directory'), { server: true, lazy: false })
-const projectDirectory = useProjectDirectory()
+const projectCollection = useProjects()
+const { apps, pending: appsPending, error: appsError } = useApps('/api/platform/apps')
 const ecosystem = computed(() => data.value?.ecosystems.find((entry) => entry.id === routeId.value || entry.detail_url === `/ecosystems/${routeId.value}`) ?? null)
-const ecosystemApps = computed(() => ecosystem.value ? (data.value?.apps ?? []).filter((app) => app.ecosystem_id === ecosystem.value?.id) : [])
-const project = computed(() => projectDirectory.projects.value.find((item) => item.id === ecosystem.value?.project_id) ?? null)
-const pending = computed(() => directoryPending.value || projectDirectory.pending.value)
-const failed = computed(() => Boolean(error.value || projectDirectory.error.value))
+const ecosystemApps = computed(() => ecosystem.value ? apps.value.filter((app) => app.ecosystem_id === ecosystem.value?.id) : [])
+const project = computed(() => projectCollection.projects.value.find((item) => item.id === ecosystem.value?.project_id) ?? null)
+const pending = computed(() => directoryPending.value || projectCollection.pending.value || appsPending.value)
+const failed = computed(() => Boolean(error.value || projectCollection.error.value || appsError.value))
 const missing = computed(() => !pending.value && !failed.value && !ecosystem.value)
 const explorePath = computed(() => ['misebox', 'werkbox'].includes(routeId.value) ? `/ecosystems/${routeId.value}/explore` : '')
 if (import.meta.server) { if (missing.value) setResponseStatus(404); else if (failed.value) setResponseStatus(503) }
 const canonicalPath = computed(() => ecosystem.value?.detail_url || `/ecosystems/${routeId.value}`)
-useSeo({ title: computed(() => ecosystem.value ? `${ecosystem.value.name} · FireUX Ecosystem` : 'FireUX Ecosystem'), description: computed(() => ecosystem.value?.description || 'View a FireUX Ecosystem and its connected Apps.'), path: canonicalPath, image: computed(() => ecosystem.value?.image_url || '/img/app/cover.png'), robots: computed(() => ecosystem.value ? 'index, follow' : 'noindex, nofollow'), jsonLdBuilder: (context) => ecosystem.value ? buildPublicPageJsonLd({ canonicalUrl: context.canonicalUrl, description: context.description, image: context.image, pageType: 'CollectionPage', title: context.title, items: ecosystemApps.value.map((app) => ({ name: app.name, url: context.absoluteUrl(app.detail_url) })) }) : null })
+useSeo({ title: computed(() => ecosystem.value ? `${ecosystem.value.name} · FireUX Ecosystem` : 'FireUX Ecosystem'), description: computed(() => ecosystem.value?.description || 'View a FireUX Ecosystem and its connected Apps.'), path: canonicalPath, image: computed(() => ecosystem.value?.image_url || '/img/app/cover.png'), robots: computed(() => ecosystem.value ? 'index, follow' : 'noindex, nofollow'), jsonLdBuilder: (context) => ecosystem.value ? buildPublicPageJsonLd({ canonicalUrl: context.canonicalUrl, description: context.description, image: context.image, pageType: 'CollectionPage', title: context.title, items: ecosystemApps.value.map((app) => ({ name: app.name, url: context.absoluteUrl(`/apps/${app.id}`) })) }) : null })
 </script>
 
 <style scoped src="./ecosystem-detail.css"></style>

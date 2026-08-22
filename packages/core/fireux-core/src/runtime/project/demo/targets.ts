@@ -6,6 +6,8 @@ export const fireuxDemoProject: Project = {
   description: 'A deterministic read-only control-plane project.',
   status: 'active',
   image_url: '',
+  created: { at: { seconds: 0, nanoseconds: 0 }, by: 'demo' },
+  updated: { at: { seconds: 0, nanoseconds: 0 }, by: 'demo' },
 }
 
 export const projectDemoTargets: readonly Project[] = [fireuxDemoProject]

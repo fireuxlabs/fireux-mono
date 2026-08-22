@@ -22,6 +22,7 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Child: pnpm.md
 - Child: runtime-package.md
 - Child: app-config.md
+- Child: app-ignition.md
 
 ## Horizontal links
 
@@ -107,9 +108,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   workspace, identity, role, workspaces, and focused smoke routes.
 - Resolve data ownership before generating product code: global and tenant
   Apps inherit the ecosystem database; every production standalone App gets a
-  dedicated named database. Provision `(default)/apps/{appId}` AppMeta and the
-  canonical named-database `apps/{appId}` record through the same creation
-  workflow. A folder alone is never a completed App.
+  dedicated named database. Provision the canonical named-database
+  `apps/{appId}` record through the creation workflow. A folder alone is never
+  a completed App.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root
   dev/kill scripts, `.vscode/tasks.json`, `.vscode/launch.json`, or
   `tools/vscode-fireux-toolbar/apps.js`. Add an optional presentation entry

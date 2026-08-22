@@ -1,16 +1,14 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-haccp">
+    <UDashboardPanel id="workspace-kitchen-inventory">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen HACCP" />
+        <LayoutsWorkspaceNavbar title="Kitchen Inventory" />
       </template>
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceKitchenSundriesParked
-            alert-title="Kitchen HACCP is parked"
-            description="This kitchen workspace route is intentionally hidden until the HACCP workspace is wired."
-          />
+          <WorkspaceKitchenOperationsCapabilityView operation="inventory" />
+          <WorkspaceKitchenOperationsGuidingLiterature operation="inventory" />
         </section>
       </template>
     </UDashboardPanel>
@@ -23,13 +21,12 @@ definePageMeta({
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    key: 'workspace-kitchen-haccp',
-    label: 'HACCP',
-    icon: 'i-lucide-clipboard-check',
+    key: 'workspace-kitchen-inventory',
+    label: 'Inventory',
+    group: 'Operations',
+    icon: 'i-lucide-boxes',
     position: 'top',
-    hidden: true,
-    parked: true,
-    order: 80,
+    order: 23,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

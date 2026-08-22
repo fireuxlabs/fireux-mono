@@ -29,7 +29,6 @@ authority.
 | Record          | Meaning                                      | Authority                                                        |
 | --------------- | -------------------------------------------- | ---------------------------------------------------------------- |
 | `App`           | One deployed product surface                 | `apps/{appId}` in its owning App database                        |
-| `AppMeta`       | Local discovery projection of that App       | `(default)/apps/{appId}` in its Firebase host project            |
 | `Ecosystem`     | The product family an App may belong to      | `ecosystems/{ecosystemId}` in the identity database              |
 | `EcosystemMeta` | Local discovery projection of that Ecosystem | `(default)/ecosystem/{ecosystemId}` in its Firebase host project |
 | `Project`       | One FireUX control-plane Project             | `projects/{projectId}` in the FireUX named database              |
@@ -37,28 +36,21 @@ authority.
 | `User`          | One person                                   | `users/{uid}` in the identity database                           |
 | `AppUser`       | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
 
-Each Firebase project's `(default)` database also carries bounded singular
-`project/{projectId}` and `ecosystem/{ecosystemId}` local records plus plural
-`apps/{appId}` AppMeta projections for only the things hosted by that Firebase
-project. Those safe routing and presentation records
-are not canonical identity or operational storage; canonical App membership
-and domain state remain in the owning named database.
+Each Firebase project's `(default)` database carries bounded singular
+`project/{projectId}` and `ecosystem/{ecosystemId}` local records. Canonical
+App identity, presentation, membership, and domain state remain in the owning
+named database.
 
-The FireUX platform directory reads those local projections directly from each
-registered Firebase project through one trusted server boundary. Its guarded
-target registry is infrastructure routing, not another stored directory or
-identity authority. A missing target or projection fails explicitly instead of
-silently publishing an incomplete platform directory.
+The FireUX platform App index reads canonical Apps from each registered named
+database through one trusted server boundary. Its guarded target registry is
+infrastructure routing, not stored App identity. Ecosystem App indexes use the
+same `useApps()` collection family against their scoped Server endpoint. Both
+return `App[]`; no App directory or AppMeta model exists.
 
-`AppMeta` is part of the App family but is not another Entity. It keeps only
-the local Project/Ecosystem/database pointers, App role and status, public
-identity and media, website route, Workspace-family discovery, and projection
-update stamp. It excludes membership, User ids and counts, moderation,
-repository/build metadata, join policy, and operational content.
-The trusted runtime initialization, media, and App-settings writers maintain
-the current App's projection idempotently. Operator migrations and App
-scaffolding use the MCP/Skill lane for the same projection contract; Client
-code never writes `(default)`.
+`AppUser` takes both identities from its path
+`apps/{appId}/users/{uid}`. The document stores only membership facts and its
+created/updated stamps; it does not repeat `app_id` or `id`. Runtime membership
+commands write the canonical shape and do not carry legacy cleanup branches.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal
@@ -84,15 +76,14 @@ in the FireUX control-plane named database, each Project owns its
 `database_id`. Project document ID is route identity, so neither Project shape
 stores a duplicate slug.
 
-The entity-facing Project stack currently lives under
-`composables/fireux/project` and moves coherently to the Project entity scope.
-`useProjectCollection` reads the caller's target-bounded control-plane endpoint,
-`useProjectDetail` selects one Project from that bounded result, and
-`useProjectInterface` maps presentation. `/projects` is the directory collection of
-active Project identity and presentation DTOs. It never exposes access,
-database credentials, Team, or operational state. There is no directory Project
-detail route and no browser Firestore read or mutation entrypoint; private
-selection and operations remain under `/workspace/project`.
+The entity-facing Project stack lives under `runtime/project`.
+`useProjects` reads canonical `Project[]` from the public Server collection,
+and `/projects/:id` reads the same strict entity shape from its exact Server
+endpoint. `useProjectCollection` separately reads the caller's target-bounded
+control-plane scope for the private Workspace. There is no
+`ProjectDirectoryEntry`, browser Firestore read, or browser mutation entrypoint;
+presentation mapping remains in `useProjectInterface` and private selection and
+operations remain under `/workspace/project`.
 
 The read-only Project Workspace may expose capabilities backed by existing
 authority. Its Team sheet reads the selected Project's `team/{uid}` records
@@ -139,8 +130,8 @@ accepted.
 Module composition is source controlled through extension packages and App
 configuration. There is deliberately no generic Firestore `Module` model.
 Authored `app/meta.ts` content remains source configuration. Stored `AppMeta`
-is the separate bounded local-registry projection derived from canonical App
-and authored App configuration; neither becomes an alternate App identity.
+does not exist; source presentation configuration is not an alternate App
+identity or Firestore model.
 
 ## Identity rules
 

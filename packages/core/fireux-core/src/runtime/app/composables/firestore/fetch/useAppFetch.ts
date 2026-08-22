@@ -3,6 +3,7 @@ import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from '../../../../composables/fireux/firestore/vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
+import { readAppDocument } from '../../../utils/readApp.ts'
 
 export type AppFetchOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
@@ -71,7 +72,7 @@ export function useAppFetch(
       transform: (docSnap: DocumentSnapshot<App>) => {
         const raw = docSnap.data()
         if (!raw) return undefined
-        return { ...(raw as any), id: docSnap.id } as App
+        return readAppDocument(raw, docSnap.id) ?? undefined
       },
     } as any) || {
       data: ref<App | undefined>(undefined),

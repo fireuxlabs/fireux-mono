@@ -27,9 +27,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-stations',
     label: 'Stations',
-    icon: 'i-lucide-map-pinned',
+    group: 'Kitchen Setup',
+    icon: 'i-lucide-layout-grid',
     position: 'top',
-    order: 5,
+    order: 30,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

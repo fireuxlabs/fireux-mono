@@ -36,6 +36,7 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-team',
     label: 'Team',
+    group: 'Workspace',
     icon: 'i-lucide-users',
     position: 'top',
     order: 6,

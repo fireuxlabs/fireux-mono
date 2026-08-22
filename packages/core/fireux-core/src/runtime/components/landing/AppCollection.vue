@@ -137,8 +137,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppDirectoryEntry } from '../../models/utils/directory'
-import type { AppDirectoryController } from '../../types/directory-controller.types'
+import type { App } from '../../app/models/app.model'
+import type { AppCollectionController } from '../../app/composables/useApps'
 
 type LandingAppMediaOverride = {
   coverUrl?: string
@@ -149,7 +149,7 @@ type LandingAppMediaOverride = {
 
 const props = withDefaults(
   defineProps<{
-    controller: AppDirectoryController
+    controller: AppCollectionController
     eyebrow?: string
     title: string
     description?: string
@@ -180,7 +180,7 @@ const apps = computed(() => {
   const selected = props.featuredIds.length
     ? props.featuredIds
         .map((id) => available.find((app) => app.id === id))
-        .filter((app): app is AppDirectoryEntry => Boolean(app))
+        .filter((app): app is App => Boolean(app))
     : available
 
   return props.limit > 0 ? selected.slice(0, props.limit) : selected
@@ -197,19 +197,19 @@ async function refreshApps(): Promise<void> {
   await props.controller.refresh?.()
 }
 
-function displayName(app: AppDirectoryEntry): string {
-  return app.name || app.short_name || app.slug || app.id
+function displayName(app: App): string {
+  return app.name || app.short_name || app.id
 }
 
-function roleLabel(app: AppDirectoryEntry): string {
+function roleLabel(app: App): string {
   if (app.role === 'global') return 'Ecosystem App'
   if (app.role === 'tenant') return 'Tenant App'
   if (app.role === 'standalone') return 'Standalone App'
   return 'App'
 }
 
-function appSummary(app: AppDirectoryEntry): string {
-  return app.tagline || app.short_bio || app.description
+function appSummary(app: App): string {
+  return app.tagline || app.short_bio || app.description || ''
 }
 
 function portableMediaUrl(value: unknown): string {
@@ -217,7 +217,7 @@ function portableMediaUrl(value: unknown): string {
   return /^https?:\/\//i.test(url) ? url : ''
 }
 
-function mediaUrl(app: AppDirectoryEntry): string {
+function mediaUrl(app: App): string {
   return (
     portableMediaUrl(props.mediaOverrides[app.id]?.coverUrl) ||
     portableMediaUrl(app.media?.cover_url) ||
@@ -226,7 +226,7 @@ function mediaUrl(app: AppDirectoryEntry): string {
   )
 }
 
-function logoUrl(app: AppDirectoryEntry): string {
+function logoUrl(app: App): string {
   return (
     portableMediaUrl(props.mediaOverrides[app.id]?.logoUrl) ||
     portableMediaUrl(app.media?.logo_url) ||
@@ -234,15 +234,15 @@ function logoUrl(app: AppDirectoryEntry): string {
   )
 }
 
-function wordmarkUrl(app: AppDirectoryEntry): string {
+function wordmarkUrl(app: App): string {
   return portableMediaUrl(props.mediaOverrides[app.id]?.wordmarkUrl)
 }
 
-function mediaLabel(app: AppDirectoryEntry): string {
+function mediaLabel(app: App): string {
   return String(props.mediaOverrides[app.id]?.mediaLabel || '').trim()
 }
 
-function avatarText(app: AppDirectoryEntry): string {
+function avatarText(app: App): string {
   return displayName(app)
     .split(/\s+/)
     .filter(Boolean)

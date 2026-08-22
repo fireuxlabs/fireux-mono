@@ -27,9 +27,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-recipes',
     label: 'Recipes',
-    icon: 'i-lucide-book-copy',
+    group: 'Food & Drink',
+    icon: 'i-lucide-notebook-tabs',
     position: 'top',
-    order: 4,
+    order: 13,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

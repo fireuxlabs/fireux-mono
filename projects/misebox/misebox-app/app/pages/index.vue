@@ -10,6 +10,7 @@
           <WorkspaceKitchenTools />
           <WorkspaceKitchenAIWelcome />
           <WorkspaceKitchen v-if="clientReady && isAuthenticated" />
+          <MiseboxWorkspaceKitchenAIDevelopment v-if="isDevelopment" />
         </section>
       </template>
     </UDashboardPanel>
@@ -24,6 +25,7 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 import { appMeta } from '../meta'
 
 const { isAuthenticated } = useAuth()
+const isDevelopment = import.meta.dev
 const workspaceRoot = useWorkspace()
 workspaceRoot.setActiveContext('kitchen')
 const clientReady = ref(false)
@@ -36,9 +38,12 @@ definePageMeta({
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   nav: {
-    key: 'home',
-    label: 'Kitchen AI',
-    icon: 'i-lucide-sparkles',
+    key: 'workspace-kitchen',
+    label: 'Kitchen',
+    icon: 'i-lucide-chef-hat',
+    position: 'bottom',
+    order: 900,
+    prominent: true,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

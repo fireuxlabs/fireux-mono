@@ -6,6 +6,15 @@ import { APP_PALETTE_KEYS } from '../../types/theme'
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
   validateAppDesignPack(app.designPack)
 
+  if (
+    app.homePath &&
+    (!app.homePath.startsWith('/') || app.homePath.startsWith('//'))
+  ) {
+    throw new Error(
+      '[fireux] app.homePath must be an absolute same-origin route beginning with one slash.'
+    )
+  }
+
   if (app.theme) {
     const palette = app.theme.palette
     const keys = Object.keys(palette).sort()

@@ -27,9 +27,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-suppliers',
     label: 'Suppliers',
+    group: 'Kitchen Setup',
     icon: 'i-lucide-truck',
     position: 'top',
-    order: 6,
+    order: 31,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

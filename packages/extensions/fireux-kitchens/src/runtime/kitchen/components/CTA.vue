@@ -22,7 +22,7 @@ const actions = [
   {
     label: 'Workspace',
     cta: 'Open workspace',
-    to: '/workspace/kitchen',
+    to: '/',
     icon: 'i-lucide-layout-dashboard',
   },
   {

@@ -10,9 +10,10 @@ This is the practical playbook for shared Core entity onboarding journeys.
 - Canonical `fireux/projects/{projectId}` owns Project identity and
   presentation. Each Firebase host keeps one bounded
   `(default)/project/{projectId}` ProjectMeta routing projection.
-- The Workspace is read-only. Canonical creation and changes are trusted
-  provisioning operations and must synchronize the local ProjectMeta; the
-  browser does not write either record.
+- The Workspace is read-only. Canonical creation and changes are guarded
+  provisioning operations that synchronize every local ProjectMeta through the
+  explicit migration/MCP lane; no ordinary Server or browser endpoint mutates
+  only one side of that contract.
 - The minimal Workspace operations are Identity, Apps, Ecosystem, and Team. Team
   reads the existing FireUX `AppProject` access record; it is not a duplicate
   membership store. Do not add Project notifications until the notification
@@ -229,8 +230,7 @@ must follow the same contract rather than becoming another mutation lane.
 Runtime initialization remains a separate internal recovery operation.
 Initialization authenticates the configured developer and atomically creates
 the fixed runtime App plus its first App-admin membership in the named database
-through the Server mutation lane. It then idempotently creates or updates that
-App's bounded `(default)` AppMeta projection. The browser cannot choose an App
+through the Server mutation lane. The browser cannot choose an App
 id, database, or path, and Firestore Rules do not need to grant tenant-App
 creation to clients.
 
@@ -240,8 +240,7 @@ masters must also be published to canonical Firebase Storage paths and their
 URLs recorded in `App.media.*`. Firestore stores those URLs, not the binaries.
 The Storage publication lets Ecosystems, directories and other Apps render the
 brand without access to the owning bundle. App-admin identity edits maintain
-the canonical App and bounded AppMeta projection through the same projection
-seam.
+the canonical App through the trusted Server writer.
 
 The App Shell initialization blocker is shown only while the canonical App
 record is missing. It must still distinguish the wider stages: `initialized`

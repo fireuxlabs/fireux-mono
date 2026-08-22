@@ -88,17 +88,24 @@ const CONSOLE_OPERATION_CONTRACTS = {
     catalogue:
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts',
     operations: [
+      'menus',
       'dishes',
       'drinks',
+      'recipes',
       'ingredients',
-      'menus',
+      'food-safety',
       'mise',
       'orders',
-      'recipes',
+      'inventory',
+      'purchasing',
+      'receiving',
+      'waste',
       'stations',
       'suppliers',
-      'tables',
       'finance',
+      'costs',
+      'waste-report',
+      'performance',
     ],
     routeRoot:
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen',
@@ -132,6 +139,18 @@ const CONSOLE_OPERATION_CONTRACTS = {
 }
 
 const CONSOLE_BASE_CAPABILITIES = ['overview', 'identity', 'team']
+const KITCHEN_TOOL_BACKED_OPERATIONS = new Set([
+  'dishes',
+  'drinks',
+  'ingredients',
+  'menus',
+  'mise',
+  'orders',
+  'recipes',
+  'stations',
+  'suppliers',
+  'finance',
+])
 
 const CONSOLE_AI_CONTRACTS = [
   {
@@ -438,33 +457,39 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must render its catalogue-backed guiding literature)`
           )
         }
-        const toolsMarker =
-          operation === 'drinks'
-            ? '<WorkspaceKitchenOperationsDishesTools'
-            : `<WorkspaceKitchenOperationsCapabilityTools operation="${operation}"`
-        const aiMarker = '<WorkspaceKitchenOperationsCapabilityAI'
         const viewMarker =
           operation === 'drinks'
             ? '<WorkspaceKitchenOperationsDishesRead'
             : `<WorkspaceKitchenOperationsCapabilityView operation="${operation}"`
-        const toolsIndex = routeSource.indexOf(toolsMarker)
-        const aiIndex = routeSource.indexOf(aiMarker)
-        const aiCloseIndex = routeSource.indexOf('>', aiIndex)
-        const aiOperationIndex = routeSource.indexOf(
-          `operation="${operation}"`,
-          aiIndex
-        )
         const viewIndex = routeSource.indexOf(viewMarker)
-        if (
-          toolsIndex < 0 ||
-          aiIndex <= toolsIndex ||
-          aiOperationIndex < aiIndex ||
-          aiOperationIndex > aiCloseIndex ||
-          viewIndex <= aiIndex
-        ) {
+        if (viewIndex < 0) {
           violations.push(
-            `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must compose Tools, AI, then View)`
+            `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must expose its catalogue-backed View)`
           )
+        } else if (KITCHEN_TOOL_BACKED_OPERATIONS.has(operation)) {
+          const toolsMarker =
+            operation === 'drinks'
+              ? '<WorkspaceKitchenOperationsDishesTools'
+              : `<WorkspaceKitchenOperationsCapabilityTools operation="${operation}"`
+          const aiMarker = '<WorkspaceKitchenOperationsCapabilityAI'
+          const toolsIndex = routeSource.indexOf(toolsMarker)
+          const aiIndex = routeSource.indexOf(aiMarker)
+          const aiCloseIndex = routeSource.indexOf('>', aiIndex)
+          const aiOperationIndex = routeSource.indexOf(
+            `operation="${operation}"`,
+            aiIndex
+          )
+          if (
+            toolsIndex < 0 ||
+            aiIndex <= toolsIndex ||
+            aiOperationIndex < aiIndex ||
+            aiOperationIndex > aiCloseIndex ||
+            viewIndex <= aiIndex
+          ) {
+            violations.push(
+              `${contract.routeRoot}/${operation} (tool-backed Kitchen Operations must compose Tools, AI, then View)`
+            )
+          }
         }
       }
       if (
@@ -521,7 +546,9 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         ),
         'utf8'
       )
-      for (const operation of contract.operations) {
+      for (const operation of contract.operations.filter((operation) =>
+        KITCHEN_TOOL_BACKED_OPERATIONS.has(operation)
+      )) {
         if (!capabilityCatalogue.includes(`  ${operation}: [`)) {
           violations.push(
             `Kitchen ${operation} Operation is missing its tool capability catalogue.`

@@ -1,7 +1,7 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-08-22
+Ref: da689ed54
 Role: map, not canon
 
 ## Purpose
@@ -214,14 +214,15 @@ remain real data even when a Demo record links to them.
   history.
   Stations projects the same ordered `KitchenStation` records. Kitchen
   Suppliers resolves Kitchen-owned usage links through a Kitchen-owned pure
-  adapter into Supplier-owned identity and coverage. Tables projects only the
-  Kitchen's configured count unless real owner-local Table Tab records are
-  explicitly added. A Product Demo may expose the separate Kitchen Finance
-  report from its completed-Order projection through the shared Kitchen
+  adapter into Supplier-owned identity and coverage. A Demo fixture may retain
+  the Kitchen's configured table count as Front-of-House boundary context, but
+  Tables is not projected as a Kitchen capability. A Product Demo may expose
+  the separate Kitchen Sales report from its completed-Order projection through
+  the shared Kitchen
   projector. The dated transaction rows derive reconciled daily aggregates,
   current/prior period totals, item rollups, calendar days, grouped trend
-  points, selected-day detail, and sales-only insights. Finance is a Kitchen
-  Operation, but its report projection does not create Sales or
+  points, selected-day detail, and sales-only insights. Sales is a Kitchen
+  Report, but its projection does not create Sales or
   FinancialFacts. Supplier
   deliveries/invoices, staff pay, recurring rent, refunds, expenses, wages,
   VAT, labour, cashflow, profit, and P&L remain absent until their owning

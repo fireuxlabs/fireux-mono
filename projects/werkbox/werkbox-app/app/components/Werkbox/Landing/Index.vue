@@ -92,11 +92,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useEcosystemAppCollection } from 'fireux-core/runtime/ecosystem/composables/useEcosystemAppCollection'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import EmployerValue from './EmployerValue.vue'
 import { content, networkCatalogue, surfaceItems } from './landing-content'
 
-const appsController = useEcosystemAppCollection()
+const appsController = useApps()
 const { appName: pricingAppName, landingTiers } = useWerkboxPricing()
 const showApps = computed(
   () =>

@@ -1,4 +1,3 @@
-import { useRuntimeConfig } from '#imports'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { createError, readBody, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
@@ -7,7 +6,6 @@ import {
   serverAppUsersTarget,
 } from '../../../utils/firestore-mutations/targets'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
-import { ensureRuntimeAppMeta } from '../projection/ensure'
 import { runGuardedServerTransaction } from '../../../server/utils/firestore-mutations/server-transaction'
 
 const TEXT_FIELDS = {
@@ -99,7 +97,6 @@ function normalizePatch(body: unknown): DocumentData {
 export async function updateAppSettings(event: H3Event) {
   const { uid } = await requireFirebaseBearerUser(event)
   const config = useFireUXConfig(event)
-  const runtime = useRuntimeConfig(event)
   const patch = normalizePatch(await readBody(event))
   const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(config.appId)
@@ -117,24 +114,9 @@ export async function updateAppSettings(event: H3Event) {
 
     mutations.update(apps, config.appId, {
       ...patch,
-      wordmark_url: FieldValue.delete(),
-      avatar_url: FieldValue.delete(),
-      thumbnail_url: FieldValue.delete(),
-      logo_url: FieldValue.delete(),
-      wordmark_light_url: FieldValue.delete(),
-      wordmark_dark_url: FieldValue.delete(),
-      cover_url: FieldValue.delete(),
       updated: { at: FieldValue.serverTimestamp(), by: uid },
     })
   })
 
-  const appDatabaseId = String(
-    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
-  ).trim()
-  const projection = await ensureRuntimeAppMeta({
-    actorUid: uid,
-    appDatabaseId,
-    config,
-  })
-  return { ok: true, appId: config.appId, projection }
+  return { ok: true, appId: config.appId }
 }

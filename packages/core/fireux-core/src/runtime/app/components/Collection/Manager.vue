@@ -1,5 +1,5 @@
 <template>
-  <section class="collection-directory app-directory">
+  <section class="collection-directory app-collection">
     <CollectionDirectoryHeader :title="title" :description="description">
       <template #controls>
         <UInput
@@ -106,17 +106,15 @@
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useDevCollectionJson } from '../../../composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import {
-  useAppInterface,
-  type AppViewSource,
-} from '../../composables/useAppInterface'
+import { useAppInterface } from '../../composables/useAppInterface'
+import type { App } from '../../models/app.model'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
-import type { AppDirectoryController } from '../../../types/directory-controller.types.ts'
+import type { AppCollectionController } from '../../composables/useApps'
 
 const props = withDefaults(
   defineProps<{
-    controller: AppDirectoryController
+    controller: AppCollectionController
     title?: string
     description?: string
     link?: boolean
@@ -138,7 +136,7 @@ const props = withDefaults(
   }
 )
 
-const collection = computed<AppViewSource[]>(() => props.controller.apps.value)
+const collection = computed<App[]>(() => props.controller.apps.value)
 const outcome = computed(() => props.controller.outcome.value)
 const refresh = () => props.controller.refresh?.()
 const isSettled = computed(
@@ -170,7 +168,7 @@ const {
   cell: makeCell,
 } = useAppInterface()
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<AppViewSource, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<App, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (app) => makeCard(app),
     initialVariant: props.initialVariant,
@@ -189,9 +187,5 @@ const countLabel = computed(() =>
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )
-const devJsonContext = computed(() =>
-  props.controller.source === 'platform'
-    ? 'App directory projection · source: server-aggregated ecosystem projections · canonical entity: App'
-    : `App collection · source: ${props.controller.source} · canonical entity: App`
-)
+const devJsonContext = 'App collection · source: server · canonical entity: App'
 </script>

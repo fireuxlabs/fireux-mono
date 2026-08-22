@@ -191,7 +191,7 @@ const principles = [
 ] as const
 
 definePageMeta({
-  layout: 'landing',
+  layout: 'default',
   nav: {
     key: 'about',
     label: 'About',
@@ -200,7 +200,7 @@ definePageMeta({
     position: 'bottom',
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    layouts: ['default'],
   },
 })
 

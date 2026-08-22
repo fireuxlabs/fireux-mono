@@ -1,15 +1,10 @@
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { type ProjectStatus } from 'fireux-core/runtime/project/models/project.model'
+import { type Project } from 'fireux-core/runtime/project/models/project.model'
+import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getFirestoreDb } from '../../utils/firebase-admin'
-
-const PROJECT_STATUSES = new Set<ProjectStatus>([
-  'active',
-  'inactive',
-  'archived',
-])
 
 const text = (value: unknown) => String(value ?? '').trim()
 export async function readProjectIndex(event: H3Event) {
@@ -55,17 +50,16 @@ export async function readProjectIndex(event: H3Event) {
         )
       ).filter((document) => document.exists)
     : []
-  const items = documents
-    .map((document) => {
-      const source = (document.data() || {}) as Record<string, unknown>
-      const rawStatus = text(source.status) as ProjectStatus
-      return {
-        id: document.id,
-        name: text(source.name),
-        description: text(source.description),
-        image_url: text(source.image_url),
-        status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'inactive',
+  const items: Project[] = documents
+    .map((document): Project => {
+      const project = readProjectDocument(document.data(), document.id)
+      if (!project) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: `Invalid canonical Project: projects/${document.id}`,
+        })
       }
+      return project
     })
     .sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id))
 

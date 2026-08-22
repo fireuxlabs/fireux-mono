@@ -101,6 +101,12 @@ export async function run({ repoRoot }) {
     /workspace_targets/,
     'AppUser must not duplicate entity App-support authority.'
   )
+  assert.match(userAppModel, /created:\s*\{[\s\S]*updated:\s*\{/)
+  assert.doesNotMatch(
+    userAppModel,
+    /app_id/,
+    'AppUser must not repeat its owning App id inside the membership document.'
+  )
 
   const mutation = read(
     repoRoot,
@@ -108,7 +114,7 @@ export async function run({ repoRoot }) {
   )
   const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
-    '\nfunction membershipRepairPatch(',
+    '\nexport function membershipRepairPatch(',
     initialStart
   )
   const initialMembership = mutation.slice(initialStart, initialEnd)
@@ -123,6 +129,17 @@ export async function run({ repoRoot }) {
     /\bworkspace_targets:/,
     'New AppUser memberships must omit empty Workspace target indexes.'
   )
+  assert.doesNotMatch(
+    initialMembership,
+    /app_id/,
+    'New AppUser memberships must not repeat the App id already supplied by the path.'
+  )
+  assert.doesNotMatch(
+    mutation,
+    /membershipRepairPatch|coalescing legacy/,
+    'Runtime membership repair must not remain a legacy-shape adapter after migration.'
+  )
+  assert.match(mutation, /export function requireCanonicalMembership/)
 
   const context = read(
     repoRoot,

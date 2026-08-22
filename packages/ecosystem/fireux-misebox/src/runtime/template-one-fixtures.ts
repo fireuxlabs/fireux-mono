@@ -382,7 +382,7 @@ export const createTemplateOneFixtureProjection = (input: {
       eyebrow: 'Kitchen operations',
       title: `Manage ${kitchen.name} in Misebox.`,
       description: 'Menus, dishes, recipes, preparation and orders stay connected in the Kitchen Workspace.',
-      workspaceTo: isFriiites ? '/workspace/kitchen' : '/get-started',
+      workspaceTo: isFriiites ? '/' : '/get-started',
       workspaceLabel: 'Enter Workspace',
       origin: `${kitchen.name} · Developed in Switzerland`,
       links: [

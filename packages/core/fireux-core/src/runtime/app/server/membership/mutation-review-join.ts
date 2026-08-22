@@ -40,7 +40,7 @@ export async function handleReviewJoin(
       mutations.create(
         memberships,
         userId,
-        initialMembership(appId, actorUid, 'user')
+        initialMembership(actorUid, 'user')
       )
     const blocks = serverAppMembershipBlocksTarget(appId)
     if ((await mutations.read(blocks, userId)).exists)

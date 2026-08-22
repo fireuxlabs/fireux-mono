@@ -33,7 +33,8 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-identity',
     label: 'Identity',
-    icon: 'i-lucide-info',
+    group: 'Workspace',
+    icon: 'i-lucide-id-card',
     position: 'top',
     order: 3,
     desktop: true,

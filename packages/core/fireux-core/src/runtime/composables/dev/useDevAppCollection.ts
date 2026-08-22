@@ -70,9 +70,7 @@ export function useDevAppCollection(): UseDevAppCollectionReturn {
 
   const apps = computed(() => {
     const items = data.value?.requestUid === uid.value ? data.value.items : []
-    return items.filter(
-      (app) => String(app.status ?? '').trim() !== 'retired'
-    )
+    return items
   })
   const truncated = computed(
     () => data.value?.requestUid === uid.value && data.value.truncated === true

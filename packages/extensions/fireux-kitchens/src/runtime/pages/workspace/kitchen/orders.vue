@@ -15,10 +15,11 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-orders',
-    label: 'Orders',
+    label: 'Orders & Service',
+    group: 'Operations',
     icon: 'i-lucide-receipt-text',
     position: 'top',
-    order: 8,
+    order: 22,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

@@ -86,7 +86,7 @@
         :title="'Products (JSON)'"
         :context="devJsonContext"
         :objects="devJsonData"
-        :derived="{}"
+        :derived="devJsonDerived"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
@@ -187,4 +187,16 @@ const productCollectionRoot = getCollectionPath('products', false)
 const devJsonContext = computed(
   () => `collection manager · products · root: ${productCollectionRoot}`
 )
+const devJsonDerived = computed(() => ({
+  source: productCollectionRoot,
+  cards: cardsFiltered.value,
+  count: totalCount.value,
+  visibleCount: visibleCount.value,
+  query: query.value,
+  variant: variant.value,
+  link: linkEnabled.value,
+  pending: fetched.pending.value,
+  hasError: Boolean(fetched.error.value),
+  outcome: outcome.value,
+}))
 </script>

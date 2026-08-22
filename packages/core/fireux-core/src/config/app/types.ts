@@ -36,6 +36,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
+  /** App-shell home route. Defaults to `/`. */
+  homePath?: `/${string}`
   /** Complete semantic palette confirmed during App onboarding. */
   theme?: AppTheme
   /** Optional app-owned Firestore database id. Standalone apps should set this. */

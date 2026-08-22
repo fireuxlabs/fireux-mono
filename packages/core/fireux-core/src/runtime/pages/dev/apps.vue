@@ -56,7 +56,7 @@ import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
+import { useApps } from '../../app/composables/useApps'
 import type { App } from '../../app/models/app.model.ts'
 
 definePageMeta({
@@ -91,7 +91,7 @@ const appModelRuntime: App = {
   },
   self_join_enabled: false,
 }
-const publicAppsController = useEcosystemAppCollection()
+const publicAppsController = useApps()
 
 const { apps } = useDevAppCollection()
 

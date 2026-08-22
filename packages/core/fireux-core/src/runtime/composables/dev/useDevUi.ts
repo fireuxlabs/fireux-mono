@@ -9,7 +9,6 @@ export function useDevUi() {
     [
       '/kitchens',
       '/kitchens/create',
-      '/workspace/kitchen',
       '/workspace/kitchen/create',
       '/portfolios',
       '/portfolios/create',

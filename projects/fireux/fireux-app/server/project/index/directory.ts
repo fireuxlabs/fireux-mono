@@ -1,31 +1,23 @@
-import type { ProjectDirectoryEntry, ProjectDirectoryPage, } from 'fireux-core/runtime/project/models/project-directory.model'
-import type { ProjectStatus } from 'fireux-core/runtime/project/models/project.model'
+import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
-const text = (value: unknown) => String(value ?? '').trim()
-
-export async function readProjectDirectoryPage(): Promise<ProjectDirectoryPage> {
+export async function readProjects(): Promise<Project[]> {
   const snapshot = await (await getFirestoreDb())
     .collection('projects')
     .get()
   const projects = snapshot.docs
-    .flatMap((document): ProjectDirectoryEntry[] => {
-      const data = document.data() || {}
-      const status = text(data.status) as ProjectStatus
-      if (status !== 'active') return []
-      return [
-        {
-          id: document.id,
-          name: text(data.name),
-          description: text(data.description),
-          image_url: text(data.image_url),
-          status,
-        },
-      ]
+    .map((document): Project => {
+      const project = readProjectDocument(document.data(), document.id)
+      if (!project) {
+        throw new Error(`Invalid canonical Project: projects/${document.id}`)
+      }
+      return project
     })
+    .filter((project) => project.status === 'active')
     .sort((left, right) =>
       (left.name || left.id).localeCompare(right.name || right.id)
     )
 
-  return { projects }
+  return projects
 }

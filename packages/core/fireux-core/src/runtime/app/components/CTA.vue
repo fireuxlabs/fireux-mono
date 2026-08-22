@@ -31,24 +31,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMyApps } from '../composables/firestore/utils/useMyApps'
-import type { AppDirectoryController } from '../../types/directory-controller.types.ts'
+import type { AppCollectionController } from '../composables/useApps'
 
 const props = defineProps<{
-  controller: AppDirectoryController
+  controller: AppCollectionController
 }>()
 
 const { hasApps } = useMyApps(props.controller.apps)
-const isPlatformDirectory = props.controller.source === 'platform'
-
 const title = computed(() => (hasApps.value ? 'My apps' : 'Apps'))
 const description = computed(() =>
   hasApps.value
-    ? isPlatformDirectory
-      ? 'Find your apps in the platform directory, or start another app.'
-      : 'Manage your apps, or start another app in this ecosystem.'
-    : isPlatformDirectory
-      ? 'Explore apps across the FireUX platform, or start your app.'
-      : 'Find apps in this ecosystem, or start your app.'
+    ? 'Manage your apps, or start another app.'
+    : 'Explore apps, or start your app.'
 )
 const primaryLabel = computed(() =>
   hasApps.value ? 'Add another app' : 'Start your app'

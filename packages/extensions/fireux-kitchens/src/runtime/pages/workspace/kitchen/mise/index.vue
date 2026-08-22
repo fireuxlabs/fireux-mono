@@ -27,9 +27,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-mise',
     label: 'Mise',
-    icon: 'i-lucide-list-todo',
+    group: 'Operations',
+    icon: 'i-lucide-list-checks',
     position: 'top',
-    order: 3,
+    order: 21,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

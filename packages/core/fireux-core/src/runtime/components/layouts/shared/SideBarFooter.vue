@@ -99,7 +99,7 @@ const actionItems = computed(() => {
     {
       label: `${fireux.appShortName || fireux.appName} home`,
       icon: 'i-lucide-house',
-      to: '/',
+      to: fireux.homePath || '/',
     },
   ]
 

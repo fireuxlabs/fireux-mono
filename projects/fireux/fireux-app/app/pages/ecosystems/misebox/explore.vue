@@ -169,12 +169,9 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type {
-  AppDirectoryEntry,
-  EcosystemDirectoryEntry,
-  PlatformDirectoryResponse,
-} from 'fireux-core/runtime/models/utils/directory'
+import type { EcosystemDirectoryEntry, PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -188,6 +185,7 @@ const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
   () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
+const { apps } = useApps('/api/platform/apps')
 
 const ecosystem = computed(
   () =>
@@ -196,13 +194,13 @@ const ecosystem = computed(
         entry.status === 'active' && entry.id === 'misebox'
     ) ?? null
 )
-const publishedApps = computed<AppDirectoryEntry[]>(() =>
-  (data.value?.apps ?? [])
+const publishedApps = computed<App[]>(() =>
+  apps.value
     .filter(
-      (entry: AppDirectoryEntry) =>
+      (entry: App) =>
         entry.status === 'active' && entry.ecosystem_id === 'misebox'
     )
-    .sort((left: AppDirectoryEntry, right: AppDirectoryEntry) => {
+    .sort((left: App, right: App) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
       return left.name.localeCompare(right.name)
@@ -240,10 +238,10 @@ const appRoleLabel = (role: App['role'] | '') => {
   return 'Published App'
 }
 
-const appSummary = (app: AppDirectoryEntry) =>
-  app.tagline.trim() ||
-  app.short_bio.trim() ||
-  app.description.trim() ||
+const appSummary = (app: App) =>
+  app.tagline?.trim() ||
+  app.short_bio?.trim() ||
+  app.description?.trim() ||
   `A published ${appRoleLabel(app.role)} connected to the Misebox Ecosystem.`
 
 useSeo({

@@ -14,7 +14,7 @@ import {
   forbidden,
   initialMembership,
   isAdminMembership,
-  membershipRepairPatch,
+  requireCanonicalMembership,
   requiredIdentityUserId,
   roleFrom,
   stamp,
@@ -61,15 +61,11 @@ async function mutateInTransaction(
         mutations.create(
           memberships,
           actorUid,
-          initialMembership(appId, actorUid, 'user')
+          initialMembership(actorUid, 'user')
         )
         mutations.update(apps, appId, appGovernancePatch(actorUid))
       } else {
-        if (!roleFrom(actorMembership))
-          forbidden(409, 'The existing App membership has an invalid role.')
-        const repair = membershipRepairPatch(actorMembership ?? {}, actorUid)
-        if (Object.keys(repair).length)
-          mutations.update(memberships, actorUid, repair)
+        requireCanonicalMembership(actorMembership ?? {})
       }
       return {
         ok: true,
@@ -102,14 +98,15 @@ async function mutateInTransaction(
         mutations.create(
           memberships,
           actorUid,
-          initialMembership(appId, actorUid, 'admin')
+          initialMembership(actorUid, 'admin')
         )
-      else
+      else {
+        requireCanonicalMembership(actorMembership ?? {})
         mutations.update(memberships, actorUid, {
-          ...membershipRepairPatch(actorMembership ?? {}, actorUid),
           role: 'admin',
           updated: stamp(actorUid),
         })
+      }
       mutations.update(apps, appId, appGovernancePatch(actorUid))
       return {
         ok: true,

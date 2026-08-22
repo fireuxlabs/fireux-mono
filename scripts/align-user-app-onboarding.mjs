@@ -18,6 +18,7 @@ import {
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
 import { mcpSkillCreate } from './_lib/firestore-mutations/mcp-skill-create.mjs'
+import { mcpSkillDelete } from './_lib/firestore-mutations/mcp-skill-delete.mjs'
 import { mcpSkillUpdate } from './_lib/firestore-mutations/mcp-skill-update.mjs'
 import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 import { defineFirestoreMutationTarget } from '../packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts'
@@ -50,20 +51,8 @@ const LEGACY_MEMBERSHIP_FIELDS = [
   'console_targets',
   'notifications',
   'profiles',
-]
-const APP_META_FIELDS = [
-  'project_id',
-  'ecosystem_id',
-  'role',
-  'status',
-  'name',
-  'short_name',
-  'description',
-  'media',
-  'database_id',
-  'website_url',
-  'workspace_families',
-  'updated',
+  'workspace_enabled',
+  'workspace_targets',
 ]
 const ECOSYSTEM_META_FIELDS = [
   'project_id',
@@ -76,7 +65,6 @@ const ECOSYSTEM_META_FIELDS = [
   'updated',
 ]
 const PROJECT_META_FIELDS = [
-  'id',
   'status',
   'name',
   'description',
@@ -105,7 +93,7 @@ Explicit apply:
     --backup /private/tmp/onboarding-preimage.json
 
 Safe repairs only: missing User presentation defaults, canonical EcosystemMeta,
-ProjectMeta and AppMeta projections, AppUser lifecycle defaults, and redundant legacy
+ProjectMeta projections, AppUser lifecycle defaults, and redundant legacy
 fields. The command never creates legal acceptance, Users, canonical
 Ecosystems, App memberships, canonical Apps, admin roles, Auth identities, or
 Storage objects.
@@ -335,9 +323,7 @@ function publicHttpsUrl(value) {
   }
 }
 
-function appPublicSiteUrl(entry, appMetaData) {
-  const configured = publicHttpsUrl(appMetaData.website_url)
-  if (configured) return configured
+function appPublicSiteUrl(entry) {
   const authored = publicHttpsUrl(appSiteUrl(entry))
   if (authored) return authored
 
@@ -420,7 +406,14 @@ async function buildPlan(sessions) {
       `${entry.projectId}/${entry.databaseId}/${entry.collectionPath}/${entry.id}`
   )
   if (new Set(operationKeys).size !== operationKeys.length) {
-    throw new Error('Planner produced duplicate mutation targets.')
+    const duplicates = operationKeys.filter(
+      (key, index) => operationKeys.indexOf(key) !== index
+    )
+    throw new Error(
+      `Planner produced duplicate mutation targets: ${[
+        ...new Set(duplicates),
+      ].join(', ')}`
+    )
   }
   const planSha256 = sha256(operations)
   return {
@@ -454,10 +447,10 @@ async function planEcosystem(session, operations, issues, blockers) {
   const ecosystemId = text(authoredApp.ecosystem_id) || session.ecosystemKey
   const ecosystemProjectId = ecosystemId
   const globalAppDb = getFirestore(session.app, text(globalApp.databaseId))
-  const [globalCanonicalApp, globalAppMeta] = await Promise.all([
-    globalAppDb.collection('apps').doc(globalApp.appId).get(),
-    defaultDb.collection('apps').doc(globalApp.appId).get(),
-  ])
+  const globalCanonicalApp = await globalAppDb
+    .collection('apps')
+    .doc(globalApp.appId)
+    .get()
   const canonical = await canonicalDb
     .collection('ecosystems')
     .doc(ecosystemId)
@@ -495,13 +488,10 @@ async function planEcosystem(session, operations, issues, blockers) {
   const set = {}
   const deleteFields = []
   const appData = globalCanonicalApp.data() || {}
-  const appMetaData = globalAppMeta.data() || {}
   const appMedia = appData.media || {}
-  const appMetaMedia = appMetaData.media || {}
   const presentationSource = {
     name:
       text(appData.name) ||
-      text(appMetaData.name) ||
       text(globalApp.name) ||
       text(session.sourceName),
     description:
@@ -509,10 +499,9 @@ async function planEcosystem(session, operations, issues, blockers) {
         ? text(session.sourceDescription)
         : '') ||
       text(appData.description) ||
-      text(appMetaData.description) ||
       text(session.sourceDescription),
-    image_url: text(appMedia.logo_url) || text(appMetaMedia.logo_url),
-    website_url: appPublicSiteUrl(globalApp, appMetaData),
+    image_url: text(appMedia.logo_url),
+    website_url: appPublicSiteUrl(globalApp),
   }
   if (!text(data.project_id)) set.project_id = ecosystemProjectId
   else if (text(data.project_id) !== ecosystemProjectId) {
@@ -642,7 +631,7 @@ async function planProjects(sessions, operations, issues, blockers) {
       continue
     }
     const authoredApp = appSource(globalApp)
-    const projectId = text(authoredApp.project_id) || session.ecosystemKey
+    const projectId = session.ecosystemKey
     const ecosystemId = text(authoredApp.ecosystem_id) || session.ecosystemKey
     const ecosystem = await getFirestore(
       session.app,
@@ -685,26 +674,18 @@ async function planProjects(sessions, operations, issues, blockers) {
     const ecosystemData = ecosystem.data() || {}
     const canonicalData = canonical.data() || {}
     const expected = {
-      id: projectId,
-      status: text(ecosystemData.status) || 'draft',
+      status:
+        text(ecosystemData.status) === 'active' ||
+        text(ecosystemData.status) === 'archived'
+          ? text(ecosystemData.status)
+          : 'inactive',
       name: text(ecosystemData.name),
       description: text(ecosystemData.description),
       image_url: publicHttpsUrl(ecosystemData.image_url),
     }
     const set = {}
-    if (text(canonicalData.id) && text(canonicalData.id) !== projectId) {
-      blockers.push(
-        issue(
-          session,
-          'PROJECT_ID_CONFLICT',
-          canonical.ref.path,
-          `stored=${text(canonicalData.id)} source=${projectId}`
-        )
-      )
-      continue
-    }
     for (const [field, value] of Object.entries(expected)) {
-      const requiredIdentity = field === 'id' || field === 'status'
+      const requiredIdentity = field === 'status'
       if (
         (requiredIdentity || text(value)) &&
         stableJson(canonicalData[field]) !== stableJson(value)
@@ -724,21 +705,36 @@ async function planProjects(sessions, operations, issues, blockers) {
         )
       }
     }
-    if (Object.keys(set).length) {
+    const deleteFields = []
+    if ('id' in canonicalData) {
+      if (text(canonicalData.id) && text(canonicalData.id) !== projectId) {
+        blockers.push(
+          issue(
+            session,
+            'PROJECT_ID_CONFLICT',
+            canonical.ref.path,
+            `stored=${text(canonicalData.id)} path=${projectId}`
+          )
+        )
+        continue
+      }
+      deleteFields.push('id')
+    }
+    if (Object.keys(set).length || deleteFields.length) {
       operations.push(
         operation(
           controlSession,
           controlSession.identityDatabaseId,
           'projects',
           canonical,
-          { verb: 'update', set }
+          { verb: 'update', set, deleteFields }
         )
       )
     }
 
     const nextCanonical = { ...canonicalData, ...set }
+    delete nextCanonical.id
     const canonicalMeta = {
-      id: projectId,
       status: text(nextCanonical.status),
       name: text(nextCanonical.name),
       description: text(nextCanonical.description),
@@ -862,13 +858,12 @@ async function planApps(session, operations, issues, blockers) {
     const databaseId = text(entry.databaseId)
     const db = getFirestore(session.app, databaseId)
     const app = await db.collection('apps').doc(entry.appId).get()
-    const meta = await defaultDb.collection('apps').doc(entry.appId).get()
+    const [legacyMeta, retiredMeta] = await Promise.all([
+      defaultDb.collection('apps').doc(entry.appId).get(),
+      defaultDb.collection('app-directory').doc(entry.appId).get(),
+    ])
     if (!app.exists) {
       issues.push(issue(session, 'APP_INITIALIZATION_REQUIRED', app.ref.path))
-      if (!meta.exists)
-        issues.push(
-          issue(session, 'APP_META_BLOCKED_BY_MISSING_APP', meta.ref.path)
-        )
       continue
     }
 
@@ -900,6 +895,9 @@ async function planApps(session, operations, issues, blockers) {
     }
     for (const field of LEGACY_APP_FIELDS)
       if (field in data) deleteFields.push(field)
+    if (data.created && typeof data.created === 'object' && 'app_id' in data.created) {
+      deleteFields.push('created.app_id')
+    }
     if (Object.keys(appSet).length || deleteFields.length) {
       operations.push(
         operation(session, databaseId, 'apps', app, {
@@ -933,6 +931,13 @@ async function planApps(session, operations, issues, blockers) {
       }
       for (const field of LEGACY_MEMBERSHIP_FIELDS)
         if (field in value) remove.push(field)
+      if (
+        value.created &&
+        typeof value.created === 'object' &&
+        'app_id' in value.created
+      ) {
+        remove.push('created.app_id')
+      }
       if (Object.keys(set).length || remove.length) {
         operations.push(
           operation(session, databaseId, `apps/${app.id}/users`, membership, {
@@ -947,54 +952,11 @@ async function planApps(session, operations, issues, blockers) {
       issues.push(issue(session, 'ACTIVE_APP_ADMIN_REQUIRED', app.ref.path))
     }
 
-    const websiteUrl = text(meta.get('website_url')) || appSiteUrl(entry)
-    if (!websiteUrl) {
-      blockers.push(issue(session, 'APP_META_WEBSITE_REQUIRED', meta.ref.path))
-      continue
-    }
-    const canonicalMeta = {
-      project_id: text(nextData.project_id),
-      ...(text(nextData.ecosystem_id)
-        ? { ecosystem_id: text(nextData.ecosystem_id) }
-        : {}),
-      role: text(nextData.role),
-      status: text(nextData.status),
-      name: text(nextData.name),
-      short_name: text(nextData.short_name),
-      description: text(nextData.description),
-      media: nextData.media || {},
-      database_id: databaseId,
-      website_url: websiteUrl,
-      workspace_families: [...new Set(entry.workspaces || [])].sort(),
-      updated: stableValue(nextData.updated || {}),
-    }
-    if (!meta.exists) {
+    for (const meta of [legacyMeta, retiredMeta]) {
+      if (!meta.exists) continue
       operations.push(
-        operation(session, '(default)', 'apps', meta, {
-          verb: 'create',
-          set: canonicalMeta,
-        })
-      )
-      continue
-    }
-    const metaData = meta.data() || {}
-    const metaSet = Object.fromEntries(
-      Object.entries(canonicalMeta).filter(
-        ([field, value]) => stableJson(metaData[field]) !== stableJson(value)
-      )
-    )
-    const metaDelete = Object.keys(metaData).filter(
-      (field) => field === 'id' || !APP_META_FIELDS.includes(field)
-    )
-    if (!text(nextData.ecosystem_id) && 'ecosystem_id' in metaData) {
-      metaDelete.push('ecosystem_id')
-    }
-    if (Object.keys(metaSet).length || metaDelete.length) {
-      operations.push(
-        operation(session, '(default)', 'apps', meta, {
-          verb: 'update',
-          set: metaSet,
-          deleteFields: metaDelete,
+        operation(session, '(default)', meta.ref.parent.path, meta, {
+          verb: 'delete',
         })
       )
     }
@@ -1105,6 +1067,8 @@ async function applyOperations(sessions, operations) {
     for (const field of entry.deleteFields) patch[field] = FieldValue.delete()
     if (entry.verb === 'create') {
       await mcpSkillCreate(session.app, target, entry.id, patch)
+    } else if (entry.verb === 'delete') {
+      await mcpSkillDelete(session.app, target, entry.id)
     } else {
       await mcpSkillUpdate(session.app, target, entry.id, patch)
     }
@@ -1120,6 +1084,10 @@ async function verifyOperations(sessions, operations) {
   for (const entry of operations) {
     const snapshot = await currentSnapshot(sessionFor(sessions, entry), entry)
     const data = snapshot.data() || {}
+    if (entry.verb === 'delete') {
+      if (snapshot.exists) failures.push({ path: snapshot.ref.path, reason: 'not-deleted' })
+      continue
+    }
     if (!snapshot.exists) {
       failures.push({ path: snapshot.ref.path, reason: 'missing' })
       continue

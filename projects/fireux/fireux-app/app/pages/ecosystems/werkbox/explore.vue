@@ -74,10 +74,9 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type {
-  AppDirectoryEntry,
-  PlatformDirectoryResponse,
-} from 'fireux-core/runtime/models/utils/directory'
+import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
 definePageMeta({
   layout: 'landing',
@@ -88,19 +87,20 @@ const { data } = await useAsyncData<PlatformDirectoryResponse>(
   () => $fetch('/api/directory'),
   { server: true, lazy: false }
 )
-const publishedApps = computed<AppDirectoryEntry[]>(() =>
-  (data.value?.apps ?? [])
+const { apps } = useApps('/api/platform/apps')
+const publishedApps = computed<App[]>(() =>
+  apps.value
     .filter(
-      (app: AppDirectoryEntry) =>
+      (app: App) =>
         app.status === 'active' && app.ecosystem_id === 'cleanbox'
     )
-    .sort((left: AppDirectoryEntry, right: AppDirectoryEntry) => {
+    .sort((left: App, right: App) => {
       if (left.role === 'global') return -1
       if (right.role === 'global') return 1
       return left.name.localeCompare(right.name)
     })
 )
-const appSummary = (app: AppDirectoryEntry) =>
+const appSummary = (app: App) =>
   app.tagline ||
   app.short_bio ||
   app.description ||

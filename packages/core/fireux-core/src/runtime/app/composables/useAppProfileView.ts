@@ -4,8 +4,8 @@ import type { UserCard } from '../../user/composables/useUserInterface'
 import {
   useAppInterface,
   type AppCard,
-  type AppViewSource,
 } from './useAppInterface'
+import type { App } from '../models/app.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 
@@ -21,7 +21,7 @@ export type AppProfileViewModel = {
 }
 
 export function useAppProfileView(
-  appRef: Ref<AppViewSource | null | undefined>
+  appRef: Ref<App | null | undefined>
 ) {
   const { profile: toProfile } = useAppInterface(appRef)
   const creatorId = computed(
@@ -45,9 +45,7 @@ export function useAppProfileView(
       description: safeString(appRef.value?.description),
       appId: safeString(appRef.value?.id) || card.value.id,
       role: safeString(appRef.value?.role) || card.value.role,
-      ecosystem:
-        safeString(appRef.value?.ecosystem_id || appRef.value?.ecosystem) ||
-        card.value.ecosystem,
+      ecosystem: safeString(appRef.value?.ecosystem_id) || card.value.ecosystem,
       creatorId: creatorId.value ?? '',
       creatorCard: creatorCard.value,
       createdAtText: createdAtText.value,

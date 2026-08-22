@@ -1,7 +1,7 @@
 import {
   createEmptyAppSocialLinks,
 } from '../factories/createEmptyAppSocialLinks'
-import type { AppSocialLinks } from '../../../../models/app-directory.model.ts'
+import type { App } from '../../../../models/app.model.ts'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 
@@ -20,8 +20,8 @@ export function formatUrl(url: string): string {
 }
 
 /** Formats social links object for storage */
-export function formatSocialLinks(socialLinks: AppSocialLinks): AppSocialLinks {
-  const formatted: AppSocialLinks = createEmptyAppSocialLinks()
+export function formatSocialLinks(socialLinks: App['social_links']): App['social_links'] {
+  const formatted: App['social_links'] = createEmptyAppSocialLinks()
   const platforms = [
     'website',
     'instagram',

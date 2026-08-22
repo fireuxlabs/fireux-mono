@@ -50,7 +50,7 @@
       </div>
     </template>
 
-    <section class="collection-directory project-directory">
+    <section class="collection-directory project-collection">
       <CollectionDirectoryHeader
         title="Active Projects"
         description="See the Apps connected to each Project."
@@ -138,11 +138,11 @@
                 <NuxtLink
                   v-for="app in appsForProject(project.id)"
                   :key="app.id"
-                  :to="app.detail_url"
+                  :to="`/apps/${encodeURIComponent(app.id)}`"
                   class="project-card__app"
                 >
                   <UAvatar
-                    :src="app.media.logo_url || undefined"
+                    :src="app.media?.logo_url || undefined"
                     :text="app.name || app.short_name || app.id"
                     :alt="app.name || app.short_name || app.id"
                     size="xs"
@@ -186,20 +186,20 @@
 import { computed } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectDirectory } from '../../composables/useProjectDirectory'
-import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
-const projectDirectory = useProjectDirectory()
-const appDirectory = usePlatformAppDirectory()
-const { projects } = projectDirectory
+const projectCollection = useProjects()
+const appDirectory = useApps('/api/platform/apps')
+const { projects } = projectCollection
 const pending = computed(
-  () => projectDirectory.pending.value || appDirectory.pending.value
+  () => projectCollection.pending.value || appDirectory.pending.value
 )
 const error = computed(
-  () => projectDirectory.error.value || appDirectory.error.value
+  () => projectCollection.error.value || appDirectory.error.value
 )
 const refresh = async () => {
-  await Promise.all([projectDirectory.refresh(), appDirectory.refresh()])
+  await Promise.all([projectCollection.refresh(), appDirectory.refresh()])
 }
 const appsByProject = computed(() => {
   const grouped = new Map<string, typeof appDirectory.apps.value>()
@@ -223,7 +223,7 @@ const devDerived = computed(() => ({
       appsForProject(project.id).map((app) => ({
         id: app.id,
         name: app.name,
-        detail_url: app.detail_url,
+        detail_url: `/apps/${encodeURIComponent(app.id)}`,
       })),
     ])
   ),

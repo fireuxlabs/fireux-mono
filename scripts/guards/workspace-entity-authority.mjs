@@ -3,7 +3,7 @@
 // usage_note: run through pnpm guard; locks root Workspace Entity storage and exact root-owned Team authority.
 
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const read = (repoRoot, relativePath) =>
@@ -187,17 +187,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(supplierServerUpdate, /serverSupplierTeamMembersTarget/)
   assert.match(supplierServerUpdate, /FIRESTORE_MUTATION_TARGETS\.suppliers/)
 
-  const projectCreate = read(
-    repoRoot,
-    'projects/fireux/fireux-app/server/project/index/create.ts'
-  )
-  assert.match(projectCreate, /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/)
-  assert.match(projectCreate, /fireuxProjectTeamMembersTarget/)
-  assert.match(projectCreate, /role:\s*'owner'/)
-  assert.doesNotMatch(
-    projectCreate,
-    /fireuxAppProjectsTarget|operator_ids|team_ids/
-  )
+  for (const retiredProjectMutation of [
+    'projects/fireux/fireux-app/server/project/index/create.ts',
+    'projects/fireux/fireux-app/server/project/identity/update.ts',
+    'projects/fireux/fireux-app/server/project/identity/delete.ts',
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, retiredProjectMutation)),
+      false,
+      `Project Workspace must stay read-only until ProjectMeta synchronization exists: ${retiredProjectMutation}`
+    )
+  }
 
   const marketplace = [
     read(

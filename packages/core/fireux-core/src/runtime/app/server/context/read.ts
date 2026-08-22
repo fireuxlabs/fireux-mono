@@ -6,7 +6,7 @@ import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
 } from '../../../server/utils/getRuntimeFirestore'
-import { projectAppDetail } from '../index/projection.ts'
+import { readAppDocument } from '../../utils/readApp.ts'
 import type {
   CurrentAppContextResponse,
   CurrentAppMembership,
@@ -22,38 +22,22 @@ function membershipDto(
   isConfiguredDeveloper: boolean,
   profiles: string[]
 ): CurrentAppMembership {
-  const role =
-    value.role === 'admin' || value.role === 'user' ? value.role : 'user'
   if (value.role !== 'admin' && value.role !== 'user') {
-    console.warn('[app/context] coalescing legacy membership role', {
-      appId: value.app_id,
-      userId: id,
-    })
+    conflict(`App membership ${id} has an invalid role.`)
   }
-  const isPremium = value.is_premium === true
   if (typeof value.is_premium !== 'boolean') {
-    console.warn('[app/context] coalescing legacy premium flag', {
-      appId: value.app_id,
-      userId: id,
-    })
+    conflict(`App membership ${id} has an invalid premium flag.`)
   }
-  const onboardingStatus =
-    value.onboarding_status === 'completed' ||
-    value.onboarding_status === 'skipped'
-      ? value.onboarding_status
-      : 'pending'
   if (
-    value.onboarding_status !== undefined &&
     value.onboarding_status !== 'pending' &&
     value.onboarding_status !== 'completed' &&
     value.onboarding_status !== 'skipped'
   ) {
-    console.warn('[app/context] coalescing legacy onboarding status', {
-      appId: value.app_id,
-      userId: id,
-      value: value.onboarding_status,
-    })
+    conflict(`App membership ${id} has an invalid onboarding status.`)
   }
+  const role = value.role
+  const isPremium = value.is_premium
+  const onboardingStatus = value.onboarding_status
   const normalizedMembership = {
     ...value,
     role,
@@ -112,19 +96,12 @@ export async function readCurrentAppContext(event: H3Event) {
     (_profile, index) => profileSnapshots[index]?.exists
   )
 
-  const appData = (appSnapshot.data() || {}) as Record<string, unknown>
-  const projectedApp = appSnapshot.exists
-    ? projectAppDetail(appData, { id: appSnapshot.id })
+  const app = appSnapshot.exists
+    ? readAppDocument(appSnapshot.data(), appSnapshot.id)
     : null
-  if (appSnapshot.exists && !projectedApp) {
+  if (appSnapshot.exists && !app) {
     conflict('Current App has an invalid canonical shape.')
   }
-  const app = projectedApp
-    ? {
-        ...projectedApp,
-        self_join_enabled: appData.self_join_enabled === true,
-      }
-    : null
 
   const membership = membershipSnapshot.exists
     ? membershipDto(

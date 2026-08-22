@@ -5,13 +5,13 @@ import type { FirestoreCollectionOutcome } from '../../composables/fireux/firest
 import { useFirestoreCollectionState } from '../../composables/fireux/firestore/operations/useFirestoreCollection'
 import type { WorkspaceSource } from '../../composables/fireux/workspace/useWorkspace'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useProjectInterface, type ProjectSurface } from './useProjectInterface'
+import type { Project } from '../models/project.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 type ProjectControlResponse = {
   ok: true
-  items: ProjectSurface[]
+  items: Project[]
 }
 
 export type ProjectCollectionFilterValue = string | number | null | undefined
@@ -28,7 +28,7 @@ type UseProjectCollectionOptions = {
 }
 
 export type UseProjectCollectionReturn = {
-  projects: ComputedRef<ProjectSurface[]>
+  projects: ComputedRef<Project[]>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -39,7 +39,6 @@ export type UseProjectCollectionReturn = {
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ): UseProjectCollectionReturn {
-  const { surface } = useProjectInterface()
   const { currentUser, hasAuthState } = useAuth()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -84,14 +83,10 @@ export function useProjectCollection(
       watch: [currentUser, hasAuthState, sourceMode],
     }
   )
-  const projects = computed<ProjectSurface[]>(() =>
-    (currentUser.value ? (data.value?.items ?? []) : []).flatMap(
-      (project: ProjectSurface) => {
-        const item = surface({ project })
-        if (!item || (filterIds.value && !filterIds.value.has(text(item.id))))
-          return []
-        return [item]
-      }
+  const projects = computed<Project[]>(() =>
+    (currentUser.value ? (data.value?.items ?? []) : []).filter(
+      (project: Project) =>
+        !filterIds.value || filterIds.value.has(text(project.id))
     )
   )
   const count = computed(() => projects.value.length)

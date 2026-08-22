@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
+  homePath: '/about',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   designPack: { preset: 'sci-fire' },

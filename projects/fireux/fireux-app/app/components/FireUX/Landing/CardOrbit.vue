@@ -131,10 +131,9 @@ import type {
   LandingCardOrbitDataSource,
   LandingCardOrbitItem,
 } from 'fireux-core/types/landing-card-orbit'
-import type {
-  AppDirectoryEntry,
-  EcosystemDirectoryEntry,
-} from 'fireux-core/runtime/models/utils/directory'
+import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import {
   useAppInterface,
   type AppCard,
@@ -158,6 +157,7 @@ withDefaults(
 )
 
 const { data, pending, error } = usePlatformDirectory()
+const { apps: platformApps } = useApps('/api/platform/apps')
 const { ecosystems: publishedEcosystems } =
   usePublishedPlatformEcosystemDirectory()
 const orbitDataSource = 'live' satisfies LandingCardOrbitDataSource
@@ -173,9 +173,7 @@ const {
 } = useEcosystemInterface()
 
 type EcosystemPreviewCard = NonNullable<ReturnType<typeof toEcosystemPreview>>
-const directoryApps = computed<readonly AppDirectoryEntry[]>(
-  () => data.value?.apps ?? []
-)
+const directoryApps = computed<readonly App[]>(() => platformApps.value)
 const directoryEcosystems = computed<readonly EcosystemDirectoryEntry[]>(
   () => publishedEcosystems.value
 )

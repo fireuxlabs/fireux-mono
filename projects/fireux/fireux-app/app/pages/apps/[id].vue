@@ -11,14 +11,14 @@
 
       <template v-else-if="app">
         <header class="app-detail__hero">
-          <div v-if="app.media.cover_url" class="app-detail__cover" :style="appHeroStyle" aria-hidden="true" />
+          <div v-if="app.media?.cover_url" class="app-detail__cover" :style="appHeroStyle" aria-hidden="true" />
           <div class="app-detail__shade" aria-hidden="true" />
           <div class="app-detail__topline">
             <UButton to="/apps" color="neutral" variant="soft" icon="i-lucide-arrow-left" size="sm">All Apps</UButton>
             <span class="app-detail__role">{{ roleLabel }}</span>
           </div>
           <div class="app-detail__identity">
-            <UAvatar :src="app.media.logo_url || app.media.thumbnail_url || undefined" :text="app.name || app.id" :alt="app.name || app.id" size="3xl" class="app-detail__avatar" />
+            <UAvatar :src="app.media?.logo_url || app.media?.thumbnail_url || undefined" :text="app.name || app.id" :alt="app.name || app.id" size="3xl" class="app-detail__avatar" />
             <div>
               <p class="app-detail__eyebrow">FireUX App</p>
               <h1>{{ app.name || app.id }}</h1>
@@ -56,7 +56,7 @@
           </div>
         </section>
 
-        <DevDebugPanel object-origin="fetched" launcher include-route title="App (JSON)" context="Canonical App directory projection with Project and Ecosystem relationships derived separately" :objects="[app]" :derived="{ project, ecosystem }" :default-open="false" />
+        <DevDebugPanel object-origin="fetched" launcher include-route title="App (JSON)" context="Canonical App from its owning named database; Project and Ecosystem relationships are derived separately" :objects="[app]" :derived="{ project, ecosystem }" :default-open="false" />
       </template>
     </UPageBody>
   </UPage>
@@ -67,23 +67,30 @@ import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { buildPublicPageJsonLd, useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type { AppDirectoryEntry, EcosystemDirectoryEntry, PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
-import { useProjectDirectory } from '../../composables/useProjectDirectory'
+import type { App } from 'fireux-core/runtime/app/models/app.model'
+import type { DetailResponse, EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
+import { usePlatformDirectory } from '../../composables/usePlatformDirectory'
+import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
-definePageMeta({ layout: 'default', title: 'App', description: 'View a published FireUX App and its relationships.', name: 'FireuxAppDirectoryDetailPage' })
+definePageMeta({ layout: 'default', title: 'App', description: 'View a published FireUX App and its relationships.', name: 'FireuxAppDetailPage' })
 
 const routeId = useRouteParam('id')
-const { data, pending: appPending, error } = await useAsyncData<PlatformDirectoryResponse>('fireux-default-directory', () => $fetch('/api/directory'), { server: true, lazy: false })
-const projectDirectory = useProjectDirectory()
-const app = computed<AppDirectoryEntry | null>(() => data.value?.apps.find((entry) => entry.id === routeId.value || entry.slug === routeId.value) ?? null)
-const project = computed(() => projectDirectory.projects.value.find((entry) => entry.id === app.value?.project_id) ?? null)
+const { data: directoryData, pending: directoryPending, error: directoryError } = usePlatformDirectory()
+const { data, pending: appPending, error } = await useAsyncData<DetailResponse<App>>(
+  () => `fireux-app-detail-${routeId.value}`,
+  () => $fetch(`/api/platform/apps/${encodeURIComponent(routeId.value)}`),
+  { server: true, lazy: false, watch: [routeId] }
+)
+const projectCollection = useProjects()
+const app = computed<App | null>(() => data.value?.item ?? null)
+const project = computed(() => projectCollection.projects.value.find((entry) => entry.id === app.value?.project_id) ?? null)
 const ecosystem = computed<EcosystemDirectoryEntry | null>(() => {
   const id = app.value?.ecosystem_id
-  return id ? data.value?.ecosystems.find((entry) => entry.id === id) ?? null : null
+  return id ? directoryData.value?.ecosystems.find((entry) => entry.id === id) ?? null : null
 })
-const pending = computed(() => appPending.value || projectDirectory.pending.value)
-const failed = computed(() => Boolean(error.value || projectDirectory.error.value))
+const pending = computed(() => appPending.value || directoryPending.value || projectCollection.pending.value)
+const failed = computed(() => Boolean(error.value || directoryError.value || projectCollection.error.value))
 const missing = computed(() => !pending.value && !failed.value && !app.value)
 
 if (import.meta.server) {
@@ -93,9 +100,9 @@ if (import.meta.server) {
 
 const roleLabel = computed(() => app.value?.role === 'global' ? 'Main App' : app.value?.role === 'tenant' ? 'Tenant App' : app.value?.role === 'standalone' ? 'Standalone App' : 'App')
 const pageDescription = computed(() => app.value?.description || app.value?.short_bio || 'Published FireUX App.')
-const appHeroStyle = computed(() => ({ backgroundImage: app.value?.media.cover_url ? `url(${app.value.media.cover_url})` : undefined }))
-const ignitionTo = computed(() => `/get-started?example=${encodeURIComponent(app.value?.slug || app.value?.id || routeId.value)}`)
-const canonicalPath = computed(() => app.value?.detail_url || `/apps/${encodeURIComponent(routeId.value)}`)
+const appHeroStyle = computed(() => ({ backgroundImage: app.value?.media?.cover_url ? `url(${app.value.media.cover_url})` : undefined }))
+const ignitionTo = computed(() => `/get-started?example=${encodeURIComponent(app.value?.id || routeId.value)}`)
+const canonicalPath = computed(() => `/apps/${encodeURIComponent(app.value?.id || routeId.value)}`)
 const isIndexable = computed(() => Boolean(app.value && isDirectoryAppIndexable(app.value.id)))
 
 useSeo({

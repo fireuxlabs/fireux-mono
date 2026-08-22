@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useEcosystemAppCollection } from '../../ecosystem/composables/useEcosystemAppCollection'
+import { useApps } from '../../app/composables/useApps'
 
 definePageMeta({
   nav: {
@@ -42,7 +42,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const appsController = useEcosystemAppCollection()
+const appsController = useApps()
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find apps in this ecosystem, or start your app.'

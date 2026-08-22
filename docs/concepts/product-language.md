@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-22
+Ref: da689ed54
 Role: map, not canon
 
 ## Purpose
@@ -116,13 +116,15 @@ surface says what can be reviewed; it does not lead with “what the Kitchen
 earned,” automatic conversion, profit, cash, or a generic Finance promise.
 
 The Kitchen Workspace may summarise its current capability tree. Identity and
-Team are first-class Workspace peers; they are not Operations. Finance is a
-selected-Kitchen reporting Operation. Overview is the Workspace home. QR is Menu
-tooling; Overview may expose quick access to important Menu QR results without
-owning the Tool. HACCP is a parked future Kitchen Operation until its workspace
-is wired. Training belongs under Team, and Purchasing belongs under Suppliers
-if Kitchen-owned purchasing gains authoritative producers. The Kitchen
-operation catalogue contains only those selected-Kitchen product meanings. Misebox may
+Team are first-class Workspace peers; they are not Operations. Sales, Costs,
+Waste, and Performance are selected-Kitchen Reports. The Agent root combines
+Kitchen selection with the overarching Kitchen AI; Overview summarises the
+selected Kitchen. QR is Menu tooling; Overview may expose quick access to
+important Menu QR results without owning the Tool. Food Safety is a current capability doorway;
+HACCP is one deeper concern within that capability, not a separate top-level
+domain. Training belongs under Team. Purchasing and Receiving are distinct
+Operations, while Suppliers is Kitchen Setup. The Kitchen operation catalogue
+contains only those selected-Kitchen product meanings. Misebox may
 summarise the Kitchen Workspace, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.

@@ -130,20 +130,6 @@ export const workspaceSurfaceCopy = {
     action: 'Open Suppliers',
     to: '/workspace/kitchen/suppliers',
   },
-  'kitchen.tables': {
-    eyebrow: 'Kitchen Workspace · Tables',
-    title: 'Review your tables.',
-    description:
-      'Review the table numbers configured for the selected Kitchen. Demo leaves tabs and billing empty until a real Table producer exists.',
-    items: [
-      'Configured table numbers',
-      'Selected-Kitchen scope',
-      'No invented tabs',
-      'No invented billing',
-    ],
-    action: 'Open Tables',
-    to: '/workspace/kitchen/tables',
-  },
   'kitchen.finance': {
     eyebrow: 'Kitchen Workspace · Finance',
     title: 'Review Kitchen sales.',
@@ -195,7 +181,7 @@ export const content = {
     },
     secondaryAction: {
       label: 'Go to workspace',
-      to: '/workspace/kitchen',
+      to: '/',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],

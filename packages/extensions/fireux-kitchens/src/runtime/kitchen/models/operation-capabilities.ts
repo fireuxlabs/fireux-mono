@@ -282,32 +282,6 @@ export const kitchenOperationToolCapabilities = {
       ['Supplier', 'Ingredient']
     ),
   ],
-  tables: [
-    requested(
-      'kitchen.tables.configure-floor',
-      'Restaurant Floor Plan',
-      'Arrange tables and their capacities.',
-      ['Table']
-    ),
-    requested(
-      'kitchen.tables.update-status',
-      'Table Status Management',
-      'Record table availability and service state.',
-      ['Table']
-    ),
-    requested(
-      'kitchen.tables.assign-table',
-      'Table Assignment',
-      'Assign a party or order to a table.',
-      ['Table', 'Order']
-    ),
-    requested(
-      'kitchen.tables.review-turnover',
-      'Table Turnover Analysis',
-      'Review occupancy and turn timing.',
-      ['Table', 'Order']
-    ),
-  ],
   finance: [
     requested(
       'kitchen.finance.daily-sales-report',

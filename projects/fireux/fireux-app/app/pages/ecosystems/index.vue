@@ -51,18 +51,19 @@
 import { computed } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { buildPublicPageJsonLd, useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectDirectory } from '../../composables/useProjectDirectory'
-import { usePublishedPlatformEcosystemDirectory, usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
 const ecosystemDirectory = usePublishedPlatformEcosystemDirectory()
-const appDirectory = usePlatformAppDirectory()
-const projectDirectory = useProjectDirectory()
+const appDirectory = useApps('/api/platform/apps')
+const projectCollection = useProjects()
 const ecosystems = ecosystemDirectory.ecosystems
-const pending = computed(() => ecosystemDirectory.pending.value || appDirectory.pending.value || projectDirectory.pending.value)
-const failed = computed(() => Boolean(ecosystemDirectory.error.value || appDirectory.error.value || projectDirectory.error.value))
+const pending = computed(() => ecosystemDirectory.pending.value || appDirectory.pending.value || projectCollection.pending.value)
+const failed = computed(() => Boolean(ecosystemDirectory.error.value || appDirectory.error.value || projectCollection.error.value))
 const totalAppCount = computed(() => ecosystems.value.reduce((total, item) => total + item.app_count, 0))
 const appsFor = (ecosystemId: string) => appDirectory.apps.value.filter((app) => app.ecosystem_id === ecosystemId)
-const projectFor = (projectId: string) => projectDirectory.projects.value.find((project) => project.id === projectId) ?? null
+const projectFor = (projectId: string) => projectCollection.projects.value.find((project) => project.id === projectId) ?? null
 const appCountLabel = (count: number) => `${count} ${count === 1 ? 'App' : 'Apps'}`
 const tones = ['36 89% 55%', '197 74% 49%', '262 72% 62%', '145 63% 43%']
 const ecosystemTone = (index: number) => ({ '--ecosystem-tone': tones[index % tones.length] })

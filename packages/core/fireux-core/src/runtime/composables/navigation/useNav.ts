@@ -121,6 +121,7 @@ function buildNavItem(
         : typeof nav.requiresSelection === 'boolean'
           ? nav.requiresSelection
           : undefined,
+    prominent: nav.prominent === true ? true : undefined,
     parked: nav.parked === true ? true : undefined,
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
     tenant:

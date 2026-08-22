@@ -27,10 +27,10 @@
 import { computed } from 'vue'
 import { useMyApps } from '../../composables/firestore/utils/useMyApps'
 import { useAppInterface } from '../../composables/useAppInterface'
-import type { AppDirectoryController } from '../../../types/directory-controller.types.ts'
+import type { AppCollectionController } from '../../composables/useApps'
 
 const props = defineProps<{
-  controller: AppDirectoryController
+  controller: AppCollectionController
 }>()
 
 const { myApps } = useMyApps(props.controller.apps)

@@ -275,7 +275,7 @@ export function useKitchenWorkspaceOverview() {
     )
   )
   const hotQuestions = computed<KitchenOverviewQuestion[]>(() => {
-    const priority = ['mise', 'orders', 'menus', 'finance']
+    const priority = ['food-safety', 'mise', 'inventory', 'menus']
     return priority.flatMap((slug) => {
       const operation = kitchenOperations.find((entry) => entry.slug === slug)
       return operation

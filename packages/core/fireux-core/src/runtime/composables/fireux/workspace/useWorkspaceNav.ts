@@ -7,7 +7,6 @@ import {
   workspaceFamilyFromRouteContext,
 } from './workspaceRoutes'
 import { useWorkspace } from './useWorkspace'
-import { useWorkspaceSelection } from './useWorkspaceSelection'
 import type { NavItem, NavPosition } from '../../navigation/types'
 
 function normalizePath(value: unknown): string {
@@ -35,9 +34,6 @@ export const useWorkspaceNav = () => {
   const familyWorkspaces = new Map(
     familyNames.map((family) => [family, useWorkspace(family)] as const)
   )
-  const familySelections = new Map(
-    familyNames.map((family) => [family, useWorkspaceSelection(family)] as const)
-  )
   const activeFamily = computed(
     () =>
       workspaceFamilyFromRouteContext(
@@ -45,15 +41,6 @@ export const useWorkspaceNav = () => {
         route.query.family
       ) || workspaceRoot.activeFamily.value
   )
-  const activeSelectionId = computed(() => {
-    const family = activeFamily.value
-    if (!family) return ''
-    return familySelections.get(family)?.selectedId.value ?? ''
-  })
-  const hasSelectedTarget = computed(() =>
-    Boolean(String(activeSelectionId.value || '').trim())
-  )
-
   const baseNavFilter = (item: NavItem) => {
     const path = normalizePath(item.to)
     if (path === '/workspace') return true
@@ -76,12 +63,7 @@ export const useWorkspaceNav = () => {
 
     if (itemFamily !== family) return false
 
-    const requiresSelection =
-      typeof item.requiresSelection === 'boolean'
-        ? item.requiresSelection
-        : !(isWorkspaceRootPath(path) || isWorkspaceCreatePath(path))
-
-    return !requiresSelection || hasSelectedTarget.value
+    return true
   }
 
   const resolveItemPosition = (item: NavItem): NavPosition => {

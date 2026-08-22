@@ -780,10 +780,9 @@ requirement, report the exact missing seam before broad edits.
   and existing-admin checks. Do not recreate a cosmetic client developer PIN
   or present one as a security boundary.
 - App initialization creates or verifies the canonical named-database App and
-  first Admin membership, then idempotently maintains the matching local
-  `(default)` AppMeta projection. App media sync and App-admin presentation
-  edits use the same projection seam. The second database write is retryable,
-  not falsely described as part of the named-database transaction.
+  first Admin membership. App media sync and App-admin presentation edits
+  update that same canonical App through trusted Server writers; they do not
+  maintain a second App projection.
 - App presentation is source configuration, not canonical `App` document data.
   Initialization never persists or backfills a theme on `apps/{appId}`.
   Renderers resolve the configured palette and typography without turning Nuxt
@@ -1068,11 +1067,10 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
 ## Firebase project directory
 
 - Every Firebase project's `(default)` database owns that Firebase project's
-  bounded local `project/{projectId}` ProjectMeta projection,
-  `ecosystem/{ecosystemId}` EcosystemMeta projection, and its locally hosted
-  `apps/{appId}` AppMeta projections. Project and Ecosystem collections are
-  singular because this directory describes the one local Firebase project and
-  its owning ecosystem; Apps remain plural.
+  bounded local `project/{projectId}` ProjectMeta projection and
+  `ecosystem/{ecosystemId}` EcosystemMeta projection. Project and Ecosystem
+  collections are singular because this directory describes the one local
+  Firebase project and its owning ecosystem.
 - The directory lists only Projects, Ecosystems, and Apps hosted by that
   Firebase project. A global Workspace aggregates project directories through a
   trusted server boundary; one project never stores another project's copy.
@@ -1080,21 +1078,26 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   and asset-reference fields only. Canonical memberships, Users, domain
   entities, content, credentials, and operational state remain in the owning
   named database.
-- A named database may retain its canonical `apps/{appId}` record because App
-  membership and operational authority live beneath it. The matching default
-  `AppMeta` record is a bounded directory projection, not competing App
-  identity. `AppMeta` contains only local ownership, database routing, role,
-  status, presentation, assets, and Workspace-family discovery. It never
-  contains memberships, User ids, counts, moderation state, repository paths,
-  build state, or operational content.
-- The Firebase-project directory and FireUX platform aggregation consume these
-  AppMeta records. An ecosystem's local `/api/apps` collection reads
-  its canonical active Apps from the owning named database; that owner-local
-  read does not make AppMeta optional during onboarding.
+- Each App exists once as canonical `apps/{appId}` in its owning named database.
+  App indexes fetch those records through a Server endpoint and return `App[]`.
+  Ecosystem scope reads one named database; platform scope aggregates the named
+  databases declared by current platform targets. Do not create `AppMeta`,
+  `AppDirectoryEntry`, or another stored/read projection for App discovery.
+- `AppUser` is the canonical membership at `apps/{appId}/users/{uid}`. Its
+  document must not repeat either path identity as stored `app_id` or `id`, and
+  ordinary runtime mutations must not double as legacy-shape repair adapters.
+  Retired membership fields are migration failures handled by the guarded
+  offline migration, not alternate shapes accepted by product code.
 - Every production `standalone` App selects a dedicated named database in each
   Firebase project that hosts its local outputs. Global and tenant Apps use
   their ecosystem's named database. A development harness must be classified
   explicitly and never weakens the standalone database rule.
+- Canonical Project identity is `fireux/projects/{projectId}` and its document
+  id is supplied by the path, not repeated in stored data. Public Project index
+  and detail endpoints return `Project`, not a parallel directory entry. Each
+  host's bounded `(default)/project/{projectId}` ProjectMeta is synchronized only
+  through the guarded provisioning migration/MCP lane; an ordinary runtime
+  mutation that updates only canonical Project is forbidden.
 
 ## Privacy-first measurement
 

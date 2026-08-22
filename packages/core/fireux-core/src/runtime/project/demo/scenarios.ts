@@ -32,6 +32,8 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
           cover_url: '',
         },
         self_join_enabled: false,
+        created: { at: { seconds: 0, nanoseconds: 0 }, by: 'demo' },
+        updated: { at: { seconds: 0, nanoseconds: 0 }, by: 'demo' },
       },
     ],
     ecosystems: [

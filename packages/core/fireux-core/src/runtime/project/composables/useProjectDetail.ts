@@ -3,10 +3,10 @@ import {
   useProjectCollection,
   type UseProjectCollectionReturn,
 } from './useProjectCollection'
-import type { ProjectSurface } from './useProjectInterface'
+import type { Project } from '../models/project.model'
 
 export type UseProjectDetailReturn = {
-  project: ComputedRef<ProjectSurface | null>
+  project: ComputedRef<Project | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
   refresh: UseProjectCollectionReturn['refresh']

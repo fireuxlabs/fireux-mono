@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-08-20
-Ref: d1a7d5eec
+Updated: 2026-08-22
+Ref: da689ed54
 Role: map, not canon
 
 ## Purpose
@@ -138,7 +138,9 @@ paths and delegate inward.
 - The workspace-indexes guard separately enforces the shared selected → targets
   index rhythm, clear wiring, `useWorkspaceIndex` adapter, and shared selected and
   target-state presentation seams.
-- Tables is the first operation-level edit reference: `/workspace/kitchen/tables` and `/workspace/kitchen/tables/edit`.
+- Tables remains a Front-of-House boundary. Kitchen Orders may cross that
+  boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
+  capabilities.
 
 ## Allowed domain buckets
 
@@ -161,14 +163,14 @@ Permissions govern those capabilities and every Operation; they are authority,
 not another navigation page. Notifications belongs to the shared shell rather
 than an Entity component bucket.
 
-| Entity    | Operations                                                                                      |
-| --------- | ----------------------------------------------------------------------------------------------- |
-| Project   | Apps, Ecosystem                                                                                 |
-| Kitchen   | Dishes, Drinks, Ingredients, Menus, Mise, Orders, Recipes, Stations, Suppliers, Tables, Finance |
-| Supplier  | Catalogue, Ingredients, Items                                                                   |
-| Portfolio | Properties, Compliance, Documents, Tasks, Finance                                               |
-| Property  | Reservations, Calendar                                                                          |
-| Blank     | —                                                                                               |
+| Entity    | Operations and reports                                                                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project   | Apps, Ecosystem                                                                                                                                                                 |
+| Kitchen   | Menus, Dishes, Drinks, Recipes, Ingredients; Food Safety, Mise, Orders & Service, Inventory, Purchasing, Receiving, Waste; Stations, Suppliers; Sales, Costs, Waste, Performance |
+| Supplier  | Catalogue, Ingredients, Items                                                                                                                                                   |
+| Portfolio | Properties, Compliance, Documents, Tasks, Finance                                                                                                                               |
+| Property  | Reservations, Calendar                                                                                                                                                          |
+| Blank     | —                                                                                                                                                                               |
 
 Ignition is separate Project intake/admin, not a Project Operation. A missing
 server folder is valid when a visible capability has no server-owned

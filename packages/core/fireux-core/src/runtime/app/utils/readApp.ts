@@ -1,0 +1,97 @@
+import type { App } from '../models/app.model.ts'
+
+const APP_FIELDS = new Set([
+  'project_id',
+  'ecosystem_id',
+  'role',
+  'status',
+  'name',
+  'short_name',
+  'tagline',
+  'description',
+  'short_bio',
+  'long_bio',
+  'social_links',
+  'media',
+  'self_join_enabled',
+  'created',
+  'updated',
+])
+const APP_ROLES = new Set<App['role']>(['global', 'tenant', 'standalone'])
+const APP_STATUSES = new Set<App['status']>(['active', 'inactive', 'archived'])
+const SOCIAL_LINK_FIELDS = [
+  'website',
+  'twitter',
+  'github',
+  'linkedin',
+  'instagram',
+  'facebook',
+  'youtube',
+  'email',
+] as const
+const MEDIA_FIELDS = [
+  'thumbnail_url',
+  'logo_url',
+  'wordmark_light_url',
+  'wordmark_dark_url',
+  'cover_url',
+] as const
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value)
+}
+
+function hasOptionalStringFields(
+  value: unknown,
+  fields: readonly string[]
+): value is Record<string, string | undefined> {
+  if (!isRecord(value)) return false
+  const keys = Object.keys(value)
+  return (
+    keys.every((field) => fields.includes(field)) &&
+    keys.every((field) => typeof value[field] === 'string')
+  )
+}
+
+function isStamp(value: unknown): boolean {
+  if (!isRecord(value) || !isRecord(value.at)) return false
+  if (
+    typeof value.at.seconds !== 'number' ||
+    typeof value.at.nanoseconds !== 'number'
+  ) {
+    return false
+  }
+  return (
+    Object.keys(value).every((key) => key === 'at' || key === 'by') &&
+    (value.by === undefined || typeof value.by === 'string')
+  )
+}
+
+/** Read one canonical App document. Document identity is supplied by Firestore. */
+export function readAppDocument(raw: unknown, id: string): App | null {
+  if (!id || !isRecord(raw)) return null
+  const keys = Object.keys(raw)
+  if (keys.some((key) => !APP_FIELDS.has(key))) return null
+  if (
+    typeof raw.project_id !== 'string' ||
+    (raw.ecosystem_id !== undefined && typeof raw.ecosystem_id !== 'string') ||
+    !APP_ROLES.has(raw.role as App['role']) ||
+    !APP_STATUSES.has(raw.status as App['status']) ||
+    typeof raw.name !== 'string' ||
+    (raw.short_name !== undefined && typeof raw.short_name !== 'string') ||
+    (raw.tagline !== undefined && typeof raw.tagline !== 'string') ||
+    (raw.description !== undefined && typeof raw.description !== 'string') ||
+    (raw.short_bio !== undefined && typeof raw.short_bio !== 'string') ||
+    (raw.long_bio !== undefined && typeof raw.long_bio !== 'string') ||
+    (raw.self_join_enabled !== undefined && typeof raw.self_join_enabled !== 'boolean') ||
+    (raw.social_links !== undefined &&
+      !hasOptionalStringFields(raw.social_links, SOCIAL_LINK_FIELDS)) ||
+    (raw.media !== undefined &&
+      !hasOptionalStringFields(raw.media, MEDIA_FIELDS)) ||
+    !isStamp(raw.created) ||
+    !isStamp(raw.updated)
+  ) {
+    return null
+  }
+  return { ...raw, id } as App
+}

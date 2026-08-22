@@ -1,9 +1,6 @@
 import { safeString } from '../../composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import {
-  type App,
-} from '../models/app.model.ts'
-import type { AppSocialLinks } from '../models/app-directory.model.ts'
+import { type App } from '../models/app.model.ts'
 import { resolveAppMediaForView } from './firestore/utils/appMedia'
 import { useResolvedColorMode } from '../../composables/theme/useColorMode'
 
@@ -46,23 +43,11 @@ export namespace AppCard {
     // Always safe to render (empty string if none)
     wordmarkUrl: string
 
-    socialLinks: AppSocialLinks
+    socialLinks: App['social_links']
   }
 }
 
-export type AppSurfaceParts<TApp extends object = Partial<App>> = {
-  app?: TApp | null | undefined
-}
-
-export type AppViewSource = Partial<Omit<App, 'role' | 'status'>> & {
-  role?: App['role'] | ''
-  status?: App['status'] | ''
-  detail_url?: string
-  /** Narrow legacy read adapter. Canonical identity is ecosystem_id. */
-  ecosystem?: string
-}
-
-function safeMedia(app: AppViewSource) {
+function safeMedia(app: App) {
   return (
     app.media ?? {
       thumbnail_url: '',
@@ -74,7 +59,7 @@ function safeMedia(app: AppViewSource) {
   )
 }
 
-function makeAvatarText(app: AppViewSource): string {
+function makeAvatarText(app: App): string {
   const source = safeString(app.short_name || app.name || app.id)
   if (!source) return ''
 
@@ -87,7 +72,7 @@ function makeAvatarText(app: AppViewSource): string {
 }
 
 export function useAppInterface(
-  appRef?: Ref<AppViewSource | null | undefined>
+  appRef?: Ref<App | null | undefined>
 ) {
   const resolvedMode = useResolvedColorMode()
   type AppPill = AppCard.Card
@@ -95,22 +80,7 @@ export function useAppInterface(
   type AppPreview = AppCard.Card
   type AppProfile = AppCard.Card
 
-  function surface<TApp extends object = Partial<App>>(
-    parts: AppSurfaceParts<TApp>
-  ): (TApp & App) | null {
-    const source = parts.app ?? null
-    if (!source) return null
-
-    const id = safeString((source as Partial<App>).id).trim()
-    if (!id) return null
-
-    return {
-      ...source,
-      id,
-    } as TApp & App
-  }
-
-  function resolveWordmarkUrl(app: AppViewSource): string {
+  function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
@@ -119,20 +89,18 @@ export function useAppInterface(
       : media.wordmarkLightUrl
   }
 
-  function map(app: AppViewSource): AppCard.Card {
+  function map(app: App): AppCard.Card {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
     const id = safeString(app.id).trim()
-    const ecosystemId = safeString(app.ecosystem_id || app.ecosystem)
+    const ecosystemId = safeString(app.ecosystem_id)
     const name = safeString(app.name)
     const shortName = safeString(app.short_name)
 
     return {
       id,
-      to:
-        safeString(app.detail_url) ||
-        (id ? `/${'apps'}/${encodeURIComponent(id)}` : ''),
+      to: id ? `/apps/${encodeURIComponent(id)}` : '',
 
       imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
@@ -167,12 +135,12 @@ export function useAppInterface(
       coverUrl: safeString(media.coverUrl),
       wordmarkUrl: resolveWordmarkUrl(app),
 
-      socialLinks: app.social_links || ({} as AppSocialLinks),
+      socialLinks: app.social_links,
     }
   }
 
   function buildInterface(
-    target?: AppViewSource | null | undefined
+    target?: App | null | undefined
   ): AppCard.Card | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null
@@ -182,28 +150,27 @@ export function useAppInterface(
 
   const toInterface = buildInterface
 
-  function pill(target?: AppViewSource | null | undefined): AppPill | null {
+  function pill(target?: App | null | undefined): AppPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: AppViewSource | null | undefined): AppCell | null {
+  function cell(target?: App | null | undefined): AppCell | null {
     return buildInterface(target)
   }
 
   function preview(
-    target?: AppViewSource | null | undefined
+    target?: App | null | undefined
   ): AppPreview | null {
     return buildInterface(target)
   }
 
   function profile(
-    target?: AppViewSource | null | undefined
+    target?: App | null | undefined
   ): AppProfile | null {
     return buildInterface(target)
   }
 
   return {
-    surface,
     interface: toInterface,
     pill,
     cell,

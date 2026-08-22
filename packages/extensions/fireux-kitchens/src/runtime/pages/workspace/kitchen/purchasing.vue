@@ -7,10 +7,8 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceKitchenSundriesParked
-            alert-title="Kitchen purchasing is parked"
-            description="This route remains hidden until Kitchen-owned purchase orders and supplier invoices have authoritative producers."
-          />
+          <WorkspaceKitchenOperationsCapabilityView operation="purchasing" />
+          <WorkspaceKitchenOperationsGuidingLiterature operation="purchasing" />
         </section>
       </template>
     </UDashboardPanel>
@@ -25,11 +23,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-purchasing',
     label: 'Purchasing',
+    group: 'Operations',
     icon: 'i-lucide-shopping-cart',
     position: 'top',
-    hidden: true,
-    parked: true,
-    order: 82,
+    order: 24,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

@@ -26,7 +26,6 @@ import {
   type AppMediaSyncFailure,
   type AppMediaSyncResponse,
 } from '../../composables/firestore/utils/appMedia'
-import { ensureRuntimeAppMeta } from '../projection/ensure'
 
 function findRepoRoot(start: string): string {
   let current = start
@@ -215,10 +214,7 @@ export async function syncConfiguredAppMedia(event: H3Event) {
     }
   }
 
-  const patch: UpdateData<DocumentData> = {
-    wordmark_url: FieldValue.delete(),
-    avatar_url: FieldValue.delete(),
-  }
+  const patch: UpdateData<DocumentData> = {}
 
   for (const [kind, url] of Object.entries(uploaded) as Array<
     [AppImageKind, string | undefined]
@@ -227,16 +223,8 @@ export async function syncConfiguredAppMedia(event: H3Event) {
     patch[appImageFirestoreField(kind)] = url
   }
 
-  if (Object.keys(patch).length > 2) {
+  if (Object.keys(patch).length) {
     await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
-    const appDatabaseId = String(
-      runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
-    ).trim()
-    await ensureRuntimeAppMeta({
-      actorUid: uid,
-      appDatabaseId,
-      config: fireux,
-    })
   }
 
   return {

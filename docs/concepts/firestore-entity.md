@@ -33,7 +33,6 @@ The rule is intentionally simple:
 (default)/
 ├── project/{projectId}       local ProjectMeta projection
 ├── ecosystem/{ecosystemId}   local EcosystemMeta projection
-└── apps/{appId}              local AppMeta projection
 
 <named database>/
 ├── apps/{appId}              canonical App

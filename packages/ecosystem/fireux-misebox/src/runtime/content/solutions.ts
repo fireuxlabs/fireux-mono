@@ -171,7 +171,7 @@ export const miseboxSolutions = [
     icon: 'i-lucide-layout-dashboard',
     status: 'planned',
     keywords: ['restaurant operations software', 'kitchen operations software'],
-    cta: { label: 'Open workspace', to: '/workspace/kitchen' },
+    cta: { label: 'Open workspace', to: '/' },
   },
 ] satisfies FireuxMetaSolution[]
 

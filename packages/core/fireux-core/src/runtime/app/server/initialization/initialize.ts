@@ -12,10 +12,9 @@ import {
   countTransactionAdmins,
   initialMembership,
   isAdminMembership,
-  membershipRepairPatch,
+  requireCanonicalMembership,
   stamp,
 } from '../membership/mutation-contract'
-import { ensureRuntimeAppMeta } from '../projection/ensure'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -143,11 +142,11 @@ export async function initializeRuntimeApp(
         mutations.create(
           memberships,
           uid,
-          initialMembership(config.appId, uid, 'admin')
+          initialMembership(uid, 'admin')
         )
       } else if (!isAdminMembership(membership.data)) {
+        requireCanonicalMembership(membership.data ?? {})
         mutations.update(memberships, uid, {
-          ...membershipRepairPatch(membership.data ?? {}, uid),
           role: 'admin',
           updated: stamp(uid),
         })
@@ -168,14 +167,5 @@ export async function initializeRuntimeApp(
       }
     }
   )
-  const projection = await ensureRuntimeAppMeta({
-    actorUid: uid,
-    appDatabaseId: input.appDatabaseId,
-    config,
-  })
-  return {
-    ...result,
-    appMetaCreated: projection.created,
-    appMetaUpdated: projection.updated,
-  }
+  return result
 }

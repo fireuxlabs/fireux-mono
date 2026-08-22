@@ -243,7 +243,7 @@ const canChangePlace = computed(() => !existingRootId.value)
 const resolvedCancelTo = computed(() => {
   const explicit = String(props.cancelTo || '').trim()
   if (explicit.startsWith('/')) return explicit
-  return props.mode === 'workspace' ? '/workspace/kitchen' : '/kitchens'
+  return props.mode === 'workspace' ? '/' : '/kitchens'
 })
 const resolvedReturnTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()

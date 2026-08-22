@@ -8,7 +8,7 @@ import {
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../utils/ids/path'
-import { projectAppDetail } from '../../../app/server/index/projection.ts'
+import { readAppDocument } from '../../../app/utils/readApp.ts'
 import { asTrimmedString } from '../../utils/projection/normalize'
 import type { DetailResponse } from '../../../models/utils/directory'
 
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const app = projectAppDetail(raw, { id: doc!.id })
+  const app = readAppDocument(raw, doc!.id)
   if (!app) {
     throw createError({
       statusCode: 404,

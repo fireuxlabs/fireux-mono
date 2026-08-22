@@ -3,7 +3,6 @@
 
 import type { Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
-import type { AppSocialLinks } from '../../../models/app-directory.model.ts'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
@@ -25,7 +24,11 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return id
   }
 
-  const updateApp = async (data: Partial<App> | Record<string, unknown>) => {
+  type AppSettingsPatch = Partial<
+    Pick<App, 'name' | 'short_name' | 'tagline' | 'description' | 'short_bio' | 'long_bio' | 'social_links'>
+  > & Partial<Record<`media.${keyof App['media']}`, string>>
+
+  const updateApp = async (data: AppSettingsPatch) => {
     ensureAppId()
     const user = await useRequireUser()
     const response = await fetch('/api/internal/app/settings', {
@@ -128,7 +131,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     })
   }
 
-  async function updateSocialLinks(links: AppSocialLinks) {
+  async function updateSocialLinks(links: App['social_links']) {
     await updateApp({ social_links: links })
   }
 
@@ -167,7 +170,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const next = cacheBust(url)
 
     const field = appImageFirestoreField(kind)
-    const patch: Record<string, unknown> = { [field]: next }
+    const patch: AppSettingsPatch = { [field]: next }
     await updateApp(patch)
     return next
   }
@@ -250,7 +253,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const next = cacheBust(url)
 
     const field = appImageFirestoreField(kind)
-    const patch: Record<string, unknown> = { [field]: next }
+    const patch: AppSettingsPatch = { [field]: next }
     await updateApp(patch)
     return next
   }

@@ -109,6 +109,8 @@ const projectModelRuntime: Project = {
   name: '',
   description: '',
   image_url: '',
+  created: { at: { seconds: 0, nanoseconds: 0 } },
+  updated: { at: { seconds: 0, nanoseconds: 0 } },
 }
 const { appId } = useFireUXConfig()
 const { selectedId } = useProjectWorkspaceSelection()

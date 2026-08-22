@@ -211,6 +211,10 @@ export async function run({ repoRoot }) {
     repoRoot,
     'projects/fireux/fireux-app/server/utils/default-directory.ts'
   )
+  const fireuxAppsReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/utils/apps.ts'
+  )
   const fireuxDirectoryApi = read(
     repoRoot,
     'projects/fireux/fireux-app/server/api/directory.get.ts'
@@ -242,13 +246,22 @@ export async function run({ repoRoot }) {
   for (const marker of [
     'PLATFORM_DIRECTORY_TARGETS',
     'getFirestoreProjectDb(target.projectId)',
-    "db.collection('ecosystem').doc(target.ecosystemId)",
-    "fetchCollection(db, 'apps')",
-    'projectAppDetail',
+    ".collection('ecosystem')",
+    '.doc(target.ecosystemId)',
     'projectEcosystemDirectoryEntry',
   ]) {
     if (!fireuxDirectoryReader.includes(marker)) {
       violations.push(`FireUX directory reader must retain ${marker}.`)
+    }
+  }
+  for (const marker of [
+    'PLATFORM_DIRECTORY_TARGETS',
+    'getFirestoreProjectDb(target.projectId, target.databaseId)',
+    "db.collection('apps').get()",
+    'Promise<App[]>',
+  ]) {
+    if (!fireuxAppsReader.includes(marker)) {
+      violations.push(`FireUX Apps reader must retain ${marker}.`)
     }
   }
   for (const marker of [

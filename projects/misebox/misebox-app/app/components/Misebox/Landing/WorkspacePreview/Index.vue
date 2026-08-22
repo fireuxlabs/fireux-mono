@@ -4,7 +4,7 @@
     :items="operations"
     label="Interactive Kitchen Workspace preview"
     navigation-label="Kitchen Operations"
-    workspace-to="/workspace/kitchen"
+    workspace-to="/"
     :open-workspace-aria-label="`Open the full ${workspaceKitchenPill.title} Kitchen Workspace`"
     @update:model-value="selectSurface"
     @open-workspace="openFullKitchenWorkspace"
@@ -74,14 +74,8 @@
       :suppliers="productDemo?.workspace.suppliers || []"
       :error="Boolean(productDemoError)"
     />
-    <MiseboxLandingWorkspacePreviewTables
-      v-else-if="selectedSurface?.id === 'kitchen.tables'"
-      :key="selectedSurface.id"
-      :tables="productDemo?.workspace.tables || emptyTables"
-      :error="Boolean(productDemoError)"
-    />
     <MiseboxLandingWorkspacePreviewFinance
-      v-else-if="selectedSurface?.id === financeSurface.id"
+      v-else-if="selectedSurface?.id === 'kitchen.finance'"
       :key="selectedSurface.id"
       :finance="productDemo?.workspace.finance || emptyFinance"
       :error="Boolean(productDemoError)"
@@ -106,19 +100,10 @@ import MiseboxLandingWorkspacePreviewFinance from './Finance.vue'
 import MiseboxLandingWorkspacePreviewOrders from './Orders.vue'
 import MiseboxLandingWorkspacePreviewStations from './Stations.vue'
 import MiseboxLandingWorkspacePreviewSuppliers from './Suppliers.vue'
-import MiseboxLandingWorkspacePreviewTables from './Tables.vue'
 
 const operations = kitchenOperations
-const financeSurface = {
-  id: 'kitchen.finance',
-  title: 'Finance',
-  icon: 'i-lucide-chart-line',
-} as const
 const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
   periods: [],
-}
-const emptyTables: MiseboxProductDemo['workspace']['tables'] = {
-  configuredCount: 0,
 }
 type ProductDemoMenu = MiseboxProductDemo['workspace']['menus'][number]
 type ProductDemoDish = MiseboxProductDemo['workspace']['dishes'][number]
@@ -129,8 +114,6 @@ const selectedSurfaceId = defineModel<string>('surfaceId', {
 const selectedDishId = ref('')
 const selectedDishPage = ref<DishChildPage>('detail')
 const selectedSurface = computed(() => {
-  if (selectedSurfaceId.value === financeSurface.id) return financeSurface
-
   return (
     operations.find((operation) => operation.id === selectedSurfaceId.value) ||
     operations[0]
@@ -196,6 +179,6 @@ const openFullKitchenWorkspace = async (event: MouseEvent) => {
     kitchenId: workspaceKitchenId.value,
     type: 'demo',
   })
-  await navigateTo('/workspace/kitchen')
+  await navigateTo('/')
 }
 </script>

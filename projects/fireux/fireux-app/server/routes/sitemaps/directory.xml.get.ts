@@ -10,17 +10,19 @@ import {
   isDirectoryEcosystemIndexable,
   readPlatformDirectory,
 } from '../../utils/default-directory'
+import { readPlatformApps } from '../../utils/apps'
 
 export default defineEventHandler(async (event) => {
   const { siteUrl } = readRuntimeSeoSitemaps()
   const directory = await readPlatformDirectory()
+  const apps = await readPlatformApps()
   const paths = [
     ...directory.ecosystems
       .filter((ecosystem) => isDirectoryEcosystemIndexable(ecosystem.id))
       .map((ecosystem) => ecosystem.detail_url),
-    ...directory.apps
+    ...apps
       .filter((app) => isDirectoryAppIndexable(app.id))
-      .map((app) => app.detail_url),
+      .map((app) => `/apps/${encodeURIComponent(app.id)}`),
   ]
   const entries = [...new Set(paths)]
     .sort((left, right) => left.localeCompare(right))

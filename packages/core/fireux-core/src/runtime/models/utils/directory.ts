@@ -1,33 +1,9 @@
-import type { App } from '../../app/models/app.model.ts'
 import type { EcosystemStatus } from '../../ecosystem/models/ecosystem.model.ts'
 
 /**
  * Directory entries are transport records, not stored entities. They contain
  * only the fields needed to discover canonical App/Ecosystem records.
  */
-export type AppDirectoryEntry = {
-  id: string
-  project_id: string
-  ecosystem_id: string
-  slug: string
-  status: App['status']
-  name: string
-  short_name: string
-  role: App['role'] | ''
-  tagline: string
-  description: string
-  short_bio: string
-  detail_url: string
-  media: Pick<
-    App['media'],
-    | 'logo_url'
-    | 'thumbnail_url'
-    | 'wordmark_light_url'
-    | 'wordmark_dark_url'
-    | 'cover_url'
-  >
-}
-
 export type EcosystemDirectoryEntry = {
   id: string
   project_id: string
@@ -43,7 +19,6 @@ export type EcosystemDirectoryEntry = {
 export type PlatformDirectoryResponse = {
   ok: true
   generatedAt: string
-  apps: AppDirectoryEntry[]
   ecosystems: EcosystemDirectoryEntry[]
 }
 

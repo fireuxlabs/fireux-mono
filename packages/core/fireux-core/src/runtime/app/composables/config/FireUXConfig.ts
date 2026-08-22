@@ -123,6 +123,7 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
+    homePath: optString(fireux, 'homePath') || '/',
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),

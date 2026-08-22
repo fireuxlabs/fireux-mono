@@ -59,9 +59,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-drinks',
     label: 'Drinks',
+    group: 'Food & Drink',
     icon: 'i-lucide-glass-water',
     position: 'top',
-    order: 6,
+    order: 12,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

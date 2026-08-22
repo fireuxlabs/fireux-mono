@@ -2,7 +2,7 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { DetailResponse } from '../../models/utils/directory.ts'
-import type { AppDetail } from '../models/app-directory.model.ts'
+import type { App } from '../models/app.model.ts'
 import { useFireUXConfig } from './config/FireUXConfig'
 
 export type AppDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
@@ -13,7 +13,7 @@ type AppDetailControls = Pick<
 >
 
 export type UseAppDetailReturn = AppDetailControls & {
-  app: ComputedRef<AppDetail | null>
+  app: ComputedRef<App | null>
   ready: Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
@@ -39,7 +39,7 @@ export function useAppDetail(
 ): UseAppDetailReturn {
   const fireux = useFireUXConfig()
   const appId = computed(() => String(unref(routeAppId) ?? '').trim())
-  const state = useAsyncData<DetailResponse<AppDetail> | null>(
+  const state = useAsyncData<DetailResponse<App> | null>(
     () =>
       [
         'app-detail',
@@ -48,13 +48,13 @@ export function useAppDetail(
       ].join('|'),
     async () => {
       if (!appId.value) return null
-      return $fetch<DetailResponse<AppDetail>>(
+      return $fetch<DetailResponse<App>>(
         `/api/apps/${encodeURIComponent(appId.value)}`
       )
     },
     { server: true, watch: [appId] }
   )
-  const app = computed<AppDetail | null>(() => {
+  const app = computed<App | null>(() => {
     const item = state.data.value?.item ?? null
     return item?.id === appId.value && !state.pending.value ? item : null
   })

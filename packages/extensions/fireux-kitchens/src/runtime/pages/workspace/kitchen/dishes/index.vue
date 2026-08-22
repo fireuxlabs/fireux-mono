@@ -31,9 +31,10 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen-dishes',
     label: 'Dishes',
-    icon: 'i-lucide-cooking-pot',
+    group: 'Food & Drink',
+    icon: 'i-lucide-utensils',
     position: 'top',
-    order: 5,
+    order: 11,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],

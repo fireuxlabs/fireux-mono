@@ -46,6 +46,10 @@ const definitions = {
     name: 'IngredientsAI',
     contextProviders: [context('kitchen.ingredients', 'Kitchen')],
   },
+  'food-safety': {
+    name: 'FoodSafetyAI',
+    contextProviders: [context('kitchen.food-safety', 'Kitchen')],
+  },
   menus: {
     name: 'MenuAI',
     contextProviders: [
@@ -60,6 +64,22 @@ const definitions = {
   orders: {
     name: 'OrdersAI',
     contextProviders: [context('kitchen.orders', 'Kitchen')],
+  },
+  inventory: {
+    name: 'InventoryAI',
+    contextProviders: [context('kitchen.inventory', 'Kitchen')],
+  },
+  purchasing: {
+    name: 'PurchasingAI',
+    contextProviders: [context('kitchen.purchasing', 'Kitchen')],
+  },
+  receiving: {
+    name: 'ReceivingAI',
+    contextProviders: [context('kitchen.receiving', 'Kitchen')],
+  },
+  waste: {
+    name: 'WasteAI',
+    contextProviders: [context('kitchen.waste', 'Kitchen')],
   },
   recipes: {
     name: 'RecipesAI',
@@ -81,15 +101,23 @@ const definitions = {
     name: 'KitchenSuppliersAI',
     contextProviders: [context('kitchen.suppliers', 'Kitchen')],
   },
-  tables: {
-    name: 'TablesAI',
-    contextProviders: [context('kitchen.tables', 'Kitchen')],
-  },
   finance: {
     name: 'FinanceAI',
     contextProviders: [context('kitchen.finance', 'Kitchen')],
     capabilities: [...advisoryAgentCapabilities, 'use_tools'],
     toolIds: ['kitchen.finance.calculate-labour-cost'],
+  },
+  costs: {
+    name: 'CostsAI',
+    contextProviders: [context('kitchen.costs', 'Kitchen')],
+  },
+  'waste-report': {
+    name: 'WasteReportAI',
+    contextProviders: [context('kitchen.waste-report', 'Kitchen')],
+  },
+  performance: {
+    name: 'PerformanceAI',
+    contextProviders: [context('kitchen.performance', 'Kitchen')],
   },
 } as const satisfies Record<
   KitchenAgentCapabilitySlug,

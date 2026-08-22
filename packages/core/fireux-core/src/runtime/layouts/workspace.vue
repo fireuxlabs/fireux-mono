@@ -26,11 +26,11 @@
       </template>
 
       <template #default="{ collapsed }">
-        <div class="flex h-full min-h-full flex-col gap-3">
+        <div class="flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
           <UNavigationMenu
-            v-if="topNav.length"
+            v-if="topNavItems.length"
             :collapsed="collapsed ?? false"
-            :items="topNav"
+            :items="topNavItems"
             orientation="vertical"
           />
 
@@ -49,11 +49,28 @@
             />
 
             <UNavigationMenu
-              v-if="familyRootNav.length"
+              v-if="regularFamilyRootNav.length"
               :collapsed="collapsed ?? false"
-              :items="familyRootNav"
+              :items="regularFamilyRootNav"
               orientation="vertical"
             />
+
+            <div v-if="prominentFamilyRootNav.length" class="space-y-2 px-2">
+              <UButton
+                v-for="item in prominentFamilyRootNav"
+                :key="item.key || item.to"
+                :to="item.to"
+                :icon="item.icon"
+                :aria-label="item.label"
+                color="primary"
+                variant="solid"
+                size="lg"
+                class="w-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-600 shadow-lg shadow-primary-500/25 ring-1 ring-inset ring-white/20 hover:brightness-110"
+                :class="collapsed ? 'justify-center' : 'justify-start'"
+              >
+                <span v-if="!collapsed">{{ item.label }}</span>
+              </UButton>
+            </div>
 
             <USeparator v-if="familyRootNav.length" />
 
@@ -67,11 +84,28 @@
       <template #footer="{ collapsed }">
         <div class="hidden flex-col gap-3 lg:flex">
           <UNavigationMenu
-            v-if="familyRootNav.length"
+            v-if="regularFamilyRootNav.length"
             :collapsed="collapsed ?? false"
-            :items="familyRootNav"
+            :items="regularFamilyRootNav"
             orientation="vertical"
           />
+
+          <div v-if="prominentFamilyRootNav.length" class="space-y-2 px-2">
+            <UButton
+              v-for="item in prominentFamilyRootNav"
+              :key="item.key || item.to"
+              :to="item.to"
+              :icon="item.icon"
+              :aria-label="item.label"
+              color="primary"
+              variant="solid"
+              size="lg"
+              class="w-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-600 shadow-lg shadow-primary-500/25 ring-1 ring-inset ring-white/20 hover:brightness-110"
+              :class="collapsed ? 'justify-center' : 'justify-start'"
+            >
+              <span v-if="!collapsed">{{ item.label }}</span>
+            </UButton>
+          </div>
 
           <USeparator v-if="familyRootNav.length" />
 
@@ -253,6 +287,22 @@ const topNav = computed(() =>
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
   )
 )
+const topNavItems = computed(() => {
+  const groups = new Map<string, typeof topNav.value>()
+
+  for (const item of topNav.value) {
+    const label = String(item.group || '').trim()
+    const items = groups.get(label) || []
+    items.push(item)
+    groups.set(label, items)
+  }
+
+  if (groups.size === 1 && groups.has('')) return topNav.value
+
+  return Array.from(groups.entries()).flatMap(([label, items]) =>
+    label ? [{ label, type: 'label' as const }, ...items] : items
+  )
+})
 const middleNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'middle'
@@ -262,6 +312,12 @@ const familyRootNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'bottom'
   )
+)
+const regularFamilyRootNav = computed(() =>
+  familyRootNav.value.filter((item) => !item.prominent)
+)
+const prominentFamilyRootNav = computed(() =>
+  familyRootNav.value.filter((item) => item.prominent)
 )
 
 watch(

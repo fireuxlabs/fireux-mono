@@ -1,6 +1,6 @@
-import type { AppSocialLinks } from '../../../../models/app-directory.model.ts'
+import type { App } from '../../../../models/app.model.ts'
 
-export const createEmptyAppSocialLinks = (): AppSocialLinks => ({
+export const createEmptyAppSocialLinks = (): App['social_links'] => ({
   website: '',
   twitter: '',
   github: '',

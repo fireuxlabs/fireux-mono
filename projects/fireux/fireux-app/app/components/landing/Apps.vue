@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 
-const { pending: appsPending, apps: displayedApps } = usePlatformAppDirectory()
+const { pending: appsPending, apps: displayedApps } = useApps('/api/platform/apps')
 </script>

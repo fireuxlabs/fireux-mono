@@ -37,20 +37,11 @@ bounded provisional exception for `menu_translation_caches` and
 authority remains unresolved and must not be broadened incidentally. Demo is
 source-only; Test and simulation storage are retired.
 
-Directory publication, cross-Project signup replication, and their receiver,
-outbox, reconciliation, provisioning, and user-monitor source are retired.
-The Firebase-project directory and FireUX platform aggregation read canonical
-`(default)` metadata records directly. An owning ecosystem's local public App
-collection may read its canonical named-database Apps. Neither read path
-creates another database authority.
-
-AppMeta supports two transports into the same App-owned projection contract:
-the MCP/Skill lane provisions or aligns registered Apps, and the authenticated
-runtime Server lane maintains the current AppMeta after App initialization,
-media synchronization, or App-admin presentation edits. `(default)` remains
-closed to Client writes. The Server path derives its fixed App id, database,
-Project, Ecosystem, and role from runtime configuration and the canonical App;
-the browser never selects those targets.
+Directory publication, cross-Project signup replication, AppMeta, and their
+receiver, outbox, reconciliation, provisioning, and user-monitor sources are
+retired. App indexes read canonical named-database Apps through Server
+endpoints. The Server path derives its scope from runtime configuration or
+guarded platform targets; the browser never selects Firestore targets.
 
 Workspace mutation targets are owner-first. Project, Kitchen, Supplier,
 Portfolio, Property, and Marketplace Store own their Team, Team requests,
@@ -75,8 +66,10 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   and the remaining Update/Delete migration touchpoints in that directory
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
-- Current-App projection maintenance:
-  `packages/core/fireux-core/src/runtime/app/server/projection/ensure.ts`
+- Current-App trusted writers:
+  `packages/core/fireux-core/src/runtime/app/server/initialization/initialize.ts`,
+  `packages/core/fireux-core/src/runtime/app/server/settings/update.ts`, and
+  `packages/core/fireux-core/src/runtime/app/server/media/sync.ts`
 - FireUX platform aggregation targets and direct metadata reader:
   `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
   `projects/fireux/fireux-app/server/utils/default-directory.ts`

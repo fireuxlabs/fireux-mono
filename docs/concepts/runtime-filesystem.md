@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-22
+Ref: da689ed54
 Role: map, not canon
 
 ## Purpose
@@ -149,7 +149,7 @@ src/runtime/kitchen/server/
 ```
 
 The module registration may preserve established component names such as
-`WorkspaceKitchenOperationsTables`; a filesystem move does not require a public
+`WorkspaceKitchenOperationsOrders`; a filesystem move does not require a public
 component or composable rename. Kitchen domain models and commands do not move
 under Workspace merely because Workspace consumes them.
 

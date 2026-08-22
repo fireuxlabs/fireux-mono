@@ -83,12 +83,12 @@
             <NuxtLink
               v-for="app in projectApps"
               :key="app.id"
-              :to="app.detail_url"
+              :to="`/apps/${encodeURIComponent(app.id)}`"
               class="project-detail__app"
             >
               <div class="project-detail__app-visual">
                 <img
-                  v-if="app.media.cover_url"
+                  v-if="app.media?.cover_url"
                   :src="app.media.cover_url"
                   alt=""
                   loading="lazy"
@@ -97,7 +97,7 @@
               </div>
               <div class="project-detail__app-copy">
                 <UAvatar
-                  :src="app.media.logo_url || undefined"
+                  :src="app.media?.logo_url || undefined"
                   :text="app.name || app.id"
                   :alt="app.name || app.id"
                   size="md"
@@ -137,33 +137,36 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { setResponseStatus } from '#imports'
+import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectDirectory } from '../../composables/useProjectDirectory'
-import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import type { DetailResponse } from 'fireux-core/runtime/models/utils/directory'
 
 definePageMeta({
   layout: 'default',
   title: 'Project',
   description: 'View a FireUX Project and its connected Apps.',
-  name: 'FireuxProjectDirectoryDetailPage',
+  name: 'FireuxProjectDetailPage',
 })
 
 const projectId = useRouteParam('id')
-const projectDirectory = useProjectDirectory()
-const appDirectory = usePlatformAppDirectory()
-const project = computed(
-  () => projectDirectory.projects.value.find((item) => item.id === projectId.value) ?? null
+const { data, pending: projectPending, error: projectError } = await useAsyncData<DetailResponse<Project>>(
+  () => `project:${projectId.value}`,
+  () => $fetch(`/api/projects/${encodeURIComponent(projectId.value)}`),
+  { server: true, lazy: false, watch: [projectId] }
 )
+const appDirectory = useApps('/api/platform/apps')
+const project = computed(() => data.value?.item ?? null)
 const projectApps = computed(() =>
   appDirectory.apps.value.filter((app) => app.project_id === projectId.value)
 )
 const pending = computed(
-  () => projectDirectory.pending.value || appDirectory.pending.value
+  () => projectPending.value || appDirectory.pending.value
 )
 const failed = computed(
-  () => Boolean(projectDirectory.error.value || appDirectory.error.value)
+  () => Boolean(projectError.value || appDirectory.error.value)
 )
 const missing = computed(() => !pending.value && !failed.value && !project.value)
 const appSectionDescription = computed(() => {

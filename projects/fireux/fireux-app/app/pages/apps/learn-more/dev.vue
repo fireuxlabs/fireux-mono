@@ -14,7 +14,7 @@
 
         <ul class="list-disc fx-list-stack text-sm">
           <li>Canonical records live in the owning Project/Ecosystem database.</li>
-          <li>FireUX reads an allowlisted <code>AppDirectoryEntry</code> projection.</li>
+          <li>FireUX reads canonical <code>App</code> records through its server boundary.</li>
           <li><code>project_id</code> and <code>ecosystem_id</code> express relationships; role does not infer them.</li>
         </ul>
       </UCard>
@@ -33,6 +33,43 @@
             <p class="font-mono">GET/POST /api/registry · retired</p>
             <p class="text-dimmed">Direct writes are rejected; publication belongs to the projection pipeline.</p>
           </div>
+        </div>
+      </UCard>
+
+      <UCard>
+        <template #header>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wide text-dimmed">Parked architecture</p>
+            <h2 class="text-lg font-semibold">AI-assisted App ignition</h2>
+          </div>
+        </template>
+
+        <div class="space-y-4 text-sm">
+          <p>
+            A future Ignition flow can turn an App name and plain description into an
+            operator-approved domain research brief before any capabilities are selected.
+          </p>
+
+          <ol class="list-decimal fx-list-stack pl-5 text-dimmed">
+            <li>FireUX AI proposes the domain, operators, boundaries, formats and neutral search seeds.</li>
+            <li>The operator reviews the research brief before external tools run.</li>
+            <li>Research tools return sourced observations; AI proposals never count as demand evidence.</li>
+            <li>FireUX AI groups the evidence into operator jobs and candidate capabilities for human review.</li>
+            <li>Approved research and response literature live in Git as Markdown and structured content rendered through Nuxt Content.</li>
+          </ol>
+
+          <p class="text-dimmed">
+            Firestore coordinates the Ignition request, status, approvals and publication reference.
+            A server-side FireUX GitHub integration may later create a review branch or pull request;
+            customers do not need GitHub accounts or repository credentials.
+          </p>
+
+          <UAlert
+            color="neutral"
+            variant="soft"
+            title="Not a current Ignition capability"
+            description="The current flow records an App request for review and scope. Research orchestration, Git publication and Nuxt Content delivery remain future implementation work."
+          />
         </div>
       </UCard>
 
