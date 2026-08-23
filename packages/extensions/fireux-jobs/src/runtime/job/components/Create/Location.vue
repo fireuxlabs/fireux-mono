@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
-import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
+import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/place/models/place-onboarding.model'
 import { computed, ref } from 'vue'
 import type { JobCreateForm } from '../../composables/firestore/mutations/useJobCreate'

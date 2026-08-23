@@ -95,8 +95,8 @@
 <script setup lang="ts">
 import { useCompanyDetail } from 'fireux-companies/runtime/place/composables/company/useCompanyDetail'
 import { useCompanyInterface } from 'fireux-companies/runtime/place/composables/company/useCompanyInterface'
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
-import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 import {

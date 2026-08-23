@@ -202,12 +202,12 @@
 </template>
 
 <script setup lang="ts">
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
-import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
-import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
+import { canonicalPlaceId } from 'fireux-places/runtime/place/composables/firestore/fetch/google/usePlacesGoogle'
+import { usePlaceFetch } from 'fireux-places/runtime/place/composables/firestore/fetch/usePlaceFetch'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/place/composables/firestore/utils/view/mapPlaceToBasePlace'
+import type { PlaceCard } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/place/composables/firestore/utils/view/usePlaceInterface'
+import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/place/composables/firestore/company/mutations/useCompanyCreate'
 import { CompanyStorage } from 'fireux-companies/runtime/place/models/company.entity'
 import {
