@@ -6,19 +6,19 @@ import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
  */
 export function configureComponents(resolver: Resolver) {
   registerComponentsDir(resolver, './runtime/components', {
-    global: true,
+    global: false,
     pathPrefix: true,
   })
 
   registerComponentsDir(resolver, './runtime/place/components', {
-    global: true,
+    global: false,
     pathPrefix: true,
     prefix: 'Place',
     ignore: ['dev/**'],
   })
 
   registerComponentsDir(resolver, './runtime/place/components/dev', {
-    global: true,
+    global: false,
     pathPrefix: true,
     prefix: 'DevPlace',
   })

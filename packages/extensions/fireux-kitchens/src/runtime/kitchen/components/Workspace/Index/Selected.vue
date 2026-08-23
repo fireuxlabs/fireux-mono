@@ -189,20 +189,25 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
 
 @media (max-width: 40rem) {
   .kitchen-home-target__layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: calc(var(--spacing) * 4);
-    padding: calc(var(--spacing) * 5);
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: calc(var(--spacing) * 3);
+    min-height: 0;
+    padding: calc(var(--spacing) * 4);
   }
 
   .kitchen-home-target__visual {
-    width: 5rem;
-    height: 5rem;
+    width: 4rem;
+    height: 4rem;
   }
 
   .kitchen-home-target__avatar,
   .kitchen-home-target__icon {
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
+  .kitchen-home-target h2 {
+    font-size: var(--text-xl);
   }
 }
 </style>

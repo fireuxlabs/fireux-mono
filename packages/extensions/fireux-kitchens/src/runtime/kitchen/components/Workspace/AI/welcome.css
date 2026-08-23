@@ -123,8 +123,10 @@
 
 @media (max-width: 40rem) {
   .kitchen-ai-welcome {
-    align-content: end;
-    padding: calc(var(--spacing) * 4) 0;
+    min-height: auto;
+    align-content: start;
+    gap: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 3) 0;
   }
 
   .kitchen-ai-welcome__intro {
@@ -134,5 +136,10 @@
 
   .kitchen-ai-welcome__starters {
     justify-content: flex-start;
+  }
+
+  .kitchen-ai-welcome__composer {
+    padding: var(--spacing);
+    border-radius: calc(var(--ui-radius) * 2);
   }
 }

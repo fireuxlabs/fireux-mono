@@ -3,7 +3,7 @@ import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
   registerComponentsDir(resolver, './runtime/place/components/Company', {
-    global: true,
+    global: false,
     pathPrefix: true,
     prefix: 'Company',
   })

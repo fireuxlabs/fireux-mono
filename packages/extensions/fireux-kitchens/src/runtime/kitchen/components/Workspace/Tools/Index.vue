@@ -1,9 +1,9 @@
 <template>
   <section aria-label="Kitchen tools">
-    <div class="flex flex-wrap items-center justify-end gap-2">
+    <div class="kitchen-workspace-tools">
       <Create
         v-if="!currentId"
-        class="mr-auto shrink-0"
+        class="kitchen-workspace-tools__slot"
         @created="setCurrent"
       />
       <UButton
@@ -12,7 +12,7 @@
         icon="i-lucide-chef-hat"
         color="primary"
         to="/workspace/kitchen/identity"
-        class="mr-auto"
+        class="kitchen-workspace-tools__slot"
       />
       <KitchenCardsPill
         v-else-if="kitchenComplete"
@@ -22,7 +22,7 @@
         to="/workspace/kitchen/identity"
         link
         :show-badges="false"
-        class="mr-auto"
+        class="kitchen-workspace-tools__slot"
       />
 
       <UButton
@@ -32,19 +32,23 @@
         color="neutral"
         variant="soft"
         to="/auth?redirect=/"
+        class="kitchen-workspace-tools__slot"
       />
       <UserCardsPill
         v-else-if="userPill"
         v-bind="userPill"
         link
         :show-badges="false"
+        class="kitchen-workspace-tools__slot"
       />
       <UButton
-        :label="exploreAction.label"
+        label="Misebox"
+        :aria-label="exploreAction.label"
         icon="i-lucide-globe-2"
         color="neutral"
         variant="outline"
         :to="exploreAction.to"
+        class="kitchen-workspace-tools__slot"
       />
     </div>
   </section>
@@ -71,3 +75,30 @@ const userPill = computed(() => {
   return card ? { ...card, to: '/dashboard/user-profile' } : null
 })
 </script>
+
+<style scoped>
+.kitchen-workspace-tools {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(var(--spacing) * 2);
+}
+
+.kitchen-workspace-tools__slot {
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 40rem) {
+  .kitchen-workspace-tools {
+    gap: var(--spacing);
+  }
+
+  .kitchen-workspace-tools :deep(button),
+  .kitchen-workspace-tools :deep(a) {
+    justify-content: center;
+    min-width: 0;
+    padding-inline: calc(var(--spacing) * 2);
+    font-size: var(--text-xs);
+  }
+}
+</style>

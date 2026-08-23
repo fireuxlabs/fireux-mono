@@ -63,6 +63,12 @@ export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
   nuxt.srcDir = 'app'
   nuxt.buildDir = 'app/.nuxt'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
+
+  if (process.env.NODE_ENV === 'production') {
+    nuxt.sourcemap = { client: false, server: false }
+    const nitro = ((nuxt.nitro ||= {}) as Record<string, any>)
+    nitro.sourceMap = false
+  }
 }
 
 export function configureAppModules(
