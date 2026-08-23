@@ -22,10 +22,7 @@
 import { computed } from 'vue'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
-import {
-  readKitchenCurrencyCode,
-  readKitchenFulfilmentConfig,
-} from '../../utils/kitchen-readers'
+import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
@@ -37,7 +34,9 @@ const deliveryZones = computed(
     props.fulfilment?.delivery_zones ||
     readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
-const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
+const currencyCode = computed(() =>
+  String(props.kitchen?.currency_code || '').trim().toUpperCase()
+)
 const deliveryCenter = computed(() => {
   const lat = Number(props.kitchen?.lat)
   const lng = Number(props.kitchen?.lng)
