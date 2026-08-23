@@ -121,7 +121,7 @@
       <NuxtErrorBoundary>
         <slot />
 
-        <template #error="{ clearError: clearPageError }">
+        <template #error="{ error: pageError, clearError: clearPageError }">
           <UDashboardPanel id="workspace-page-unavailable">
             <template #header>
               <LayoutsWorkspaceNavbar
@@ -137,7 +137,11 @@
                   variant="subtle"
                   icon="i-lucide-triangle-alert"
                   :title="`${workspaceLabel} page unavailable`"
-                  description="This page could not be loaded. The rest of the Workspace is still available."
+                  :description="
+                    isDevelopment
+                      ? String(pageError)
+                      : 'This page could not be loaded. The rest of the Workspace is still available.'
+                  "
                 >
                   <template #actions>
                     <UButton
@@ -191,6 +195,7 @@ import { useUser } from '../user/composables/useUser'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
+const isDevelopment = import.meta.dev
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
 const { appUser } = useUser()
@@ -213,7 +218,7 @@ const roleLens = computed(() => {
 })
 const route = useRoute()
 const workspace = computed(() =>
-  workspaceFamilyFromRouteContext(String(route.path || ''), route.query.family)
+  workspaceFamilyFromRouteContext(String(route.path || ''), route.meta.workspace)
 )
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(

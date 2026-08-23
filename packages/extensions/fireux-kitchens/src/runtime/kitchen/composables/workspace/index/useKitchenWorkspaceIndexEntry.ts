@@ -1,5 +1,4 @@
 import { onMounted, ref, watchEffect, type Ref } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { rememberAnonymousAccountUpgrade } from 'fireux-core/runtime/composables/fireux/firebase/anonymous-account-upgrade'
 import { useKitchenAnonymousAdoption } from './useKitchenAnonymousAdoption'
@@ -13,7 +12,6 @@ export function useKitchenWorkspaceIndexEntry(
   const clientReady = ref(!enabled)
 
   if (enabled) {
-    useWorkspace().setActiveContext('kitchen')
     const { adopt } = useKitchenAnonymousAdoption()
 
     watchEffect(() => {

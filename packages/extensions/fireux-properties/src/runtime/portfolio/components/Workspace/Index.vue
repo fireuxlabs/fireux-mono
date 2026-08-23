@@ -2,16 +2,15 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <WorkspacePortfolioIndexSelected
-      :portfolio="selection.portfolio"
-      :portfolio-id="selection.portfolioId"
-      @clear="actions.clear"
+      :portfolio="portfolio"
+      :portfolio-id="portfolioId"
+      @clear="clearPortfolio"
     />
 
     <WorkspacePortfolioIndexTargets
-      v-if="sections.targets.show"
-      :collection="sections.targets.collection"
-      :outcome="sections.targets.outcome"
-      @select="actions.selectTarget"
+      :collection="portfolios"
+      :outcome="outcome"
+      @select="selectPortfolio"
     />
 
     <DevDebugPanel
@@ -19,8 +18,8 @@
       scope="workspace"
       object-origin="fetched"
       :objects="{
-        selectedPortfolio: selection.portfolio,
-        portfolios: sections.targets.collection,
+        selectedPortfolio: portfolio,
+        portfolios,
       }"
       :derived="debug"
       :default-open="false"
@@ -31,5 +30,13 @@
 <script setup lang="ts">
 import { usePortfolioWorkspaceIndex } from '../../composables/workspace/index/usePortfolioWorkspaceIndex'
 
-const { selection, sections, actions, debug } = usePortfolioWorkspaceIndex()
+const {
+  portfolio,
+  portfolioId,
+  portfolios,
+  outcome,
+  selectPortfolio,
+  clearPortfolio,
+  debug,
+} = usePortfolioWorkspaceIndex()
 </script>

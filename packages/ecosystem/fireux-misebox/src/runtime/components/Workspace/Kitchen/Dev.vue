@@ -91,8 +91,8 @@
             firebaseIdentity,
             user: currentUser,
             appUser: appUser ?? null,
-            selectedKitchen: kitchenSelection.kitchen,
-            kitchens: kitchenSections.targets.collection,
+            selectedKitchen: kitchenSelection.kitchen.value,
+            kitchens: kitchenTargets.kitchens.value,
           }"
           :derived="combinedDebug"
           :default-open="false"
@@ -112,10 +112,10 @@
               title="Live kitchens"
               description="Switch the live Kitchen used for development."
               source="live"
-              :collection="kitchenSections.targets.collection"
-              :outcome="kitchenSections.targets.outcome"
-              :selected-id="kitchenSelection.kitchenId"
-              :selected-source="kitchenSelection.kitchenSource"
+              :collection="kitchenTargets.kitchens.value"
+              :outcome="kitchenTargets.outcome.value"
+              :selected-id="kitchenSelection.kitchenId.value"
+              :selected-source="kitchenSelection.kitchenSource.value"
               @select="selectDeveloperKitchen"
             />
           </div>
@@ -159,12 +159,17 @@ const userDebugDerived = computed(() => ({
   userOutcome: coreOutcome.value,
   appUserOutcome: appOutcome.value,
 }))
-const {
-  selection: kitchenSelection,
-  sections: kitchenSections,
-  debug: kitchenDebug,
-} = useKitchenWorkspaceIndex()
+const { current, access } = useKitchenWorkspaceIndex()
 const kitchenWorkspace = useKitchenWorkspace()
+const kitchenSelection = kitchenWorkspace.selection
+const kitchenTargets = kitchenWorkspace.targets
+const kitchenDebug = computed(() => ({
+  current: current.value,
+  access: access.value,
+  selectedKitchenId: kitchenSelection.kitchenId.value,
+  targetCount: kitchenTargets.kitchens.value.length,
+  targetOutcome: kitchenTargets.outcome.value,
+}))
 const combinedDebug = computed(() => ({
   ...userDebugDerived.value,
   ...kitchenDebug.value,

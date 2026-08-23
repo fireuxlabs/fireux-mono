@@ -7,6 +7,8 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, type ComputedRef } from 'vue'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 
 type AppSupportAccessQueryOptions = {
   db: Firestore
@@ -52,4 +54,32 @@ export function useAppSupportAccessQueries<TRecord extends DocumentData>(
     operatorQuery: accessQuery('operator_ids'),
     teamQuery: accessQuery('team_ids'),
   }
+}
+
+export function useAppSupportAccess(options: AppSupportAccessQueryOptions) {
+  const queries = useAppSupportAccessQueries<DocumentData>(options)
+  const { firestoreQuery } = useFirestoreRead()
+  const operatorRecords = firestoreQuery(queries.operatorQuery)
+  const teamRecords = firestoreQuery(queries.teamQuery)
+  const ids = computed(() => [
+    ...new Set(
+      [...(operatorRecords.value ?? []), ...(teamRecords.value ?? [])]
+        .map((record) => String(record.id ?? '').trim())
+        .filter(Boolean)
+    ),
+  ])
+  const pending = computed(
+    () => operatorRecords.pending.value || teamRecords.pending.value
+  )
+  const error = computed(
+    () => operatorRecords.error.value ?? teamRecords.error.value
+  )
+  const { outcome } = useFirestoreCollectionState({
+    active: options.enabled,
+    count: computed(() => ids.value.length),
+    pending,
+    error,
+  })
+
+  return { ids, pending, error, outcome }
 }

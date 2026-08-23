@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw workspace debug label. -->
 <!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: delegate selected-target chrome to Core. -->
 <template>
-  <WorkspaceSelectedTarget
+  <WorkspaceCurrentEntity
     label="Blank"
     :selected-id="blankId"
     :description="blankName"

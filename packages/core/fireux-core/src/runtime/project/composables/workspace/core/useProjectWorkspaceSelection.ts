@@ -1,16 +1,13 @@
-import { useWorkspaceSelection } from '../../../../composables/fireux/workspace/useWorkspaceSelection'
-import type { WorkspaceSource } from '../../../../composables/fireux/workspace/useWorkspace'
+import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { normalizeString } from '../../../../utils/string'
 
 type ProjectWorkspaceSelectionInput = {
   selectedId?: string
   projectId?: string
-  type?: WorkspaceSource
 }
 
 export function useProjectWorkspaceSelection() {
-  const { selectedId, selectTarget, clearSelection } =
-    useWorkspaceSelection('project')
+  const { currentId, setCurrent, clearCurrent } = useWorkspace('project')
 
   const setProjectWorkspaceSelection = (selectionPatch: ProjectWorkspaceSelectionInput = {}) => {
     const hasNextId =
@@ -18,14 +15,14 @@ export function useProjectWorkspaceSelection() {
       selectionPatch.projectId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
-      : selectedId.value
+      : currentId.value
 
-    selectTarget(nextId, selectionPatch.type ?? 'live')
+    setCurrent(nextId)
   }
 
   return {
-    selectedId,
+    selectedId: currentId,
     setProjectWorkspaceSelection,
-    clearProjectWorkspaceSelection: clearSelection,
+    clearProjectWorkspaceSelection: clearCurrent,
   }
 }

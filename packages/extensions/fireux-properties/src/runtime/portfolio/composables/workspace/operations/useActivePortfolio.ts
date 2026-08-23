@@ -1,8 +1,7 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Workspace Spine pass: centralize Portfolio operation write authorization.
 // Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
 import { computed, type ComputedRef, type Ref } from 'vue'
-import type { WorkspaceDataType } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceData'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
@@ -14,6 +13,8 @@ import {
 import { usePortfolioWorkspaceSelection } from '../core/usePortfolioWorkspaceSelection'
 import { usePropertiesWorkspaceDemoData } from '../../../../composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData'
 import type { PropertiesWorkspaceDemoScenario } from '../../../../composables/fireux/workspace/shared/usePropertiesWorkspaceDemoData'
+
+type WorkspaceDataType = 'live'
 
 export type ActivePortfolioRuntime = {
   dataType: ComputedRef<WorkspaceDataType | null>

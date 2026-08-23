@@ -2,16 +2,15 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceSupplierIndexSelected
-      :supplier="selection.supplier"
-      :supplier-id="selection.supplierId"
-      @clear="actions.clear"
+      :supplier="supplier"
+      :supplier-id="supplierId"
+      @clear="clearSupplier"
     />
 
     <WorkspaceSupplierIndexTargets
-      v-if="sections.targets.show"
-      :collection="sections.targets.collection"
-      :outcome="sections.targets.outcome"
-      @select="actions.selectTarget"
+      :collection="suppliers"
+      :outcome="outcome"
+      @select="selectSupplier"
     />
 
     <DevDebugPanel
@@ -19,8 +18,8 @@
       scope="workspace"
       object-origin="fetched"
       :objects="{
-        selectedSupplier: selection.supplier,
-        suppliers: sections.targets.collection,
+        selectedSupplier: supplier,
+        suppliers,
       }"
       :derived="debug"
       :default-open="false"
@@ -31,5 +30,13 @@
 <script setup lang="ts">
 import { useSupplierWorkspaceIndex } from '../../composables/workspace/index/useSupplierWorkspaceIndex'
 
-const { selection, sections, actions, debug } = useSupplierWorkspaceIndex()
+const {
+  supplier,
+  supplierId,
+  suppliers,
+  outcome,
+  selectSupplier,
+  clearSupplier,
+  debug,
+} = useSupplierWorkspaceIndex()
 </script>

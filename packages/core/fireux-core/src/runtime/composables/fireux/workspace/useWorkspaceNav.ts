@@ -32,7 +32,7 @@ export const useWorkspaceNav = () => {
   const currentWorkspace = computed(() =>
     workspaceFamilyFromRouteContext(
       normalizePath(route.path),
-      route.query.family
+      route.meta.workspace
     )
   )
   const baseNavFilter = (item: NavItem) => {

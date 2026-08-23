@@ -10,7 +10,6 @@ import { useUserInterface } from './useUserInterface'
 export type { User } from '../models/user.model.ts'
 export type { UserAccount } from '../models/user-account.model.ts'
 export { useUserFetch } from './firestore/fetch/useUserFetch'
-export { useUserInterface } from './useUserInterface'
 
 /**
  * FireUX stack family: Active identity + app membership.

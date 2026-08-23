@@ -174,7 +174,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import {
   usePlaceSearch,
   type PlaceSearchLocation,
@@ -189,8 +188,7 @@ type SelectedPlace = {
   source: 'google' | 'fireux' | 'manual'
 }
 
-const workspaceRoot = useWorkspace('kitchen')
-const canCreate = computed(() => workspaceRoot.canCreateTarget())
+const canCreate = computed(() => true)
 const { createKitchen } = useKitchenCreate()
 const toast = useToast()
 const emit = defineEmits<{

@@ -13,3 +13,5 @@ export type WorkspaceTargetCard = {
   meta?: string
   badges?: string[]
 }
+
+export type WorkspaceEntityCard = WorkspaceTargetCard

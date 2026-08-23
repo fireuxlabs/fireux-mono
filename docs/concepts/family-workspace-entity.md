@@ -107,9 +107,8 @@ migration verification, and protected Workspace consumer are complete.
 - Capability runtimes receive the established current Entity id and load only
   their own records. They do not reconstruct an Entity directory or another
   current-Entity authority.
-- `useWorkspaceDirectoryIndex` quarantines the five older collection-style
-  indexes while they are deliberately migrated. It is descriptive migration
-  infrastructure, not the canonical contract, and gains no new consumers.
+- Domain Index composables expose named Entity collections and actions
+  directly. Core does not own a generic directory-index adapter.
 - `team/{uid}` grants Workspace membership and names its roles and permissions.
   Current App admins are the explicit override only for roots managed by that
   App.

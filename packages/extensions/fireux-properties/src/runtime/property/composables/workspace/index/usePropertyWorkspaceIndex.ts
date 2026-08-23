@@ -2,26 +2,14 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Workspace Spine pass: compose Property membership outcome before selection validation and bind real target ids.
 // Concurrent edit — 2026-07-21 22:31 CEST — Workspace family alignment: consume Property core-owned target authority.
 import { computed } from 'vue'
-import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
 export function usePropertyWorkspaceIndex() {
   const {
     properties,
-    targeting,
     selection: workspaceSelection,
     runtime: workspaceRuntime,
     actions: workspaceActions,
   } = usePropertyWorkspace()
-  const selection = computed(() => ({
-    property: workspaceSelection.property.value,
-    propertyId: workspaceSelection.propertyId.value,
-  }))
-  const runtime = computed(() => ({
-    appId: workspaceRuntime.appId.value,
-    rootCollection: workspaceRuntime.rootCollection.value,
-    readOnly: workspaceRuntime.readOnly.value,
-    canWrite: workspaceRuntime.canWrite.value,
-  }))
   const debug = computed(() => ({
     propertyId: workspaceSelection.propertyId.value,
     activePropertyAppId: workspaceRuntime.appId.value,
@@ -30,21 +18,15 @@ export function usePropertyWorkspaceIndex() {
     canWrite: workspaceRuntime.canWrite.value,
     selectedProperty: workspaceSelection.property.value,
     targetCount: properties.count.value,
-    source: targeting.debug.value,
   }))
 
-  return useWorkspaceDirectoryIndex({
-    selection,
-    selectedId: computed(() => workspaceSelection.propertyId.value),
-    selectedTarget: workspaceSelection.property,
-    runtime,
-    targets: properties.targets,
+  return {
+    property: workspaceSelection.property,
+    propertyId: workspaceSelection.propertyId,
+    properties: properties.targets,
     outcome: properties.outcome,
-    getTargetId: (target) => String(target?.id ?? '').trim(),
-    selectTarget: (id: string) => {
-      workspaceActions.selectProperty(String(id ?? '').trim())
-    },
-    clearSelection: workspaceActions.clearSelectedProperty,
+    selectProperty: workspaceActions.selectProperty,
+    clearProperty: workspaceActions.clearSelectedProperty,
     debug,
-  })
+  }
 }

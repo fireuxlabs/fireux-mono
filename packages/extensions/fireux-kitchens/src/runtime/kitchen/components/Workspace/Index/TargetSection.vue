@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen per-source target wrapper. -->
 <template>
-  <WorkspaceTargetCollection
+  <WorkspaceEntityCollection
     :outcome="props.outcome"
     :count="cards.length"
     :entity="stateCopy.entity"
@@ -18,12 +18,12 @@
       :selected="isSelected(card.id)"
       @action="selectKitchen(card.id)"
     />
-  </WorkspaceTargetCollection>
+  </WorkspaceEntityCollection>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { WorkspaceTargetCard as WorkspaceTargetCardType } from 'fireux-core/runtime/components/Workspace/types'
 import type { KitchenFetchSource } from '../../../composables/firestore/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'

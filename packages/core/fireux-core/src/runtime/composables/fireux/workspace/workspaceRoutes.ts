@@ -39,9 +39,9 @@ export function workspaceFamilyFromPath(path: string): WorkspaceFamily | '' {
 
 export function workspaceFamilyFromRouteContext(
   path: string,
-  _familyQuery?: unknown
+  workspace?: unknown
 ): WorkspaceFamily | '' {
-  return workspaceFamilyFromPath(path)
+  return workspaceFamilyFromPath(path) || normalizeWorkspaceFamily(workspace)
 }
 
 export function workspaceOperationFromPath(path: string): string {

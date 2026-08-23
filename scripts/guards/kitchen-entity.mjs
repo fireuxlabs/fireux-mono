@@ -359,6 +359,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detailReader, /lastGoodKitchen/)
   assert.match(detailReader, /lastGoodPlace/)
   assert.doesNotMatch(detailModel, /PublicKitchenDetail/)
-  assert.match(operatorPanel, /\buseKitchenWorkspaceTargetCollection\s*\(/)
+  assert.match(operatorPanel, /\buseKitchenWorkspaceKitchens\s*\(/)
   assert.doesNotMatch(operatorPanel, /useKitchenFetch|firebase\/firestore/)
 }

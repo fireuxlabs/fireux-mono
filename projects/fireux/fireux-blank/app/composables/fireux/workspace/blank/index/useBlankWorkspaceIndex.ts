@@ -2,8 +2,6 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: identify targets through the shared index contract.
 // Concurrent edit — 2026-07-21 22:28 CEST — Workspace family alignment: consume the core-owned membership-aware target outcome.
 import { computed } from 'vue'
-import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
-import type { Blank } from '../../../../../models/blank.model'
 import { useBlankWorkspace } from '../core/useBlankWorkspace'
 
 /**
@@ -15,20 +13,10 @@ import { useBlankWorkspace } from '../core/useBlankWorkspace'
 export function useBlankWorkspaceIndex() {
   const {
     blanks,
-    targeting,
     selection: workspaceSelection,
     runtime: workspaceRuntime,
     actions: workspaceActions,
   } = useBlankWorkspace()
-  const selection = computed(() => ({
-    blank: workspaceSelection.blank.value,
-    blankId: workspaceSelection.blankId.value,
-  }))
-  const runtime = computed(() => ({
-    rootCollection: workspaceRuntime.rootCollection.value,
-    readOnly: workspaceRuntime.readOnly.value,
-    canWrite: workspaceRuntime.canWrite.value,
-  }))
   const debug = computed(() => ({
     family: 'blank',
     blankId: workspaceSelection.blankId.value,
@@ -37,21 +25,15 @@ export function useBlankWorkspaceIndex() {
     rootCollection: workspaceRuntime.rootCollection.value,
     appCollectionPath: workspaceRuntime.appCollectionPath.value,
     readOnly: workspaceRuntime.readOnly.value,
-    source: targeting.debug.value,
   }))
 
-  return useWorkspaceDirectoryIndex({
-    selection,
-    selectedId: computed(() => workspaceSelection.blankId.value),
-    selectedTarget: workspaceSelection.blank,
-    runtime,
-    targets: blanks.targets,
+  return {
+    blank: workspaceSelection.blank,
+    blankId: workspaceSelection.blankId,
+    blanks: blanks.targets,
     outcome: blanks.outcome,
-    getTargetId: (target: Blank) => String(target?.id ?? '').trim(),
-    selectTarget: (id: string) => {
-      workspaceActions.selectBlank(String(id ?? '').trim())
-    },
-    clearSelection: workspaceActions.clearSelectedBlank,
+    selectBlank: workspaceActions.selectBlank,
+    clearBlank: workspaceActions.clearSelectedBlank,
     debug,
-  })
+  }
 }

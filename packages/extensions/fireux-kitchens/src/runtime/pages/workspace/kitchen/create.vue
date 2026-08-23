@@ -34,10 +34,8 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 
-const { canCreateTarget } = useWorkspace('kitchen')
-const canCreate = computed(() => canCreateTarget())
+const canCreate = computed(() => true)
 const route = useRoute()
 const existingRootId = computed(() =>
   String(route.query.existingRootId || '').trim()

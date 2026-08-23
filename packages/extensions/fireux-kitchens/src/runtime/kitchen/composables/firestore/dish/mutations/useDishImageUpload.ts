@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: upload Dish images through the Kitchen-owned server boundary.
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { ref } from 'vue'
 
@@ -15,7 +15,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useDishImageUpload() {
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspaceSelection('kitchen')
+  const { currentId: selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const pending = ref(false)
 

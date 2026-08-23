@@ -106,13 +106,10 @@ records and operations use their parent Entity's composable scope.
 - `useWorkspace`: persists only the current Entity id for a named Workspace
   and exposes set/clear actions. It does not load a
   collection, infer authority, or expose source modes.
-- `useWorkspaceDirectoryIndex`: bounded migration seam for older pages that
-  still present an Entity directory as a Workspace index. It is not the
-  canonical Workspace index contract and gains no new consumers.
-- `useXWorkspaceIndex`: uses `useWorkspace` to resolve the current domain Entity and exposes only the
-  current Entity, access needed by the Index, and its bounded actions. An older
-  directory-style family may still adapt through `useWorkspaceDirectoryIndex`
-  while it awaits deliberate migration; that is not the Kitchen contract.
+- `useXWorkspaceIndex`: uses `useWorkspace` to resolve the current domain
+  Entity and exposes its named Entity collection, outcome, selection actions,
+  and Index debug directly. Core does not repackage those values as generic
+  targets, sections, counts, or runtime state.
 
 ## Reactive ownership
 

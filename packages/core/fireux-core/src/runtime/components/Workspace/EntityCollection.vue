@@ -1,20 +1,20 @@
-<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make idle target presentation explicit. -->
-<!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: render target states from outcome rather than count. -->
+<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make idle entity presentation explicit. -->
+<!-- Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: render entity states from outcome rather than count. -->
 <template>
   <section
     v-if="outcome !== 'idle'"
-    class="workspace-target-collection"
+    class="workspace-entity-collection"
     :aria-busy="outcome === 'pending'"
   >
-    <header class="workspace-target-collection__header">
-      <div class="workspace-target-collection__copy">
+    <header class="workspace-entity-collection__header">
+      <div class="workspace-entity-collection__copy">
         <slot name="header">
-          <h2 class="workspace-target-collection__title">
+          <h2 class="workspace-entity-collection__title">
             {{ resolvedTitle }}
           </h2>
           <p
             v-if="description"
-            class="workspace-target-collection__description"
+            class="workspace-entity-collection__description"
           >
             {{ description }}
           </p>
@@ -23,7 +23,7 @@
 
       <div
         v-if="$slots.actions || isSettled"
-        class="workspace-target-collection__aside"
+        class="workspace-entity-collection__aside"
       >
         <slot name="actions" />
 
@@ -40,7 +40,7 @@
 
     <MoleculesStateCard
       v-if="outcome === 'pending'"
-      class="workspace-target-collection__state"
+      class="workspace-entity-collection__state"
       :entity="entity"
       state="loading"
       surface="bare"
@@ -50,7 +50,7 @@
 
     <MoleculesStateCard
       v-else-if="outcome === 'error'"
-      class="workspace-target-collection__state"
+      class="workspace-entity-collection__state"
       :entity="entity"
       state="error"
       surface="bare"
@@ -58,7 +58,7 @@
       :uppercase="false"
       :description="errorDescription"
     >
-      <div v-if="retryable" class="workspace-target-collection__state-action">
+      <div v-if="retryable" class="workspace-entity-collection__state-action">
         <UButton
           size="sm"
           variant="soft"
@@ -72,15 +72,15 @@
 
     <div
       v-else-if="outcome === 'ready'"
-      class="workspace-target-collection__items"
-      :class="[`workspace-target-collection__items--${layout}`, itemsClass]"
+      class="workspace-entity-collection__items"
+      :class="[`workspace-entity-collection__items--${layout}`, itemsClass]"
     >
       <slot />
     </div>
 
     <MoleculesStateCard
       v-else-if="outcome === 'empty'"
-      class="workspace-target-collection__state"
+      class="workspace-entity-collection__state"
       :entity="entity"
       state="empty"
       surface="bare"
@@ -94,11 +94,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceEntityOutcome } from '../../composables/fireux/workspace/workspace-outcome'
 
 const props = withDefaults(
   defineProps<{
-    outcome: WorkspaceTargetOutcome
+    outcome: WorkspaceEntityOutcome
     count: number
     entity: string
     errorDescription: string
@@ -126,18 +126,18 @@ const isSettled = computed(
   () => props.outcome === 'ready' || props.outcome === 'empty'
 )
 const resolvedTitle = computed(
-  () => String(props.title ?? '').trim() || 'Choose target'
+  () => String(props.title ?? '').trim() || 'Choose entity'
 )
 </script>
 
 <style scoped>
-.workspace-target-collection {
+.workspace-entity-collection {
   display: grid;
   gap: calc(var(--spacing) * 4);
   min-width: 0;
 }
 
-.workspace-target-collection__header {
+.workspace-entity-collection__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -145,14 +145,14 @@ const resolvedTitle = computed(
   min-width: 0;
 }
 
-.workspace-target-collection__copy {
+.workspace-entity-collection__copy {
   display: grid;
   gap: var(--spacing);
   min-width: 0;
 }
 
-.workspace-target-collection__copy :deep(h2),
-.workspace-target-collection__title {
+.workspace-entity-collection__copy :deep(h2),
+.workspace-entity-collection__title {
   margin: 0;
   color: var(--ui-text-highlighted);
   font-size: var(--text-base);
@@ -160,15 +160,15 @@ const resolvedTitle = computed(
   line-height: var(--leading-tight);
 }
 
-.workspace-target-collection__copy :deep(p),
-.workspace-target-collection__description {
+.workspace-entity-collection__copy :deep(p),
+.workspace-entity-collection__description {
   margin: 0;
   color: var(--ui-text-muted);
   font-size: var(--text-xs);
   line-height: var(--leading-normal);
 }
 
-.workspace-target-collection__aside {
+.workspace-entity-collection__aside {
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
@@ -177,11 +177,11 @@ const resolvedTitle = computed(
   gap: calc(var(--spacing) * 2);
 }
 
-.workspace-target-collection__items {
+.workspace-entity-collection__items {
   min-width: 0;
 }
 
-.workspace-target-collection__items--grid {
+.workspace-entity-collection__items--grid {
   display: grid;
   grid-template-columns: repeat(
     auto-fit,
@@ -190,17 +190,17 @@ const resolvedTitle = computed(
   gap: calc(var(--spacing) * 3);
 }
 
-.workspace-target-collection__items--list {
+.workspace-entity-collection__items--list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: calc(var(--spacing) * 3);
 }
 
-.workspace-target-collection__state {
+.workspace-entity-collection__state {
   border-block: 1px solid var(--ui-border);
 }
 
-.workspace-target-collection__state-action {
+.workspace-entity-collection__state-action {
   display: flex;
   justify-content: center;
   margin-top: calc(var(--spacing) * 4);

@@ -375,18 +375,6 @@ function workspaceDemoRelationshipMayLoad(importer, resolved) {
   )
 }
 
-function workspaceCoreFamily(relativePath, source) {
-  const match = relativePath.match(
-    /\/(?:src\/runtime\/(?:[^/]+\/)?composables\/(?:fireux\/)?workspace|app\/composables\/fireux\/workspace)\/([^/]+)\/core\/use([A-Z][A-Za-z0-9]*)Workspace\.(?:js|ts)$/
-  )
-  if (!match) return null
-
-  const family = match[1]
-  return new RegExp(`useWorkspace\\(\\s*['"]${family}['"]\\s*\\)`).test(source)
-    ? { family, typeName: match[2] }
-    : null
-}
-
 function isProductDemoAdapter(relativePath) {
   return /^projects\/[^/]+\/[^/]+\/app\/composables\/product-demo\/use(?:[A-Z][A-Za-z0-9]*)?ProductDemo\.(?:js|ts)$/.test(
     relativePath
@@ -570,7 +558,6 @@ export async function run(ctx) {
       existsSync(path.join(repoRoot, productDemoAdapterForLoader(relativeFile)))
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
-    const workspaceCore = workspaceCoreFamily(relativeFile, source)
     const kitchenDemo = relativeFile.startsWith(
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/'
     )
@@ -586,19 +573,6 @@ export async function run(ctx) {
         file: relativeFile,
         message:
           'Kitchen Demo fixtures must follow Menu, Dish, Recipe, and Mise operation vocabulary; Catalogue belongs to the Supplier family.',
-      })
-    }
-
-    if (
-      workspaceCore &&
-      !new RegExp(
-        `use${workspaceCore.typeName}WorkspaceDemo(?:Data|Targets)\\s*\\(`
-      ).test(source)
-    ) {
-      violations.push({
-        code: 'workspace-shape',
-        file: relativeFile,
-        message: `The ${workspaceCore.family} Workspace accepts the shared Demo source but does not consume its owner-local Demo adapter.`,
       })
     }
 
@@ -1984,7 +1958,7 @@ export async function run(ctx) {
   const kitchenWorkspaceCoreFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'
   const kitchenWorkspaceTargetFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceTargetCollection.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceKitchens.ts'
   const kitchenWorkspaceCorePath = path.join(repoRoot, kitchenWorkspaceCoreFile)
   const kitchenWorkspaceTargetPath = path.join(
     repoRoot,
@@ -1997,16 +1971,13 @@ export async function run(ctx) {
     ? readFileSync(kitchenWorkspaceTargetPath, 'utf8')
     : ''
   if (
-    !/useKitchenWorkspaceTargetCollection\(\{\s*enabled:\s*true,\s*\}\)/.test(
-      kitchenWorkspaceCoreSource
-    ) ||
-    !kitchenWorkspaceCoreSource.includes("workspaceData('live', kitchen)") ||
-    kitchenWorkspaceCoreSource.includes("workspaceData('demo', kitchen)") ||
+    !kitchenWorkspaceCoreSource.includes('useKitchenWorkspaceKitchens()') ||
     kitchenWorkspaceCoreSource.includes('useKitchenWorkspaceDemoTargets') ||
+    kitchenWorkspaceCoreSource.includes('useKitchenWorkspaceDemoData') ||
     !kitchenWorkspaceTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
     ) ||
-    !kitchenWorkspaceTargetSource.includes('enabled: options.enabled')
+    !kitchenWorkspaceTargetSource.includes("'/api/workspace/kitchen/targets'")
   ) {
     violations.push({
       code: 'kitchen-demo-live-target',

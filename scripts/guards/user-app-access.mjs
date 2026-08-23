@@ -261,17 +261,6 @@ export async function run({ repoRoot }) {
     'Active User and account state must use bounded server projections.'
   )
 
-  const workspaceTargets = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceTargets.ts'
-  )
-  assert.match(workspaceTargets, /useWorkspaceTargetRequest/)
-  assert.doesNotMatch(
-    workspaceTargets,
-    /useUserFetch|useCurrentAppContext/,
-    'Generic Workspace targets must consume the authenticated family projection directly.'
-  )
-
   const routeAuthGuard = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'

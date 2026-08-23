@@ -2,23 +2,22 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceBlankIndexSelected
-      :blank="selection.blank"
-      :blank-id="selection.blankId"
-      @clear="actions.clear"
+      :blank="blank"
+      :blank-id="blankId"
+      @clear="clearBlank"
     />
 
     <WorkspaceBlankIndexTargets
-      v-if="sections.targets.show"
-      :collection="sections.targets.collection"
-      :outcome="sections.targets.outcome"
-      @select="actions.selectTarget"
+      :collection="blanks"
+      :outcome="outcome"
+      @select="selectBlank"
     />
 
     <DevDebugPanel
       title="Blank workspace debug"
       scope="workspace"
       object-origin="fetched"
-      :objects="{ selectedBlank: selection.blank, blanks: sections.targets.collection }"
+      :objects="{ selectedBlank: blank, blanks }"
       :derived="debug"
       :default-open="false"
     />
@@ -29,9 +28,12 @@
 import { useBlankWorkspaceIndex } from '../../../composables/fireux/workspace/blank/index/useBlankWorkspaceIndex'
 
 const {
-  selection,
-  sections,
-  actions,
+  blank,
+  blankId,
+  blanks,
+  outcome,
+  selectBlank,
+  clearBlank,
   debug,
 } = useBlankWorkspaceIndex()
 </script>

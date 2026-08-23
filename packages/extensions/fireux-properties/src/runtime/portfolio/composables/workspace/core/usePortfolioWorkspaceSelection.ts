@@ -1,4 +1,4 @@
-import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 type PortfolioWorkspaceSelectionInput = {
@@ -7,8 +7,7 @@ type PortfolioWorkspaceSelectionInput = {
 }
 
 export function usePortfolioWorkspaceSelection() {
-  const { selectedId, selectTarget, clearSelection } =
-    useWorkspaceSelection('portfolio')
+  const { currentId, setCurrent, clearCurrent } = useWorkspace('portfolio')
 
   const setPortfolioWorkspaceSelection = (
     selectionPatch: PortfolioWorkspaceSelectionInput = {}
@@ -18,14 +17,14 @@ export function usePortfolioWorkspaceSelection() {
       selectionPatch.portfolioId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.portfolioId)
-      : selectedId.value
+      : currentId.value
 
-    selectTarget(nextId, 'live')
+    setCurrent(nextId)
   }
 
   return {
-    selectedId,
+    selectedId: currentId,
     setPortfolioWorkspaceSelection,
-    clearPortfolioWorkspaceSelection: clearSelection,
+    clearPortfolioWorkspaceSelection: clearCurrent,
   }
 }

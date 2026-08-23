@@ -1,5 +1,5 @@
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
-import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import type { KitchenOrderTransition } from '../../../../../utils/order.ts'
@@ -15,7 +15,7 @@ export function useKitchenOrderTransition(options: {
   appId: MaybeRefOrGetter<string | null | undefined>
 }) {
   const { currentUser } = useAuth()
-  const { selectedId } = useWorkspaceSelection('kitchen')
+  const { currentId: selectedId } = useWorkspace('kitchen')
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
   const error = ref('')
   const pendingByOrderId = ref<Record<string, boolean>>({})

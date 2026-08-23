@@ -1,61 +1,31 @@
 import { computed } from 'vue'
-import { normalizeWorkspaceFamily } from './useWorkspace'
-import type { WorkspaceDataType } from './useWorkspaceData'
-import { useWorkspaceDataAuthority } from './useWorkspaceDataAuthority'
-import { useWorkspaceSelection } from './useWorkspaceSelection'
+import { normalizeWorkspace, useWorkspace } from './useWorkspace'
 
-export class WorkspaceDataReadOnlyError extends Error {
-  readonly code = 'workspace-data-read-only'
+export class WorkspaceSelectionRequiredError extends Error {
+  readonly code = 'workspace-selection-required'
 
-  constructor(family: string) {
-    super(
-      `${family || 'Workspace'} Demo data is read-only.`
-    )
-    this.name = 'WorkspaceDataReadOnlyError'
+  constructor(workspace: string) {
+    super(`Select a ${workspace || 'Workspace'} before making changes.`)
+    this.name = 'WorkspaceSelectionRequiredError'
   }
 }
 
 /**
- * Defense-in-depth for Workspace mutation, HTTP, and upload adapters.
- *
- * Server authorization and Firestore Rules remain authoritative. This gate
- * prevents a Demo-selected parent from issuing a Live request at all.
+ * Temporary shared selection assertion for existing mutation consumers.
+ * Domain servers and Firestore Rules remain the write authority.
  */
-export function useWorkspaceWriteGuard(family: string) {
-  const normalizedFamily = normalizeWorkspaceFamily(family)
-  const selection = useWorkspaceSelection(normalizedFamily)
-  const { authority } = useWorkspaceDataAuthority(normalizedFamily)
-  const selectedType = computed<WorkspaceDataType | null>(() => {
-    const resolved = authority.value
-    return resolved &&
-      resolved.id === selection.selectedId.value &&
-      resolved.type === selection.selectedType.value
-      ? resolved.type
-      : null
-  })
-  const isDemo = computed(
-    () =>
-      selection.selectedType.value === 'demo' &&
-      selectedType.value === 'demo'
-  )
+export function useWorkspaceWriteGuard(workspaceName: string) {
+  const workspace = normalizeWorkspace(workspaceName)
+  const { currentId } = useWorkspace(workspace)
 
-  const requireWritableData = (
-    expectedType?: WorkspaceDataType
-  ): Exclude<WorkspaceDataType, 'demo'> => {
-    const type = selectedType.value
-    if (
-      !type ||
-      type === 'demo' ||
-      (expectedType !== undefined && type !== expectedType)
-    ) {
-      throw new WorkspaceDataReadOnlyError(normalizedFamily)
-    }
-    return type
+  const requireWritableData = () => {
+    if (!currentId.value) throw new WorkspaceSelectionRequiredError(workspace)
+    return currentId.value
   }
 
   return {
-    selectedType,
-    isDemo,
+    selectedType: computed(() => (currentId.value ? 'live' as const : null)),
+    isDemo: computed(() => false),
     requireWritableData,
   }
 }

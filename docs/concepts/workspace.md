@@ -33,19 +33,13 @@ do not authorize `/workspace/**` product routes or visible Workspace terminology
 
 - `useWorkspace`
 - `useWorkspaceAccess`
-- `useWorkspaceEntityRuntime`
 - `useWorkspaceDemoData`
-- `useWorkspaceTargets`
-- `useWorkspaceTargetRequest`
-- `useWorkspaceFamilyRuntime`
-- `WorkspaceSelectedTarget`
-- `WorkspaceTargetCollection`
-- `useWorkspaceOverview`
-- `useWorkspaceSelection`
+- `WorkspaceCurrentEntity`
+- `WorkspaceEntityCollection`
 - `useWorkspaceTeam`
 
-Workspace is a shared surface and selected-entity runtime, not an entity
-owner. Shared Workspace shells, navigation, selection, and outcome primitives
+Workspace is a shared surface and current-entity primitive, not an entity
+owner. Shared Workspace shells, navigation, current ID, and outcome primitives
 remain in the root technical spine. Kitchen, Supplier, Project, and other
 entity-specific Workspace adapters belong beneath their entity roots according
 to `runtime-filesystem.md`. Nuxt pages and API handlers retain their framework

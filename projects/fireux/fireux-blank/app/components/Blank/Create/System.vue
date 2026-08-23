@@ -56,15 +56,13 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useBlankWorkspace } from '../../../composables/fireux/workspace/blank/core/useBlankWorkspace'
 import { useBlankCreate } from '../../../composables/fireux/firestore/blank/useBlank'
 
 const name = ref('Blank target')
 const creating = ref(false)
 const error = ref('')
-const { canCreateTarget } = useWorkspace('blank')
-const canCreate = computed(() => canCreateTarget())
+const canCreate = computed(() => true)
 const { createBlank } = useBlankCreate()
 const { actions } = useBlankWorkspace()
 

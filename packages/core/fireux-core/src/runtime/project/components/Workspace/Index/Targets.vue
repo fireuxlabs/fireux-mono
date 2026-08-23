@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Project target wrapper. -->
 <template>
-  <WorkspaceTargetCollection
+  <WorkspaceEntityCollection
     :outcome="props.outcome"
     :count="cards.length"
     entity="project targets"
@@ -19,12 +19,12 @@
       :show-badges="false"
       @action="selectProject(card.id)"
     />
-  </WorkspaceTargetCollection>
+  </WorkspaceEntityCollection>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/workspace-outcome'
 import type { ProjectSurface } from '../../../composables/useProjectInterface'
 import { useProjectInterface } from '../../../composables/useProjectInterface'
 

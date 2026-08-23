@@ -6,7 +6,12 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchen />
+        <section class="workspace-surface">
+          <WorkspaceKitchenAI />
+          <WorkspaceKitchen />
+          <WorkspaceKitchenTools />
+          <WorkspaceKitchenDev v-if="isDevelopment" />
+        </section>
       </template>
     </UDashboardPanel>
   </div>
@@ -16,8 +21,11 @@
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
+const isDevelopment = import.meta.dev
+
 definePageMeta({
   layout: 'workspace',
+  workspace: 'kitchen',
   workspaceSurface: 'browse',
   workspaceAccess: 'public-entry',
   nav: {

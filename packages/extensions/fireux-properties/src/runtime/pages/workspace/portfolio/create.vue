@@ -28,11 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-
-const { canCreateTarget } = useWorkspace('portfolio')
-const canCreate = computed(() => canCreateTarget())
+const canCreate = true
 
 definePageMeta({
   layout: 'workspace',

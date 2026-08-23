@@ -2,17 +2,16 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceProjectIndexSelected
-      :project="selection.project"
-      :project-id="selection.projectId"
-      :outcome="selection.outcome"
-      @clear="actions.clear"
+      :project="project"
+      :project-id="projectId"
+      :outcome="outcome"
+      @clear="clearProject"
     />
 
     <WorkspaceProjectIndexTargets
-      v-if="sections.targets.show"
-      :collection="sections.targets.collection"
-      :outcome="sections.targets.outcome"
-      @select="actions.selectTarget"
+      :collection="projects"
+      :outcome="outcome"
+      @select="selectProject"
     />
 
     <DevDebugPanel
@@ -20,8 +19,8 @@
       scope="workspace"
       object-origin="fetched"
       :objects="{
-        selectedProject: selection.project,
-        projects: sections.targets.collection,
+        selectedProject: project,
+        projects,
       }"
       :derived="debug"
       :default-open="false"
@@ -32,5 +31,6 @@
 <script setup lang="ts">
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
-const { selection, sections, actions, debug } = useProjectWorkspaceIndex()
+const { project, projectId, projects, outcome, selectProject, clearProject, debug } =
+  useProjectWorkspaceIndex()
 </script>

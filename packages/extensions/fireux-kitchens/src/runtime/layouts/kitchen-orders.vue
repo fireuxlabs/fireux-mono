@@ -49,14 +49,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWorkspaceSelection } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceSelection'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 
 defineOptions({ name: 'KitchenOrdersLayout' })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const kitchenSelection = useWorkspaceSelection('kitchen')
+const kitchenSelection = useWorkspace('kitchen')
 const selectionBlocked = computed(
-  () => !normalizeString(kitchenSelection.selectedId.value)
+  () => !normalizeString(kitchenSelection.currentId.value)
 )
 </script>
 

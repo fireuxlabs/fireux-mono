@@ -1,14 +1,14 @@
-<!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: centralize selected-target chrome and clear behavior. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: centralize selected-entity chrome and clear behavior. -->
 <template>
-  <section class="workspace-selected-target">
+  <section class="workspace-selected-entity">
     <UCard
       v-if="selectedId"
       variant="subtle"
-      class="workspace-selected-target__surface"
+      class="workspace-selected-entity__surface"
     >
-      <div class="workspace-selected-target__layout">
-        <div class="workspace-selected-target__identity">
-          <div v-if="$slots.selected" class="workspace-selected-target__legacy">
+      <div class="workspace-selected-entity__layout">
+        <div class="workspace-selected-entity__identity">
+          <div v-if="$slots.selected" class="workspace-selected-entity__legacy">
             <slot
               name="selected"
               :title="selectedTitle"
@@ -17,25 +17,25 @@
           </div>
 
           <template v-else>
-            <slot name="leading" :target="target" :outcome="outcome">
+            <slot name="leading" :entity="entity" :outcome="outcome">
               <UAvatar
-                v-if="target?.imageUrl"
-                :src="target.imageUrl"
-                :alt="target.imageAlt || target.title"
+                v-if="entity?.imageUrl"
+                :src="entity.imageUrl"
+                :alt="entity.imageAlt || entity.title"
                 size="md"
-                class="workspace-selected-target__avatar"
+                class="workspace-selected-entity__avatar"
                 :class="{
-                  'workspace-selected-target__avatar--contain':
-                    target.imageFit === 'contain',
+                  'workspace-selected-entity__avatar--contain':
+                    entity.imageFit === 'contain',
                 }"
                 :style="mediaStyle"
               />
 
               <span
                 v-else
-                class="workspace-selected-target__icon"
+                class="workspace-selected-entity__icon"
                 :class="{
-                  'workspace-selected-target__icon--error': outcome === 'error',
+                  'workspace-selected-entity__icon--error': outcome === 'error',
                 }"
                 aria-hidden="true"
               >
@@ -45,17 +45,17 @@
                       ? 'i-lucide-loader-circle'
                       : outcome === 'error'
                         ? 'i-lucide-triangle-alert'
-                        : target?.icon || icon
+                        : entity?.icon || icon
                   "
                   :class="{
-                    'workspace-selected-target__spinner': outcome === 'pending',
+                    'workspace-selected-entity__spinner': outcome === 'pending',
                   }"
                 />
               </span>
             </slot>
 
-            <div class="workspace-selected-target__copy">
-              <div class="workspace-selected-target__eyebrow">
+            <div class="workspace-selected-entity__copy">
+              <div class="workspace-selected-entity__eyebrow">
                 <span>{{ selectedTitle }}</span>
                 <UBadge
                   v-if="outcome === 'pending'"
@@ -75,24 +75,24 @@
                 </UBadge>
               </div>
 
-              <p class="workspace-selected-target__title">
+              <p class="workspace-selected-entity__title">
                 {{ displayTitle }}
               </p>
               <p
                 v-if="displayDescription"
-                class="workspace-selected-target__description"
+                class="workspace-selected-entity__description"
               >
                 {{ displayDescription }}
               </p>
 
               <div
-                v-if="$slots.meta || target?.badges?.length"
-                class="workspace-selected-target__meta"
+                v-if="$slots.meta || entity?.badges?.length"
+                class="workspace-selected-entity__meta"
               >
-                <slot name="meta" :target="target" :outcome="outcome" />
+                <slot name="meta" :entity="entity" :outcome="outcome" />
 
                 <UBadge
-                  v-for="badge in target?.badges ?? []"
+                  v-for="badge in entity?.badges ?? []"
                   :key="badge"
                   color="neutral"
                   variant="soft"
@@ -105,8 +105,8 @@
           </template>
         </div>
 
-        <div class="workspace-selected-target__actions">
-          <slot name="actions" :target="target" :outcome="outcome" />
+        <div class="workspace-selected-entity__actions">
+          <slot name="actions" :entity="entity" :outcome="outcome" />
 
           <UButton
             color="neutral"
@@ -134,16 +134,16 @@
 
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
-import type { WorkspaceTargetCard } from './types'
+import type { WorkspaceEntityOutcome } from '../../composables/fireux/workspace/workspace-outcome'
+import type { WorkspaceEntityCard } from './types'
 
 const props = withDefaults(
   defineProps<{
     label: string
     selectedId?: string
     description?: string
-    target?: WorkspaceTargetCard | null
-    outcome?: WorkspaceTargetOutcome
+    entity?: WorkspaceEntityCard | null
+    outcome?: WorkspaceEntityOutcome
     icon?: string
     clearLabel?: string
     emptyTitle?: string
@@ -152,7 +152,7 @@ const props = withDefaults(
   {
     selectedId: '',
     description: '',
-    target: null,
+    entity: null,
     outcome: 'ready',
     icon: 'i-lucide-layout-dashboard',
     clearLabel: 'Change',
@@ -165,15 +165,15 @@ const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
-const label = computed(() => String(props.label ?? '').trim() || 'Target')
+const label = computed(() => String(props.label ?? '').trim() || 'Entity')
 const selectedId = computed(() => String(props.selectedId ?? '').trim())
 const selectedDescription = computed(
   () => String(props.description ?? '').trim() || selectedId.value
 )
 const selectedTitle = computed(() => `Selected ${label.value}`)
 const displayTitle = computed(() => {
-  const targetTitle = String(props.target?.title ?? '').trim()
-  if (targetTitle) return targetTitle
+  const entityTitle = String(props.entity?.title ?? '').trim()
+  if (entityTitle) return entityTitle
 
   const description = String(props.description ?? '').trim()
   if (description) return description
@@ -183,10 +183,10 @@ const displayTitle = computed(() => {
   return selectedId.value
 })
 const displayDescription = computed(() => {
-  const targetDescription = String(
-    props.target?.subtitle || props.target?.meta || ''
+  const entityDescription = String(
+    props.entity?.subtitle || props.entity?.meta || ''
   ).trim()
-  if (targetDescription) return targetDescription
+  if (entityDescription) return entityDescription
 
   if (props.outcome === 'pending') {
     return `Restoring the selected ${label.value.toLowerCase()}.`
@@ -203,37 +203,37 @@ const emptyDescription = computed(
     `Select the ${label.value.toLowerCase()} workspace you want to open.`
 )
 const mediaStyle = computed<CSSProperties | undefined>(() =>
-  props.target?.imageBackground
-    ? { backgroundColor: props.target.imageBackground }
+  props.entity?.imageBackground
+    ? { backgroundColor: props.entity.imageBackground }
     : undefined
 )
 </script>
 
 <style scoped>
-.workspace-selected-target {
+.workspace-selected-entity {
   min-width: 0;
 }
 
-.workspace-selected-target__layout {
+.workspace-selected-entity__layout {
   display: grid;
   gap: calc(var(--spacing) * 4);
   min-width: 0;
 }
 
-.workspace-selected-target__identity {
+.workspace-selected-entity__identity {
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 3);
   min-width: 0;
 }
 
-.workspace-selected-target__legacy {
+.workspace-selected-entity__legacy {
   width: 100%;
   min-width: 0;
 }
 
-.workspace-selected-target__avatar,
-.workspace-selected-target__icon {
+.workspace-selected-entity__avatar,
+.workspace-selected-entity__icon {
   width: calc(var(--spacing) * 13);
   height: calc(var(--spacing) * 13);
   flex: 0 0 auto;
@@ -242,22 +242,22 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   background: var(--ui-bg-elevated);
 }
 
-.workspace-selected-target__avatar--contain :deep(img) {
+.workspace-selected-entity__avatar--contain :deep(img) {
   object-fit: contain;
   padding: calc(var(--spacing) * 1.5);
 }
 
-.workspace-selected-target__icon {
+.workspace-selected-entity__icon {
   display: grid;
   place-items: center;
   color: var(--ui-primary);
 }
 
-.workspace-selected-target__icon--error {
+.workspace-selected-entity__icon--error {
   color: var(--ui-error);
 }
 
-.workspace-selected-target__icon :deep(svg) {
+.workspace-selected-entity__icon :deep(svg) {
   width: calc(var(--spacing) * 5);
   height: calc(var(--spacing) * 5);
 }

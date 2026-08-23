@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Portfolio target wrapper. -->
 <template>
-  <WorkspaceTargetCollection
+  <WorkspaceEntityCollection
     :outcome="props.outcome"
     :count="cards.length"
     entity="portfolio targets"
@@ -22,12 +22,12 @@
       :show-badges="false"
       @action="selectPortfolio(card.id)"
     />
-  </WorkspaceTargetCollection>
+  </WorkspaceEntityCollection>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import {
   usePortfolioInterface,
   type PortfolioSurface,

@@ -2,12 +2,8 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Blank access support directly.
 // Concurrent edit — 2026-07-21 22:28 CEST — Workspace family alignment: resolve Blank root/support pairs from App-support authority.
 // Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: project access only from strict AppBlank support.
-import { computed, unref, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { collection, query, where, type Query } from 'firebase/firestore'
-import {
-  normalizeWorkspaceSource,
-  type WorkspaceSource,
-} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readWorkspaceTargetAuthority } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -33,9 +29,6 @@ type CreateBlankInput = {
   name?: string
 }
 type BlankIdInput = string[] | Ref<string[]>
-type UseBlankCollectionOptions = {
-  source?: WorkspaceSource | Ref<WorkspaceSource | null | undefined> | null
-}
 
 export function blankAppCollectionPath(appId: string) {
   const resolvedAppId = text(appId)
@@ -44,14 +37,12 @@ export function blankAppCollectionPath(appId: string) {
   return `${'apps'}/${resolvedAppId}/${BlankStorage.appCollection}`
 }
 
-export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
+export function useBlankCollection() {
   const { appId, ecosystem } = useFireUXConfig()
   const { uid } = useAuth()
   const db = useFirestore()
   const { firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
-  const source = computed(() =>
-    normalizeWorkspaceSource(unref(options.source) ?? 'live')
-  )
+  const source = computed(() => 'live' as const)
   const userId = computed(() => text(uid.value))
   const rootCollectionPath = computed(() =>
     source.value === 'live' ? BlankStorage.rootCollection : ''
@@ -59,25 +50,31 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const appCollectionPath = computed(() =>
     source.value === 'live' ? blankAppCollectionPath(appId) : ''
   )
-  const supportQuery = (field: 'operator_ids' | 'team_ids') => computed<Query<AppBlank> | null>(() =>
-    source.value === 'live' && appId && userId.value
-      ? query(
-          collection(db, 'apps', appId, BlankStorage.appCollection),
-          where(field, 'array-contains', userId.value)
-        ) as Query<AppBlank>
-      : null
-  )
+  const supportQuery = (field: 'operator_ids' | 'team_ids') =>
+    computed<Query<AppBlank> | null>(() =>
+      source.value === 'live' && appId && userId.value
+        ? (query(
+            collection(db, 'apps', appId, BlankStorage.appCollection),
+            where(field, 'array-contains', userId.value)
+          ) as Query<AppBlank>)
+        : null
+    )
   const operatorBlanks = firestoreQuery<AppBlank>(supportQuery('operator_ids'))
   const teamBlanks = firestoreQuery<AppBlank>(supportQuery('team_ids'))
   const appBlanks = computed(() => {
     const byId = new Map<string, AppBlank>()
-    for (const blank of [...(operatorBlanks.value ?? []), ...(teamBlanks.value ?? [])]) {
+    for (const blank of [
+      ...(operatorBlanks.value ?? []),
+      ...(teamBlanks.value ?? []),
+    ]) {
       const id = text(blank.id)
       if (id) byId.set(id, blank)
     }
     return [...byId.values()]
   })
-  const targetIds = computed(() => appBlanks.value.map(blank => text(blank.id)).filter(Boolean))
+  const targetIds = computed(() =>
+    appBlanks.value.map((blank) => text(blank.id)).filter(Boolean)
+  )
   const targetIdSet = computed(() => new Set(targetIds.value))
   const authorisedAppBlanks = computed(() =>
     appBlanks.value.filter((blank) => {
@@ -85,7 +82,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
 
       return Boolean(
         authority &&
-        userId.value &&
+          userId.value &&
           (authority.operatorIds.includes(userId.value) ||
             authority.teamIds.includes(userId.value))
       )
@@ -107,11 +104,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       const id = text(blank.id)
       const appSupport = appSupportById.get(id)
       const authority = readWorkspaceTargetAuthority(appSupport)
-      if (
-        !appSupport ||
-        !authority ||
-        !targetIdSet.value.has(id)
-      ) return []
+      if (!appSupport || !authority || !targetIdSet.value.has(id)) return []
 
       const surface = composeBlankSurface({
         blank: { ...blank, id },
@@ -126,7 +119,9 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
   const count = computed(() => blanks.value.length)
   const pending = computed(() =>
     active.value
-      ? operatorBlanks.pending.value || teamBlanks.pending.value || rootBlanks.pending.value
+      ? operatorBlanks.pending.value ||
+        teamBlanks.pending.value ||
+        rootBlanks.pending.value
       : false
   )
   const integrityError = computed<Error | undefined>(() => {
@@ -137,13 +132,11 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       teamBlanks.error.value ||
       rootBlanks.error.value ||
       targetIds.value.length === 0
-    ) return undefined
+    )
+      return undefined
 
     const appSupportById = new Map(
-      appBlanks.value.map((support) => [
-        text(support.id),
-        support,
-      ])
+      appBlanks.value.map((support) => [text(support.id), support])
     )
     const rootsById = new Map(
       (rootBlanks.docs.value ?? []).map((blank) => [text(blank.id), blank])
@@ -183,12 +176,17 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
     }
 
     return failures.length
-      ? new Error(`[blank] invalid workspace target pair; ${failures.join('; ')}`)
+      ? new Error(
+          `[blank] invalid workspace target pair; ${failures.join('; ')}`
+        )
       : undefined
   })
   const error = computed<unknown | undefined>(() =>
     active.value
-      ? operatorBlanks.error.value ?? teamBlanks.error.value ?? rootBlanks.error.value ?? integrityError.value
+      ? (operatorBlanks.error.value ??
+        teamBlanks.error.value ??
+        rootBlanks.error.value ??
+        integrityError.value)
       : undefined
   )
   const { outcome } = useFirestoreCollectionState({

@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { KitchenFetchSource } from '../../../composables/firestore/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 

@@ -62,7 +62,7 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppDetail } from 'fireux-core/runtime/app/composables/useAppDetail'
 import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/useKitchenWorkspaceSelection'
-import { useKitchenWorkspaceTargetCollection } from '../../composables/workspace/index/useKitchenWorkspaceTargetCollection'
+import { useKitchenWorkspaceKitchens } from '../../composables/workspace/index/useKitchenWorkspaceKitchens'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import type { PublicActionButton } from 'fireux-core/runtime/composables/public/usePublicActionPanel'
 
@@ -82,7 +82,7 @@ const isTenantWorkspaceHandoff = computed(() =>
 )
 const { app: operatorApp } = useAppDetail(operatorAppId)
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
-const { kitchens: workspaceTargets } = useKitchenWorkspaceTargetCollection()
+const { kitchens: workspaceTargets } = useKitchenWorkspaceKitchens()
 const workspaceKitchen = computed(
   () =>
     workspaceTargets.value.find((kitchen) => kitchen.id === kitchenId.value) ||

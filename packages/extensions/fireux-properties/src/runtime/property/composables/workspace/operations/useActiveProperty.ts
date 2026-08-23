@@ -1,8 +1,9 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
-import type { WorkspaceDataType } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceData'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { PropertySurface } from '../../firestore/utils/view/usePropertyInterface'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
+
+type WorkspaceDataType = 'live'
 
 export type ActivePropertyRuntime = {
   dataType: ComputedRef<WorkspaceDataType | null>

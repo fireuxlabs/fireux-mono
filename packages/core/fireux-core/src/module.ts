@@ -153,14 +153,6 @@ export default defineNuxtModule({
         './runtime/server/api/internal/user/handle.post'
       ),
     })
-    addServerHandler({
-      route: '/api/workspace/:family/targets',
-      method: 'get',
-      handler: resolver.resolve(
-        './runtime/server/api/workspace/[family]/targets.get'
-      ),
-    })
-
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
       ctx?.addEntity?.({
         entityKey: 'users',

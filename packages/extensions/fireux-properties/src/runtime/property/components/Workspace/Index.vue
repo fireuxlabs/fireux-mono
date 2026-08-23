@@ -2,16 +2,15 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <WorkspacePropertyIndexSelected
-      :property="selection.property"
-      :property-id="selection.propertyId"
-      @clear="actions.clear"
+      :property="property"
+      :property-id="propertyId"
+      @clear="clearProperty"
     />
 
     <WorkspacePropertyIndexTargets
-      v-if="sections.targets.show"
-      :collection="sections.targets.collection"
-      :outcome="sections.targets.outcome"
-      @select="actions.selectTarget"
+      :collection="properties"
+      :outcome="outcome"
+      @select="selectProperty"
     />
 
     <DevDebugPanel
@@ -19,8 +18,8 @@
       scope="workspace"
       object-origin="fetched"
       :objects="{
-        selectedProperty: selection.property,
-        properties: sections.targets.collection,
+        selectedProperty: property,
+        properties,
       }"
       :derived="debug"
       :default-open="false"
@@ -31,5 +30,13 @@
 <script setup lang="ts">
 import { usePropertyWorkspaceIndex } from '../../composables/workspace/index/usePropertyWorkspaceIndex'
 
-const { selection, sections, actions, debug } = usePropertyWorkspaceIndex()
+const {
+  property,
+  propertyId,
+  properties,
+  outcome,
+  selectProperty,
+  clearProperty,
+  debug,
+} = usePropertyWorkspaceIndex()
 </script>
