@@ -9,6 +9,7 @@ import {
   useKitchenInterface,
   type KitchenSurface,
 } from '../../firestore/utils/view/useKitchenInterface'
+import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 
 export function useKitchenWorkspaceIndex() {
   const workspace = useWorkspace('kitchen')
@@ -24,15 +25,17 @@ export function useKitchenWorkspaceIndex() {
       : null
   )
   const id = computed(() => String(kitchenRecord.value?.id || '').trim())
-  const name = computed(() =>
-    String(
-      kitchen.value?.display_name ||
-        kitchen.value?.name ||
-        kitchen.value?.slug ||
-        ''
-    ).trim()
+  const presentation = computed(() =>
+    readKitchenPresentationIdentity(kitchen.value)
   )
-  const description = computed(() => String(kitchen.value?.tagline || '').trim())
+  const name = computed(() => presentation.value.displayName)
+  const description = computed(() => presentation.value.tagline)
+  const image = computed(
+    () =>
+      presentation.value.cardImageUrl ||
+      presentation.value.imageUrl ||
+      presentation.value.logoImageUrl
+  )
   const outcome = computed<'idle' | 'pending' | 'error' | 'empty' | 'ready'>(
     () => {
       if (!hasAuthState.value || status.value === 'pending') return 'pending'
@@ -82,7 +85,12 @@ export function useKitchenWorkspaceIndex() {
       status.value = 'ready'
       const currentId = String(response.current?.id || '').trim()
       if (currentId) {
-        workspace.setCurrent(currentId, name.value, description.value)
+        workspace.setCurrent(
+          currentId,
+          name.value,
+          description.value,
+          image.value
+        )
       }
     } catch {
       if (sequence !== requestSequence) return

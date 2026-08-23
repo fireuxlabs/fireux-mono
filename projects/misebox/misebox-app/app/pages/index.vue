@@ -7,9 +7,14 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenAI />
-          <WorkspaceKitchen />
           <WorkspaceKitchenTools />
+          <WorkspaceKitchenAI
+            title="How can I help your Kitchen today?"
+            agent-label=""
+            description=""
+            :starters="[]"
+          />
+          <WorkspaceKitchen />
           <WorkspaceKitchenDev v-if="isDevelopment" />
         </section>
       </template>

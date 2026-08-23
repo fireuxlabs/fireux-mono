@@ -6,11 +6,20 @@ import { readKitchenAgentOrientation } from './orientation'
 import { runKitchenTeamAI } from './team'
 import type { KitchenAgentRequest } from './types'
 import { findMiseboxOperationAgent } from '../../../ai/workspace-agents'
+import { selectKitchenWorkspaceAction } from './workspace-actions'
 
 export async function runKitchenAgent(
   event: H3Event,
   request: KitchenAgentRequest
 ) {
+  const workspaceAction = await selectKitchenWorkspaceAction(event, request)
+  if (workspaceAction) {
+    return {
+      ok: true as const,
+      answer: 'I found the right action.',
+      workspaceAction: { id: workspaceAction },
+    }
+  }
   const requestedAgent = request.operation
     ? findMiseboxOperationAgent('kitchen', request.operation)
     : undefined

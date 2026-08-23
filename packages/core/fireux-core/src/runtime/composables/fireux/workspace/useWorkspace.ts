@@ -21,14 +21,17 @@ export function useWorkspace(workspace: string) {
     `${key}-current-description`,
     () => ''
   )
+  const currentImage = useState<string>(`${key}-current-image`, () => '')
 
-  const setCurrent = (id: string, name = '', description = '') => {
+  const setCurrent = (id: string, name = '', description = '', image = '') => {
     const value = normalizeString(id)
     const nextName = normalizeString(name)
     const nextDescription = normalizeString(description)
+    const nextImage = normalizeString(image)
     currentId.value = value
     currentName.value = value ? nextName : ''
     currentDescription.value = value ? nextDescription : ''
+    currentImage.value = value ? nextImage : ''
     cookie.value = value
   }
 
@@ -36,6 +39,7 @@ export function useWorkspace(workspace: string) {
     currentId: computed(() => currentId.value),
     currentName: computed(() => currentName.value),
     currentDescription: computed(() => currentDescription.value),
+    currentImage: computed(() => currentImage.value),
     setCurrent,
     clearCurrent: () => setCurrent(''),
   }

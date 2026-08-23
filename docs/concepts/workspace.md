@@ -1,7 +1,7 @@
 # Workspace
 
 Updated: 2026-08-23
-Ref: 7f18d4e91
+Ref: 79efa4a44
 Role: map, not canon
 
 ## Purpose
@@ -113,7 +113,9 @@ paths and delegate inward.
   `View`. The route spells out that composition, while one page-provided
   workspace supplies shared target, authority, records, and outcomes to every
   sheet. A sheet with no real job is omitted; empty Views do not manufacture
-  dashboard cards merely to occupy space.
+  dashboard cards merely to occupy space. Development-only diagnostics follow
+  the focused View at the bottom and never interrupt the production order:
+  `Tools`, `AI`, `View`, then `Dev`.
 - Core Workspace navigation exposes a neutral right slot and has no knowledge of
   AI. An AI-enabled Operation may compose FireUX AI presentation into that slot
   or render a bounded contextual AI sheet in its body. FireUX AI owns prompt

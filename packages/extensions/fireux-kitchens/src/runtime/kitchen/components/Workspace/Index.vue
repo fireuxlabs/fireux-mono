@@ -32,20 +32,19 @@
         :kitchen="current.kitchen"
       />
 
-      <UCard v-else>
-        <div class="space-y-4">
-          <div class="space-y-1">
-            <h2 class="font-semibold text-highlighted">Create your Kitchen</h2>
-            <p class="text-sm text-muted">
-              Start with a name or find the Place your Kitchen belongs to.
-            </p>
-          </div>
-          <WorkspaceKitchenCreate
-            v-if="access.canCreate"
-            @created="useCreatedKitchen"
-          />
+      <div v-else class="px-6 py-10 text-center">
+        <div
+          class="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary"
+        >
+          <UIcon name="i-lucide-chef-hat" class="size-7" />
         </div>
-      </UCard>
+        <h2 class="mt-4 text-lg font-semibold text-highlighted">
+          No Kitchen yet
+        </h2>
+        <p class="mx-auto mt-2 max-w-lg text-sm text-muted">
+          Create one above, then KitchenAI will help you build it as you work.
+        </p>
+      </div>
     </template>
   </section>
 </template>
@@ -55,15 +54,10 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIndexEntry } from '../../composables/workspace/index/useKitchenWorkspaceIndexEntry'
 
-const { current, access, actions } = useKitchenWorkspaceIndex()
+const { current, actions } = useKitchenWorkspaceIndex()
 const { clientReady, hasIdentity } = useKitchenWorkspaceIndexEntry(
   computed(() => current.value.id),
   true,
   actions.refresh
 )
-
-async function useCreatedKitchen(id: string) {
-  actions.setCurrent(id)
-  await actions.refresh()
-}
 </script>

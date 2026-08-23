@@ -11,4 +11,11 @@ export type KitchenAgentRequest = {
   prompt: string
   operation: string
   pendingTool: PendingTeamTool | null
+  availableActions: KitchenWorkspaceActionId[]
 }
+
+export type KitchenWorkspaceActionId =
+  | 'create-kitchen'
+  | 'complete-kitchen'
+  | 'sign-up'
+  | 'explore-misebox'

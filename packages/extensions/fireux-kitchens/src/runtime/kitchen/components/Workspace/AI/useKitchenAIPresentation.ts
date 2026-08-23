@@ -48,24 +48,22 @@ export function useKitchenAIPresentation(
       () => options.agent?.operationSlug || options.operation || ''
     ),
     agentLabel: computed(
-      () => options.agentLabel || `Kitchen AI powered by ${appName}`
+      () => options.agentLabel ?? `Kitchen AI powered by ${appName}`
     ),
     hasContextIcon: computed(() => Boolean(options.contextIcon)),
     contextIcon: computed(() => options.contextIcon || 'i-lucide-sparkles'),
     title: computed(
-      () => options.title || 'How can I help your kitchen today?'
+      () => options.title ?? 'How can I help your kitchen today?'
     ),
     description: computed(
       () =>
-        options.description ||
+        options.description ??
         'Give me your existing menu and I’ll help turn it into a working digital Menu and Kitchen Workspace.'
     ),
     placeholder: computed(() => options.placeholder || 'Ask Kitchen AI…'),
     promptSuggestions: computed(
       () =>
-        options.context?.promptSuggestions ||
-        options.promptSuggestions ||
-        []
+        options.context?.promptSuggestions || options.promptSuggestions || []
     ),
     allowFile: computed(() => options.allowFile ?? true),
     starters: computed(

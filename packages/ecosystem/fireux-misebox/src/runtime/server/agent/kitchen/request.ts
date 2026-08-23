@@ -1,10 +1,16 @@
 import { createError, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { pendingTeamTool } from './team-tools'
-import type { KitchenAgentRequest } from './types'
+import type { KitchenAgentRequest, KitchenWorkspaceActionId } from './types'
 
 const PROMPT_MAX_LENGTH = 2_000
 const text = (value: unknown) => String(value ?? '').trim()
+const workspaceActionIds = new Set<KitchenWorkspaceActionId>([
+  'create-kitchen',
+  'complete-kitchen',
+  'sign-up',
+  'explore-misebox',
+])
 
 function readPrompt(value: unknown) {
   const prompt = text(value)
@@ -35,5 +41,14 @@ export async function readKitchenAgentRequest(
     prompt,
     operation,
     pendingTool: pendingTeamTool(body?.pendingTool),
+    availableActions: Array.from(
+      new Set(
+        (Array.isArray(body?.availableActions) ? body.availableActions : [])
+          .map(text)
+          .filter((id): id is KitchenWorkspaceActionId =>
+            workspaceActionIds.has(id as KitchenWorkspaceActionId)
+          )
+      )
+    ),
   }
 }

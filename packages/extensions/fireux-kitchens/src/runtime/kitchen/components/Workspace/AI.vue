@@ -28,7 +28,7 @@
       v-if="!commandMode || !commandResult"
       v-model="prompt"
       :placeholder="resolvedPlaceholder"
-      :suggestions="resolvedPromptSuggestions"
+      :suggestions="promptSuggestions"
       :starters="resolvedStarters"
       :ai-tools="props.aiTools"
       :allow-file="allowFile"
@@ -47,6 +47,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
+import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 import { isWasteAIHelloPrompt } from '../../models/waste-ai'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
@@ -77,8 +78,13 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
-const { isAuthenticated } = useAuth()
+const { currentUser, isAuthenticated } = useAuth()
 const kitchenWorkspace = useKitchenWorkspace()
+const {
+  suggestions: workspaceToolSuggestions,
+  availableActions: availableWorkspaceActions,
+  performAction: performWorkspaceAction,
+} = useKitchenWorkspaceTools()
 const {
   agentLabel: resolvedAgentLabel,
   hasContextIcon,
@@ -92,6 +98,11 @@ const {
   commandMode,
   operation: resolvedOperation,
 } = useKitchenAIPresentation(props, appName)
+const promptSuggestions = computed(() =>
+  resolvedPromptSuggestions.value.length || resolvedOperation.value
+    ? resolvedPromptSuggestions.value
+    : workspaceToolSuggestions.value
+)
 const prompt = ref('')
 const messages = ref<KitchenAIWelcomeMessage[]>([])
 const submitting = ref(false)
@@ -184,8 +195,11 @@ async function runPrompt(text: string) {
   try {
     const headers: Record<string, string> = {}
     if (!wasteHello && !capabilityHandshake) {
-      const user = await useRequireUser()
-      headers.Authorization = `Bearer ${await user.getIdToken()}`
+      const user =
+        !resolvedOperation.value && availableWorkspaceActions.value.length
+          ? currentUser.value
+          : await useRequireUser()
+      if (user) headers.Authorization = `Bearer ${await user.getIdToken()}`
     }
     const response = await $fetch<{
       ok: true
@@ -198,6 +212,7 @@ async function runPrompt(text: string) {
       }
       createdObject?: KitchenAICreatedObject
       resultAction?: KitchenAIResultAction
+      workspaceAction?: { id: string }
     }>('/api/workspace/kitchen/agent', {
       method: 'POST',
       headers,
@@ -209,8 +224,18 @@ async function runPrompt(text: string) {
           ? { operation: resolvedOperation.value }
           : {}),
         ...(pendingTool.value ? { pendingTool: pendingTool.value } : {}),
+        ...(!resolvedOperation.value
+          ? { availableActions: availableWorkspaceActions.value }
+          : {}),
       },
     })
+    if (
+      response.workspaceAction?.id &&
+      (await performWorkspaceAction(response.workspaceAction.id))
+    ) {
+      showResult(response.answer)
+      return
+    }
     pendingTool.value = response.pendingTool || null
     showResult(response.answer, {
       createdObject: response.createdObject,

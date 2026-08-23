@@ -23,6 +23,9 @@
         </div>
 
         <h2>{{ displayName }}</h2>
+        <p v-if="tagline" class="kitchen-home-target__tagline">
+          {{ tagline }}
+        </p>
         <p v-if="shortAddress" class="kitchen-home-target__address">
           {{ shortAddress }}
         </p>
@@ -62,6 +65,7 @@ const shortAddress = computed(
       props.kitchen.short_address || props.kitchen.formatted_address || ''
     ).trim()
 )
+const tagline = computed(() => String(props.kitchen.tagline || '').trim())
 const mediaStyle = computed<CSSProperties | undefined>(() =>
   kitchenCard.value?.mediaBackdropColor
     ? { backgroundColor: kitchenCard.value.mediaBackdropColor }
@@ -168,8 +172,14 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   line-height: var(--leading-tight);
 }
 
+.kitchen-home-target__tagline,
 .kitchen-home-target__address {
   margin: 0;
+}
+
+.kitchen-home-target__tagline {
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-base);
 }
 
 .kitchen-home-target__address {

@@ -11,8 +11,8 @@
 
       <WorkspaceKitchenIdentityStage
         number="01"
-        title="Your Place"
-        description="Shared location identity inherited by this Kitchen. Change the backdrop here without duplicating it on Kitchen."
+        title="Place"
+        description="Optional location identity for fixed venues. Mobile, prototype, and galley Kitchens can continue without one."
         :percent="placePercent"
         :complete="placeComplete"
         :requirements="placeRequirements"
@@ -23,12 +23,9 @@
       <WorkspaceKitchenIdentityStage
         number="02"
         title="Kitchen profile"
-        description="Kitchen lifecycle, route and directory visibility. Identity remains on the linked Place."
+        description="The name, tagline, and image needed to present this Kitchen. A linked Place may supply them but is not required."
         :percent="rootPercent"
         :complete="rootComplete"
-        :locked="!placeComplete"
-        locked-title="Place identity is incomplete"
-        locked-description="Finish the linked Place identity before publishing this Kitchen."
         :requirements="rootRequirements"
       >
         <KitchenEditPublication
@@ -58,7 +55,6 @@
           Edit Workspace theme
         </UButton>
       </WorkspaceKitchenIdentityStage>
-
     </div>
 
     <MoleculesStateCard

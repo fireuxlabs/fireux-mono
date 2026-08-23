@@ -31,7 +31,9 @@ export function useKitchenIdentityProgression() {
   const kitchen = computed(
     () => identityState.selectedKitchen.value as Record<string, unknown> | null
   )
-  const identity = computed(() => readKitchenPresentationIdentity(kitchen.value))
+  const identity = computed(() =>
+    readKitchenPresentationIdentity(kitchen.value)
+  )
   const place = placeState.place
   const placePresentation = computed(() => readPlacePresentation(place.value))
   const resolvedName = computed(
@@ -45,28 +47,22 @@ export function useKitchenIdentityProgression() {
       normalizeString(identity.value.tagline) ||
       normalizeString(place.value?.brand_tagline)
   )
-  const placeRequirements = computed<KitchenIdentityRequirement[]>(() => [
-    {
-      key: 'place',
-      label: 'Linked Place',
-      detail: 'The Kitchen resolves its physical identity from one Place.',
-      complete: Boolean(identityState.placeId.value && place.value?.id),
-    },
-    {
-      key: 'place-name',
-      label: 'Place name',
-      detail: 'The linked Place has its canonical name.',
-      complete: Boolean(placePresentation.value.name),
-    },
-    {
-      key: 'place-backdrop',
-      label: 'Identity backdrop',
-      detail: 'Transparent identity media has a deliberate base colour.',
-      complete: Boolean(placePresentation.value.mediaBackdropColor),
-    },
-  ])
+  const placeRequirements = computed<KitchenIdentityRequirement[]>(() =>
+    identityState.placeId.value
+      ? [
+          {
+            key: 'place',
+            label: 'Linked Place',
+            detail: 'The optional Place link resolves correctly.',
+            complete: Boolean(place.value?.id),
+          },
+        ]
+      : []
+  )
   const placePercent = computed(() =>
-    completionPercent(placeRequirements.value)
+    placeRequirements.value.length
+      ? completionPercent(placeRequirements.value)
+      : 100
   )
   const placeComplete = computed(() => placePercent.value === 100)
 
@@ -78,40 +74,26 @@ export function useKitchenIdentityProgression() {
       complete: Boolean(resolvedName.value),
     },
     {
-      key: 'slug',
-      label: 'Slug',
-      detail: 'The Kitchen has a stable route identifier.',
-      complete: Boolean(identityState.slug.value),
-    },
-    {
       key: 'tagline',
       label: 'Tagline',
       detail: 'A Kitchen override or the linked Place tagline is available.',
       complete: Boolean(resolvedTagline.value),
     },
     {
-      key: 'logo',
-      label: 'Logo',
-      detail: 'A Kitchen override or inherited Place logo is available.',
+      key: 'image',
+      label: 'Image',
+      detail: 'A Kitchen or inherited Place image can present the Kitchen.',
       complete: Boolean(
-        identity.value.logoImageUrl || placePresentation.value.logoImage
-      ),
-    },
-    {
-      key: 'wordmark',
-      label: 'Wordmark',
-      detail: 'A Kitchen override or inherited Place wordmark is available.',
-      complete: Boolean(
-        identity.value.wordmarkImageUrl || placePresentation.value.wordmarkImage
+        identity.value.cardImageUrl ||
+          identity.value.imageUrl ||
+          identity.value.logoImageUrl ||
+          placePresentation.value.imageUrl ||
+          placePresentation.value.logoImage
       ),
     },
   ])
-  const rootPercent = computed(() =>
-    placeComplete.value ? completionPercent(rootRequirements.value) : 0
-  )
-  const rootComplete = computed(
-    () => placeComplete.value && rootPercent.value === 100
-  )
+  const rootPercent = computed(() => completionPercent(rootRequirements.value))
+  const rootComplete = computed(() => rootPercent.value === 100)
 
   const storedWorkspacePalette = computed(() =>
     readWorkspacePalette(

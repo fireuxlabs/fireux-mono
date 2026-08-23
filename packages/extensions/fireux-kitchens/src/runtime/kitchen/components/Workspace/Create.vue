@@ -180,6 +180,7 @@ import {
   type PlaceSearchCell,
 } from 'fireux-places/runtime/place/composables/usePlaceSearch'
 import { useKitchenCreate } from '../../composables/firestore/mutations/useKitchenCreate'
+import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 
 type SelectedPlace = {
   placeId: string
@@ -189,6 +190,7 @@ type SelectedPlace = {
 }
 
 const canCreate = computed(() => true)
+const { createKitchenOpen: open } = useKitchenWorkspaceTools()
 const { createKitchen } = useKitchenCreate()
 const toast = useToast()
 const emit = defineEmits<{
@@ -200,7 +202,6 @@ const { query, results, isSearching, refresh } = usePlaceSearch({
   location: nearbyLocation,
   type: 'kitchen',
 })
-const open = ref(false)
 const selection = ref<SelectedPlace | null>(null)
 const manualName = ref('')
 const error = ref('')
