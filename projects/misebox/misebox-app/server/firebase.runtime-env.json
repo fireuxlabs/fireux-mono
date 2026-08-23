@@ -1,6 +1,10 @@
 {
   "projectId": "misebox-78f9c",
   "environment": {
+    "FIREUX_AI_ENABLED": "true",
+    "FIREUX_AI_MODE": "app",
+    "FIREUX_AI_MODEL": "gpt-4o-mini",
+    "FIREUX_AI_PROVIDER": "openai",
     "SPROOCHLI_MENU_PROVIDER_ENDPOINT": "https://sproochli.web.app/api/tools/menu",
     "SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE": "https://sproochli.web.app/api/tools/menu"
   }
