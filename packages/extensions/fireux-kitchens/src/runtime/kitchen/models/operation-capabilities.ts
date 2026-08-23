@@ -26,6 +26,13 @@ const requested = (
 })
 
 export const kitchenOperationToolCapabilities = {
+  'food-safety': [],
+  inventory: [],
+  purchasing: [],
+  receiving: [],
+  costs: [],
+  'waste-report': [],
+  performance: [],
   dishes: [
     requested(
       'kitchen.dishes.calculate-cost',

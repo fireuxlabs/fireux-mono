@@ -7,6 +7,11 @@
 
       <template #body>
         <section class="space-y-4">
+          <WorkspaceKitchenOperationsCapabilityTools operation="waste-report" />
+          <WorkspaceKitchenOperationsCapabilityAI
+            operation="waste-report"
+            :show-suggestion-cards="false"
+          />
           <WorkspaceKitchenOperationsCapabilityView operation="waste-report" />
           <UAlert
             color="neutral"
@@ -25,6 +30,7 @@
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
+  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-waste-report',
@@ -37,7 +43,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: true,
-  requiresSelection: true,
+  requiresAuth: false,
+  requiresSelection: false,
 })
 </script>

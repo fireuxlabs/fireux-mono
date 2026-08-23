@@ -1,7 +1,7 @@
 # Workspace
 
 Updated: 2026-08-23
-Ref: da689ed54
+Ref: 7f18d4e91
 Role: map, not canon
 
 ## Purpose
@@ -110,8 +110,10 @@ paths and delegate inward.
 - Direct Workspace pages require authentication by default. A browse-only route
   may declare `workspaceAccess: 'public-entry'` and `requiresAuth: false` only
   when it also declares `requiresSelection: false`; its anonymous composition
-  must not mount protected entity reads or commands. The Workspace page guard
-  enforces this named exception.
+  may mount only reads or commands explicitly authorized for the current
+  Firebase identity. An anonymous identity may use a domain command only when
+  its trusted server boundary permits that exact operation. The Workspace page
+  guard enforces this named exception.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
 - A Workspace landing or Operation composes three named domain sheets when each
@@ -220,7 +222,9 @@ behaviour; the map does not require empty symmetry.
 - Every Live App derives targets from the canonical root, its declared host
   relationship where present, and the owning Entity's `team/{uid}` record.
   AppUser proves App membership and governance; it never carries Workspace
-  target IDs. Place-backed Kitchen stores no management relationship.
+  target IDs. Kitchen stores no management relationship: Place-backed roots
+  use same-ID Place identity, while a name-only shell begins with its Kitchen
+  root and root-owned Team.
 - Every family loads its authenticated chooser candidates through
   `/api/workspace/{family}/targets`. Core owns the App-, family-, and User-scoped
   request lifecycle; the family endpoint owns authority and the family core
@@ -286,8 +290,9 @@ behaviour; the map does not require empty symmetry.
 - Current App admins remain the explicit administrative override only for
   roots managed by that App; UI `canWrite` still does not replace server or
   Rules enforcement.
-- Kitchen is the Place-backed reference with a server-projected live outcome
-  and a separate lazy Demo outcome. Supplier, Portfolio, and Property retain
+- Kitchen has a server-projected live outcome and a separate lazy Demo outcome.
+  A Kitchen may be Place-backed or begin as a name-only shell. Supplier,
+  Portfolio, and Property retain
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
   family and has no production onboarding.
@@ -296,8 +301,8 @@ behaviour; the map does not require empty symmetry.
   `workspace` uses the ecosystem App by convention; `app` names its
   dedicated Workspace App with `app_id`. Core resolves this vocabulary without
   enumerating domain families. Kitchen is the accepted exception: its canonical
-  root has no management field and its same-ID Place, AppUser membership, and
-  Kitchen Team supply the required evidence.
+  root has no management field; its Kitchen Team and current identity supply
+  authority, and an optional same-ID Place supplies venue identity.
 
 ## Operations
 

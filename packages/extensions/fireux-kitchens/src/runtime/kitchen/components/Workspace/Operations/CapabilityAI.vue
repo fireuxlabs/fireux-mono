@@ -58,7 +58,7 @@
     </section>
 
     <UAlert
-      v-else-if="!suggestions.length"
+      v-else-if="showSuggestionCards && !suggestions.length"
       color="neutral"
       variant="soft"
       title="No contextual suggestions yet"

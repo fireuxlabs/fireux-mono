@@ -10,10 +10,22 @@
             <UBadge color="neutral" variant="outline">Development</UBadge>
           </div>
           <p class="text-sm text-toned">
-            KitchenAI stays simple. Each capability AI earns a tick only after
-            it is connected to its page evidence and approved tools. A minus
-            marks a routing-only handshake.
+            Not connected → Handshake → Connected → Complete. Registration
+            proves routing; connection requires approved tools; completion also
+            requires authoritative evidence, UI, approvals, and verification.
           </p>
+
+          <div class="flex flex-wrap gap-2 pt-2">
+            <UBadge
+              v-for="summary in statusSummaries"
+              :key="summary.status"
+              :color="summary.presentation.color"
+              variant="subtle"
+              :class="summary.presentation.badgeClass"
+            >
+              {{ summary.count }} {{ summary.presentation.label.toLowerCase() }}
+            </UBadge>
+          </div>
         </div>
       </template>
 
@@ -36,7 +48,7 @@
           </div>
 
           <UBadge
-            :color="item.status === 'connected' ? 'success' : 'neutral'"
+            :color="item.presentation.color"
             variant="subtle"
             :class="item.presentation.badgeClass"
           >
@@ -94,6 +106,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useWorkspaceNav } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNav'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
+import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 
 const workspaceNav = useWorkspaceNav()
 const {
@@ -135,11 +148,18 @@ const combinedDebug = computed(() => ({
   ...kitchenDebug.value,
 }))
 
-type CapabilityAIStatus = 'not-connected' | 'handshake' | 'connected'
+type CapabilityAIStatus =
+  | 'not-connected'
+  | 'handshake'
+  | 'connected'
+  | 'complete'
 
-const capabilityAIStatuses: Record<string, CapabilityAIStatus> = {
-  'workspace-kitchen-waste': 'handshake',
-}
+const capabilityAgentByPath = new Map(
+  kitchenOperationAgents.map((agent) => [
+    `/workspace/kitchen/${agent.operationSlug}`,
+    agent,
+  ])
+)
 
 const statusPresentation = {
   'not-connected': {
@@ -147,18 +167,28 @@ const statusPresentation = {
     icon: 'i-lucide-circle-x',
     iconClass: 'text-error',
     badgeClass: '',
+    color: 'error',
   },
   handshake: {
     label: 'Handshake',
     icon: 'i-lucide-circle-minus',
     iconClass: 'kitchen-ai-development__handshake-icon',
     badgeClass: 'kitchen-ai-development__handshake-badge',
+    color: 'neutral',
   },
   connected: {
     label: 'Connected',
     icon: 'i-lucide-circle-check',
     iconClass: 'text-success',
     badgeClass: '',
+    color: 'success',
+  },
+  complete: {
+    label: 'Complete',
+    icon: 'i-lucide-circle-check-big',
+    iconClass: 'text-primary',
+    badgeClass: '',
+    color: 'primary',
   },
 } as const
 
@@ -169,7 +199,9 @@ const capabilityAIs = computed(() =>
     )
     .map((item) => {
       const key = item.key || item.to
-      const status = capabilityAIStatuses[key] || 'not-connected'
+      const agent = capabilityAgentByPath.get(item.to)
+      const status: CapabilityAIStatus =
+        agent?.maturity || 'not-connected'
       return {
         key,
         name: toCapabilityAIName(item.label, item.to),
@@ -178,6 +210,16 @@ const capabilityAIs = computed(() =>
         presentation: statusPresentation[status],
       }
     })
+)
+
+const statusSummaries = computed(() =>
+  (
+    ['not-connected', 'handshake', 'connected', 'complete'] as const
+  ).map((status) => ({
+    status,
+    count: capabilityAIs.value.filter((item) => item.status === status).length,
+    presentation: statusPresentation[status],
+  }))
 )
 
 function toCapabilityAIName(label: string, path: string): string {

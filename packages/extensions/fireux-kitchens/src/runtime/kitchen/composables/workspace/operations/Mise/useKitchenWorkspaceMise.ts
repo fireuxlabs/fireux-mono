@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo mise tasks without Firestore access.
 import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenMiseCollection } from './fetch/useKitchenMiseCollection'
 import { useKitchenMiseStatusUpdate } from './mutations/useKitchenMiseStatusUpdate'
 import {
@@ -17,6 +18,7 @@ import {
 import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
 
 export function useKitchenWorkspaceMise() {
+  const { hasIdentity } = useAuth()
   const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
@@ -40,7 +42,9 @@ export function useKitchenWorkspaceMise() {
   )
   const demoMenuService = useKitchenWorkspaceDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    hasIdentity.value && rootCollection.value && kitchenId.value
+      ? kitchenId.value
+      : ''
   )
   const {
     miseTasks: fetchedMiseTasks,

@@ -1,6 +1,5 @@
 import { computed } from 'vue'
 import type { FireuxOperationAgentDefinition } from 'fireux-ai/runtime/agents/operation-agent'
-import { wasteAIContext } from '../../../models/waste-ai'
 import type { KitchenAIStarter } from './types'
 
 export type KitchenAIPresentationContext = {
@@ -66,7 +65,7 @@ export function useKitchenAIPresentation(
       () =>
         options.context?.promptSuggestions ||
         options.promptSuggestions ||
-        (options.agent ? [] : wasteAIContext.promptSuggestions)
+        []
     ),
     allowFile: computed(() => options.allowFile ?? true),
     starters: computed(

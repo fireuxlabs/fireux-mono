@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-22
-Ref: da689ed54
+Updated: 2026-08-23
+Ref: 7f18d4e91
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -60,12 +60,16 @@ Before each task:
   material lives in separately authorized records and is absent from the
   public response. An exact permitted listener may keep an already-open Entity
   current without changing that response or ownership contract.
-- Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
-  creates the required Place first, then creates the same-ID Kitchen root and
-  its Kitchen-owned Team authority. Kitchen is a plain parent model, not a
-  generic Entity/App/Workspace management classification.
-- A Kitchen root owns exactly its id/slug, status, and visibility. Its resolved
-  public read contains the same-ID Place. Fulfilment and other operational
+- Reusable Kitchen onboarding belongs to `fireux-kitchens`. Place-backed
+  onboarding selects or creates a Place, then creates the same-ID Kitchen root
+  and its Kitchen-owned Team authority. The root Workspace also permits a
+  name-only shell: a trusted command creates a generated Kitchen id, minimal
+  root, and owner Team record for the current Firebase identity, including an
+  anonymous identity. Kitchen is a plain parent model, not a generic
+  Entity/App/Workspace management classification.
+- A Kitchen root owns exactly its id, name, slug, status, and visibility. A
+  Place-backed public read may resolve its same-ID Place; a name-only shell is
+  deliberately unenriched until Place identity is attached. Fulfilment and other operational
   configuration are capability data, not properties of the Kitchen entity.
   Place owns venue name and description, address/geo, photography and identity
   media, classification/tags, price level, currency/timezone, and business
@@ -525,9 +529,9 @@ Before each task:
 - Misebox `/` is itself the browse-only public Kitchen Workspace; there is no
   separate `/workspace/kitchen` index. The root page directly
   composes the real Core Workspace layout and page shell, while `fireux-kitchens`
-  owns the inner `WorkspaceKitchenAI` domain surface. Anonymous visitors
-  receive no selected-Kitchen reads or commands; the existing Kitchen selector
-  mounts only for authenticated Users. Kitchen selection establishes optional
+  owns the inner `WorkspaceKitchenAI` domain surface. The Auth spine resolves a
+  Firebase identity for the visitor and may use an anonymous identity. Kitchen
+  selection establishes optional
   evidence scope rather than access to KitchenAI: zero targets leaves a valid
   blank context, one authoritative Live target is selected automatically, and
   multiple targets require an explicit choice from the User's active Kitchen
@@ -539,9 +543,10 @@ Before each task:
   choose among available Kitchens, or name the selected Kitchen; it must not
   infer onboarding progress from those facts. The root Create Kitchen Tool is
   available before authentication and searches the shared Place directory plus
-  Google Places. Saving requires an authenticated current-App member: the
-  trusted Place boundary ensures the selected Place, then Kitchen onboarding
-  creates its same-ID Kitchen root and the creator's owner Team membership. The
+  Google Places and also accepts a name-only Kitchen. Place-backed saving uses
+  the trusted Place boundary and the authenticated onboarding contract. A
+  name-only save accepts the current anonymous or authenticated Firebase
+  identity and creates the generated Kitchen root plus its owner Team record. The
   new Kitchen is selected without sending the browser directly to Firestore.
   The one unscoped development handshake
   routes a WasteAI-directed prompt through KitchenAI, passes one explicitly
@@ -568,6 +573,30 @@ Before each task:
   components remain empty. Current catalogue research is projected through
   `wasteAIContext.devContext` and rendered only by the development component;
   it is not production capability content.
+- Every top-level Kitchen capability doorway uses the same public-entry
+  boundary. Its Tools, specialist AI, View, and literature do not require a
+  canonical User account or preselected Kitchen. Live readers wait for Firebase
+  identity where required, and every reader and command still enforces Kitchen
+  authority. Route access never grants operational-record access. Create,
+  edit, detail, report-detail, and command routes retain their narrower access
+  and selection requirements. Drinks is the first connected capability proving
+  this boundary with live evidence.
+- Kitchen capability development follows one evidence-preserving sequence.
+  Level-one domain search demand establishes the capability map. Every proven
+  capability then receives the same thin Workspace handshake—registered
+  specialist AI, invisible-until-real Tools sheet, focused View, and guiding
+  literature projected from the Kitchen operation catalogue. Registration
+  means KitchenAI can discover and route to the specialist; it does not mean
+  the specialist has live evidence or executable tools. The development panel
+  derives maturity from the operation-agent definitions, never from a second
+  status registry. `handshake` proves only zero-data routing, `connected`
+  requires a real runtime path and approved tools where actions exist, and
+  `complete` additionally requires authoritative evidence, UI, approvals, and
+  verification. Next, `X/search-demand` deepens one
+  capability as a greenfield domain, and its observed jobs justify records,
+  human tools, AI-assisted tools, compound tools, and approvals. Production
+  landing copy may summarise only capabilities already proved by those child
+  sources; the research corpus remains distinct from live operational evidence.
 - `jobs.misebox.app` is a focused product doorway over the existing
   `misebox-app` authority, not a second canonical App. It may give public Job,
   Professional, and Agent routes a Jobs-only project layout while retaining

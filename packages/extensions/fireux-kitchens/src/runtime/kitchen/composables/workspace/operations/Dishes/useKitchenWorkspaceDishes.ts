@@ -17,6 +17,7 @@ import type {
 import { buildKitchenDemoDishesOperation } from '../../../../utils/demo-dishes'
 import { useKitchenWorkspaceSupplyWorkspace } from '../Suppliers/useKitchenWorkspaceSupplyWorkspace'
 import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -27,6 +28,7 @@ export function useKitchenWorkspaceDishes(
   _options: { resolveMenuSections?: boolean } = {}
 ) {
   const { selection, runtime } = useKitchenWorkspace()
+  const { hasIdentity } = useAuth()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
@@ -83,7 +85,9 @@ export function useKitchenWorkspaceDishes(
       demoDishOperationState.value.error
   )
   const fetchKitchenId = computed(() =>
-    rootCollection.value && kitchenId.value ? kitchenId.value : ''
+    hasIdentity.value && rootCollection.value && kitchenId.value
+      ? kitchenId.value
+      : ''
   )
   const demoDishRecords = computed(() =>
     findKitchenWorkspaceDemoDishRecords(demoData.data.value, kitchenId.value)

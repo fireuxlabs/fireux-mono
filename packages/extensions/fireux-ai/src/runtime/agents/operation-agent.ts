@@ -2,6 +2,12 @@ export type FireuxOperationAgentExecution =
   | 'shared-inference'
   | 'independent-on-demand'
 
+export type FireuxOperationAgentMaturity =
+  | 'not-connected'
+  | 'handshake'
+  | 'connected'
+  | 'complete'
+
 export type FireuxOperationAgentCapability =
   | 'read_context'
   | 'summarise'
@@ -48,6 +54,7 @@ export type FireuxOperationAgentDefinition = {
   capabilities: readonly FireuxOperationAgentCapability[]
   toolIds: readonly string[]
   execution: FireuxOperationAgentExecution
+  maturity?: FireuxOperationAgentMaturity
 }
 
 export type FireuxWorkspaceAgentDefinition = {

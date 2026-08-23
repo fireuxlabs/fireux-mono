@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenMiseWorkspace } from '../../../../composables/workspace/operations/Mise/useKitchenMiseWorkspace'
+import { useKitchenMiseWorkspace } from '../../../../composables/workspace/operations/Mise/useKitchenMiseWorkspace'
 
-const { readOnly, canWrite } = provideKitchenMiseWorkspace()
+const { readOnly, canWrite } = useKitchenMiseWorkspace()
 </script>

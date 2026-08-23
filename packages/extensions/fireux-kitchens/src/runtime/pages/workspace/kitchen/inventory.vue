@@ -7,6 +7,11 @@
 
       <template #body>
         <section class="space-y-4">
+          <WorkspaceKitchenOperationsCapabilityTools operation="inventory" />
+          <WorkspaceKitchenOperationsCapabilityAI
+            operation="inventory"
+            :show-suggestion-cards="false"
+          />
           <WorkspaceKitchenOperationsCapabilityView operation="inventory" />
           <WorkspaceKitchenOperationsGuidingLiterature operation="inventory" />
         </section>
@@ -19,6 +24,7 @@
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
+  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-inventory',
@@ -31,7 +37,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: true,
-  requiresSelection: true,
+  requiresAuth: false,
+  requiresSelection: false,
 })
 </script>

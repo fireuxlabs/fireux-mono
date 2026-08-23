@@ -1,7 +1,7 @@
 # Workspace entity family
 
 Updated: 2026-08-23
-Ref: f3c707663
+Ref: 7f18d4e91
 Role: map, not canon
 
 ## Purpose
@@ -27,7 +27,7 @@ map in `workspace.md`. The family deltas are:
 | Member            | Status and reason                                                                                                                       |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Blank             | `accepted`: App-local minimal harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations |
-| Kitchen           | `accepted`: Place-backed root, dual Live/Demo targets, root-owned Team, and a large operational domain                                  |
+| Kitchen           | `accepted`: Place-backed or name-only root, dual Live/Demo targets, root-owned Team, and a large operational domain                     |
 | Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                              |
 | Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                |
 | Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                    |
@@ -49,15 +49,16 @@ Overview, Identity, Team, Operations, and debug adapters.
 Their material differences remain domain-owned. Project is a private FireUX
 control-plane Entity with Apps and Ecosystem Operations and no production
 Create flow. Kitchen is a domain-database Entity with Live and Demo sources,
-trusted onboarding, food-service Operations, and same-ID Place identity. Those
+trusted onboarding, food-service Operations, and optional same-ID Place identity. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
-`kitchens/{kitchenId}/team/{uid}` while its four-field root remains exactly
-`id`, `slug`, `status`, and `visibility`, and same-ID Place owns venue
-identity. A Kitchen capability owns its configuration and records beneath the
+`kitchens/{kitchenId}/team/{uid}` while its five-field root remains exactly
+`id`, `name`, `slug`, `status`, and `visibility`. A Place-backed Kitchen uses
+its same-ID Place for venue identity; a name-only shell may be enriched later.
+A Kitchen capability owns its configuration and records beneath the
 Kitchen only after that destination and its consumers are proved. Existing
 Kitchen root fields and App-nested support are migration preimages, not a
 second authority; retain them until the capability-owned reader, writer,
@@ -113,21 +114,25 @@ migration verification, and protected Workspace consumer are complete.
 - Persisted selection is invalidated only after a successful target read proves
   it invalid. Pending or failed reads do not clear it.
 - Tenant and global Apps query bounded canonical root relationships and Team
-  authority. Kitchen uses its same-ID Place rather than root management.
+  authority. Kitchen uses its root-owned Team and, when present, its same-ID
+  Place rather than root management.
   Neither mode authorizes a full-root client scan followed by local filtering.
 - `team/{uid}` grants Workspace membership and names its roles and permissions.
   Current App admins are the explicit override only for roots managed by that
   App.
 - Visible `canWrite` state never replaces server or Rules enforcement.
-- Workspace onboarding uses a fixed-runtime authenticated family endpoint and
-  one trusted transaction for root, the caller's Team authority, and any
-  required parent records.
+- Workspace onboarding uses a fixed-runtime family endpoint and one trusted
+  transaction for root, the caller's Team authority, and any required parent
+  records. Authentication is the default; Kitchen's name-only shell command is
+  the accepted bounded exception that may authorize a Firebase anonymous
+  identity.
 - Workspace-capable roots that declare management share one management ladder:
   `root`, `workspace`, or
   `app`. `workspace` resolves by convention to the ecosystem App
   (`<ecosystem>-app`); no configurable Workspace App id is stored. `app` alone
   stores `app_id`. Kitchen deliberately declares no management field; its
-  Place, App membership, and Team evidence remain Kitchen-owned. Domain
+  current identity, optional Place, App policy, and Team evidence remain
+  Kitchen-owned. Domain
   packages own their transactions, so Core does not enumerate present or
   future Workspace families.
 - Index owns target selection and its Create doorway. Overview, Identity,
@@ -139,7 +144,7 @@ migration verification, and protected Workspace consumer are complete.
 
 | Delta                                                        | State      | Why it exists                                                                                                                                               | Evidence or owner                                                                                                          |
 | ------------------------------------------------------------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Kitchen identity is its same-id Place                        | `accepted` | Kitchen is the operation at one Place; the Kitchen root id is the Place id, Place owns venue identity, and capability records own operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                          |
+| Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                          |
 | Kitchen renders Live and Demo target sources                 | `accepted` | Demo is an optional, lazy, read-only Kitchen product surface; the sources still feed the same target presenter and selection contract                       | Kitchen core plus `scripts/guards/workspace-indexes.mjs` and `scripts/guards/demo-data.mjs`                                |
 | Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                               | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
 | Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                          | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
@@ -195,7 +200,7 @@ composition delta, not permission to fork the Workspace Index spine.
 
 ### Next
 
-- Keep the four-field Kitchen root + required same-id Place + root-owned Team composition
+- Keep the five-field Kitchen root + optional same-id Place + root-owned Team composition
   guarded across Live, Demo, and Test sources. Reject copied Place identity,
   Kitchen media overrides, and redundant `place_id` on the Kitchen root.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep

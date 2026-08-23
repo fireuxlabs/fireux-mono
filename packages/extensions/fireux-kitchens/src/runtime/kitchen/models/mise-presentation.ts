@@ -7,7 +7,7 @@ import {
   type KitchenMiseStatus,
   type KitchenMiseTask,
   type KitchenMiseWorkflowStage,
-} from './mise.model.ts'
+} from '../utils/mise.ts'
 
 export type KitchenMiseChecklistSummary = {
   done: boolean

@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-08-23
-Ref: e23268507
+Ref: 7f18d4e91
 Role: living context
 Scope: repo-wide
 
@@ -225,10 +225,12 @@ requirement, report the exact missing seam before broad edits.
   `scripts/guards/css-system.mjs` when this contract changes.
 - Direct Workspace pages require authentication by default. A browse-only route
   may opt into `workspaceAccess: 'public-entry'` with `requiresAuth: false` only
-  when it also requires no selected entity. That public entry must not mount
-  protected entity reads or commands for anonymous visitors. The Workspace page
-  guard enforces the route metadata exception; the page owns the corresponding
-  anonymous composition boundary.
+  when it also requires no selected entity. That public entry may mount only
+  reads or commands whose trusted boundary explicitly authorizes the current
+  Firebase identity, including an anonymous identity where the domain permits
+  it; the route itself grants no authority. The Workspace page guard enforces
+  the route metadata exception, and the page owns the corresponding anonymous
+  composition boundary.
 
 ## Entity detail pages
 
@@ -297,8 +299,9 @@ requirement, report the exact missing seam before broad edits.
 - Each public entity family declares one exact route key. When that key is the
   Firestore document ID, resolve it with a direct document read; do not query a
   second field or fall back between `slug` and `id` in route construction.
-- Kitchen root IDs are stable operational identity and currently follow the
-  linked Place ID. Its authored `slug` is the reviewed public route key and is
+- Kitchen root IDs are stable operational identity. Place-backed onboarding
+  uses the linked Place ID; a name-only Kitchen shell uses a generated Kitchen
+  ID and may acquire Place identity later. Its authored `slug` is the reviewed public route key and is
   resolved only by the Kitchen-owned bounded server resolver, which rejects
   duplicates. Internal Kitchen, Menu, Order, and Workspace relationships keep
   using the stable root ID; they never substitute the route slug.
@@ -690,9 +693,11 @@ requirement, report the exact missing seam before broad edits.
   family-declared management relationships where present, exact AppUser
   membership, and root-owned Team records. Missing roots, invalid declared
   relationships, invalid Team state, or missing caller membership fail closed.
-- Production onboarding for those families is a fixed-runtime authenticated
-  domain endpoint. One trusted transaction creates or attaches the canonical
-  root and creates the caller's root-owned Team authority. Operators may
+- Production onboarding for those families uses a fixed-runtime domain
+  endpoint. It is authenticated by default; an explicit family command may
+  accept a Firebase anonymous identity for a bounded shell creation flow. One
+  trusted transaction creates or attaches the canonical root and creates the
+  caller's root-owned Team authority. Operators may
   mutate; members have target/read membership only; current App admins are the
   explicit override for Entities managed by that App.
 - Workspace-capable roots whose canonical model declares a host relationship
@@ -704,9 +709,11 @@ requirement, report the exact missing seam before broad edits.
   storage. Core must not enumerate extension Workspace families or own a
   generic domain-root factory; each domain owns validation and its trusted
   root/Team transaction.
-- Kitchen is the accepted Place-backed delta: it stores no management field;
-  its same-ID Place, current App membership, and root-owned Team provide the
-  creation and target evidence. Blank remains the small harness, and Project
+- Kitchen is the accepted domain delta: it stores no management field. A
+  Place-backed Kitchen uses the same-ID Place, while a name-only shell can
+  begin from its minimal root and root-owned Team before Place enrichment.
+  Current Firebase identity, App policy where required, and Kitchen Team provide
+  the creation and target evidence. Blank remains the small harness, and Project
   remains a read-only control-plane family. Those are domain deltas, not
   alternate target or onboarding spines.
 

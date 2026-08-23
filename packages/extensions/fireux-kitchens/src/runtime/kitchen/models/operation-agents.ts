@@ -40,6 +40,7 @@ const definitions = {
   },
   drinks: {
     name: 'DrinksAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.drinks', 'Kitchen')],
   },
   ingredients: {
@@ -52,6 +53,7 @@ const definitions = {
   },
   menus: {
     name: 'MenuAI',
+    maturity: 'connected',
     contextProviders: [
       context('kitchen.menus', 'Kitchen'),
       context('menus.context', 'Kitchen'),
@@ -91,6 +93,7 @@ const definitions = {
   },
   team: {
     name: 'TeamAI',
+    maturity: 'connected',
     instruction:
       'Help the operator understand and manage the selected Kitchen team using only the registered Team tools and authorized Team records.',
     contextProviders: [context('kitchen.team', 'Kitchen')],
@@ -128,6 +131,7 @@ const definitions = {
     contextProviders: readonly FireuxAgentContextProvider[]
     capabilities?: readonly FireuxOperationAgentCapability[]
     toolIds?: readonly string[]
+    maturity?: 'handshake' | 'connected' | 'complete'
   }
 >
 
@@ -151,6 +155,8 @@ export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
           ? definition.capabilities
           : advisoryAgentCapabilities,
       toolIds: 'toolIds' in definition ? definition.toolIds : [],
+      maturity:
+        'maturity' in definition ? definition.maturity : 'handshake',
       execution: 'shared-inference',
     })
   }

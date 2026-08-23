@@ -34,8 +34,8 @@
             </div>
 
             <WorkspaceKitchenOperationsDishesRead />
-            <WorkspaceKitchenOperationsGuidingLiterature operation="drinks" />
           </section>
+          <WorkspaceKitchenOperationsGuidingLiterature operation="drinks" />
         </section>
       </template>
     </UDashboardPanel>
@@ -43,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
 import { computed } from 'vue'
 import { buildMissingDrinkImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
 
 const drinksWorkspace = provideKitchenDishesWorkspace('drink')
 const drinkSuggestions = computed(() =>
@@ -55,6 +55,7 @@ const drinkSuggestions = computed(() =>
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
+  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-drinks',
@@ -67,7 +68,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: true,
-  requiresSelection: true,
+  requiresAuth: false,
+  requiresSelection: false,
 })
 </script>

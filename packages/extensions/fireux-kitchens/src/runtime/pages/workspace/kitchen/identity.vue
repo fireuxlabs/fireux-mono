@@ -7,6 +7,6 @@
 <script setup>
 definePageMeta({
   layout: 'workspace',
-  requiresAuth: true,
+  requiresAuth: false,
 })
 </script>

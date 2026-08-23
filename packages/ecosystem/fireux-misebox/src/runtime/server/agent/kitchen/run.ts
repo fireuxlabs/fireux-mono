@@ -6,6 +6,7 @@ import { readKitchenAgentOrientation } from './orientation'
 import { runKitchenTeamAI } from './team'
 import type { KitchenAgentRequest } from './types'
 import { runKitchenWasteAI } from './waste'
+import { findMiseboxOperationAgent } from '../../../ai/workspace-agents'
 
 export async function runKitchenAgent(
   event: H3Event,
@@ -15,6 +16,27 @@ export async function runKitchenAgent(
   // Kitchen data and performs no action. Every other request remains guarded.
   const wasteResult = runKitchenWasteAI(request)
   if (wasteResult) return wasteResult
+
+  const requestedAgent = request.operation
+    ? findMiseboxOperationAgent('kitchen', request.operation)
+    : undefined
+  if (requestedAgent?.maturity === 'handshake') {
+    return {
+      ok: true as const,
+      answer: `Hello from ${requestedAgent.name}. I am registered with KitchenAI, but my operational evidence and tools are not connected yet.`,
+      scope: {
+        source: 'simulator' as const,
+        kitchenName: 'No Kitchen evidence read',
+        userContext: false,
+        kitchenContext: false,
+        menuContext: false,
+        menuCount: 0,
+        delegates: [requestedAgent.name],
+        tipRecorded: false,
+        usage: { amount: '0', currency: 'USD' },
+      },
+    }
+  }
 
   if (!request.kitchenId) {
     const { uid } = await requireFirebaseBearerUser(
