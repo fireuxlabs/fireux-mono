@@ -12,13 +12,18 @@
           <div class="flex min-h-11 items-center px-1">
             <NuxtLink
               v-if="collapsed"
-              to="/"
+              to="/about"
               class="mx-auto inline-flex"
               aria-label="Home"
             >
               <AppBrandLogo size="small" alt="FireUX" />
             </NuxtLink>
-            <NuxtLink v-else to="/" class="inline-flex" aria-label="Home">
+            <NuxtLink
+              v-else
+              to="/about"
+              class="inline-flex"
+              aria-label="Home"
+            >
               <AppBrandWordmark size="card" alt="FireUX" />
             </NuxtLink>
           </div>
@@ -55,27 +60,31 @@
               orientation="vertical"
             />
 
-            <div v-if="prominentFamilyRootNav.length" class="space-y-2 px-2">
-              <UButton
-                v-for="item in prominentFamilyRootNav"
-                :key="item.key || item.to"
-                :to="item.to"
-                :icon="item.icon"
-                :aria-label="item.label"
-                color="primary"
-                variant="solid"
-                size="lg"
-                class="w-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-600 shadow-lg shadow-primary-500/25 ring-1 ring-inset ring-white/20 hover:brightness-110"
-                :class="collapsed ? 'justify-center' : 'justify-start'"
-              >
-                <span v-if="!collapsed">{{ item.label }}</span>
-              </UButton>
-            </div>
+            <div class="space-y-2">
+              <div v-if="prominentFamilyRootNav.length" class="space-y-2">
+                <NuxtLink
+                  v-for="item in prominentFamilyRootNav"
+                  :key="item.key || item.to"
+                  :to="item.to"
+                  :class="collapsed ? 'flex w-full justify-center' : 'pill'"
+                  :aria-label="item.description || item.label"
+                >
+                  <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
+                  <span v-if="!collapsed" class="min-w-0 text-left">
+                    <strong class="block truncate text-sm font-medium text-highlighted">
+                      {{ item.label }}
+                    </strong>
+                    <small class="block truncate text-xs text-muted">
+                      {{ item.description || `Open ${item.label}` }}
+                    </small>
+                  </span>
+                </NuxtLink>
+              </div>
 
-            <USeparator v-if="familyRootNav.length" />
-
-            <div class="pt-3">
-              <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
+              <LayoutsSharedSideBarFooter
+                :collapsed="collapsed ?? false"
+                :show-home="false"
+              />
             </div>
           </div>
         </div>
@@ -90,29 +99,33 @@
             orientation="vertical"
           />
 
-          <div v-if="prominentFamilyRootNav.length" class="space-y-2 px-2">
-            <UButton
-              v-for="item in prominentFamilyRootNav"
-              :key="item.key || item.to"
-              :to="item.to"
-              :icon="item.icon"
-              :aria-label="item.label"
-              color="primary"
-              variant="solid"
-              size="lg"
-              class="w-full bg-gradient-to-r from-primary-500 via-primary-500 to-primary-600 shadow-lg shadow-primary-500/25 ring-1 ring-inset ring-white/20 hover:brightness-110"
-              :class="collapsed ? 'justify-center' : 'justify-start'"
-            >
-              <span v-if="!collapsed">{{ item.label }}</span>
-            </UButton>
+          <div class="space-y-2">
+            <div v-if="prominentFamilyRootNav.length" class="space-y-2">
+              <NuxtLink
+                v-for="item in prominentFamilyRootNav"
+                :key="item.key || item.to"
+                :to="item.to"
+                :class="collapsed ? 'flex w-full justify-center' : 'pill'"
+                :aria-label="item.description || item.label"
+              >
+                <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
+                <span v-if="!collapsed" class="min-w-0 text-left">
+                  <strong class="block truncate text-sm font-medium text-highlighted">
+                    {{ item.label }}
+                  </strong>
+                  <small class="block truncate text-xs text-muted">
+                    {{ item.description || `Open ${item.label}` }}
+                  </small>
+                </span>
+              </NuxtLink>
+            </div>
+
+            <LayoutsSharedSideBarFooter
+              :collapsed="collapsed ?? false"
+              compact-profile
+              :show-home="false"
+            />
           </div>
-
-          <USeparator v-if="familyRootNav.length" />
-
-          <LayoutsSharedSideBarFooter
-            :collapsed="collapsed ?? false"
-            compact-profile
-          />
         </div>
       </template>
     </UDashboardSidebar>
@@ -191,6 +204,7 @@ import {
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
+import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
 import { useUser } from '../user/composables/useUser'
 defineOptions({ name: 'workspace' })
 
@@ -220,6 +234,7 @@ const route = useRoute()
 const workspace = computed(() =>
   workspaceFamilyFromRouteContext(String(route.path || ''), route.meta.workspace)
 )
+const workspaceState = useWorkspace(workspace.value)
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
@@ -255,7 +270,19 @@ const regularFamilyRootNav = computed(() =>
   familyRootNav.value.filter((item) => !item.prominent)
 )
 const prominentFamilyRootNav = computed(() =>
-  familyRootNav.value.filter((item) => item.prominent)
+  familyRootNav.value
+    .filter((item) => item.prominent)
+    .map((item) => {
+      const currentName = workspaceState.currentName.value
+      if (!currentName) return item
+      return {
+        ...item,
+        label: currentName,
+        description:
+          workspaceState.currentDescription.value ||
+          `Current ${workspaceLabel.value}`,
+      }
+    })
 )
 
 const workspaceLabel = computed(

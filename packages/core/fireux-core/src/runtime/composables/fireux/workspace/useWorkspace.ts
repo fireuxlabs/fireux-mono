@@ -16,15 +16,26 @@ export function useWorkspace(workspace: string) {
     sameSite: 'lax',
   })
   const currentId = useState<string>(key, () => normalizeString(cookie.value))
+  const currentName = useState<string>(`${key}-current-name`, () => '')
+  const currentDescription = useState<string>(
+    `${key}-current-description`,
+    () => ''
+  )
 
-  const setCurrent = (id: string) => {
+  const setCurrent = (id: string, name = '', description = '') => {
     const value = normalizeString(id)
+    const nextName = normalizeString(name)
+    const nextDescription = normalizeString(description)
     currentId.value = value
+    currentName.value = value ? nextName : ''
+    currentDescription.value = value ? nextDescription : ''
     cookie.value = value
   }
 
   return {
     currentId: computed(() => currentId.value),
+    currentName: computed(() => currentName.value),
+    currentDescription: computed(() => currentDescription.value),
     setCurrent,
     clearCurrent: () => setCurrent(''),
   }

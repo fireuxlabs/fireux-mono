@@ -15,6 +15,7 @@ export type NavPosition = 'top' | 'middle' | 'bottom'
 export interface NavMeta {
   key?: string
   label?: string
+  description?: string
   icon?: string
   group?: string
   position?: NavPosition
@@ -33,6 +34,7 @@ export interface NavMeta {
 export interface NavItem {
   key?: string
   label: string
+  description?: string
   icon?: string
   to: string
   group?: string

@@ -24,6 +24,15 @@ export function useKitchenWorkspaceIndex() {
       : null
   )
   const id = computed(() => String(kitchenRecord.value?.id || '').trim())
+  const name = computed(() =>
+    String(
+      kitchen.value?.display_name ||
+        kitchen.value?.name ||
+        kitchen.value?.slug ||
+        ''
+    ).trim()
+  )
+  const description = computed(() => String(kitchen.value?.tagline || '').trim())
   const outcome = computed<'idle' | 'pending' | 'error' | 'empty' | 'ready'>(
     () => {
       if (!hasAuthState.value || status.value === 'pending') return 'pending'
@@ -72,8 +81,8 @@ export function useKitchenWorkspaceIndex() {
       kitchenRecord.value = response.current
       status.value = 'ready'
       const currentId = String(response.current?.id || '').trim()
-      if (currentId && currentId !== workspace.currentId.value) {
-        workspace.setCurrent(currentId)
+      if (currentId) {
+        workspace.setCurrent(currentId, name.value, description.value)
       }
     } catch {
       if (sequence !== requestSequence) return

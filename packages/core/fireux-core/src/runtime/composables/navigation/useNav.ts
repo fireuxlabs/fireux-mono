@@ -105,6 +105,8 @@ function buildNavItem(
     key:
       typeof nav.key === 'string' && nav.key.length > 0 ? nav.key : undefined,
     label,
+    description:
+      typeof nav.description === 'string' ? nav.description : undefined,
     icon: typeof nav.icon === 'string' ? nav.icon : undefined,
     to,
     group: typeof nav.group === 'string' ? nav.group : undefined,

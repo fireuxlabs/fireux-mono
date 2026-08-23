@@ -29,17 +29,27 @@
       class="mt-auto w-full"
     />
 
-    <UButton
+    <NuxtLink
       v-else-if="mounted && authUser?.isAnonymous"
       :to="signInTo"
-      :label="collapsed ? undefined : 'Sign in'"
-      icon="i-lucide-log-in"
-      color="primary"
-      variant="soft"
-      class="mt-auto w-full"
-      :class="collapsed ? 'justify-center' : 'justify-start'"
-      :aria-label="collapsed ? 'Sign in' : undefined"
-    />
+      :class="collapsed ? 'mt-auto flex w-full justify-center' : 'pill mt-auto'"
+      aria-label="Guest — click here to sign up"
+    >
+      <UAvatar
+        icon="i-lucide-user"
+        size="sm"
+        class="shrink-0"
+      />
+
+      <span v-if="!collapsed" class="min-w-0 text-left">
+        <strong class="block truncate text-sm font-medium text-highlighted">
+          Guest
+        </strong>
+        <small class="block truncate text-xs text-muted">
+          Click here to sign up
+        </small>
+      </span>
+    </NuxtLink>
   </div>
 </template>
 
@@ -55,9 +65,11 @@ const props = withDefaults(
   defineProps<{
     collapsed: boolean
     compactProfile?: boolean
+    showHome?: boolean
   }>(),
   {
     compactProfile: false,
+    showHome: true,
   }
 )
 
@@ -113,13 +125,15 @@ const handleSignOut = async () => {
 }
 
 const actionItems = computed(() => {
-  const items: any[] = [
-    {
+  const items: any[] = []
+
+  if (props.showHome) {
+    items.push({
       label: `${fireux.appShortName || fireux.appName} home`,
       icon: 'i-lucide-house',
       to: fireux.homePath || '/',
-    },
-  ]
+    })
+  }
 
   if (mounted.value && isAuthenticated.value) {
     items.push({

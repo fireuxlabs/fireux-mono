@@ -30,7 +30,8 @@ definePageMeta({
   workspaceAccess: 'public-entry',
   nav: {
     key: 'workspace-kitchen',
-    label: 'Kitchen',
+    label: 'Current Kitchen',
+    description: 'Click here to onboard your kitchen',
     icon: 'i-lucide-chef-hat',
     position: 'bottom',
     order: 900,

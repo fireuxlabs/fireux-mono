@@ -236,7 +236,10 @@ const continueDisabled = computed(
 const continueLabel = computed(() => {
   if (!isLastStep.value) return 'Continue'
   if (preview.value?.action === 'connect') return 'Connect Kitchen'
-  if (preview.value?.action === 'open') return 'Open Kitchen'
+  if (preview.value?.action === 'open') {
+    const name = String(preview.value.display_name || '').trim()
+    return name ? `Open ${name}` : 'Open Kitchen'
+  }
   return 'Create Kitchen'
 })
 const completionIcon = computed(() => {
