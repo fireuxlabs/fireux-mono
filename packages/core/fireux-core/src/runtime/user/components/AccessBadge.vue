@@ -35,12 +35,17 @@ const badges = {
     icon: 'i-lucide-crown',
     color: 'warning',
   },
+  business: {
+    label: 'Business',
+    icon: 'i-lucide-building-2',
+    color: 'primary',
+  },
 } as const satisfies Record<
   UserSubscription,
   {
     label: string
     icon: string
-    color: 'neutral' | 'warning'
+    color: 'neutral' | 'warning' | 'primary'
   }
 >
 

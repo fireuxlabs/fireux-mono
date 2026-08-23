@@ -16,7 +16,6 @@ export function useKitchenWorkspaceIdentity(
   const rootCollection = runtime.rootCollection
   const appId = runtime.appId
   const dataType = runtime.dataType
-  const isDemo = runtime.isDemo
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const refreshTargets: () => Promise<void> = async () => {
@@ -58,7 +57,6 @@ export function useKitchenWorkspaceIdentity(
     appId,
     rootCollection,
     dataType,
-    isDemo,
     readOnly,
     canWrite,
     refreshTargets,

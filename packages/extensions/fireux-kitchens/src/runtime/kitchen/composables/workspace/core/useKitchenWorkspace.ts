@@ -16,30 +16,15 @@ import {
   type WorkspaceDataType,
 } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceData'
 import { useWorkspaceDataAuthority } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDataAuthority'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { resolveWorkspaceEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/workspace/utils/resolveWorkspaceEntityCollectionPath'
 import { useWorkspaceEntityFirestore } from 'fireux-core/runtime/composables/fireux/firestore/system/workspace/utils/useWorkspaceEntityFirestore'
-import {
-  readRuntimeFirestoreDatabaseId,
-  readRuntimeSimulationFirestoreDatabaseId,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { composeKitchenScopedSurface } from '../../../utils/kitchen-readers'
-import {
-  useKitchenFetch,
-  type KitchenFetchSource,
-} from '../../firestore/fetch/useKitchenFetch'
+import { useKitchenFetch } from '../../firestore/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenWorkspaceTargetCollection } from '../index/useKitchenWorkspaceTargetCollection'
-import { useKitchenWorkspaceDemoTargets } from './useKitchenWorkspaceDemoTargets'
 
 type KitchenWorkspaceEntity = KitchenSurface
-
-const normalizeSource = (value: unknown): KitchenFetchSource => {
-  const source = normalizeString(value)
-  if (source === 'demo' || source === 'test') return source
-  return 'live'
-}
 
 const composeWorkspaceKitchen = (
   publicKitchen: KitchenWorkspaceEntity | null,
@@ -101,51 +86,19 @@ function createKitchenWorkspace() {
    * - actions: select/clear helpers
    */
   const workspaceRoot = useWorkspace('kitchen')
-  const { uid } = useAuth()
-  const allowDemo = computed(() => workspaceRoot.allowsDemo())
-  const kitchenSource = computed<KitchenFetchSource>(() =>
-    !allowDemo.value && normalizeSource(workspaceRoot.source.value) === 'demo'
-      ? 'live'
-      : normalizeSource(workspaceRoot.source.value)
-  )
+  const kitchenSource = computed(() => 'live' as const)
   const liveTargetCollection = useKitchenWorkspaceTargetCollection({
     enabled: true,
   })
-  const demoTargets = useKitchenWorkspaceDemoTargets(
-    computed(() => allowDemo.value && kitchenSource.value === 'demo')
-  )
   const liveTargetData = computed<Array<WorkspaceData<KitchenSurface>>>(() =>
     liveTargetCollection.kitchens.value.map((kitchen) =>
       workspaceData('live', kitchen)
     )
   )
-  const demoTargetData = computed<Array<WorkspaceData<KitchenSurface>>>(() =>
-    (demoTargets.data.value?.kitchens ?? []).map((kitchen) =>
-      workspaceData('demo', kitchen)
-    )
-  )
-  const selectionTargets = computed<Array<WorkspaceData<KitchenSurface>>>(
-    () => {
-      if (kitchenSource.value === 'live') {
-        return liveTargetData.value
-      }
-      if (kitchenSource.value === 'demo') {
-        return demoTargetData.value
-      }
-      return []
-    }
-  )
-  const selectionOutcome = computed(() => {
-    if (kitchenSource.value === 'live') {
-      return liveTargetCollection.outcome.value
-    }
-    if (kitchenSource.value === 'demo') return demoTargets.outcome.value
-    return 'idle' as const
-  })
+  const selectionTargets = liveTargetData
+  const selectionOutcome = liveTargetCollection.outcome
   const enforcedTargetId = computed(() =>
-    kitchenSource.value === 'live' &&
-    selectionOutcome.value === 'ready' &&
-    liveTargetData.value.length === 1
+    selectionOutcome.value === 'ready' && liveTargetData.value.length === 1
       ? normalizeString(liveTargetData.value[0]?.value.id)
       : ''
   )
@@ -162,26 +115,12 @@ function createKitchenWorkspace() {
     enforcedTargetId,
   })
   const kitchenId = computed(() => normalizeString(selectedId.value))
-  const directFetchSource = computed<KitchenFetchSource>(() =>
-    kitchenSource.value === 'test' ? 'test' : 'demo'
-  )
-  const { kitchen: fetchedKitchen } = useKitchenFetch(kitchenId, {
-    source: directFetchSource,
-  })
-  const testTargetData = computed<WorkspaceData<KitchenSurface> | null>(() =>
-    kitchenSource.value === 'test' && fetchedKitchen.value
-      ? workspaceData('test', fetchedKitchen.value as KitchenSurface)
-      : null
-  )
   const resolvedSelectedData = computed<WorkspaceData<KitchenSurface> | null>(
     () => {
-      const data =
-        kitchenSource.value === 'test'
-          ? testTargetData.value
-          : selectedData.value
+      const data = selectedData.value
       if (
         !data ||
-        data.type !== kitchenSource.value ||
+        data.type !== 'live' ||
         normalizeString(data.value.id) !== kitchenId.value
       ) {
         return null
@@ -192,7 +131,6 @@ function createKitchenWorkspace() {
   const dataType = computed<WorkspaceDataType | null>(
     () => resolvedSelectedData.value?.type ?? null
   )
-  const isDemo = computed(() => dataType.value === 'demo')
   const selectedKitchenTarget = computed<KitchenWorkspaceEntity | null>(
     () => resolvedSelectedData.value?.value ?? null
   )
@@ -218,18 +156,12 @@ function createKitchenWorkspace() {
     { immediate: true }
   )
   const scopedAppId = computed(() =>
-    kitchenSource.value === 'live'
-      ? resolveWorkspaceEntityAppId(
-          selectedKitchenTarget.value,
-          workspaceRoot.appId
-        )
-      : workspaceRoot.appId
+    resolveWorkspaceEntityAppId(
+      selectedKitchenTarget.value,
+      workspaceRoot.appId
+    )
   )
-  const databaseId = computed(() =>
-    kitchenSource.value === 'test'
-      ? readRuntimeSimulationFirestoreDatabaseId() || ''
-      : readRuntimeFirestoreDatabaseId() || ''
-  )
+  const databaseId = computed(() => readRuntimeFirestoreDatabaseId() || '')
   const firestore = useWorkspaceEntityFirestore({
     family: 'kitchens',
     target: selectedKitchenTarget,
@@ -255,47 +187,23 @@ function createKitchenWorkspace() {
         )
       : selectedKitchenTarget.value
   )
-  const storageKitchenId = computed(() => (isDemo.value ? '' : kitchenId.value))
-  const readOnly = computed(() => !dataType.value || isDemo.value)
+  const storageKitchenId = kitchenId
+  const readOnly = computed(() => dataType.value !== 'live')
   const canWrite = computed(
-    () =>
-      !readOnly.value &&
-      (dataType.value === 'live'
-        ? selectedKitchenTarget.value?.can_write === true
-        : targetHasOperator(selectedKitchen.value, normalizeString(uid.value)))
+    () => !readOnly.value && selectedKitchenTarget.value?.can_write === true
   )
   const clearSelectedKitchen = () => clearSelection()
-  const selectKitchen = (
-    kitchenId: string,
-    source: KitchenFetchSource = 'live'
-  ) => {
-    const requestedSource = normalizeSource(source)
-    const resolvedSource =
-      requestedSource === 'demo' && !allowDemo.value ? 'live' : requestedSource
-    selectTarget(kitchenId, resolvedSource)
-  }
-  watch(
-    kitchenId,
-    (id: string) => {
-      if (id) return
-      workspaceRoot.resetSource()
-    },
-    { immediate: true }
-  )
+  const selectKitchen = (kitchenId: string) => selectTarget(kitchenId, 'live')
   const selection = {
     kitchen: selectedKitchen,
     kitchenId,
     kitchenSource,
     hasSelection: computed(() => Boolean(resolvedSelectedData.value)),
-    demoPending: demoTargets.pending,
-    demoError: demoTargets.error,
-    demoOutcome: demoTargets.outcome,
   }
   const runtime = {
     appId: firestore.appId,
     source: kitchenSource,
     dataType,
-    isDemo,
     canonicalRootCollection: firestore.rootCollection,
     collectionPath: firestore.collectionPath,
     isTenantOwned: firestore.isTenantOwned,
@@ -309,10 +217,9 @@ function createKitchenWorkspace() {
     databaseId,
     isTenant: computed(() => workspaceRoot.isTenant),
     isGlobal: computed(() => workspaceRoot.isGlobal),
-    allowDemo,
     readOnly,
     canWrite,
-    canCreate: computed(() => !isDemo.value && workspaceRoot.canCreateTarget()),
+    canCreate: computed(() => workspaceRoot.canCreateTarget()),
   }
   const actions = {
     selectKitchen,

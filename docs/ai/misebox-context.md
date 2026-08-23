@@ -467,9 +467,8 @@ Before each task:
   The preview header keeps one `Open full Workspace` doorway visible across
   every operation. It selects Deanos as the read-only Demo Kitchen before
   entering `/`; the landing preview does not acquire Workspace
-  target authority. The Kitchen index continues to present the bounded Live
-  and Demo target choosers together, so this doorway never hides the user's
-  real Kitchens.
+  target authority. Demo discovery remains outside the current-Kitchen Index;
+  entering the Workspace never replaces or hides the User's current Kitchen.
   Orders projects the Deanos `KitchenOrder` records as
   `workspace.orders`, derives Incoming/Queue/Pass from the canonical Order
   lifecycle, and reuses the shared Order rail and ticket components without
@@ -526,21 +525,20 @@ Before each task:
   canonical `/apps/:slug` details, and excludes the current global Misebox App
   from its own proof grid. It does not hard-code tenant Apps or read Firestore
   in the browser.
-- Misebox `/` is itself the browse-only public Kitchen Workspace; there is no
-  separate `/workspace/kitchen` index. The root page directly
-  composes the real Core Workspace layout and page shell, while `fireux-kitchens`
-  owns the inner `WorkspaceKitchenAI` domain surface. The Auth spine resolves a
-  Firebase identity for the visitor and may use an anonymous identity. Kitchen
-  selection establishes optional
-  evidence scope rather than access to KitchenAI: zero targets leaves a valid
-  blank context, one authoritative Live target is selected automatically, and
-  multiple targets require an explicit choice from the User's active Kitchen
-  Team memberships. Generic signed-in questions may begin in blank context,
-  but KitchenAI must not claim live operational evidence until a Live Kitchen
-  is selected. Its root orientation context is limited to authentication,
-  authoritative available Kitchen names/count, current selection, and
-  Live/Demo source. It may explain that the User has no Kitchen, ask them to
-  choose among available Kitchens, or name the selected Kitchen; it must not
+- Misebox `/` is the public Kitchen Workspace index; there is no separate
+  `/workspace/kitchen` index. The root page composes the Core Workspace layout
+  and page shell, while `fireux-kitchens` owns the current-Kitchen index. The
+  Auth spine resolves a Firebase identity for the visitor and may use an
+  anonymous identity. Active Kitchen Team memberships establish access. Zero
+  Kitchens produces the Create state; otherwise the persisted current Kitchen
+  id is accepted only after server authority proves membership, with the first
+  accessible Kitchen used when no valid preference exists. The index does not
+  load or expose a target collection, Demo source, tenant policy, AI
+  coordination, or capability records. Those concerns remain outside the
+  current-Kitchen baseline and may be added only by the surface that owns them.
+  KitchenAI must not claim live operational evidence until a Kitchen is current;
+  it may explain that the User has no Kitchen, ask them to choose among
+  available Kitchens, or name the current Kitchen, but it must not
   infer onboarding progress from those facts. The root Create Kitchen Tool is
   available before authentication and searches the shared Place directory plus
   Google Places and also accepts a name-only Kitchen. Place-backed saving uses
@@ -548,6 +546,14 @@ Before each task:
   name-only save accepts the current anonymous or authenticated Firebase
   identity and creates the generated Kitchen root plus its owner Team record. The
   new Kitchen is selected without sending the browser directly to Firestore.
+  The persistent Workspace sidebar presents an anonymous identity as `Sign in`
+  in the same bottom-left account slot used by a signed-in User. When that
+  action starts from a selected anonymous Kitchen, Core retains a one-hour,
+  tab-local proof of the outgoing Firebase identity and Kitchen owns the trusted
+  adoption command. After sign-in, the command verifies both Firebase identities
+  and transfers only the selected Kitchen owner Team membership; the Kitchen's
+  original creation stamp remains historical truth. Auth does not own Kitchen
+  migration and the browser cannot reassign membership from supplied ids alone.
   The one unscoped development handshake
   routes a WasteAI-directed prompt through KitchenAI, passes one explicitly
   temporary restaurant-Waste context paragraph into WasteAI, and echoes its

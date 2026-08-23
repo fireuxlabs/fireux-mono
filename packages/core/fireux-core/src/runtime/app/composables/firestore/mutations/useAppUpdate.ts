@@ -3,6 +3,7 @@
 
 import type { Ref } from 'vue'
 import type { App } from '../../../models/app.model.ts'
+import type { AppUserSubscription } from '../../../models/app-user.model.ts'
 import { useFireUXConfig } from '../../config/FireUXConfig'
 import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
@@ -25,8 +26,18 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   type AppSettingsPatch = Partial<
-    Pick<App, 'name' | 'short_name' | 'tagline' | 'description' | 'short_bio' | 'long_bio' | 'social_links'>
-  > & Partial<Record<`media.${keyof App['media']}`, string>>
+    Pick<
+      App,
+      | 'name'
+      | 'short_name'
+      | 'tagline'
+      | 'description'
+      | 'short_bio'
+      | 'long_bio'
+      | 'social_links'
+    >
+  > &
+    Partial<Record<`media.${keyof App['media']}`, string>>
 
   const updateApp = async (data: AppSettingsPatch) => {
     ensureAppId()
@@ -282,7 +293,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function setAppUserSubscription(
     uid: string,
-    subscription: 'free' | 'premium'
+    subscription: AppUserSubscription
   ) {
     await mutateAppMembership({
       action: 'set-subscription',

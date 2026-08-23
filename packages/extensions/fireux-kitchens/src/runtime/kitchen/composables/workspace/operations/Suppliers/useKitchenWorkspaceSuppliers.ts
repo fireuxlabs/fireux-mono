@@ -4,7 +4,6 @@ import type { SupplierSurface } from 'fireux-suppliers/runtime/supplier/composab
 import { useKitchenSupplierFetch } from './fetch/useKitchenSupplierFetch'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
-import { useKitchenWorkspaceSupplyWorkspace } from './useKitchenWorkspaceSupplyWorkspace'
 
 export function useKitchenWorkspaceSuppliers() {
   const { selection, runtime } = useKitchenWorkspace()
@@ -14,7 +13,6 @@ export function useKitchenWorkspaceSuppliers() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const enabled = computed(() => !runtime.isDemo.value)
   const fetchKitchenId = computed(() =>
     rootCollection.value && runtime.storageKitchenId.value
       ? runtime.storageKitchenId.value
@@ -27,25 +25,12 @@ export function useKitchenWorkspaceSuppliers() {
   } = useKitchenSupplierFetch(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
-    enabled,
   })
-  const supply = useKitchenWorkspaceSupplyWorkspace()
-  const demoSuppliers = computed<SupplierSurface[]>(() =>
-    supply.supplierScenarios.value.map((scenario) => scenario.supplier)
+  const typedSuppliers = computed(
+    () => fetchedSuppliers.value as SupplierSurface[]
   )
-  const typedSuppliers = computed<SupplierSurface[]>(() =>
-    runtime.isDemo.value
-      ? demoSuppliers.value
-      : (fetchedSuppliers.value as SupplierSurface[])
-  )
-  const suppliersPending = computed(() =>
-    runtime.isDemo.value ? supply.pending.value : fetchedSuppliersPending.value
-  )
-  const collectionPath = computed(() =>
-    runtime.isDemo.value
-      ? `demo/kitchens/${kitchenId.value}/suppliers`
-      : fetchedCollectionPath.value
-  )
+  const suppliersPending = fetchedSuppliersPending
+  const collectionPath = fetchedCollectionPath
   const page = useKitchenWorkspaceReadPage<SupplierSurface>({
     collectionName: SupplierStorage.collection,
     selectedKitchen,
@@ -64,7 +49,6 @@ export function useKitchenWorkspaceSuppliers() {
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
-    unresolvedSupplyLinks: supply.unresolvedLinks.value.map((link) => link.id),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -79,9 +63,6 @@ export function useKitchenWorkspaceSuppliers() {
     readOnly,
     canWrite,
     suppliers: workspaceSuppliers,
-    supplierScenarios: supply.supplierScenarios,
-    supplyLines: supply.supplyLines,
-    unresolvedSupplyLinks: supply.unresolvedLinks,
     count,
     pending,
     debug,

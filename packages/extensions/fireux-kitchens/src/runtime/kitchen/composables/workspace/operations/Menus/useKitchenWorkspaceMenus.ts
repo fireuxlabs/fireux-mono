@@ -13,11 +13,6 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../../menu/utils/menu-source-upload.ts'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../core/useKitchenWorkspaceDemoData'
-import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -45,14 +40,6 @@ export function useKitchenWorkspaceMenus() {
   const identity = useKitchenWorkspaceIdentity(kitchenWorkspace)
   const { place } = useKitchenWorkspacePlace(identity)
   const storageKitchenId = kitchenWorkspace.runtime.storageKitchenId
-  const demoData = useKitchenWorkspaceDemoData(kitchenWorkspace.runtime.isDemo)
-  const demoScenario = computed(() =>
-    findKitchenWorkspaceDemoScenario(
-      demoData.data.value,
-      kitchenWorkspace.selection.kitchenId.value
-    )
-  )
-  const demoMenuService = useKitchenWorkspaceDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     kitchenWorkspace.runtime.rootCollection.value && storageKitchenId.value
       ? storageKitchenId.value
@@ -84,68 +71,14 @@ export function useKitchenWorkspaceMenus() {
       databaseId: kitchenWorkspace.runtime.databaseId,
     }
   )
-  const rawMenus = computed(() =>
-    kitchenWorkspace.runtime.isDemo.value
-      ? (demoScenario.value?.menus.map((menu) => menu.kitchenMenu) ?? [])
-      : fetchedMenus.value
+  const rawMenus = fetchedMenus
+  const activeMenus = fetchedActiveMenus
+  const pending = menusPending
+  const collectionPath = fetchedCollectionPath
+  const menuSources = computed(() => sortMenuSources(sourceUploads.items.value))
+  const menuPreviewDishes = computed<Record<string, MenuPreviewDish>>(
+    () => ({})
   )
-  const activeMenus = computed(() =>
-    kitchenWorkspace.runtime.isDemo.value
-      ? (rawMenus.value ?? []).filter((menu) => menu.status !== 'archived')
-      : fetchedActiveMenus.value
-  )
-  const pending = computed(() =>
-    kitchenWorkspace.runtime.isDemo.value
-      ? demoData.pending.value
-      : menusPending.value
-  )
-  const collectionPath = computed(() =>
-    kitchenWorkspace.runtime.isDemo.value
-      ? `demo/kitchens/${kitchenWorkspace.selection.kitchenId.value}/menus`
-      : fetchedCollectionPath.value
-  )
-  const menuSources = computed(() =>
-    kitchenWorkspace.runtime.isDemo.value
-      ? []
-      : sortMenuSources(sourceUploads.items.value)
-  )
-  const menuPreviewDishes = computed(() => {
-    if (!kitchenWorkspace.runtime.isDemo.value) return {}
-
-    const previews: Record<string, MenuPreviewDish> = {}
-    const usedDishIds = new Set<string>()
-
-    for (const menu of demoScenario.value?.menus ?? []) {
-      const linkedDishIds = menu.menuSections
-        .filter(({ section }) => section.status === 'active')
-        .sort(
-          (left, right) => left.section.sort_order - right.section.sort_order
-        )
-        .flatMap(({ items }) =>
-          [...items]
-            .filter((item) => item.status === 'active')
-            .sort((left, right) => left.sort_order - right.sort_order)
-        )
-        .map((item) => text(item.dish_id))
-        .filter(Boolean)
-      const linkedDishes = linkedDishIds
-        .map((dishId) => menu.dishes.find((dish) => dish.id === dishId))
-        .filter((dish) => Boolean(dish && text(dish.image)))
-      const dish =
-        linkedDishes.find((item) => item && !usedDishIds.has(item.id)) ??
-        linkedDishes[0]
-
-      if (!dish) continue
-
-      usedDishIds.add(dish.id)
-      previews[menu.kitchenMenu.id] = {
-        name: text(dish.name) || 'Menu dish',
-        imageUrl: text(dish.image),
-      }
-    }
-
-    return previews
-  })
   const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
   const canCreateMenu = computed(
     () => kitchenWorkspace.runtime.canWrite.value && Boolean(currencyCode.value)
@@ -159,9 +92,6 @@ export function useKitchenWorkspaceMenus() {
       ? ''
       : 'Set the linked Place currency before creating menus.'
   })
-  const canManageMenuService = computed(
-    () => kitchenWorkspace.runtime.isDemo.value
-  )
   const menuConfig = computed(() => {
     const kitchen = kitchenWorkspace.selection.kitchen.value
     const menus = kitchen?.menus
@@ -249,7 +179,6 @@ export function useKitchenWorkspaceMenus() {
     storageKitchenId,
     activeKitchenAppId: kitchenWorkspace.runtime.appId,
     dataType: kitchenWorkspace.runtime.dataType,
-    isDemo: kitchenWorkspace.runtime.isDemo,
     rootCollection: kitchenWorkspace.runtime.rootCollection,
     databaseId: kitchenWorkspace.runtime.databaseId,
     readOnly: kitchenWorkspace.runtime.readOnly,
@@ -263,17 +192,11 @@ export function useKitchenWorkspaceMenus() {
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuPreviewDishes,
-    canManageMenuService,
     menuConfig,
     updateMenuConfig,
     createSpecialsMenu,
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
-    isMenuInService: (menuId: string) =>
-      !kitchenWorkspace.runtime.isDemo.value ||
-      demoMenuService.isMenuInService(menuId),
-    menuServiceMode: demoMenuService.menuMode,
-    setMenuInService: demoMenuService.setMenuInService,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu,
     menuCreateBlockedMessage,
@@ -294,11 +217,6 @@ export function useKitchenWorkspaceMenus() {
       menuSourcesPending: sourceUploads.pending.value,
       readOnly: kitchenWorkspace.runtime.readOnly.value,
       canWrite: kitchenWorkspace.runtime.canWrite.value,
-      demoMenuAvailability:
-        demoMenuService.cascade.value?.menus.map((menu) => ({
-          ...menu,
-          inService: demoMenuService.isMenuInService(menu.id),
-        })) ?? [],
     })),
   }
 }

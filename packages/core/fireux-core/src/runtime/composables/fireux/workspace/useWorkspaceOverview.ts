@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:26 CEST — Workspace Spine pass: make overview state outcome-authoritative.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../utils/string'
-import type { WorkspaceTargetOutcome } from './useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from './useWorkspaceDirectoryIndex'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 

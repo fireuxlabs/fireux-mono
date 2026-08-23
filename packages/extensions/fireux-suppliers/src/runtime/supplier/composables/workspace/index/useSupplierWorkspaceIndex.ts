@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Workspace Spine pass: compose Supplier membership outcome before selection validation and bind real target ids.
 // Concurrent edit — 2026-07-21 22:31 CEST — Workspace family alignment: consume Supplier core-owned target authority.
 import { computed } from 'vue'
-import { useWorkspaceIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import { useSupplierWorkspace } from '../core/useSupplierWorkspace'
 
 export function useSupplierWorkspaceIndex() {
@@ -34,9 +34,10 @@ export function useSupplierWorkspaceIndex() {
     source: targeting.debug.value,
   }))
 
-  return useWorkspaceIndex({
+  return useWorkspaceDirectoryIndex({
     selection,
     selectedId: computed(() => workspaceSelection.supplierId.value),
+    selectedTarget: workspaceSelection.supplier,
     runtime,
     targets: suppliers.targets,
     outcome: suppliers.outcome,

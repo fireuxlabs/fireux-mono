@@ -491,9 +491,7 @@ async function planEcosystem(session, operations, issues, blockers) {
   const appMedia = appData.media || {}
   const presentationSource = {
     name:
-      text(appData.name) ||
-      text(globalApp.name) ||
-      text(session.sourceName),
+      text(appData.name) || text(globalApp.name) || text(session.sourceName),
     description:
       (ecosystemId !== session.ecosystemKey
         ? text(session.sourceDescription)
@@ -895,7 +893,11 @@ async function planApps(session, operations, issues, blockers) {
     }
     for (const field of LEGACY_APP_FIELDS)
       if (field in data) deleteFields.push(field)
-    if (data.created && typeof data.created === 'object' && 'app_id' in data.created) {
+    if (
+      data.created &&
+      typeof data.created === 'object' &&
+      'app_id' in data.created
+    ) {
       deleteFields.push('created.app_id')
     }
     if (Object.keys(appSet).length || deleteFields.length) {
@@ -927,7 +929,7 @@ async function planApps(session, operations, issues, blockers) {
         )
         continue
       }
-      if (value.subscription !== 'free' && value.subscription !== 'premium') {
+      if (!['free', 'premium', 'business'].includes(value.subscription)) {
         blockers.push(
           issue(
             session,
@@ -1098,7 +1100,8 @@ async function verifyOperations(sessions, operations) {
     const snapshot = await currentSnapshot(sessionFor(sessions, entry), entry)
     const data = snapshot.data() || {}
     if (entry.verb === 'delete') {
-      if (snapshot.exists) failures.push({ path: snapshot.ref.path, reason: 'not-deleted' })
+      if (snapshot.exists)
+        failures.push({ path: snapshot.ref.path, reason: 'not-deleted' })
       continue
     }
     if (!snapshot.exists) {

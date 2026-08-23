@@ -1,117 +1,70 @@
-<!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: replace the Kitchen-only preview fork with shared selected-target chrome. -->
 <template>
-  <WorkspaceSelectedTarget
-    label="Kitchen"
-    :selected-id="kitchenId"
-    :description="kitchenName"
-    :target="targetCard"
-    :outcome="outcome"
-    icon="i-lucide-chef-hat"
-    empty-title="Start building your Kitchen"
-    empty-description="Ask KitchenAI a question or explore a demo. Your Kitchen can take shape as you use its tools."
-    class="kitchen-home-target"
-    :class="{ 'kitchen-home-target--fixed': source === 'live' }"
-    @clear="emit('clear')"
-  >
-    <template #selected>
-      <div class="kitchen-home-target__layout">
-        <div class="kitchen-home-target__visual">
-          <span class="kitchen-home-target__glow" aria-hidden="true" />
-          <UAvatar
-            v-if="targetCard?.imageUrl"
-            :src="targetCard.imageUrl"
-            :alt="targetCard.imageAlt || targetCard.title"
-            size="xl"
-            class="kitchen-home-target__avatar"
-            :style="mediaStyle"
-          />
+  <div class="kitchen-home-target">
+    <div class="kitchen-home-target__layout">
+      <div class="kitchen-home-target__visual">
+        <span class="kitchen-home-target__glow" aria-hidden="true" />
+        <UAvatar
+          v-if="kitchenCard?.imageUrl"
+          :src="kitchenCard.imageUrl"
+          :alt="`${displayName} logo`"
+          size="xl"
+          class="kitchen-home-target__avatar"
+          :style="mediaStyle"
+        />
 
-          <span v-else class="kitchen-home-target__icon" aria-hidden="true">
-            <UIcon
-              :name="
-                outcome === 'pending'
-                  ? 'i-lucide-loader-circle'
-                  : outcome === 'error'
-                    ? 'i-lucide-triangle-alert'
-                    : 'i-lucide-chef-hat'
-              "
-              :class="{ 'animate-spin': outcome === 'pending' }"
-            />
-          </span>
-        </div>
-
-        <div class="kitchen-home-target__copy">
-          <div class="kitchen-home-target__eyebrow">
-            <span>Current Kitchen</span>
-          </div>
-
-          <h2>{{ displayName }}</h2>
-          <p v-if="targetCard?.subtitle" class="kitchen-home-target__address">
-            {{ targetCard.subtitle }}
-          </p>
-        </div>
+        <span v-else class="kitchen-home-target__icon" aria-hidden="true">
+          <UIcon name="i-lucide-chef-hat" />
+        </span>
       </div>
-    </template>
-  </WorkspaceSelectedTarget>
+
+      <div class="kitchen-home-target__copy">
+        <div class="kitchen-home-target__eyebrow">
+          <span>Current Kitchen</span>
+        </div>
+
+        <h2>{{ displayName }}</h2>
+        <p v-if="shortAddress" class="kitchen-home-target__address">
+          {{ shortAddress }}
+        </p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
-import type { WorkspaceTargetCard } from 'fireux-core/runtime/components/Workspace/types'
-import type { KitchenFetchSource } from '../../../composables/firestore/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 
-const props = withDefaults(
-  defineProps<{
-    kitchen?: KitchenSurface | null
-    kitchenId?: string
-    source?: KitchenFetchSource
-    outcome?: WorkspaceTargetOutcome
-  }>(),
-  {
-    kitchen: null,
-    kitchenId: '',
-    source: 'live',
-    outcome: 'ready',
-  }
-)
-
-const emit = defineEmits<{
-  (event: 'clear'): void
-}>()
-
-const kitchenName = computed(() =>
-  String(props.kitchen?.name || props.kitchen?.slug || '').trim()
-)
+const props = defineProps<{ kitchen: KitchenSurface }>()
 const { workspaceTarget } = useKitchenInterface()
 const kitchenCard = computed(() => workspaceTarget(props.kitchen))
-const targetCard = computed<WorkspaceTargetCard | null>(() => {
-  const card = kitchenCard.value
-  if (!card) return null
-
-  return {
-    id: card.id,
-    title: card.name,
-    subtitle: card.shortAddress,
-    imageUrl: card.imageUrl,
-    imageAlt: `${card.name} logo`,
-    imageFit: 'contain',
-    imageBackground: card.mediaBackdropColor,
-    icon: 'i-lucide-chef-hat',
-    badges: [props.source === 'demo' ? 'Demo · Read-only' : 'Live'],
-  }
-})
-const displayName = computed(() => {
-  if (props.outcome === 'pending') return 'Loading Kitchen'
-  if (props.outcome === 'error')
-    return kitchenName.value || 'Kitchen unavailable'
-  return targetCard.value?.title || kitchenName.value || props.kitchenId
-})
+const kitchenRecord = computed(
+  () =>
+    props.kitchen as KitchenSurface & { identity?: { display_name?: string } }
+)
+const displayName = computed(
+  () =>
+    kitchenCard.value?.name ||
+    String(
+      kitchenRecord.value.identity?.display_name ||
+        props.kitchen.display_name ||
+        props.kitchen.name ||
+        props.kitchen.slug ||
+        ''
+    ).trim() ||
+    'Kitchen'
+)
+const shortAddress = computed(
+  () =>
+    kitchenCard.value?.shortAddress ||
+    String(
+      props.kitchen.short_address || props.kitchen.formatted_address || ''
+    ).trim()
+)
 const mediaStyle = computed<CSSProperties | undefined>(() =>
-  targetCard.value?.imageBackground
-    ? { backgroundColor: targetCard.value.imageBackground }
+  kitchenCard.value?.mediaBackdropColor
+    ? { backgroundColor: kitchenCard.value.mediaBackdropColor }
     : undefined
 )
 </script>
@@ -119,10 +72,6 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
 <style scoped>
 .kitchen-home-target {
   min-width: 0;
-}
-
-.kitchen-home-target--fixed :deep(.workspace-selected-target__actions) {
-  display: none;
 }
 
 .kitchen-home-target__layout {
@@ -137,8 +86,16 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 4);
   background:
-    radial-gradient(circle at 8% 20%, color-mix(in srgb, var(--ui-primary) 16%, transparent), transparent 30%),
-    linear-gradient(135deg, color-mix(in srgb, var(--ui-bg-elevated) 94%, var(--ui-primary)), var(--ui-bg));
+    radial-gradient(
+      circle at 8% 20%,
+      color-mix(in srgb, var(--ui-primary) 16%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ui-bg-elevated) 94%, var(--ui-primary)),
+      var(--ui-bg)
+    );
 }
 
 .kitchen-home-target__visual {

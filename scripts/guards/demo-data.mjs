@@ -1713,24 +1713,6 @@ export async function run(ctx) {
     }
   }
 
-  for (const file of [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Menus/useKitchenWorkspaceMenus.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Ingredients/useKitchenWorkspaceIngredients.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Recipes/useKitchenWorkspaceRecipes.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Mise/useKitchenWorkspaceMise.ts',
-  ]) {
-    const source = readFileSync(path.join(repoRoot, file), 'utf8')
-    if (!source.includes('useKitchenWorkspaceDemoMenuService')) {
-      violations.push({
-        code: 'kitchen-demo-menu-service-consumer',
-        file,
-        message:
-          'Every affected Demo Workspace operation must consume the shared Menu service projection.',
-      })
-    }
-  }
-
   const kitchenMiseModelFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/mise.ts'
   const kitchenMisePresentationFile =
@@ -1960,7 +1942,10 @@ export async function run(ctx) {
   )
   const kitchenWorkspaceDishesFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts'
-  const kitchenWorkspaceDishesPath = path.join(repoRoot, kitchenWorkspaceDishesFile)
+  const kitchenWorkspaceDishesPath = path.join(
+    repoRoot,
+    kitchenWorkspaceDishesFile
+  )
   const kitchenDishRecordsFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/index.ts'
   const kitchenDishRecordsPath = path.join(repoRoot, kitchenDishRecordsFile)
@@ -2001,7 +1986,10 @@ export async function run(ctx) {
   const kitchenWorkspaceTargetFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceTargetCollection.ts'
   const kitchenWorkspaceCorePath = path.join(repoRoot, kitchenWorkspaceCoreFile)
-  const kitchenWorkspaceTargetPath = path.join(repoRoot, kitchenWorkspaceTargetFile)
+  const kitchenWorkspaceTargetPath = path.join(
+    repoRoot,
+    kitchenWorkspaceTargetFile
+  )
   const kitchenWorkspaceCoreSource = existsSync(kitchenWorkspaceCorePath)
     ? readFileSync(kitchenWorkspaceCorePath, 'utf8')
     : ''
@@ -2013,7 +2001,8 @@ export async function run(ctx) {
       kitchenWorkspaceCoreSource
     ) ||
     !kitchenWorkspaceCoreSource.includes("workspaceData('live', kitchen)") ||
-    !kitchenWorkspaceCoreSource.includes("workspaceData('demo', kitchen)") ||
+    kitchenWorkspaceCoreSource.includes("workspaceData('demo', kitchen)") ||
+    kitchenWorkspaceCoreSource.includes('useKitchenWorkspaceDemoTargets') ||
     !kitchenWorkspaceTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
     ) ||
@@ -2023,7 +2012,7 @@ export async function run(ctx) {
       code: 'kitchen-demo-live-target',
       file: kitchenWorkspaceCoreFile,
       message:
-        'Kitchen Demo and Live targets must feed one shared family runtime without creating page-specific target providers.',
+        'The canonical Kitchen Workspace must consume only authoritative Live targets; Demo data belongs to an explicit Demo consumer.',
     })
   }
 

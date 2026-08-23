@@ -20,10 +20,7 @@
           @submit.prevent="submit"
         >
           <div class="shrink-0 border-b border-default px-6 py-4">
-            <PlaceSearchBar
-              v-model="query"
-              placeholder="Search Kitchens"
-            />
+            <PlaceSearchBar v-model="query" placeholder="Search Kitchens" />
           </div>
 
           <div class="min-h-0 flex-1 overflow-y-auto px-6 py-4">
@@ -101,10 +98,7 @@
               </button>
             </div>
 
-            <div
-              v-else
-              class="flex h-full items-center justify-center"
-            >
+            <div v-else class="flex h-full items-center justify-center">
               <div class="space-y-3 text-center">
                 <UButton
                   v-if="needsLocation"
@@ -116,15 +110,12 @@
                   :loading="locating"
                   @click="searchNearby"
                 />
-                <p v-else class="text-sm text-muted">
-                  No matching Kitchens
-                </p>
+                <p v-else class="text-sm text-muted">No matching Kitchens</p>
                 <p v-if="locationError" class="text-xs text-error">
                   {{ locationError }}
                 </p>
               </div>
             </div>
-
           </div>
 
           <div class="shrink-0 border-t border-default px-6 py-4">
@@ -190,7 +181,6 @@ import {
   type PlaceSearchCell,
 } from 'fireux-places/runtime/place/composables/usePlaceSearch'
 import { useKitchenCreate } from '../../composables/firestore/mutations/useKitchenCreate'
-import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 
 type SelectedPlace = {
   placeId: string
@@ -202,8 +192,10 @@ type SelectedPlace = {
 const workspaceRoot = useWorkspace('kitchen')
 const canCreate = computed(() => workspaceRoot.canCreateTarget())
 const { createKitchen } = useKitchenCreate()
-const kitchenWorkspace = useKitchenWorkspace()
 const toast = useToast()
+const emit = defineEmits<{
+  (event: 'created', id: string): void
+}>()
 const nearbyLocation = ref<PlaceSearchLocation | null>(null)
 const { query, results, isSearching, refresh } = usePlaceSearch({
   debugLabel: 'kitchens',
@@ -218,8 +210,7 @@ const locating = ref(false)
 const locationError = ref('')
 const working = ref(false)
 const needsLocation = computed(
-  () =>
-    !nearbyLocation.value && query.value.trim().split(/\s+/).length === 1
+  () => !nearbyLocation.value && query.value.trim().split(/\s+/).length === 1
 )
 
 onMounted(() => {
@@ -265,13 +256,12 @@ async function resolveBrowserLocation(refreshResults: boolean) {
 
   locating.value = true
   try {
-    const position = await new Promise<GeolocationPosition>(
-      (resolve, reject) =>
-        window.navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: false,
-          maximumAge: 300_000,
-          timeout: 8_000,
-        })
+    const position = await new Promise<GeolocationPosition>((resolve, reject) =>
+      window.navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: false,
+        maximumAge: 300_000,
+        timeout: 8_000,
+      })
     )
     nearbyLocation.value = {
       lat: position.coords.latitude,
@@ -335,8 +325,7 @@ async function submit() {
     const result = await createKitchen(
       selection.value ? { place_id: selection.value.placeId } : { name }
     )
-    await kitchenWorkspace.targets.refresh()
-    kitchenWorkspace.actions.selectKitchen(result.id)
+    emit('created', result.id)
     const createdName = selection.value?.name || name || 'Kitchen'
     clearDraft()
     toast.add({ title: `${createdName} created`, color: 'success' })

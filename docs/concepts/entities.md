@@ -53,15 +53,15 @@ Promote it only when independent behavior proves the need.
 
 Every declaration made with `defineFireuxEntity()` answers these axes:
 
-| Axis         | Current vocabulary                                                                                            | Question answered                              |
-| ------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `kind`       | entity, record, shape, primitive, bucket, to-confirm                                                          | What sort of concept is it?                    |
-| `family`     | one or more named FireUX families                                                                             | Which siblings should be compared?             |
-| `identity`   | root, parent-scoped, none, to-confirm                                                                         | Where does canonical identity live?            |
-| `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent   | Who owns lifecycle truth?                      |
-| `appSupport` | none, membership record, profile delta, to-confirm                                                            | What genuine App-owned support may accompany it? |
-| `workspace`  | boolean                                                                                                       | Is it a Workspace Entity?                      |
-| `parent`     | optional Entity name                                                                                          | Which Entity owns a parent-scoped declaration? |
+| Axis         | Current vocabulary                                                                                          | Question answered                                |
+| ------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `kind`       | entity, record, shape, primitive, bucket, to-confirm                                                        | What sort of concept is it?                      |
+| `family`     | one or more named FireUX families                                                                           | Which siblings should be compared?               |
+| `identity`   | root, parent-scoped, none, to-confirm                                                                       | Where does canonical identity live?              |
+| `authority`  | App database, domain database, identity database, ecosystem identity database, FireUX control plane, parent | Who owns lifecycle truth?                        |
+| `appSupport` | none, membership record, profile delta, to-confirm                                                          | What genuine App-owned support may accompany it? |
+| `workspace`  | boolean                                                                                                     | Is it a Workspace Entity?                        |
+| `parent`     | optional Entity name                                                                                        | Which Entity owns a parent-scoped declaration?   |
 
 A root Entity document is its canonical readable Entity. Information that
 cannot be returned with that Entity must live physically under its honest
@@ -72,25 +72,25 @@ Entity declaration does not carry a second read-classification axis.
 
 The current declared Entities are:
 
-| Entity           | Family                     | Identity       | Authority                   | App support       | Workspace |
-| ---------------- | -------------------------- | -------------- | --------------------------- | ----------------- | --------- |
-| App              | core, system               | root           | App database                | none              | no        |
-| Ecosystem        | system                     | root           | Ecosystem identity database | none              | no        |
-| User             | core, identity             | root           | identity database           | membership record | no        |
-| Project          | system, workspace entity   | root           | FireUX control plane        | none              | yes       |
-| Job              | content                    | root           | domain database             | none              | no        |
-| Place            | place                      | root           | domain database             | none              | no        |
-| MarketplaceStore | commerce, workspace entity | root           | domain database             | none              | yes       |
-| Kitchen          | kitchen, workspace entity  | root           | domain database             | none              | yes       |
-| KitchenMenu      | menu, kitchen              | Kitchen-scoped | parent                      | none              | no        |
-| Recipe           | kitchen                    | Kitchen-scoped | parent                      | none              | no        |
-| KitchenPrepItem  | kitchen                    | Kitchen-scoped | parent                      | none              | no        |
-| Dish             | kitchen, menu              | Kitchen-scoped | parent                      | none              | no        |
-| KitchenOrder     | kitchen, ordering          | Kitchen-scoped | parent                      | none              | no        |
-| Menu             | menu                       | root           | domain database             | none              | no        |
-| Supplier         | supplier, workspace entity | root           | domain database             | none              | yes       |
-| Portfolio        | portfolio, workspace entity| root           | domain database             | none              | yes       |
-| Property         | property, workspace entity | root           | domain database             | none              | yes       |
+| Entity           | Family                      | Identity       | Authority                   | App support       | Workspace |
+| ---------------- | --------------------------- | -------------- | --------------------------- | ----------------- | --------- |
+| App              | core, system                | root           | App database                | none              | no        |
+| Ecosystem        | system                      | root           | Ecosystem identity database | none              | no        |
+| User             | core, identity              | root           | identity database           | membership record | no        |
+| Project          | system, workspace entity    | root           | FireUX control plane        | none              | yes       |
+| Job              | content                     | root           | domain database             | none              | no        |
+| Place            | place                       | root           | domain database             | none              | no        |
+| MarketplaceStore | commerce, workspace entity  | root           | domain database             | none              | yes       |
+| Kitchen          | kitchen, workspace entity   | root           | domain database             | none              | yes       |
+| KitchenMenu      | menu, kitchen               | Kitchen-scoped | parent                      | none              | no        |
+| Recipe           | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
+| KitchenPrepItem  | kitchen                     | Kitchen-scoped | parent                      | none              | no        |
+| Dish             | kitchen, menu               | Kitchen-scoped | parent                      | none              | no        |
+| KitchenOrder     | kitchen, ordering           | Kitchen-scoped | parent                      | none              | no        |
+| Menu             | menu                        | root           | domain database             | none              | no        |
+| Supplier         | supplier, workspace entity  | root           | domain database             | none              | yes       |
+| Portfolio        | portfolio, workspace entity | root           | domain database             | none              | yes       |
+| Property         | property, workspace entity  | root           | domain database             | none              | yes       |
 
 The current declared Records are:
 
@@ -159,10 +159,11 @@ replaces server or Rules authority.
 Free is the effective product default when no AppUser exists. This lets public
 Workspace surfaces present and enforce the Free experience without inventing
 identity or membership: `hasMembership` remains false, role remains absent,
-and only a canonical AppUser with `subscription: premium` enables Premium.
+Premium and Business subscriptions enable Premium capabilities, while only
+Business enables multi-Workspace ownership.
 
 AppUser stores App governance (`role: user | admin | dev`), subscription
-(`free | premium`), and onboarding lifecycle separately. A stored Dev role has
+(`free | premium | business`), and onboarding lifecycle separately. A stored Dev role has
 developer authority and explicitly intended Admin capabilities without
 implying Premium. Empty profile and
 Workspace-target indexes may be absent at rest; readers normalize them without
@@ -329,17 +330,17 @@ Directory and Entity Detail family maps.
 
 ## Delta register
 
-| Difference                                                     | State      | Required direction                                                                                                                                                                         |
-| -------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Existing domain concepts exceed the executable matrix          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                             |
-| Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                        |
-| Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth |
-| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration       |
-| Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                        |
-| Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                 |
+| Difference                                                     | State      | Required direction                                                                                                                                                                                   |
+| -------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Existing domain concepts exceed the executable matrix          | `drift`    | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                                                       |
+| Place plus same-id Company role                                | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and Company reads return that canonical Place                                                                  |
+| Place read transport                                           | `accepted` | The server exact read returns `{ place: Place }`, then the browser exact-subscribes to that record; index reads page `Place[]`; one `normalizePlace` utility completes sparse stored truth           |
+| Kitchen root + Place + Team composition                        | `accepted` | Every Kitchen root contains only id, slug, status, and visibility; the same-id Place owns location identity, Team owns access, and capability records own operational configuration                  |
+| Recipe and Dish Kitchen ownership                              | `accepted` | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                                                  |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted` | KitchenOrder owns lifecycle; KitchenSale is its immutable result; User-owned Customer links point to Orders without duplicating status, while guest details remain on Order                          |
 | Product root plus ProductPrice and Supplier Item relationships | `accepted` | Product owns commercial identity, App provenance and publication; ProductPrice children own pricing; Supplier Item is a Supplier-owned offer with required `product_id` and optional `ingredient_id` |
-| Supplier location chain                                        | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                        |
-| Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                      |
+| Supplier location chain                                        | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`.                                  |
+| Directory publication implementation history lived in this map | `drift`    | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family                                                |
 
 ## Alignment roadmap
 

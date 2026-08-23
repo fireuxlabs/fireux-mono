@@ -30,10 +30,10 @@ const relativeFiles = {
   portfolioWriter:
     'packages/extensions/fireux-properties/src/runtime/portfolio/server/index/onboarding/onboarding.ts',
   blankWriter: 'projects/fireux/fireux-blank/server/utils/blank/onboarding.ts',
-  kitchenTargetModel:
+  kitchenWorkspaceModel:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/kitchen-index.model.ts',
-  kitchenTargetApi:
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/targets.ts',
+  kitchenWorkspaceApi:
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/workspace.ts',
   placeAuthority:
     'packages/extensions/fireux-places/src/runtime/place/server/identity/mutation-authority.ts',
   kitchenThemeEditor:
@@ -96,9 +96,15 @@ export async function run(ctx) {
     )
   }
   if (!/export type Kitchen\s*=\s*\{/.test(source.kitchen)) {
-    violations.push(`${relativeFiles.kitchen} must export the plain Kitchen model`)
+    violations.push(
+      `${relativeFiles.kitchen} must export the plain Kitchen model`
+    )
   }
-  if (/defineFireuxEntity|appSupport|management_mode|management_app_id/.test(source.kitchen)) {
+  if (
+    /defineFireuxEntity|appSupport|management_mode|management_app_id/.test(
+      source.kitchen
+    )
+  ) {
     violations.push(
       `${relativeFiles.kitchen} must remain independent of generic Entity/App management metadata`
     )
@@ -192,18 +198,20 @@ export async function run(ctx) {
     )
   }
 
-  if (/FireuxEntityManagement|\bmanagement\s*:/.test(source.kitchenTargetModel)) {
+  if (
+    /FireuxEntityManagement|\bmanagement\s*:/.test(source.kitchenWorkspaceModel)
+  ) {
     violations.push(
-      `${relativeFiles.kitchenTargetModel} must not project Kitchen management`
+      `${relativeFiles.kitchenWorkspaceModel} must not project Kitchen management`
     )
   }
   if (
     /readFireuxEntityManagement|resolveFireuxEntityManagementAppId|\bmanagement\s*:/.test(
-      source.kitchenTargetApi
+      source.kitchenWorkspaceApi
     )
   ) {
     violations.push(
-      `${relativeFiles.kitchenTargetApi} must resolve Kitchen targets from Team authority without App management`
+      `${relativeFiles.kitchenWorkspaceApi} must resolve Kitchens from Team authority without App management`
     )
   }
   for (const key of ['placeAuthority']) {

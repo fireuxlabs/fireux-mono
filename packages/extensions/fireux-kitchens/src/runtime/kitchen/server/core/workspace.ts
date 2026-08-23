@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: project authorized roots without browser Firestore reads.
+// Concurrent edit — 2026-08-23 CEST — Kitchen Workspace reset: read Kitchens directly from active Team membership.
 // Concurrent edit — 2026-07-22 12:35 CEST — Canonical Kitchen theme write: project resolved style and server-authorized write capability.
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -7,14 +7,15 @@ import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
-  type KitchenWorkspaceTargetItem,
-  type KitchenWorkspaceTargetsResponse,
+  type KitchenWorkspaceCurrentResponse,
+  type KitchenWorkspaceKitchen,
+  type KitchenWorkspaceKitchensResponse,
 } from '../../models/kitchen-index.model.ts'
 import type { KitchenOrdersConfig } from '../../models/kitchen-configuration.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import { readKitchenFulfilment } from './fulfilment.ts'
 import { readKitchenSproochliAttachment } from './sproochli-attachment.ts'
-import { resolveKitchenWorkspaceTargetIds } from './workspace-targets.ts'
+import { readUserKitchenIds } from './user-kitchens.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import {
   readKitchenMenusConfig,
@@ -40,14 +41,14 @@ const optionalNumber = (value: unknown) => {
   return Number.isFinite(number) ? number : undefined
 }
 
-function projectKitchenTarget(input: {
+function projectKitchen(input: {
   id: string
   canWrite: boolean
   fulfilment: KitchenFulfilment
-  sproochli: KitchenWorkspaceTargetItem['sproochli']
+  sproochli: KitchenWorkspaceKitchen['sproochli']
   root: StoredRecord
   place: StoredRecord | null
-}): KitchenWorkspaceTargetItem {
+}): KitchenWorkspaceKitchen {
   const placeData = input.place || {}
   const place = readPlacePresentation(placeData)
   const resolvedIdentity = menuKitchenIdentity(input.root, placeData)
@@ -135,86 +136,91 @@ function projectKitchenTarget(input: {
   }
 }
 
-export async function readKitchenWorkspaceTargets(
-  event: H3Event
-): Promise<KitchenWorkspaceTargetsResponse> {
+async function readKitchen(
+  uid: string,
+  id: string
+): Promise<KitchenWorkspaceKitchen> {
+  if (!isFirestoreDocumentId(id)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid Kitchen ID.' })
+  }
+  const db = getRuntimeFirestore()
+  const rootRef = db.doc(`kitchens/${id}`)
+  const teamRef = db.doc(`kitchens/${id}/team/${uid}`)
+  const placeRef = db.doc(`places/${id}`)
+  const [rootSnapshot, teamSnapshot, placeSnapshot] = await db.getAll(
+    rootRef,
+    teamRef,
+    placeRef
+  )
+
+  if (!rootSnapshot.exists) {
+    conflict(`Kitchen ${id} is missing its canonical root.`)
+  }
+  if (!teamSnapshot.exists) {
+    conflict(`Kitchen ${id} is missing its Team membership.`)
+  }
+
+  const root = rootSnapshot.data() || {}
+  const member = teamSnapshot.data() || {}
+  const teamRole = text(member.role)
+  if (
+    text(member.user_id) !== uid ||
+    member.status !== 'active' ||
+    !['owner', 'operator', 'member'].includes(teamRole)
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: `Kitchen ${id} requires active Team membership.`,
+    })
+  }
+
+  return projectKitchen({
+    id,
+    canWrite: teamRole === 'owner' || teamRole === 'operator',
+    fulfilment: await readKitchenFulfilment(db, id),
+    sproochli: await readKitchenSproochliAttachment(db, id, root),
+    root,
+    place: placeSnapshot.exists ? placeSnapshot.data() || {} : null,
+  })
+}
+
+async function readUserKitchens(event: H3Event) {
   const { uid } = await requireFirebaseBearerUser(
     event,
-    'A Firebase identity is required to view Kitchen targets.',
+    'A Firebase identity is required to view Kitchens.',
     { allowAnonymous: true }
   )
-  const db = getRuntimeFirestore()
+  const kitchenIds = await readUserKitchenIds(uid)
+  return Promise.all(kitchenIds.map((id) => readKitchen(uid, id)))
+}
 
-  const indexedTargetIds = await resolveKitchenWorkspaceTargetIds(uid)
-  if (!indexedTargetIds.length) {
-    return { ok: true, family: 'kitchen', items: [] }
+export async function readKitchenWorkspaceKitchens(
+  event: H3Event
+): Promise<KitchenWorkspaceKitchensResponse> {
+  return {
+    ok: true,
+    family: 'kitchen',
+    items: await readUserKitchens(event),
   }
+}
 
-  const rootSnapshots = await db.getAll(
-    ...indexedTargetIds.map((id) => db.doc(`kitchens/${id}`))
+export async function readKitchenWorkspaceCurrent(
+  event: H3Event,
+  requestedId = ''
+): Promise<KitchenWorkspaceCurrentResponse> {
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'A Firebase identity is required to view a Kitchen.',
+    { allowAnonymous: true }
   )
-  const roots = new Map(
-    rootSnapshots.map((snapshot) => [snapshot.id, snapshot])
-  )
-  const relatedRefs = new Map<string, ReturnType<typeof db.doc>>()
-
-  for (const id of indexedTargetIds) {
-    const rootSnapshot = roots.get(id)
-    if (!rootSnapshot?.exists) {
-      conflict(`Kitchen target ${id} is missing its canonical root.`)
-    }
+  const kitchenIds = await readUserKitchenIds(uid)
+  const kitchenId =
+    requestedId && kitchenIds.includes(requestedId)
+      ? requestedId
+      : (kitchenIds[0] ?? '')
+  return {
+    ok: true,
+    family: 'kitchen',
+    current: kitchenId ? await readKitchen(uid, kitchenId) : null,
   }
-
-  const targetIds = indexedTargetIds
-  for (const id of targetIds) {
-    for (const ref of [
-      db.doc(`kitchens/${id}/team/${uid}`),
-      db.doc(`${'places'}/${id}`),
-    ]) {
-      relatedRefs.set(ref.path, ref)
-    }
-  }
-
-  const relatedSnapshots = await db.getAll(...relatedRefs.values())
-  const related = new Map(
-    relatedSnapshots.map((snapshot) => [snapshot.ref.path, snapshot])
-  )
-  const items = await Promise.all(
-    targetIds.map(async (id) => {
-      const rootSnapshot = roots.get(id)!
-      const root = rootSnapshot.data() || {}
-      const teamPath = `kitchens/${id}/team/${uid}`
-      const placeId = id
-      const placePath = `${'places'}/${placeId}`
-      const teamSnapshot = related.get(teamPath)
-      const placeSnapshot = related.get(placePath)
-
-      if (!teamSnapshot?.exists) {
-        conflict(`Kitchen target ${id} is missing its Team membership.`)
-      }
-      const member = teamSnapshot.data() || {}
-      const teamRole = text(member.role)
-      if (
-        text(member.user_id) !== uid ||
-        member.status !== 'active' ||
-        !['owner', 'operator', 'member'].includes(teamRole)
-      ) {
-        throw createError({
-          statusCode: 403,
-          statusMessage: `Kitchen target ${id} requires active Team membership.`,
-        })
-      }
-
-      return projectKitchenTarget({
-        id,
-        canWrite: teamRole === 'owner' || teamRole === 'operator',
-        fulfilment: await readKitchenFulfilment(db, id),
-        sproochli: await readKitchenSproochliAttachment(db, id, root),
-        root,
-        place: placeSnapshot?.exists ? placeSnapshot.data() || {} : null,
-      })
-    })
-  )
-
-  return { ok: true, family: 'kitchen', items }
 }

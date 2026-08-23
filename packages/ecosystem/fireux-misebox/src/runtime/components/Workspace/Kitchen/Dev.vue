@@ -1,109 +1,125 @@
 <template>
-  <div class="space-y-4">
-    <UCard class="kitchen-ai-development" variant="subtle">
-      <template #header>
-        <div class="space-y-1">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h2 class="font-semibold text-highlighted">
-              Kitchen AI development
-            </h2>
-            <UBadge color="neutral" variant="outline">Development</UBadge>
-          </div>
-          <p class="text-sm text-toned">
-            Not connected → Handshake → Connected → Complete. Registration
-            proves routing; connection requires approved tools; completion also
-            requires authoritative evidence, UI, approvals, and verification.
-          </p>
+  <div class="kitchen-development">
+    <USeparator label="Development" />
 
-          <div class="flex flex-wrap gap-2 pt-2">
-            <UBadge
-              v-for="summary in statusSummaries"
-              :key="summary.status"
-              :color="summary.presentation.color"
-              variant="subtle"
-              :class="summary.presentation.badgeClass"
+    <details class="kitchen-development__disclosure">
+      <summary class="kitchen-development__summary">
+        <span class="kitchen-development__summary-copy">
+          <strong>Kitchen development</strong>
+          <small>Capability connections and workspace debug</small>
+        </span>
+        <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
+      </summary>
+
+      <div class="kitchen-development__body">
+        <UCard class="kitchen-ai-development" variant="subtle">
+          <template #header>
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h2 class="font-semibold text-highlighted">
+                  Kitchen AI development
+                </h2>
+                <UBadge color="neutral" variant="outline">Development</UBadge>
+              </div>
+              <p class="text-sm text-toned">
+                Not connected → Handshake → Connected → Complete. Registration
+                proves routing; connection requires approved tools; completion
+                also requires authoritative evidence, UI, approvals, and
+                verification.
+              </p>
+
+              <div class="flex flex-wrap gap-2 pt-2">
+                <UBadge
+                  v-for="summary in statusSummaries"
+                  :key="summary.status"
+                  :color="summary.presentation.color"
+                  variant="subtle"
+                  :class="summary.presentation.badgeClass"
+                >
+                  {{ summary.count }}
+                  {{ summary.presentation.label.toLowerCase() }}
+                </UBadge>
+              </div>
+            </div>
+          </template>
+
+          <ul class="divide-y divide-default">
+            <li
+              v-for="item in capabilityAIs"
+              :key="item.key"
+              class="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
             >
-              {{ summary.count }} {{ summary.presentation.label.toLowerCase() }}
-            </UBadge>
-          </div>
-        </div>
-      </template>
+              <UIcon
+                :name="item.presentation.icon"
+                class="size-5 shrink-0"
+                :class="item.presentation.iconClass"
+                aria-hidden="true"
+              />
 
-      <ul class="divide-y divide-default">
-        <li
-          v-for="item in capabilityAIs"
-          :key="item.key"
-          class="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-        >
-          <UIcon
-            :name="item.presentation.icon"
-            class="size-5 shrink-0"
-            :class="item.presentation.iconClass"
-            aria-hidden="true"
-          />
+              <div class="min-w-0 flex-1">
+                <ULink
+                  :to="`${item.to}/search-demand`"
+                  class="font-medium text-highlighted hover:text-primary"
+                >
+                  {{ item.name }}
+                </ULink>
+                <p class="text-xs text-muted">{{ item.group }}</p>
+                <p class="text-xs text-dimmed">
+                  {{ item.availableToolCount }} available ·
+                  {{ item.requestedToolCount }} planned
+                </p>
+              </div>
 
-          <div class="min-w-0 flex-1">
-            <ULink
-              :to="`${item.to}/search-demand`"
-              class="font-medium text-highlighted hover:text-primary"
-            >
-              {{ item.name }}
-            </ULink>
-            <p class="text-xs text-muted">{{ item.group }}</p>
-            <p class="text-xs text-dimmed">
-              {{ item.availableToolCount }} available ·
-              {{ item.requestedToolCount }} planned
-            </p>
-          </div>
+              <UBadge
+                :color="item.presentation.color"
+                variant="subtle"
+                :class="item.presentation.badgeClass"
+              >
+                {{ item.presentation.label }}
+              </UBadge>
+            </li>
+          </ul>
+        </UCard>
 
-          <UBadge
-            :color="item.presentation.color"
-            variant="subtle"
-            :class="item.presentation.badgeClass"
-          >
-            {{ item.presentation.label }}
-          </UBadge>
-        </li>
-      </ul>
-    </UCard>
-
-    <DevDebugPanel
-      title="Kitchen workspace debug"
-      scope="workspace"
-      object-origin="fetched"
-      include-route
-      context="Current identity, Kitchen selection, and workspace runtime"
-      :objects="{
-        firebaseIdentity,
-        user: currentUser,
-        appUser: appUser ?? null,
-        selectedKitchen: kitchenSelection.kitchen,
-        kitchens: kitchenSections.targets.collection,
-      }"
-      :derived="combinedDebug"
-      :default-open="false"
-      :hide-when-empty="false"
-    />
-
-    <details class="kitchen-development-targets">
-      <summary>Developer Kitchen switcher</summary>
-
-      <div class="kitchen-development-targets__body">
-        <p class="text-sm text-muted">
-          Switch operational context while testing the single-Kitchen Free
-          experience.
-        </p>
-
-        <WorkspaceKitchenIndexTargets
-          v-if="kitchenSections.targets.show"
-          :collection="kitchenSections.targets.collection"
-          :demo-collection="kitchenSections.demoTargets.collection"
-          :outcome="kitchenSections.targets.outcome"
-          :demo-outcome="kitchenSections.demoTargets.outcome"
-          :selected-id="kitchenSelection.kitchenId"
-          :selected-source="kitchenSelection.kitchenSource"
-          @select="kitchenActions.selectTarget"
+        <DevDebugPanel
+          title="Kitchen workspace debug"
+          scope="workspace"
+          object-origin="fetched"
+          include-route
+          context="Current identity, Kitchen selection, and workspace runtime"
+          :objects="{
+            firebaseIdentity,
+            user: currentUser,
+            appUser: appUser ?? null,
+            selectedKitchen: kitchenSelection.kitchen,
+            kitchens: kitchenSections.targets.collection,
+          }"
+          :derived="combinedDebug"
+          :default-open="false"
+          :hide-when-empty="false"
         />
+
+        <details class="kitchen-development-targets">
+          <summary>Developer Kitchen switcher</summary>
+
+          <div class="kitchen-development-targets__body">
+            <p class="text-sm text-muted">
+              Switch operational context while testing the single-Kitchen Free
+              experience.
+            </p>
+
+            <WorkspaceKitchenIndexTargetSection
+              title="Live kitchens"
+              description="Switch the live Kitchen used for development."
+              source="live"
+              :collection="kitchenSections.targets.collection"
+              :outcome="kitchenSections.targets.outcome"
+              :selected-id="kitchenSelection.kitchenId"
+              :selected-source="kitchenSelection.kitchenSource"
+              @select="selectDeveloperKitchen"
+            />
+          </div>
+        </details>
       </div>
     </details>
   </div>
@@ -115,14 +131,11 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useWorkspaceNav } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceNav'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspace'
 import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 
 const workspaceNav = useWorkspaceNav()
-const {
-  currentUser: firebaseUser,
-  hasAuthState,
-  lastBindError,
-} = useAuth()
+const { currentUser: firebaseUser, hasAuthState, lastBindError } = useAuth()
 const { currentUser, appUser, coreOutcome, appOutcome } = useUser()
 const firebaseIdentity = computed(() => {
   const identity = firebaseUser.value
@@ -149,13 +162,17 @@ const userDebugDerived = computed(() => ({
 const {
   selection: kitchenSelection,
   sections: kitchenSections,
-  actions: kitchenActions,
   debug: kitchenDebug,
 } = useKitchenWorkspaceIndex()
+const kitchenWorkspace = useKitchenWorkspace()
 const combinedDebug = computed(() => ({
   ...userDebugDerived.value,
   ...kitchenDebug.value,
 }))
+
+function selectDeveloperKitchen(id: string) {
+  kitchenWorkspace.actions.selectKitchen(id)
+}
 
 type CapabilityAIStatus =
   | 'not-connected'
@@ -209,8 +226,7 @@ const capabilityAIs = computed(() =>
     .map((item) => {
       const key = item.key || item.to
       const agent = capabilityAgentByPath.get(item.to)
-      const status: CapabilityAIStatus =
-        agent?.maturity || 'not-connected'
+      const status: CapabilityAIStatus = agent?.maturity || 'not-connected'
       return {
         key,
         name: toCapabilityAIName(item.label, item.to),
@@ -224,8 +240,7 @@ const capabilityAIs = computed(() =>
           ).length || 0,
         requestedToolCount:
           agent?.toolCatalogue?.filter(
-            (tool) =>
-              tool.status === 'requested' || tool.status === 'building'
+            (tool) => tool.status === 'requested' || tool.status === 'building'
           ).length || 0,
         presentation: statusPresentation[status],
       }
@@ -233,13 +248,14 @@ const capabilityAIs = computed(() =>
 )
 
 const statusSummaries = computed(() =>
-  (
-    ['not-connected', 'handshake', 'connected', 'complete'] as const
-  ).map((status) => ({
-    status,
-    count: capabilityAIs.value.filter((item) => item.status === status).length,
-    presentation: statusPresentation[status],
-  }))
+  (['not-connected', 'handshake', 'connected', 'complete'] as const).map(
+    (status) => ({
+      status,
+      count: capabilityAIs.value.filter((item) => item.status === status)
+        .length,
+      presentation: statusPresentation[status],
+    })
+  )
 )
 
 function toCapabilityAIName(label: string, path: string): string {
@@ -250,6 +266,61 @@ function toCapabilityAIName(label: string, path: string): string {
 </script>
 
 <style scoped>
+.kitchen-development {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+}
+
+.kitchen-development__disclosure {
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-bg-elevated);
+}
+
+.kitchen-development__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
+  color: var(--ui-text-highlighted);
+  cursor: pointer;
+  list-style: none;
+}
+
+.kitchen-development__summary::-webkit-details-marker {
+  display: none;
+}
+
+.kitchen-development__summary-copy {
+  display: grid;
+  gap: calc(var(--spacing) * 1);
+}
+
+.kitchen-development__summary-copy strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.kitchen-development__summary-copy small {
+  color: var(--ui-text-muted);
+}
+
+.kitchen-development__summary > svg {
+  flex: none;
+  transition: transform 160ms ease;
+}
+
+.kitchen-development__disclosure[open] > .kitchen-development__summary > svg {
+  transform: rotate(180deg);
+}
+
+.kitchen-development__body {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+  padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4);
+}
+
 .kitchen-ai-development {
   --misebox-ai-handshake: light-dark(
     oklch(49.6% 0.265 301.924deg),

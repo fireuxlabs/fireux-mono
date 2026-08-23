@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Workspace Spine pass: compose Property membership outcome before selection validation and bind real target ids.
 // Concurrent edit — 2026-07-21 22:31 CEST — Workspace family alignment: consume Property core-owned target authority.
 import { computed } from 'vue'
-import { useWorkspaceIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
 export function usePropertyWorkspaceIndex() {
   const {
@@ -33,9 +33,10 @@ export function usePropertyWorkspaceIndex() {
     source: targeting.debug.value,
   }))
 
-  return useWorkspaceIndex({
+  return useWorkspaceDirectoryIndex({
     selection,
     selectedId: computed(() => workspaceSelection.propertyId.value),
+    selectedTarget: workspaceSelection.property,
     runtime,
     targets: properties.targets,
     outcome: properties.outcome,

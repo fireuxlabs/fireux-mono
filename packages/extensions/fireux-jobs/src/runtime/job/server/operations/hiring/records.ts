@@ -101,7 +101,7 @@ export function assertCurrentAppMembership(
 export function hasPremiumCapacity(snapshot: DocumentSnapshot): boolean {
   if (!isCurrentMembership(snapshot)) return false
   const data = snapshot.data()
-  return data?.subscription === 'premium'
+  return data?.subscription === 'premium' || data?.subscription === 'business'
 }
 
 export function applicationDocumentId(

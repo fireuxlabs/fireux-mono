@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Workspace Spine pass: compose Portfolio membership outcome before selection validation and bind real target ids.
 // Concurrent edit — 2026-07-21 22:31 CEST — Workspace family alignment: consume Portfolio core-owned target authority.
 import { computed } from 'vue'
-import { useWorkspaceIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import { usePortfolioWorkspace } from '../core/usePortfolioWorkspace'
 
 export function usePortfolioWorkspaceIndex() {
@@ -34,9 +34,10 @@ export function usePortfolioWorkspaceIndex() {
     source: targeting.debug.value,
   }))
 
-  return useWorkspaceIndex({
+  return useWorkspaceDirectoryIndex({
     selection,
     selectedId: computed(() => workspaceSelection.portfolioId.value),
+    selectedTarget: workspaceSelection.portfolio,
     runtime,
     targets: portfolios.targets,
     outcome: portfolios.outcome,

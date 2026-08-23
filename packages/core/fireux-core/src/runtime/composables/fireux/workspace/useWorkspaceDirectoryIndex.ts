@@ -1,9 +1,8 @@
-// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: require one authoritative target outcome.
-// Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: gate target auto-selection on authoritative ready state.
+// Bounded migration seam for older collection-style Workspace indexes.
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../utils/string'
 
-type ValueRef<T> = Ref<T> | ComputedRef<T>
+type ValueRef<T> = T | Ref<T> | ComputedRef<T>
 
 type WorkspaceIndexDebug = Record<string, unknown>
 
@@ -14,7 +13,7 @@ export type WorkspaceTargetOutcome =
   | 'empty'
   | 'ready'
 
-export function resolveWorkspaceSelectedTargetOutcome(input: {
+export function resolveWorkspaceDirectorySelectionOutcome(input: {
   selectedId?: unknown
   selectedTarget?: unknown
   targetOutcome: WorkspaceTargetOutcome
@@ -24,7 +23,7 @@ export function resolveWorkspaceSelectedTargetOutcome(input: {
   return input.targetOutcome === 'error' ? 'error' : 'pending'
 }
 
-type UseWorkspaceIndexOptions<
+type UseWorkspaceDirectoryIndexOptions<
   TTarget,
   TSelection extends Record<string, unknown>,
   TRuntime extends Record<string, unknown>,
@@ -34,19 +33,20 @@ type UseWorkspaceIndexOptions<
   showTargets?: ValueRef<boolean | null | undefined>
   selection?: ValueRef<TSelection>
   selectedId?: ValueRef<string | null | undefined>
+  selectedTarget?: ValueRef<TTarget | null | undefined>
   autoSelectTargetId?: ValueRef<string | null | undefined>
   getTargetId: (target: TTarget) => string
   runtime?: ValueRef<TRuntime>
-  selectTarget: (id: string) => void
+  selectTarget: (id: string, source?: string) => void
   clearSelection?: () => void
   debug?: ValueRef<WorkspaceIndexDebug | null | undefined>
 }
 
-export function useWorkspaceIndex<
+export function useWorkspaceDirectoryIndex<
   TTarget,
   TSelection extends Record<string, unknown> = Record<string, unknown>,
   TRuntime extends Record<string, unknown> = Record<string, unknown>,
->(options: UseWorkspaceIndexOptions<TTarget, TSelection, TRuntime>) {
+>(options: UseWorkspaceDirectoryIndexOptions<TTarget, TSelection, TRuntime>) {
   const targetItems = computed<TTarget[]>(() => {
     const targets = options.targets ? unref(options.targets) : []
     return Array.isArray(targets)
@@ -62,6 +62,22 @@ export function useWorkspaceIndex<
   const targetOutcome = computed<WorkspaceTargetOutcome>(() =>
     unref(options.outcome)
   )
+  const showTargets = computed(() =>
+    options.showTargets ? Boolean(unref(options.showTargets)) : true
+  )
+  const selectedOutcome = computed(() =>
+    resolveWorkspaceDirectorySelectionOutcome({
+      selectedId: options.selectedId ? unref(options.selectedId) : '',
+      selectedTarget: options.selectedTarget
+        ? unref(options.selectedTarget)
+        : null,
+      targetOutcome: targetOutcome.value,
+    })
+  )
+  const resolvedSelection = computed(() => ({
+    ...selection.value,
+    outcome: selectedOutcome.value,
+  }))
   const targetIds = computed(
     () =>
       new Set(
@@ -72,7 +88,7 @@ export function useWorkspaceIndex<
   )
   const sections = computed(() => ({
     targets: {
-      show: options.showTargets ? Boolean(unref(options.showTargets)) : true,
+      show: showTargets.value,
       collection: targetItems.value,
       outcome: targetOutcome.value,
     },
@@ -82,8 +98,9 @@ export function useWorkspaceIndex<
   }))
   const debug = computed(() => ({
     ...(options.debug ? (unref(options.debug) ?? {}) : {}),
+    selectedOutcome: selectedOutcome.value,
     workspaceIndex: {
-      selection: selection.value,
+      selection: resolvedSelection.value,
       runtime: runtime.value,
       targets: {
         show: sections.value.targets.show,
@@ -95,10 +112,12 @@ export function useWorkspaceIndex<
   }))
 
   const actions = {
-    selectTarget: (id: string) => {
-      options.selectTarget(id)
+    selectTarget: (id: string, source?: string) => {
+      options.selectTarget(id, source)
     },
-    clear: options.clearSelection ?? (() => {}),
+    clear: () => {
+      options.clearSelection?.()
+    },
   }
 
   watch(
@@ -127,7 +146,7 @@ export function useWorkspaceIndex<
   )
 
   return {
-    selection,
+    selection: resolvedSelection,
     sections,
     runtime,
     counts,

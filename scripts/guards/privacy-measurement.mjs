@@ -30,6 +30,7 @@ const ALLOWED_STORAGE_FILES = new Set([
   'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceSelection.ts',
   'packages/core/fireux-core/src/runtime/composables/theme/useColorMode.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/firebase/account-consent.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/firebase/anonymous-account-upgrade.ts',
   'packages/core/fireux-core/src/runtime/composables/shared/useStoredChoice.ts',
   'packages/core/fireux-core/src/runtime/pages/chat.vue',
   'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/directory/useBlogLanguage.ts',

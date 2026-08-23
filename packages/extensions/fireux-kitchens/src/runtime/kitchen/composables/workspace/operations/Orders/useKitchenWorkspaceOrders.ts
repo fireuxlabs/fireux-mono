@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazy-load typed demo Orders inside the workspace operation.
 import { computed } from 'vue'
 import { useKitchenOrdersFetch } from './fetch/useKitchenOrdersFetch'
 import {
@@ -10,10 +9,6 @@ import {
 } from '../../../../utils/order.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../core/useKitchenWorkspaceDemoData'
 import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition'
 import { useKitchenOrderService } from './mutations/useKitchenOrderService'
 
@@ -28,12 +23,6 @@ export function useKitchenWorkspaceOrders() {
   const canWrite = runtime.canWrite
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
-  )
-  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
-  const demoOrders = computed<KitchenOrder[]>(
-    () =>
-      findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
-        ?.orders ?? []
   )
   const {
     orders,
@@ -62,19 +51,9 @@ export function useKitchenWorkspaceOrders() {
     pending: ordersPending,
     collectionPath: ordersPath,
   })
-  const workspaceOrders = computed(() =>
-    runtime.isDemo.value ? demoOrders.value : page.collection.value.items
-  )
-  const pending = computed(() =>
-    runtime.isDemo.value
-      ? demoData.pending.value
-      : page.collection.value.pending
-  )
-  const orderBoardPath = computed(() =>
-    runtime.isDemo.value
-      ? `demo/kitchens/${kitchenId.value}/orders`
-      : ordersPath.value
-  )
+  const workspaceOrders = computed(() => page.collection.value.items)
+  const pending = computed(() => page.collection.value.pending)
+  const orderBoardPath = ordersPath
   const visibleOrders = computed(() =>
     workspaceOrders.value.filter(
       (order) => deriveKitchenOrderBoardStage(order) !== 'trash'

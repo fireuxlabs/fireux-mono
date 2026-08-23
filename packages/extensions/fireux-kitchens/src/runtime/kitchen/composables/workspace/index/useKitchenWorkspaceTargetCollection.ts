@@ -1,10 +1,8 @@
 // Kitchen owns target projection; Core owns authenticated request lifecycle.
 import { computed, type ComputedRef, type MaybeRefOrGetter } from 'vue'
 import { useWorkspaceTargetRequest } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTargetRequest'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
-import type {
-  KitchenWorkspaceTargetItem,
-} from '../../../models/kitchen-index.model.ts'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
+import type { KitchenWorkspaceKitchen } from '../../../models/kitchen-index.model.ts'
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterface'
 
@@ -20,9 +18,12 @@ export type UseKitchenWorkspaceTargetCollectionResult = {
 export function useKitchenWorkspaceTargetCollection(
   options: { enabled?: MaybeRefOrGetter<boolean> } = {}
 ): UseKitchenWorkspaceTargetCollectionResult {
-  const request = useWorkspaceTargetRequest<KitchenWorkspaceTargetItem>('kitchen', {
-    enabled: options.enabled,
-  })
+  const request = useWorkspaceTargetRequest<KitchenWorkspaceKitchen>(
+    'kitchen',
+    {
+      enabled: options.enabled,
+    }
+  )
   const { surface } = useKitchenInterface()
   const kitchens = computed<KitchenSurface[]>(() =>
     request.items.value.flatMap((target) => {

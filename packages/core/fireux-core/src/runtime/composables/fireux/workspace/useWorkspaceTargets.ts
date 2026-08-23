@@ -7,7 +7,7 @@ import {
   useWorkspace,
   type WorkspaceAppMode,
 } from './useWorkspace'
-import type { WorkspaceTargetOutcome } from './useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from './useWorkspaceDirectoryIndex'
 import { useWorkspaceTargetRequest } from './useWorkspaceTargetRequest'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
@@ -28,7 +28,7 @@ export function useWorkspaceTargets(options: UseWorkspaceTargetsOptions) {
     uniqueStrings(
       options.globalTargetIds
         ? unref(options.globalTargetIds)
-        : request.items.value.map(item => item.id)
+        : request.items.value.map((item) => item.id)
     )
   )
   const targetIds = computed(() => uniqueStrings(globalTargetIds.value))

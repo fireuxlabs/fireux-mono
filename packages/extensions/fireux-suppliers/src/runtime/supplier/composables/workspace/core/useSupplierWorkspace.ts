@@ -10,7 +10,7 @@ import {
 import { workspaceData } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceData'
 import { useWorkspaceEntityRuntime } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceEntityRuntime'
 import { useWorkspaceFamilyRuntime } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceFamilyRuntime'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import { useWorkspaceTargets } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useSupplierCollection } from '../../firestore/fetch/useSupplierCollection'

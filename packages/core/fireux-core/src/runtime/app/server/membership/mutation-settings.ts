@@ -2,6 +2,7 @@ import type {
   AppUserRole,
   AppUserSubscription,
 } from '../../models/app-user.model.ts'
+import { isAppUserSubscription } from '../../models/app-user.model.ts'
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
@@ -59,10 +60,11 @@ export async function handleMembershipSettings(
     })
     if (!authority.ok) forbidden(authority.statusCode, authority.message)
     const userId = requireFirestoreDocumentId(authority.userId, 'User id')
-    const subscription: AppUserSubscription =
-      input.subscription === 'free' || input.subscription === 'premium'
-        ? input.subscription
-        : forbidden(400, 'Subscription must be free or premium.')
+    const subscription: AppUserSubscription = isAppUserSubscription(
+      input.subscription
+    )
+      ? input.subscription
+      : forbidden(400, 'Subscription must be free, premium, or business.')
     if (!(await mutations.read(memberships, userId)).exists)
       forbidden(404, 'The target App membership does not exist.')
     mutations.update(memberships, userId, {

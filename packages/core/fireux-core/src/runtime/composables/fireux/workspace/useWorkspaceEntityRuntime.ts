@@ -13,7 +13,7 @@ import { targetHasOperator } from './useWorkspaceAccess'
 import { type WorkspaceData, type WorkspaceDataType } from './useWorkspaceData'
 import { useWorkspaceDataAuthority } from './useWorkspaceDataAuthority'
 import { normalizeWorkspaceSource, useWorkspace } from './useWorkspace'
-import type { WorkspaceTargetOutcome } from './useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from './useWorkspaceDirectoryIndex'
 import { useWorkspaceSelection } from './useWorkspaceSelection'
 
 type ValueRef<T> = MaybeRef<T>

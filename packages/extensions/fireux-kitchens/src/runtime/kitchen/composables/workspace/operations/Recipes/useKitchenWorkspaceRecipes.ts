@@ -1,17 +1,8 @@
 import { computed } from 'vue'
 import { useKitchenRecipeCollection } from '../../../firestore/recipe/fetch/useKitchenRecipeCollection'
-import {
-  normalizeRecipe,
-  RecipeStorage,
-  type Recipe,
-} from '../../../../utils/recipe.ts'
+import { RecipeStorage, type Recipe } from '../../../../utils/recipe.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../core/useKitchenWorkspaceDemoData'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
-import { useKitchenWorkspaceDemoMenuService } from '../../core/useKitchenWorkspaceDemoMenuService'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -29,27 +20,6 @@ export function useKitchenWorkspaceRecipes() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
-  const demoScenario = computed(() =>
-    findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
-  )
-  const demoRecipes = computed<Recipe[]>(() =>
-    (demoScenario.value?.recipes ?? []).map((recipe) =>
-      normalizeRecipe({
-        id: recipe.id,
-        name: recipe.name,
-        slug: recipe.id,
-        description: recipe.method.join(' '),
-        source_language: 'en',
-        names: { en: recipe.name },
-        descriptions: {
-          en: recipe.method.join(' '),
-        },
-        kitchen_id: kitchenId.value,
-      })
-    )
-  )
-  const demoMenuService = useKitchenWorkspaceDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -63,23 +33,11 @@ export function useKitchenWorkspaceRecipes() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const workspaceRecipes = computed<Recipe[]>(() =>
-    runtime.isDemo.value ? demoRecipes.value : fetchedRecipes.value
-  )
-  const pending = computed(() =>
-    runtime.isDemo.value ? demoData.pending.value : recipesPending.value
-  )
-  const error = computed(() =>
-    runtime.isDemo.value ? demoData.error.value : recipesError.value
-  )
-  const outcome = computed(() =>
-    runtime.isDemo.value ? demoData.outcome.value : recipesOutcome.value
-  )
-  const collectionPath = computed(() =>
-    runtime.isDemo.value
-      ? `demo/kitchens/${kitchenId.value}/recipes`
-      : fetchedCollectionPath.value
-  )
+  const workspaceRecipes = fetchedRecipes
+  const pending = recipesPending
+  const error = recipesError
+  const outcome = recipesOutcome
+  const collectionPath = fetchedCollectionPath
   const page = useKitchenWorkspaceReadPage<Recipe>({
     collectionName: RecipeStorage.collection,
     selectedKitchen,
@@ -88,37 +46,11 @@ export function useKitchenWorkspaceRecipes() {
     pending,
     collectionPath,
   })
-  const dishes = computed(() =>
-    runtime.isDemo.value ? (demoScenario.value?.dishes ?? []) : []
-  )
+  const dishes = computed(() => [])
   const count = computed(() => page.collection.value.count)
   const dishUsageByRecipeId = computed<
     Record<string, KitchenRecipeDishUsage[]>
-  >(() => {
-    if (!runtime.isDemo.value || !demoScenario.value) return {}
-    const dishById = new Map(
-      demoScenario.value.dishes.map((dish) => [normalizeString(dish.id), dish])
-    )
-    const usage: Record<string, KitchenRecipeDishUsage[]> = {}
-    for (const spec of demoScenario.value.dishSpecs) {
-      const dish = dishById.get(normalizeString(spec.dishId))
-      if (!dish) continue
-      for (const component of spec.components) {
-        if (component.source !== 'recipe') continue
-        const recipeId = normalizeString(component.recipeId)
-        const entries = usage[recipeId] ?? []
-        if (!entries.some((entry) => entry.dishId === dish.id)) {
-          entries.push({
-            recipeId,
-            dishId: dish.id,
-            dishName: normalizeString(dish.name) || dish.id,
-          })
-        }
-        usage[recipeId] = entries
-      }
-    }
-    return usage
-  })
+  >(() => ({}))
   const getDishUsageForRecipe = (recipeId: string) =>
     dishUsageByRecipeId.value[normalizeString(recipeId)] || []
   const debug = computed(() => ({
@@ -155,12 +87,8 @@ export function useKitchenWorkspaceRecipes() {
     pending,
     error,
     outcome,
-    demoScenario,
     dishUsageByRecipeId,
     getDishUsageForRecipe,
-    isRecipeInService: (recipeId: string) =>
-      !runtime.isDemo.value ||
-      demoMenuService.isEntityInService('recipes', recipeId),
     debug,
   }
 }

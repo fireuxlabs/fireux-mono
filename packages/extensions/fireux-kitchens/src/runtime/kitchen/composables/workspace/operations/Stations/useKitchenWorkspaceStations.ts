@@ -6,10 +6,6 @@ import {
 } from '../../../../utils/station.ts'
 import { useKitchenWorkspace } from '../../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../Shared/useKitchenWorkspaceReadPage'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../../core/useKitchenWorkspaceDemoData'
 import { useKitchenStationCollection } from './fetch/useKitchenStationCollection'
 
 export function useKitchenWorkspaceStations() {
@@ -20,10 +16,6 @@ export function useKitchenWorkspaceStations() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
-  const demoScenario = computed(() =>
-    findKitchenWorkspaceDemoScenario(demoData.data.value, kitchenId.value)
-  )
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -35,19 +27,9 @@ export function useKitchenWorkspaceStations() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const workspaceStations = computed(() =>
-    runtime.isDemo.value
-      ? (demoScenario.value?.stations ?? [])
-      : fetchedStations.value
-  )
-  const pending = computed(() =>
-    runtime.isDemo.value ? demoData.pending.value : stationsPending.value
-  )
-  const collectionPath = computed(() =>
-    runtime.isDemo.value
-      ? `demo/kitchens/${kitchenId.value}/stations`
-      : fetchedCollectionPath.value
-  )
+  const workspaceStations = fetchedStations
+  const pending = stationsPending
+  const collectionPath = fetchedCollectionPath
   const page = useKitchenWorkspaceReadPage<KitchenStation>({
     collectionName: KitchenStationStorage.collection,
     selectedKitchen,

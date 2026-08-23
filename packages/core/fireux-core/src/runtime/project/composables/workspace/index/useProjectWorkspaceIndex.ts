@@ -1,10 +1,7 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 // Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: identify authoritative Project targets.
 import { computed } from 'vue'
-import {
-  resolveWorkspaceSelectedTargetOutcome,
-  useWorkspaceIndex,
-} from '../../../../composables/fireux/workspace/useWorkspaceIndex'
+import { useWorkspaceDirectoryIndex } from '../../../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import type { ProjectSurface } from '../../useProjectInterface'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
@@ -15,17 +12,9 @@ export function useProjectWorkspaceIndex() {
     runtime: workspaceRuntime,
     actions: workspaceActions,
   } = useProjectWorkspace()
-  const selectedOutcome = computed(() =>
-    resolveWorkspaceSelectedTargetOutcome({
-      selectedId: workspaceSelection.projectId.value,
-      selectedTarget: workspaceSelection.project.value,
-      targetOutcome: projects.outcome.value,
-    })
-  )
   const selection = computed(() => ({
     project: workspaceSelection.project.value,
     projectId: workspaceSelection.projectId.value,
-    outcome: selectedOutcome.value,
   }))
   const runtime = computed(() => ({
     rootCollection: workspaceRuntime.rootCollection.value,
@@ -38,15 +27,15 @@ export function useProjectWorkspaceIndex() {
     readOnly: workspaceRuntime.readOnly.value,
     canWrite: workspaceRuntime.canWrite.value,
     selectedProject: workspaceSelection.project.value,
-    selectedOutcome: selectedOutcome.value,
     targetCount: projects.count.value,
     authority: 'fireux-app-admin',
     dataType: workspaceRuntime.dataType.value,
   }))
 
-  return useWorkspaceIndex({
+  return useWorkspaceDirectoryIndex({
     selection,
     selectedId: computed(() => workspaceSelection.projectId.value),
+    selectedTarget: workspaceSelection.project,
     runtime,
     targets: projects.targets,
     outcome: projects.outcome,

@@ -158,6 +158,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/workspace/kitchen/targets.get',
   },
   {
+    route: '/api/workspace/kitchen/current',
+    method: 'get',
+    handler: './runtime/server/api/workspace/kitchen/current.get',
+  },
+  {
     route: '/api/workspace/kitchen/theme',
     method: 'post',
     handler: './runtime/server/api/workspace/kitchen/theme.post',

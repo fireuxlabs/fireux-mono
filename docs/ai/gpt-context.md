@@ -659,7 +659,8 @@ requirement, report the exact missing seam before broad edits.
   their owning Project database; the control plane does not mirror them into a
   directory, monitor, or user index.
 - AppUser persists orthogonal App authority, subscription, and lifecycle:
-  `role` is `user | admin | dev`, `subscription` is `free | premium`, and
+  `role` is `user | admin | dev`, `subscription` is
+  `free | premium | business`, and
   `onboarding_status` remains `pending | completed | skipped`. A stored Dev
   role has developer authority and the explicitly intended App-admin
   capabilities, but it never changes or implies subscription. Profile
@@ -669,7 +670,8 @@ requirement, report the exact missing seam before broad edits.
   authority.
 - Free is the effective product subscription when AppUser is absent. This does
   not create a User, AppUser, role, or membership; `hasMembership` remains
-  false, and only a canonical stored Premium subscription enables Premium.
+  false. A canonical stored Premium or Business subscription enables Premium
+  capabilities; only Business enables multi-Workspace ownership.
 - User list and detail readers return canonical User identities. On a tenant
   runtime, candidate visibility comes only from exact valid
   `apps/{appId}/users/{uid}` memberships before the root User join; a guessed

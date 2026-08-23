@@ -11,7 +11,7 @@ import {
   normalizeWorkspaceDataType,
   type WorkspaceDataType,
 } from './useWorkspaceData'
-import type { WorkspaceTargetOutcome } from './useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from './useWorkspaceDirectoryIndex'
 
 type WorkspaceSelectionState = {
   id?: string

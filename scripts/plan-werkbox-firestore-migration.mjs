@@ -22,8 +22,7 @@ import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 const PROJECT_ID = 'cleanbox-f15bc'
 const DATABASE_ID = 'cleanbox'
 const ECOSYSTEM_ID = 'cleanbox'
-const MIGRATION_MARKER_PATH =
-  'security-migrations/werkbox-firestore-rules-v1'
+const MIGRATION_MARKER_PATH = 'security-migrations/werkbox-firestore-rules-v1'
 const HANDLE_STATE_PATH = 'user-handle-state/canonical'
 const SERVER_API_CUTOVERS = {
   jobs: 'trusted-api-v1',
@@ -61,11 +60,7 @@ const ALLOWED_REMOVED_FIELDS = {
     'notifications',
     'userOf',
   ]),
-  'canonical-membership': new Set([
-    'workspace_scopes',
-    'id',
-    'notifications',
-  ]),
+  'canonical-membership': new Set(['workspace_scopes', 'id', 'notifications']),
   'canonical-app': new Set(['admin_ids', 'ecosystem', 'id', 'team']),
   'canonical-agent': new Set(['id']),
   'canonical-app-agent': new Set(['id']),
@@ -270,7 +265,9 @@ async function readState() {
       subcollections.map((collection) => collection.get())
     )
     userDescendants.set(uid, {
-      subcollectionNames: subcollections.map((collection) => collection.id).sort(),
+      subcollectionNames: subcollections
+        .map((collection) => collection.id)
+        .sort(),
       collections: new Map(
         snapshots.map((snapshot, index) => [
           subcollections[index].id,
@@ -282,14 +279,17 @@ async function readState() {
   const appState = new Map()
   for (const appId of EXPECTED_APP_IDS) {
     const appRef = db.doc(`apps/${appId}`)
-    const [memberships, agents, professionals, subcollections] = await Promise.all([
-      appRef.collection('users').get(),
-      appRef.collection('agents').get(),
-      appRef.collection('professionals').get(),
-      appRef.listCollections(),
-    ])
+    const [memberships, agents, professionals, subcollections] =
+      await Promise.all([
+        appRef.collection('users').get(),
+        appRef.collection('agents').get(),
+        appRef.collection('professionals').get(),
+        appRef.listCollections(),
+      ])
     appState.set(appId, {
-      subcollectionNames: subcollections.map((collection) => collection.id).sort(),
+      subcollectionNames: subcollections
+        .map((collection) => collection.id)
+        .sort(),
       memberships: snapshotMap(memberships),
       profiles: {
         agent: snapshotMap(agents),
@@ -363,20 +363,42 @@ function buildPlan(state) {
     const authUser = state.auth.get(uid)
     const userPath = userSnapshot.ref.path
     if (!authUser) {
-      blockers.push(blocker('USER_WITHOUT_AUTH', userPath, 'A deletion or retained-identity decision is required.'))
+      blockers.push(
+        blocker(
+          'USER_WITHOUT_AUTH',
+          userPath,
+          'A deletion or retained-identity decision is required.'
+        )
+      )
       continue
     }
 
     const authEmail = normalizeEmail(authUser.email)
     const legacyEmail = normalizeEmail(userSnapshot.get('email'))
     if (!authEmail) {
-      blockers.push(blocker('AUTH_EMAIL_MISSING', userPath, 'A retained User requires an Auth email for UserPrivate.'))
+      blockers.push(
+        blocker(
+          'AUTH_EMAIL_MISSING',
+          userPath,
+          'A retained User requires an Auth email for UserPrivate.'
+        )
+      )
     }
     if (legacyEmail && authEmail && legacyEmail !== authEmail) {
-      blockers.push(blocker('AUTH_EMAIL_DRIFT', userPath, 'Legacy User email does not match Firebase Auth.'))
+      blockers.push(
+        blocker(
+          'AUTH_EMAIL_DRIFT',
+          userPath,
+          'Legacy User email does not match Firebase Auth.'
+        )
+      )
     }
 
-    const handle = canonicalHandle(userSnapshot.get('handle'), userPath, blockers)
+    const handle = canonicalHandle(
+      userSnapshot.get('handle'),
+      userPath,
+      blockers
+    )
     const memberships = membershipsForUser(state, uid)
     const profiles = ROOT_PROFILE_KINDS.filter((kind) =>
       state[ROOT_PROFILE_COLLECTIONS[kind]].has(uid)
@@ -471,7 +493,8 @@ function buildPlan(state) {
       warnings.push({
         code: 'AUTH_IDENTITY_WITHOUT_USER',
         subjectSha256: sha256(uid),
-        message: 'Auth-only identity is preserved; no public User is fabricated.',
+        message:
+          'Auth-only identity is preserved; no public User is fabricated.',
       })
     }
   }
@@ -483,12 +506,24 @@ function buildPlan(state) {
     )) {
       const path = membershipSnapshot.ref.path
       if (!canonicalUsers.has(uid)) {
-        blockers.push(blocker('MEMBERSHIP_WITHOUT_CANONICAL_USER', path, 'Membership cannot survive without a retained canonical User.'))
+        blockers.push(
+          blocker(
+            'MEMBERSHIP_WITHOUT_CANONICAL_USER',
+            path,
+            'Membership cannot survive without a retained canonical User.'
+          )
+        )
         continue
       }
       const role = membershipSnapshot.get('role')
       if (!['admin', 'user'].includes(role)) {
-        blockers.push(blocker('INVALID_MEMBERSHIP_ROLE', path, 'Role must be admin or user.'))
+        blockers.push(
+          blocker(
+            'INVALID_MEMBERSHIP_ROLE',
+            path,
+            'Role must be admin or user.'
+          )
+        )
         continue
       }
       const profiles = ROOT_PROFILE_KINDS.filter((kind) =>
@@ -536,12 +571,16 @@ function buildPlan(state) {
         `${path}.updated`,
         blockers
       )
-      if (!['free', 'premium'].includes(membershipSnapshot.get('subscription'))) {
+      if (
+        !['free', 'premium', 'business'].includes(
+          membershipSnapshot.get('subscription')
+        )
+      ) {
         blockers.push(
           blocker(
             'MEMBERSHIP_SUBSCRIPTION_INVALID',
             path,
-            'Subscription must be free or premium.'
+            'Subscription must be free, premium, or business.'
           )
         )
       }
@@ -768,13 +807,15 @@ function auditRootCollections(state, blockers, warnings) {
     warnings.push({
       code: 'LEGACY_HANDLES_RETAINED_LOCKED',
       count: state.legacyHandles.size,
-      message: 'Legacy handles remain as rollback evidence but receive no client access.',
+      message:
+        'Legacy handles remain as rollback evidence but receive no client access.',
     })
   }
   if (state.rootCollectionNames.includes('test')) {
     warnings.push({
       code: 'LEGACY_TEST_COLLECTION_RETAINED_LOCKED',
-      message: 'Legacy test data remains in place but receives no client access.',
+      message:
+        'Legacy test data remains in place but receives no client access.',
     })
   }
 }
@@ -782,20 +823,44 @@ function auditRootCollections(state, blockers, warnings) {
 function auditAuthorityInventory(state, blockers) {
   for (const appId of EXPECTED_APP_IDS) {
     if (!state.apps.has(appId)) {
-      blockers.push(blocker('EXPECTED_APP_MISSING', `apps/${appId}`, 'Canonical App source is missing.'))
+      blockers.push(
+        blocker(
+          'EXPECTED_APP_MISSING',
+          `apps/${appId}`,
+          'Canonical App source is missing.'
+        )
+      )
     }
   }
   for (const appId of state.apps.keys()) {
     if (!EXPECTED_APP_IDS.includes(appId)) {
-      blockers.push(blocker('UNEXPECTED_APP', `apps/${appId}`, 'Classify this App before fixed-target rules are released.'))
+      blockers.push(
+        blocker(
+          'UNEXPECTED_APP',
+          `apps/${appId}`,
+          'Classify this App before fixed-target rules are released.'
+        )
+      )
     }
   }
   if (!state.ecosystems.has(ECOSYSTEM_ID)) {
-    blockers.push(blocker('ECOSYSTEM_MISSING', `ecosystems/${ECOSYSTEM_ID}`, 'Canonical Ecosystem source is missing.'))
+    blockers.push(
+      blocker(
+        'ECOSYSTEM_MISSING',
+        `ecosystems/${ECOSYSTEM_ID}`,
+        'Canonical Ecosystem source is missing.'
+      )
+    )
   }
   for (const ecosystemId of state.ecosystems.keys()) {
     if (ecosystemId !== ECOSYSTEM_ID) {
-      blockers.push(blocker('UNEXPECTED_ECOSYSTEM', `ecosystems/${ecosystemId}`, 'Classify this Ecosystem before release.'))
+      blockers.push(
+        blocker(
+          'UNEXPECTED_ECOSYSTEM',
+          `ecosystems/${ecosystemId}`,
+          'Classify this Ecosystem before release.'
+        )
+      )
     }
   }
   const ecosystem = state.ecosystems.get(ECOSYSTEM_ID)
@@ -841,7 +906,8 @@ function auditDescendantInventory(state, blockers) {
         )
       }
     }
-    const notifications = descendants.collections.get('notifications') ?? new Map()
+    const notifications =
+      descendants.collections.get('notifications') ?? new Map()
     for (const snapshot of notifications.values()) {
       auditCanonicalNotification(snapshot, blockers)
     }
@@ -1213,12 +1279,24 @@ function membershipsForUser(state, uid) {
 function planHandleReservation({ state, uid, handle, operations, blockers }) {
   const existing = state.reservations.get(handle)
   if (existing && existing.get('uid') !== uid) {
-    blockers.push(blocker('HANDLE_RESERVATION_CONFLICT', existing.ref.path, 'Reservation belongs to another User.'))
+    blockers.push(
+      blocker(
+        'HANDLE_RESERVATION_CONFLICT',
+        existing.ref.path,
+        'Reservation belongs to another User.'
+      )
+    )
     return
   }
   for (const user of state.users.values()) {
     if (user.id !== uid && String(user.get('handle') ?? '').trim() === handle) {
-      blockers.push(blocker('DUPLICATE_USER_HANDLE', user.ref.path, 'Two Users claim the same canonical handle.'))
+      blockers.push(
+        blocker(
+          'DUPLICATE_USER_HANDLE',
+          user.ref.path,
+          'Two Users claim the same canonical handle.'
+        )
+      )
       return
     }
   }
@@ -1235,7 +1313,12 @@ function planHandleReservation({ state, uid, handle, operations, blockers }) {
         : serverValue('timestamp'),
   }
   operations.push(
-    upsertOperation(existing, `user-handles/${handle}`, payload, 'canonical-user-handle')
+    upsertOperation(
+      existing,
+      `user-handles/${handle}`,
+      payload,
+      'canonical-user-handle'
+    )
   )
 }
 
@@ -1255,7 +1338,13 @@ function planRootAgents(state, operations, blockers) {
   for (const [uid, snapshot] of state.agents) {
     const path = snapshot.ref.path
     if (!state.users.has(uid)) {
-      blockers.push(blocker('AGENT_WITHOUT_USER', path, 'Agent identity must match a retained User.'))
+      blockers.push(
+        blocker(
+          'AGENT_WITHOUT_USER',
+          path,
+          'Agent identity must match a retained User.'
+        )
+      )
       continue
     }
     const created = canonicalCreatedStamp(
@@ -1406,7 +1495,9 @@ function canonicalAppPayload({
     .filter(([, membership]) => membership.get('role') === 'admin')
     .map(([uid]) => uid)
   const legacyAdmins = Array.isArray(source.admin_ids)
-    ? source.admin_ids.map((value) => String(value ?? '').trim()).filter(Boolean)
+    ? source.admin_ids
+        .map((value) => String(value ?? '').trim())
+        .filter(Boolean)
     : []
   if (
     source.admin_ids != null &&
@@ -1527,7 +1618,13 @@ function canonicalAppPayload({
     const value = snapshot.get(field)
     if (typeof value === 'string' && value.trim()) {
       if (value.trim().length > max) {
-        blockers.push(blocker('APP_TEXT_TOO_LONG', `${path}.${field}`, `Value exceeds ${max} characters.`))
+        blockers.push(
+          blocker(
+            'APP_TEXT_TOO_LONG',
+            `${path}.${field}`,
+            `Value exceeds ${max} characters.`
+          )
+        )
       } else {
         payload[field] = value.trim()
       }
@@ -1753,10 +1850,17 @@ function exactStringMap(value, keys) {
 }
 
 function canonicalCreatedStamp(value, valuePath, blockers, options = {}) {
-  const stamp = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  const stamp =
+    value && typeof value === 'object' && !Array.isArray(value) ? value : {}
   const at = stamp.at instanceof Timestamp ? stamp.at : null
   if (!at) {
-    blockers.push(blocker('INVALID_CREATED_STAMP', valuePath, 'A real source timestamp is required.'))
+    blockers.push(
+      blocker(
+        'INVALID_CREATED_STAMP',
+        valuePath,
+        'A real source timestamp is required.'
+      )
+    )
     return null
   }
   const result = { at }
@@ -1784,10 +1888,17 @@ function canonicalCreatedStamp(value, valuePath, blockers, options = {}) {
 }
 
 function canonicalUpdatedStamp(value, valuePath, blockers) {
-  const stamp = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+  const stamp =
+    value && typeof value === 'object' && !Array.isArray(value) ? value : {}
   const at = stamp.at instanceof Timestamp ? stamp.at : null
   if (!(at instanceof Timestamp)) {
-    blockers.push(blocker('INVALID_UPDATED_STAMP', valuePath, 'A real source timestamp is required.'))
+    blockers.push(
+      blocker(
+        'INVALID_UPDATED_STAMP',
+        valuePath,
+        'A real source timestamp is required.'
+      )
+    )
     return null
   }
   const result = { at }
@@ -1799,7 +1910,13 @@ function canonicalUpdatedStamp(value, valuePath, blockers) {
 function boundedRequiredString(value, max, valuePath, blockers) {
   const text = String(value ?? '').trim()
   if (!text || text.length > max) {
-    blockers.push(blocker('INVALID_REQUIRED_TEXT', valuePath, `Expected 1-${max} characters.`))
+    blockers.push(
+      blocker(
+        'INVALID_REQUIRED_TEXT',
+        valuePath,
+        `Expected 1-${max} characters.`
+      )
+    )
     return ''
   }
   return text
@@ -1836,7 +1953,13 @@ function canonicalHandle(value, ownerPath, blockers) {
   const raw = String(value ?? '').trim()
   const normalized = raw.toLowerCase()
   if (raw !== normalized || !/^[a-z0-9][a-z0-9-]{2,29}$/.test(normalized)) {
-    blockers.push(blocker('USER_HANDLE_NOT_CANONICAL', ownerPath, 'Handle must be lowercase, unique, and 3-30 URL-safe characters.'))
+    blockers.push(
+      blocker(
+        'USER_HANDLE_NOT_CANONICAL',
+        ownerPath,
+        'Handle must be lowercase, unique, and 3-30 URL-safe characters.'
+      )
+    )
     return ''
   }
   return normalized
@@ -1845,7 +1968,8 @@ function canonicalHandle(value, ownerPath, blockers) {
 function canonicalAvatar(value, valuePath, blockers) {
   const avatar = String(value ?? '').trim()
   if (!avatar) return '/img/ecosystem/avatar.png'
-  if (avatar === '/img/ecosystem/avatar.png' || isHttpsUrl(avatar)) return avatar
+  if (avatar === '/img/ecosystem/avatar.png' || isHttpsUrl(avatar))
+    return avatar
   blockers.push(
     blocker(
       'USER_AVATAR_INVALID',
@@ -1866,7 +1990,9 @@ function isHttpsUrl(value) {
 }
 
 function normalizeEmail(value) {
-  const email = String(value ?? '').trim().toLowerCase()
+  const email = String(value ?? '')
+    .trim()
+    .toLowerCase()
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : ''
 }
 
@@ -1927,7 +2053,8 @@ function snapshotPrecondition(snapshot) {
 function phaseFor(family) {
   if (family === 'canonical-app') return 'authority'
   if (family === 'migration-marker') return 'markers'
-  if (family.includes('membership') || family.includes('app-')) return 'membership'
+  if (family.includes('membership') || family.includes('app-'))
+    return 'membership'
   return 'identity'
 }
 
@@ -2014,8 +2141,12 @@ function summarize(plan) {
       status: plan.safety.status,
       blockerCount: plan.safety.blockers.length,
       warningCount: plan.safety.warnings.length,
-      blockerCodes: [...new Set(plan.safety.blockers.map((entry) => entry.code))].sort(),
-      warningCodes: [...new Set(plan.safety.warnings.map((entry) => entry.code))].sort(),
+      blockerCodes: [
+        ...new Set(plan.safety.blockers.map((entry) => entry.code)),
+      ].sort(),
+      warningCodes: [
+        ...new Set(plan.safety.warnings.map((entry) => entry.code)),
+      ].sort(),
     },
     operationSetSha256: plan.operationSetSha256,
     finalPlanSha256: plan.finalPlanSha256,

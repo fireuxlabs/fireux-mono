@@ -729,15 +729,10 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
     path.join(repoRoot, KITCHEN_RECIPES_CONTROLLER),
     'utf8'
   )
-  for (const expected of [
-    'demoData.error.value',
-    'demoData.outcome.value',
-    'recipesError.value',
-    'recipesOutcome.value',
-  ]) {
+  for (const expected of ['error = recipesError', 'outcome = recipesOutcome']) {
     if (!controllerSource.includes(expected)) {
       violations.push(
-        `${KITCHEN_RECIPES_CONTROLLER} (must preserve source-aware Recipes outcomes)`
+        `${KITCHEN_RECIPES_CONTROLLER} (must preserve authoritative Recipes outcomes)`
       )
     }
   }
@@ -791,7 +786,7 @@ function validateWorkspaceLayout(repoRoot, violations) {
   const source = readFileSync(fullPath, 'utf8')
   const hasDirectSlot = /<slot\b[^>]*\bv-else\b/.test(source)
   const hasGuardedSlot =
-    /<NuxtErrorBoundary\b[^>]*\bv-else\b/.test(source) &&
+    /<NuxtErrorBoundary\b/.test(source) &&
     /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(
       source
     ) &&
@@ -807,40 +802,14 @@ function validateWorkspaceLayout(repoRoot, violations) {
       `${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`
     )
   }
-  for (const pattern of [
-    /useWorkspaceRouteTargetAccess\s*\(/,
-    /selectionAccessPending/,
-    /selectionAccessError/,
-    /workspace-selection-pending/,
-    /workspace-selection-unavailable/,
-  ]) {
-    if (!pattern.test(source)) {
-      violations.push(
-        `${CONSOLE_LAYOUT} (live selected-target routes must wait for exact family target authority and fail closed on pending, error, or settled missing access)`
-      )
-    }
-  }
-
-  const accessRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceRouteTargetAccess.ts'
-  const accessPath = path.join(repoRoot, accessRelative)
-  const accessSource = existsSync(accessPath)
-    ? readFileSync(accessPath, 'utf8')
-    : ''
-  for (const pattern of [
-    /useWorkspaceTargetRequest\(family/,
-    /type !== ['"]demo['"] &&\s*type !== ['"]test['"]/,
-    /activeRequest\.value\?\.outcome\.value === ['"]pending['"]/,
-    /activeRequest\.value\?\.outcome\.value === ['"]error['"]/,
-    /normalizeString\(item\.id\) === selectedId\.value/,
-    /outcome !== ['"]ready['"] && outcome !== ['"]empty['"]/,
-    /selections\.get\(family\)\?\.clearSelection\(\)/,
-  ]) {
-    if (!pattern.test(accessSource)) {
-      violations.push(
-        `${accessRelative} (live selected-target routes must wait for exact family target authority and fail closed on pending, error, or settled missing access)`
-      )
-    }
+  if (
+    /useWorkspaceRouteTargetAccess|selectionAccessPending|selectionBlocked/.test(
+      source
+    )
+  ) {
+    violations.push(
+      `${CONSOLE_LAYOUT} (the shared layout must remain ignorant of domain Entity selection and access)`
+    )
   }
 }
 

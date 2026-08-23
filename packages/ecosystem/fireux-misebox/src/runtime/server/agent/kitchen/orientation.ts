@@ -4,10 +4,10 @@ import {
   resolveKitchen,
   type KitchenRootRecord,
 } from 'fireux-kitchens/runtime/kitchen/server/identity/read'
-import { resolveKitchenWorkspaceTargetIds } from 'fireux-kitchens/runtime/kitchen/server/core/workspace-targets'
+import { readUserKitchenIds } from 'fireux-kitchens/runtime/kitchen/server/core/user-kitchens'
 
 export async function readKitchenAgentOrientation(uid: string) {
-  const ids = await resolveKitchenWorkspaceTargetIds(uid)
+  const ids = await readUserKitchenIds(uid)
   if (!ids.length) return []
 
   const db = getRuntimeFirestore()

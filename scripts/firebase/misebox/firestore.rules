@@ -1111,7 +1111,7 @@ service cloud.firestore {
               'updated'
             ]) &&
             data.role in ['admin', 'user', 'dev'] &&
-            data.subscription in ['free', 'premium'] &&
+            data.subscription in ['free', 'premium', 'business'] &&
             (!('onboarding_status' in data) ||
               data.onboarding_status in [
                 'pending',

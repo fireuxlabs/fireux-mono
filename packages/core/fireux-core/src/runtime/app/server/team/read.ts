@@ -13,6 +13,11 @@ import type {
   AppAdminMember,
   AppAdminPeopleResponse,
 } from '../../models/app-context.model.ts'
+import {
+  isAppUserSubscription,
+  type AppUserRole,
+  type AppUserSubscription,
+} from '../../models/app-user.model.ts'
 import { readUserIdentitySummary } from '../../../user/server/identity/summary'
 
 const MAX_MEMBERS = 100
@@ -29,12 +34,12 @@ export async function readAppTeam(event: H3Event) {
   const identityDb = getRuntimeIdentityFirestore()
   const appRef = appDb.collection('apps').doc(appId)
 
-  const actorMembership = await appRef
-    .collection('users')
-    .doc(uid)
-    .get()
+  const actorMembership = await appRef.collection('users').doc(uid).get()
   const actorRole = actorMembership.data()?.role
-  if (!actorMembership.exists || (actorRole !== 'admin' && actorRole !== 'dev')) {
+  if (
+    !actorMembership.exists ||
+    (actorRole !== 'admin' && actorRole !== 'dev')
+  ) {
     throw createError({
       statusCode: 403,
       statusMessage: 'App admin access is required.',
@@ -58,7 +63,7 @@ export async function readAppTeam(event: H3Event) {
   const requestDocs = requestSnapshot.docs
   const memberRows = new Map<
     string,
-    { role: 'admin' | 'user' | 'dev'; subscription: 'free' | 'premium' }
+    { role: AppUserRole; subscription: AppUserSubscription }
   >()
   for (const document of memberDocs) {
     const data = document.data()
@@ -67,7 +72,7 @@ export async function readAppTeam(event: H3Event) {
     if (role !== 'admin' && role !== 'user' && role !== 'dev') {
       conflict(`App member ${document.id} has an invalid role.`)
     }
-    if (subscription !== 'free' && subscription !== 'premium') {
+    if (!isAppUserSubscription(subscription)) {
       conflict(`App member ${document.id} has an invalid subscription.`)
     }
     memberRows.set(document.id, { role, subscription })
@@ -85,9 +90,7 @@ export async function readAppTeam(event: H3Event) {
   const userIds = Array.from(new Set([...memberRows.keys(), ...requestIds]))
   const userSnapshots = userIds.length
     ? await identityDb.getAll(
-        ...userIds.map((userId) =>
-          identityDb.collection('users').doc(userId)
-        )
+        ...userIds.map((userId) => identityDb.collection('users').doc(userId))
       )
     : []
   const usersById = new Map(
@@ -97,11 +100,14 @@ export async function readAppTeam(event: H3Event) {
     ])
   )
 
-  const members: AppAdminMember[] = Array.from(memberRows, ([id, membership]) => ({
-    id,
-    ...membership,
-    user: usersById.get(id) ?? null,
-  }))
+  const members: AppAdminMember[] = Array.from(
+    memberRows,
+    ([id, membership]) => ({
+      id,
+      ...membership,
+      user: usersById.get(id) ?? null,
+    })
+  )
   const joinRequests: AppAdminJoinRequest[] = requestIds.map((id) => ({
     id,
     user: usersById.get(id) ?? null,

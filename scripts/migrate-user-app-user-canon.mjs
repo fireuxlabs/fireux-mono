@@ -49,7 +49,8 @@ const MISEBOX_FREE_DEVELOPER_OVERRIDE = {
   appId: 'misebox-app',
   userId: 'jMK33p5XlhYS8rBCEf8qUiogfMg2',
   subscription: 'free',
-  reason: 'Reviewed decision: design and test the normal Free Kitchen experience first.',
+  reason:
+    'Reviewed decision: design and test the normal Free Kitchen experience first.',
 }
 
 const text = (value) => String(value ?? '').trim()
@@ -107,10 +108,9 @@ function ecosystemTargets() {
     let developerId = ''
     try {
       const env = readFileSync(path.resolve(app.workspace, '.env'), 'utf8')
-      developerId = text(env.match(/^DEVELOPER_(?:ID|UID)=(.+)$/m)?.[1]).replace(
-        /^['"]|['"]$/g,
-        ''
-      )
+      developerId = text(
+        env.match(/^DEVELOPER_(?:ID|UID)=(.+)$/m)?.[1]
+      ).replace(/^['"]|['"]$/g, '')
     } catch {}
     targets.get(ecosystem).apps.push({
       key: app.key,
@@ -165,7 +165,12 @@ function hasOverride(session, app, membership) {
 async function buildPlan(sessions) {
   const operations = []
   const blockers = []
-  const counts = { users: 0, appUsers: 0, developers: 0, subscriptions: { free: 0, premium: 0 } }
+  const counts = {
+    users: 0,
+    appUsers: 0,
+    developers: 0,
+    subscriptions: { free: 0, premium: 0, business: 0 },
+  }
 
   for (const session of sessions) {
     const identityDb = getFirestore(session.app, session.identityDatabaseId)
@@ -173,9 +178,13 @@ async function buildPlan(sessions) {
     for (const user of users.docs) {
       counts.users += 1
       const value = user.data()
-      const missing = USER_FIELDS.filter((field) => typeof value[field] !== 'string')
+      const missing = USER_FIELDS.filter(
+        (field) => typeof value[field] !== 'string'
+      )
       const unknown = Object.keys(value).filter(
-        (field) => !USER_FIELDS.includes(field) && !['created', 'updated'].includes(field)
+        (field) =>
+          !USER_FIELDS.includes(field) &&
+          !['created', 'updated'].includes(field)
       )
       if (missing.length || unknown.length) {
         blockers.push({
@@ -190,7 +199,14 @@ async function buildPlan(sessions) {
       const remove = ['created', 'updated'].filter((field) => field in value)
       if (remove.length) {
         operations.push(
-          operation(session, session.identityDatabaseId, 'users', user, {}, remove)
+          operation(
+            session,
+            session.identityDatabaseId,
+            'users',
+            user,
+            {},
+            remove
+          )
         )
       }
     }
@@ -210,7 +226,7 @@ async function buildPlan(sessions) {
         const role = configuredDeveloper ? 'dev' : value.role
         const subscription = hasOverride(session, app, membership)
           ? 'free'
-          : value.subscription === 'free' || value.subscription === 'premium'
+          : ['free', 'premium', 'business'].includes(value.subscription)
             ? value.subscription
             : value.is_premium === true
               ? 'premium'
@@ -222,12 +238,16 @@ async function buildPlan(sessions) {
           (field) => !allowedBefore.includes(field)
         )
         const validStamps =
-          value.created && typeof value.created === 'object' &&
-          value.updated && typeof value.updated === 'object'
+          value.created &&
+          typeof value.created === 'object' &&
+          value.updated &&
+          typeof value.updated === 'object'
         if (
           !['user', 'admin', 'dev'].includes(role) ||
-          !['free', 'premium'].includes(subscription) ||
-          !['pending', 'completed', 'skipped'].includes(value.onboarding_status) ||
+          !['free', 'premium', 'business'].includes(subscription) ||
+          !['pending', 'completed', 'skipped'].includes(
+            value.onboarding_status
+          ) ||
           !validStamps ||
           unknown.length
         ) {
@@ -271,7 +291,9 @@ async function buildPlan(sessions) {
       ecosystem: session.ecosystem,
       projectId: session.projectId,
       identityDatabaseId: session.identityDatabaseId,
-      appDatabases: [...new Set(session.apps.map((app) => app.databaseId))].sort(),
+      appDatabases: [
+        ...new Set(session.apps.map((app) => app.databaseId)),
+      ].sort(),
     })),
     override: MISEBOX_FREE_DEVELOPER_OVERRIDE,
     counts,
@@ -298,8 +320,13 @@ function snapshotFor(sessions, entry) {
 async function assertPreconditions(sessions, operations) {
   for (const entry of operations) {
     const snapshot = await snapshotFor(sessions, entry)
-    if (!snapshot.exists || sha256(snapshot.data()) !== entry.preconditionSha256) {
-      throw new Error(`Stale migration target: ${entry.collectionPath}/${entry.id}`)
+    if (
+      !snapshot.exists ||
+      sha256(snapshot.data()) !== entry.preconditionSha256
+    ) {
+      throw new Error(
+        `Stale migration target: ${entry.collectionPath}/${entry.id}`
+      )
     }
   }
 }
@@ -356,7 +383,12 @@ async function verify(sessions) {
     for (const user of users.docs) {
       const fields = Object.keys(user.data()).sort()
       if (stableJson(fields) !== stableJson([...USER_FIELDS].sort())) {
-        failures.push({ projectId: session.projectId, databaseId: session.identityDatabaseId, path: user.ref.path, fields })
+        failures.push({
+          projectId: session.projectId,
+          databaseId: session.identityDatabaseId,
+          path: user.ref.path,
+          fields,
+        })
       }
     }
     for (const app of session.apps) {
@@ -371,9 +403,16 @@ async function verify(sessions) {
         if (
           stableJson(fields) !== stableJson([...APP_USER_FIELDS].sort()) ||
           !['user', 'admin', 'dev'].includes(value.role) ||
-          !['free', 'premium'].includes(value.subscription)
+          !['free', 'premium', 'business'].includes(value.subscription)
         ) {
-          failures.push({ projectId: session.projectId, databaseId: app.databaseId, path: membership.ref.path, fields, role: value.role, subscription: value.subscription })
+          failures.push({
+            projectId: session.projectId,
+            databaseId: app.databaseId,
+            path: membership.ref.path,
+            fields,
+            role: value.role,
+            subscription: value.subscription,
+          })
         }
       }
     }
@@ -394,7 +433,8 @@ try {
     console.log(JSON.stringify(plan, null, 2))
     process.exitCode = plan.blockers.length ? 1 : 0
   } else {
-    if (plan.blockers.length) throw new Error('Migration has unresolved blockers.')
+    if (plan.blockers.length)
+      throw new Error('Migration has unresolved blockers.')
     if (text(args.confirm) !== plan.planSha256) {
       throw new Error(`Apply requires --confirm ${plan.planSha256}.`)
     }
@@ -406,9 +446,24 @@ try {
     await applyOperations(sessions, plan.operations)
     const failures = await verify(sessions)
     if (failures.length) {
-      throw new Error(`Post-write verification failed: ${JSON.stringify(failures)}`)
+      throw new Error(
+        `Post-write verification failed: ${JSON.stringify(failures)}`
+      )
     }
-    console.log(JSON.stringify({ mode: 'apply', planSha256: plan.planSha256, counts: plan.counts, operations: plan.operations.length, backupArtifact, verified: true }, null, 2))
+    console.log(
+      JSON.stringify(
+        {
+          mode: 'apply',
+          planSha256: plan.planSha256,
+          counts: plan.counts,
+          operations: plan.operations.length,
+          backupArtifact,
+          verified: true,
+        },
+        null,
+        2
+      )
+    )
   }
 } finally {
   await Promise.all(sessions.map((session) => deleteApp(session.app)))

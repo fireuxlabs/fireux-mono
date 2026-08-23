@@ -35,6 +35,11 @@ function assertAccess(input, expected) {
     expected.hasPremiumSubscription,
     `${expected.label}: Premium subscription`
   )
+  assert.equal(
+    access.hasBusinessSubscription,
+    expected.hasBusinessSubscription,
+    `${expected.label}: Business subscription`
+  )
 }
 
 export async function run({ repoRoot }) {
@@ -47,6 +52,7 @@ export async function run({ repoRoot }) {
       hasMembership: false,
       hasAdminAuthority: false,
       hasPremiumSubscription: false,
+      hasBusinessSubscription: false,
     },
     {
       label: 'Free member',
@@ -56,6 +62,7 @@ export async function run({ repoRoot }) {
       hasMembership: true,
       hasAdminAuthority: false,
       hasPremiumSubscription: false,
+      hasBusinessSubscription: false,
     },
     {
       label: 'Premium member',
@@ -65,6 +72,17 @@ export async function run({ repoRoot }) {
       hasMembership: true,
       hasAdminAuthority: false,
       hasPremiumSubscription: true,
+      hasBusinessSubscription: false,
+    },
+    {
+      label: 'Business member',
+      membership: { role: 'user', subscription: 'business' },
+      role: 'user',
+      subscription: 'business',
+      hasMembership: true,
+      hasAdminAuthority: false,
+      hasPremiumSubscription: true,
+      hasBusinessSubscription: true,
     },
     {
       label: 'Admin member',
@@ -74,6 +92,7 @@ export async function run({ repoRoot }) {
       hasMembership: true,
       hasAdminAuthority: true,
       hasPremiumSubscription: false,
+      hasBusinessSubscription: false,
     },
     {
       label: 'Free developer',
@@ -83,6 +102,7 @@ export async function run({ repoRoot }) {
       hasMembership: true,
       hasAdminAuthority: true,
       hasPremiumSubscription: false,
+      hasBusinessSubscription: false,
     },
     {
       label: 'Premium developer',
@@ -92,6 +112,7 @@ export async function run({ repoRoot }) {
       hasMembership: true,
       hasAdminAuthority: true,
       hasPremiumSubscription: true,
+      hasBusinessSubscription: false,
     },
   ]
 
@@ -145,7 +166,7 @@ export async function run({ repoRoot }) {
   assert.match(userAppModel, /role:\s*AppUserRole/)
   assert.match(userAppModel, /subscription:\s*AppUserSubscription/)
   assert.match(userAppModel, /'user', 'admin', 'dev'/)
-  assert.match(userAppModel, /'free', 'premium'/)
+  assert.match(userAppModel, /'free', 'premium', 'business'/)
   assert.doesNotMatch(
     userAppModel,
     /\b(?:access_?tier|tier|is_premium):/,

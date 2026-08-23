@@ -11,6 +11,7 @@ import type {
   CurrentAppContextResponse,
   CurrentAppMembership,
 } from '../../models/app-context.model.ts'
+import { isAppUserSubscription } from '../../models/app-user.model.ts'
 
 function conflict(message: string): never {
   throw createError({ statusCode: 409, statusMessage: message })
@@ -24,7 +25,7 @@ function membershipDto(
   if (value.role !== 'admin' && value.role !== 'user' && value.role !== 'dev') {
     conflict(`App membership ${id} has an invalid role.`)
   }
-  if (value.subscription !== 'free' && value.subscription !== 'premium') {
+  if (!isAppUserSubscription(value.subscription)) {
     conflict(`App membership ${id} has an invalid subscription.`)
   }
   if (
@@ -61,10 +62,7 @@ export async function readCurrentAppContext(event: H3Event) {
     'Firebase identity required.',
     { allowAnonymous: true }
   )
-  const {
-    appId,
-    profiles: configuredProfiles,
-  } = useFireUXConfig(event)
+  const { appId, profiles: configuredProfiles } = useFireUXConfig(event)
   const runtimeDb = getRuntimeFirestore()
   const identityDb = getRuntimeIdentityFirestore()
   const appRef = runtimeDb.collection('apps').doc(appId)

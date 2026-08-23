@@ -1,12 +1,11 @@
-// Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for navigation.
 import { computed } from 'vue'
 import { useRoute } from '#imports'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useNav } from '../../navigation/useNav'
 import {
   normalizeWorkspaceFamily,
   workspaceFamilyFromRouteContext,
 } from './workspaceRoutes'
-import { useWorkspace } from './useWorkspace'
 import type { NavItem, NavPosition } from '../../navigation/types'
 
 function normalizePath(value: unknown): string {
@@ -26,20 +25,15 @@ function isWorkspaceCreatePath(path: string) {
 export const useWorkspaceNav = () => {
   const nav = useNav(['workspace'])
   const route = useRoute()
-  const workspaceRoot = useWorkspace()
-  const familyNames = workspaceRoot.families
-    .map((value) => normalizeWorkspaceFamily(value))
+  const workspaces = useFireUXConfig()
+    .workspaces.map((value) => normalizeWorkspaceFamily(value))
     .filter(Boolean)
-  const enabledFamilies = new Set(familyNames)
-  const familyWorkspaces = new Map(
-    familyNames.map((family) => [family, useWorkspace(family)] as const)
-  )
-  const activeFamily = computed(
-    () =>
-      workspaceFamilyFromRouteContext(
-        normalizePath(route.path),
-        route.query.family
-      ) || workspaceRoot.activeFamily.value
+  const enabledWorkspaces = new Set(workspaces)
+  const currentWorkspace = computed(() =>
+    workspaceFamilyFromRouteContext(
+      normalizePath(route.path),
+      route.query.family
+    )
   )
   const baseNavFilter = (item: NavItem) => {
     const path = normalizePath(item.to)
@@ -48,20 +42,14 @@ export const useWorkspaceNav = () => {
 
     const itemFamily = workspaceFamilyFromRouteContext(path)
     if (!itemFamily) return false
-    if (!enabledFamilies.has(itemFamily)) return false
-    if (
-      isWorkspaceCreatePath(path) &&
-      !familyWorkspaces.get(itemFamily)?.canCreateTarget()
-    ) {
-      return false
-    }
+    if (!enabledWorkspaces.has(itemFamily)) return false
 
-    const family = activeFamily.value
-    if (!family) {
+    const workspace = currentWorkspace.value
+    if (!workspace) {
       return isWorkspaceRootPath(path)
     }
 
-    if (itemFamily !== family) return false
+    if (itemFamily !== workspace) return false
 
     return true
   }
@@ -89,14 +77,9 @@ export const useWorkspaceNav = () => {
       .sort((left, right) => canonicalOrder(left) - canonicalOrder(right))
   )
   const desktop = computed(() => items.value.filter((item) => item.desktop))
-  const mobile = computed(() => items.value.filter((item) => item.mobile))
 
   return {
-    ...nav,
-    baseNavFilter,
     resolveItemPosition,
-    items,
     desktop,
-    mobile,
   }
 }

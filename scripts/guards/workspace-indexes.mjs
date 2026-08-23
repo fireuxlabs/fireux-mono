@@ -85,11 +85,13 @@ export async function run(ctx) {
           .map((violation) => `  - ${violation}`),
         '',
         '[guard] Fix:',
-        '- Keep WorkspaceXIndex on the selected → targets → debug rhythm and shared useWorkspaceIndex adapter.',
+        '- Keep the canonical Workspace index current-only: one persisted Entity id and set/clear actions.',
+        '- Quarantine unmigrated directory selectors behind useWorkspaceDirectoryIndex.',
+        '- Keep the Kitchen entry index current-only: current Kitchen, request state, and Create when empty.',
         '- Render selected state through WorkspaceSelectedTarget and forward @clear="actions.clear".',
         '- Render target pending/error/ready/empty state only through WorkspaceTargetCollection.',
         '- Resolve membership target IDs and outcomes once in the family core; index adapters only consume that authority.',
-        '- Bind Kitchen selection to its live/demo target items and outcome, with auto-selection left to useWorkspaceIndex.',
+        '- Keep current Entity authority and domain reads inside the owning family.',
         '- Stamp selected-parent data at each provider boundary as { type, value }; persist and validate { id, type }.',
         '- Derive isDemo, readOnly, and canWrite from the selected typed data; missing or mismatched provenance stays read-only and inactive.',
         '- Keep operation/detail views source-ignorant and gate every mutation adapter before its first side effect.',
@@ -223,7 +225,7 @@ function validateWorkspaceTargetEndpoints({ repoRoot, violations }) {
   }
   assertMatch(
     kitchen,
-    /useWorkspaceTargetRequest<KitchenWorkspaceTargetItem>\(['"]kitchen['"]/,
+    /useWorkspaceTargetRequest<KitchenWorkspaceKitchen>\(\s*['"]kitchen['"]/,
     kitchenRelative,
     'Kitchen must reuse the shared request lifecycle',
     violations
@@ -267,7 +269,7 @@ function validateWorkspaceTargetEndpoints({ repoRoot, violations }) {
 
 function validateWorkspaceDataContract({ files, repoRoot, violations }) {
   const indexRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceIndex.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts'
   const dataRelative =
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceData.ts'
   const selectionRelative =
@@ -316,18 +318,16 @@ function validateWorkspaceDataContract({ files, repoRoot, violations }) {
   )
 
   for (const pattern of [
-    /workspaceIndex:\s*\{/,
-    /selection:\s*selection\.value/,
-    /runtime:\s*runtime\.value/,
-    /show:\s*sections\.value\.targets\.show/,
-    /outcome:\s*targetOutcome\.value/,
-    /count:\s*counts\.value\.targets/,
+    /export function useWorkspace\(workspace:\s*string\)/,
+    /currentId:\s*computed\(/,
+    /setCurrent/,
+    /clearCurrent/,
   ]) {
     assertMatch(
       indexSource,
       pattern,
       indexRelative,
-      'must expose the shared selection, runtime, and target debug anatomy',
+      'must persist only one current Entity id and expose set/clear actions',
       violations
     )
   }
@@ -603,47 +603,25 @@ function validateMutationWriteGates({ files, repoRoot, violations }) {
 function validateSharedWorkspaceSource({ repoRoot, violations }) {
   const relative =
     'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspace.ts'
-  const selectionRelative =
-    'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceSelection.ts'
   const fullPath = path.join(repoRoot, relative)
   if (!existsSync(fullPath)) {
-    violations.push(`${relative} (missing shared Workspace source authority)`)
+    violations.push(`${relative} (missing shared current Workspace authority)`)
     return
   }
 
   const source = readFileSync(fullPath, 'utf8')
-  const selectionSource = readRequiredSource(
-    repoRoot,
-    selectionRelative,
-    'missing shared Workspace selection authority',
+  assertMatch(
+    source,
+    /useState<string>\(key/,
+    relative,
+    'Workspace must use one App-and-Workspace-keyed reactive current id',
     violations
   )
   assertMatch(
     source,
-    /useState<WorkspaceSource>\(\s*`fireux-workspace-\$\{appScope\}-\$\{normalizedFamily\}-source-state`/,
+    /currentId\.value = value\s*cookie\.value = value/,
     relative,
-    'Workspace source must use one App-and-family-keyed reactive state across composable instances',
-    violations
-  )
-  assertMatch(
-    source,
-    /sourceState\.value = nextSource\s*sourceCookie\.value = nextSource/,
-    relative,
-    'Workspace source changes must update shared reactive state and its persistence cookie together',
-    violations
-  )
-  assertMatch(
-    selectionSource,
-    /`fireux-workspace-\$\{appScope\}-\$\{normalizedFamily\}-selection-state`/,
-    selectionRelative,
-    'Workspace selection must be isolated by App and family',
-    violations
-  )
-  assertMatch(
-    selectionSource,
-    /state\.value = value\s*stateCookie\.value = value/,
-    selectionRelative,
-    'Workspace selection must commit reactive state and persistence together',
+    'Workspace current id changes must update reactive state and persistence together',
     violations
   )
 }
@@ -684,7 +662,6 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
     source,
     `Workspace${family}IndexTargets`
   )
-  const debugTag = readSelfClosingTag(source, 'DevDebugPanel')
 
   assertMatch(
     source,
@@ -693,6 +670,17 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
     'index must use the compact shared workspace surface',
     violations
   )
+  if (family === 'Kitchen') {
+    validateKitchenCurrentIndex({
+      source,
+      relative,
+      selectedPath,
+      files,
+      repoRoot,
+      violations,
+    })
+    return
+  }
   if (!selectedTag) {
     violations.push(`${relative} (missing Workspace${family}IndexSelected)`)
   } else if (!/@clear=["']actions\.clear["']/.test(selectedTag)) {
@@ -734,29 +722,14 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
       violations
     )
   }
-  if (!debugTag) {
-    violations.push(`${relative} (missing DevDebugPanel)`)
-  } else {
-    assertMatch(
-      debugTag,
-      /:derived=["']debug["']/,
-      relative,
-      'debug panel must receive the index debug state',
-      violations
-    )
-  }
   const selectedPosition = source.indexOf(`<Workspace${family}IndexSelected`)
   const targetsPosition = source.indexOf(`<Workspace${family}IndexTargets`)
-  const debugPosition = source.indexOf('<DevDebugPanel')
   if (
     selectedPosition >= 0 &&
     targetsPosition >= 0 &&
-    debugPosition >= 0 &&
-    !(selectedPosition < targetsPosition && targetsPosition < debugPosition)
+    !(selectedPosition < targetsPosition)
   ) {
-    violations.push(
-      `${relative} (index order must be selected → targets → debug)`
-    )
+    violations.push(`${relative} (index order must be selected → targets)`)
   }
   assertMatch(
     source,
@@ -777,6 +750,100 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   })
   validateComposable({ family, files, repoRoot, violations })
   validateTargetAuthority({ family, files, repoRoot, violations })
+}
+
+function validateKitchenCurrentIndex({
+  source,
+  relative,
+  selectedPath,
+  files,
+  repoRoot,
+  violations,
+}) {
+  assertMatch(
+    source,
+    /<WorkspaceKitchenIndexSelected\b/,
+    relative,
+    'Kitchen index must render its current Kitchen',
+    violations
+  )
+  assertMatch(
+    source,
+    /<WorkspaceKitchenCreate\b/,
+    relative,
+    'Kitchen index must expose Create when the current Kitchen is empty',
+    violations
+  )
+  assertNoMatch(
+    source,
+    /<WorkspaceKitchenIndexTargets\b/,
+    relative,
+    'Kitchen index must not own the User Kitchen collection or switcher',
+    violations
+  )
+  assertMatch(
+    source,
+    /\buseKitchenWorkspaceIndex\s*\(/,
+    relative,
+    'Kitchen index must call useKitchenWorkspaceIndex',
+    violations
+  )
+
+  if (!existsSync(selectedPath)) {
+    violations.push(
+      `${relativePath(repoRoot, selectedPath)} (missing current-Kitchen presentation)`
+    )
+  } else {
+    const selectedSource = readFileSync(selectedPath, 'utf8')
+    assertNoMatch(
+      selectedSource,
+      /<WorkspaceSelectedTarget\b|\bemit\(['"]clear['"]\)/,
+      relativePath(repoRoot, selectedPath),
+      'current Kitchen presentation must not own Workspace switching',
+      violations
+    )
+  }
+
+  const candidates = files.filter(
+    (candidate) => path.basename(candidate) === 'useKitchenWorkspaceIndex.ts'
+  )
+  if (candidates.length !== 1) {
+    violations.push(
+      `useKitchenWorkspaceIndex.ts (expected one current-Kitchen resolver; found ${candidates.length})`
+    )
+    return
+  }
+  const composablePath = candidates[0]
+  const composableRelative = relativePath(repoRoot, composablePath)
+  const composable = readFileSync(composablePath, 'utf8')
+  assertMatch(
+    composable,
+    /['"]\/api\/workspace\/kitchen\/current['"]/,
+    composableRelative,
+    'Kitchen index must resolve one current Kitchen from Kitchen authority',
+    violations
+  )
+  assertMatch(
+    composable,
+    /useWorkspace\(['"]kitchen['"]\)/,
+    composableRelative,
+    'Kitchen index must persist only its current Kitchen id',
+    violations
+  )
+  assertMatch(
+    composable,
+    /current:\s*computed\(\(\)\s*=>\s*\(\{\s*kitchen:\s*kitchen\.value,\s*id:\s*id\.value,\s*outcome:\s*outcome\.value/,
+    composableRelative,
+    'Kitchen index must expose one current Kitchen and its request outcome',
+    violations
+  )
+  assertNoMatch(
+    composable,
+    /\buseWorkspaceDirectoryIndex\s*\(|\buseKitchenWorkspace\s*\(/,
+    composableRelative,
+    'Kitchen current resolution must not rebuild the generic collection index or capability runtime',
+    violations
+  )
 }
 
 function validateSelected({ selectedPath, family, repoRoot, violations }) {
@@ -883,60 +950,10 @@ function validateComposable({ family, files, repoRoot, violations }) {
 
   for (const candidate of candidates) {
     const source = readFileSync(candidate, 'utf8')
-    if (/\buseWorkspaceIndex\s*\(\s*\{/.test(source)) continue
+    if (/\buseWorkspaceDirectoryIndex\s*\(\s*\{/.test(source)) continue
     violations.push(
-      `${relativePath(repoRoot, candidate)} (workspace index adapter must delegate to useWorkspaceIndex)`
+      `${relativePath(repoRoot, candidate)} (unmigrated directory index must delegate to useWorkspaceDirectoryIndex)`
     )
-  }
-
-  if (family === 'Kitchen') {
-    for (const candidate of candidates) {
-      const source = readFileSync(candidate, 'utf8')
-      const relative = relativePath(repoRoot, candidate)
-      if (
-        /kitchenId:\s*workspaceSelection\.hasSelection/.test(source) ||
-        /showTargetChooser[\s\S]*workspaceSelection\.hasSelection/.test(source)
-      ) {
-        violations.push(
-          `${relative} (persisted Kitchen selection and chooser visibility must not depend on hydrated selected-object state)`
-        )
-      }
-      assertMatch(
-        source,
-        /const showTargetChooser = computed\(\s*\(\) => true\s*\)/,
-        relative,
-        'Kitchen selector must keep the authoritative target collection visible',
-        violations
-      )
-      assertMatch(
-        source,
-        /demoTargets:\s*\{\s*show:\s*workspaceRuntime\.allowDemo\.value\s*&&\s*index\.sections\.value\.targets\.show/,
-        relative,
-        'Kitchen Demo chooser visibility must follow the shared Live chooser',
-        violations
-      )
-    }
-  }
-
-  if (family === 'Kitchen' || family === 'Project') {
-    for (const candidate of candidates) {
-      const source = readFileSync(candidate, 'utf8')
-      const relative = relativePath(repoRoot, candidate)
-      assertMatch(
-        source,
-        /resolveWorkspaceSelectedTargetOutcome\s*\(/,
-        relative,
-        'Kitchen and Project must derive selected state through the shared outcome resolver',
-        violations
-      )
-      assertMatch(
-        source,
-        /selectedOutcome:\s*selectedOutcome\.value/,
-        relative,
-        'Kitchen and Project debug must expose the selected outcome',
-        violations
-      )
-    }
   }
 }
 

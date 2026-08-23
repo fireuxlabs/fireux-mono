@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import {
   CONSOLE_ROOT,
   type WorkspaceFamily,
@@ -6,7 +7,6 @@ import {
   toWorkspaceFamilyLabel,
   toWorkspaceFamilyPath,
 } from './workspaceRoutes'
-import { useWorkspace } from './useWorkspace'
 
 type WorkspaceEntryFamily = {
   key: WorkspaceFamily
@@ -21,11 +21,11 @@ export type WorkspaceEntryAction = {
 }
 
 export function useWorkspaceEntryCta() {
-  const workspaceRoot = useWorkspace()
+  const fireux = useFireUXConfig()
   const workspaces = computed<WorkspaceEntryFamily[]>(() =>
     Array.from(
       new Set(
-        workspaceRoot.families
+        fireux.workspaces
           .map((value) => normalizeWorkspaceFamily(value))
           .filter(Boolean)
       )
@@ -35,8 +35,7 @@ export function useWorkspaceEntryCta() {
     }))
   )
 
-  const hasWorkspaces = computed(() => workspaces.value.length > 0)
-  const hasWorkspaceEntry = computed(() => hasWorkspaces.value)
+  const hasWorkspaceEntry = computed(() => workspaces.value.length > 0)
   const workspaceEntryPath = computed(() => workspaces.value[0]?.path || '/')
   const workspaceActions = computed<WorkspaceEntryAction[]>(() =>
     workspaces.value.length
@@ -51,10 +50,8 @@ export function useWorkspaceEntryCta() {
 
   return {
     workspaceActions,
-    hasWorkspaces,
     hasWorkspaceEntry,
     workspaceEntryPath,
     workspaceRootPath: CONSOLE_ROOT,
-    workspaces,
   }
 }

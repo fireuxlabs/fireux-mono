@@ -29,10 +29,7 @@
           :key="card.id"
           v-bind="card"
           :link="true"
-          :data-service-state="
-            isRecipeInService(card.id) ? 'active' : 'inactive'
-          "
-          :class="isRecipeInService(card.id) ? '' : 'opacity-45 saturate-50'"
+          data-service-state="active"
         />
       </div>
 
@@ -56,8 +53,7 @@ import { computed } from 'vue'
 import { useRecipeInterface } from '../../../../composables/recipe/useRecipeInterface'
 import { useKitchenRecipesWorkspace } from '../../../../composables/workspace/operations/Recipes/useKitchenRecipesWorkspace'
 
-const { recipes, pending, error, outcome, debug, isRecipeInService } =
-  useKitchenRecipesWorkspace()
+const { recipes, pending, error, outcome, debug } = useKitchenRecipesWorkspace()
 const { cell } = useRecipeInterface()
 const cards = computed(() =>
   recipes.value

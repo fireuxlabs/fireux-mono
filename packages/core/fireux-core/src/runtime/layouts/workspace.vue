@@ -118,99 +118,15 @@
     </UDashboardSidebar>
 
     <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
-      <UDashboardPanel
-        v-if="selectionAccessPending"
-        id="workspace-selection-pending"
-      >
-        <template #header>
-          <LayoutsWorkspaceNavbar :title="`Checking ${familyLabel} access`" />
-        </template>
-
-        <template #body>
-          <section class="flex min-h-[55vh] items-center">
-            <UAlert
-              class="w-full max-w-2xl"
-              color="neutral"
-              variant="subtle"
-              icon="i-lucide-loader-circle"
-              :title="`Checking ${familyLabel} access`"
-              description="The selected workspace is being verified before this page opens."
-            />
-          </section>
-        </template>
-      </UDashboardPanel>
-
-      <UDashboardPanel
-        v-else-if="selectionAccessError"
-        id="workspace-selection-unavailable"
-      >
-        <template #header>
-          <LayoutsWorkspaceNavbar
-            :title="`${familyLabel} access unavailable`"
-          />
-        </template>
-
-        <template #body>
-          <section class="flex min-h-[55vh] items-center">
-            <UAlert
-              class="w-full max-w-2xl"
-              color="error"
-              variant="subtle"
-              icon="i-lucide-triangle-alert"
-              :title="`${familyLabel} access could not be verified`"
-              description="This protected workspace page stays closed until access can be verified."
-            >
-              <template #actions>
-                <UButton
-                  color="neutral"
-                  variant="soft"
-                  icon="i-lucide-refresh-cw"
-                  @click="refreshTargetAccess"
-                >
-                  Retry
-                </UButton>
-              </template>
-            </UAlert>
-          </section>
-        </template>
-      </UDashboardPanel>
-
-      <UDashboardPanel
-        v-else-if="selectionBlocked"
-        id="workspace-selection-required"
-      >
-        <template #header>
-          <LayoutsWorkspaceNavbar :title="selectionRequiredTitle" />
-        </template>
-
-        <template #body>
-          <section class="flex min-h-[55vh] items-center">
-            <UAlert
-              class="w-full max-w-2xl"
-              color="neutral"
-              variant="subtle"
-              icon="i-lucide-list-checks"
-              :title="selectionRequiredTitle"
-              :description="selectionRequiredDescription"
-              :actions="[
-                {
-                  label: selectionRequiredActionLabel,
-                  to: familyPath,
-                  icon: 'i-lucide-arrow-right',
-                },
-              ]"
-            />
-          </section>
-        </template>
-      </UDashboardPanel>
-
-      <NuxtErrorBoundary v-else>
+      <NuxtErrorBoundary>
         <slot />
 
         <template #error="{ clearError: clearPageError }">
           <UDashboardPanel id="workspace-page-unavailable">
             <template #header>
-              <LayoutsWorkspaceNavbar :title="`${familyLabel} unavailable`" />
+              <LayoutsWorkspaceNavbar
+                :title="`${workspaceLabel} unavailable`"
+              />
             </template>
 
             <template #body>
@@ -220,7 +136,7 @@
                   color="error"
                   variant="subtle"
                   icon="i-lucide-triangle-alert"
-                  :title="`${familyLabel} page unavailable`"
+                  :title="`${workspaceLabel} page unavailable`"
                   description="This page could not be loaded. The rest of the Workspace is still available."
                 >
                   <template #actions>
@@ -242,6 +158,19 @@
     </div>
   </UDashboardGroup>
 
+  <ClientOnly>
+    <UBadge
+      v-if="roleLens"
+      :label="roleLens.label"
+      :icon="roleLens.icon"
+      :color="roleLens.color"
+      variant="soft"
+      size="sm"
+      class="pointer-events-none fixed right-4 bottom-4 z-50 shadow-lg ring-1 ring-default"
+      aria-live="off"
+    />
+  </ClientOnly>
+
   <LayoutsSharedNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
@@ -251,37 +180,41 @@
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: share the notification slideover owner across workspace and dashboard.
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useRoute } from '#imports'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import {
-  workspaceOperationFromPath,
   workspaceFamilyFromRouteContext,
   toWorkspaceFamilyLabel,
-  toWorkspaceFamilyPath,
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
-import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
-import { useWorkspaceRouteTargetAccess } from '../composables/fireux/workspace/useWorkspaceRouteTargetAccess'
+import { useUser } from '../user/composables/useUser'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
-const workspaceRoot = useWorkspace()
-const route = useRoute()
-const family = computed(
-  () =>
-    workspaceFamilyFromRouteContext(
-      String(route.path || ''),
-      route.query.family
-    ) || workspaceRoot.activeFamily.value
-)
-const requiresSelection = computed(() => {
-  const nav = route.meta.nav as Record<string, unknown> | undefined
-  return (
-    route.meta.requiresSelection === true || nav?.requiresSelection === true
-  )
+const { appUser } = useUser()
+const roleLens = computed(() => {
+  if (appUser.value?.role === 'dev') {
+    return {
+      label: 'Developer view',
+      icon: 'i-lucide-code-2',
+      color: 'warning' as const,
+    }
+  }
+  if (appUser.value?.role === 'admin') {
+    return {
+      label: 'Admin view',
+      icon: 'i-lucide-shield-check',
+      color: 'info' as const,
+    }
+  }
+  return null
 })
+const route = useRoute()
+const workspace = computed(() =>
+  workspaceFamilyFromRouteContext(String(route.path || ''), route.query.family)
+)
 const topNav = computed(() =>
   workspaceNav.desktop.value.filter(
     (item) => workspaceNav.resolveItemPosition(item) === 'top'
@@ -320,47 +253,7 @@ const prominentFamilyRootNav = computed(() =>
   familyRootNav.value.filter((item) => item.prominent)
 )
 
-watch(
-  () => String(route.path || ''),
-  (path) => {
-    const routeFamily = workspaceFamilyFromRouteContext(
-      path,
-      route.query.family
-    )
-    if (!routeFamily) return
-    workspaceRoot.setActiveContext(
-      routeFamily,
-      workspaceOperationFromPath(path)
-    )
-  },
-  { immediate: true }
-)
-const familyLabel = computed(
-  () => toWorkspaceFamilyLabel(family.value) || 'Workspace'
-)
-const familyPath = computed(() => {
-  const configuredEntry = familyRootNav.value.find(
-    (item) => item.key === `workspace-${family.value}`
-  )?.to
-  return configuredEntry ||
-    (family.value ? toWorkspaceFamilyPath(family.value) : '/workspace')
-})
-const targetAccess = useWorkspaceRouteTargetAccess({
-  family,
-  requiresSelection,
-})
-const selectionAccessPending = targetAccess.pending
-const selectionAccessError = targetAccess.error
-const selectionBlocked = targetAccess.blocked
-const refreshTargetAccess = targetAccess.refresh
-const selectionRequiredTitle = computed(
-  () => `Select ${familyLabel.value} first`
-)
-const selectionRequiredDescription = computed(
-  () =>
-    `This workspace page needs an active ${familyLabel.value.toLowerCase()} before it can load.`
-)
-const selectionRequiredActionLabel = computed(
-  () => `Choose ${familyLabel.value}`
+const workspaceLabel = computed(
+  () => toWorkspaceFamilyLabel(workspace.value) || 'Workspace'
 )
 </script>

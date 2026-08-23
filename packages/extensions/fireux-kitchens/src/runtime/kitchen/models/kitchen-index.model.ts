@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: define the sparse bounded published Kitchen index projection.
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: define the bounded authenticated target projection.
+// Concurrent edit — 2026-08-23 CEST — Kitchen Workspace reset: define the authenticated Kitchen projection.
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette workspace: project server-authorized write capability with resolved Menu style.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type { KitchenFulfilment } from './fulfilment.model.ts'
@@ -11,9 +11,9 @@ import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Theme } from 'fireux-core/types/theme'
 
-export const KITCHEN_WORKSPACE_TARGET_LIMIT = 50
+export const KITCHEN_USER_LIMIT = 50
 
-export type KitchenWorkspaceTargetItem = {
+export type KitchenWorkspaceKitchen = {
   id: string
   can_write: boolean
   place_id?: string
@@ -55,8 +55,14 @@ export type KitchenWorkspaceTargetItem = {
   route_scope: 'live'
 }
 
-export type KitchenWorkspaceTargetsResponse = {
+export type KitchenWorkspaceKitchensResponse = {
   ok: true
   family: 'kitchen'
-  items: KitchenWorkspaceTargetItem[]
+  items: KitchenWorkspaceKitchen[]
+}
+
+export type KitchenWorkspaceCurrentResponse = {
+  ok: true
+  family: 'kitchen'
+  current: KitchenWorkspaceKitchen | null
 }

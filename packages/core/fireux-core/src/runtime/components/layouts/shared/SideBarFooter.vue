@@ -28,11 +28,24 @@
       :show-badges="false"
       class="mt-auto w-full"
     />
+
+    <UButton
+      v-else-if="mounted && authUser?.isAnonymous"
+      :to="signInTo"
+      :label="collapsed ? undefined : 'Sign in'"
+      icon="i-lucide-log-in"
+      color="primary"
+      variant="soft"
+      class="mt-auto w-full"
+      :class="collapsed ? 'justify-center' : 'justify-start'"
+      :aria-label="collapsed ? 'Sign in' : undefined"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../user/composables/useUser'
@@ -49,11 +62,16 @@ const props = withDefaults(
 )
 
 const fireux = useFireUXConfig()
-const { isAuthenticated, signOutUser } = useAuth()
+const { currentUser: authUser, isAuthenticated, signOutUser } = useAuth()
+const route = useRoute()
 const { currentUser, pill: userInterface, isLoading } = useUser()
 
 const mounted = ref(false)
 const signOutLoading = ref(false)
+const signInTo = computed(() => ({
+  path: '/auth',
+  query: { redirect: route.fullPath || '/' },
+}))
 
 onMounted(() => {
   mounted.value = true

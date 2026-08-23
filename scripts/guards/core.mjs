@@ -130,8 +130,6 @@ function checkFireuxCoreContracts(pkgPath) {
   const appStatus = source('src/runtime/app/server/index/status.ts')
   const appConfigType = source('src/config/app/types.ts')
   const appConfigBuilder = source('src/config/app/fireux.config.ts')
-  const workspace = source('src/runtime/composables/fireux/workspace/useWorkspace.ts')
-  const workspacePolicy = source('src/runtime/utils/workspace-policy.ts')
   const appConfig = source('src/config/app/fireux.config.ts')
   const metaContent = source('src/config/app/meta-content.ts')
   const metaContentLoader = source('src/config/app/meta-content-loader.ts')
@@ -165,14 +163,6 @@ function checkFireuxCoreContracts(pkgPath) {
   if (!runtimeView.includes('useRuntimeConfig(event)')) {
     violations.push(
       'FireUXConfig must support the shared event-aware browser/server reader.'
-    )
-  }
-  if (
-    !workspace.includes('resolveWorkspaceCanCreate') ||
-    !workspacePolicy.includes("role !== 'tenant'")
-  ) {
-    violations.push(
-      'Workspace UI and trusted onboarding must share the Core creation policy.'
     )
   }
   if (

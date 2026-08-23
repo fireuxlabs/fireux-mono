@@ -70,7 +70,7 @@ const ADAPTERS = [
   {
     route:
       'packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/targets.get.ts',
-    owner: 'kitchen/server/core/targets',
+    owner: 'kitchen/server/core/workspace',
   },
   {
     route:

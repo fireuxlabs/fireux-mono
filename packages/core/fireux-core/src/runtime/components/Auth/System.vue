@@ -29,11 +29,7 @@
             />
 
             <div class="flex w-full flex-col gap-3">
-              <UButton
-                block
-                color="primary"
-                @click="goToCompletion"
-              >
+              <UButton block color="primary" @click="goToCompletion">
                 {{ authActionLabel }}
               </UButton>
               <UButton
@@ -91,12 +87,14 @@ import {
   resolveInternalRedirect,
   userOnboardingPath,
 } from '../../utils/onboarding-route'
+import { rememberAnonymousAccountUpgrade } from '../../composables/fireux/firebase/anonymous-account-upgrade'
 
 const router = useRouter()
 const route = useRoute()
 const {
   authState,
   hasAuthState,
+  currentUser: authUser,
   signOutUser,
   signInWithGoogle,
 } = useAuth()
@@ -125,6 +123,19 @@ const currentUserPill = computed(() =>
 const authMode = computed(() =>
   route.query.mode === 'sign-up' ? 'sign-up' : 'sign-in'
 )
+const anonymousUpgradeContext = computed(() => ({
+  family: route.query.anonymous_family,
+  targetId: route.query.anonymous_target,
+}))
+
+watch(
+  authUser,
+  (user) => {
+    if (!user?.isAnonymous) return
+    void rememberAnonymousAccountUpgrade(user, anonymousUpgradeContext.value)
+  },
+  { immediate: true }
+)
 const resolvedPostAuthPath = computed(() => {
   const redirect = resolveInternalRedirect(route.query.redirect)
   if (authMode.value === 'sign-up') return userOnboardingPath(redirect)
@@ -151,14 +162,12 @@ watch(
       isAuthenticated.value,
       resolvedPostAuthPath.value,
     ] as const,
-  async (
-    [path, authReady, authenticated, target]: readonly [
-      string,
-      boolean,
-      boolean,
-      string,
-    ]
-  ) => {
+  async ([path, authReady, authenticated, target]: readonly [
+    string,
+    boolean,
+    boolean,
+    string,
+  ]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
     await completeAuthNavigation(target)
@@ -185,6 +194,10 @@ const handleGoogle = async () => {
   providerError.value = ''
   providerLoading.value = true
   try {
+    await rememberAnonymousAccountUpgrade(
+      authUser.value,
+      anonymousUpgradeContext.value
+    )
     const user = await signInWithGoogle()
     if (user?.uid && authMode.value === 'sign-up') {
       await completeAuthNavigation(resolvedPostAuthPath.value)
@@ -196,5 +209,4 @@ const handleGoogle = async () => {
     providerLoading.value = false
   }
 }
-
 </script>

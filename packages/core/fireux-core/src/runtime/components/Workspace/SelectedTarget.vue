@@ -8,10 +8,7 @@
     >
       <div class="workspace-selected-target__layout">
         <div class="workspace-selected-target__identity">
-          <div
-            v-if="$slots.selected"
-            class="workspace-selected-target__legacy"
-          >
+          <div v-if="$slots.selected" class="workspace-selected-target__legacy">
             <slot
               name="selected"
               :title="selectedTitle"
@@ -20,11 +17,7 @@
           </div>
 
           <template v-else>
-            <slot
-              name="leading"
-              :target="target"
-              :outcome="outcome"
-            >
+            <slot name="leading" :target="target" :outcome="outcome">
               <UAvatar
                 v-if="target?.imageUrl"
                 :src="target.imageUrl"
@@ -96,11 +89,7 @@
                 v-if="$slots.meta || target?.badges?.length"
                 class="workspace-selected-target__meta"
               >
-                <slot
-                  name="meta"
-                  :target="target"
-                  :outcome="outcome"
-                />
+                <slot name="meta" :target="target" :outcome="outcome" />
 
                 <UBadge
                   v-for="badge in target?.badges ?? []"
@@ -117,11 +106,7 @@
         </div>
 
         <div class="workspace-selected-target__actions">
-          <slot
-            name="actions"
-            :target="target"
-            :outcome="outcome"
-          />
+          <slot name="actions" :target="target" :outcome="outcome" />
 
           <UButton
             color="neutral"
@@ -149,7 +134,7 @@
 
 <script setup lang="ts">
 import { computed, type CSSProperties } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import type { WorkspaceTargetCard } from './types'
 
 const props = withDefaults(

@@ -125,9 +125,7 @@ const workspaceDescription = computed(() => {
 
   const selectedName = selectedKitchenName.value
   if (selectedName) {
-    return kitchenWorkspace.runtime.isDemo.value
-      ? `You are exploring ${selectedName} as a read-only Demo Kitchen.`
-      : `You are working with ${selectedName}. KitchenAI can use its authorized live evidence when your question requires it.`
+    return `You are working with ${selectedName}. KitchenAI can use its authorized live evidence when your question requires it.`
   }
 
   const outcome = kitchenWorkspace.targets.outcome.value

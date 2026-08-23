@@ -1,61 +1,69 @@
-<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen dual-source outcome contract. -->
-<!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: restore the shared selected-target clear contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceKitchenIndexSelected
-      :kitchen="selection.kitchen"
-      :kitchen-id="selection.kitchenId"
-      :source="selection.kitchenSource"
-      :outcome="selection.outcome"
-      @clear="actions.clear"
-    />
+    <template v-if="clientReady && hasIdentity">
+      <UCard v-if="current.outcome === 'pending' || current.outcome === 'idle'">
+        <div class="flex items-center gap-3 text-sm text-muted">
+          <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin" />
+          Loading your Kitchen
+        </div>
+      </UCard>
 
-    <WorkspaceKitchenIndexTargets
-      v-if="showOnboardingTargets"
-      mode="free"
-      :collection="sections.targets.collection"
-      :demo-collection="sections.demoTargets.collection"
-      :outcome="sections.targets.outcome"
-      :demo-outcome="sections.demoTargets.outcome"
-      :selected-id="selection.kitchenId"
-      :selected-source="selection.kitchenSource"
-      @select="actions.selectTarget"
-    />
+      <UAlert
+        v-else-if="current.outcome === 'error'"
+        color="error"
+        variant="subtle"
+        icon="i-lucide-triangle-alert"
+        title="Your Kitchen could not be loaded"
+        description="Try the request again."
+      >
+        <template #actions>
+          <UButton
+            label="Try again"
+            color="error"
+            variant="soft"
+            size="sm"
+            @click="actions.refresh"
+          />
+        </template>
+      </UAlert>
 
-    <DevDebugPanel
-      v-if="isDevelopment && props.showDebug"
-      title="Kitchen workspace debug"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{
-        selectedKitchen: selection.kitchen,
-        kitchens: sections.targets.collection,
-      }"
-      :derived="debug"
-      :default-open="false"
-    />
+      <WorkspaceKitchenIndexSelected
+        v-else-if="current.kitchen"
+        :kitchen="current.kitchen"
+      />
+
+      <UCard v-else>
+        <div class="space-y-4">
+          <div class="space-y-1">
+            <h2 class="font-semibold text-highlighted">Create your Kitchen</h2>
+            <p class="text-sm text-muted">
+              Start with a name or find the Place your Kitchen belongs to.
+            </p>
+          </div>
+          <WorkspaceKitchenCreate
+            v-if="access.canCreate"
+            @created="useCreatedKitchen"
+          />
+        </div>
+      </UCard>
+    </template>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceIndexEntry } from '../../composables/workspace/index/useKitchenWorkspaceIndexEntry'
 
-const props = withDefaults(
-  defineProps<{
-    showDebug?: boolean
-  }>(),
-  {
-    showDebug: true,
-  }
+const { current, access, actions } = useKitchenWorkspaceIndex()
+const { clientReady, hasIdentity } = useKitchenWorkspaceIndexEntry(
+  computed(() => current.value.id),
+  true,
+  actions.refresh
 )
-const isDevelopment = import.meta.dev
-const { selection, sections, actions, debug } = useKitchenWorkspaceIndex()
-const showOnboardingTargets = computed(
-  () =>
-    !selection.value.hasSelection &&
-    sections.value.targets.show &&
-    (sections.value.targets.outcome !== 'empty' ||
-      sections.value.demoTargets.show)
-)
+
+async function useCreatedKitchen(id: string) {
+  actions.setCurrent(id)
+  await actions.refresh()
+}
 </script>

@@ -13,7 +13,7 @@ import type {
 import { useAuth } from '../firebase/useAuth'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { normalizeWorkspaceFamily } from './useWorkspace'
-import type { WorkspaceTargetOutcome } from './useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from './useWorkspaceDirectoryIndex'
 
 type WorkspaceTargetRequestState<TItem extends WorkspaceTargetIdItem> = {
   requestUid: string
@@ -101,10 +101,7 @@ export function useWorkspaceTargetRequest<TItem extends WorkspaceTargetIdItem>(
   const response = computed<WorkspaceTargetsResponse<TItem> | null>(() => {
     if (!enabled.value) return null
     const value = state.value
-    if (
-      value.requestUid !== uid.value ||
-      value.status !== 'ready'
-    ) {
+    if (value.requestUid !== uid.value || value.status !== 'ready') {
       return null
     }
     return value.response
@@ -144,7 +141,9 @@ export function useWorkspaceTargetRequest<TItem extends WorkspaceTargetIdItem>(
   }
 }
 
-export type UseWorkspaceTargetRequestResult<TItem extends WorkspaceTargetIdItem> = {
+export type UseWorkspaceTargetRequestResult<
+  TItem extends WorkspaceTargetIdItem,
+> = {
   items: ComputedRef<TItem[]>
   response: ComputedRef<WorkspaceTargetsResponse<TItem> | null>
   pending: ComputedRef<boolean>

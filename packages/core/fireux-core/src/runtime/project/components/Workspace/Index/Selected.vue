@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import type { ProjectSurface } from '../../../composables/useProjectInterface'
 
 const props = withDefaults(

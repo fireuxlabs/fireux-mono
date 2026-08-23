@@ -89,9 +89,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${base}server/api/kitchens/[kitchen]/fulfilment.get.ts`
   )
-  const workspaceTargets = read(
+  const workspaceKitchen = read(
     repoRoot,
-    `${kitchenBase}server/core/targets.ts`
+    `${kitchenBase}server/core/workspace.ts`
   )
   const menuKitchenScope = read(
     repoRoot,
@@ -235,7 +235,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /Kitchen fulfilment must use kitchens\/\{kitchenId\}\/fulfilment\/policy\./
   )
   assert.match(fulfilmentApi, /readMenuKitchenFulfilment\(kitchen\.id\)/)
-  assert.match(workspaceTargets, /readKitchenFulfilment\(db, id\)/)
+  assert.match(workspaceKitchen, /readKitchenFulfilment\(db, id\)/)
   assert.match(
     menuKitchenScope,
     /readKitchenFulfilment\(getRuntimeFirestore\(\), kitchenId\)/

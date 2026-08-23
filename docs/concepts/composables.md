@@ -1,6 +1,6 @@
 # Composables spine map
 
-Updated: 2026-08-18
+Updated: 2026-08-23
 Ref: e23268507
 Role: map, not canon
 
@@ -101,8 +101,18 @@ records and operations use their parent Entity's composable scope.
 - `useYX`: name Y's real adaptation of X. It consumes the narrowest supported X
   capability, keeps X ignorant of Y, and must add a Y-owned decision,
   projection, policy, or lifecycle relationship rather than act as an alias.
-- `useXWorkspace`: selected workspace runtime for a domain.
-- `useXWorkspaceIndex`: index page adapter over shared `useWorkspaceIndex`.
+- `useXWorkspace`: capability runtime for an established current domain Entity;
+  do not use it to turn the Workspace Index into a collection manager.
+- `useWorkspace`: persists only the current Entity id for a named Workspace
+  and exposes set/clear actions. It does not load a
+  collection, infer authority, or expose source modes.
+- `useWorkspaceDirectoryIndex`: bounded migration seam for older pages that
+  still present an Entity directory as a Workspace index. It is not the
+  canonical Workspace index contract and gains no new consumers.
+- `useXWorkspaceIndex`: uses `useWorkspace` to resolve the current domain Entity and exposes only the
+  current Entity, access needed by the Index, and its bounded actions. An older
+  directory-style family may still adapt through `useWorkspaceDirectoryIndex`
+  while it awaits deliberate migration; that is not the Kitchen contract.
 
 ## Reactive ownership
 
@@ -131,7 +141,7 @@ records and operations use their parent Entity's composable scope.
 
 | Difference                                                                          | State       | Reason or alignment trigger                                                                                                           |
 | ----------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Core, app, Firestore, workspace, and domain composables use different buckets         | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                      |
+| Core, app, Firestore, workspace, and domain composables use different buckets       | `accepted`  | Ownership and required context differ; each seam should have one clear authority                                                      |
 | Domain `useXOnboarding` adapters contain different drafts and stages                | `accepted`  | Shared onboarding owns mechanics only; domain decisions must remain named and local                                                   |
 | Menu uses both `fireux/menu` and `fireux/kitchen/menu`                              | `accepted`  | Root Menu and scoped KitchenMenu are different entities and route contexts                                                            |
 | Older vague or multi-job composables remain                                         | `drift`     | Simplify when touched by naming input, process, and output before extracting another helper                                           |

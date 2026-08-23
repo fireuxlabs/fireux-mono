@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import type { Blank } from '../../../../models/blank.model'
 
 const props = withDefaults(
@@ -63,7 +63,7 @@ const cards = computed(() =>
         badges: [text(blank.status)].filter(Boolean),
       }
     })
-    .filter((card): card is NonNullable<(typeof card)> => Boolean(card))
+    .filter((card): card is NonNullable<typeof card> => Boolean(card))
 )
 
 function selectBlank(id: string) {

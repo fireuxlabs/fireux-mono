@@ -1,13 +1,13 @@
 import { createError } from 'h3'
-import {
-  FieldValue,
-  type DocumentData,
-} from 'firebase-admin/firestore'
+import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
 } from '../../models/app-membership'
-import type { AppUserRole } from '../../models/app-user.model.ts'
+import {
+  isAppUserSubscription,
+  type AppUserRole,
+} from '../../models/app-user.model.ts'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppAuthorityTargets,
@@ -47,10 +47,7 @@ export function stamp(actorUid: string) {
   return { at: FieldValue.serverTimestamp(), by: actorUid }
 }
 
-export function initialMembership(
-  actorUid: string,
-  role: AppUserRole
-) {
+export function initialMembership(actorUid: string, role: AppUserRole) {
   return {
     role,
     subscription: 'free',
@@ -62,7 +59,7 @@ export function initialMembership(
 
 export function requireCanonicalMembership(data: DocumentData) {
   if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
-  if (data.subscription !== 'free' && data.subscription !== 'premium')
+  if (!isAppUserSubscription(data.subscription))
     forbidden(409, 'The App membership has an invalid subscription.')
   if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
     forbidden(409, 'The App membership has an invalid onboarding status.')

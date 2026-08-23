@@ -9,10 +9,6 @@ import {
 } from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../operations/Shared/useKitchenWorkspaceReadPage'
-import {
-  findKitchenWorkspaceDemoScenario,
-  useKitchenWorkspaceDemoData,
-} from '../core/useKitchenWorkspaceDemoData'
 
 function createKitchenWorkspaceTeam() {
   const { selection, runtime } = useKitchenWorkspace()
@@ -22,14 +18,6 @@ function createKitchenWorkspaceTeam() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const demoData = useKitchenWorkspaceDemoData(runtime.isDemo)
-  const demoTeamMembers = computed<KitchenTeamMember[]>(
-    () =>
-      findKitchenWorkspaceDemoScenario(
-        demoData.data.value,
-        kitchenId.value
-      )?.team.map((member) => ({ ...member })) ?? []
-  )
   const access = useWorkspaceTeam({
     target: selectedKitchen,
     targetId: kitchenId,
@@ -51,12 +39,8 @@ function createKitchenWorkspaceTeam() {
       databaseId,
     }
   )
-  const teamMembers = computed(() =>
-    runtime.isDemo.value ? demoTeamMembers.value : fetchedTeamMembers.value
-  )
-  const teamPending = computed(() =>
-    runtime.isDemo.value ? demoData.pending.value : fetchedTeamPending.value
-  )
+  const teamMembers = fetchedTeamMembers
+  const teamPending = fetchedTeamPending
   const {
     items: joinRequestItems,
     pending: joinRequestItemsPending,

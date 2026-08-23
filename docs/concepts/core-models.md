@@ -102,17 +102,17 @@ stamps, and entity declarations are shared model utilities, not core records.
 
 ## Library ownership
 
-| Library                           | Owns                                                                                                                                                            | Does not own                                            |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                                        | User identity, generic app-shell state, configuration   |
-| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                          | App or project identity                                 |
-| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                         | App membership or generic profile fragments             |
-| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                             | Module packages or App module configuration             |
+| Library                           | Owns                                                                                                                                                              | Does not own                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `runtime/app/models`              | Canonical App and App-owned membership/support contracts                                                                                                          | User identity, generic app-shell state, configuration   |
+| `runtime/ecosystem/models`        | Canonical Ecosystem and its owned projection contracts                                                                                                            | App or project identity                                 |
+| `runtime/user/models`             | Canonical User and User-owned private support contracts                                                                                                           | App membership or generic profile fragments             |
+| `runtime/project/models`          | Canonical Project control-plane and Project-owned support contracts                                                                                               | Module packages or App module configuration             |
 | `runtime/models`                  | Reusable data-contract fragments and projections: stamps, scope, Workspace Entity access, profiles, entity declarations, directories, and shared style vocabulary | Entity-owned records, access decisions, or Vue state    |
-| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                    | Persisted entity authority                              |
-| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                        | Canonical stored shape                                  |
-| `config/app`                      | Authored App composition and literature contracts                                                                                                               | Firestore records                                       |
-| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                                           | Generic Core vocabulary without another domain consumer |
+| `runtime/types`                   | Runtime and UI coordination types that are not stored models                                                                                                      | Persisted entity authority                              |
+| `runtime/utils`                   | Derived runtime behavior such as access, avatar, and scope normalization                                                                                          | Canonical stored shape                                  |
+| `config/app`                      | Authored App composition and literature contracts                                                                                                                 | Firestore records                                       |
+| `runtime/<entity>/{models,utils}` | Domain policy proved by that entity, such as Kitchen currency display                                                                                             | Generic Core vocabulary without another domain consumer |
 
 ## Entity model file shape
 
@@ -151,8 +151,8 @@ identity or Firestore model.
   Workspace target access belongs to each Workspace Entity's `team/{uid}`
   record.
 - Product access resolves to Free when AppUser is absent. That effective default
-  creates neither identity nor membership; only stored Premium changes product
-  capability.
+  creates neither identity nor membership. Stored Premium and Business enable
+  Premium capabilities; only Business enables multi-Workspace ownership.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.

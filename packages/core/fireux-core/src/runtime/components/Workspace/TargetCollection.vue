@@ -58,10 +58,7 @@
       :uppercase="false"
       :description="errorDescription"
     >
-      <div
-        v-if="retryable"
-        class="workspace-target-collection__state-action"
-      >
+      <div v-if="retryable" class="workspace-target-collection__state-action">
         <UButton
           size="sm"
           variant="soft"
@@ -76,10 +73,7 @@
     <div
       v-else-if="outcome === 'ready'"
       class="workspace-target-collection__items"
-      :class="[
-        `workspace-target-collection__items--${layout}`,
-        itemsClass,
-      ]"
+      :class="[`workspace-target-collection__items--${layout}`, itemsClass]"
     >
       <slot />
     </div>
@@ -100,7 +94,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from '../../composables/fireux/workspace/useWorkspaceDirectoryIndex'
 
 const props = withDefaults(
   defineProps<{
@@ -128,8 +122,8 @@ const emit = defineEmits<{
   (event: 'retry'): void
 }>()
 
-const isSettled = computed(() =>
-  props.outcome === 'ready' || props.outcome === 'empty'
+const isSettled = computed(
+  () => props.outcome === 'ready' || props.outcome === 'empty'
 )
 const resolvedTitle = computed(
   () => String(props.title ?? '').trim() || 'Choose target'

@@ -38,7 +38,6 @@ do not authorize `/workspace/**` product routes or visible Workspace terminology
 - `useWorkspaceTargets`
 - `useWorkspaceTargetRequest`
 - `useWorkspaceFamilyRuntime`
-- `useWorkspaceIndex`
 - `WorkspaceSelectedTarget`
 - `WorkspaceTargetCollection`
 - `useWorkspaceOverview`
@@ -89,9 +88,8 @@ paths and delegate inward.
   Core does not depend on the AI extension. Tools and execution remain optional
   named capabilities, so the baseline does not manufacture empty AI routes.
   There is no generic Workspace Agent route.
-- Create belongs to the target selector lifecycle at `/workspace/{family}`. A
-  create route may remain as the selector's action target, but it never appears
-  in selected-workspace navigation.
+- Create belongs to the empty current-Entity state. A create route may remain
+  as its action target, but it never appears in Workspace navigation.
 - A capability used inside an Operation, such as Menu QR, remains a child tool
   instead of becoming another top-level Operation. Identity-owned QR belongs
   with Identity. Development routes are hidden, unavailable outside a
@@ -137,9 +135,9 @@ paths and delegate inward.
   using the shared transition still needs the real root. Only an explicit,
   justified `pageTransition: false` route is exempt from that root check. The
   guard does not constrain body geometry.
-- The workspace-indexes guard separately enforces the shared selected → targets
-  index rhythm, clear wiring, `useWorkspaceIndex` adapter, and shared selected and
-  target-state presentation seams.
+- The workspace-indexes guard enforces each guarded Index contract. Kitchen is
+  current-only; older directory-style families retain their selected-target
+  contract until they are migrated deliberately.
 - Tables remains a Front-of-House boundary. Kitchen Orders may cross that
   boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
   capabilities.
@@ -157,8 +155,8 @@ paths and delegate inward.
 ## Source-backed capability map
 
 The visible Workspace tree is the naming authority for entity server and client
-slices. `Index` is the selection and Create doorway; Create is not a selected
-workspace peer.
+slices. `Index` establishes the current Entity and presents Create when none is
+available; Create is not a current-workspace peer.
 
 Every Workspace bakes in Index, Overview, Identity, Team, and Notifications.
 Permissions govern those capabilities and every Operation; they are authority,
@@ -193,90 +191,29 @@ behaviour; the map does not require empty symmetry.
 
 ## Index pattern
 
-- Page renders `WorkspaceXIndex`.
-- Only the genuine Workspace Entity Index capability uses the named doorway
-  `runtime/<entity>/components/Workspace/Index.vue`: it owns selection, creation entry, and target-list
-  presentation. Supporting selected-target and target-collection components
-  may live under the entity's `components/Workspace/Index/*`. This does not authorize `Index.vue` as a
-  generic directory-entry trick for AI, shells, controllers, collections, or
-  other capabilities; name those jobs directly. Do not use the opaque repeated
-  `Index/Index.vue` entry.
-- `WorkspaceXIndex` renders selected and targets sections.
-- `useXWorkspaceIndex` adapts domain data into shared `useWorkspaceIndex`.
-- `useXWorkspace` owns target candidate resolution, the authoritative collection
-  outcome, and selection validity. Index and overview composables consume that
-  core result; they do not call `useWorkspaceTargets` again or overlay another
-  membership outcome.
-- `useXWorkspace` resolves through `useWorkspaceFamilyRuntime`, which creates one
-  family runtime per Nuxt App request/client instance. Selector, Overview,
-  Identity, Team, and Operations consume that same object; repeated composable
-  calls must not recreate target reads, selection watchers, or entity runtime.
-- Named selected wrappers map domain identity into `WorkspaceSelectedTarget`;
-  Core owns the selected/empty card anatomy and Clear action presentation, and
-  the family index forwards `actions.clear`. A family may project its existing
-  entity card through the shared selected-content slot; it must not replace the
-  shared empty state or Clear behavior.
-- Tenant apps can auto-select a single persisted authorized target.
-- Authority-proven single targets are committed inside the family runtime;
-  index adapters never add a second auto-selection path.
-- Every Live App derives targets from the canonical root, its declared host
-  relationship where present, and the owning Entity's `team/{uid}` record.
-  AppUser proves App membership and governance; it never carries Workspace
-  target IDs. Kitchen stores no management relationship: Place-backed roots
-  use same-ID Place identity, while a name-only shell begins with its Kitchen
-  root and root-owned Team.
-- Every family loads its authenticated chooser candidates through
-  `/api/workspace/{family}/targets`. Core owns the App-, family-, and User-scoped
-  request lifecycle; the family endpoint owns authority and the family core
-  maps the returned IDs or projections into domain cards. Project retains its
-  private control-plane authority, and Kitchen retains its richer joined
-  projection, without forking the request contract.
-- Target adapters must pass the collection `outcome` through `useWorkspaceIndex`;
-  it is the sole target-state authority, with no count or pending fallback.
-  Named `WorkspaceXIndexTargets` wrappers require that outcome and use
-  `WorkspaceTargetCollection` for pending, error, cards, then settled empty;
-  counts are not authoritative while a read is unsettled.
-- An `idle` source renders no target chooser; idle is neither loading nor empty.
-- Target wrappers must not add an `isMounted`, local pending flag, or direct
-  state card in front of that outcome. Multi-source families render one shared
-  target presenter per source from the first paint.
-- Domain wrappers retain entity-to-card mapping, selection validation, copy,
-  card components, and actions. A multi-source family such as Kitchen composes
-  one shared target presenter per source rather than flattening source state.
-- The Kitchen index keeps its bounded authenticated Live target chooser and
-  lazy Demo target chooser available together, even while a Demo Kitchen is
-  selected. This is a navigation exception only: selected Live target and
-  operation providers remain inactive in Demo mode.
-- Persisted selection is validated only against a successful target read.
-  Pending or failed target reads must not clear a saved selection.
-- Selected-target routes distinguish the persisted selection from the loaded
-  target. The persisted family selection ID decides whether a target is selected; the asynchronously
-  loaded target object decides whether target content is ready. A missing
-  object while an ID exists is a loading state, never a false "select first"
-  empty state.
-- A Workspace family has one App-and-family-keyed reactive source state shared by every
-  composable instance. Its cookie is persistence, not a second live source
-  authority; source changes update both together so source-aware selection
-  cannot race between `live`, `demo`, and `test`.
-- Global target adapters compose AppUser membership pending/error with the
-  collection outcome. Membership failure is `error`, never an empty target list.
-- Canonical root relationships and exact Team records bound live reads. Target
-  resolution must fail on a missing root, wrong declared host, malformed Team
-  authority, missing required AppUser membership, or unauthorized id; it never
-  leaves an unused full-root listener behind client filtering.
-- Kitchen live targets use the canonical authenticated
-  `/api/workspace/kitchen/targets`
-  projection. The fixed-runtime server derives candidate IDs, exact-loads and
-  authorizes every canonical root/Team/Place join, and the selected live
-  Kitchen reuses that projected root instead of starting a second raw browser
-  query. Its response is the sole live target outcome: do not overlay a second
-  browser AppUser target read, and share the keyed request across selected/index
-  consumers. Missing pairs and scope drift remain errors, never partial target
-  lists.
-- Demo target adapters use `useWorkspaceDemoData` and a dynamic import. The
-  loader stays untouched while inactive, successful local data is cached, and
-  its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
-  same index contract as a live read.
+- A Workspace is the current Entity context used by its capabilities. It is not
+  the User's Entity directory, a Demo catalogue, or a tenant-policy manager.
+- The User relationship determines which Entities are available. A Workspace
+  may resolve that relationship to establish one current Entity, but it does
+  not expose the relationship collection as Workspace state.
+- No available Entity produces the create/onboarding state. One available
+  Entity becomes current automatically. Switching among multiple available
+  Entities is a User action outside the baseline Workspace index.
+- `WorkspaceXIndex` renders the current Entity and the request state required to
+  establish it. It renders Create only when the authoritative relationship is
+  settled and empty.
+- `useXWorkspaceIndex` exposes a small contract: `current`, `access`, and
+  `actions`. It does not expose target sections, source modes, tenant state,
+  Demo state, storage routing, or debug anatomy.
+- Domain capability runtimes are added behind the current Entity only when a
+  real capability needs their records, write authority, or Firestore path.
+  Those concerns must not be pulled back into the index pre-emptively.
+- The Kitchen index resolves its current Kitchen from the bounded authenticated
+  Team projection. A persisted Kitchen id is only a preference and is accepted
+  after the authoritative response proves access. Missing pairs and scope drift
+  remain errors, never partial results.
+- Demo is Entity data or a separate discovery experience. It is not a Workspace
+  source mode and does not change the Workspace index contract.
 
 ## Production onboarding
 
@@ -373,8 +310,8 @@ Demo, test, and simulation:
 
 ## Alignment roadmap
 
-- Now: preserve the guarded selected → targets → debug Index contract and one
-  family-owned target outcome.
+- Now: prove the current-Entity Kitchen Index without collection, Demo, tenant,
+  capability-runtime, or debug concerns.
 - Next: align lifecycle sheets through the family delta register while the
   owner-first Team and operations cutover completes.
 - Later: guard Overview, Identity, and Team only after their shared jobs are as

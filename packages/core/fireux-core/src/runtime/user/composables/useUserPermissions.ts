@@ -20,13 +20,17 @@ export function useUserPermissions(user: UserRefs) {
   const hasPremiumSubscription = computed(
     () => access.value.hasPremiumSubscription
   )
-  const canOwnMultipleWorkspaces = hasPremiumSubscription
+  const hasBusinessSubscription = computed(
+    () => access.value.hasBusinessSubscription
+  )
+  const canOwnMultipleWorkspaces = hasBusinessSubscription
 
   return {
     isAdmin,
     isDeveloper,
     subscription,
     hasPremiumSubscription,
+    hasBusinessSubscription,
     canOwnMultipleWorkspaces,
   }
 }

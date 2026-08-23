@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
 import { computed, type ComputedRef, type Ref } from 'vue'
 import type { WorkspaceDataType } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceData'
-import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import {
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,

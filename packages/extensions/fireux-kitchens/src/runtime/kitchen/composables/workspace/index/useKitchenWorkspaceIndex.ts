@@ -1,129 +1,107 @@
-// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make live and demo outcomes authoritative.
-// Concurrent edit — 2026-07-20 16:22 CEST — Workspace Spine pass: include membership state in Kitchen target outcomes and bind real target ids.
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazy-load Kitchen demo targets only on the workspace index.
-// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Workspace targets: load live targets through the authenticated server projection.
-// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: make the server projection the sole live authority.
-import { computed } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import type {
+  KitchenWorkspaceCurrentResponse,
+  KitchenWorkspaceKitchen,
+} from '../../../models/kitchen-index.model.ts'
 import {
-  resolveWorkspaceSelectedTargetOutcome,
-  useWorkspaceIndex,
-} from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
-import type { KitchenFetchSource } from '../../firestore/fetch/useKitchenFetch'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { useKitchenWorkspaceDemoData } from '../core/useKitchenWorkspaceDemoData'
+  useKitchenInterface,
+  type KitchenSurface,
+} from '../../firestore/utils/view/useKitchenInterface'
 
 export function useKitchenWorkspaceIndex() {
-  const {
-    targets: targetCollection,
-    selection: workspaceSelection,
-    runtime: workspaceRuntime,
-    actions: workspaceActions,
-  } = useKitchenWorkspace()
-  const demoCollection = useKitchenWorkspaceDemoData(
-    computed(() => workspaceRuntime.allowDemo.value)
-  )
-  const targetKitchens = computed(() => targetCollection.kitchens.value)
-  const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
-  const targetOutcome = targetCollection.outcome
-  const selectedTargetOutcome = computed(() =>
-    workspaceSelection.kitchenSource.value === 'demo'
-      ? demoCollection.outcome.value
-      : targetOutcome.value
-  )
-  const selectedOutcome = computed(() =>
-    resolveWorkspaceSelectedTargetOutcome({
-      selectedId: workspaceSelection.kitchenId.value,
-      selectedTarget: workspaceSelection.kitchen.value,
-      targetOutcome: selectedTargetOutcome.value,
-    })
-  )
-  const selection = computed(() => ({
-    kitchen: workspaceSelection.kitchen.value,
-    kitchenId: workspaceSelection.kitchenId.value,
-    kitchenSource: workspaceSelection.kitchenSource.value,
-    hasSelection: workspaceSelection.hasSelection.value,
-    outcome: selectedOutcome.value,
-  }))
-  const isLiveSelection = computed(
-    () => workspaceSelection.kitchenSource.value === 'live'
-  )
-  const isTenantSingleTarget = computed(
-    () =>
-      workspaceRuntime.isTenant.value &&
-      !workspaceRuntime.allowDemo.value &&
-      isLiveSelection.value &&
-      targetOutcome.value === 'ready' &&
-      targetKitchens.value.length === 1 &&
-      Boolean(workspaceSelection.kitchen.value)
-  )
-  const showTargetChooser = computed(() => true)
-  const runtime = computed(() => ({
-    appId: workspaceRuntime.appId.value,
-    source: workspaceRuntime.source.value,
-    kitchenCollectionPath: workspaceRuntime.kitchenCollectionPath.value,
-    rootCollection: workspaceRuntime.rootCollection.value,
-    readOnly: workspaceRuntime.readOnly.value,
-    canWrite: workspaceRuntime.canWrite.value,
-    canCreate: workspaceRuntime.canCreate.value,
-  }))
-  const debug = computed(() => ({
-    kitchenId: workspaceSelection.kitchenId.value,
-    kitchenSource: workspaceSelection.kitchenSource.value,
-    activeKitchenAppId: workspaceRuntime.appId.value,
-    source: workspaceRuntime.source.value,
-    kitchenCollectionPath: workspaceRuntime.kitchenCollectionPath.value,
-    rootCollection: workspaceRuntime.rootCollection.value,
-    databaseId: workspaceRuntime.databaseId.value,
-    readOnly: workspaceRuntime.readOnly.value,
-    canWrite: workspaceRuntime.canWrite.value,
-    selectedKitchen: workspaceSelection.kitchen.value,
-    selectedOutcome: selectedOutcome.value,
-    targetCount: targetKitchens.value.length,
-    demoTargetCount: demoKitchens.value.length,
-    targetSource: {
-      authority: 'authenticated-server-projection',
-      outcome: targetOutcome.value,
-    },
-    isTenantSingleTarget: isTenantSingleTarget.value,
-  }))
+  const workspace = useWorkspace('kitchen')
+  const { currentUser, hasAuthState } = useAuth()
+  const { surface } = useKitchenInterface()
+  const status = ref<'idle' | 'pending' | 'ready' | 'error'>('idle')
+  const kitchenRecord = ref<KitchenWorkspaceKitchen | null>(null)
+  let requestSequence = 0
 
-  const index = useWorkspaceIndex({
-    selection,
-    selectedId: computed(() => workspaceSelection.kitchenId.value),
-    runtime,
-    targets: targetKitchens,
-    outcome: targetOutcome,
-    getTargetId: (target) => String(target?.id ?? '').trim(),
-    showTargets: showTargetChooser,
-    selectTarget: (id: string) => {
-      workspaceActions.selectKitchen(String(id ?? '').trim(), 'live')
-    },
-    clearSelection: workspaceActions.clearSelectedKitchen,
-    debug,
-  })
-  const sections = computed(() => ({
-    ...index.sections.value,
-    locked: isTenantSingleTarget.value,
-    demoTargets: {
-      show:
-        workspaceRuntime.allowDemo.value && index.sections.value.targets.show,
-      collection: demoKitchens.value,
-      outcome: demoCollection.outcome.value,
-    },
-  }))
-  const actions = {
-    ...index.actions,
-    clear: () => {
-      if (!isTenantSingleTarget.value) index.actions.clear()
-    },
-    selectTarget: (id: string, source: KitchenFetchSource = 'live') => {
-      workspaceActions.selectKitchen(String(id ?? '').trim(), source)
-    },
+  const kitchen = computed<KitchenSurface | null>(() =>
+    kitchenRecord.value
+      ? surface({ kitchen: kitchenRecord.value, routeScope: 'live' })
+      : null
+  )
+  const id = computed(() => String(kitchenRecord.value?.id || '').trim())
+  const outcome = computed<'idle' | 'pending' | 'error' | 'empty' | 'ready'>(
+    () => {
+      if (!hasAuthState.value || status.value === 'pending') return 'pending'
+      if (!currentUser.value || status.value === 'idle') return 'idle'
+      if (status.value === 'error') return 'error'
+      return kitchenRecord.value ? 'ready' : 'empty'
+    }
+  )
+
+  const setCurrent = (kitchenId: string) => {
+    workspace.setCurrent(kitchenId)
   }
 
+  const load = async (force = false) => {
+    const user = currentUser.value
+    if (!import.meta.client || !hasAuthState.value || !user) {
+      status.value = 'idle'
+      kitchenRecord.value = null
+      return
+    }
+
+    const preferredId = workspace.currentId.value
+    if (
+      !force &&
+      status.value === 'ready' &&
+      String(kitchenRecord.value?.id || '').trim() === preferredId
+    ) {
+      return
+    }
+
+    const sequence = ++requestSequence
+    status.value = 'pending'
+    try {
+      const token = await user.getIdToken()
+      const response = await $fetch<KitchenWorkspaceCurrentResponse>(
+        '/api/workspace/kitchen/current',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          query: preferredId ? { kitchen_id: preferredId } : undefined,
+        }
+      )
+      if (sequence !== requestSequence) return
+      if (response.family !== 'kitchen') {
+        throw new Error('Kitchen Workspace response scope mismatch.')
+      }
+      kitchenRecord.value = response.current
+      status.value = 'ready'
+      const currentId = String(response.current?.id || '').trim()
+      if (currentId && currentId !== workspace.currentId.value) {
+        workspace.setCurrent(currentId)
+      }
+    } catch {
+      if (sequence !== requestSequence) return
+      kitchenRecord.value = null
+      status.value = 'error'
+    }
+  }
+
+  watch([hasAuthState, currentUser, workspace.currentId], () => void load(), {
+    immediate: true,
+  })
+  onScopeDispose(() => {
+    requestSequence += 1
+  })
+
   return {
-    ...index,
-    sections,
-    actions,
+    current: computed(() => ({
+      kitchen: kitchen.value,
+      id: id.value,
+      outcome: outcome.value,
+    })),
+    access: computed(() => ({
+      canCreate: true,
+      canWrite: kitchen.value?.can_write === true,
+    })),
+    actions: {
+      setCurrent,
+      refresh: () => load(true),
+    },
   }
 }

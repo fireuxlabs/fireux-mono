@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine project cleanup: identify targets through the shared index contract.
 // Concurrent edit — 2026-07-21 22:28 CEST — Workspace family alignment: consume the core-owned membership-aware target outcome.
 import { computed } from 'vue'
-import { useWorkspaceIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceIndex'
+import { useWorkspaceDirectoryIndex } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceDirectoryIndex'
 import type { Blank } from '../../../../../models/blank.model'
 import { useBlankWorkspace } from '../core/useBlankWorkspace'
 
@@ -40,9 +40,10 @@ export function useBlankWorkspaceIndex() {
     source: targeting.debug.value,
   }))
 
-  return useWorkspaceIndex({
+  return useWorkspaceDirectoryIndex({
     selection,
     selectedId: computed(() => workspaceSelection.blankId.value),
+    selectedTarget: workspaceSelection.blank,
     runtime,
     targets: blanks.targets,
     outcome: blanks.outcome,
