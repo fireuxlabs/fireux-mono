@@ -175,9 +175,12 @@ export default defineEventHandler(async (event: H3Event) => {
     readUserContext(access.uid),
     readMenus(access, { appId, kitchenId }),
   ])
-  const menuContext = readKitchenMenusConfig(access.appKitchen).context
+  const menuContext = readKitchenMenusConfig(access.rootKitchen).context
   const kitchenIdentity = record(access.rootKitchen.identity)
-  const kitchenName = readRecordString(kitchenIdentity, 'name') || kitchenId
+  const kitchenName =
+    readRecordString(access.rootKitchen, 'name') ||
+    readRecordString(kitchenIdentity, 'display_name') ||
+    kitchenId
 
   const ai = useFireuxAi(event)
   const summaryRequest = isMenuSummaryRequest(prompt)

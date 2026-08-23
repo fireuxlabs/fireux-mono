@@ -91,14 +91,17 @@ export async function readKitchenAgentContext(
   ])
   const identity = record(access.rootKitchen.identity)
   return {
-    kitchenName: readRecordString(identity, 'name') || request.kitchenId,
+    kitchenName:
+      readRecordString(access.rootKitchen, 'name') ||
+      readRecordString(identity, 'display_name') ||
+      request.kitchenId,
     tagline: readRecordString(identity, 'tagline'),
     userContext,
     kitchenContext: readRecordString(
-      record(access.appKitchen.workspace),
+      record(access.rootKitchen.workspace),
       'context'
     ),
-    menuContext: readKitchenMenusConfig(access.appKitchen).context,
+    menuContext: readKitchenMenusConfig(access.rootKitchen).context,
     menuManifest,
     drinks,
   }
