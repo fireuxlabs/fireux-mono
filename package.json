@@ -61,6 +61,7 @@
     "migrate:misebox-kitchen-ownership": "node scripts/migrate-misebox-kitchen-ownership.mjs",
     "migrate:misebox-kitchen-fulfilment": "node scripts/migrate-misebox-kitchen-fulfilment.mjs",
     "migrate:misebox-kitchen-sproochli": "node scripts/migrate-misebox-kitchen-sproochli.mjs",
+    "misebox:free-test-kitchen": "node scripts/set-misebox-free-test-kitchen.mjs",
     "delete:misebox-kitchen-root-fulfilment": "node scripts/delete-misebox-kitchen-root-fulfilment.mjs",
     "migrate:firestore-entity-canon": "node scripts/migrate-firestore-entity-canon.mjs",
     "align:user-avatars": "node scripts/align-user-avatars.mjs",
