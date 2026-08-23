@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { CurrencyDisplayFormat } from '../../models/shared/currency-display.model.ts'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { WorkspacePalette } from 'fireux-core/types/theme'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
@@ -107,6 +108,23 @@ export const readKitchenThemePalette = (
 ): WorkspacePalette | null => {
   const theme = record(record(value).theme)
   return readWorkspacePalette(theme.palette)
+}
+
+export const readKitchenMenuPageStyle = (
+  value: KitchenRecord
+): Partial<PageStyle> => {
+  const palette = readKitchenThemePalette(value)
+  if (!palette) return {}
+  return {
+    background_color_light: palette.canvas,
+    background_color_dark: palette.canvas,
+    font_color_light: palette.text,
+    font_color_dark: palette.text,
+    title_color_light: palette.text,
+    title_color_dark: palette.text,
+    primary_color: palette.accent,
+    secondary_color: palette.accent,
+  }
 }
 
 export const readKitchenTableCount = (value: KitchenRecord) => {

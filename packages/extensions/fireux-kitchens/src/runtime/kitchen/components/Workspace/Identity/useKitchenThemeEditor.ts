@@ -10,7 +10,7 @@ import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/iden
 import { useKitchenWorkspaceMenus } from '../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
 import { useMenu } from '../../../../menu/composables/useMenu'
 import type { Menu } from '../../../../menu/utils/menu.ts'
-import { readKitchenMenuStyle } from '../../../utils/kitchen-readers'
+import { readKitchenMenuPageStyle } from '../../../utils/kitchen-readers'
 import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { normalizePageStyle, normalizeString, pageStyleEquals, themeWriteStyle, type ThemeSaveRequest } from './kitchen-theme-style'
 import {
@@ -116,7 +116,7 @@ export function useKitchenThemeEditor() {
       : menuRouteIndexPath(routeScope)
   })
 
-  const pageStyle = computed(() => readKitchenMenuStyle(kitchen.value) ?? {})
+  const pageStyle = computed(() => readKitchenMenuPageStyle(kitchen.value))
 
   const locallySavedPageStyle = ref<Partial<PageStyle> | null>(null)
 
