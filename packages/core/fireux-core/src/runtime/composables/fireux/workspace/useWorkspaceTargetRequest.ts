@@ -75,8 +75,8 @@ export function useWorkspaceTargetRequest<TItem extends WorkspaceTargetIdItem>(
         )
         if (uid.value !== requestUid) return
         if (
-          response.appId !== appId ||
-          response.family !== normalizedFamily
+          response.family !== normalizedFamily ||
+          (response.appId !== undefined && response.appId !== appId)
         ) {
           throw new Error('Workspace target response scope mismatch.')
         }

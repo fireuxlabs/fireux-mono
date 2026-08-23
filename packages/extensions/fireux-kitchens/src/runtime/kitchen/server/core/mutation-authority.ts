@@ -24,7 +24,7 @@ export async function readKitchenMutationActor(event: H3Event) {
 
 function requireMemberRole(exists: boolean, value: unknown, message: string) {
   const role = String(value ?? '').trim()
-  if (!exists || (role !== 'admin' && role !== 'user')) {
+  if (!exists || (role !== 'admin' && role !== 'user' && role !== 'dev')) {
     throw createError({ statusCode: 403, statusMessage: message })
   }
   return role as 'admin' | 'user'

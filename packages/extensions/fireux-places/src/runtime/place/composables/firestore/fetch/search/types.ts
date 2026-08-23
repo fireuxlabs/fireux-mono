@@ -19,6 +19,12 @@ export type BasePlace = Pick<
 
 export type BasePlaceRecord = BasePlace & { collection?: string }
 
+export type PlaceSearchLocation = {
+  lat: number
+  lng: number
+  radiusMeters: number
+}
+
 export type SearchStage = {
   results: BasePlaceRecord[]
   stage: string

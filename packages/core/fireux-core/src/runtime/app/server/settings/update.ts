@@ -107,7 +107,8 @@ export async function updateAppSettings(event: H3Event) {
       mutations.read<Record<string, unknown>>(memberships, uid),
     ])
     if (!app.exists) fail(409, 'The runtime App record does not exist.')
-    const isAdmin = membership.data?.role === 'admin'
+    const membershipRole = membership.data?.role
+    const isAdmin = membershipRole === 'admin' || membershipRole === 'dev'
     const isDeveloper =
       Boolean(config.developerId) && uid === config.developerId
     if (!isAdmin && !isDeveloper) fail(403, 'App admin access is required.')

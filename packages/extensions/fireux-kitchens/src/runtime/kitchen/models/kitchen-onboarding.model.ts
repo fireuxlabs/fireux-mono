@@ -27,7 +27,7 @@ export type KitchenOnboardingCompleteInput = {
 export type KitchenOnboardingCompleteResult = {
   ok: true
   kitchen_id: string
-  place_id: string
+  place_id?: string
   action: Exclude<KitchenOnboardingAction, 'request_access'>
   created_root: boolean
   created_team_member: boolean

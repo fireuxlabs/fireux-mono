@@ -1,4 +1,7 @@
-import type { AppUserRole } from '../../models/app-user.model.ts'
+import type {
+  AppUserRole,
+  AppUserSubscription,
+} from '../../models/app-user.model.ts'
 import { serverAppUsersTarget } from '../../../utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import {
@@ -10,6 +13,7 @@ import {
   type MembershipTransactionState,
   type TransactionOutcome,
 } from './mutation-contract'
+import { resolveSubscriptionMutationAuthority } from './subscription-authority.ts'
 
 export async function handleMembershipSettings(
   state: MembershipTransactionState
@@ -22,9 +26,9 @@ export async function handleMembershipSettings(
     requireAdmin(actorMembership)
     const userId = requireFirestoreDocumentId(input.userId, 'User id')
     const role: AppUserRole =
-      input.role === 'admin' || input.role === 'user'
+      input.role === 'admin' || input.role === 'user' || input.role === 'dev'
         ? input.role
-        : forbidden(400, 'Role must be admin or user.')
+        : forbidden(400, 'Role must be user, admin, or dev.')
     const target = await mutations.read(memberships, userId)
     if (!target.exists)
       forbidden(404, 'The target App membership does not exist.')
@@ -32,7 +36,7 @@ export async function handleMembershipSettings(
     if (!previousRole)
       forbidden(409, 'The target App membership has an invalid role.')
     if (
-      previousRole === 'admin' &&
+      (previousRole === 'admin' || previousRole === 'dev') &&
       role === 'user' &&
       (await countTransactionAdmins(mutations, appId)) <= 1
     )
@@ -41,15 +45,28 @@ export async function handleMembershipSettings(
     return { ok: true, action: input.action, appId, userId, role }
   }
 
-  if (input.action === 'set-premium') {
-    requireAdmin(actorMembership)
-    const userId = requireFirestoreDocumentId(input.userId, 'User id')
-    if (typeof input.isPremium !== 'boolean')
-      forbidden(400, 'Premium state must be boolean.')
+  if (
+    input.action === 'set-subscription' ||
+    input.action === 'set-self-subscription'
+  ) {
+    const actorRole = roleFrom(actorMembership)
+    const selfDeveloperChange = input.action === 'set-self-subscription'
+    const authority = resolveSubscriptionMutationAuthority({
+      action: input.action,
+      actorUid,
+      actorRole,
+      ...(!selfDeveloperChange ? { userId: input.userId } : {}),
+    })
+    if (!authority.ok) forbidden(authority.statusCode, authority.message)
+    const userId = requireFirestoreDocumentId(authority.userId, 'User id')
+    const subscription: AppUserSubscription =
+      input.subscription === 'free' || input.subscription === 'premium'
+        ? input.subscription
+        : forbidden(400, 'Subscription must be free or premium.')
     if (!(await mutations.read(memberships, userId)).exists)
       forbidden(404, 'The target App membership does not exist.')
     mutations.update(memberships, userId, {
-      is_premium: input.isPremium,
+      subscription,
       updated: stamp(actorUid),
     })
     return {
@@ -57,7 +74,7 @@ export async function handleMembershipSettings(
       action: input.action,
       appId,
       userId,
-      isPremium: input.isPremium,
+      subscription,
     }
   }
 

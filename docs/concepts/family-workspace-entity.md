@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-08-21
+Updated: 2026-08-23
 Ref: f3c707663
 Role: map, not canon
 
@@ -112,7 +112,8 @@ migration verification, and protected Workspace consumer are complete.
   `WorkspaceTargetCollection`.
 - Persisted selection is invalidated only after a successful target read proves
   it invalid. Pending or failed reads do not clear it.
-- Tenant and global Apps query bounded root management and Team authority.
+- Tenant and global Apps query bounded canonical root relationships and Team
+  authority. Kitchen uses its same-ID Place rather than root management.
   Neither mode authorizes a full-root client scan followed by local filtering.
 - `team/{uid}` grants Workspace membership and names its roles and permissions.
   Current App admins are the explicit override only for roots managed by that
@@ -121,11 +122,14 @@ migration verification, and protected Workspace consumer are complete.
 - Workspace onboarding uses a fixed-runtime authenticated family endpoint and
   one trusted transaction for root, the caller's Team authority, and any
   required parent records.
-- Workspace-capable roots share one management ladder: `root`, `workspace`, or
+- Workspace-capable roots that declare management share one management ladder:
+  `root`, `workspace`, or
   `app`. `workspace` resolves by convention to the ecosystem App
   (`<ecosystem>-app`); no configurable Workspace App id is stored. `app` alone
-  stores `app_id`. Domain packages own their transactions, so Core does not
-  enumerate present or future Workspace families.
+  stores `app_id`. Kitchen deliberately declares no management field; its
+  Place, App membership, and Team evidence remain Kitchen-owned. Domain
+  packages own their transactions, so Core does not enumerate present or
+  future Workspace families.
 - Index owns target selection and its Create doorway. Overview, Identity,
   Team, and Operations remain separate selected-workspace concerns; Create is
   never a selected-workspace menu peer.

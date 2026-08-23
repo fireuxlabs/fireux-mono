@@ -85,7 +85,7 @@ export type ManagedMarketplaceStore = MarketplaceStore & {
 
 export type ManagedMarketplaceStoresResponse = {
   items: MarketplaceStore[]
-  role: 'user' | 'admin'
+  role: 'user' | 'admin' | 'dev'
   truncated: boolean
 }
 

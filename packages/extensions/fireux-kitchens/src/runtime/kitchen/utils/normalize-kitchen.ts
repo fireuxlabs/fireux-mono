@@ -26,6 +26,7 @@ export function normalizeKitchen(
   if (!['active', 'inactive', 'archived'].includes(status)) return null
   return {
     id,
+    name: String(source.name ?? place.name).trim(),
     slug,
     status: status as Kitchen['status'],
     visibility: readKitchenVisibility(source),

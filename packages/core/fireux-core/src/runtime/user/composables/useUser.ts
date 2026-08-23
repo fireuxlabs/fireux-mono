@@ -8,7 +8,6 @@ import { useUserComputed } from './useUserComputed'
 import { useUserInterface } from './useUserInterface'
 
 export type { User } from '../models/user.model.ts'
-import type { AppUser } from '../../app/models/app-user.model.ts'
 export type { UserAccount } from '../models/user-account.model.ts'
 export { useUserFetch } from './firestore/fetch/useUserFetch'
 export { useUserInterface } from './useUserInterface'

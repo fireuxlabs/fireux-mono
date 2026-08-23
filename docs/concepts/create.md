@@ -1,6 +1,6 @@
 # Create spine map
 
-Updated: 2026-08-20
+Updated: 2026-08-23
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -263,13 +263,14 @@ the final mutation, and completion routing.
 
 - Directory and Workspace create routes compose the same Kitchen create system;
   route mode changes chrome and destination, not entity truth.
-- Kitchen onboarding reuses canonical Place identity, then owns only Kitchen
-  draft decisions and the trusted root/Team transaction. AppUser membership is
-  verified when the management relationship names an App.
+- Kitchen creation ensures canonical Place identity, then owns the trusted
+  root/Team transaction. AppUser membership is verified independently; Kitchen
+  stores no management relationship.
 - New Kitchen roots stay sparse and unpublished. Place fields, Menu content,
   ordering, payment, profiles, and publication are not create side effects.
-- Tenant onboarding is bounded by root management, Team, and AppUser authority, and route query state
-  never mutates an existing Kitchen automatically.
+- Kitchen onboarding is bounded by the same-ID Place, Team, and AppUser
+  authority, and route query state never mutates an existing Kitchen
+  automatically.
 
 ## Current create plan primitive
 
@@ -334,15 +335,15 @@ that distinction inside the create family.
 
 ## Delta register
 
-| Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                             |
-| -------------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                      |
-| Workspace-target create writes root identity plus Team                                              | `accepted`   | The domain transaction writes its root management relationship and caller Team record; Core supplies only generic management vocabulary and resolution  |
-| Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                                                    |
-| `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                              |
-| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                               |
-| Optional blank-field omission is described but not uniformly enforced                              | `drift`      | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical                                            |
-| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`   | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction                                        |
+| Difference                                                                                         | State        | Reason or alignment trigger                                                                                                                              |
+| -------------------------------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                                                       |
+| Workspace-target create writes root identity plus Team                                             | `accepted`   | The domain transaction writes its canonical root, any family-declared relationship, and caller Team record; Kitchen deliberately has no management field |
+| Place and Kitchen creation compose provider confirmation with trusted domain commands              | `accepted`   | Place owns provider resolution; Kitchen may present a compact search modal or review route while both call the same entity-owned command                 |
+| `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                                                               |
+| Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                                                                |
+| Optional blank-field omission is described but not uniformly enforced                              | `drift`      | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical                                             |
+| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language              | `accepted`   | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction                                         |
 
 ## Alignment roadmap
 

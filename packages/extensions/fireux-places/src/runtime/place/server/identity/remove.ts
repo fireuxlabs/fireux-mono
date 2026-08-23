@@ -50,7 +50,8 @@ export async function removePlace(event: H3Event, placeId: string) {
 
     const isDeveloper =
       import.meta.dev && Boolean(developerId) && uid === developerId
-    const isAdmin = membershipSnapshot?.data?.role === 'admin'
+    const membershipRole = membershipSnapshot?.data?.role
+    const isAdmin = membershipRole === 'admin' || membershipRole === 'dev'
     if (!isDeveloper && !isAdmin) {
       throw createError({
         statusCode: 403,

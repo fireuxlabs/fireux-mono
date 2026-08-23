@@ -5,7 +5,7 @@
       :context-icon="resolvedContextIcon"
       :has-context-icon="hasContextIcon"
       :title="resolvedTitle"
-      :description="resolvedDescription"
+      :description="workspaceDescription"
     />
 
     <Messages
@@ -33,6 +33,7 @@
       :ai-tools="props.aiTools"
       :allow-file="allowFile"
       :command-mode="commandMode"
+      :aria-label="composerAriaLabel"
       :submitting="submitting"
       @submit="sendPrompt"
       @file="stageFile"
@@ -43,23 +44,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
-import { isPurchasingAIHelloPrompt } from '../../../models/purchasing-ai'
-import CommandResult from './CommandResult.vue'
-import Composer from './Composer.vue'
-import Intro from './Intro.vue'
-import Messages from './Messages.vue'
+import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
+import { isWasteAIHelloPrompt } from '../../models/waste-ai'
+import CommandResult from './AI/CommandResult.vue'
+import Composer from './AI/Composer.vue'
+import Intro from './AI/Intro.vue'
+import Messages from './AI/Messages.vue'
 import {
   useKitchenAIPresentation,
   type KitchenAIPresentationOptions,
-} from './useKitchenAIPresentation'
+} from './AI/useKitchenAIPresentation'
 import type {
   KitchenAICreatedObject,
   KitchenAIResultAction,
   KitchenAIToolNugget,
   KitchenAIWelcomeMessage,
-} from './types'
+} from './AI/types'
 
 const props = withDefaults(
   defineProps<
@@ -75,6 +77,7 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
+const { isAuthenticated } = useAuth()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
   agentLabel: resolvedAgentLabel,
@@ -100,6 +103,50 @@ const pendingTool = ref<{
   confirmation: string
 } | null>(null)
 let messageId = 0
+const composerAriaLabel = computed(
+  () => `Ask ${props.agent?.name || 'KitchenAI'}`
+)
+
+const selectedKitchenName = computed(() =>
+  String(
+    kitchenWorkspace.selection.kitchen.value?.name ||
+      kitchenWorkspace.selection.kitchen.value?.slug ||
+      ''
+  ).trim()
+)
+const availableKitchenNames = computed(() =>
+  kitchenWorkspace.targets.kitchens.value
+    .map((kitchen) => String(kitchen.name || kitchen.slug || '').trim())
+    .filter(Boolean)
+)
+const workspaceDescription = computed(() => {
+  if (props.description || props.agent) return resolvedDescription.value
+  if (!isAuthenticated.value) return resolvedDescription.value
+
+  const selectedName = selectedKitchenName.value
+  if (selectedName) {
+    return kitchenWorkspace.runtime.isDemo.value
+      ? `You are exploring ${selectedName} as a read-only Demo Kitchen.`
+      : `You are working with ${selectedName}. KitchenAI can use its authorized live evidence when your question requires it.`
+  }
+
+  const outcome = kitchenWorkspace.targets.outcome.value
+  if (outcome === 'pending' || outcome === 'idle') {
+    return 'I am checking which Kitchens are available to you.'
+  }
+  if (outcome === 'error') {
+    return 'I could not load your available Kitchens. You can still begin from a blank Kitchen context.'
+  }
+
+  const names = availableKitchenNames.value
+  if (!names.length) {
+    return 'You do not have a Kitchen yet. We can begin filling one in from a menu, a few details, or a blank Kitchen.'
+  }
+  if (names.length === 1) {
+    return `${names[0]} is available to you. Select it to use its live evidence, or continue from a blank Kitchen context.`
+  }
+  return `You have ${names.length} Kitchens available. Choose the Kitchen you want me to work with.`
+})
 
 const selectedLiveScope = computed(() => ({
   appId: String(kitchenWorkspace.runtime.appId.value || '').trim(),
@@ -126,22 +173,19 @@ async function sendPrompt() {
 
 async function runPrompt(text: string) {
   const selected = selectedLiveScope.value
-  const purchasingHello = isPurchasingAIHelloPrompt(text)
+  const wasteHello =
+    resolvedOperation.value === 'waste' || isWasteAIHelloPrompt(text)
   const appId = selected.appId || configuredAppId
   const kitchenId = selected.kitchenId
-  if (!appId || (!kitchenId && !purchasingHello)) {
-    showResult(
-      kitchenWorkspace.runtime.isDemo.value
-        ? 'This Demo Kitchen is read-only. Select a Live Kitchen before running a command.'
-        : 'Select or create a Live Kitchen before running a command.'
-    )
+  if (!appId) {
+    showResult('KitchenAI is not available for this App.')
     return
   }
 
   submitting.value = true
   try {
     const headers: Record<string, string> = {}
-    if (!purchasingHello) {
+    if (!wasteHello) {
       const user = await useRequireUser()
       headers.Authorization = `Bearer ${await user.getIdToken()}`
     }
@@ -231,4 +275,4 @@ function stageFile(file: File) {
 }
 </script>
 
-<style src="./welcome.css"></style>
+<style src="./AI/welcome.css"></style>

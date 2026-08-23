@@ -254,7 +254,7 @@ export const APP_REGISTRY = {
     workspaces: ['kitchen'],
     toolProviders: ['go-qr'],
     componentSmokeRoutes: [
-      '/workspace/kitchen',
+      '/',
       '/workspace/kitchen/identity',
       '/workspace/kitchen/mise',
       '/workspace/kitchen/ingredients',

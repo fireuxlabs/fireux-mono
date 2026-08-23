@@ -571,10 +571,12 @@ async function buildSecurityTests() {
     ? documentPath(privateDocuments[0]).split('/')[1] || ''
     : ''
   const adminId = documentId(
-    appUsers.find((document) => document.fields?.role?.stringValue === 'admin')
+    appUsers.find((document) =>
+      ['admin', 'dev'].includes(document.fields?.role?.stringValue)
+    )
   )
   const regularId = documentId(
-    appUsers.find((document) => documentId(document) !== adminId)
+    appUsers.find((document) => document.fields?.role?.stringValue === 'user')
   )
   const customerId = profileOwnerId(customers[0])
   const driverId = profileOwnerId(appDrivers[0])
@@ -1356,7 +1358,7 @@ async function buildSecurityTests() {
     'apps/misebox-app/users/security-rules-sparse-membership'
   const sparseMembershipProbeData = {
     role: 'user',
-    is_premium: false,
+    subscription: 'free',
     onboarding_status: 'pending',
     created: {
       at: writeTime,
@@ -3804,7 +3806,6 @@ async function buildSecurityTests() {
       {
         ...publicUserData,
         avatar: 'https://example.invalid/avatars/rules-user.jpg',
-        updated: { at: updateTime, by: publicUserId },
       },
       updateTime
     ),
@@ -3821,7 +3822,6 @@ async function buildSecurityTests() {
         {
           ...publicUserData,
           avatar,
-          updated: { at: updateTime, by: publicUserId },
         }
       )
     ),
@@ -3833,7 +3833,6 @@ async function buildSecurityTests() {
       {
         ...publicUserData,
         display_name: 'Rules User',
-        updated: { at: updateTime, by: publicUserId },
       },
       updateTime
     ),
@@ -3845,7 +3844,6 @@ async function buildSecurityTests() {
       {
         ...publicUserDataWithoutBio,
         bio: 'I build useful things.',
-        updated: { at: updateTime, by: publicUserId },
       },
       updateTime
     ),
@@ -3857,7 +3855,6 @@ async function buildSecurityTests() {
       {
         ...publicUserDataWithoutBio,
         bio: 'b'.repeat(280),
-        updated: { at: updateTime, by: publicUserId },
       },
       updateTime
     ),
@@ -3866,10 +3863,7 @@ async function buildSecurityTests() {
       `users/${publicUserId}`,
       publicUserId,
       publicUserDataWithBio,
-      {
-        ...publicUserDataWithoutBio,
-        updated: { at: updateTime, by: publicUserId },
-      },
+      publicUserDataWithoutBio,
       updateTime
     ),
     deniedUpdate(
@@ -3880,7 +3874,6 @@ async function buildSecurityTests() {
       {
         ...publicUserDataWithoutBio,
         bio: 'b'.repeat(281),
-        updated: { at: updateTime, by: publicUserId },
       }
     ),
     ...[
@@ -3898,7 +3891,6 @@ async function buildSecurityTests() {
         {
           ...publicUserDataWithoutBio,
           bio,
-          updated: { at: updateTime, by: publicUserId },
         }
       )
     ),
@@ -3910,7 +3902,6 @@ async function buildSecurityTests() {
       {
         ...publicUserData,
         profiles: forgedPublicUserProfiles,
-        updated: { at: updateTime, by: publicUserId },
       }
     ),
     allowedUpdate(

@@ -536,19 +536,19 @@ function buildPlan(state) {
         `${path}.updated`,
         blockers
       )
-      if (typeof membershipSnapshot.get('is_premium') !== 'boolean') {
+      if (!['free', 'premium'].includes(membershipSnapshot.get('subscription'))) {
         blockers.push(
           blocker(
-            'MEMBERSHIP_PREMIUM_STATE_INVALID',
+            'MEMBERSHIP_SUBSCRIPTION_INVALID',
             path,
-            'Legacy is_premium must be an explicit boolean.'
+            'Subscription must be free or premium.'
           )
         )
       }
       if (!created || !updated) continue
       const payload = {
         role,
-        is_premium: membershipSnapshot.get('is_premium') === true,
+        subscription: membershipSnapshot.get('subscription'),
         workspace_enabled: false,
         onboarding_status:
           membershipSnapshot.get('onboarding_status') === 'completed' ||

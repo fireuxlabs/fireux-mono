@@ -1,9 +1,6 @@
 import type { H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { readAppPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
   onboardingText as text,
@@ -15,11 +12,7 @@ export type KitchenOnboardingFirestore = ReturnType<typeof getRuntimeFirestore>
 
 type RuntimePolicy = {
   appId: string
-  appRole: string
-  ecosystem: string
-  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
-  configuredAppPalette: ReturnType<typeof readAppPalette>
 }
 
 export type KitchenOnboardingActor = RuntimePolicy & {
@@ -31,24 +24,30 @@ export type KitchenOnboardingActor = RuntimePolicy & {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = useFireUXConfig(event)
+  const policy = resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen')
   return {
-    ...resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen'),
-    configuredAppPalette: readAppPalette(fireux.theme?.palette),
+    appId: policy.appId,
+    canCreate: policy.canCreate,
   }
 }
 
 export async function readKitchenOnboardingActor(
-  event: H3Event
+  event: H3Event,
+  options: { allowAnonymous?: boolean; allowMissingMembership?: boolean } = {}
 ): Promise<KitchenOnboardingActor> {
-  const { uid, decoded } = await requireFirebaseBearerUser(event)
+  const { uid, decoded } = await requireFirebaseBearerUser(
+    event,
+    'A Firebase identity is required.',
+    { allowAnonymous: options.allowAnonymous }
+  )
   const policy = runtimePolicy(event)
   const db = getRuntimeFirestore()
-  const membershipRef = db.doc(
-    `apps/${policy.appId}/${'users'}/${uid}`
-  )
+  const membershipRef = db.doc(`apps/${policy.appId}/${'users'}/${uid}`)
   const membership = await membershipRef.get()
-  const role = memberRole(membership.exists, membership.get('role'))
+  const role =
+    options.allowMissingMembership && !membership.exists
+      ? 'user'
+      : memberRole(membership.exists, membership.get('role'))
   return {
     ...policy,
     uid,

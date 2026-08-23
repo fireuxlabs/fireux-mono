@@ -34,7 +34,7 @@ const profileIndexApiContract = (route) => ({
     '"preferences"',
     '"terms"',
     '"role"',
-    '"is_premium"',
+    '"subscription"',
     '"app_ids"',
     '"driver_phone"',
     '"active_kitchen_ids"',

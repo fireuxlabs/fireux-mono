@@ -3,10 +3,15 @@
 <template>
   <section class="space-y-4">
     <WorkspaceKitchenIndexTargetSection
-      title="Your kitchens"
-      description="Live kitchens linked to your current user profile."
+      v-if="mode === 'all' || outcome !== 'empty'"
+      :title="mode === 'free' ? 'Your kitchen' : 'Your kitchens'"
+      :description="
+        mode === 'free'
+          ? 'Open the Kitchen connected to your account.'
+          : 'Live kitchens linked to your current user profile.'
+      "
       source="live"
-      :collection="collection"
+      :collection="mode === 'free' ? freeCollection : collection"
       :outcome="outcome"
       :selected-id="selectedId"
       :selected-source="selectedSource"
@@ -14,8 +19,13 @@
     />
 
     <WorkspaceKitchenIndexTargetSection
-      title="Demo kitchens"
-      description="Explore with our read-only kitchens."
+      v-if="mode === 'all' || outcome === 'empty'"
+      :title="mode === 'free' ? 'Explore a demo kitchen' : 'Demo kitchens'"
+      :description="
+        mode === 'free'
+          ? 'See how KitchenAI works with read-only example data.'
+          : 'Explore with our read-only kitchens.'
+      "
       source="demo"
       :collection="demoCollection"
       :outcome="demoOutcome"
@@ -38,6 +48,7 @@ const props = withDefaults(
     demoCollection?: KitchenSurface[]
     outcome: WorkspaceTargetOutcome
     demoOutcome: WorkspaceTargetOutcome
+    mode?: 'all' | 'free'
     selectedId?: string
     selectedSource?: KitchenFetchSource
   }>(),
@@ -46,6 +57,7 @@ const props = withDefaults(
     demoCollection: () => [],
     selectedId: '',
     selectedSource: 'live',
+    mode: 'all',
   }
 )
 
@@ -59,6 +71,7 @@ const workspaceIds = computed(() =>
     .filter(Boolean)
 )
 const workspaceIdSet = computed(() => new Set(workspaceIds.value))
+const freeCollection = computed(() => props.collection.slice(0, 1))
 const demoIds = computed(() =>
   props.demoCollection
     .map((kitchen) => String(kitchen.id ?? '').trim())

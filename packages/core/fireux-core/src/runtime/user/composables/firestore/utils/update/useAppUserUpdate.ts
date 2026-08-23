@@ -4,13 +4,14 @@
 import { useFireUXConfig } from '../../../../../app/composables/config/FireUXConfig'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { mutateAppMembership } from '../appMembershipMutation'
+import type { AppUserSubscription } from '../../../../../app/models/app-user.model.ts'
 
 type AppMembershipActions = {
   /** Single, canonical role toggle (admin <-> user). */
   setAdmin: (makeAdmin: boolean) => Promise<void>
 
-  /** App-scoped premium entitlement. */
-  setPremium: (isPremium: boolean) => Promise<void>
+  /** App-scoped subscription selected by an authorized actor. */
+  setSubscription: (subscription: AppUserSubscription) => Promise<void>
 
   /** Completes or deliberately skips the current App's onboarding. */
   setOnboardingStatus: (status: 'completed' | 'skipped') => Promise<void>
@@ -42,12 +43,12 @@ export function useAppUserUpdate(user: UserRefs) {
         role,
       })
     },
-    setPremium: async (isPremium) => {
+    setSubscription: async (subscription) => {
       const { uid } = requireContext()
       await mutateAppMembership({
-        action: 'set-premium',
+        action: 'set-subscription',
         userId: uid,
-        isPremium: Boolean(isPremium),
+        subscription,
       })
     },
     setOnboardingStatus: async (status) => {

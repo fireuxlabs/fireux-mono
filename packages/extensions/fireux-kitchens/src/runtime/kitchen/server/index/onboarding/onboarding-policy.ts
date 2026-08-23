@@ -2,18 +2,13 @@
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
-import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
-import {
-  readFireuxEntityManagement,
-  resolveFireuxEntityManagementAppId,
-} from 'fireux-core/runtime/utils/entity-management'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
 } from 'fireux-places/runtime/place/utils/place-spine'
 import type { KitchenOnboardingPreview } from '../../../models/kitchen-onboarding.model.ts'
 
-export type KitchenOnboardingMemberRole = 'admin' | 'user'
+export type KitchenOnboardingMemberRole = 'admin' | 'user' | 'dev'
 
 export const onboardingText = (value: unknown) => String(value ?? '').trim()
 export const onboardingRecord = (value: unknown): Record<string, unknown> =>
@@ -36,39 +31,6 @@ export function requireOnboardingMemberRole(
   })
 }
 
-export function readKitchenOnboardingManagement(
-  value: Record<string, unknown>
-): FireuxEntityManagement {
-  if (
-    Object.hasOwn(value, 'app_scope') ||
-    Object.hasOwn(value, 'app_scope_state') ||
-    Object.hasOwn(value, 'app_scope_app_id') ||
-    Object.hasOwn(value, 'app_id') ||
-    Object.hasOwn(value, 'workspace')
-  ) {
-    fail(409, 'Kitchen contains retired management fields.')
-  }
-  const management = readFireuxEntityManagement(value.management)
-  if (!management) fail(409, 'Kitchen management is missing or invalid.')
-  return management
-}
-
-export function assertKitchenOnboardingManagement(
-  kitchen: Record<string, unknown>,
-  appId: string,
-  ecosystem: string
-) {
-  const management = readKitchenOnboardingManagement(kitchen)
-  const managementAppId = resolveFireuxEntityManagementAppId(
-    management,
-    ecosystem
-  )
-  if (management.mode !== 'root' && managementAppId !== appId) {
-    fail(409, 'This Kitchen is already attached to another App.')
-  }
-  return management
-}
-
 export function assertKitchenOnboardingPlaceDefaults(
   place: Record<string, unknown>
 ) {
@@ -88,15 +50,13 @@ export function kitchenOnboardingAccessDecision(input: {
   canCreate: boolean
 }): Pick<KitchenOnboardingPreview, 'action' | 'can_complete' | 'message'> {
   if (!input.kitchen) {
-    if (input.canCreate && input.role === 'admin') {
+    if (input.canCreate) {
       return { action: 'create', can_complete: true }
     }
     return {
       action: 'request_access',
       can_complete: false,
-      message: input.canCreate
-        ? 'An App admin must create the Kitchen.'
-        : 'Kitchen creation is disabled for this App.',
+      message: 'Kitchen creation is disabled for this App.',
     }
   }
 
@@ -106,7 +66,7 @@ export function kitchenOnboardingAccessDecision(input: {
   ) {
     return { action: 'open', can_complete: true }
   }
-  if (input.role === 'admin') {
+  if (input.role === 'admin' || input.role === 'dev') {
     return { action: 'connect', can_complete: true }
   }
   return {

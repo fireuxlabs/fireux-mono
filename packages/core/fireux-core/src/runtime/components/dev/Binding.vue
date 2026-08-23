@@ -77,7 +77,9 @@ const binding = computed(() => ({
 const bindingAppUsersCount = computed(() => memberships.value.length)
 const bindingAdminIdsCount = computed(
   () =>
-    memberships.value.filter((membership) => membership.role === 'admin').length
+    memberships.value.filter(
+      (membership) => membership.role === 'admin' || membership.role === 'dev'
+    ).length
 )
 const bindingTotal = computed(() => binding.value.missingCore.length)
 </script>

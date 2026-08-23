@@ -2,7 +2,7 @@
   <section
     class="grid gap-3 rounded-xl border border-default bg-elevated/30 p-4 sm:p-5"
   >
-    <WorkspaceKitchenAIWelcome
+    <WorkspaceKitchenAI
       :agent="agent"
       :agent-label="agent.name"
       :title="`Work with ${title} AI`"

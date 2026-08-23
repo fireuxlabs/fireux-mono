@@ -1,6 +1,6 @@
 # Workspace
 
-Updated: 2026-08-22
+Updated: 2026-08-23
 Ref: da689ed54
 Role: map, not canon
 
@@ -163,14 +163,14 @@ Permissions govern those capabilities and every Operation; they are authority,
 not another navigation page. Notifications belongs to the shared shell rather
 than an Entity component bucket.
 
-| Entity    | Operations and reports                                                                                                                                                          |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Project   | Apps, Ecosystem                                                                                                                                                                 |
+| Entity    | Operations and reports                                                                                                                                                           |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project   | Apps, Ecosystem                                                                                                                                                                  |
 | Kitchen   | Menus, Dishes, Drinks, Recipes, Ingredients; Food Safety, Mise, Orders & Service, Inventory, Purchasing, Receiving, Waste; Stations, Suppliers; Sales, Costs, Waste, Performance |
-| Supplier  | Catalogue, Ingredients, Items                                                                                                                                                   |
-| Portfolio | Properties, Compliance, Documents, Tasks, Finance                                                                                                                               |
-| Property  | Reservations, Calendar                                                                                                                                                          |
-| Blank     | —                                                                                                                                                                               |
+| Supplier  | Catalogue, Ingredients, Items                                                                                                                                                    |
+| Portfolio | Properties, Compliance, Documents, Tasks, Finance                                                                                                                                |
+| Property  | Reservations, Calendar                                                                                                                                                           |
+| Blank     | —                                                                                                                                                                                |
 
 Ignition is separate Project intake/admin, not a Project Operation. A missing
 server folder is valid when a visible capability has no server-owned
@@ -217,9 +217,10 @@ behaviour; the map does not require empty symmetry.
 - Tenant apps can auto-select a single persisted authorized target.
 - Authority-proven single targets are committed inside the family runtime;
   index adapters never add a second auto-selection path.
-- Every Live App derives targets from canonical root management plus the
-  owning Entity's `team/{uid}` record. AppUser proves App membership and
-  governance; it never carries Workspace target IDs.
+- Every Live App derives targets from the canonical root, its declared host
+  relationship where present, and the owning Entity's `team/{uid}` record.
+  AppUser proves App membership and governance; it never carries Workspace
+  target IDs. Place-backed Kitchen stores no management relationship.
 - Every family loads its authenticated chooser candidates through
   `/api/workspace/{family}/targets`. Core owns the App-, family-, and User-scoped
   request lifecycle; the family endpoint owns authority and the family core
@@ -255,10 +256,10 @@ behaviour; the map does not require empty symmetry.
   cannot race between `live`, `demo`, and `test`.
 - Global target adapters compose AppUser membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
-- Root management and exact Team records bound live reads. Target resolution
-  must fail on a missing root, wrong management host, malformed Team authority,
-  missing required AppUser membership, or unauthorized id; it never leaves an
-  unused full-root listener behind client filtering.
+- Canonical root relationships and exact Team records bound live reads. Target
+  resolution must fail on a missing root, wrong declared host, malformed Team
+  authority, missing required AppUser membership, or unauthorized id; it never
+  leaves an unused full-root listener behind client filtering.
 - Kitchen live targets use the canonical authenticated
   `/api/workspace/kitchen/targets`
   projection. The fixed-runtime server derives candidate IDs, exact-loads and
@@ -278,9 +279,10 @@ behaviour; the map does not require empty symmetry.
 - A Workspace family creates or attaches through its own fixed-runtime
   authenticated server endpoint. The caller cannot choose the App, database,
   collection path, Team id, or authority.
-- One Firestore transaction owns root management and the caller's exact
-  `team/{uid}` record. A Team record names roles and permissions; no second
-  operator/team array participates in access.
+- One Firestore transaction owns the canonical root, any relationship declared
+  by that Entity, and the caller's exact `team/{uid}` record. A Team record
+  names roles and permissions; no second operator/team array participates in
+  access.
 - Current App admins remain the explicit administrative override only for
   roots managed by that App; UI `canWrite` still does not replace server or
   Rules enforcement.
@@ -289,10 +291,13 @@ behaviour; the map does not require empty symmetry.
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
   family and has no production onboarding.
-- Workspace-capable roots use `management.mode`: `root` has no Workspace host;
+- Workspace-capable roots with a management field use `management.mode`:
+  `root` has no Workspace host;
   `workspace` uses the ecosystem App by convention; `app` names its
   dedicated Workspace App with `app_id`. Core resolves this vocabulary without
-  enumerating domain families.
+  enumerating domain families. Kitchen is the accepted exception: its canonical
+  root has no management field and its same-ID Place, AppUser membership, and
+  Kitchen Team supply the required evidence.
 
 ## Operations
 

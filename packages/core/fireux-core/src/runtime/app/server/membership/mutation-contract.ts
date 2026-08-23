@@ -53,7 +53,7 @@ export function initialMembership(
 ) {
   return {
     role,
-    is_premium: false,
+    subscription: 'free',
     onboarding_status: 'pending',
     created: stamp(actorUid),
     updated: stamp(actorUid),
@@ -62,18 +62,21 @@ export function initialMembership(
 
 export function requireCanonicalMembership(data: DocumentData) {
   if (!roleFrom(data)) forbidden(409, 'The App membership has an invalid role.')
-  if (typeof data.is_premium !== 'boolean')
-    forbidden(409, 'The App membership has an invalid premium flag.')
+  if (data.subscription !== 'free' && data.subscription !== 'premium')
+    forbidden(409, 'The App membership has an invalid subscription.')
   if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
     forbidden(409, 'The App membership has an invalid onboarding status.')
 }
 
 export function roleFrom(data: DocumentData | undefined): AppUserRole | null {
-  return data?.role === 'admin' || data?.role === 'user' ? data.role : null
+  return data?.role === 'admin' || data?.role === 'user' || data?.role === 'dev'
+    ? data.role
+    : null
 }
 
 export function isAdminMembership(data: DocumentData | undefined) {
-  return roleFrom(data) === 'admin'
+  const role = roleFrom(data)
+  return role === 'admin' || role === 'dev'
 }
 
 export function requireAdmin(data: DocumentData | undefined) {
@@ -99,14 +102,22 @@ export async function countTransactionAdmins(
   mutations: GuardedServerTransaction,
   appId: string
 ) {
-  return (
-    await mutations.query(serverAppUsersTarget(appId), {
+  const memberships = serverAppUsersTarget(appId)
+  const [admins, developers] = await Promise.all([
+    mutations.query(memberships, {
       field: 'role',
       op: '==',
       value: 'admin',
       limit: 2,
-    })
-  ).length
+    }),
+    mutations.query(memberships, {
+      field: 'role',
+      op: '==',
+      value: 'dev',
+      limit: 2,
+    }),
+  ])
+  return admins.length + developers.length
 }
 
 export type AuthorityRevocation = {

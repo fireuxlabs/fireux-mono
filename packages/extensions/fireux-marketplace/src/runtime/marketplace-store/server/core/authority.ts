@@ -29,7 +29,7 @@ export const OFFER_LIMIT = 100
 
 export const ORDER_LIMIT = 100
 
-export type MemberRole = 'user' | 'admin'
+export type MemberRole = 'user' | 'admin' | 'dev'
 
 export type MarketplaceMemberContext = {
   uid: string
@@ -138,7 +138,7 @@ export function ordersRef(store: DocumentReference) {
 export function validMemberRole(snapshot: DocumentSnapshot): MemberRole | '' {
   if (!snapshot.exists) return ''
   const role = text(snapshot.get('role'))
-  return role === 'admin' || role === 'user' ? role : ''
+  return role === 'admin' || role === 'user' || role === 'dev' ? role : ''
 }
 
 export async function requireMarketplaceMember(
@@ -187,7 +187,7 @@ export async function requireMarketplaceAdmin(
   event: H3Event
 ): Promise<MarketplaceMemberContext> {
   const current = await requireMarketplaceMember(event)
-  if (current.role !== 'admin') {
+  if (current.role !== 'admin' && current.role !== 'dev') {
     throw createError({
       statusCode: 403,
       statusMessage: 'Current App administrator access is required.',
@@ -200,7 +200,11 @@ export function canManageStore(
   store: MarketplaceStore,
   current: MarketplaceMemberContext
 ) {
-  return current.role === 'admin' || current.managedStoreIds.has(store.id)
+  return (
+    current.role === 'admin' ||
+    current.role === 'dev' ||
+    current.managedStoreIds.has(store.id)
+  )
 }
 
 export function assertCanManageStore(

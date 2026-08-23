@@ -33,7 +33,8 @@ export async function readAppTeam(event: H3Event) {
     .collection('users')
     .doc(uid)
     .get()
-  if (!actorMembership.exists || actorMembership.data()?.role !== 'admin') {
+  const actorRole = actorMembership.data()?.role
+  if (!actorMembership.exists || (actorRole !== 'admin' && actorRole !== 'dev')) {
     throw createError({
       statusCode: 403,
       statusMessage: 'App admin access is required.',
@@ -55,13 +56,21 @@ export async function readAppTeam(event: H3Event) {
 
   const memberDocs = memberSnapshot.docs
   const requestDocs = requestSnapshot.docs
-  const memberRoles = new Map<string, 'admin' | 'user'>()
+  const memberRows = new Map<
+    string,
+    { role: 'admin' | 'user' | 'dev'; subscription: 'free' | 'premium' }
+  >()
   for (const document of memberDocs) {
-    const role = document.data()?.role
-    if (role !== 'admin' && role !== 'user') {
+    const data = document.data()
+    const role = data?.role
+    const subscription = data?.subscription
+    if (role !== 'admin' && role !== 'user' && role !== 'dev') {
       conflict(`App member ${document.id} has an invalid role.`)
     }
-    memberRoles.set(document.id, role)
+    if (subscription !== 'free' && subscription !== 'premium') {
+      conflict(`App member ${document.id} has an invalid subscription.`)
+    }
+    memberRows.set(document.id, { role, subscription })
   }
 
   const requestIds: string[] = []
@@ -73,7 +82,7 @@ export async function readAppTeam(event: H3Event) {
     requestIds.push(userId)
   }
 
-  const userIds = Array.from(new Set([...memberRoles.keys(), ...requestIds]))
+  const userIds = Array.from(new Set([...memberRows.keys(), ...requestIds]))
   const userSnapshots = userIds.length
     ? await identityDb.getAll(
         ...userIds.map((userId) =>
@@ -88,9 +97,9 @@ export async function readAppTeam(event: H3Event) {
     ])
   )
 
-  const members: AppAdminMember[] = Array.from(memberRoles, ([id, role]) => ({
+  const members: AppAdminMember[] = Array.from(memberRows, ([id, membership]) => ({
     id,
-    role,
+    ...membership,
     user: usersById.get(id) ?? null,
   }))
   const joinRequests: AppAdminJoinRequest[] = requestIds.map((id) => ({

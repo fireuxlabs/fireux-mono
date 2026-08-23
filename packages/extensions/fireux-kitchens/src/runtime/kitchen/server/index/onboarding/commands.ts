@@ -187,10 +187,14 @@ export async function completeKitchenOnboarding(
     }
 
     if (createdRoot) {
+      const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+        name: placeName,
         slug,
         status: 'active',
         visibility: false,
+        created: stamp,
+        updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
@@ -224,6 +228,68 @@ export async function completeKitchenOnboarding(
       created_root: createdRoot,
       created_team_member: createdTeamMember,
       ...(slug ? { slug } : {}),
+    }
+  })
+}
+
+export async function createKitchenShell(event: H3Event, input: unknown) {
+  const body = request(input, ['name'])
+  const name = text(body.name)
+  if (!name || name.length > 120) {
+    fail(400, 'Kitchen name is required and must be 120 characters or fewer.')
+  }
+
+  const current = await actor(event, {
+    allowAnonymous: true,
+    allowMissingMembership: true,
+  })
+  if (!current.canCreate) fail(403, 'Kitchen creation is disabled for this App.')
+
+  const kitchenId = current.db.collection('kitchens').doc().id
+  const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
+  const creatorName =
+    current.authDisplayName || `Guest ${current.uid.slice(0, 6)}`
+
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const [root, teamMember] = await Promise.all([
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+      mutations.read(teamMembers, current.uid),
+    ])
+    if (root.exists || teamMember.exists) {
+      fail(409, 'Kitchen shell identity already exists.')
+    }
+
+    const slug = normalizeSlug(name) || kitchenId.toLowerCase()
+    mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+      name,
+      slug,
+      status: 'active',
+      visibility: false,
+      created: serverAuditStamp({ by: current.uid, appId: current.appId }),
+      updated: serverAuditStamp({ by: current.uid }),
+    })
+    mutations.create(
+      teamMembers,
+      current.uid,
+      buildKitchenTeamMemberRecord({
+        appId: current.appId,
+        createdBy: current.uid,
+        kitchenId,
+        memberId: current.uid,
+        name: creatorName,
+        role: 'owner',
+        slug: normalizeSlug(creatorName) || 'guest',
+        userId: current.uid,
+      })
+    )
+
+    return {
+      ok: true as const,
+      kitchen_id: kitchenId,
+      action: 'create' as const,
+      created_root: true,
+      created_team_member: true,
+      slug,
     }
   })
 }

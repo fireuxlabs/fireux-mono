@@ -1,6 +1,11 @@
 import { computed } from 'vue'
 import type { FireuxOperationAgentDefinition } from 'fireux-ai/runtime/agents/operation-agent'
+import { wasteAIContext } from '../../../models/waste-ai'
 import type { KitchenAIStarter } from './types'
+
+export type KitchenAIPresentationContext = {
+  promptSuggestions?: readonly string[]
+}
 
 export type KitchenAIPresentationOptions = {
   title?: string
@@ -12,6 +17,7 @@ export type KitchenAIPresentationOptions = {
   mode?: 'assistant' | 'command'
   agentLabel?: string
   contextIcon?: string
+  context?: KitchenAIPresentationContext
   promptSuggestions?: readonly string[]
   agent?: FireuxOperationAgentDefinition
 }
@@ -56,7 +62,12 @@ export function useKitchenAIPresentation(
         'Give me your existing menu and I’ll help turn it into a working digital Menu and Kitchen Workspace.'
     ),
     placeholder: computed(() => options.placeholder || 'Ask Kitchen AI…'),
-    promptSuggestions: computed(() => options.promptSuggestions || []),
+    promptSuggestions: computed(
+      () =>
+        options.context?.promptSuggestions ||
+        options.promptSuggestions ||
+        (options.agent ? [] : wasteAIContext.promptSuggestions)
+    ),
     allowFile: computed(() => options.allowFile ?? true),
     starters: computed(
       () => options.starters ?? (options.agent ? [] : defaultStarters)

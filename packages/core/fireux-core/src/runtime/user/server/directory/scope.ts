@@ -20,7 +20,7 @@ function validateMembership(
   if (!snapshot.exists) return false
 
   const role = snapshot.get('role')
-  if (role !== 'admin' && role !== 'user') {
+  if (role !== 'admin' && role !== 'user' && role !== 'dev') {
     invalidMembership(snapshot.id)
   }
   return true

@@ -1,10 +1,15 @@
-import type { AppUserAccessTier } from '../utils/app-user-access'
 import type { UserIdentitySummary } from '../../user/models/user-directory.model.ts'
 import type { App } from './app.model.ts'
+import type {
+  AppUserOnboardingStatus,
+  AppUserRole,
+  AppUserSubscription,
+} from './app-user.model.ts'
 
 export type AppAdminMember = {
   id: string
-  role: 'admin' | 'user'
+  role: AppUserRole
+  subscription: AppUserSubscription
   user: UserIdentitySummary | null
 }
 
@@ -23,12 +28,10 @@ export type AppAdminPeopleResponse = {
 
 export type CurrentAppMembership = {
   id: string
-  role: 'admin' | 'user'
-  is_premium: boolean
-  access_tier: AppUserAccessTier
-  has_premium_access: boolean
+  role: AppUserRole
+  subscription: AppUserSubscription
   workspace_enabled: boolean
-  onboarding_status: 'pending' | 'completed' | 'skipped'
+  onboarding_status: AppUserOnboardingStatus
   profiles: string[]
 }
 

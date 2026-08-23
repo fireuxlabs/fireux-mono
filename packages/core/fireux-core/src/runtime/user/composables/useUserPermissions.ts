@@ -1,45 +1,32 @@
 // Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: derive one highest current-App tier without duplicating stored authority.
 import { computed } from '#imports'
-import {
-  resolveAppUserAccess,
-  type AppUserAccessTier,
-} from '../../app/utils/app-user-access'
+import { resolveAppUserAccess } from '../../app/utils/app-user-access'
+import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
 import type { CurrentAppMembership } from '../../app/models/app-context.model.ts'
-import { useDeveloperAccess } from './useDeveloperAccess'
 import type { UserRefs } from './firestore/fetch/useUserFetch'
 
-export type UserAccessTier = AppUserAccessTier
+export type UserSubscription = AppUserSubscription
 
 export function useUserPermissions(user: UserRefs) {
   const appUser = user.appUser as {
     value: CurrentAppMembership | null | undefined
   }
-  const { isDeveloper } = useDeveloperAccess()
-
-  const access = computed(() =>
-    resolveAppUserAccess({
-      membership: appUser.value,
-      isConfiguredDeveloper: isDeveloper.value,
-    })
-  )
+  const access = computed(() => resolveAppUserAccess(appUser.value))
   const isAdmin = computed(() => access.value.hasAdminAuthority)
-  const isPremiumEntitlement = computed(
-    () => access.value.hasExplicitPremiumEntitlement
+  const isDeveloper = computed(() => access.value.hasDeveloperAuthority)
+  const subscription = computed<UserSubscription>(
+    () => access.value.subscription
   )
-  const hasPremiumAccess = computed(() => access.value.hasPremiumAccess)
-  // Compatibility alias: callers historically consumed `isPremium`.
-  // It now means effective Premium-or-higher capability, not the raw grant.
-  const isPremium = hasPremiumAccess
-  const accessTier = computed<UserAccessTier | null>(() => access.value.tier)
-  const canOwnMultipleWorkspaces = hasPremiumAccess
+  const hasPremiumSubscription = computed(
+    () => access.value.hasPremiumSubscription
+  )
+  const canOwnMultipleWorkspaces = hasPremiumSubscription
 
   return {
     isAdmin,
-    isPremium,
-    isPremiumEntitlement,
-    hasPremiumAccess,
     isDeveloper,
-    accessTier,
+    subscription,
+    hasPremiumSubscription,
     canOwnMultipleWorkspaces,
   }
 }

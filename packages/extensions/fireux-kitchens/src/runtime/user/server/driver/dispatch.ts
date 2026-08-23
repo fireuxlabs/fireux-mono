@@ -78,7 +78,7 @@ function iso(value: unknown) {
 }
 
 function isMembership(data: DocumentData | undefined) {
-  return data?.role === 'admin' || data?.role === 'user'
+  return data?.role === 'admin' || data?.role === 'user' || data?.role === 'dev'
 }
 
 function activeKitchenLinks(driver: DocumentData, appId: string) {

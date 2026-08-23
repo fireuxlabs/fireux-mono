@@ -73,7 +73,10 @@ export async function requireKitchenWriter(
   const [membershipSnapshot, rootKitchenSnapshot, teamMemberSnapshot] =
     await db.getAll(membershipRef, rootKitchenRef, teamMemberRef)
   const role = String(membershipSnapshot.get('role') ?? '').trim()
-  if (!membershipSnapshot.exists || (role !== 'admin' && role !== 'user')) {
+  if (
+    !membershipSnapshot.exists ||
+    (role !== 'admin' && role !== 'user' && role !== 'dev')
+  ) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Active App membership is required.',

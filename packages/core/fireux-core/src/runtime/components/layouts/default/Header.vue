@@ -40,7 +40,7 @@
 
           <!-- Signed in => dashboard -->
           <template v-else-if="isSignedIn">
-            <UserAccessBadge :tier="accessTier" />
+            <UserAccessBadge :subscription="subscription" />
 
             <UButton
               to="/dashboard"
@@ -121,7 +121,7 @@ const mobileItems = computed(() =>
 
 /** Auth */
 const { authPhase, isSignedIn } = useWorkspaceEntryState()
-const { currentUser, avatarSrc, accessTier } = useUser()
+const { currentUser, avatarSrc, subscription } = useUser()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>

@@ -54,11 +54,11 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: emit sparse Place onboarding drafts instead of blank placeholders.
 import { computed, nextTick, ref, watch } from 'vue'
-import { usePlaceSearch } from '../../composables/firestore/fetch/search/usePlaceSearch'
+import { usePlaceSearch } from '../../composables/usePlaceSearch'
 import { usePlaceCreate } from '../../composables/firestore/mutations/usePlaceCreate'
 import {
-    sanitizeLogoAvatar,
-    usePlaceLogoState,
+  sanitizeLogoAvatar,
+  usePlaceLogoState,
 } from '../../composables/firestore/utils/view/usePlaceLogos'
 import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
 import type { PlaceSource } from '../../models/place.model.ts'
@@ -74,7 +74,12 @@ const props = withDefaults(
     showConfirmButton?: boolean
     showClearButton?: boolean
   }>(),
-  { type: null, placeholder: null, showConfirmButton: true, showClearButton: true }
+  {
+    type: null,
+    placeholder: null,
+    showConfirmButton: true,
+    showClearButton: true,
+  }
 )
 
 const placeholder = computed(() => props.placeholder || undefined)
@@ -88,11 +93,17 @@ const emit = defineEmits<{
 const showConfirmButton = computed(() => props.showConfirmButton ?? true)
 const showClearButton = computed(() => props.showClearButton ?? true)
 
-const { query, results, selected, isSearching, select: selectPlace, clear } =
-  usePlaceSearch({
-    debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
-    type: props.type ?? null,
-  })
+const {
+  query,
+  results,
+  selected,
+  isSearching,
+  select: selectPlace,
+  clear,
+} = usePlaceSearch({
+  debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
+  type: props.type ?? null,
+})
 
 const selectedPlace = computed(() => selected.value as BasePlace | null)
 
@@ -110,7 +121,9 @@ const typeLabel = computed(() => {
 })
 
 const confirmLabel = computed(() =>
-  selectedSource.value === 'google' ? `Add ${typeLabel.value}` : `Use ${typeLabel.value}`
+  selectedSource.value === 'google'
+    ? `Add ${typeLabel.value}`
+    : `Use ${typeLabel.value}`
 )
 
 const { pill: placeInterface } = usePlaceInterface()
@@ -121,9 +134,8 @@ const selectedCell = computed(() =>
 const selectedLogoTarget = computed(
   () => selectedCell.value ?? selectedPlace.value ?? null
 )
-const { avatar: selectedLogo, isLoading: selectedLogoLoading } = usePlaceLogoState(
-  selectedLogoTarget
-)
+const { avatar: selectedLogo, isLoading: selectedLogoLoading } =
+  usePlaceLogoState(selectedLogoTarget)
 
 const selectedImageUrl = computed(
   () => selectedLogo.value || selectedCell.value?.imageUrl || ''
@@ -142,7 +154,9 @@ function handleSelectPlace(place: BasePlace) {
 
   nextTick(() => {
     const selectedDraft = selectedPlace.value
-    const placeId = String((selectedDraft as any)?.id ?? (selectedDraft as any)?.place_id ?? '').trim()
+    const placeId = String(
+      (selectedDraft as any)?.id ?? (selectedDraft as any)?.place_id ?? ''
+    ).trim()
     if (!selectedDraft || !placeId) return
 
     const draft = toDraft(selectedDraft, placeId, selectedLogo.value)
@@ -168,7 +182,9 @@ if (import.meta.dev && props.type === 'kitchen') {
 }
 
 function toShade(value: unknown): PlaceImageShade {
-  const v = String(value ?? 'none').toLowerCase().trim()
+  const v = String(value ?? 'none')
+    .toLowerCase()
+    .trim()
   if (v === 'light' || v === 'dark' || v === 'none') return v
   return 'none'
 }
@@ -183,7 +199,9 @@ function toDraft(
   const existingSearchTerm = String((place as any)?.search_term ?? '').trim()
 
   const sanitizedPlaceImage =
-    sanitizeLogoAvatar(String((place as any)?.image_url ?? (place as any)?.place_image ?? '')) ?? ''
+    sanitizeLogoAvatar(
+      String((place as any)?.image_url ?? (place as any)?.place_image ?? '')
+    ) ?? ''
 
   // Prefer an explicit discovered logo; otherwise store an empty image.
   let resolvedLogo =
@@ -219,15 +237,18 @@ function toDraft(
       (place as any)?.default_currency_code ?? ''
     ).trim(),
     business_hours: (place as any)?.business_hours,
-    search_term: existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
+    search_term:
+      existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
   }
 
   return Object.fromEntries(
     Object.entries(draft).filter(([, value]) => {
       if (typeof value === 'string') return Boolean(value)
       if (Array.isArray(value)) return value.length > 0
-      if (value && typeof value === 'object') return Object.keys(value).length > 0
-      if (typeof value === 'number') return Number.isFinite(value) && value !== 0
+      if (value && typeof value === 'object')
+        return Object.keys(value).length > 0
+      if (typeof value === 'number')
+        return Number.isFinite(value) && value !== 0
       return value !== null && value !== undefined
     })
   ) as PlaceUpsertInput
@@ -237,7 +258,9 @@ async function onConfirmClick() {
   const place = selectedPlace.value
   if (!place || confirming.value) return
 
-  const placeId = String((place as any)?.id ?? (place as any)?.place_id ?? '').trim()
+  const placeId = String(
+    (place as any)?.id ?? (place as any)?.place_id ?? ''
+  ).trim()
   if (!placeId) return
 
   confirming.value = true
@@ -246,7 +269,8 @@ async function onConfirmClick() {
       console.log('[places][confirm] start', {
         placeId,
         source: selectedSource.value,
-        image_url: (place as any)?.image_url ?? (place as any)?.place_image ?? '',
+        image_url:
+          (place as any)?.image_url ?? (place as any)?.place_image ?? '',
         selected_logo_state: selectedLogo.value ?? '',
         selected_cell_image: selectedCell.value?.imageUrl ?? '',
       })
@@ -259,9 +283,10 @@ async function onConfirmClick() {
         placeId,
         selected_logo: selectedLogo.value ?? '',
         logo_override: logoOverride ?? '',
-        override_is_google_icon: /maps\.gstatic\.com\/mapfiles\/place_api\/icons/i.test(
-          logoOverride ?? ''
-        ),
+        override_is_google_icon:
+          /maps\.gstatic\.com\/mapfiles\/place_api\/icons/i.test(
+            logoOverride ?? ''
+          ),
       })
     }
 

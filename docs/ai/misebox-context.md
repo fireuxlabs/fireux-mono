@@ -525,13 +525,32 @@ Before each task:
 - Misebox `/` is itself the browse-only public Kitchen Workspace; there is no
   separate `/workspace/kitchen` index. The root page directly
   composes the real Core Workspace layout and page shell, while `fireux-kitchens`
-  owns the inner `WorkspaceKitchenAIWelcome` domain surface. Anonymous visitors
+  owns the inner `WorkspaceKitchenAI` domain surface. Anonymous visitors
   receive no selected-Kitchen reads or commands; the existing Kitchen selector
-  mounts only for authenticated Users. The one unscoped development handshake
-  routes a PurchasingAI-directed prompt through KitchenAI, receives the literal
-  child greeting, and presents `PurchasingAI says hello.` It reads no data,
-  invokes no provider or Tool, and writes nothing. Every other prompt still
-  requires an authorized selected Live Kitchen. Menu-file selection remains a
+  mounts only for authenticated Users. Kitchen selection establishes optional
+  evidence scope rather than access to KitchenAI: zero targets leaves a valid
+  blank context, one authoritative Live target is selected automatically, and
+  multiple targets require an explicit choice from the User's active Kitchen
+  Team memberships. Generic signed-in questions may begin in blank context,
+  but KitchenAI must not claim live operational evidence until a Live Kitchen
+  is selected. Its root orientation context is limited to authentication,
+  authoritative available Kitchen names/count, current selection, and
+  Live/Demo source. It may explain that the User has no Kitchen, ask them to
+  choose among available Kitchens, or name the selected Kitchen; it must not
+  infer onboarding progress from those facts. The root Create Kitchen Tool is
+  available before authentication and searches the shared Place directory plus
+  Google Places. Saving requires an authenticated current-App member: the
+  trusted Place boundary ensures the selected Place, then Kitchen onboarding
+  creates its same-ID Kitchen root and the creator's owner Team membership. The
+  new Kitchen is selected without sending the browser directly to Firestore.
+  The one unscoped development handshake
+  routes a WasteAI-directed prompt through KitchenAI, passes one explicitly
+  temporary restaurant-Waste context paragraph into WasteAI, and echoes its
+  typed response. It invokes no provider or Tool, reads no live evidence,
+  produces no suggestions, and writes nothing; it exists only to prove the
+  delegation and context pipeline while Waste search-demand work remains
+  pending. Live reads, deductions, proposals, and commands still require an
+  authorized selected Live Kitchen. Menu-file selection remains a
   browser-local prototype interaction with no upload or persistence, and
   account creation begins only at the explicit
   `Save my Kitchen` doorway. The previous product-led landing remains intact at
@@ -539,7 +558,16 @@ Before each task:
   imply that a selected file was uploaded or analysed before the corresponding
   trusted boundary exists. The Workspace sidebar exposes one prominent
   singular `Kitchen` control that returns to `/`; Kitchen capability pages
-  remain under `/workspace/kitchen/*`.
+  remain under `/workspace/kitchen/*`. Waste is the first capability page to
+  follow the same public composition pattern as the Kitchen root: Tools,
+  capability AI, authenticated live Index, then development evidence. It does
+  not require authentication or a selected Kitchen to enter; only its live
+  Index may mount authenticated data. This allows an operator to begin with a
+  public Tool or AI doorway and acquire or select a Kitchen only when the chosen
+  job genuinely requires one. Until Waste itself is built, its Tools and Index
+  components remain empty. Current catalogue research is projected through
+  `wasteAIContext.devContext` and rendered only by the development component;
+  it is not production capability content.
 - `jobs.misebox.app` is a focused product doorway over the existing
   `misebox-app` authority, not a second canonical App. It may give public Job,
   Professional, and Agent routes a Jobs-only project layout while retaining

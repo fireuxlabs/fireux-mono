@@ -99,7 +99,9 @@ async function actorFor(event: H3Event, appId: string) {
     .collection('users')
     .doc(user.uid)
     .get()
-  const isAdmin = membership.exists && membership.data()?.role === 'admin'
+  const role = membership.data()?.role
+  const isAdmin =
+    membership.exists && (role === 'admin' || role === 'dev')
   return {
     id: user.uid,
     name: typeof user.decoded.name === 'string' ? user.decoded.name.trim() : '',

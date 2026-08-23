@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-08-20
+Updated: 2026-08-23
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -147,9 +147,12 @@ identity or Firestore model.
   duplicates. Internal relationships use the root ID, never the route slug.
   User handles and other reviewed authored route keys retain their own explicit
   family contracts.
-- `AppUser` owns App membership, role, premium entitlement, and onboarding.
+- `AppUser` owns App membership, independent role and subscription, and onboarding.
   Workspace target access belongs to each Workspace Entity's `team/{uid}`
   record.
+- Product access resolves to Free when AppUser is absent. That effective default
+  creates neither identity nor membership; only stored Premium changes product
+  capability.
 - Nuxt config selects and composes an App; it must not silently become another
   App database. Normal runtime reads must not repair canonical identity from
   duplicated config values.

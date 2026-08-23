@@ -44,7 +44,7 @@
         class="kitchen-ai-welcome__input"
         :placeholder="placeholder"
         :suggestions="suggestions"
-        :aria-label="commandMode ? 'Ask Team AI' : 'Ask Kitchen AI'"
+        :aria-label="ariaLabel"
         @update:model-value="emit('update:modelValue', $event)"
       />
       <UButton
@@ -79,6 +79,7 @@ withDefaults(
     aiTools?: readonly KitchenAIToolNugget[]
     allowFile?: boolean
     commandMode?: boolean
+    ariaLabel?: string
     submitting?: boolean
   }>(),
   {
@@ -89,6 +90,7 @@ withDefaults(
     aiTools: () => [],
     allowFile: true,
     commandMode: false,
+    ariaLabel: 'Ask KitchenAI',
     submitting: false,
   }
 )

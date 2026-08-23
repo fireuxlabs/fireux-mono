@@ -18,27 +18,26 @@
         function isValidAppUser(data) {
           return data.keys().hasAll([
               'role',
-              'is_premium',
+              'subscription',
               'created',
               'updated'
             ]) &&
             data.keys().hasOnly([
               'role',
-              'is_premium',
+              'subscription',
               'onboarding_status',
               'created',
               'updated'
             ]) &&
-            data.role in ['admin', 'user'] &&
-            data.is_premium is bool &&
+            data.role in ['admin', 'user', 'dev'] &&
+            data.subscription in ['free', 'premium'] &&
             (!('onboarding_status' in data) ||
               data.onboarding_status in [
                 'pending',
                 'completed',
                 'skipped'
-              ]) &&
+            ]) &&
             validCreatedStamp(data.created) &&
-            data.created.app_id == appId &&
             validUpdatedStamp(data.updated);
         }
 

@@ -46,10 +46,11 @@ function projectKitchenTarget(input: {
   fulfilment: KitchenFulfilment
   sproochli: KitchenWorkspaceTargetItem['sproochli']
   root: StoredRecord
-  place: StoredRecord
+  place: StoredRecord | null
 }): KitchenWorkspaceTargetItem {
-  const place = readPlacePresentation(input.place)
-  const resolvedIdentity = menuKitchenIdentity(input.root, input.place)
+  const placeData = input.place || {}
+  const place = readPlacePresentation(placeData)
+  const resolvedIdentity = menuKitchenIdentity(input.root, placeData)
   const displayName = text(resolvedIdentity.name)
   if (!displayName) {
     conflict(`Kitchen ${input.id} has no usable canonical identity.`)
@@ -69,8 +70,8 @@ function projectKitchenTarget(input: {
   const about = place.about
   const website = place.website
   const phone = place.phone
-  const latitude = optionalNumber(input.place.lat)
-  const longitude = optionalNumber(input.place.lng)
+  const latitude = optionalNumber(placeData.lat)
+  const longitude = optionalNumber(placeData.lng)
   const logoImageUrl = place.logoImage
   const cardImageUrl = resolvedIdentity.imageUrl
   const mediaBackdropColor = place.mediaBackdropColor
@@ -78,7 +79,7 @@ function projectKitchenTarget(input: {
   return {
     id: input.id,
     can_write: input.canWrite,
-    place_id: input.id,
+    ...(input.place ? { place_id: input.id } : {}),
     slug: readRecordString(input.root, 'slug'),
     visibility,
     identity: {
@@ -139,7 +140,8 @@ export async function readKitchenWorkspaceTargets(
 ): Promise<KitchenWorkspaceTargetsResponse> {
   const { uid } = await requireFirebaseBearerUser(
     event,
-    'Sign in to view Kitchen targets.'
+    'A Firebase identity is required to view Kitchen targets.',
+    { allowAnonymous: true }
   )
   const db = getRuntimeFirestore()
 
@@ -190,9 +192,6 @@ export async function readKitchenWorkspaceTargets(
       if (!teamSnapshot?.exists) {
         conflict(`Kitchen target ${id} is missing its Team membership.`)
       }
-      if (!placeSnapshot?.exists) {
-        conflict(`Kitchen target ${id} is missing its canonical Place.`)
-      }
       const member = teamSnapshot.data() || {}
       const teamRole = text(member.role)
       if (
@@ -212,7 +211,7 @@ export async function readKitchenWorkspaceTargets(
         fulfilment: await readKitchenFulfilment(db, id),
         sproochli: await readKitchenSproochliAttachment(db, id, root),
         root,
-        place: placeSnapshot.data() || {},
+        place: placeSnapshot?.exists ? placeSnapshot.data() || {} : null,
       })
     })
   )

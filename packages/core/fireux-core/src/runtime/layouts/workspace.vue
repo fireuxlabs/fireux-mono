@@ -338,9 +338,13 @@ watch(
 const familyLabel = computed(
   () => toWorkspaceFamilyLabel(family.value) || 'Workspace'
 )
-const familyPath = computed(() =>
-  family.value ? toWorkspaceFamilyPath(family.value) : '/workspace'
-)
+const familyPath = computed(() => {
+  const configuredEntry = familyRootNav.value.find(
+    (item) => item.key === `workspace-${family.value}`
+  )?.to
+  return configuredEntry ||
+    (family.value ? toWorkspaceFamilyPath(family.value) : '/workspace')
+})
 const targetAccess = useWorkspaceRouteTargetAccess({
   family,
   requiresSelection,

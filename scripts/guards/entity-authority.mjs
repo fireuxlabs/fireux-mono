@@ -270,8 +270,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/app/models/app-user.model.ts'
   )
   assert.match(appUserModel, /export type AppUser\s*=\s*\{/)
-  assert.match(appUserModel, /id:\s*string/)
+  assert.doesNotMatch(
+    appUserModel,
+    /\n\s{2}id:\s*string/,
+    'Stored AppUser identity comes from apps/{appId}/users/{uid}.'
+  )
   assert.match(appUserModel, /role:\s*AppUserRole/)
+  assert.match(appUserModel, /subscription:\s*AppUserSubscription/)
   assert.doesNotMatch(
     appUserModel,
     /defineFireuxEntity|Storage|Defaults|FireuxStamped/

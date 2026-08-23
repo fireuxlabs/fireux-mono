@@ -24,7 +24,7 @@ export function useJobPermissions(
 
   const hasAppMembership = computed(() => {
     const role = appUser.value?.role
-    return role === 'user' || role === 'admin'
+    return role === 'user' || role === 'admin' || role === 'dev'
   })
   const hasAgentProfile = computed(() => Boolean(resolvedAgent.value?.profile?.id))
   const hasAgentCapability = computed(() =>

@@ -4,6 +4,7 @@
 import type { PlaceAddress, PlaceBusinessHours } from '../../../../models/place.model.ts'
 import type { PlaceUpsertInput } from '../../../../models/place-onboarding.model.ts'
 import type { BasePlace } from '../search/types'
+import type { PlaceSearchLocation } from '../search/types'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 import {
   placeBusinessHoursFromGooglePeriods,
@@ -80,7 +81,10 @@ export async function fetchGoogle(
   query: string,
   excludeIds: Set<string>,
   limit: number,
-  options?: { type?: string | null }
+  options?: {
+    location?: PlaceSearchLocation | null
+    type?: string | null
+  }
 ): Promise<BasePlace[]> {
   if (limit <= 0 || typeof window === 'undefined') return []
 
@@ -90,6 +94,16 @@ export async function fetchGoogle(
     url.searchParams.set('q', query)
     if (options?.type) {
       url.searchParams.set('type', String(options.type))
+    }
+    if (options?.location) {
+      url.searchParams.set(
+        'location',
+        `${options.location.lat},${options.location.lng}`
+      )
+      url.searchParams.set(
+        'radius',
+        String(options.location.radiusMeters)
+      )
     }
 
     const res = await fetch(url.toString(), {

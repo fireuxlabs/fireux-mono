@@ -40,7 +40,7 @@ export default defineEventHandler(
     const role = normalizedText(membershipSnapshot.get('role'))
     if (
       !membershipSnapshot.exists ||
-      (role !== 'admin' && role !== 'user')
+      (role !== 'admin' && role !== 'user' && role !== 'dev')
     ) {
       throw createError({
         statusCode: 403,

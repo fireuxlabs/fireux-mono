@@ -19,14 +19,13 @@ function conflict(message: string): never {
 function membershipDto(
   id: string,
   value: Record<string, unknown>,
-  isConfiguredDeveloper: boolean,
   profiles: string[]
 ): CurrentAppMembership {
-  if (value.role !== 'admin' && value.role !== 'user') {
+  if (value.role !== 'admin' && value.role !== 'user' && value.role !== 'dev') {
     conflict(`App membership ${id} has an invalid role.`)
   }
-  if (typeof value.is_premium !== 'boolean') {
-    conflict(`App membership ${id} has an invalid premium flag.`)
+  if (value.subscription !== 'free' && value.subscription !== 'premium') {
+    conflict(`App membership ${id} has an invalid subscription.`)
   }
   if (
     value.onboarding_status !== 'pending' &&
@@ -36,36 +35,34 @@ function membershipDto(
     conflict(`App membership ${id} has an invalid onboarding status.`)
   }
   const role = value.role
-  const isPremium = value.is_premium
+  const subscription = value.subscription
   const onboardingStatus = value.onboarding_status
   const normalizedMembership = {
     ...value,
     role,
-    is_premium: isPremium,
+    subscription,
     onboarding_status: onboardingStatus,
   }
-  const access = resolveAppUserAccess({
-    membership: normalizedMembership,
-    isConfiguredDeveloper,
-  })
+  const access = resolveAppUserAccess(normalizedMembership)
 
   return {
     id,
     role,
-    is_premium: isPremium,
-    access_tier: access.tier ?? 'free',
-    has_premium_access: access.hasPremiumAccess,
-    workspace_enabled: access.hasAdminAuthority || isConfiguredDeveloper,
+    subscription,
+    workspace_enabled: access.hasAdminAuthority,
     onboarding_status: onboardingStatus,
     profiles,
   }
 }
 
 export async function readCurrentAppContext(event: H3Event) {
-  const { uid } = await requireFirebaseBearerUser(event)
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'Firebase identity required.',
+    { allowAnonymous: true }
+  )
   const {
     appId,
-    developerId,
     profiles: configuredProfiles,
   } = useFireUXConfig(event)
   const runtimeDb = getRuntimeFirestore()
@@ -107,7 +104,6 @@ export async function readCurrentAppContext(event: H3Event) {
     ? membershipDto(
         membershipSnapshot.id,
         (membershipSnapshot.data() || {}) as Record<string, unknown>,
-        Boolean(developerId) && uid === developerId,
         activeProfiles
       )
     : null

@@ -12,7 +12,7 @@ export type PlaceOnboardingRequest = {
 export type OnboardingContext = {
   uid: string
   runtimeAppId: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'dev'
   db: ReturnType<typeof getRuntimeFirestore>
   membershipRef: ReturnType<ReturnType<typeof getRuntimeFirestore>['doc']>
   placeRef: ReturnType<ReturnType<typeof getRuntimeFirestore>['doc']>
@@ -39,9 +39,9 @@ export function requestRecord(value: unknown) {
 export function requireMemberRole(
   exists: boolean,
   value: unknown
-): 'admin' | 'user' {
+): 'admin' | 'user' | 'dev' {
   const role = text(value)
-  if (!exists || (role !== 'admin' && role !== 'user')) {
+  if (!exists || (role !== 'admin' && role !== 'user' && role !== 'dev')) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Current App membership is required to onboard a Place.',

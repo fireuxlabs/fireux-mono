@@ -132,7 +132,7 @@ export function assertCanonicalReferences(
 function isCurrentMembership(snapshot: DocumentSnapshot): boolean {
   if (!snapshot.exists) return false
   const role = text(snapshot.data()?.role)
-  return role === 'user' || role === 'admin'
+  return role === 'user' || role === 'admin' || role === 'dev'
 }
 
 export function membershipRef(

@@ -74,7 +74,7 @@ export async function publishAppUserJoinedEvent(
   const memberships = serverAppUsersTarget(input.appId)
   const events = serverAppEventsTarget(input.appId)
   let eventId = ''
-  let membershipRole: 'admin' | 'user' = 'user'
+  let membershipRole: 'admin' | 'user' | 'dev' = 'user'
   let occurredAt = ''
 
   const created = await runGuardedServerTransaction(
@@ -94,18 +94,24 @@ export async function publishAppUserJoinedEvent(
 
       const membership = membershipSnapshot.data as AppUser
       const membershipCreatedAt = membership?.created?.at
-      membershipRole = membership.role === 'admin' ? 'admin' : 'user'
+      membershipRole = membership.role
       occurredAt = timestampIso(membershipCreatedAt)
       eventId = appUserJoinedEventId(
         input.userId,
         timestampOccurrenceKey(membershipCreatedAt)
       )
-      const [eventSnapshot, admins] = await Promise.all([
+      const [eventSnapshot, admins, developers] = await Promise.all([
         mutations.read(events, eventId),
         mutations.query<AppUser>(memberships, {
           field: 'role',
           op: '==',
           value: 'admin',
+          limit: 32,
+        }),
+        mutations.query<AppUser>(memberships, {
+          field: 'role',
+          op: '==',
+          value: 'dev',
           limit: 32,
         }),
       ])
@@ -138,7 +144,7 @@ export async function publishAppUserJoinedEvent(
         published_at: FieldValue.serverTimestamp(),
       } as unknown as AppEvent)
 
-      for (const admin of admins) {
+      for (const admin of [...admins, ...developers]) {
         if (admin.id === input.userId) continue
 
         mutations.create(serverUserNotificationsTarget(admin.id), eventId, {

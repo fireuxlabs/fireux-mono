@@ -161,6 +161,8 @@ const props = withDefaults(
     outcome?: WorkspaceTargetOutcome
     icon?: string
     clearLabel?: string
+    emptyTitle?: string
+    emptyDescription?: string
   }>(),
   {
     selectedId: '',
@@ -169,6 +171,8 @@ const props = withDefaults(
     outcome: 'ready',
     icon: 'i-lucide-layout-dashboard',
     clearLabel: 'Change',
+    emptyTitle: '',
+    emptyDescription: '',
   }
 )
 
@@ -207,9 +211,10 @@ const displayDescription = computed(() => {
   }
   return displayTitle.value === selectedId.value ? '' : selectedId.value
 })
-const emptyTitle = computed(() => `Choose a ${label.value}`)
+const emptyTitle = computed(() => props.emptyTitle || `Choose a ${label.value}`)
 const emptyDescription = computed(
   () =>
+    props.emptyDescription ||
     `Select the ${label.value.toLowerCase()} workspace you want to open.`
 )
 const mediaStyle = computed<CSSProperties | undefined>(() =>

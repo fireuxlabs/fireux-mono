@@ -1,11 +1,12 @@
 // @fireux-script
 // last_used: 2026-07-24
-// usage_note: run through pnpm guard; locks derived AppUser tiers, inherited Premium capability, and sparse optional indexes.
+// usage_note: run through pnpm guard; locks independent AppUser role/subscription authority and trusted developer subscription control.
 
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts'
+import { resolveSubscriptionMutationAuthority } from '../../packages/core/fireux-core/src/runtime/app/server/membership/subscription-authority.ts'
 import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
@@ -13,16 +14,26 @@ const read = (repoRoot, relativePath) =>
 
 function assertAccess(input, expected) {
   const access = resolveAppUserAccess(input)
-  assert.equal(access.tier, expected.tier, expected.label)
+  assert.equal(access.role, expected.role, `${expected.label}: role`)
+  assert.deepEqual(
+    access.subscription,
+    expected.subscription,
+    `${expected.label}: subscription`
+  )
   assert.equal(
+    access.hasMembership,
+    expected.hasMembership,
+    `${expected.label}: membership`
+  )
+  assert.deepEqual(
     access.hasAdminAuthority,
     expected.hasAdminAuthority,
     `${expected.label}: Admin authority`
   )
   assert.equal(
-    access.hasPremiumAccess,
-    expected.hasPremiumAccess,
-    `${expected.label}: Premium access`
+    access.hasPremiumSubscription,
+    expected.hasPremiumSubscription,
+    `${expected.label}: Premium subscription`
   )
 }
 
@@ -31,59 +42,99 @@ export async function run({ repoRoot }) {
     {
       label: 'missing membership',
       membership: null,
-      isConfiguredDeveloper: true,
-      tier: null,
+      role: null,
+      subscription: 'free',
+      hasMembership: false,
       hasAdminAuthority: false,
-      hasPremiumAccess: false,
+      hasPremiumSubscription: false,
     },
     {
       label: 'Free member',
-      membership: { role: 'user', is_premium: false },
-      tier: 'free',
+      membership: { role: 'user', subscription: 'free' },
+      role: 'user',
+      subscription: 'free',
+      hasMembership: true,
       hasAdminAuthority: false,
-      hasPremiumAccess: false,
+      hasPremiumSubscription: false,
     },
     {
       label: 'Premium member',
-      membership: { role: 'user', is_premium: true },
-      tier: 'premium',
+      membership: { role: 'user', subscription: 'premium' },
+      role: 'user',
+      subscription: 'premium',
+      hasMembership: true,
       hasAdminAuthority: false,
-      hasPremiumAccess: true,
+      hasPremiumSubscription: true,
     },
     {
       label: 'Admin member',
-      membership: { role: 'admin', is_premium: false },
-      tier: 'admin',
+      membership: { role: 'admin', subscription: 'free' },
+      role: 'admin',
+      subscription: 'free',
+      hasMembership: true,
       hasAdminAuthority: true,
-      hasPremiumAccess: true,
+      hasPremiumSubscription: false,
     },
     {
-      label: 'configured developer member',
-      membership: { role: 'user', is_premium: false },
-      isConfiguredDeveloper: true,
-      tier: 'dev',
-      hasAdminAuthority: false,
-      hasPremiumAccess: true,
+      label: 'Free developer',
+      membership: { role: 'dev', subscription: 'free' },
+      role: 'dev',
+      subscription: 'free',
+      hasMembership: true,
+      hasAdminAuthority: true,
+      hasPremiumSubscription: false,
     },
     {
-      label: 'configured developer Admin',
-      membership: { role: 'admin', is_premium: false },
-      isConfiguredDeveloper: true,
-      tier: 'dev',
+      label: 'Premium developer',
+      membership: { role: 'dev', subscription: 'premium' },
+      role: 'dev',
+      subscription: 'premium',
+      hasMembership: true,
       hasAdminAuthority: true,
-      hasPremiumAccess: true,
+      hasPremiumSubscription: true,
     },
   ]
 
   for (const testCase of cases) {
-    assertAccess(
-      {
-        membership: testCase.membership,
-        isConfiguredDeveloper: testCase.isConfiguredDeveloper,
-      },
-      testCase
+    assertAccess(testCase.membership, testCase)
+  }
+
+  assert.deepEqual(
+    resolveSubscriptionMutationAuthority({
+      action: 'set-self-subscription',
+      actorUid: 'developer',
+      actorRole: 'dev',
+    }),
+    { ok: true, userId: 'developer' }
+  )
+  for (const actorRole of ['user', 'admin']) {
+    assert.deepEqual(
+      resolveSubscriptionMutationAuthority({
+        action: 'set-self-subscription',
+        actorUid: actorRole,
+        actorRole,
+      }),
+      { ok: false, statusCode: 403, message: 'Developer access is required.' }
     )
   }
+  assert.deepEqual(
+    resolveSubscriptionMutationAuthority({
+      action: 'set-subscription',
+      actorUid: 'admin',
+      actorRole: 'admin',
+      userId: 'member',
+    }),
+    { ok: true, userId: 'member' }
+  )
+  assert.deepEqual(
+    resolveSubscriptionMutationAuthority({
+      action: 'set-subscription',
+      actorUid: 'user',
+      actorRole: 'user',
+      userId: 'member',
+    }),
+    { ok: false, statusCode: 403, message: 'App admin access is required.' }
+  )
 
   const model = read(
     repoRoot,
@@ -91,10 +142,14 @@ export async function run({ repoRoot }) {
   )
   assert.match(model, /export type AppUser\s*=\s*\{/)
   const userAppModel = model
+  assert.match(userAppModel, /role:\s*AppUserRole/)
+  assert.match(userAppModel, /subscription:\s*AppUserSubscription/)
+  assert.match(userAppModel, /'user', 'admin', 'dev'/)
+  assert.match(userAppModel, /'free', 'premium'/)
   assert.doesNotMatch(
     userAppModel,
-    /\b(?:access_?tier|tier):/,
-    'AppUser must not persist the derived access tier.'
+    /\b(?:access_?tier|tier|is_premium):/,
+    'AppUser must not persist a tier or retired premium flag.'
   )
   assert.doesNotMatch(
     userAppModel,
@@ -119,6 +174,7 @@ export async function run({ repoRoot }) {
   )
   const initialMembership = mutation.slice(initialStart, initialEnd)
   assert.match(initialMembership, /onboarding_status: 'pending'/)
+  assert.match(initialMembership, /subscription: 'free'/)
   assert.doesNotMatch(
     initialMembership,
     /\bprofiles:/,
@@ -146,12 +202,31 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
   )
   assert.match(context, /profileSnapshots\[index\]\?\.exists/)
-  assert.match(
-    context,
-    /workspace_enabled: access\.hasAdminAuthority \|\| isConfiguredDeveloper/
-  )
+  assert.match(context, /workspace_enabled: access\.hasAdminAuthority/)
   assert.doesNotMatch(context, /workspace_targets/)
-  assert.match(context, /has_premium_access: access\.hasPremiumAccess/)
+  assert.match(context, /subscription/)
+  assert.doesNotMatch(context, /access_tier|has_premium_access|is_premium/)
+
+  const settings = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/app/server/membership/mutation-settings.ts'
+  )
+  assert.match(settings, /input\.action === 'set-self-subscription'/)
+  assert.match(settings, /resolveSubscriptionMutationAuthority/)
+  assert.match(
+    settings,
+    /if \(input\.action === 'set-role'\) \{[\s\S]*requireAdmin\(actorMembership\)/
+  )
+  assert.doesNotMatch(settings, /isPremium|set-premium|is_premium/)
+
+  const navbar = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/layouts/workspace/Navbar.vue'
+  )
+  assert.match(navbar, /v-if="isDeveloper"/)
+  assert.match(navbar, /action: 'set-self-subscription'/)
+  assert.doesNotMatch(navbar, /userId:/)
+  assert.match(navbar, /subscriptionPending/)
 
   const activeUserFetch = read(
     repoRoot,

@@ -1,6 +1,6 @@
 # Entities
 
-Updated: 2026-08-20
+Updated: 2026-08-23
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -152,14 +152,19 @@ database to verify the complete relationship without writing data.
 User is canonical identity. AppUser is App-owned membership/entitlement and
 UserAccount is private account support. Neither support record is another User.
 
-The visible Dev/Admin/Premium/Free access badge is derived presentation. It is
-not stored on User and never replaces server or Rules authority.
+Role and subscription are independent AppUser facts. Presentation may show
+them, but it never stores a combined access tier on User or AppUser and never
+replaces server or Rules authority.
 
-AppUser stores App governance (`role: user | admin`), an explicit Premium
-grant, and onboarding lifecycle separately. A configured developer with a
-valid membership resolves to Dev, an Admin resolves to Admin, then explicit
-Premium and Free follow. Dev and Admin include Premium product capability, but
-only the stored Admin role grants App administration. Empty profile and
+Free is the effective product default when no AppUser exists. This lets public
+Workspace surfaces present and enforce the Free experience without inventing
+identity or membership: `hasMembership` remains false, role remains absent,
+and only a canonical AppUser with `subscription: premium` enables Premium.
+
+AppUser stores App governance (`role: user | admin | dev`), subscription
+(`free | premium`), and onboarding lifecycle separately. A stored Dev role has
+developer authority and explicitly intended Admin capabilities without
+implying Premium. Empty profile and
 Workspace-target indexes may be absent at rest; readers normalize them without
 turning the indexes into authority.
 

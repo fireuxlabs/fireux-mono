@@ -12,7 +12,7 @@
       :show-user-profile-link="false"
     >
       <template #badges>
-        <UserAccessBadge v-if="isOwnProfile" :tier="accessTier" />
+        <UserAccessBadge v-if="isOwnProfile" :subscription="subscription" />
       </template>
 
       <template #actions>
@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserAccessTier } from '../composables/useUserPermissions'
+import type { UserSubscription } from '../composables/useUserPermissions'
 import type { User } from '../models/user.model.ts'
 
 const props = withDefaults(
@@ -82,12 +82,12 @@ const props = withDefaults(
     user: User
     isOwnProfile?: boolean
     canEdit?: boolean
-    accessTier?: UserAccessTier | null
+    subscription?: UserSubscription | null
   }>(),
   {
     isOwnProfile: false,
     canEdit: false,
-    accessTier: null,
+    subscription: null,
   }
 )
 

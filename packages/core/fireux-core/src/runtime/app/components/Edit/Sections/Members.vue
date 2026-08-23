@@ -26,7 +26,7 @@
 
           <UBadge
             size="xs"
-            :color="member.role === 'admin' ? 'primary' : 'neutral'"
+            :color="member.role === 'admin' || member.role === 'dev' ? 'primary' : 'neutral'"
             variant="soft"
             class="shrink-0"
           >
@@ -44,7 +44,7 @@ import type { UserCard } from '../../../../user/composables/useUserInterface'
 
 type MemberRow = {
   id: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'dev'
   display_name: string
 }
 

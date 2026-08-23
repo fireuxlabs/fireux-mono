@@ -16,7 +16,7 @@ export const KITCHEN_WORKSPACE_TARGET_LIMIT = 50
 export type KitchenWorkspaceTargetItem = {
   id: string
   can_write: boolean
-  place_id: string
+  place_id?: string
   slug: string
   visibility: boolean
   identity: {

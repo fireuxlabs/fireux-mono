@@ -50,6 +50,7 @@ export function canConfigure(
 ) {
   return (
     actor.role === 'admin' ||
+    actor.role === 'dev' ||
     createdByCurrentApp(place, actor.uid, actor.runtimeAppId)
   )
 }

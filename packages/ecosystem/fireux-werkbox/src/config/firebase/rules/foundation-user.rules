@@ -33,14 +33,14 @@
       return isKnownApp(appId) &&
         isAuthenticated() &&
         exists(appMembershipPath(appId, request.auth.uid)) &&
-        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'user'];
+        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'user', 'dev'];
     }
 
     function isAppAdmin(appId) {
       return isKnownApp(appId) &&
         isAuthenticated() &&
         exists(appMembershipPath(appId, request.auth.uid)) &&
-        get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
+        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'dev'];
     }
 
     // @fireux-core-rules text
@@ -152,20 +152,16 @@
     // Canonical User identity. Membership/profile indices are server-owned.
     function isValidUser(data) {
       return data.keys().hasAll([
-          'display_name', 'avatar', 'handle',
-          'created', 'updated'
+          'display_name', 'avatar', 'handle'
         ]) &&
         data.keys().hasOnly([
-          'display_name', 'bio', 'avatar', 'handle',
-          'created', 'updated'
+          'display_name', 'bio', 'avatar', 'handle'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
         validOptionalText(data, 'bio', 280) &&
         isValidUserAvatar(data.avatar) &&
         data.handle is string &&
-        data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
-        validCreatedStamp(data.created) &&
-        validUpdatedStamp(data.updated);
+        data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$');
     }
 
     match /users/{userId} {
@@ -175,11 +171,9 @@
       allow update: if isOwner(userId) &&
         isValidUser(request.resource.data) &&
         request.resource.data.handle == resource.data.handle &&
-        request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'display_name', 'bio', 'avatar', 'updated'
-        ]) &&
-        validOwnerUpdateStamp(request.resource.data, userId);
+          'display_name', 'bio', 'avatar'
+        ]);
 
       match /private/account {
         function isValidPreferences(value) {

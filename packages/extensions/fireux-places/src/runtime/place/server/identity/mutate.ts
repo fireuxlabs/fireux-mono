@@ -307,7 +307,8 @@ export async function mutatePlace(
     }
 
     const place = placeSnapshot.data || {}
-    const runtimeAdmin = runtimeMembershipSnapshot?.data?.role === 'admin'
+    const runtimeRole = runtimeMembershipSnapshot?.data?.role
+    const runtimeAdmin = runtimeRole === 'admin' || runtimeRole === 'dev'
     const rootKitchen = rootKitchenSnapshot?.data || {}
     const rootKitchenManagement = readRootKitchenManagement(
       rootKitchen,

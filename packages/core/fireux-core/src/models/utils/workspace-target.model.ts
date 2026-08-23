@@ -6,7 +6,7 @@ export type WorkspaceTargetIdItem = {
 
 export type WorkspaceTargetsResponse<TItem extends WorkspaceTargetIdItem = WorkspaceTargetIdItem> = {
   ok: true
-  appId: string
+  appId?: string
   family: string
   items: TItem[]
 }

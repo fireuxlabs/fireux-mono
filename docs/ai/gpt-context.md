@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-21
+Updated: 2026-08-23
 Ref: e23268507
 Role: living context
 Scope: repo-wide
@@ -655,15 +655,18 @@ requirement, report the exact missing seam before broad edits.
 - Cross-Project signup replication is retired. App membership events remain in
   their owning Project database; the control plane does not mirror them into a
   directory, monitor, or user index.
-- AppUser persists orthogonal App authority and lifecycle: `role` remains
-  `user | admin`, `is_premium` remains the explicit entitlement, and
-  `onboarding_status` remains `pending | completed | skipped`. The shared
-  `user-app-access` resolver derives `dev > admin > premium > free` only for a
-  valid membership; Dev never manufactures Admin authority, while Dev and Admin
-  inherit Premium product capability. Profile documents, not User/AppUser
+- AppUser persists orthogonal App authority, subscription, and lifecycle:
+  `role` is `user | admin | dev`, `subscription` is `free | premium`, and
+  `onboarding_status` remains `pending | completed | skipped`. A stored Dev
+  role has developer authority and the explicitly intended App-admin
+  capabilities, but it never changes or implies subscription. Profile
+  documents, not User/AppUser
   arrays, are profile authority. AppUser never duplicates Workspace Entity
   ownership or access; each root Entity's `team/{uid}` records are that
   authority.
+- Free is the effective product subscription when AppUser is absent. This does
+  not create a User, AppUser, role, or membership; `hasMembership` remains
+  false, and only a canonical stored Premium subscription enables Premium.
 - User list and detail readers return canonical User identities. On a tenant
   runtime, candidate visibility comes only from exact valid
   `apps/{appId}/users/{uid}` memberships before the root User join; a guessed
@@ -684,15 +687,16 @@ requirement, report the exact missing seam before broad edits.
   writes the canonical User. Browser Storage Rules are not the provisioning
   path, and a local `/img/...` placeholder is never the persisted avatar.
 - Live Workspace families derive bounded targets from canonical roots,
-  management relationships, exact AppUser membership, and root-owned Team
-  records. Missing roots, invalid management, invalid Team state, or missing
-  caller membership fail closed.
+  family-declared management relationships where present, exact AppUser
+  membership, and root-owned Team records. Missing roots, invalid declared
+  relationships, invalid Team state, or missing caller membership fail closed.
 - Production onboarding for those families is a fixed-runtime authenticated
   domain endpoint. One trusted transaction creates or attaches the canonical
   root and creates the caller's root-owned Team authority. Operators may
   mutate; members have target/read membership only; current App admins are the
   explicit override for Entities managed by that App.
-- Workspace-capable roots use the shared cumulative management contract:
+- Workspace-capable roots whose canonical model declares a host relationship
+  use the shared cumulative management contract:
   `{ mode: 'root' }`, `{ mode: 'workspace' }`, or
   `{ mode: 'app', app_id }`. `workspace` resolves through the ecosystem package's
   conventional `<ecosystem>-app`, while only `app` stores an App id. The
@@ -700,9 +704,11 @@ requirement, report the exact missing seam before broad edits.
   storage. Core must not enumerate extension Workspace families or own a
   generic domain-root factory; each domain owns validation and its trusted
   root/Team transaction.
-- Kitchen retains Place and live/Demo composition, Blank remains the small
-  harness, and Project remains a read-only control-plane family. Those are
-  domain deltas, not alternate target or onboarding spines.
+- Kitchen is the accepted Place-backed delta: it stores no management field;
+  its same-ID Place, current App membership, and root-owned Team provide the
+  creation and target evidence. Blank remains the small harness, and Project
+  remains a read-only control-plane family. Those are domain deltas, not
+  alternate target or onboarding spines.
 
 ## Demo World boundaries
 
@@ -842,7 +848,8 @@ requirement, report the exact missing seam before broad edits.
   An ecosystem without released browser policy retains an explicit local
   default-deny fragment; it never omits its Rules authority or uses an open
   placeholder.
-- Workspace target IDs are derived from root management and Team authority,
+- Workspace target IDs are derived from canonical root relationships where
+  declared and Team authority,
   not Nuxt configuration or User/App arrays. AppUser contains only App
   membership and capability state; it never mirrors Entity target IDs.
   Route keys and relationship targets are stored data, not build-time App

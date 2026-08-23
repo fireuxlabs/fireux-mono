@@ -31,9 +31,10 @@ export function requireBearerToken(
 
 export async function requireFirebaseBearerUser(
   event: H3Event,
-  message = 'Sign in before continuing.'
+  message = 'Sign in before continuing.',
+  options: { allowAnonymous?: boolean } = {}
 ) {
-  const user = await firebaseBearerUser(event).catch(() => null)
+  const user = await firebaseBearerUser(event, options).catch(() => null)
   if (!user) {
     throw createError({
       statusCode: 401,
@@ -44,12 +45,19 @@ export async function requireFirebaseBearerUser(
   return user
 }
 
-export async function firebaseBearerUser(event: H3Event) {
+export async function firebaseBearerUser(
+  event: H3Event,
+  options: { allowAnonymous?: boolean } = {}
+) {
   const token = bearerTokenFromEvent(event)
   if (!token) return null
 
   const decoded = await getAuth(getAdminApp()).verifyIdToken(token, true)
-  if (decoded.firebase?.sign_in_provider === 'anonymous') return null
+  if (
+    decoded.firebase?.sign_in_provider === 'anonymous' &&
+    options.allowAnonymous !== true
+  )
+    return null
 
   return {
     uid: requirePathSegment(decoded.uid, 'User id'),

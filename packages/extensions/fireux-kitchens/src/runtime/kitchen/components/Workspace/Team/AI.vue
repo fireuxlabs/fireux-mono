@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceKitchenAIWelcome v-bind="teamAI" />
+  <WorkspaceKitchenAI v-bind="teamAI" />
 </template>
 
 <script setup lang="ts">

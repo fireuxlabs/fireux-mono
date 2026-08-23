@@ -79,6 +79,7 @@ async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
 
     return (
       appUserData.role === 'admin' ||
+      appUserData.role === 'dev' ||
       appUserData.canManageProducts === true
     )
   } catch (error) {

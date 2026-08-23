@@ -33,6 +33,8 @@ const KITCHEN_RECIPES_FETCH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
 const KITCHEN_RECIPES_CONTROLLER =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Recipes/useKitchenWorkspaceRecipes.ts'
+const KITCHEN_WASTE_DEV =
+  'packages/ecosystem/fireux-misebox/src/runtime/components/Workspace/Kitchen/Waste/Dev.vue'
 const STANDARD_SURFACES = new Set([
   'browse',
   'detail',
@@ -448,8 +450,24 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           existsSync(candidate)
         )
         const routeSource = routePath ? readFileSync(routePath, 'utf8') : ''
+        if (operation === 'waste') {
+          const devPath = path.join(repoRoot, KITCHEN_WASTE_DEV)
+          const devSource = existsSync(devPath)
+            ? readFileSync(devPath, 'utf8')
+            : ''
+          if (
+            !routeSource.includes('<WorkspaceKitchenWasteDev') ||
+            !devSource.includes('wasteAIContext.devContext')
+          ) {
+            violations.push(
+              `${contract.routeRoot}/${operation} (Waste research clues must remain in the named development context until the capability is built)`
+            )
+          }
+          continue
+        }
+        const operationSource = routeSource
         if (
-          !routeSource.includes(
+          !operationSource.includes(
             `<WorkspaceKitchenOperationsGuidingLiterature operation="${operation}" />`
           )
         ) {
@@ -461,7 +479,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           operation === 'drinks'
             ? '<WorkspaceKitchenOperationsDishesRead'
             : `<WorkspaceKitchenOperationsCapabilityView operation="${operation}"`
-        const viewIndex = routeSource.indexOf(viewMarker)
+        const viewIndex = operationSource.indexOf(viewMarker)
         if (viewIndex < 0) {
           violations.push(
             `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must expose its catalogue-backed View)`
@@ -472,10 +490,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
               ? '<WorkspaceKitchenOperationsDishesTools'
               : `<WorkspaceKitchenOperationsCapabilityTools operation="${operation}"`
           const aiMarker = '<WorkspaceKitchenOperationsCapabilityAI'
-          const toolsIndex = routeSource.indexOf(toolsMarker)
-          const aiIndex = routeSource.indexOf(aiMarker)
-          const aiCloseIndex = routeSource.indexOf('>', aiIndex)
-          const aiOperationIndex = routeSource.indexOf(
+          const toolsIndex = operationSource.indexOf(toolsMarker)
+          const aiIndex = operationSource.indexOf(aiMarker)
+          const aiCloseIndex = operationSource.indexOf('>', aiIndex)
+          const aiOperationIndex = operationSource.indexOf(
             `operation="${operation}"`,
             aiIndex
           )

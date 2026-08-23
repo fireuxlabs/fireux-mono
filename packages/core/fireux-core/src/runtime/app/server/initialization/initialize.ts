@@ -142,12 +142,12 @@ export async function initializeRuntimeApp(
         mutations.create(
           memberships,
           uid,
-          initialMembership(uid, 'admin')
+          initialMembership(uid, 'dev')
         )
       } else if (!isAdminMembership(membership.data)) {
         requireCanonicalMembership(membership.data ?? {})
         mutations.update(memberships, uid, {
-          role: 'admin',
+          role: 'dev',
           updated: stamp(uid),
         })
       }

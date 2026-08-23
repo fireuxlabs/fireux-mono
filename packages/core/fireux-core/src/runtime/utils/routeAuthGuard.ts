@@ -99,7 +99,7 @@ export async function resolveClientAppAdmin(
     if (!app) return false
 
     const membership = await resolveCurrentAppMembership(app, uid, appId)
-    return membership?.role === 'admin'
+    return membership?.role === 'admin' || membership?.role === 'dev'
   }
 
   return withTimeout(run(), options.timeoutMs, false)

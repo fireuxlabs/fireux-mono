@@ -1,4 +1,3 @@
-<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: present the derived Free, Premium, Admin, or Dev tier consistently. -->
 <template>
   <UBadge
     v-if="badge"
@@ -12,15 +11,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserAccessTier } from '../composables/useUserPermissions'
+import type { UserSubscription } from '../composables/useUserPermissions'
 
 const props = withDefaults(
   defineProps<{
-    tier?: UserAccessTier | null
+    subscription?: UserSubscription | null
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   }>(),
   {
-    tier: null,
+    subscription: null,
     size: 'sm',
   }
 )
@@ -36,24 +35,16 @@ const badges = {
     icon: 'i-lucide-crown',
     color: 'warning',
   },
-  admin: {
-    label: 'Admin',
-    icon: 'i-lucide-shield-check',
-    color: 'primary',
-  },
-  dev: {
-    label: 'Dev',
-    icon: 'i-lucide-code-xml',
-    color: 'info',
-  },
 } as const satisfies Record<
-  UserAccessTier,
+  UserSubscription,
   {
     label: string
     icon: string
-    color: 'neutral' | 'warning' | 'primary' | 'info'
+    color: 'neutral' | 'warning'
   }
 >
 
-const badge = computed(() => (props.tier ? badges[props.tier] : null))
+const badge = computed(() =>
+  props.subscription ? badges[props.subscription] : null
+)
 </script>

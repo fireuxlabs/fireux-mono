@@ -132,7 +132,7 @@ const users = await Promise.all(usersSnap.docs.map(async (doc) => {
 const appUsers = appUsersSnap.docs.map((doc) => ({
   id: doc.id,
   role: doc.get('role') || '',
-  is_premium: doc.get('is_premium') === true,
+  subscription: doc.get('subscription') || '',
 }))
 
 const membershipIds = new Set(appUsers.map((membership) => membership.id))

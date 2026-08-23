@@ -8,6 +8,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
+  signInAnonymously,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -91,8 +92,16 @@ export function useAuth() {
     // determining the initial auth state (signed-in or signed-out).
     authStateUnsubscribe = onAuthStateChanged(
       authInstance,
-      (u) => {
-        currentUser.value = u
+      async (u) => {
+        let resolvedUser = u
+        if (!resolvedUser) {
+          try {
+            resolvedUser = (await signInAnonymously(authInstance)).user
+          } catch (error) {
+            lastBindError.value = error
+          }
+        }
+        currentUser.value = resolvedUser
         hasAuthState.value = true
         authStateUnsubscribe?.()
         authStateUnsubscribe = null
@@ -175,6 +184,7 @@ export function useAuth() {
   const isAuthenticated = computed(
     () => !!currentUser.value && !currentUser.value.isAnonymous
   )
+  const hasIdentity = computed(() => Boolean(currentUser.value?.uid))
   const authState = computed(() =>
     currentUser.value && !currentUser.value.isAnonymous
       ? 'AUTHENTICATED'
@@ -297,6 +307,7 @@ export function useAuth() {
     currentUser,
     uid,
     isAuthenticated,
+    hasIdentity,
     authState,
     creating,
 

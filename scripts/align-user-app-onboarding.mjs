@@ -914,16 +914,29 @@ async function planApps(session, operations, issues, blockers) {
     let adminCount = 0
     for (const membership of memberships.docs) {
       const value = membership.data()
-      if (value.role === 'admin') adminCount += 1
+      if (value.role === 'admin' || value.role === 'dev') adminCount += 1
       const set = {}
       const remove = []
-      if (value.role !== 'admin' && value.role !== 'user') {
+      if (
+        value.role !== 'admin' &&
+        value.role !== 'user' &&
+        value.role !== 'dev'
+      ) {
         blockers.push(
           issue(session, 'APP_USER_ROLE_REQUIRES_REVIEW', membership.ref.path)
         )
         continue
       }
-      if (typeof value.is_premium !== 'boolean') set.is_premium = false
+      if (value.subscription !== 'free' && value.subscription !== 'premium') {
+        blockers.push(
+          issue(
+            session,
+            'APP_USER_SUBSCRIPTION_REQUIRES_REVIEW',
+            membership.ref.path
+          )
+        )
+        continue
+      }
       if (
         !['pending', 'completed', 'skipped'].includes(value.onboarding_status)
       ) {

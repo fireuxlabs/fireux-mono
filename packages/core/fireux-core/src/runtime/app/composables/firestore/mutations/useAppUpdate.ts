@@ -280,11 +280,14 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     })
   }
 
-  async function setAppUserPremium(uid: string, isPremium: boolean) {
+  async function setAppUserSubscription(
+    uid: string,
+    subscription: 'free' | 'premium'
+  ) {
     await mutateAppMembership({
-      action: 'set-premium',
+      action: 'set-subscription',
       userId: uid,
-      isPremium: Boolean(isPremium),
+      subscription,
     })
   }
 
@@ -305,7 +308,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     overwriteImageFromLocal,
     handleJoinRequests,
     setAppUserAdmin,
-    setAppUserPremium,
+    setAppUserSubscription,
     membership: {
       setAdmin: (uid: string, makeAdmin: boolean) =>
         mutateAppMembership({

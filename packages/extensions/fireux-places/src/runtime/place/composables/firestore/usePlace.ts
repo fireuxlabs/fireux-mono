@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: export the trusted Place removal intent.
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { usePlaceSearch } from './fetch/search/usePlaceSearch'
+import { usePlaceSearch } from '../usePlaceSearch'
 import { usePlaceCollection } from './fetch/usePlaceCollection'
 import { usePlaceFetch } from './fetch/usePlaceFetch'
 import { usePlaceClaim } from './mutations/usePlaceClaim'

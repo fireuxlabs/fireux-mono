@@ -81,7 +81,7 @@ export function userProfileRef(
 
 export function isCurrentMembership(snapshot: DocumentSnapshot): boolean {
   if (!snapshot.exists) return false
-  return ['user', 'admin'].includes(text(snapshot.data()?.role))
+  return ['user', 'admin', 'dev'].includes(text(snapshot.data()?.role))
 }
 
 export function hasProfile(snapshot: DocumentSnapshot): boolean {
@@ -101,7 +101,7 @@ export function assertCurrentAppMembership(
 export function hasPremiumCapacity(snapshot: DocumentSnapshot): boolean {
   if (!isCurrentMembership(snapshot)) return false
   const data = snapshot.data()
-  return data?.role === 'admin' || data?.is_premium === true
+  return data?.subscription === 'premium'
 }
 
 export function applicationDocumentId(

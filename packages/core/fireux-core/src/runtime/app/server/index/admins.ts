@@ -65,17 +65,21 @@ export async function readAppAdmins(event: H3Event) {
   )
 
   try {
-    const memberships = await appDb
+    const memberships = appDb
       .collection('apps')
       .doc(cfg.appId)
       .collection('users')
-      .where('role', '==', 'admin')
-      .limit(limit)
-      .get()
+    const [adminMemberships, developerMemberships] = await Promise.all([
+      memberships.where('role', '==', 'admin').limit(limit).get(),
+      memberships.where('role', '==', 'dev').limit(limit).get(),
+    ])
 
     const admins: PublicAppAdmin[] = []
 
-    for (const membership of memberships.docs) {
+    for (const membership of [
+      ...adminMemberships.docs,
+      ...developerMemberships.docs,
+    ].slice(0, limit)) {
       const uid = membership.id.trim()
       if (!uid) continue
 

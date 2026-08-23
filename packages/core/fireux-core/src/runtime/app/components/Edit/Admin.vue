@@ -184,7 +184,10 @@ const teamRows = computed(() => {
       const hydrated = byId.get(id)
       return {
         id,
-        role: appUser?.role === 'admin' ? 'admin' : 'user',
+        role:
+          appUser?.role === 'admin' || appUser?.role === 'dev'
+            ? appUser.role
+            : 'user',
         display_name: hydrated?.display_name ?? id,
       }
     })
@@ -193,14 +196,14 @@ const teamRows = computed(() => {
         row
       ): row is {
         id: string
-        role: 'admin' | 'user'
+        role: 'admin' | 'user' | 'dev'
         display_name: string
       } => Boolean(row)
     )
 })
 
 const adminRows = computed(() =>
-  teamRows.value.filter((row) => row.role === 'admin')
+  teamRows.value.filter((row) => row.role === 'admin' || row.role === 'dev')
 )
 
 const fallbackUserCard = (options: {

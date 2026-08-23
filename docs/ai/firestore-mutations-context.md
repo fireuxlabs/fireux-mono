@@ -79,6 +79,12 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `scripts/align-user-app-onboarding.mjs`; its `project` family aligns existing
   canonical Projects with their local ProjectMeta records through a dry-run
   plan, confirmation hash, protected pre-image, and post-write verification.
+- Canonical User and AppUser conformance:
+  `scripts/audit-user-app-user-canon.mjs` reads every registered App database
+  and reports exact User identity and AppUser membership shape. The guarded
+  `scripts/migrate-user-app-user-canon.mjs` owns the backup-first cutover to
+  independent AppUser `role` and `subscription`, including deletion of the
+  retired premium boolean and exact post-write verification.
 - Entity storage cutover:
   `scripts/migrate-firestore-entity-canon.mjs` plans the root Workspace,
   User-owned Profile, Marketplace Store, and legacy FireUX Product moves one

@@ -142,7 +142,7 @@ const {
   appUser,
   avatarSrc,
   pill: userInterface,
-  isPremium,
+  subscription,
   canOwnMultipleWorkspaces,
 } = useUser()
 const { getProxiedAvatarUrl } = useAvatarProxy()
@@ -234,7 +234,7 @@ const signedInUserJson = computed(() => {
       ...currentUser.value,
       appUser: appUser.value ?? null,
       permissions: {
-        isPremium: isPremium.value,
+        subscription: subscription.value,
         canOwnMultipleWorkspaces: canOwnMultipleWorkspaces.value,
       },
     }

@@ -1,6 +1,5 @@
 import { createError, readBody, type H3Event } from 'h3'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
-import { isPurchasingAIHelloPrompt } from 'fireux-kitchens/runtime/kitchen/models/purchasing-ai'
 import { pendingTeamTool } from './team-tools'
 import type { KitchenAgentRequest } from './types'
 
@@ -30,15 +29,9 @@ export async function readKitchenAgentRequest(
   const body = (await readBody(event)) as Record<string, unknown> | null
   const prompt = readPrompt(body?.prompt)
   const operation = text(body?.operation)
-  const purchasingHello =
-    operation === 'purchasing' ||
-    (!operation && isPurchasingAIHelloPrompt(prompt))
-
   return {
     appId: requirePathSegment(body?.appId, 'App id'),
-    kitchenId: purchasingHello
-      ? text(body?.kitchenId)
-      : requirePathSegment(body?.kitchenId, 'Kitchen id'),
+    kitchenId: text(body?.kitchenId),
     prompt,
     operation,
     pendingTool: pendingTeamTool(body?.pendingTool),

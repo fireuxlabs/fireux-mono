@@ -11,7 +11,7 @@
         :user="user"
         :is-own-profile="isOwnProfile"
         :can-edit="canEdit"
-        :access-tier="isOwnProfile ? accessTier : null"
+        :subscription="isOwnProfile ? subscription : null"
       />
 
       <UPageCard
@@ -83,7 +83,7 @@ if (import.meta.server) {
     setResponseStatus(statusCode.value >= 500 ? statusCode.value : 503)
 }
 
-const { user: sessionUser, accessTier } = useUser()
+const { user: sessionUser, subscription } = useUser()
 const isOwnProfile = computed(() =>
   Boolean(user.value?.id && sessionUser.value?.id === user.value.id)
 )
@@ -112,7 +112,7 @@ const devJsonData = computed(() => (user.value ? [user.value] : []))
 const devJsonDerived = computed(() => ({
     isOwnProfile: isOwnProfile.value,
     canEdit: canEdit.value,
-    accessTier: isOwnProfile.value ? accessTier.value : null,
+    subscription: isOwnProfile.value ? subscription.value : null,
   page: { handle: handle.value },
 }))
 </script>

@@ -600,8 +600,6 @@ function buildSecurityTests(databaseId) {
     display_name: 'Rules Owner',
     avatar: 'https://example.invalid/avatar.png',
     handle: 'rules-owner',
-    created: created(),
-    updated: updated(),
   }
   const userWithBio = {
     ...user,
@@ -655,13 +653,13 @@ function buildSecurityTests(databaseId) {
   }
   const membership = (role = 'user', appId = 'cleanbox-app') => ({
     role,
-    is_premium: false,
+    subscription: 'free',
     created: created('migration-admin', appId),
     updated: updated('migration-admin'),
   })
   const sparseMembership = {
     role: 'user',
-    is_premium: false,
+    subscription: 'free',
     onboarding_status: 'pending',
     created: created('migration-admin', 'cleanbox-app'),
     updated: updated('migration-admin'),
@@ -727,11 +725,11 @@ function buildSecurityTests(databaseId) {
     read('anonymous-provider User get denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, [], 'anonymous'),
     read('unauthenticated User get denied', 'DENY', databaseId, `users/${ownerId}`, '', user),
     list('raw User list denied', 'DENY', databaseId, 'users', ownerId),
-    update('owner safe User update', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, display_name: 'Updated', updated: stamp }, updateTime),
-    update('owner can add a bounded public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'I build useful things.', updated: stamp }, updateTime),
-    update('owner can store a 280-character public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(280), updated: stamp }, updateTime),
-    update('owner can remove optional public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, userWithBio, { ...user, updated: stamp }, updateTime),
-    update('owner cannot exceed the public User bio limit', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(281), updated: stamp }, updateTime),
+    update('owner safe User update', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, display_name: 'Updated' }, updateTime),
+    update('owner can add a bounded public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'I build useful things.' }, updateTime),
+    update('owner can store a 280-character public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(280) }, updateTime),
+    update('owner can remove optional public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, userWithBio, user, updateTime),
+    update('owner cannot exceed the public User bio limit', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(281) }, updateTime),
     ...[
       ['number', 42],
       ['list', []],
@@ -746,14 +744,14 @@ function buildSecurityTests(databaseId) {
         `users/${ownerId}`,
         ownerId,
         user,
-        { ...user, bio, updated: stamp },
+        { ...user, bio },
         updateTime
       )
     ),
-    update('User app privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, app_ids: ['cleanbox-app', 'richies-reinigung'], updated: stamp }, updateTime),
-    update('User profile privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, profiles: [], updated: stamp }, updateTime),
-    update('User handle bypass denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, handle: 'forged-handle', updated: stamp }, updateTime),
-    update('User schema pollution denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, email: 'leak@example.invalid', updated: stamp }, updateTime),
+    update('User app privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, app_ids: ['cleanbox-app', 'richies-reinigung'] }, updateTime),
+    update('User profile privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, profiles: [] }, updateTime),
+    update('User handle bypass denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, handle: 'forged-handle' }, updateTime),
+    update('User schema pollution denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, email: 'leak@example.invalid' }, updateTime),
     create('client User create denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, writeTime),
     remove('client User delete denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user),
 

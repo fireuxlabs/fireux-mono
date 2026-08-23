@@ -156,6 +156,7 @@ export async function completePlaceOnboarding(
     if (Object.keys(patch).length) {
       const authorized =
         role === 'admin' ||
+        role === 'dev' ||
         createdByCurrentApp(place, actor.uid, actor.runtimeAppId)
       if (!authorized) {
         throw createError({

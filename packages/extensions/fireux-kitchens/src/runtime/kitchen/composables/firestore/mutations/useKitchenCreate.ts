@@ -2,12 +2,10 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Workspace creation through trusted onboarding.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: own Kitchen preview and completion transport in the create seam.
-import type {
-  FireuxEntityCreateMode,
-  FireuxEntityCreateResult,
-} from 'fireux-core/runtime/models/utils/entity-create.model'
+import type { FireuxEntityCreateResult } from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
 import type { KitchenCreateInput } from '../../../models/kitchen-input.model.ts'
 import type {
   KitchenOnboardingCompleteInput,
@@ -16,35 +14,19 @@ import type {
 } from '../../../models/kitchen-onboarding.model.ts'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-type KitchenPlaceDraft = Record<string, unknown> & {
-  id?: string
-  name?: string
-  short_name?: string
-  slug?: string
-}
-type KitchenCreateDraft = KitchenCreateInput & {
-  place_id?: string
-  display_name?: string
-  place?: KitchenPlaceDraft
-}
+type KitchenCreateDraft = KitchenCreateInput
 
 export type KitchenCreateResult = FireuxEntityCreateResult & {
   slug?: string
-}
-export type KitchenCreateOptions = {
-  collectionPath?: string
-}
-
-export type KitchenCreateModeOptions = {
-  mode?: FireuxEntityCreateMode
-  existingRootId?: string | null
 }
 
 export const KitchenCreatePlan = defineFireuxCreatePlan({
   family: 'idempotent',
 })
 
-export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
+export function useKitchenCreate() {
+  const { ensurePlaceExists } = usePlaceCreate({ type: 'kitchen' })
+
   async function authHeaders() {
     const user = await useRequireUser()
     const token = await user.getIdToken()
@@ -87,33 +69,41 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
   }
 
   async function createKitchen(
-    input: KitchenCreateDraft = {},
-    createOptions: KitchenCreateModeOptions = {}
+    input: KitchenCreateDraft
   ): Promise<KitchenCreateResult> {
-    return createKitchenWorkspace(input, createOptions)
-  }
-
-  async function createKitchenWorkspace(
-    input: KitchenCreateDraft = {},
-    createOptions: KitchenCreateModeOptions = {}
-  ): Promise<KitchenCreateResult> {
-    const existingRootId = normalizeString(createOptions.existingRootId)
-    const placeId = normalizeString(input.place_id || input.place?.id)
-    const displayName = normalizeString(input.display_name)
-    if (!existingRootId && !placeId) {
-      throw new Error(
-        'A linked Place is required to create a Kitchen workspace.'
+    const placeId = normalizeString(input.place_id)
+    const name = normalizeString(input.name)
+    if (!placeId && name) {
+      const result = await $fetch<KitchenOnboardingCompleteResult>(
+        '/api/kitchens/onboarding/shell',
+        {
+          method: 'POST',
+          headers: await authHeaders(),
+          body: { name },
+        }
       )
+      if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
+        throw new Error('Kitchen shell creation was invalid.')
+      }
+      return {
+        id: result.kitchen_id,
+        createdRoot: result.created_root,
+        createdTeamMember: result.created_team_member,
+        ...(result.slug ? { slug: result.slug } : {}),
+      }
+    }
+    if (!placeId) {
+      throw new Error('Choose a Kitchen or enter a Kitchen name.')
     }
 
-    const preview = await previewKitchenOnboarding({
-      ...(placeId ? { place_id: placeId } : {}),
-      ...(existingRootId ? { kitchen_id: existingRootId } : {}),
-    })
+    const placeReady = await ensurePlaceExists({ id: placeId })
+    if (!placeReady)
+      throw new Error('The selected Place could not be prepared.')
+
+    const preview = await previewKitchenOnboarding({ place_id: placeId })
     const result = await completeKitchenOnboarding({
       place_id: preview.place_id,
       ...(preview.existing ? { kitchen_id: preview.kitchen_id } : {}),
-      ...(displayName ? { display_name: displayName } : {}),
     })
 
     return {
@@ -128,7 +118,6 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     completeKitchenOnboarding,
     createPlan: KitchenCreatePlan,
     createKitchen,
-    createKitchenWorkspace,
     previewKitchenOnboarding,
   }
 }

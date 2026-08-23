@@ -1,14 +1,19 @@
 import { fetchGoogle, getLastPlacesAutocompleteDebug } from '../google/usePlacesGoogle'
 import { resolveExistingPlace } from './resolveExistingPlace'
-import type { MapToBasePlace, SearchStage } from './types'
+import type {
+  MapToBasePlace,
+  PlaceSearchLocation,
+  SearchStage,
+} from './types'
 
 export const searchGoogle = async (params: {
   term: string
   allowGoogle: boolean
+  location?: PlaceSearchLocation | null
   mapToCard: MapToBasePlace
   type?: string | null
 }): Promise<SearchStage> => {
-  const { term, allowGoogle, mapToCard, type } = params
+  const { term, allowGoogle, location, mapToCard, type } = params
 
   if (!allowGoogle) {
     return { results: [], stage: 'skip-google', debug: { stage: 'skip-google' } }
@@ -22,7 +27,10 @@ export const searchGoogle = async (params: {
     }
   }
 
-  const googleCells = await fetchGoogle(term, new Set(), 4, { type })
+  const googleCells = await fetchGoogle(term, new Set(), 4, {
+    location,
+    type,
+  })
   const resolved = await Promise.all(
     googleCells.map(async (cell) =>
       (await resolveExistingPlace(cell.id, mapToCard)) ?? cell

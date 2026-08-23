@@ -5,7 +5,7 @@ import { requireFirestoreDocumentId } from '../ids/path'
 import { resolveWorkspaceCanCreate } from '../../../utils/workspace-policy'
 import { resolveFireuxEntityManagementForApp } from '../../../utils/entity-management'
 
-export type WorkspaceEntityMemberRole = 'admin' | 'user'
+export type WorkspaceEntityMemberRole = 'admin' | 'user' | 'dev'
 
 export type WorkspaceEntitySupportAuthority = {
   operatorIds: string[]
@@ -53,7 +53,10 @@ export function requireWorkspaceEntityMemberRole(input: {
   entityLabel: string
 }): WorkspaceEntityMemberRole {
   const role = text(input.role)
-  if (!input.exists || (role !== 'admin' && role !== 'user')) {
+  if (
+    !input.exists ||
+    (role !== 'admin' && role !== 'user' && role !== 'dev')
+  ) {
     fail(
       403,
       `Current App membership is required to onboard a ${input.entityLabel}.`

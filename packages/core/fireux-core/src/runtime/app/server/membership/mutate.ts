@@ -98,12 +98,12 @@ async function mutateInTransaction(
         mutations.create(
           memberships,
           actorUid,
-          initialMembership(actorUid, 'admin')
+          initialMembership(actorUid, 'dev')
         )
       else {
         requireCanonicalMembership(actorMembership ?? {})
         mutations.update(memberships, actorUid, {
-          role: 'admin',
+          role: 'dev',
           updated: stamp(actorUid),
         })
       }
@@ -114,7 +114,7 @@ async function mutateInTransaction(
         appId,
         userId: actorUid,
         created,
-        role: 'admin',
+        role: 'dev',
       }
     }
 
@@ -159,7 +159,8 @@ async function mutateInTransaction(
       return handleReviewJoin(state, crossDatabaseUserVerified)
     if (
       input.action === 'set-role' ||
-      input.action === 'set-premium' ||
+      input.action === 'set-subscription' ||
+      input.action === 'set-self-subscription' ||
       input.action === 'set-onboarding-status'
     )
       return handleMembershipSettings(state)

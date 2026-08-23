@@ -11,7 +11,8 @@
     />
 
     <WorkspaceKitchenIndexTargets
-      v-if="sections.targets.show"
+      v-if="showOnboardingTargets"
+      mode="free"
       :collection="sections.targets.collection"
       :demo-collection="sections.demoTargets.collection"
       :outcome="sections.targets.outcome"
@@ -22,6 +23,7 @@
     />
 
     <DevDebugPanel
+      v-if="isDevelopment && props.showDebug"
       title="Kitchen workspace debug"
       scope="workspace"
       object-origin="fetched"
@@ -36,7 +38,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
+const props = withDefaults(
+  defineProps<{
+    showDebug?: boolean
+  }>(),
+  {
+    showDebug: true,
+  }
+)
+const isDevelopment = import.meta.dev
 const { selection, sections, actions, debug } = useKitchenWorkspaceIndex()
+const showOnboardingTargets = computed(
+  () =>
+    !selection.value.hasSelection &&
+    sections.value.targets.show &&
+    (sections.value.targets.outcome !== 'empty' ||
+      sections.value.demoTargets.show)
+)
 </script>

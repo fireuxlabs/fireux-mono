@@ -246,14 +246,14 @@ const canOpenWorkspace = computed(
     appOutcome.value === 'ready' &&
     membershipOutcome.value === 'ready' &&
     Boolean(hasWorkspaceEntry.value) &&
-    appUser.value?.role === 'admin' &&
+    (appUser.value?.role === 'admin' || appUser.value?.role === 'dev') &&
     appUser.value.workspace_enabled === true
 )
 const canManageApp = computed(
   () =>
     appOutcome.value === 'ready' &&
     membershipOutcome.value === 'ready' &&
-    appUser.value?.role === 'admin'
+    (appUser.value?.role === 'admin' || appUser.value?.role === 'dev')
 )
 const canSelfJoin = computed(
   () => appOutcome.value === 'ready' && app.value?.self_join_enabled === true

@@ -66,7 +66,7 @@ async function continuePendingTeamTool(
   return executePreparedTeamTool(event, request, current)
 }
 
-export async function runKitchenTeamAgent(
+export async function runKitchenTeamAI(
   event: H3Event,
   request: KitchenAgentRequest,
   access: KitchenAgentAccess

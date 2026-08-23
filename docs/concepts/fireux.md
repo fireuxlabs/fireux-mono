@@ -1,6 +1,6 @@
 # FireUX concept map
 
-Updated: 2026-08-21
+Updated: 2026-08-23
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -52,8 +52,10 @@ Explain FireUX as the platform shape behind the repo.
 ## Runtime app roles
 
 - `global`: app can expose multiple domains/workspaces.
-- `tenant`: root management, Team, and AppUser membership resolve its Workspace
-  targets; deploy-time configuration does not pin Entity IDs.
+- `tenant`: canonical root relationships, Team, and AppUser membership resolve
+  its Workspace targets; deploy-time configuration does not pin Entity IDs.
+  Place-backed Kitchen is resolved through its same-ID Place rather than a
+  management field.
 - `standalone`: FireUX-owned standalone app mode.
 
 ## Current ecosystem ownership

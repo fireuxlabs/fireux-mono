@@ -110,7 +110,7 @@ async function readContext(event: H3Event, kitchenId: string) {
   const layer = readAppPaletteLayer(theme.palette)
   return {
     appId,
-    canWrite: role === 'admin',
+    canWrite: role === 'admin' || role === 'dev',
     appData,
     inheritedPalette,
     layer,

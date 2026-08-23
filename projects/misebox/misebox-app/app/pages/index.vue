@@ -7,10 +7,18 @@
 
       <template #body>
         <section class="workspace-surface">
+          tools
           <WorkspaceKitchenTools />
-          <WorkspaceKitchenAIWelcome />
-          <WorkspaceKitchen v-if="clientReady && isAuthenticated" />
-          <MiseboxWorkspaceKitchenAIDevelopment v-if="isDevelopment" />
+          AI
+          <WorkspaceKitchenAI />
+          <template v-if="clientReady && hasIdentity">
+            index
+            <WorkspaceKitchen :show-debug="false" />
+          </template>
+          <template v-if="isDevelopment">
+            <USeparator label="Development" class="my-2" />
+            <WorkspaceKitchenDev />
+          </template>
         </section>
       </template>
     </UDashboardPanel>
@@ -24,7 +32,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
-const { isAuthenticated } = useAuth()
+const { hasIdentity } = useAuth()
 const isDevelopment = import.meta.dev
 const workspaceRoot = useWorkspace()
 workspaceRoot.setActiveContext('kitchen')

@@ -71,8 +71,8 @@
           Add a Kitchen
         </h1>
         <p class="mt-3 text-sm leading-6 text-muted">
-          Connect the Kitchen to its Place, confirm its identity, and review
-          access before creation.
+          Choose the Place this Kitchen belongs to and review access before
+          creation.
         </p>
       </template>
 
@@ -98,29 +98,10 @@
         </UButton>
       </div>
 
-      <KitchenOnboardingIdentity
-        v-if="activeStepId === 'identity'"
-        :place="place"
-        :display-name="displayName"
-        :editable="canEditIdentity"
-        @update:display-name="setDisplayName"
-      />
-
       <KitchenOnboardingReview
         v-if="activeStepId === 'review'"
         :place="place"
         :preview="preview"
-        :effective-name="effectiveName"
-        :palette-override="paletteOverride"
-        :inherited-palette="inheritedPalette"
-      />
-
-      <KitchenOnboardingBrand
-        v-if="activeStepId === 'brand'"
-        :model-value="paletteOverride"
-        :inherited="inheritedPalette"
-        :editable="canEditPalette"
-        @update:model-value="setPaletteOverride"
       />
 
       <template #footer>
@@ -154,7 +135,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
-import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlaceOnboarding'
+import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenWorkspaceSelection } from '../composables/workspace/core/useKitchenWorkspaceSelection'
 import { useKitchenOnboarding } from '../composables/useKitchenOnboarding'
@@ -187,29 +168,21 @@ const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 const {
   activeStepId,
   back,
-  canEditIdentity,
-  canEditPalette,
   clearSelection,
   completion,
   currentStep,
-  displayName,
-  effectiveName,
   error,
   isFirstStep,
   isLastStep,
-  inheritedPalette,
   next,
   pending,
   place,
-  paletteOverride,
   preview,
   progress,
   selectKitchen,
   selectPlace,
   selectionError,
   selectionPending,
-  setDisplayName,
-  setPaletteOverride,
   stepCount,
   stepNumber,
 } = useKitchenOnboarding()

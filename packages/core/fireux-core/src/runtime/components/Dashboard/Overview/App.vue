@@ -95,7 +95,7 @@
         <div class="mt-5 flex items-center gap-2 text-sm text-muted">
           <UIcon
             :name="
-              membership.role === 'admin'
+              membership.role === 'admin' || membership.role === 'dev'
                 ? 'i-lucide-shield-check'
                 : 'i-lucide-user-round-check'
             "
@@ -205,7 +205,7 @@ const missingMembershipDescription = computed(() =>
 )
 
 const membershipLabel = computed(() =>
-  props.membership?.role === 'admin'
+  props.membership?.role === 'admin' || props.membership?.role === 'dev'
     ? `Administrator in ${props.appName}`
     : `Member of ${props.appName}`
 )

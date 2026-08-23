@@ -1,15 +1,26 @@
-import { ref, watch } from 'vue'
-import type { PlaceSource } from '../../../../models/place.model.ts'
-import type { BasePlace, BasePlaceRecord } from './types'
-import type { PlaceImageShade } from '../../../../utils/place-spine'
-import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
-import { canonicalPlaceId } from '../google/usePlacesGoogle'
-import { normalizeQuery } from './normalizeQuery'
-import { searchPrimary } from './searchPrimary'
-import { searchGoogle } from './searchGoogle'
+import { ref, watch, type Ref } from 'vue'
+import type { PlaceSource } from '../models/place.model.ts'
+import type {
+  BasePlace,
+  BasePlaceRecord,
+  PlaceSearchLocation,
+} from './firestore/fetch/search/types'
+import type { PlaceImageShade } from '../utils/place-spine'
+import { mapPlaceToBasePlace } from './firestore/utils/view/mapPlaceToBasePlace'
+import { canonicalPlaceId } from './firestore/fetch/google/usePlacesGoogle'
+import { normalizeQuery } from './firestore/fetch/search/normalizeQuery'
+import { searchPrimary } from './firestore/fetch/search/searchPrimary'
+import { searchGoogle } from './firestore/fetch/search/searchGoogle'
+
+export type {
+  BasePlace,
+  PlaceSearchLocation,
+} from './firestore/fetch/search/types'
 
 type UsePlaceSearchOptions = {
   debugLabel?: string
+  debounceMs?: number
+  location?: Ref<PlaceSearchLocation | null>
   type?: string | null
 }
 
@@ -18,6 +29,8 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
   const results = ref<PlaceSearchCell[]>([])
   const selected = ref<BasePlaceRecord | null>(null)
   const isSearching = ref(false)
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  let searchSequence = 0
 
   const debug = ref<Record<string, unknown> | null>(null)
 
@@ -55,6 +68,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
   }
 
   async function searchPlaces(q: string) {
+    const sequence = ++searchSequence
     const term = q.trim().toLowerCase()
     const termNormalized = term ? normalizeQuery(term) : ''
 
@@ -99,9 +113,14 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
         }
       }
 
+      const googleLocation =
+        normalizeLocation(options.location?.value) ||
+        locationFromResults(primaryResults)
       const google = await searchGoogle({
         term,
-        allowGoogle: true,
+        allowGoogle:
+          Boolean(googleLocation) || term.split(/\s+/).length > 1,
+        location: googleLocation,
         mapToCard: mapToBasePlace,
         type: options.type ?? null,
       })
@@ -109,6 +128,8 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       const googleCards = google.results
         .map((row) => toSearchCell(row))
         .filter(Boolean) as PlaceSearchCell[]
+
+      if (sequence !== searchSequence) return
 
       if (primaryResults.length) {
         const existingIds = new Set(
@@ -138,11 +159,23 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
         })
       }
     } finally {
-      isSearching.value = false
+      if (sequence === searchSequence) isSearching.value = false
     }
   }
 
-  watch(query, (q: string) => void searchPlaces(q))
+  watch(query, (q: string) => {
+    if (debounceTimer) clearTimeout(debounceTimer)
+    searchSequence++
+    results.value = []
+    if (!q.trim()) {
+      void searchPlaces(q)
+      return
+    }
+    debounceTimer = setTimeout(
+      () => void searchPlaces(q),
+      Math.max(0, options.debounceMs ?? 450)
+    )
+  })
 
   function select(place: BasePlace) {
     const id = canonicalPlaceId(place.id) || place.id
@@ -155,12 +188,66 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
   }
 
   function clear() {
+    if (debounceTimer) clearTimeout(debounceTimer)
+    searchSequence++
     query.value = ''
     results.value = []
     selected.value = null
   }
 
-  return { query, results, selected, isSearching, select, clear, debug }
+  const refresh = () => searchPlaces(query.value)
+
+  return {
+    query,
+    results,
+    selected,
+    isSearching,
+    select,
+    clear,
+    debug,
+    refresh,
+  }
+}
+
+function normalizeLocation(
+  value: PlaceSearchLocation | null | undefined
+): PlaceSearchLocation | null {
+  if (!value) return null
+  const lat = Number(value.lat)
+  const lng = Number(value.lng)
+  const radiusMeters = Number(value.radiusMeters)
+  return Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    Number.isFinite(radiusMeters) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180 &&
+    radiusMeters > 0 &&
+    radiusMeters <= 50_000
+    ? { lat, lng, radiusMeters }
+    : null
+}
+
+function locationFromResults(
+  results: PlaceSearchCell[]
+): PlaceSearchLocation | null {
+  for (const result of results) {
+    const lat = Number(result.lat)
+    const lng = Number(result.lng)
+    if (
+      Number.isFinite(lat) &&
+      Number.isFinite(lng) &&
+      lat >= -90 &&
+      lat <= 90 &&
+      lng >= -180 &&
+      lng <= 180 &&
+      (lat !== 0 || lng !== 0)
+    ) {
+      return { lat, lng, radiusMeters: 25_000 }
+    }
+  }
+  return null
 }
 
 export type PlaceSearchCell = {

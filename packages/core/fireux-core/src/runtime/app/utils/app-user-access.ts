@@ -1,22 +1,17 @@
 // FILE: packages/core/fireux-core/src/runtime/app/utils/app-user-access.ts
 
-import type { AppUserRole } from '../models/app-user.model.ts'
-
-export type AppUserAccessTier = 'free' | 'premium' | 'admin' | 'dev'
+import type {
+  AppUserRole,
+  AppUserSubscription,
+} from '../models/app-user.model.ts'
 
 export type ResolvedAppUserAccess = {
-  tier: AppUserAccessTier | null
   role: AppUserRole | null
+  subscription: AppUserSubscription
   hasMembership: boolean
   hasAdminAuthority: boolean
-  hasExplicitPremiumEntitlement: boolean
-  hasPremiumAccess: boolean
-  isConfiguredDeveloper: boolean
-}
-
-type ResolveAppUserAccessInput = {
-  membership?: unknown
-  isConfiguredDeveloper?: boolean
+  hasDeveloperAuthority: boolean
+  hasPremiumSubscription: boolean
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -25,64 +20,28 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {}
 }
 
-/**
- * Resolve the current App's display tier and product capability implications.
- *
- * Stored AppUser authority remains orthogonal:
- * - `role` controls App governance.
- * - `is_premium` records an explicitly granted premium entitlement.
- * - the configured developer identity is runtime authority, never a stored role.
- *
- * `dev` therefore overlays a real App membership; it never manufactures one.
- * This resolver is presentation/capability logic and must not replace server or
- * Firestore Rules authorization.
- */
+/** Resolve independent App governance and subscription facts. */
 export function resolveAppUserAccess(
-  input: ResolveAppUserAccessInput
+  membership: unknown
 ): ResolvedAppUserAccess {
-  const membership = asRecord(input.membership)
+  const value = asRecord(membership)
   const role: AppUserRole | null =
-    membership.role === 'admin' || membership.role === 'user'
-      ? membership.role
+    value.role === 'admin' || value.role === 'user' || value.role === 'dev'
+      ? value.role
       : null
-  const hasMembership = role !== null
-  const hasAdminAuthority = role === 'admin'
-  const hasExplicitPremiumEntitlement =
-    hasMembership && membership.is_premium === true
-  const isConfiguredDeveloper = input.isConfiguredDeveloper === true
-  const hasPremiumAccess =
-    hasMembership &&
-    (isConfiguredDeveloper ||
-      hasAdminAuthority ||
-      hasExplicitPremiumEntitlement)
-
-  const tier: AppUserAccessTier | null = !hasMembership
-    ? null
-    : isConfiguredDeveloper
-      ? 'dev'
-      : hasAdminAuthority
-        ? 'admin'
-        : hasExplicitPremiumEntitlement
-          ? 'premium'
-          : 'free'
+  const storedSubscription: AppUserSubscription | null =
+    value.subscription === 'free' || value.subscription === 'premium'
+      ? value.subscription
+      : null
+  const hasMembership = role !== null && storedSubscription !== null
+  const subscription = storedSubscription ?? 'free'
 
   return {
-    tier,
-    role,
+    role: hasMembership ? role : null,
+    subscription,
     hasMembership,
-    hasAdminAuthority,
-    hasExplicitPremiumEntitlement,
-    hasPremiumAccess,
-    isConfiguredDeveloper,
+    hasAdminAuthority: hasMembership && (role === 'admin' || role === 'dev'),
+    hasDeveloperAuthority: hasMembership && role === 'dev',
+    hasPremiumSubscription: hasMembership && subscription === 'premium',
   }
-}
-
-export function hasAppUserPremiumAccess(
-  membership: unknown,
-  options: { isConfiguredDeveloper?: boolean } = {}
-): boolean {
-  return resolveAppUserAccess({
-    membership,
-    isConfiguredDeveloper: options.isConfiguredDeveloper,
-  }).hasPremiumAccess
 }
