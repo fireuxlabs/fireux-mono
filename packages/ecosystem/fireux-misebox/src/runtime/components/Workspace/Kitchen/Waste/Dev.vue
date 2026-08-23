@@ -4,7 +4,18 @@
       <template #header>
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="font-semibold text-highlighted">WasteAI development</h2>
-          <UBadge color="neutral" variant="outline">Handshake</UBadge>
+          <div class="flex items-center gap-2">
+            <UButton
+              to="/workspace/kitchen/waste/search-demand"
+              color="neutral"
+              variant="outline"
+              size="xs"
+              icon="i-lucide-search"
+            >
+              Search demand
+            </UButton>
+            <UBadge color="neutral" variant="outline">Handshake</UBadge>
+          </div>
         </div>
       </template>
 

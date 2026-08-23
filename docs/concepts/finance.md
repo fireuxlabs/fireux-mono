@@ -1,6 +1,6 @@
 # Finance map
 
-Updated: 2026-08-17
+Updated: 2026-08-23
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -145,6 +145,16 @@ reports into one generic Finance workspace.
   the bounded transaction-summary fields. Money out remains explicitly unavailable until
   a producing domain owns real outgoing transactions; the ledger does not
   invent costs or present missing data as zero.
+- The Kitchen operation catalogue preserves the product navigation boundary:
+  Sales owns daily gross-Sales reporting and equivalent-period comparison;
+  Costs owns food-cost and contribution specifications. Moving those two
+  requested specifications does not create cost authority or make either Tool
+  callable.
+- Costs research distinguishes theoretical direct food cost from actual usage,
+  variance, contribution, expense, COGS and accounting profit. Current Dish
+  planning estimates may use represented Recipe requirements and Supplier offer
+  terms with explicit coverage and exclusions, but they do not establish the
+  authoritative acquisition and period-usage chain required for a Cost report.
 - `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
   summary. It retains gross-sale semantics and completed-service labels while
   both Workspace and Product Demo reuse the same product-neutral layout and money
@@ -233,7 +243,7 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Finance.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/calculate-restaurant-labour-cost.ts`

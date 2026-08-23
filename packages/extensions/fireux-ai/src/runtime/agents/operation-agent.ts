@@ -21,6 +21,16 @@ export type FireuxAgentContextProvider = {
   required: boolean
 }
 
+export type FireuxOperationAgentTool = {
+  id: string
+  label: string
+  description: string
+  status: 'requested' | 'building' | 'available' | 'agent-ready'
+  requiredRecords: readonly string[]
+  authority: string
+  approval: string
+}
+
 export type FireuxAgentEntityTarget = {
   kind: string
   idParam: string
@@ -53,6 +63,7 @@ export type FireuxOperationAgentDefinition = {
   contextProviders: readonly FireuxAgentContextProvider[]
   capabilities: readonly FireuxOperationAgentCapability[]
   toolIds: readonly string[]
+  toolCatalogue?: readonly FireuxOperationAgentTool[]
   execution: FireuxOperationAgentExecution
   maturity?: FireuxOperationAgentMaturity
 }

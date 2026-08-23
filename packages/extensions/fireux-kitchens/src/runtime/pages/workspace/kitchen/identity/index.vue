@@ -17,6 +17,10 @@
               <WorkspaceKitchenIdentitySections />
             </div>
           </ClientOnly>
+          <WorkspaceKitchenResearchSegue
+            capability="Identity"
+            base-path="/workspace/kitchen/identity/search-demand"
+          />
         </div>
       </template>
     </UDashboardPanel>

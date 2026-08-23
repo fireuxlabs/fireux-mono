@@ -13,6 +13,10 @@
           <WorkspaceKitchenOperationsCapabilityView operation="recipes" />
           <WorkspaceKitchenOperationsRecipes />
           <WorkspaceKitchenOperationsGuidingLiterature operation="recipes" />
+          <WorkspaceKitchenResearchSegue
+            capability="Recipes"
+            base-path="/workspace/kitchen/recipes/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>

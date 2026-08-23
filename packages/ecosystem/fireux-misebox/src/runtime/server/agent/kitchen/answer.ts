@@ -7,6 +7,7 @@ import {
 import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/kitchen/server/ai/usage'
 import { readKitchenAgentContext } from './context'
 import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
+import { findMiseboxOperationAgent } from '../../../ai/workspace-agents'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -18,6 +19,18 @@ export async function answerKitchenAgent(
   const ai = useFireuxAi(event)
   const context = await readKitchenAgentContext(access, request)
   const isDrinks = request.operation === 'drinks'
+  const requestedAgent = findMiseboxOperationAgent(
+    'kitchen',
+    isDrinks ? 'drinks' : 'menus'
+  )
+  const toolCatalogue = (requestedAgent?.toolCatalogue || []).map((tool) => ({
+    id: tool.id,
+    label: tool.label,
+    description: tool.description,
+    status: tool.status,
+    authority: tool.authority,
+    approval: tool.approval,
+  }))
   const operationAgents = isDrinks
     ? {
         DrinksAI: {
@@ -29,9 +42,9 @@ export async function answerKitchenAgent(
             description: drink.description,
             image: drink.image,
           })),
-          available_tools: ['kitchen.drinks.update-image'],
+          tool_catalogue: toolCatalogue,
           instruction:
-            'Inspect the supplied canonical Drink records. An empty image is direct evidence that the drink needs an image. Name affected drinks, recommend the available update-image tool, and do not claim to have changed or generated an image.',
+            'Inspect the supplied canonical Drink records. An empty image is direct evidence that the drink needs an image. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
         },
       }
     : {
@@ -40,8 +53,9 @@ export async function answerKitchenAgent(
           authority: 'advisory',
           menu_manifest: context.menuManifest,
           context: context.menuContext || undefined,
+          tool_catalogue: toolCatalogue,
           instruction:
-            'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Do not propose or claim a mutation.',
+            'Assess the current Menu shape from exact manifest counts and confirmed Menu context. Identify useful operational observations without inventing sales, popularity, profitability, ingredient, stock, or customer evidence. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
         },
       }
   const response = await ai.generateText({
@@ -64,7 +78,7 @@ export async function answerKitchenAgent(
       user_context: context.userContext || undefined,
       kitchen_context: context.kitchenContext || undefined,
       menu_context: context.menuContext || undefined,
-      instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${isDrinks ? 'DrinksAI' : 'MenuAI'}. Answer using only the supplied authorized Kitchen identity, confirmed context, and named operation-agent scope. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
+      instruction: `Act as KitchenAI for the selected Kitchen and delegate this request to ${isDrinks ? 'DrinksAI' : 'MenuAI'}. Answer using only the supplied authorized Kitchen identity, confirmed context, named operation-agent scope, and its status-bearing Tool catalogue. Treat requested or building Tools as planned language that cannot run. Treat saved context as operator knowledge, not measured evidence. State when the records do not support a claim. Do not claim to have changed data. Be concise and conversational. ${fireuxAgentTipInstruction}`,
     },
   })
   const result = extractFireuxAgentTip(response.text, {

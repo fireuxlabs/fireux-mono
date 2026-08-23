@@ -27,7 +27,7 @@ const FILES = {
   kitchenWorkspace:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue',
   kitchenWorkspacePage:
-    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance/index.vue',
   restaurantLabourCalculator:
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts',
   restaurantLabourToolAdapter:

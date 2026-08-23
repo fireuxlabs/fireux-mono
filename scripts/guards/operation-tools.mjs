@@ -25,41 +25,13 @@ export async function run({ repoRoot }) {
   const operationCapabilityFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-capabilities.ts'
   const operationCapabilities = await source(repoRoot, operationCapabilityFile)
-  const requestedCapabilityLabels = [
-    ...operationCapabilities.matchAll(
-      /requested\(\s*'kitchen\.[^']+',\s*'([^']+)'/g
-    ),
-  ].map((match) => match[1])
-  const customerJobEndings = [
-    'Analysis',
-    'Assignment',
-    'Builder',
-    'Calculator',
-    'Checklist',
-    'Comparison',
-    'Count',
-    'Generator',
-    'Management',
-    'Plan',
-    'Publishing',
-    'Queue',
-    'Receiving',
-    'Report',
-    'Review',
-    'Routing',
-    'Setup',
-    'Tool',
-    'Tracker',
-  ]
-
   if (
-    !requestedCapabilityLabels.length ||
-    requestedCapabilityLabels.some(
-      (label) => !customerJobEndings.some((ending) => label.endsWith(ending))
-    )
+    !operationCapabilities.includes('const researchTools =') ||
+    !operationCapabilities.includes('.toolHypotheses)') ||
+    operationCapabilities.includes('const requested =')
   ) {
     violations.push(
-      `${operationCapabilityFile}: requested capabilities must use recognizable customer-job names such as Calculator, Tracker, Builder, Management, or Analysis.`
+      `${operationCapabilityFile}: capability Tools must project the capability-owned search-demand hypotheses instead of maintaining a second requested-Tool catalogue.`
     )
   }
   const definitionFiles = (await readdir(join(repoRoot, definitionRoot)))

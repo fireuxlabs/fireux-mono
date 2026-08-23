@@ -13,6 +13,10 @@
           <WorkspaceKitchenOperationsCapabilityView operation="suppliers" />
           <WorkspaceKitchenOperationsSuppliers />
           <WorkspaceKitchenOperationsGuidingLiterature operation="suppliers" />
+          <WorkspaceKitchenResearchSegue
+            capability="Suppliers"
+            base-path="/workspace/kitchen/suppliers/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>

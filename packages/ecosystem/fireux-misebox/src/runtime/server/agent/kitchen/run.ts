@@ -5,25 +5,39 @@ import { answerKitchenAgent } from './answer'
 import { readKitchenAgentOrientation } from './orientation'
 import { runKitchenTeamAI } from './team'
 import type { KitchenAgentRequest } from './types'
-import { runKitchenWasteAI } from './waste'
 import { findMiseboxOperationAgent } from '../../../ai/workspace-agents'
 
 export async function runKitchenAgent(
   event: H3Event,
   request: KitchenAgentRequest
 ) {
-  // The first capability handshake is deliberately unscoped: it reads no
-  // Kitchen data and performs no action. Every other request remains guarded.
-  const wasteResult = runKitchenWasteAI(request)
-  if (wasteResult) return wasteResult
-
   const requestedAgent = request.operation
     ? findMiseboxOperationAgent('kitchen', request.operation)
     : undefined
   if (requestedAgent?.maturity === 'handshake') {
+    const catalogue = requestedAgent.toolCatalogue || []
+    const requestedTools = catalogue.filter(
+      (tool) => tool.status === 'requested' || tool.status === 'building'
+    )
+    const availableTools = catalogue.filter(
+      (tool) => tool.status === 'available' || tool.status === 'agent-ready'
+    )
+    const catalogueAnswer = [
+      availableTools.length
+        ? `Available now: ${availableTools.map((tool) => tool.label).join(', ')}.`
+        : 'No Tools are available yet.',
+      requestedTools.length
+        ? `Planned: ${requestedTools.map((tool) => tool.label).join(', ')}.`
+        : 'No additional Tools are currently planned.',
+      requestedTools.length
+        ? 'Planned Tools are known language only and cannot be run.'
+        : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
     return {
       ok: true as const,
-      answer: `Hello from ${requestedAgent.name}. I am registered with KitchenAI, but my operational evidence and tools are not connected yet.`,
+      answer: `${requestedAgent.name} is registered with KitchenAI. ${catalogueAnswer}`,
       scope: {
         source: 'simulator' as const,
         kitchenName: 'No Kitchen evidence read',

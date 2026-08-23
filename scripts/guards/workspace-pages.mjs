@@ -53,7 +53,7 @@ const NON_DIRECT_PAGES = new Map([
     'router',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
     'live',
   ],
 ])
@@ -567,7 +567,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
       for (const operation of contract.operations.filter((operation) =>
         KITCHEN_TOOL_BACKED_OPERATIONS.has(operation)
       )) {
-        if (!capabilityCatalogue.includes(`  ${operation}: [`)) {
+        if (
+          !capabilityCatalogue.includes(`  ${operation}: [`) &&
+          !capabilityCatalogue.includes(`  ${operation}: researchTools(`)
+        ) {
           violations.push(
             `Kitchen ${operation} Operation is missing its tool capability catalogue.`
           )

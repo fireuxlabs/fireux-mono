@@ -6,6 +6,7 @@ import {
   type FireuxOperationAgentCapability,
 } from 'fireux-ai/runtime/agents/operation-agent'
 import { kitchenOperations } from './operations'
+import { kitchenOperationToolCapabilities } from './operation-capabilities'
 import { kitchenTeamAgentToolIds } from '../tools/team'
 
 type KitchenOperationSlug = (typeof kitchenOperations)[number]['slug']
@@ -107,8 +108,8 @@ const definitions = {
   finance: {
     name: 'FinanceAI',
     contextProviders: [context('kitchen.finance', 'Kitchen')],
-    capabilities: [...advisoryAgentCapabilities, 'use_tools'],
-    toolIds: ['kitchen.finance.calculate-labour-cost'],
+    capabilities: advisoryAgentCapabilities,
+    toolIds: [],
   },
   costs: {
     name: 'CostsAI',
@@ -155,6 +156,7 @@ export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
           ? definition.capabilities
           : advisoryAgentCapabilities,
       toolIds: 'toolIds' in definition ? definition.toolIds : [],
+      toolCatalogue: kitchenOperationToolCapabilities[slug],
       maturity:
         'maturity' in definition ? definition.maturity : 'handshake',
       execution: 'shared-inference',

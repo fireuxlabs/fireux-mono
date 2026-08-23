@@ -173,8 +173,8 @@ async function sendPrompt() {
 
 async function runPrompt(text: string) {
   const selected = selectedLiveScope.value
-  const wasteHello =
-    resolvedOperation.value === 'waste' || isWasteAIHelloPrompt(text)
+  const capabilityHandshake = props.agent?.maturity === 'handshake'
+  const wasteHello = isWasteAIHelloPrompt(text)
   const appId = selected.appId || configuredAppId
   const kitchenId = selected.kitchenId
   if (!appId) {
@@ -185,7 +185,7 @@ async function runPrompt(text: string) {
   submitting.value = true
   try {
     const headers: Record<string, string> = {}
-    if (!wasteHello) {
+    if (!wasteHello && !capabilityHandshake) {
       const user = await useRequireUser()
       headers.Authorization = `Bearer ${await user.getIdToken()}`
     }

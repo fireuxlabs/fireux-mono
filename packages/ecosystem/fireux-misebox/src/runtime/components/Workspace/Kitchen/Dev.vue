@@ -43,8 +43,17 @@
           />
 
           <div class="min-w-0 flex-1">
-            <p class="font-medium text-highlighted">{{ item.name }}</p>
+            <ULink
+              :to="`${item.to}/search-demand`"
+              class="font-medium text-highlighted hover:text-primary"
+            >
+              {{ item.name }}
+            </ULink>
             <p class="text-xs text-muted">{{ item.group }}</p>
+            <p class="text-xs text-dimmed">
+              {{ item.availableToolCount }} available ·
+              {{ item.requestedToolCount }} planned
+            </p>
           </div>
 
           <UBadge
@@ -205,8 +214,19 @@ const capabilityAIs = computed(() =>
       return {
         key,
         name: toCapabilityAIName(item.label, item.to),
+        to: item.to,
         group: item.group || 'Kitchen',
         status,
+        availableToolCount:
+          agent?.toolCatalogue?.filter(
+            (tool) =>
+              tool.status === 'available' || tool.status === 'agent-ready'
+          ).length || 0,
+        requestedToolCount:
+          agent?.toolCatalogue?.filter(
+            (tool) =>
+              tool.status === 'requested' || tool.status === 'building'
+          ).length || 0,
         presentation: statusPresentation[status],
       }
     })

@@ -553,8 +553,8 @@ Before each task:
   temporary restaurant-Waste context paragraph into WasteAI, and echoes its
   typed response. It invokes no provider or Tool, reads no live evidence,
   produces no suggestions, and writes nothing; it exists only to prove the
-  delegation and context pipeline while Waste search-demand work remains
-  pending. Live reads, deductions, proposals, and commands still require an
+  delegation and context pipeline while Waste tools remain unproved. Live reads,
+  deductions, proposals, and commands still require an
   authorized selected Live Kitchen. Menu-file selection remains a
   browser-local prototype interaction with no upload or persistence, and
   account creation begins only at the explicit
@@ -597,6 +597,185 @@ Before each task:
   human tools, AI-assisted tools, compound tools, and approvals. Production
   landing copy may summarise only capabilities already proved by those child
   sources; the research corpus remains distinct from live operational evidence.
+  Waste is the first complete capability-level language baseline. Its explicit
+  route sequence is `/workspace/kitchen/waste/search-demand` for observed
+  evidence, `/analysis` for operator jobs and required record questions, then
+  `/tools` for named Tool specifications and the WasteAI/KitchenAI delegation
+  contract. The Kitchen-owned source keeps Google Autocomplete observations,
+  independent validation literature, interpretation, and proposed responses
+  visibly separate. Its four current Tool specifications remain `requested`:
+  record a Waste event, review Waste patterns, calculate only supported Waste
+  cost, and propose an evidenced reduction action. None is registered as an
+  available Tool or product promise until its canonical records, trusted
+  reader or command, authority, approval, UI, audit behaviour, and verification
+  exist. Later capability passes may follow this three-stage page shape without
+  creating a second App-domain search-demand registry.
+  Inventory is the second differentiated member and follows the same three
+  stages. Its language boundary treats physical counts as observations and
+  levels, variance, supported value, and replenishment needs as deductions.
+  Inventory may propose replenishment, but Purchasing retains supplier, price,
+  order, and approval authority; stock value remains unknown without compatible
+  authoritative cost evidence. Its four Tool specifications also remain
+  `requested` until their activation gates are satisfied.
+  Purchasing is the third differentiated member. It owns the explicit Kitchen
+  commitment to buy: requirement, requisition, offer comparison, draft order,
+  approval, transmission, and outstanding-order state. Inventory may supply a
+  replenishment need and Supplier supplies identity and offer facts; Receiving
+  alone records what arrived. PurchasingAI may prepare and compare, but no AI
+  or compound Tool may commit the Kitchen without approval of the exact order
+  immediately before a truthful transmission attempt.
+  Receiving is the fourth differentiated member and the evidence gate between
+  a purchase commitment and stock on hand. It preserves ordered, delivered,
+  inspected, and accepted quantities separately; records applicable condition,
+  temperature, and traceability evidence; and requires an explicit accept,
+  reject, or hold decision. Only finalized accepted quantities may cross a
+  trusted command boundary into Inventory. Receiving guidance identifies its
+  jurisdiction or Kitchen policy source rather than presenting one limit as a
+  universal legal rule.
+  Mise is the fifth differentiated member and the first research pass with a
+  mixed real Tool state. Add, update, status-change, and delete Prep Task Tools
+  remain `available` because current trusted commands implement them. Prep-list
+  generation, quantity calculation, and Station assignment remain `requested`.
+  Mise owns planned preparation and readiness; Recipes define method, Orders
+  own live service routing, and forecasts or AI outputs remain reviewable
+  proposals rather than silently created work.
+  Orders & Service is the sixth differentiated member. It owns the live Kitchen
+  execution queue from accepted demand to Kitchen readiness, including
+  explainable priority and Station routing. Tables, payment, external delivery,
+  and customer handoff remain outside this capability. Canonical Order records
+  and lifecycle rules exist, but the four Workspace Tools remain `requested`
+  until their readers, commands, registration, authority, and UI are verified
+  end to end; research must not infer Tool availability from model presence.
+  Stations is the seventh differentiated member. A Station is a stable
+  Kitchen-owned production destination, distinct from its display device,
+  assigned person, and current work. Stations own routing and readiness
+  configuration; Mise and Orders own each live work projection, while Team owns
+  membership and competency evidence. Station records and partial UI do not by
+  themselves make the four catalogue Tools available; they remain `requested`
+  until their end-to-end contracts and registration are verified.
+  Suppliers is the eighth differentiated member and is explicitly the
+  Kitchen-side relationship capability, not ownership of the Supplier Entity.
+  Supplier owns identity and offers; the Kitchen owns its connection and local
+  preferences; Purchasing owns commitments; Receiving owns delivery evidence.
+  The legacy-named prepare-order and receive-delivery catalogue hypotheses are
+  interpreted only as bounded handoffs to those owning capabilities, never as
+  Supplier-owned purchase or receipt mutations.
+  Food Safety is the ninth differentiated member. HACCP is a deeper method
+  within Food Safety rather than another top-level capability. The source must
+  distinguish external guidance, the approved versioned Kitchen plan,
+  operational checks, corrective actions, and AI deductions. Rules and limits
+  always identify their jurisdiction or approved Kitchen source; neither the
+  UI nor FoodSafetyAI claims legal compliance, invents readings, or chooses
+  product disposition. All five current specifications remain `requested`.
+  Menus is the tenth differentiated member. It owns the reviewed composition,
+  versioning and publication of a Kitchen offer while Dish and Drink own the
+  referenced items. Imports remain source-linked proposals until reviewed;
+  publication is an explicit projection; QR is only a doorway. Menu engineering
+  uses bounded authoritative sales and cost evidence and leaves missing values
+  unknown. All four catalogue specifications remain `requested`.
+  Dishes is the eleventh differentiated member. Dish owns the sellable food-item
+  specification; Recipe owns production method and yield, Ingredient owns food
+  facts and purchasing identity, Menu owns placement and displayed offer, and
+  Finance supplies bounded KitchenSale measures. Dish cost, popularity and
+  contribution remain derived evidence with explicit sources, scope and
+  unknowns. All four catalogue specifications remain `requested`.
+  Drinks is the twelfth differentiated member. Drink owns the sellable beverage
+  specification, while Inventory owns beverage stock, Recipe owns mixed-drink
+  method and yield, Menu owns placement and displayed price, and Finance owns
+  bounded sales measures. Drink-facing stock, Recipe and Menu Tools are compound
+  handoffs to those authorities, never duplicate storage. All four catalogue
+  specifications remain `requested` even though the AI handshake is connected.
+  Recipes is the thirteenth differentiated member. Recipe owns its versioned
+  Ingredients, quantities, method, expected yield and portion conversion.
+  Ingredient owns identity and effective price evidence; Dish and Drink
+  reference approved Recipes; Mise consumes scaled projections for work. Scaling
+  never overwrites the base Recipe, observed and expected yield stay distinct,
+  and missing conversions or prices remain unknown. All four specifications
+  remain `requested`.
+  Ingredients is the fourteenth differentiated member. Ingredient owns stable
+  Kitchen identity, working units and reviewed food facts. Supplier offers,
+  prices and receipts remain commercial evidence; Inventory owns quantities and
+  replenishment policy; Waste owns loss events; Recipes, Dishes and Drinks own
+  their explicit references. Ingredient-facing count, reorder and Waste Tools
+  are compound handoffs, not duplicate storage. All four specifications remain
+  `requested`.
+  Sales is the fifteenth differentiated member and remains bounded by immutable
+  completed KitchenSales and the existing authorized gross-Sales projection.
+  It owns daily reporting, item rollups, reconciliation and equivalent-period
+  comparison. Food-cost and contribution specifications now belong to the
+  separate Costs capability. Sales never implies net revenue, refunds, tax,
+  tips, payment settlement, costs, profit or accounting. Its two AI-callable
+  Tool specifications remain `requested` despite the working Workspace report.
+  Costs is the sixteenth differentiated member. It distinguishes theoretical
+  direct food cost, actual period usage, variance, contribution and accounting
+  rather than presenting them as one measure. The first proposed scope is
+  theoretical direct food cost and contribution with explicit source coverage
+  and exclusions. Supplier offers remain labelled planning estimates; actual
+  period cost, expenses and profit stay unavailable until their operational
+  producers exist. Both specifications remain `requested`.
+  Waste Report is the seventeenth differentiated member and is a read-only
+  projection over Waste-owned events. It defines scope before aggregation,
+  keeps incompatible units and currencies separate, reports supported-cost
+  coverage, and treats missing records as missing evidence rather than zero.
+  It may expose patterns for investigation but never invents causes, avoided
+  cost, savings or compliance. Its three report specifications remain
+  `requested` and consume Waste-owned evidence rather than duplicating it.
+  Performance is the eighteenth and final specialist capability pass. It is a
+  read-only comparison layer over timestamped operational events and never a
+  source of generic KPIs. Current Orders lack complete transition history,
+  Stations lack historical work completion, and readiness lacks time-bound
+  results, so authoritative ticket-time, Station and readiness reports remain
+  unavailable. Mise completion may later contribute only through a bounded
+  projection. All four specifications remain `requested`; none infer labour
+  productivity, individual ranking, quality, cause, staffing need or profit.
+  Today is the first Workspace-foundation pass and is deliberately not a
+  nineteenth specialist capability. It orders and routes time-bound evidence
+  from Mise, Receiving, Inventory, Food Safety, Orders, Stations, Menus, Waste,
+  Sales and Team. It owns presentation order, time scope, source labels and
+  child doorways only; it owns no operational records, mutations, Tools,
+  generic task store or TodayAI. KitchenAI may summarise authorized child
+  evidence and propose actions through the capability that owns each record.
+  Overview is the second Workspace-foundation pass. It is the stable map of the
+  selected Kitchen: Kitchen and Place orientation, conventional capability
+  groups, doorway questions, source labels and routes. It differs from Today,
+  which is time-bound coordination. Overview owns no child records, mutations,
+  Tools, OverviewAI, generic operational state or unsupported Kitchen health
+  score. It may compose only proven, source-labelled child evidence.
+  Identity is the third Workspace-foundation pass and composes two explicit
+  authorities. Kitchen owns id, name, slug, lifecycle status, visibility and
+  the `place_id` link; Place owns real-world venue name, address, coordinates,
+  contact, opening hours and Place media. Joined public presentation and debug
+  must keep Kitchen, Place and derived fields visibly separate. Relinking Place
+  is a consequential compound action. The current Identity progression's
+  Workspace-theme stage is known scope drift: Workspace does not own a theme,
+  and the research contract does not legitimize it. Existing forms are not
+  automatically AI-callable Tools; all three specifications remain requested.
+  Team is the fourth and final Workspace-foundation pass. It is a genuine
+  Kitchen-owned capability for named members, Kitchen roles, Station
+  responsibility, reviewed competence/training evidence, invitations and
+  operational handover. Canonical User identity, AppUser access, payroll,
+  scheduling and generic HR remain separate. Five membership Tools are already
+  registered and AI-callable: read, add, update name, create invitation and
+  delete an unlinked member. Station competence, training evidence and handover
+  remain requested. Current `KitchenTeamMember.hourly_rate`, `currency` and
+  `shift_label` fields are known scope drift requiring a separate coordinated
+  model-consumer-data migration; research does not legitimize them.
+  Every registered Kitchen capability AI now receives a status-bearing Tool
+  catalogue projected from that capability's completed search-demand model.
+  `requested` and `building` entries are planning language only; `available`
+  entries exist for human use; only `agent-ready` entries may also appear in
+  executable `toolIds`. KitchenAI discovers these catalogues through its child
+  agent registrations and does not maintain another Tool list. The old
+  Waste-only handshake exception and unsupported Finance labour-cost and Drink
+  image Tool claims are removed. Today and Overview remain coordinators with no
+  child Tool catalogue of their own.
+  Every item in the Kitchen Workspace development list has an explicit static
+  `/workspace/kitchen/X/search-demand` doorway. The shared presentation reads
+  its starting seeds and maturity from the Kitchen-owned catalogues, while each
+  route remains independently addressable and may later gain its own evidence.
+  Waste is the first differentiated member. Today and Overview also have
+  research doorways, but are explicitly treated as aggregation-boundary tests,
+  not silently promoted into specialist agents or operational data owners.
 - `jobs.misebox.app` is a focused product doorway over the existing
   `misebox-app` authority, not a second canonical App. It may give public Job,
   Professional, and Agent routes a Jobs-only project layout while retaining

@@ -26,6 +26,10 @@
           <WorkspaceKitchenOperationsCapabilityView operation="ingredients" />
           <WorkspaceKitchenOperationsIngredients />
           <WorkspaceKitchenOperationsGuidingLiterature operation="ingredients" />
+          <WorkspaceKitchenResearchSegue
+            capability="Ingredients"
+            base-path="/workspace/kitchen/ingredients/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>

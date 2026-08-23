@@ -36,6 +36,10 @@
             <WorkspaceKitchenOperationsDishesRead />
           </section>
           <WorkspaceKitchenOperationsGuidingLiterature operation="drinks" />
+          <WorkspaceKitchenResearchSegue
+            capability="Drinks"
+            base-path="/workspace/kitchen/drinks/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>

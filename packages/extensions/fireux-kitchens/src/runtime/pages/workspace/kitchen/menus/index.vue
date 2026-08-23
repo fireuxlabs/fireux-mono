@@ -36,6 +36,10 @@
           <WorkspaceKitchenOperationsCapabilityView operation="menus" />
           <WorkspaceKitchenOperationsMenus />
           <WorkspaceKitchenOperationsGuidingLiterature operation="menus" />
+          <WorkspaceKitchenResearchSegue
+            capability="Menus"
+            base-path="/workspace/kitchen/menus/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>

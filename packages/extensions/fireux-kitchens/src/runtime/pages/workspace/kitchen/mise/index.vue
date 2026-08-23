@@ -13,6 +13,10 @@
           <WorkspaceKitchenOperationsCapabilityView operation="mise" />
           <WorkspaceKitchenOperationsMise />
           <WorkspaceKitchenOperationsGuidingLiterature operation="mise" />
+          <WorkspaceKitchenResearchSegue
+            capability="Mise"
+            base-path="/workspace/kitchen/mise/search-demand"
+          />
         </section>
       </template>
     </UDashboardPanel>
