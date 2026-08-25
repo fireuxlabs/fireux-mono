@@ -3,7 +3,11 @@
     <NuxtPage v-if="hasMemberRoute" />
     <UDashboardPanel v-else id="workspace-kitchen-team">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Team" />
+        <LayoutsWorkspaceNavbar title="Team">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="team"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

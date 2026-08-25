@@ -629,6 +629,16 @@ Before each task:
   A capability-owned catalogue is the semantic source for Tool labels,
   descriptions, authority, approval, and maturity. The Workspace maintains only
   the concrete UI handler needed to open an available Tool's route or modal.
+  Every registered Kitchen capability also owns
+  `pages/workspace/kitchen/<capability>/content-landing.md`: concise human
+  literature for visible public explanation and the information modal. It may
+  inform AI orientation, but it never grants record access, changes maturity,
+  or makes a Tool executable; those remain registered TypeScript authority.
+  Each file stays below 140 words and explains only how to use the page, its
+  current information, Tools, capability state, and material limits. Workspace
+  Main owns the equivalent App context at
+  `app/content/kitchen/content-landing.md`. `scripts/guards/operation-tools.mjs`
+  keeps this file family complete and concise.
   Capability AI receives that capability's handled actions; KitchenAI receives
   the combined handled actions. Neither AI may advertise a `requested` Tool as
   runnable, and every mutation still requires its Tool's explicit approval.

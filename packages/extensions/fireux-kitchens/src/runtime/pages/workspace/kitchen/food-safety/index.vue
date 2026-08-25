@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-food-safety">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Food Safety" />
+        <LayoutsWorkspaceNavbar title="Kitchen Food Safety">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="food-safety"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

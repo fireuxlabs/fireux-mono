@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-waste-report">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Waste Report" />
+        <LayoutsWorkspaceNavbar title="Kitchen Waste Report">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="waste-report"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

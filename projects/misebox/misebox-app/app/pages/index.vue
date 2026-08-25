@@ -2,16 +2,15 @@
   <div>
     <UDashboardPanel id="misebox-kitchen-home">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen" />
+        <LayoutsWorkspaceNavbar :title="pageTitle" />
       </template>
 
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenTools />
           <WorkspaceKitchenAI
-            title="How can I help your Kitchen today?"
+            title="What would you like to work on?"
             agent-label=""
-            description=""
             :starters="[]"
           />
           <WorkspaceKitchen />
@@ -23,10 +22,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { appMeta } from '../meta'
 
 const isDevelopment = import.meta.dev
+const kitchenWorkspace = useWorkspace('kitchen')
+const pageTitle = computed(() =>
+  kitchenWorkspace.currentName.value
+    ? `Run ${kitchenWorkspace.currentName.value} with KitchenAI`
+    : 'Build and run your Kitchen with KitchenAI'
+)
 
 definePageMeta({
   layout: 'workspace',

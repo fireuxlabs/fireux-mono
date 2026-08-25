@@ -7,7 +7,7 @@
       </span>
     </div>
     <p v-if="agentLabel" class="fx-type-label">{{ agentLabel }}</p>
-    <h1 id="kitchen-ai-title" class="fx-type-display-title" v-text="title" />
+    <h2 id="kitchen-ai-title" class="fx-type-display-title" v-text="title" />
     <p v-if="description" class="fx-type-description text-toned">
       {{ description }}
     </p>

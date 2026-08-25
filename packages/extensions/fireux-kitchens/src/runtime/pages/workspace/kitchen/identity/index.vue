@@ -2,7 +2,11 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-identity">
       <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle" />
+        <LayoutsWorkspaceNavbar :title="navTitle">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="identity"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

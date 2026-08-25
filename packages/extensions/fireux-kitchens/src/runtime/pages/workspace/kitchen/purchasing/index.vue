@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-purchasing">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Purchasing" />
+        <LayoutsWorkspaceNavbar title="Kitchen Purchasing">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="purchasing"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

@@ -71,7 +71,7 @@
     </form>
 
     <p
-      v-if="allowFile || voice.supported.value || transcribing || voiceError"
+      v-if="voice.recording.value || transcribing || voiceError"
       class="kitchen-ai-welcome__privacy"
       aria-live="polite"
     >
@@ -80,11 +80,6 @@
       >
       <template v-else-if="transcribing">Transcribing your voice…</template>
       <template v-else-if="voiceError">{{ voiceError }}</template>
-      <template v-else>
-        Voice clips are sent for transcription and are not stored by Misebox.
-        Selected files stay in your browser. Kitchen questions use the current
-        Kitchen only.
-      </template>
     </p>
   </div>
 </template>

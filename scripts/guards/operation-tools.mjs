@@ -245,6 +245,60 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts'
   )
+  const agentDefinitions = operationAgents
+    .slice(
+      operationAgents.indexOf('const definitions = {'),
+      operationAgents.indexOf('} as const satisfies Record<')
+    )
+  const capabilitySlugs = [
+    ...agentDefinitions.matchAll(/^  ['"]?([a-z]+(?:-[a-z]+)*)['"]?: \{$/gm),
+  ].map((match) => match[1])
+  for (const slug of capabilitySlugs) {
+    const landingContentFile =
+      `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${slug}/content-landing.md`
+    if (!existsSync(join(repoRoot, landingContentFile))) {
+      violations.push(
+        `${landingContentFile}: every registered Kitchen capability requires human-readable landing context.`
+      )
+      continue
+    }
+    const landingContent = await source(repoRoot, landingContentFile)
+    const wordCount = landingContent.trim().split(/\s+/).length
+    if (
+      !/^# Kitchen /m.test(landingContent) ||
+      landingContent.trim().split(/\n\s*\n/).length < 4 ||
+      wordCount > 140
+    ) {
+      violations.push(
+        `${landingContentFile}: expected one Kitchen heading plus concise purpose, support, state, and evidence-boundary paragraphs (140 words maximum).`
+      )
+    }
+    const capabilityHeaderFile =
+      slug === 'orders'
+        ? 'packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-orders.vue'
+        : `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${slug}/index.vue`
+    const capabilityHeader = await source(repoRoot, capabilityHeaderFile)
+    if (
+      !capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') ||
+      !capabilityHeader.includes(`operation="${slug}"`)
+    ) {
+      violations.push(
+        `${capabilityHeaderFile}: registered Kitchen capability pages must expose their context modal in the page header.`
+      )
+    }
+  }
+  const workspaceMainContentFile =
+    'projects/misebox/misebox-app/app/content/kitchen/content-landing.md'
+  const workspaceMainContent = await source(repoRoot, workspaceMainContentFile)
+  if (
+    !workspaceMainContent.includes('# Kitchen Workspace Main') ||
+    !workspaceMainContent.includes('upgrade to Business') ||
+    workspaceMainContent.trim().split(/\s+/).length > 140
+  ) {
+    violations.push(
+      `${workspaceMainContentFile}: Workspace Main context must remain concise and state the Business multi-Kitchen boundary.`
+    )
+  }
   if (
     !operationAgents.includes('kitchenTeamAgentToolIds') ||
     operationAgents.includes("'kitchen.team.")

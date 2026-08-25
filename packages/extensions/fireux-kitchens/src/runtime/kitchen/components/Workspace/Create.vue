@@ -203,7 +203,7 @@ const { query, results, isSearching, refresh } = usePlaceSearch({
   type: 'kitchen',
 })
 const selection = ref<SelectedPlace | null>(null)
-const manualName = ref('')
+const manualName = ref('My Kitchen')
 const error = ref('')
 const locating = ref(false)
 const locationError = ref('')

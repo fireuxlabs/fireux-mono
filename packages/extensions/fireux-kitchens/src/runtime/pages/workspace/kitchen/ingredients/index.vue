@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-ingredients">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Ingredients" />
+        <LayoutsWorkspaceNavbar title="Kitchen Ingredients">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="ingredients"
+          /></template>
+        </LayoutsWorkspaceNavbar>
 
         <UDashboardToolbar>
           <template #right>

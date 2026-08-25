@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-mise">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Mise" />
+        <LayoutsWorkspaceNavbar title="Kitchen Mise">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="mise"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

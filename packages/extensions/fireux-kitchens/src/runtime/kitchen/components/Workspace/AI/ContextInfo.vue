@@ -52,7 +52,10 @@
             </ul>
           </section>
 
-          <section class="grid gap-2" :aria-labelledby="`${agent.id}-abilities`">
+          <section
+            class="grid gap-2"
+            :aria-labelledby="`${agent.id}-abilities`"
+          >
             <h3 :id="`${agent.id}-abilities`" class="m-0 font-semibold">
               What it may do
             </h3>
@@ -80,7 +83,9 @@
                 class="grid gap-1 rounded-lg border border-default p-3"
               >
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                  <span class="font-medium text-highlighted">{{ tool.label }}</span>
+                  <span class="font-medium text-highlighted">{{
+                    tool.label
+                  }}</span>
                   <UBadge :color="statusColor(tool.status)" variant="soft">
                     {{ statusLabel(tool.status) }}
                   </UBadge>

@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-finance">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Finance" />
+        <LayoutsWorkspaceNavbar title="Kitchen Finance">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="finance"
+          /></template>
+        </LayoutsWorkspaceNavbar>
 
         <UDashboardToolbar>
           <template #left>

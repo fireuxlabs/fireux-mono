@@ -1,17 +1,12 @@
 <template>
   <section class="kitchen-ai-welcome" aria-labelledby="kitchen-ai-title">
-    <div class="flex items-start justify-between gap-3">
-      <ContextInfo v-if="props.agent" :agent="props.agent" class="shrink-0" />
-      <Intro
-        class="min-w-0 flex-1"
-        :agent-label="resolvedAgentLabel"
-        :context-icon="resolvedContextIcon"
-        :has-context-icon="hasContextIcon"
-        :title="resolvedTitle"
-        :description="workspaceDescription"
-      />
-      <div v-if="props.agent" class="w-8 shrink-0" aria-hidden="true" />
-    </div>
+    <Intro
+      :agent-label="resolvedAgentLabel"
+      :context-icon="resolvedContextIcon"
+      :has-context-icon="hasContextIcon"
+      :title="workspaceTitle"
+      :description="workspaceDescription"
+    />
 
     <Messages
       v-if="!commandMode && messages.length"
@@ -55,7 +50,6 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
-import ContextInfo from './AI/ContextInfo.vue'
 import Intro from './AI/Intro.vue'
 import Messages from './AI/Messages.vue'
 import {
@@ -149,6 +143,12 @@ const selectedKitchenName = computed(() =>
       ''
   ).trim()
 )
+const workspaceTitle = computed(() => {
+  if (props.agent || resolvedOperation.value) return resolvedTitle.value
+  return selectedKitchenName.value
+    ? `Run ${selectedKitchenName.value} with KitchenAI`
+    : 'Build and run your Kitchen with KitchenAI'
+})
 const availableKitchenNames = computed(() =>
   kitchenWorkspace.targets.kitchens.value
     .map((kitchen) => String(kitchen.name || kitchen.slug || '').trim())
@@ -156,11 +156,13 @@ const availableKitchenNames = computed(() =>
 )
 const workspaceDescription = computed(() => {
   if (props.description || props.agent) return resolvedDescription.value
-  if (!isAuthenticated.value) return resolvedDescription.value
+  if (!isAuthenticated.value) {
+    return 'Create a Kitchen, bring in what you already have, and use KitchenAI to find the next useful step.'
+  }
 
   const selectedName = selectedKitchenName.value
   if (selectedName) {
-    return `You are working with ${selectedName}. KitchenAI can use its authorized live evidence when your question requires it.`
+    return `Build ${selectedName} with menus, dishes, recipes, prep, and the tools available now.`
   }
 
   const outcome = kitchenWorkspace.targets.outcome.value
@@ -173,7 +175,7 @@ const workspaceDescription = computed(() => {
 
   const names = availableKitchenNames.value
   if (!names.length) {
-    return 'You do not have a Kitchen yet. We can begin filling one in from a menu, a few details, or a blank Kitchen.'
+    return 'Create your first Kitchen, bring in what you already have, and let KitchenAI guide the next useful step.'
   }
   if (names.length === 1) {
     return `${names[0]} is available to you. Select it to use its live evidence, or continue from a blank Kitchen context.`

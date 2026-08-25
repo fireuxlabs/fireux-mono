@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="workspace-kitchen-drinks">
       <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Drinks" />
+        <LayoutsWorkspaceNavbar title="Kitchen Drinks">
+          <template #right
+            ><WorkspaceKitchenCapabilityContextInfo operation="drinks"
+          /></template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
@@ -36,7 +40,6 @@
             capability="Drinks"
             base-path="/workspace/kitchen/drinks/search-demand"
           />
-
         </section>
       </template>
     </UDashboardPanel>

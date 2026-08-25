@@ -12,6 +12,7 @@
         </template>
 
         <template #right>
+          <WorkspaceKitchenCapabilityContextInfo operation="orders" />
           <div id="kitchen-orders-actions" />
           <UButton
             to="/"
@@ -38,5 +39,4 @@ defineOptions({ name: 'KitchenOrdersLayout' })
 :deep(.kitchen-orders-layout__body) {
   padding-top: 0;
 }
-
 </style>
