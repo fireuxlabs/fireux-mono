@@ -23,6 +23,8 @@ export async function answerKitchenAgentOrientation(
   const kitchens = identity?.uid
     ? await readKitchenAgentOrientation(identity.uid)
     : []
+  const createKitchenAvailable =
+    request.availableActions.includes('create-kitchen')
   const response = await useFireuxAi(event).generateText({
     appId: request.appId,
     task: 'summarise_text',
@@ -32,12 +34,19 @@ export async function answerKitchenAgentOrientation(
       question: request.prompt,
       selection: { state: 'none', kitchen_evidence: 'not-supplied' },
       available_kitchens: kitchens,
+      workspace_entry: {
+        known_kitchen_count: kitchens.length,
+        create_kitchen_action_available: createKitchenAvailable,
+        entitlement_evidence: 'not-supplied',
+        current_product_state:
+          'This Kitchen Workspace is the correct product surface for creating another Kitchen. It currently offers Create Kitchen only when the user has no selected Kitchen, so second-Kitchen creation is not connected here yet. Multi-Kitchen access is intended for higher subscriptions, but no subscription entitlement decision is supplied to this request.',
+      },
       workspace_agent: buildKitchenCoordinatorContext(operationAgents),
     },
     context: {
       agent: workspaceAgent?.name || 'KitchenAI',
       instruction:
-        'Answer naturally from the registered capability context and available Kitchen identity list. No selected Kitchen evidence is supplied, so do not claim to inspect or change a Kitchen. Do not use canned replies or phrase matching. State a selection need only when the question requires live Kitchen evidence or a Kitchen-scoped action. Be concise and conversational.',
+        'Answer naturally from the registered capability context, available Kitchen identity list, and Workspace-entry facts. Lead with a direct plain-language answer to the user’s question, then explain any important limitation or next step. Do not expose internal terms such as capability context, identity context, evidence envelope, or registered agent. Do not return JSON or a fenced block unless the user asks for it. No selected Kitchen evidence is supplied, so do not claim to inspect or change a Kitchen. Never infer subscription eligibility when entitlement evidence is not supplied. Treat action availability as current UI evidence, not proof of permanent product policy. Do not imply that another product surface is required when the supplied facts identify this Workspace as the correct surface. Do not use canned replies or phrase matching. State a selection need only when the question requires live Kitchen evidence or a Kitchen-scoped action. Be concise and conversational.',
     },
   })
   const answer = text(response.text)

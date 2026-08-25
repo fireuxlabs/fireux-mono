@@ -2,20 +2,21 @@
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="workspace-kitchen-identity">
       <template #header>
-        <LayoutsWorkspaceNavbar :title="navTitle">
-          <template #right>
-            <WorkspaceAICapabilityPlaceholder capability="Identity" />
-          </template>
-        </LayoutsWorkspaceNavbar>
+        <LayoutsWorkspaceNavbar :title="navTitle" />
       </template>
 
       <template #body>
-        <div class="workspace-profile">
-          <ClientOnly>
-            <div class="workspace-profile__section">
+        <div class="workspace-profile workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="identity" />
+          <WorkspaceKitchenCapabilityAI
+            operation="identity"
+            :show-suggestion-cards="false"
+          />
+          <div class="workspace-profile__section">
+            <ClientOnly>
               <WorkspaceKitchenIdentitySections />
-            </div>
-          </ClientOnly>
+            </ClientOnly>
+          </div>
           <WorkspaceKitchenResearchSegue
             capability="Identity"
             base-path="/workspace/kitchen/identity/search-demand"

@@ -25,39 +25,13 @@
     </template>
 
     <template #body>
-      <section v-if="selectionBlocked" class="kitchen-orders-layout__empty">
-        <UAlert
-          color="neutral"
-          variant="subtle"
-          icon="i-lucide-list-checks"
-          title="Select Kitchen first"
-          description="Orders need an active Kitchen before the board can load."
-          :actions="[
-            {
-              label: 'Choose Kitchen',
-              to: '/',
-              icon: 'i-lucide-arrow-right',
-            },
-          ]"
-        />
-      </section>
-
-      <NuxtPage v-else />
+      <NuxtPage />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-
 defineOptions({ name: 'KitchenOrdersLayout' })
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const kitchenSelection = useWorkspace('kitchen')
-const selectionBlocked = computed(
-  () => !normalizeString(kitchenSelection.currentId.value)
-)
 </script>
 
 <style scoped>
@@ -65,13 +39,4 @@ const selectionBlocked = computed(
   padding-top: 0;
 }
 
-.kitchen-orders-layout__empty {
-  display: grid;
-  min-height: 55vh;
-  place-items: center;
-}
-
-.kitchen-orders-layout__empty > * {
-  width: min(100%, 42rem);
-}
 </style>

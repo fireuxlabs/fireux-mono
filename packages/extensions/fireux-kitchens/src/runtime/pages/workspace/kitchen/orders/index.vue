@@ -3,7 +3,22 @@
     <WorkspaceKitchenCapabilityTools operation="orders" />
     <WorkspaceKitchenCapabilityAI operation="orders" />
     <WorkspaceKitchenCapabilityView operation="orders" />
-    <WorkspaceKitchenOrders />
+    <WorkspaceKitchenOrders v-if="hasKitchen" />
+    <UAlert
+      v-else
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-list-checks"
+      title="Select Kitchen to open the live Orders board"
+      description="OrdersAI and capability information remain available without a selection. Live Order records require an authorized current Kitchen."
+      :actions="[
+        {
+          label: 'Choose Kitchen',
+          to: '/',
+          icon: 'i-lucide-arrow-right',
+        },
+      ]"
+    />
     <WorkspaceKitchenCapabilityGuidingLiterature operation="orders" />
     <WorkspaceKitchenResearchSegue
       capability="Orders & Service"
@@ -13,6 +28,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+
+const kitchenWorkspace = useWorkspace('kitchen')
+const hasKitchen = computed(() => Boolean(kitchenWorkspace.currentId.value))
+
 definePageMeta({
   layout: 'kitchen-orders',
   workspaceSurface: 'live',

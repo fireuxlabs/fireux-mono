@@ -95,7 +95,7 @@ const props = withDefaults(
 const title = computed(
   () =>
     kitchenOperations.find((entry) => entry.slug === props.operation)?.title ||
-    props.operation
+    (props.operation === 'identity' ? 'Identity' : props.operation)
 )
 const agent = computed(() => {
   const match = kitchenOperationAgents.find(
