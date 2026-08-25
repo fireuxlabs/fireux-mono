@@ -1,213 +1,50 @@
 <template>
-  <div class="kitchen-home-target">
-    <div class="kitchen-home-target__layout">
-      <div class="kitchen-home-target__visual">
-        <span class="kitchen-home-target__glow" aria-hidden="true" />
-        <UAvatar
-          v-if="kitchenCard?.imageUrl"
-          :src="kitchenCard.imageUrl"
-          :alt="`${displayName} logo`"
-          size="xl"
-          class="kitchen-home-target__avatar"
-          :style="mediaStyle"
-        />
-
-        <span v-else class="kitchen-home-target__icon" aria-hidden="true">
-          <UIcon name="i-lucide-chef-hat" />
-        </span>
-      </div>
-
-      <div class="kitchen-home-target__copy">
-        <div class="kitchen-home-target__eyebrow">
-          <span>Current Kitchen</span>
-        </div>
-
-        <h2>{{ displayName }}</h2>
-        <p v-if="tagline" class="kitchen-home-target__tagline">
-          {{ tagline }}
-        </p>
-        <p v-if="shortAddress" class="kitchen-home-target__address">
-          {{ shortAddress }}
-        </p>
-      </div>
-    </div>
-  </div>
+  <WorkspaceCurrentEntity
+    label="Kitchen"
+    :selected-id="kitchen.id"
+    :entity="entity"
+    :changeable="false"
+    icon="i-lucide-chef-hat"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, type CSSProperties } from 'vue'
+import { computed } from 'vue'
+import type { WorkspaceEntityCard } from 'fireux-core/runtime/components/Workspace/types'
 import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 
 const props = defineProps<{ kitchen: KitchenSurface }>()
 const { workspaceTarget } = useKitchenInterface()
-const kitchenCard = computed(() => workspaceTarget(props.kitchen))
-const kitchenRecord = computed(
-  () =>
-    props.kitchen as KitchenSurface & { identity?: { display_name?: string } }
-)
-const displayName = computed(
-  () =>
-    kitchenCard.value?.name ||
+
+const entity = computed<WorkspaceEntityCard>(() => {
+  const card = workspaceTarget(props.kitchen)
+  const title =
+    card?.name ||
     String(
-      kitchenRecord.value.identity?.display_name ||
-        props.kitchen.display_name ||
+      props.kitchen.display_name ||
         props.kitchen.name ||
         props.kitchen.slug ||
-        ''
-    ).trim() ||
-    'Kitchen'
-)
-const shortAddress = computed(
-  () =>
-    kitchenCard.value?.shortAddress ||
+        'Kitchen'
+    ).trim()
+  const address =
+    card?.shortAddress ||
     String(
       props.kitchen.short_address || props.kitchen.formatted_address || ''
     ).trim()
-)
-const tagline = computed(() => String(props.kitchen.tagline || '').trim())
-const mediaStyle = computed<CSSProperties | undefined>(() =>
-  kitchenCard.value?.mediaBackdropColor
-    ? { backgroundColor: kitchenCard.value.mediaBackdropColor }
-    : undefined
-)
+  const tagline = String(props.kitchen.tagline || '').trim()
+
+  return {
+    id: props.kitchen.id,
+    title,
+    subtitle: tagline || address,
+    meta: tagline && address ? address : undefined,
+    imageUrl: card?.imageUrl,
+    imageAlt: `${title} identity`,
+    imageFit: 'contain',
+    imageBackground: card?.mediaBackdropColor,
+    icon: 'i-lucide-chef-hat',
+    badges: card?.badges,
+  }
+})
 </script>
-
-<style scoped>
-.kitchen-home-target {
-  min-width: 0;
-}
-
-.kitchen-home-target__layout {
-  position: relative;
-  display: grid;
-  grid-template-columns: 7rem minmax(0, 1fr);
-  align-items: center;
-  gap: calc(var(--spacing) * 7);
-  min-height: 9rem;
-  overflow: hidden;
-  padding: calc(var(--spacing) * 6);
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 4);
-  background:
-    radial-gradient(
-      circle at 8% 20%,
-      color-mix(in srgb, var(--ui-primary) 16%, transparent),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--ui-bg-elevated) 94%, var(--ui-primary)),
-      var(--ui-bg)
-    );
-}
-
-.kitchen-home-target__visual {
-  position: relative;
-  display: grid;
-  width: 7rem;
-  height: 7rem;
-  place-items: center;
-}
-
-.kitchen-home-target__glow {
-  position: absolute;
-  inset: 10%;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--ui-primary) 30%, transparent);
-  filter: blur(1.5rem);
-  opacity: 0.75;
-}
-
-.kitchen-home-target__avatar,
-.kitchen-home-target__icon {
-  position: relative;
-  width: 5.5rem;
-  height: 5.5rem;
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 4);
-  background: color-mix(in srgb, var(--ui-bg-elevated) 88%, var(--ui-primary));
-  box-shadow: 0 1rem 2rem color-mix(in srgb, var(--ui-primary) 12%, transparent);
-}
-
-.kitchen-home-target__avatar :deep(img) {
-  object-fit: contain;
-  padding: calc(var(--spacing) * 2);
-}
-
-.kitchen-home-target__icon {
-  display: grid;
-  place-items: center;
-  color: var(--ui-primary);
-}
-
-.kitchen-home-target__icon :deep(svg) {
-  width: calc(var(--spacing) * 7);
-  height: calc(var(--spacing) * 7);
-}
-
-.kitchen-home-target__copy {
-  display: grid;
-  gap: calc(var(--spacing) * 2);
-  min-width: 0;
-}
-
-.kitchen-home-target__eyebrow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  color: var(--ui-text-muted);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-medium);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.kitchen-home-target h2 {
-  margin: 0;
-  color: var(--ui-text-highlighted);
-  font-size: var(--text-3xl);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--leading-tight);
-}
-
-.kitchen-home-target__tagline,
-.kitchen-home-target__address {
-  margin: 0;
-}
-
-.kitchen-home-target__tagline {
-  color: var(--ui-text-highlighted);
-  font-size: var(--text-base);
-}
-
-.kitchen-home-target__address {
-  color: var(--ui-text-toned);
-  font-size: var(--text-sm);
-}
-
-@media (max-width: 40rem) {
-  .kitchen-home-target__layout {
-    grid-template-columns: 4rem minmax(0, 1fr);
-    gap: calc(var(--spacing) * 3);
-    min-height: 0;
-    padding: calc(var(--spacing) * 4);
-  }
-
-  .kitchen-home-target__visual {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  .kitchen-home-target__avatar,
-  .kitchen-home-target__icon {
-    width: 3.75rem;
-    height: 3.75rem;
-  }
-
-  .kitchen-home-target h2 {
-    font-size: var(--text-xl);
-  }
-}
-</style>

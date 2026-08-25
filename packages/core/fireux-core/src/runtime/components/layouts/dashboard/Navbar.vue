@@ -7,6 +7,7 @@
     </template>
 
     <template #right>
+      <UserSubscriptionControl />
       <slot name="right" />
 
       <UTooltip :text="notificationTooltip" :shortcuts="['N']">

@@ -105,10 +105,14 @@
           </template>
         </div>
 
-        <div class="workspace-selected-entity__actions">
+        <div
+          v-if="$slots.actions || changeable"
+          class="workspace-selected-entity__actions"
+        >
           <slot name="actions" :entity="entity" :outcome="outcome" />
 
           <UButton
+            v-if="changeable"
             color="neutral"
             variant="soft"
             size="sm"
@@ -146,6 +150,7 @@ const props = withDefaults(
     outcome?: WorkspaceEntityOutcome
     icon?: string
     clearLabel?: string
+    changeable?: boolean
     emptyTitle?: string
     emptyDescription?: string
   }>(),
@@ -156,6 +161,7 @@ const props = withDefaults(
     outcome: 'ready',
     icon: 'i-lucide-layout-dashboard',
     clearLabel: 'Change',
+    changeable: true,
     emptyTitle: '',
     emptyDescription: '',
   }
@@ -214,6 +220,19 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   min-width: 0;
 }
 
+.workspace-selected-entity__surface {
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--ui-primary) 16%, var(--ui-border));
+  background:
+    radial-gradient(
+      circle at 0 0,
+      color-mix(in srgb, var(--ui-primary) 10%, transparent),
+      transparent 42%
+    ),
+    color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
+  box-shadow: 0 1rem 3rem color-mix(in srgb, var(--ui-bg-inverted) 7%, transparent);
+}
+
 .workspace-selected-entity__layout {
   display: grid;
   gap: calc(var(--spacing) * 4);
@@ -262,70 +281,70 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   height: calc(var(--spacing) * 5);
 }
 
-.workspace-selected-target__spinner {
-  animation: workspace-selected-target-spin 1s linear infinite;
+.workspace-selected-entity__spinner {
+  animation: workspace-selected-entity-spin 1s linear infinite;
 }
 
-.workspace-selected-target__copy {
+.workspace-selected-entity__copy {
   display: grid;
   gap: var(--spacing);
   min-width: 0;
 }
 
-.workspace-selected-target__eyebrow,
-.workspace-selected-target__meta,
-.workspace-selected-target__actions {
+.workspace-selected-entity__eyebrow,
+.workspace-selected-entity__meta,
+.workspace-selected-entity__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: calc(var(--spacing) * 2);
 }
 
-.workspace-selected-target__eyebrow {
+.workspace-selected-entity__eyebrow {
   color: var(--ui-text-muted);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
 }
 
-.workspace-selected-target__title,
-.workspace-selected-target__description {
+.workspace-selected-entity__title,
+.workspace-selected-entity__description {
   overflow: hidden;
   margin: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.workspace-selected-target__title {
+.workspace-selected-entity__title {
   color: var(--ui-text-highlighted);
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   line-height: var(--leading-tight);
 }
 
-.workspace-selected-target__description {
+.workspace-selected-entity__description {
   color: var(--ui-text-toned);
   font-size: var(--text-xs);
 }
 
-.workspace-selected-target__actions {
+.workspace-selected-entity__actions {
   justify-content: flex-end;
 }
 
-@keyframes workspace-selected-target-spin {
+@keyframes workspace-selected-entity-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (min-width: 640px) {
-  .workspace-selected-target__layout {
+  .workspace-selected-entity__layout {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .workspace-selected-target__spinner {
+  .workspace-selected-entity__spinner {
     animation: none;
   }
 }

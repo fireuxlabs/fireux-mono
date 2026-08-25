@@ -290,6 +290,10 @@ export async function run({ repoRoot }) {
   const workspaceMainContentFile =
     'projects/misebox/misebox-app/app/content/kitchen/content-landing.md'
   const workspaceMainContent = await source(repoRoot, workspaceMainContentFile)
+  const workspaceMainPage = await source(
+    repoRoot,
+    'projects/misebox/misebox-app/app/pages/index.vue'
+  )
   if (
     !workspaceMainContent.includes('# Kitchen Workspace Main') ||
     !workspaceMainContent.includes('upgrade to Business') ||
@@ -297,6 +301,11 @@ export async function run({ repoRoot }) {
   ) {
     violations.push(
       `${workspaceMainContentFile}: Workspace Main context must remain concise and state the Business multi-Kitchen boundary.`
+    )
+  }
+  if (!workspaceMainPage.includes('MiseboxWorkspaceKitchenContextInfo')) {
+    violations.push(
+      'projects/misebox/misebox-app/app/pages/index.vue: Workspace Main must expose its KitchenAI context modal in the page header.'
     )
   }
   if (

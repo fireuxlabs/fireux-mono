@@ -2,7 +2,11 @@
   <div>
     <UDashboardPanel id="misebox-kitchen-home">
       <template #header>
-        <LayoutsWorkspaceNavbar :title="pageTitle" />
+        <LayoutsWorkspaceNavbar :title="pageTitle">
+          <template #right>
+            <MiseboxWorkspaceKitchenContextInfo />
+          </template>
+        </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>

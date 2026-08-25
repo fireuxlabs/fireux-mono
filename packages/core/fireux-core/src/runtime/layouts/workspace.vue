@@ -1,11 +1,11 @@
 <template>
-  <UDashboardGroup unit="rem">
+  <UDashboardGroup unit="rem" class="workspace-shell">
     <UDashboardSidebar
       id="core-workspace"
       v-model:open="open"
       collapsible
       resizable
-      class="bg-elevated/25"
+      class="workspace-shell__sidebar"
     >
       <template #header="{ collapsed }">
         <div class="px-2 py-2">
@@ -130,7 +130,7 @@
       </template>
     </UDashboardSidebar>
 
-    <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
+    <main class="workspace-shell__canvas">
       <NuxtErrorBoundary>
         <slot />
 
@@ -172,7 +172,7 @@
           </UDashboardPanel>
         </template>
       </NuxtErrorBoundary>
-    </div>
+    </main>
   </UDashboardGroup>
 
   <ClientOnly>

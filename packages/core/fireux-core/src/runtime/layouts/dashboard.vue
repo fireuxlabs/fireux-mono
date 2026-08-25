@@ -1,12 +1,12 @@
 <!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: keep the profile control aligned with sidebar collapse state. -->
 <template>
-  <UDashboardGroup unit="rem">
+  <UDashboardGroup unit="rem" class="workspace-shell">
     <UDashboardSidebar
       id="core-dashboard"
       v-model:open="open"
       collapsible
       resizable
-      class="bg-elevated/25"
+      class="workspace-shell__sidebar"
     >
       <template #header="{ collapsed }">
         <LayoutsDashboardProfilesMenu :collapsed="collapsed ?? false" />
@@ -59,9 +59,9 @@
       </template>
     </UDashboardSidebar>
 
-    <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
+    <main class="workspace-shell__canvas">
       <NuxtPage />
-    </div>
+    </main>
   </UDashboardGroup>
 
   <LayoutsSharedNotificationsSlideover

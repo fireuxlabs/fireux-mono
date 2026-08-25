@@ -92,6 +92,46 @@ export async function run(ctx) {
     }
   }
 
+  const currentEntity = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/components/Workspace/CurrentEntity.vue'
+    ),
+    'utf8'
+  )
+  const kitchenSelected = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index/Selected.vue'
+    ),
+    'utf8'
+  )
+  const projectSelected = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index/Selected.vue'
+    ),
+    'utf8'
+  )
+  for (const [label, source] of [
+    ['Kitchen', kitchenSelected],
+    ['Project', projectSelected],
+  ]) {
+    if (!source.includes('<WorkspaceCurrentEntity')) {
+      violations.push(`${label} must use the shared selected-entity anatomy`)
+    }
+  }
+  if (currentEntity.includes('workspace-selected-target__')) {
+    violations.push(
+      'WorkspaceCurrentEntity styles must target its current selected-entity anatomy'
+    )
+  }
+  if (!currentEntity.includes('changeable?: boolean')) {
+    violations.push(
+      'WorkspaceCurrentEntity must allow current-only families to omit switching'
+    )
+  }
+
   const writeGuard = readFileSync(path.join(workspaceRoot, 'useWorkspaceWriteGuard.ts'), 'utf8')
   if (!writeGuard.includes('currentId.value')) {
     violations.push('Workspace write guard must reject writes without a current entity id')

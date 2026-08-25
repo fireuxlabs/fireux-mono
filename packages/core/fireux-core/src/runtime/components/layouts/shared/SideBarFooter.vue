@@ -9,9 +9,9 @@
 
     <NuxtLink
       v-if="compactProfile && collapsed && pillUser"
-      to="/dashboard/user-profile"
+      to="/dashboard/settings"
       class="mt-auto flex w-full justify-center"
-      aria-label="View profile"
+      aria-label="Open account settings"
     >
       <UAvatar
         :src="pillUser.avatarUrl || undefined"
@@ -35,11 +35,7 @@
       :class="collapsed ? 'mt-auto flex w-full justify-center' : 'pill mt-auto'"
       aria-label="Guest — click here to sign up"
     >
-      <UAvatar
-        icon="i-lucide-user"
-        size="sm"
-        class="shrink-0"
-      />
+      <UAvatar icon="i-lucide-user" size="sm" class="shrink-0" />
 
       <span v-if="!collapsed" class="min-w-0 text-left">
         <strong class="block truncate text-sm font-medium text-highlighted">
@@ -74,12 +70,11 @@ const props = withDefaults(
 )
 
 const fireux = useFireUXConfig()
-const { currentUser: authUser, isAuthenticated, signOutUser } = useAuth()
+const { currentUser: authUser } = useAuth()
 const route = useRoute()
-const { currentUser, pill: userInterface, isLoading } = useUser()
+const { currentUser, pill: userInterface, coreOutcome } = useUser()
 
 const mounted = ref(false)
-const signOutLoading = ref(false)
 const signInTo = computed(() => ({
   path: '/auth',
   query: { redirect: route.fullPath || '/' },
@@ -91,14 +86,16 @@ onMounted(() => {
 
 const pillUser = computed((): UserCard.Card | undefined => {
   if (!mounted.value) return undefined
-  if (isLoading.value) return undefined
+  if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending') {
+    return undefined
+  }
   const user = currentUser.value
   if (!user) return undefined
   const card = userInterface(user)
   if (!card) return undefined
   return {
     ...card,
-    to: '/dashboard/user-profile',
+    to: '/dashboard/settings',
   }
 })
 
@@ -114,16 +111,6 @@ const avatarFallback = computed(() => {
     .join('')
 })
 
-const handleSignOut = async () => {
-  if (signOutLoading.value) return
-  signOutLoading.value = true
-  try {
-    await signOutUser()
-  } finally {
-    signOutLoading.value = false
-  }
-}
-
 const actionItems = computed(() => {
   const items: any[] = []
 
@@ -132,15 +119,6 @@ const actionItems = computed(() => {
       label: `${fireux.appShortName || fireux.appName} home`,
       icon: 'i-lucide-house',
       to: fireux.homePath || '/',
-    })
-  }
-
-  if (mounted.value && isAuthenticated.value) {
-    items.push({
-      label: 'Sign out',
-      icon: 'i-lucide-log-out',
-      disabled: signOutLoading.value,
-      onSelect: handleSignOut,
     })
   }
 

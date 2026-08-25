@@ -128,16 +128,22 @@ export async function run({ repoRoot }) {
     }),
     { ok: true, userId: 'developer' }
   )
-  for (const actorRole of ['user', 'admin']) {
-    assert.deepEqual(
-      resolveSubscriptionMutationAuthority({
-        action: 'set-self-subscription',
-        actorUid: actorRole,
-        actorRole,
-      }),
-      { ok: false, statusCode: 403, message: 'Developer access is required.' }
-    )
-  }
+  assert.deepEqual(
+    resolveSubscriptionMutationAuthority({
+      action: 'set-self-subscription',
+      actorUid: 'admin',
+      actorRole: 'admin',
+    }),
+    { ok: true, userId: 'admin' }
+  )
+  assert.deepEqual(
+    resolveSubscriptionMutationAuthority({
+      action: 'set-self-subscription',
+      actorUid: 'user',
+      actorRole: 'user',
+    }),
+    { ok: false, statusCode: 403, message: 'App admin access is required.' }
+  )
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
       action: 'set-subscription',
@@ -240,14 +246,43 @@ export async function run({ repoRoot }) {
   )
   assert.doesNotMatch(settings, /isPremium|set-premium|is_premium/)
 
-  const navbar = read(
+  const subscriptionControl = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue'
+  )
+  assert.match(subscriptionControl, /isAdmin\.value \|\| isDeveloper\.value/)
+  assert.match(subscriptionControl, /action: 'set-self-subscription'/)
+  assert.doesNotMatch(subscriptionControl, /userId:/)
+  assert.match(subscriptionControl, /const pending = ref\(false\)/)
+
+  const dashboardNavbar = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue'
+  )
+  const workspaceNavbar = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/components/layouts/workspace/Navbar.vue'
   )
-  assert.match(navbar, /v-if="isDeveloper"/)
-  assert.match(navbar, /action: 'set-self-subscription'/)
-  assert.doesNotMatch(navbar, /userId:/)
-  assert.match(navbar, /subscriptionPending/)
+  assert.match(dashboardNavbar, /<UserSubscriptionControl/)
+  assert.match(workspaceNavbar, /<LayoutsDashboardNavbar/)
+  assert.match(workspaceNavbar, /<UserSubscriptionControl/)
+
+  const sidebarFooter = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/layouts/shared/SideBarFooter.vue'
+  )
+  assert.match(sidebarFooter, /to: '\/dashboard\/settings'/)
+  assert.doesNotMatch(sidebarFooter, /Sign out|signOutUser|handleSignOut/)
+  assert.match(sidebarFooter, /coreOutcome/)
+  assert.doesNotMatch(sidebarFooter, /\bisLoading\b/)
+
+  const dashboardLayout = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/layouts/dashboard.vue'
+  )
+  assert.match(dashboardLayout, /class="workspace-shell"/)
+  assert.match(dashboardLayout, /class="workspace-shell__sidebar"/)
+  assert.match(dashboardLayout, /<main class="workspace-shell__canvas">/)
 
   const activeUserFetch = read(
     repoRoot,
