@@ -2,7 +2,7 @@
   <section aria-label="Kitchen tools">
     <div class="kitchen-workspace-tools">
       <Create
-        v-if="!currentId"
+        v-if="kitchenTool?.kind === 'create'"
         class="kitchen-workspace-tools__slot"
         @created="setCurrent"
       />

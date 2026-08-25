@@ -27,6 +27,7 @@ import {
   type KitchenOnboardingFirestore as Firestore,
 } from './onboarding-actor'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
+import { readUserKitchenIds } from '../../core/user-kitchens.ts'
 
 type Locator = {
   placeId: string
@@ -36,6 +37,18 @@ type Locator = {
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
+}
+
+async function assertKitchenCreationAllowance(
+  current: Awaited<ReturnType<typeof actor>>
+) {
+  const kitchenIds = await readUserKitchenIds(current.uid)
+  if (kitchenIds.length && !current.canOwnMultipleWorkspaces) {
+    fail(
+      403,
+      'Creating another Kitchen requires a Business subscription.'
+    )
+  }
 }
 
 function request(value: unknown, allowed: readonly string[]) {
@@ -135,6 +148,7 @@ export async function completeKitchenOnboarding(
   const body = request(input, ['place_id', 'kitchen_id'])
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
+  if (!locator.kitchen) await assertKitchenCreationAllowance(current)
   const memberships = serverAppUsersTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
 
@@ -241,6 +255,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   })
   if (!current.canCreate)
     fail(403, 'Kitchen creation is disabled for this App.')
+  await assertKitchenCreationAllowance(current)
 
   const kitchenId = current.db.collection('kitchens').doc().id
   const teamMembers = serverKitchenTeamMembersTarget(kitchenId)

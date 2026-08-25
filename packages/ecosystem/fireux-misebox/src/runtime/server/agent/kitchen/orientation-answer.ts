@@ -38,15 +38,20 @@ export async function answerKitchenAgentOrientation(
         known_kitchen_count: kitchens.length,
         create_kitchen_action_available: createKitchenAvailable,
         entitlement_evidence: 'not-supplied',
+        multi_kitchen_policy: {
+          free: 'one Kitchen',
+          premium: 'one Kitchen',
+          business: 'multiple Kitchens',
+        },
         current_product_state:
-          'This Kitchen Workspace is the correct product surface for creating another Kitchen. It currently offers Create Kitchen only when the user has no selected Kitchen, so second-Kitchen creation is not connected here yet. Multi-Kitchen access is intended for higher subscriptions, but no subscription entitlement decision is supplied to this request.',
+          'The Landing, Workspace Main, and Main Page all mean this same root Kitchen Workspace surface. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
       },
       workspace_agent: buildKitchenCoordinatorContext(operationAgents),
     },
     context: {
       agent: workspaceAgent?.name || 'KitchenAI',
       instruction:
-        'Answer naturally from the registered capability context, available Kitchen identity list, and Workspace-entry facts. Lead with a direct plain-language answer to the user’s question, then explain any important limitation or next step. Do not expose internal terms such as capability context, identity context, evidence envelope, or registered agent. Do not return JSON or a fenced block unless the user asks for it. No selected Kitchen evidence is supplied, so do not claim to inspect or change a Kitchen. Never infer subscription eligibility when entitlement evidence is not supplied. Treat action availability as current UI evidence, not proof of permanent product policy. Do not imply that another product surface is required when the supplied facts identify this Workspace as the correct surface. Do not use canned replies or phrase matching. State a selection need only when the question requires live Kitchen evidence or a Kitchen-scoped action. Be concise and conversational.',
+        'Answer naturally from the registered capability context, available Kitchen identity list, and Workspace-entry facts. Lead with a direct plain-language answer to the user’s question, then explain any important limitation or next step. For subscription-limit questions, state the applicable limit and upgrade path in no more than two sentences; do not discuss action availability unless the user asks how to perform the action. State supplied subscription policy directly, but never infer the user’s current subscription when entitlement evidence is not supplied. Kitchen selection controls access to live Kitchen records; it does not explain subscription limits or capability availability. Do not expose internal terms such as capability context, identity context, evidence envelope, registered agent, or entitlement evidence. Do not return JSON or a fenced block unless the user asks for it. No selected Kitchen evidence is supplied, so do not claim to inspect or change a Kitchen. Treat action availability as current UI evidence, not proof of permanent product policy. Do not imply that another product surface is required when the supplied facts identify this Workspace as the correct surface. Do not use canned replies or phrase matching. State a selection need only when the question requires live Kitchen evidence or a Kitchen-scoped action. Be concise and conversational.',
     },
   })
   const answer = text(response.text)

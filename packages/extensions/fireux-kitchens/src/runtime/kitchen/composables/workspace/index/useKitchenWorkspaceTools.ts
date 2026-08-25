@@ -2,10 +2,12 @@ import { navigateTo, useState } from '#imports'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 
 export function useKitchenWorkspaceTools() {
   const { isAuthenticated } = useAuth()
+  const { canOwnMultipleWorkspaces } = useUser()
   const { currentId, currentName, currentDescription, currentImage } =
     useWorkspace('kitchen')
   const createKitchenOpen = useState(
@@ -18,12 +20,14 @@ export function useKitchenWorkspaceTools() {
     Boolean(currentName.value && currentDescription.value && currentImage.value)
   )
   const kitchenTool = computed(() => {
-    if (!currentId.value) {
+    if (!currentId.value || canOwnMultipleWorkspaces.value) {
       return {
         id: 'create-kitchen' as const,
         kind: 'create' as const,
         label: 'Create Kitchen',
-        suggestion: 'Help me create my Kitchen',
+        suggestion: currentId.value
+          ? 'Help me create another Kitchen'
+          : 'Help me create my Kitchen',
       }
     }
     if (!kitchenComplete.value) {

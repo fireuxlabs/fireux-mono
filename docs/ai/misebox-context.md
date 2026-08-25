@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-24
-Ref: d0caff27b
+Updated: 2026-08-25
+Ref: ca2812511
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -67,6 +67,13 @@ Before each task:
   root, and owner Team record for the current Firebase identity, including an
   anonymous identity. Kitchen is a plain parent model, not a generic
   Entity/App/Workspace management classification.
+- Misebox `/` is one product surface referred to interchangeably as the
+  Landing, Workspace Main, or Main Page. It owns Kitchen selection and the
+  create-Kitchen doorway. Free and Premium subscriptions may own one Kitchen;
+  Business may own and manage multiple Kitchens. The UI projects this from
+  Core's `canOwnMultipleWorkspaces` permission, and trusted Kitchen onboarding
+  enforces the same Business-only multi-Kitchen boundary. Role remains separate
+  from subscription and never creates a developer exception.
 - A Kitchen root owns exactly its id, name, slug, status, and visibility. A
   Place-backed public read may resolve its same-ID Place; a name-only shell is
   deliberately unenriched until Place identity is attached. Fulfilment and other operational

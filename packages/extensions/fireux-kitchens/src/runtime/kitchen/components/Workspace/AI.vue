@@ -1,12 +1,17 @@
 <template>
   <section class="kitchen-ai-welcome" aria-labelledby="kitchen-ai-title">
-    <Intro
-      :agent-label="resolvedAgentLabel"
-      :context-icon="resolvedContextIcon"
-      :has-context-icon="hasContextIcon"
-      :title="resolvedTitle"
-      :description="workspaceDescription"
-    />
+    <div class="flex items-start justify-between gap-3">
+      <ContextInfo v-if="props.agent" :agent="props.agent" class="shrink-0" />
+      <Intro
+        class="min-w-0 flex-1"
+        :agent-label="resolvedAgentLabel"
+        :context-icon="resolvedContextIcon"
+        :has-context-icon="hasContextIcon"
+        :title="resolvedTitle"
+        :description="workspaceDescription"
+      />
+      <div v-if="props.agent" class="w-8 shrink-0" aria-hidden="true" />
+    </div>
 
     <Messages
       v-if="!commandMode && messages.length"
@@ -50,6 +55,7 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
+import ContextInfo from './AI/ContextInfo.vue'
 import Intro from './AI/Intro.vue'
 import Messages from './AI/Messages.vue'
 import {

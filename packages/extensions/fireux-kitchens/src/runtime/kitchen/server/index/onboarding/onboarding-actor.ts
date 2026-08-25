@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
   onboardingText as text,
@@ -21,6 +22,7 @@ export type KitchenOnboardingActor = RuntimePolicy & {
   db: KitchenOnboardingFirestore
   membershipRef: ReturnType<KitchenOnboardingFirestore['doc']>
   role: MemberRole
+  canOwnMultipleWorkspaces: boolean
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
@@ -44,6 +46,9 @@ export async function readKitchenOnboardingActor(
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(`apps/${policy.appId}/${'users'}/${uid}`)
   const membership = await membershipRef.get()
+  const access = resolveAppUserAccess(
+    membership.exists ? membership.data() : null
+  )
   const role =
     options.allowMissingMembership && !membership.exists
       ? 'user'
@@ -55,5 +60,6 @@ export async function readKitchenOnboardingActor(
     db,
     membershipRef,
     role,
+    canOwnMultipleWorkspaces: access.canOwnMultipleWorkspaces,
   }
 }
