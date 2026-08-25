@@ -87,7 +87,7 @@
               Kitchen ticket
             </h2>
 
-            <WorkspaceKitchenOperationsOrdersTicketPresentation :order="kioskTicket" />
+            <WorkspaceKitchenOrdersTicketPresentation :order="kioskTicket" />
           </div>
 
           <OrderingObjectShape

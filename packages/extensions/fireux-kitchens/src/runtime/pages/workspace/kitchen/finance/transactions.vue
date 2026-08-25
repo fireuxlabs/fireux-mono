@@ -6,7 +6,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenOperationsFinanceNav />
+        <WorkspaceKitchenFinanceNav />
         <WorkspaceKitchenOverviewFinance
           :from-date="fromDate"
           :to-date="toDate"

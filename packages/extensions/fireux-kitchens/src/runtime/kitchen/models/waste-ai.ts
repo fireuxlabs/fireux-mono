@@ -36,15 +36,3 @@ export const wasteAIContext: WasteAIContext = {
     needs: wasteOperation.guidingLiterature.needs,
   },
 }
-
-export type WasteAIHandshake = {
-  agent: 'WasteAI'
-  message: 'Hello from WasteAI.'
-  context: WasteAIContext
-}
-
-const wasteAIPrompt = /\bwaste\s*ai\b/i
-
-export function isWasteAIHelloPrompt(prompt: string): boolean {
-  return wasteAIPrompt.test(prompt)
-}

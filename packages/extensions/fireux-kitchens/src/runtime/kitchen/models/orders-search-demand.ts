@@ -22,6 +22,41 @@ export const kitchenOrdersSearchDemand = {
     { label: 'Square Kitchen Display System', url: 'https://squareup.com/us/en/point-of-sale/restaurants/kitchen-display-system', note: 'Validates viewing, tracking and fulfilling Kitchen orders through digital tickets.' },
     { label: 'Fresh KDS order-management description', url: 'https://www.fresh.technology/', note: 'Validates item/modifier tracking, timers, sorting, prioritisation and multi-Station coordination as current market language.' },
   ],
+  records: [
+  {
+    id: 'kitchen.orders.order',
+    label: 'Kitchen Order',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Orders',
+    authority: 'Order owns the accepted demand, immutable item snapshots, fulfilment context, pricing snapshot and lifecycle state.',
+    facts: [
+      'Order and service identity',
+      'item snapshots and quantities',
+      'fulfilment and requested timing',
+      'pricing and payment state',
+      'lifecycle transitions and audit stamps'
+    ],
+    readBy: [
+      'kitchen.orders.route-order',
+      'kitchen.orders.update-status',
+      'kitchen.orders.prioritize-queue',
+      'kitchen.orders.review-prep-times'
+    ],
+    writtenBy: [ 'kitchen.orders.route-order', 'kitchen.orders.update-status' ]
+  },
+  {
+    id: 'kitchen.orders.routing-evidence',
+    label: 'Order routing evidence',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Stations, Recipes, Mise and Team',
+    authority: 'Queue and timing deductions compose current operational evidence without changing its owners.',
+    facts: [ 'Station mapping', 'Recipe and prep requirements', 'Mise readiness', 'authorized Team responsibility' ],
+    readBy: [ 'kitchen.orders.route-order', 'kitchen.orders.prioritize-queue', 'kitchen.orders.review-prep-times' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen, service period, source channel and order identity apply?', 'Which items, quantities, modifiers, notes and safety information must remain intact?', 'Which Station owns each line and which dependencies govern whole-order readiness?', 'When was the order accepted, fired, started, completed, ready, handed off or cancelled?', 'Why does the queue place one order before another?', 'Which actor or trusted integration changed each state?', 'Which timestamps can support later performance analysis without rewriting the Order?'],
   toolHypotheses: [
     { id: 'kitchen.orders.route-order', label: 'Route Kitchen Order', layer: 'compound', purpose: 'Project accepted order lines to their responsible preparation Stations.', inputs: ['authorized Order', 'Dish-to-Station rules', 'current Station configuration'], outputs: ['traceable Station work projections and unresolved lines'], evidence: ['Order items and modifiers', 'Dish and Station relationships'], authority: 'Routing cannot alter the accepted commercial Order or guess an unmapped Station.', approval: 'Configured deterministic routing needs no per-line approval; every override is explicit and stamped.', status: 'requested' },

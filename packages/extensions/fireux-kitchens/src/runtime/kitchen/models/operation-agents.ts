@@ -37,19 +37,29 @@ const definitions = {
   },
   dishes: {
     name: 'DishesAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.dishes', 'Kitchen')],
   },
   drinks: {
     name: 'DrinksAI',
     maturity: 'connected',
-    contextProviders: [context('kitchen.drinks', 'Kitchen')],
+    contextProviders: [
+      context('kitchen.drinks', 'Kitchen'),
+      context('kitchen.recipes', 'Recipes'),
+      context('kitchen.ingredients', 'Ingredients'),
+      context('kitchen.inventory', 'Inventory'),
+      context('kitchen.menus', 'Menus'),
+      context('kitchen.finance', 'Finance'),
+    ],
   },
   ingredients: {
     name: 'IngredientsAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.ingredients', 'Kitchen')],
   },
   'food-safety': {
     name: 'FoodSafetyAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.food-safety', 'Kitchen')],
   },
   menus: {
@@ -62,34 +72,42 @@ const definitions = {
   },
   mise: {
     name: 'MiseAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.mise', 'Kitchen')],
   },
   orders: {
     name: 'OrdersAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.orders', 'Kitchen')],
   },
   inventory: {
     name: 'InventoryAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.inventory', 'Kitchen')],
   },
   purchasing: {
     name: 'PurchasingAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.purchasing', 'Kitchen')],
   },
   receiving: {
     name: 'ReceivingAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.receiving', 'Kitchen')],
   },
   waste: {
     name: 'WasteAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.waste', 'Kitchen')],
   },
   recipes: {
     name: 'RecipesAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.recipes', 'Kitchen')],
   },
   stations: {
     name: 'StationsAI',
+    maturity: 'connected',
     contextProviders: [context('kitchen.stations', 'Kitchen')],
   },
   team: {
@@ -157,8 +175,7 @@ export const kitchenOperationAgents = kitchenAgentCapabilitySlugs.map(
           : advisoryAgentCapabilities,
       toolIds: 'toolIds' in definition ? definition.toolIds : [],
       toolCatalogue: kitchenOperationToolCapabilities[slug],
-      maturity:
-        'maturity' in definition ? definition.maturity : 'handshake',
+      maturity: 'maturity' in definition ? definition.maturity : 'handshake',
       execution: 'shared-inference',
     })
   }

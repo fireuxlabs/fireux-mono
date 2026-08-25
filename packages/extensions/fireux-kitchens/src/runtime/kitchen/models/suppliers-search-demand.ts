@@ -22,6 +22,35 @@ export const kitchenSuppliersSearchDemand = {
     { label: 'Smartsheet vendor-list and price-list templates', url: 'https://www.smartsheet.com/free-vendor-templates', note: 'Validates approved Supplier lists, contact details, price lists and comparison by purchase quantity.' },
     { label: 'DineOpen restaurant Supplier management', url: 'https://www.dineopen.com/products/inventory/suppliers', note: 'Validates current market language around multi-Supplier item links, pack-aware comparison and performance evidence.' },
   ],
+  records: [
+  {
+    id: 'kitchen.suppliers.connection',
+    label: 'Kitchen Supplier connection',
+    kind: 'owned',
+    status: 'partial',
+    owner: 'Kitchen Suppliers',
+    authority: 'The Kitchen-owned relationship references canonical Supplier identity and stores only Kitchen-local relationship state.',
+    facts: [
+      'Kitchen and Supplier identities',
+      'relationship state and preference',
+      'account or delivery context',
+      'approval and audit evidence'
+    ],
+    readBy: [ 'kitchen.suppliers.compare-prices', 'kitchen.suppliers.prepare-order', 'kitchen.suppliers.receive-delivery' ],
+    writtenBy: [ 'kitchen.suppliers.connect-supplier' ]
+  },
+  {
+    id: 'kitchen.suppliers.offer',
+    label: 'Supplier offer',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Supplier',
+    authority: 'Supplier owns its item and offer facts; the Kitchen may map and compare compatible offers without copying them.',
+    facts: [ 'Supplier item or SKU', 'pack and unit', 'availability, price and currency', 'quote time, lead time and terms' ],
+    readBy: [ 'kitchen.suppliers.compare-prices', 'kitchen.suppliers.prepare-order', 'kitchen.suppliers.receive-delivery' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which canonical Supplier identity is connected to this Kitchen?', 'Which relationship facts belong to the Kitchen rather than the Supplier profile?', 'Which SupplierItem or catalogue offer maps to which Ingredient or Product?', 'What pack, unit, availability, price, currency and quote time make an offer comparable?', 'Which minimum, lead time, delivery schedule, account or compliance requirement applies?', 'Which Purchasing and Receiving records support a reliability or quality deduction?', 'Is the connection active, preferred, restricted or retired, and who approved that state?'],
   toolHypotheses: [
     { id: 'kitchen.suppliers.connect-supplier', label: 'Connect Supplier', layer: 'human', purpose: 'Connect one canonical Supplier identity to the Kitchen.', inputs: ['Supplier identity', 'Kitchen relationship details', 'approval state'], outputs: ['Kitchen-owned Supplier connection'], evidence: ['canonical Supplier and current Kitchen'], authority: 'The command may reference but never copy or mutate Supplier-owned identity.', approval: 'An authorized operator explicitly confirms the connection.', status: 'requested' },

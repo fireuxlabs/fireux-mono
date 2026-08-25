@@ -2,6 +2,7 @@ import { navigateTo, useState } from '#imports'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 
 export function useKitchenWorkspaceTools() {
   const { isAuthenticated } = useAuth()
@@ -11,6 +12,7 @@ export function useKitchenWorkspaceTools() {
     'kitchen-workspace-create-open',
     () => false
   )
+  const capabilityTools = useKitchenCapabilityToolDirectory()
 
   const kitchenComplete = computed(() =>
     Boolean(currentName.value && currentDescription.value && currentImage.value)
@@ -56,12 +58,18 @@ export function useKitchenWorkspaceTools() {
       kitchenTool.value?.suggestion,
       userTool.value?.suggestion,
       exploreAction.suggestion,
+      ...capabilityTools.tools.value.map(
+        ({ tool }) => `Use ${tool.label}`
+      ),
     ].filter((suggestion): suggestion is string => Boolean(suggestion))
   )
   const availableActions = computed(() =>
-    [kitchenTool.value?.id, userTool.value?.id, exploreAction.id].filter(
-      (id): id is string => Boolean(id)
-    )
+    [
+      kitchenTool.value?.id,
+      userTool.value?.id,
+      exploreAction.id,
+      ...capabilityTools.availableActions.value,
+    ].filter((id): id is string => Boolean(id))
   )
 
   async function performAction(id: string) {
@@ -81,7 +89,7 @@ export function useKitchenWorkspaceTools() {
       await navigateTo(exploreAction.to)
       return true
     }
-    return false
+    return capabilityTools.performAction(id)
   }
 
   return {

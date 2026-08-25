@@ -16,7 +16,7 @@ export type KitchenWasteToolHypothesis = {
   evidence: readonly string[]
   authority: string
   approval: string
-  status: 'requested'
+  status: 'requested' | 'available'
 }
 
 export const kitchenWasteSearchDemand = {
@@ -25,7 +25,8 @@ export const kitchenWasteSearchDemand = {
   language: 'English',
   domain: 'Restaurant food waste management',
   question: 'What are Kitchen operators trying to do about food waste?',
-  method: 'Google Autocomplete seeds establish current search language. Independent operational literature validates the work behind those searches without being counted as search-demand evidence.',
+  method:
+    'Google Autocomplete seeds establish current search language. Independent operational literature validates the work behind those searches without being counted as search-demand evidence.',
   seeds: [
     {
       seed: 'restaurant food waste',
@@ -79,37 +80,64 @@ export const kitchenWasteSearchDemand = {
     {
       id: 'capture',
       title: 'Record waste at the point it happens',
-      operatorJob: 'Replace memory, paper or an improvised spreadsheet with a quick Waste record.',
-      evidenceQueries: ['restaurant food waste log', 'restaurant waste log sheet', 'food waste tracking app'],
-      interpretation: 'Log, sheet, printable, Excel and app modifiers describe the same immediate capture job in different formats.',
+      operatorJob:
+        'Replace memory, paper or an improvised spreadsheet with a quick Waste record.',
+      evidenceQueries: [
+        'restaurant food waste log',
+        'restaurant waste log sheet',
+        'food waste tracking app',
+      ],
+      interpretation:
+        'Log, sheet, printable, Excel and app modifiers describe the same immediate capture job in different formats.',
     },
     {
       id: 'classify',
       title: 'Understand what was wasted and why',
-      operatorJob: 'Separate spoilage, preparation loss, overproduction, cooking mistakes and returned food.',
-      evidenceQueries: ['restaurant food waste management', 'restaurant waste management plan'],
-      interpretation: 'A useful record needs consistent reasons and operational sources so repeated causes can be compared.',
+      operatorJob:
+        'Separate spoilage, preparation loss, overproduction, cooking mistakes and returned food.',
+      evidenceQueries: [
+        'restaurant food waste management',
+        'restaurant waste management plan',
+      ],
+      interpretation:
+        'A useful record needs consistent reasons and operational sources so repeated causes can be compared.',
     },
     {
       id: 'measure',
       title: 'Measure quantity and supported cost',
-      operatorJob: 'Understand the scale of Waste without inventing financial evidence.',
-      evidenceQueries: ['restaurant food waste percentage', 'restaurant food waste statistics', 'restaurant food waste dataset'],
-      interpretation: 'Quantity can be recorded directly. Cost must be derived only when Ingredient, Recipe or Dish cost evidence is authoritative.',
+      operatorJob:
+        'Understand the scale of Waste without inventing financial evidence.',
+      evidenceQueries: [
+        'restaurant food waste percentage',
+        'restaurant food waste statistics',
+        'restaurant food waste dataset',
+      ],
+      interpretation:
+        'Quantity can be recorded directly. Cost must be derived only when Ingredient, Recipe or Dish cost evidence is authoritative.',
     },
     {
       id: 'improve',
       title: 'Find a practical reduction action',
-      operatorJob: 'Use recurring Waste patterns to improve ordering, storage, prep, production or portions.',
-      evidenceQueries: ['restaurant waste management software', 'restaurant food waste app'],
-      interpretation: 'The valuable outcome is not a dashboard alone; it is a defensible operational change connected to the cause.',
+      operatorJob:
+        'Use recurring Waste patterns to improve ordering, storage, prep, production or portions.',
+      evidenceQueries: [
+        'restaurant waste management software',
+        'restaurant food waste app',
+      ],
+      interpretation:
+        'The valuable outcome is not a dashboard alone; it is a defensible operational change connected to the cause.',
     },
     {
       id: 'dispose',
       title: 'Handle disposal and reporting obligations',
-      operatorJob: 'Understand recycling, disposal and regulatory requirements for the operator’s location.',
-      evidenceQueries: ['restaurant food waste recycling', 'restaurant food waste disposal regulations'],
-      interpretation: 'This is adjacent to the Kitchen Waste record but jurisdiction-specific guidance must not be presented as universal legal advice.',
+      operatorJob:
+        'Understand recycling, disposal and regulatory requirements for the operator’s location.',
+      evidenceQueries: [
+        'restaurant food waste recycling',
+        'restaurant food waste disposal regulations',
+      ],
+      interpretation:
+        'This is adjacent to the Kitchen Waste record but jurisdiction-specific guidance must not be presented as universal legal advice.',
     },
   ] satisfies KitchenWasteDemandCluster[],
   validationSources: [
@@ -129,6 +157,35 @@ export const kitchenWasteSearchDemand = {
       note: 'Supports tracking amount, type and source, then using results to reduce Waste.',
     },
   ],
+  records: [
+  {
+    id: 'kitchen.waste.event',
+    label: 'Waste event',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Waste',
+    authority: 'WasteEvent records one immutable observed loss without adjusting Inventory or inventing supported cost.',
+    facts: [ 'item name', 'quantity and unit', 'reason and source', 'occurrence and actor', 'optional notes' ],
+    readBy: [ 'kitchen.waste.review-patterns', 'kitchen.waste.calculate-supported-cost', 'kitchen.waste.propose-reduction' ],
+    writtenBy: [ 'kitchen.waste.record-event' ]
+  },
+  {
+    id: 'kitchen.waste.analysis',
+    label: 'Waste analysis',
+    kind: 'projection',
+    status: 'requested',
+    owner: 'Waste',
+    authority: 'Patterns, supported cost and reduction proposals are traceable deductions over events and owner evidence, never replacement records.',
+    facts: [
+      'scope and compatible quantities',
+      'source events and coverage',
+      'supported cost evidence',
+      'patterns, uncertainty and exclusions'
+    ],
+    readBy: [ 'kitchen.waste.review-patterns', 'kitchen.waste.calculate-supported-cost', 'kitchen.waste.propose-reduction' ],
+    writtenBy: []
+  }
+],
   recordQuestions: [
     'What was wasted: Ingredient, Recipe, Dish, Drink or an unstructured item?',
     'How much was wasted, in which unit, and when?',
@@ -143,22 +200,39 @@ export const kitchenWasteSearchDemand = {
       label: 'Record Waste',
       layer: 'human',
       purpose: 'Capture one Waste event at the point it occurs.',
-      inputs: ['item or item reference', 'quantity and unit', 'reason', 'operational source', 'occurred time'],
+      inputs: [
+        'item or item reference',
+        'quantity and unit',
+        'reason',
+        'operational source',
+        'occurred time',
+      ],
       outputs: ['one reviewable Kitchen Waste event'],
-      evidence: ['current Kitchen', 'actor identity', 'optional Ingredient, Recipe, Dish, Drink, Station, Mise or Order reference'],
-      authority: 'A trusted command verifies write authority for the selected Kitchen and stamps the actor.',
-      approval: 'The operator explicitly submits the record before anything is written.',
-      status: 'requested',
+      evidence: [
+        'current Kitchen',
+        'actor identity',
+        'optional Ingredient, Recipe, Dish, Drink, Station, Mise or Order reference',
+      ],
+      authority:
+        'The guarded Waste create mutation targets the selected Kitchen, stamps the actor and relies on Firestore rules for write authority.',
+      approval:
+        'The operator explicitly submits the record before anything is written.',
+      status: 'available',
     },
     {
       id: 'kitchen.waste.review-patterns',
       label: 'Review Waste Patterns',
       layer: 'human',
       purpose: 'Group recorded Waste by item, reason, source and period.',
-      inputs: ['authorized Waste events', 'period', 'optional reason, source or item filters'],
+      inputs: [
+        'authorized Waste events',
+        'period',
+        'optional reason, source or item filters',
+      ],
       outputs: ['traceable quantities and recurring-pattern summaries'],
       evidence: ['only recorded Waste events inside the requested period'],
-      authority: 'A bounded reader returns only Waste records the current identity may inspect.',
+      authority:
+        'A bounded reader returns only Waste records the current identity may inspect.',
       approval: 'Reading requires authority but no mutation approval.',
       status: 'requested',
     },
@@ -166,24 +240,50 @@ export const kitchenWasteSearchDemand = {
       id: 'kitchen.waste.calculate-supported-cost',
       label: 'Calculate Supported Waste Cost',
       layer: 'ai-assisted',
-      purpose: 'Attach or aggregate cost only when an authoritative operational cost can be resolved.',
-      inputs: ['Waste event quantity', 'unit', 'item reference', 'authoritative unit-cost evidence'],
-      outputs: ['supported cost with source identity', 'unknown when evidence is absent'],
-      evidence: ['Ingredient purchase price, Recipe cost or Dish cost with compatible units'],
-      authority: 'The calculation reads bounded source evidence and never substitutes an estimate for a missing cost.',
-      approval: 'A read-only calculation needs no mutation approval; persisting a result would require a separate approved command.',
+      purpose:
+        'Attach or aggregate cost only when an authoritative operational cost can be resolved.',
+      inputs: [
+        'Waste event quantity',
+        'unit',
+        'item reference',
+        'authoritative unit-cost evidence',
+      ],
+      outputs: [
+        'supported cost with source identity',
+        'unknown when evidence is absent',
+      ],
+      evidence: [
+        'Ingredient purchase price, Recipe cost or Dish cost with compatible units',
+      ],
+      authority:
+        'The calculation reads bounded source evidence and never substitutes an estimate for a missing cost.',
+      approval:
+        'A read-only calculation needs no mutation approval; persisting a result would require a separate approved command.',
       status: 'requested',
     },
     {
       id: 'kitchen.waste.propose-reduction',
       label: 'Propose a Waste Reduction Action',
       layer: 'compound',
-      purpose: 'Turn a repeated, evidenced Waste pattern into a contextual operational proposal.',
-      inputs: ['pattern summary', 'supporting Waste events', 'available downstream Tools'],
-      outputs: ['reasoned suggestion', 'supporting evidence', 'optional proposed Tool invocation'],
-      evidence: ['repeated pattern plus relevant Inventory, Purchasing, Mise, Recipe, Dish or Order context when available'],
-      authority: 'WasteAI may propose from authorized evidence but cannot change another capability directly.',
-      approval: 'Suggestions need no approval; every proposed mutation requires the destination Tool’s own approval.',
+      purpose:
+        'Turn a repeated, evidenced Waste pattern into a contextual operational proposal.',
+      inputs: [
+        'pattern summary',
+        'supporting Waste events',
+        'available downstream Tools',
+      ],
+      outputs: [
+        'reasoned suggestion',
+        'supporting evidence',
+        'optional proposed Tool invocation',
+      ],
+      evidence: [
+        'repeated pattern plus relevant Inventory, Purchasing, Mise, Recipe, Dish or Order context when available',
+      ],
+      authority:
+        'WasteAI may propose from authorized evidence but cannot change another capability directly.',
+      approval:
+        'Suggestions need no approval; every proposed mutation requires the destination Tool’s own approval.',
       status: 'requested',
     },
   ] satisfies KitchenWasteToolHypothesis[],
@@ -208,6 +308,8 @@ export const kitchenWasteSearchDemand = {
       'Authorization, UI, audit behaviour and verification are complete.',
     ],
   },
-  conclusion: 'Waste is a distinct operational capability. Its first producer should be a fast, structured Waste event; reporting and AI deductions follow from those records rather than replacing them.',
-  nextStep: 'Confirm the Waste event shape, then define the smallest recording tool and the evidence WasteAI may use for suggestions.',
+  conclusion:
+    'Waste is a distinct operational capability. Its first producer should be a fast, structured Waste event; reporting and AI deductions follow from those records rather than replacing them.',
+  nextStep:
+    'Confirm the Waste event shape, then define the smallest recording tool and the evidence WasteAI may use for suggestions.',
 } as const

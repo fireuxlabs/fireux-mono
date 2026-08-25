@@ -176,15 +176,15 @@
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocuments } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocuments'
-import { usePortfolioDocumentLinks } from '../../../portfolio/composables/workspace/operations/Documents/fetch/usePortfolioDocumentLinks'
-import { linkDocumentToEntity } from '../../../portfolio/composables/workspace/operations/Documents/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../portfolio/composables/workspace/operations/Documents/mutations/useDocumentCreate'
-import { useDocumentStorage } from '../../../portfolio/composables/workspace/operations/Documents/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../portfolio/composables/workspace/operations/Documents/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../portfolio/composables/workspace/operations/Documents/utils/view/useDocumentInterface'
+import { usePortfolioDocuments } from '../../../portfolio/composables/workspace/Documents/fetch/usePortfolioDocuments'
+import { usePortfolioDocumentLinks } from '../../../portfolio/composables/workspace/Documents/fetch/usePortfolioDocumentLinks'
+import { linkDocumentToEntity } from '../../../portfolio/composables/workspace/Documents/mutations/linkDocumentToEntity'
+import { useDocumentCreate } from '../../../portfolio/composables/workspace/Documents/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../portfolio/composables/workspace/Documents/mutations/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../portfolio/composables/workspace/Documents/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../portfolio/composables/workspace/Documents/utils/view/useDocumentInterface'
 import { DocumentStorage } from '../../../portfolio/models/document.model.ts'
 
 definePageMeta({

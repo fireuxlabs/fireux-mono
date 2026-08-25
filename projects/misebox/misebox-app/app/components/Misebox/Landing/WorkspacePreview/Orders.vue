@@ -11,7 +11,7 @@
       </div>
 
       <div class="orders-preview max-h-[24rem] overflow-y-auto pr-1">
-        <WorkspaceKitchenOperationsOrdersRail
+        <WorkspaceKitchenOrdersRail
           v-for="stage in orderStages"
           :key="stage.id"
           :accent="stage.accent"
@@ -20,7 +20,7 @@
           :label="stage.label"
         >
           <div class="grid gap-2 sm:grid-cols-2">
-            <WorkspaceKitchenOperationsOrdersTicketPresentation
+            <WorkspaceKitchenOrdersTicketPresentation
               v-for="order in stage.orders"
               :key="order.id"
               :order="order"
@@ -29,7 +29,7 @@
               :show-customer-details="false"
             />
           </div>
-        </WorkspaceKitchenOperationsOrdersRail>
+        </WorkspaceKitchenOrdersRail>
       </div>
     </template>
 

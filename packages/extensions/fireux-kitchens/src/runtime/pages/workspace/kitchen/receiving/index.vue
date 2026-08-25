@@ -1,19 +1,19 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-receiving">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Receiving" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="receiving" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="receiving" />
+          <WorkspaceKitchenCapabilityAI
             operation="receiving"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="receiving" />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="receiving" />
+          <WorkspaceKitchenCapabilityView operation="receiving" />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="receiving" />
           <WorkspaceKitchenResearchSegue
             capability="Receiving"
             base-path="/workspace/kitchen/receiving/search-demand"

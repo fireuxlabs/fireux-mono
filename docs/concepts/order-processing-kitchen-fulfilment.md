@@ -1,7 +1,7 @@
 # Order processing and kitchen fulfilment spine
 
-Updated: 2026-08-22
-Ref: d1a7d5eec
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -152,7 +152,7 @@ There is no stored Preparing state in V1. Queue already means the kitchen owns t
 - Transition enforcement:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/orders/transition.ts`
 - Operator family:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Orders/`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Orders/`
 
 ## Alignment roadmap
 

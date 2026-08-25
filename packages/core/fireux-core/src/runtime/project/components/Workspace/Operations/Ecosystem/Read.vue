@@ -81,7 +81,7 @@ import type {
   EcosystemInterfaceInput,
 } from '../../../../../ecosystem/composables/useEcosystemInterface'
 import { useEcosystemInterface } from '../../../../../ecosystem/composables/useEcosystemInterface'
-import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/operations/Ecosystem/useProjectWorkspaceEcosystem'
+import { useProjectWorkspaceEcosystem } from '../../../../composables/workspace/Ecosystem/useProjectWorkspaceEcosystem'
 
 // Operation entry spine: docs/concepts/workspace.md
 const {

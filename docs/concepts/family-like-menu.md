@@ -1,7 +1,7 @@
 # Like-menu operation family
 
-Updated: 2026-07-26
-Ref: c94401076
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -18,7 +18,7 @@ members are Menu entities or inherit Menu data authority.
 - Parent: `workspace.md`
 - Horizontal: `components.md`, `pages.md`, `collection-manager.md`
 - Reference member:
-  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus`
+  `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus`
 - Executable contract: `scripts/guards/like-menu-family.mjs`
 
 Current source and the executable guard outrank this map.
@@ -57,10 +57,10 @@ registry. Data and mutation authority stay with the owning operation.
 
 ## Members
 
-| Member | Records | Tools | Status |
-| --- | --- | --- | --- |
-| Kitchen Menus | Menu records | Create Menu | Reference and guarded |
-| Kitchen Dishes | Dish records with quick look | Create Dish | Adopted and guarded |
+| Member         | Records                      | Tools       | Status                |
+| -------------- | ---------------------------- | ----------- | --------------------- |
+| Kitchen Menus  | Menu records                 | Create Menu | Reference and guarded |
+| Kitchen Dishes | Dish records with quick look | Create Dish | Adopted and guarded   |
 
 Other Kitchen, Supplier, Portfolio, or Project operations are not members until
 they are deliberately aligned and added to the executable registry.

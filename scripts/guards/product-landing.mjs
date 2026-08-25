@@ -149,7 +149,7 @@ const KITCHEN_MISE_BOARD_PATH =
 const KITCHEN_MISE_COLLECTION_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskCollection.vue'
 const KITCHEN_MISE_CONSOLE_READ_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Mise/Read.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Mise/Read.vue'
 const KITCHEN_MISE_PRESENTATION_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
 const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
@@ -1406,7 +1406,7 @@ export async function run(ctx) {
     'workspace-preview-menus',
     'workspace-preview-dishes',
     'selectedDishSection',
-    '<WorkspaceKitchenOperationsDishesCardsCell',
+    '<WorkspaceKitchenDishesCardsCell',
   ]) {
     if (miseboxWorkspacePreview.includes(forbidden)) {
       violations.push(
@@ -1445,7 +1445,7 @@ export async function run(ctx) {
       '<MiseboxLandingWorkspacePreviewDishesMise',
     ],
     dishCollection: [
-      '<WorkspaceKitchenOperationsDishesCardsCell',
+      '<WorkspaceKitchenDishesCardsCell',
       'workspace-preview-dishes',
       '@action="$emit(\'select\', dish.id)"',
     ],
@@ -1494,8 +1494,8 @@ export async function run(ctx) {
     ],
     orders: [
       'aria-label="Orders preview"',
-      '<WorkspaceKitchenOperationsOrdersRail',
-      '<WorkspaceKitchenOperationsOrdersTicketPresentation',
+      '<WorkspaceKitchenOrdersRail',
+      '<WorkspaceKitchenOrdersTicketPresentation',
       'deriveKitchenOrderBoardStage',
       ':interactive="false"',
       'ProductDemoOrder',
@@ -1508,7 +1508,7 @@ export async function run(ctx) {
     ],
     suppliers: [
       'aria-label="Suppliers preview"',
-      '<WorkspaceKitchenOperationsSuppliersCardsCell',
+      '<WorkspaceKitchenSuppliersCardsCell',
       ':data-supplier-id="supplier.id"',
       'supplier.linkedIngredientCount',
       "MiseboxProductDemo['workspace']['suppliers'][number]",

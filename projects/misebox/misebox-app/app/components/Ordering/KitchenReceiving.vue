@@ -3,7 +3,7 @@
     <div class="space-y-3">
       <h2 class="text-lg font-black text-highlighted">Kitchen receiving</h2>
 
-      <WorkspaceKitchenOperationsOrdersReceiving
+      <WorkspaceKitchenOrdersReceiving
         v-if="awaitingDecision"
         :accepting="false"
         :estimate-minutes="estimateMinutes"
@@ -26,7 +26,7 @@
           </UBadge>
         </div>
 
-        <WorkspaceKitchenOperationsOrdersTicketPresentation
+        <WorkspaceKitchenOrdersTicketPresentation
           :order="displayOrder"
         />
       </div>

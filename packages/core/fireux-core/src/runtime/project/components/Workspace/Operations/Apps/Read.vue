@@ -48,7 +48,7 @@ import {
   useAppInterface,
   type AppCard,
 } from '../../../../../app/composables/useAppInterface'
-import { useProjectWorkspaceApps } from '../../../../composables/workspace/operations/Apps/useProjectWorkspaceApps'
+import { useProjectWorkspaceApps } from '../../../../composables/workspace/Apps/useProjectWorkspaceApps'
 
 const { apps, outcome } = useProjectWorkspaceApps()
 const { cell: appCell } = useAppInterface()

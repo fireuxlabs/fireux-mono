@@ -17,7 +17,7 @@
           :data-supplier-id="supplier.id"
           class="overflow-hidden rounded-xl border border-default bg-default shadow-sm"
         >
-          <WorkspaceKitchenOperationsSuppliersCardsCell
+          <WorkspaceKitchenSuppliersCardsCell
             :id="supplier.id"
             :title="supplier.name"
             :subtitle="supplier.headquartersLabel || supplier.headline"

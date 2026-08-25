@@ -22,6 +22,40 @@ export const kitchenWasteReportSearchDemand = {
     { label: 'WRAP hospitality food Waste reporting guidance', url: 'https://www.wrap.ngo/resources/measuring-and-reporting-food-waste-hospitality-and-food-service', note: 'Validates consistent scope, measurement and reporting as prerequisites for useful hospitality Waste data.' },
     { label: 'European Commission food Waste measurement', url: 'https://food.ec.europa.eu/food-safety/food-waste/eu-food-waste-relevant-legislation/food-waste-measurements_en', note: 'Validates common methodology, minimum quality requirements and quality reporting; it is jurisdictional literature, not Kitchen compliance advice.' },
   ],
+  records: [
+  {
+    id: 'kitchen.waste-report.events',
+    label: 'Waste events',
+    kind: 'reference',
+    status: 'available',
+    owner: 'Waste',
+    authority: 'Waste Report reads canonical Waste events and cannot fill missing events or rewrite their observations.',
+    facts: [ 'event identity and occurrence', 'quantity and unit', 'reason and source', 'operational references' ],
+    readBy: [
+      'kitchen.waste-report.summarize-recorded-waste',
+      'kitchen.waste-report.compare-periods',
+      'kitchen.waste-report.prepare-evidence-review'
+    ],
+    writtenBy: []
+  },
+  {
+    id: 'kitchen.waste-report.summary',
+    label: 'Waste report',
+    kind: 'projection',
+    status: 'requested',
+    owner: 'Waste Report',
+    authority: 'The report derives compatible grouped quantities and supported cost coverage without becoming a second Waste record or accounting loss.',
+    facts: [
+      'Kitchen-local period',
+      'grouping and unit semantics',
+      'event counts and quantities',
+      'supported costs and coverage',
+      'comparison scope and exclusions'
+    ],
+    readBy: [ 'kitchen.waste-report.compare-periods', 'kitchen.waste-report.prepare-evidence-review' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen, owner-local period and Waste-event inclusion rules define the report?', 'How many recorded events exist and what known collection gaps remain?', 'Which Waste types, reasons, sources, stages, Stations, services or items are grouped?', 'Which quantity units can be aggregated directly and which must remain separate?', 'Which trusted conversion source, if any, permits another aggregation?', 'Which event costs resolve from authoritative Ingredient, Recipe, Dish or Drink evidence?', 'What proportion of events and physical quantity has supported cost coverage?', 'Which currency groups must remain separate?', 'Which comparison period has equivalent scope and measurement semantics?', 'Which pattern is an observation rather than a proven cause or saved amount?'],
   toolHypotheses: [
     { id: 'kitchen.waste-report.summarize-recorded-waste', label: 'Recorded Waste Summary', layer: 'compound', purpose: 'Aggregate authorized Waste events by compatible quantity, type, reason, source and operational context.', inputs: ['selected Kitchen and period', 'authorized Waste events', 'explicit grouping and unit rules'], outputs: ['traceable grouped quantities, event counts, unknowns and coverage'], evidence: ['only recorded Kitchen Waste events'], authority: 'The Tool does not treat missing records as zero, combine incompatible units or create a second Waste record.', approval: 'Read-only reporting needs no mutation approval.', status: 'requested' },

@@ -1,22 +1,18 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-drinks">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Drinks" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsDrinksToolMap
-            :suggestions="drinkSuggestions"
-          />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="drinks" />
 
-          <WorkspaceKitchenOperationsDishesTools />
-
-          <WorkspaceKitchenOperationsCapabilityAI
+          <WorkspaceKitchenCapabilityAI
             operation="drinks"
             :suggestions="drinkSuggestions"
-            :show-suggestion-cards="false"
+            :action-targets="drinkActionTargets"
           />
 
           <section class="grid gap-4" aria-labelledby="drinks-content-title">
@@ -33,13 +29,14 @@
               </p>
             </div>
 
-            <WorkspaceKitchenOperationsDishesRead />
+            <WorkspaceKitchenDishesRead />
           </section>
-          <WorkspaceKitchenOperationsGuidingLiterature operation="drinks" />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="drinks" />
           <WorkspaceKitchenResearchSegue
             capability="Drinks"
             base-path="/workspace/kitchen/drinks/search-demand"
           />
+
         </section>
       </template>
     </UDashboardPanel>
@@ -49,11 +46,24 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { buildMissingDrinkImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
 
 const drinksWorkspace = provideKitchenDishesWorkspace('drink')
 const drinkSuggestions = computed(() =>
   buildMissingDrinkImageSuggestions(drinksWorkspace.dishes.value)
+)
+const drinkActionTargets = computed(() =>
+  drinksWorkspace.dishes.value
+    .filter((drink) => drink.item_kind === 'drink' && Boolean(drink.id))
+    .flatMap((drink) =>
+      ['kitchen.drinks.update-drink', 'kitchen.drinks.delete-drink'].map(
+        (actionId) => ({
+          actionId,
+          targetId: drink.id,
+          label: String(drink.name || 'Untitled Drink').trim(),
+        })
+      )
+    )
 )
 
 definePageMeta({

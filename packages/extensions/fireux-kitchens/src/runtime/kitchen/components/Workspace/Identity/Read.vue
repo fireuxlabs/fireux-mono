@@ -173,7 +173,7 @@
 import { computed } from 'vue'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from '../../../composables/workspace/identity/useKitchenWorkspacePlace'
-import { useKitchenWorkspaceMenus } from '../../../composables/workspace/operations/Menus/useKitchenWorkspaceMenus'
+import { useKitchenWorkspaceMenus } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
 import { readKitchenFulfilmentConfig } from '../../../utils/kitchen-readers'
 import { menuAcceptsOrderType } from '../../../../menu/utils/menu-ordering-policy'
 

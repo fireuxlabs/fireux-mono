@@ -17,7 +17,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenOperationsOrdersPreOrders />
+        <WorkspaceKitchenOrdersPreOrders />
       </template>
     </UDashboardPanel>
   </div>

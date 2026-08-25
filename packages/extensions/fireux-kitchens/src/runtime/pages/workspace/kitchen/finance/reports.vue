@@ -6,7 +6,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenOperationsFinanceNav />
+        <WorkspaceKitchenFinanceNav />
 
         <section class="grid gap-4 lg:grid-cols-2">
           <UCard>

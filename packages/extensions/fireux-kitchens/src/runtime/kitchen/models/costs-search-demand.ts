@@ -21,6 +21,30 @@ export const kitchenCostsSearchDemand = {
     { label: 'RestaurantMargin food Cost formulas', url: 'https://restaurantmargin.com/food-cost-formula', note: 'Validates that per-item food-cost percentage and contribution answer narrower questions and exclude labour, occupancy, fees, tax and other costs.' },
     { label: 'Basic Kitchen and Food Service Management', url: 'https://opentextbc.ca/basickitchenandfoodservicemanagement/open/download?type=pdf', note: 'Validates selling price, food cost, food-cost percentage and contribution margin as separately defined measures.' },
   ],
+  records: [
+  {
+    id: 'kitchen.costs.operational-evidence',
+    label: 'Operational cost evidence',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Recipes, Ingredients, Purchasing, Receiving and Sales',
+    authority: 'Costs reads owner-authoritative specifications, acquisition evidence and Sales; it stores no accounting substitute.',
+    facts: [ 'Recipe quantities and yields', 'effective Ingredient acquisition evidence', 'KitchenSale prices and quantities' ],
+    readBy: [ 'kitchen.costs.food-cost-report', 'kitchen.costs.calculate-margin' ],
+    writtenBy: []
+  },
+  {
+    id: 'kitchen.costs.calculation',
+    label: 'Cost calculation',
+    kind: 'projection',
+    status: 'requested',
+    owner: 'Costs',
+    authority: 'A calculation is a traceable projection with coverage and exclusions, not a canonical expense, COGS or profit record.',
+    facts: [ 'measure definition', 'source identities and effective dates', 'coverage, unknowns and exclusions' ],
+    readBy: [],
+    writtenBy: []
+  }
+],
   recordQuestions: ['What exact cost measure is requested: theoretical item cost, actual period usage, variance, contribution or accounting cost?', 'Which Kitchen, currency, item, Recipe version and effective period define the calculation?', 'Which Ingredient quantities, units, conversions, yields and portion counts are authoritative?', 'Which purchase, receipt or approved acquisition-price evidence supports each Ingredient cost?', 'Is a Supplier offer being used only as a clearly labelled planning estimate?', 'Which KitchenSale price and quantity evidence supports contribution?', 'Which labour, packaging, channel fees, Waste, tax, overhead or other costs are excluded?', 'Do currencies, units and effective dates reconcile?', 'Which missing inputs prevent a complete calculation?', 'Can every output be traced to its source without manufacturing an expense or FinancialFact?'],
   toolHypotheses: [
     { id: 'kitchen.costs.food-cost-report', label: 'Restaurant Food Cost Report', layer: 'compound', purpose: 'Compare supported theoretical direct food cost with bounded Sales while exposing coverage and exclusions.', inputs: ['selected Kitchen and period', 'approved Dish and Recipe specifications', 'effective Ingredient acquisition costs', 'KitchenSale lines'], outputs: ['currency-safe item and period food-cost measures, coverage and missing evidence'], evidence: ['canonical Recipe, Ingredient commercial evidence and KitchenSales'], authority: 'The Tool does not label offers as actual cost, fabricate missing prices, or claim actual usage, COGS, expenses, profit or accounting completeness.', approval: 'Read-only reporting needs no mutation approval; export or accepted source correction is separate.', status: 'requested' },

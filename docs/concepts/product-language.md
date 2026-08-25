@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-22
-Ref: da689ed54
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -189,7 +189,7 @@ or advertise the FireUX ecosystem-creation offer.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operations.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/supplier/models/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Dish.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`

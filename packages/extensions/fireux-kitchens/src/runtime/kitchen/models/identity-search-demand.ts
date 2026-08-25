@@ -76,6 +76,30 @@ export const kitchenIdentitySearchDemand = {
       note: 'Validates accurate real-world name and separately maintained address, hours and category rather than keyword-loaded duplicate identity.',
     },
   ],
+  records: [
+  {
+    id: 'kitchen.identity.kitchen',
+    label: 'Kitchen',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Kitchen',
+    authority: 'Kitchen owns only its root identity, lifecycle and Place link.',
+    facts: [ 'id', 'name and slug', 'status and visibility', 'place_id' ],
+    readBy: [ 'kitchen.identity.update-kitchen', 'kitchen.identity.link-place' ],
+    writtenBy: [ 'kitchen.identity.update-kitchen', 'kitchen.identity.link-place' ]
+  },
+  {
+    id: 'kitchen.identity.place',
+    label: 'Place',
+    kind: 'reference',
+    status: 'available',
+    owner: 'Place',
+    authority: 'Place owns venue identity, location, contact, hours and media; Identity composes it without copying it into Kitchen.',
+    facts: [ 'venue identity', 'address and coordinates', 'contact and hours', 'Place media' ],
+    readBy: [ 'kitchen.identity.update-place', 'kitchen.identity.link-place' ],
+    writtenBy: [ 'kitchen.identity.update-place' ]
+  }
+],
   recordQuestions: [
     'Which Kitchen id and Place id are being composed?',
     'Which entity owns every editable field?',

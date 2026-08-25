@@ -7,7 +7,7 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceKitchenOperationsDishesDish />
+          <WorkspaceKitchenDishesDish />
         </section>
       </template>
     </UDashboardPanel>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
+import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
 
 provideKitchenDishesWorkspace('drink')
 

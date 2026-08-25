@@ -48,7 +48,6 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
-import { isWasteAIHelloPrompt } from '../../models/waste-ai'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
 import Intro from './AI/Intro.vue'
@@ -62,23 +61,33 @@ import type {
   KitchenAIResultAction,
   KitchenAIToolNugget,
   KitchenAIWelcomeMessage,
+  KitchenCapabilityActionTarget,
 } from './AI/types'
 
 const props = withDefaults(
   defineProps<
     KitchenAIPresentationOptions & {
       aiTools?: readonly KitchenAIToolNugget[]
+      availableActions?: readonly string[]
+      actionTargets?: readonly KitchenCapabilityActionTarget[]
+      performAction?: (
+        id: string,
+        targetId?: string
+      ) => boolean | Promise<boolean>
     }
   >(),
   {
     starters: undefined,
     operation: '',
     aiTools: () => [],
+    availableActions: () => [],
+    actionTargets: () => [],
+    performAction: undefined,
   }
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
-const { currentUser, isAuthenticated } = useAuth()
+const { isAuthenticated } = useAuth()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
   suggestions: workspaceToolSuggestions,
@@ -98,6 +107,15 @@ const {
   commandMode,
   operation: resolvedOperation,
 } = useKitchenAIPresentation(props, appName)
+const availableActions = computed(() =>
+  resolvedOperation.value
+    ? props.availableActions
+    : availableWorkspaceActions.value
+)
+const performAction = (id: string, targetId = '') =>
+  resolvedOperation.value && props.performAction
+    ? props.performAction(id, targetId)
+    : performWorkspaceAction(id)
 const promptSuggestions = computed(() =>
   resolvedPromptSuggestions.value.length || resolvedOperation.value
     ? resolvedPromptSuggestions.value
@@ -182,8 +200,6 @@ async function sendPrompt() {
 
 async function runPrompt(text: string) {
   const selected = selectedLiveScope.value
-  const capabilityHandshake = props.agent?.maturity === 'handshake'
-  const wasteHello = isWasteAIHelloPrompt(text)
   const appId = selected.appId || configuredAppId
   const kitchenId = selected.kitchenId
   if (!appId) {
@@ -194,13 +210,8 @@ async function runPrompt(text: string) {
   submitting.value = true
   try {
     const headers: Record<string, string> = {}
-    if (!wasteHello && !capabilityHandshake) {
-      const user =
-        !resolvedOperation.value && availableWorkspaceActions.value.length
-          ? currentUser.value
-          : await useRequireUser()
-      if (user) headers.Authorization = `Bearer ${await user.getIdToken()}`
-    }
+    const user = await useRequireUser()
+    headers.Authorization = `Bearer ${await user.getIdToken()}`
     const response = await $fetch<{
       ok: true
       answer: string
@@ -212,7 +223,7 @@ async function runPrompt(text: string) {
       }
       createdObject?: KitchenAICreatedObject
       resultAction?: KitchenAIResultAction
-      workspaceAction?: { id: string }
+      workspaceAction?: { id: string; targetId?: string }
     }>('/api/workspace/kitchen/agent', {
       method: 'POST',
       headers,
@@ -224,16 +235,22 @@ async function runPrompt(text: string) {
           ? { operation: resolvedOperation.value }
           : {}),
         ...(pendingTool.value ? { pendingTool: pendingTool.value } : {}),
-        ...(!resolvedOperation.value
-          ? { availableActions: availableWorkspaceActions.value }
+        ...(availableActions.value.length
+          ? { availableActions: availableActions.value }
+          : {}),
+        ...(props.actionTargets.length
+          ? { actionTargets: props.actionTargets }
           : {}),
       },
     })
     if (
       response.workspaceAction?.id &&
-      (await performWorkspaceAction(response.workspaceAction.id))
+      (await performAction(
+        response.workspaceAction.id,
+        response.workspaceAction.targetId
+      ))
     ) {
-      showResult(response.answer)
+      if (response.answer) showResult(response.answer)
       return
     }
     pendingTool.value = response.pendingTool || null

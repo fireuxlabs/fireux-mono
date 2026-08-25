@@ -48,6 +48,19 @@
         @update:model-value="emit('update:modelValue', $event)"
       />
       <UButton
+        v-if="voice.supported.value"
+        type="button"
+        :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
+        :color="voice.recording.value ? 'error' : 'neutral'"
+        :variant="voice.recording.value ? 'soft' : 'ghost'"
+        :loading="transcribing"
+        :disabled="submitting || transcribing"
+        :aria-label="
+          voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
+        "
+        @click="toggleVoice"
+      />
+      <UButton
         type="submit"
         icon="i-lucide-arrow-up"
         color="primary"
@@ -57,15 +70,29 @@
       />
     </form>
 
-    <p v-if="allowFile" class="kitchen-ai-welcome__privacy">
-      Selected files stay in your browser. Kitchen questions use the selected
-      Live Kitchen only.
+    <p
+      v-if="allowFile || voice.supported.value || transcribing || voiceError"
+      class="kitchen-ai-welcome__privacy"
+      aria-live="polite"
+    >
+      <template v-if="voice.recording.value"
+        >Listening… tap stop when finished.</template
+      >
+      <template v-else-if="transcribing">Transcribing your voice…</template>
+      <template v-else-if="voiceError">{{ voiceError }}</template>
+      <template v-else>
+        Voice clips are sent for transcription and are not stored by Misebox.
+        Selected files stay in your browser. Kitchen questions use the current
+        Kitchen only.
+      </template>
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useVoiceRecorder } from 'fireux-ai/runtime/composables/useVoiceRecorder'
 import PromptInput from './PromptInput.vue'
 import ToolNuggets from './ToolNuggets.vue'
 import type { KitchenAIStarter, KitchenAIToolNugget } from './types'
@@ -100,6 +127,11 @@ const emit = defineEmits<{
   file: [file: File]
 }>()
 const fileInput = ref<HTMLInputElement | null>(null)
+const voice = useVoiceRecorder()
+const transcribing = ref(false)
+const transcriptionError = ref('')
+const voiceError = computed(() => transcriptionError.value || voice.error.value)
+let recordingTimeout: ReturnType<typeof setTimeout> | null = null
 
 function selectFile(event: Event) {
   const input = event.target as HTMLInputElement
@@ -107,4 +139,53 @@ function selectFile(event: Event) {
   if (file) emit('file', file)
   input.value = ''
 }
+
+async function toggleVoice() {
+  transcriptionError.value = ''
+  if (!voice.recording.value) {
+    if (await voice.start()) {
+      recordingTimeout = setTimeout(() => void finishVoice(), 30_000)
+    }
+    return
+  }
+  await finishVoice()
+}
+
+async function finishVoice() {
+  if (recordingTimeout) clearTimeout(recordingTimeout)
+  recordingTimeout = null
+  const recording = await voice.stop()
+  if (!recording) return
+  transcribing.value = true
+  try {
+    const user = await useRequireUser()
+    const form = new FormData()
+    form.append('file', recording.audio, recording.fileName)
+    const result = await $fetch<{ ok: true; text: string }>(
+      '/api/workspace/kitchen/agent/transcribe',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        body: form,
+      }
+    )
+    emit('update:modelValue', result.text)
+  } catch (cause) {
+    const failure = cause as {
+      data?: { statusMessage?: string; message?: string }
+      message?: string
+    }
+    transcriptionError.value =
+      failure.data?.statusMessage ||
+      failure.data?.message ||
+      failure.message ||
+      'Your voice could not be transcribed.'
+  } finally {
+    transcribing.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  if (recordingTimeout) clearTimeout(recordingTimeout)
+})
 </script>

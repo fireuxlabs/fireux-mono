@@ -1,6 +1,5 @@
-<!-- Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: add the selected-Kitchen report route and Workspace navigation entry. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-finance">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Finance" />
@@ -53,16 +52,16 @@
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="finance" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="finance" />
-          <WorkspaceKitchenOperationsCapabilityView operation="finance" />
-          <WorkspaceKitchenOperationsFinanceNav />
-          <WorkspaceKitchenOperationsFinanceOverview
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="finance" />
+          <WorkspaceKitchenCapabilityAI operation="finance" />
+          <WorkspaceKitchenCapabilityView operation="finance" />
+          <WorkspaceKitchenFinanceNav />
+          <WorkspaceKitchenFinanceOverview
             :from-date="calendarRange.start.toString()"
             :to-date="calendarRange.end.toString()"
           />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="finance" />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="finance" />
           <WorkspaceKitchenResearchSegue
             capability="Sales"
             base-path="/workspace/kitchen/finance/search-demand"

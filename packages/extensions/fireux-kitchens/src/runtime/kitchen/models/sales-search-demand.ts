@@ -21,6 +21,41 @@ export const kitchenSalesSearchDemand = {
     { label: 'Square item Sales reporting guidance', url: 'https://squareup.com/help/us/en/article/8363-view-item-category-and-modifiers-sales-reports', note: 'Validates period-bounded item quantity and Sales reporting with explicit filters and groupings.' },
     { label: 'Square close-of-day reporting guidance', url: 'https://squareup.com/help/us/en/article/6594-end-of-day-reporting-with-square-for-restaurants', note: 'Validates close-of-day Sales review as an operator job; FireUX does not claim unsupported payment, tip, refund or net-Sales fields.' },
   ],
+  records: [
+  {
+    id: 'kitchen.finance.sale',
+    label: 'Kitchen Sale',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Sales',
+    authority: 'Immutable completed KitchenSale owns the captured gross Sale, item lines, quantities, currency and source identities.',
+    facts: [
+      'Sale and source Order identity',
+      'completed time',
+      'currency-safe gross amounts',
+      'item quantities and captured prices',
+      'channel, Menu and closer references'
+    ],
+    readBy: [ 'kitchen.finance.daily-sales-report', 'kitchen.finance.compare-periods' ],
+    writtenBy: []
+  },
+  {
+    id: 'kitchen.finance.sales-report',
+    label: 'Sales report',
+    kind: 'projection',
+    status: 'available',
+    owner: 'Sales',
+    authority: 'The bounded server projection derives gross Sales measures without becoming another Sale or claiming net revenue, payment, cost or profit.',
+    facts: [
+      'Kitchen-local period',
+      'currency-separated totals',
+      'counts, averages and item rollups',
+      'transaction reconciliation and exclusions'
+    ],
+    readBy: [ 'kitchen.finance.daily-sales-report', 'kitchen.finance.compare-periods' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen, owner-local timezone and inclusive date range define the report?', 'Which immutable completed KitchenSales are included and which historical Orders lack canonical Sales?', 'Which currency groups must remain separate?', 'Which exact gross-Sale, item-Sale, delivery-fee, quantity, count and average definitions are used?', 'Which transaction rows reconcile to each aggregate?', 'Which Menu, item, channel, order type and closer identities were captured at the Sale?', 'Which refunds, discounts, taxes, tips, payments or costs are absent rather than zero?', 'Is the selected period complete, bounded and within query limits?', 'Which comparison period uses equivalent calendar and metric semantics?', 'Which deduction is an observation versus an unsupported causal explanation?'],
   toolHypotheses: [
     { id: 'kitchen.finance.daily-sales-report', label: 'Restaurant Daily Sales Report', layer: 'ai-assisted', purpose: 'Read and explain one bounded Kitchen-local day of immutable completed Sales.', inputs: ['selected Kitchen', 'owner-local service date', 'authorized KitchenSale projection'], outputs: ['reconciled currency-grouped totals, item rollups and transaction summaries'], evidence: ['immutable KitchenSales and bounded server projection'], authority: 'The Tool reports gross Sales only and does not invent refunds, net Sales, tax, tips, payments, costs or profit.', approval: 'Read-only reporting needs no mutation approval; export or external sharing is separate.', status: 'requested' },

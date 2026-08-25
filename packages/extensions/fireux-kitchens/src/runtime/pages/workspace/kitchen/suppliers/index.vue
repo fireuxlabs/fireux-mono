@@ -1,18 +1,17 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-suppliers">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Suppliers" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="suppliers" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="suppliers" />
-          <WorkspaceKitchenOperationsCapabilityView operation="suppliers" />
-          <WorkspaceKitchenOperationsSuppliers />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="suppliers" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="suppliers" />
+          <WorkspaceKitchenCapabilityAI operation="suppliers" />
+          <WorkspaceKitchenCapabilityView operation="suppliers" />
+          <WorkspaceKitchenSuppliers />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="suppliers" />
           <WorkspaceKitchenResearchSegue
             capability="Suppliers"
             base-path="/workspace/kitchen/suppliers/search-demand"

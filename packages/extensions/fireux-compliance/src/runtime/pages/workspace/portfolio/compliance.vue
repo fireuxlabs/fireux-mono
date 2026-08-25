@@ -102,12 +102,12 @@
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
-import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskCreate'
-import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/workspace/operations/Tasks/utils/projection/useTaskProjection'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
+import { useTaskCreate } from 'fireux-tasks/runtime/portfolio/composables/workspace/Tasks/mutations/useTaskCreate'
+import { useTaskProjection } from 'fireux-tasks/runtime/portfolio/composables/workspace/Tasks/utils/projection/useTaskProjection'
 import { computed } from 'vue'
-import { usePortfolioComplianceRecordCollection } from '../../../portfolio/composables/workspace/operations/Compliance/fetch/usePortfolioComplianceRecordCollection'
-import { useComplianceInterface } from '../../../portfolio/composables/workspace/operations/Compliance/utils/view/useComplianceInterface'
+import { usePortfolioComplianceRecordCollection } from '../../../portfolio/composables/workspace/Compliance/fetch/usePortfolioComplianceRecordCollection'
+import { useComplianceInterface } from '../../../portfolio/composables/workspace/Compliance/utils/view/useComplianceInterface'
 import { ComplianceRecordStorage } from '../../../portfolio/models/compliance-record.model.ts'
 
 definePageMeta({

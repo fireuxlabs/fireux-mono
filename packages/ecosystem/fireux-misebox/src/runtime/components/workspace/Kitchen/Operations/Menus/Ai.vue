@@ -112,7 +112,7 @@
 <script setup lang="ts">
 import { computed, ref } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useKitchenMenusWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/operations/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/Menus/useKitchenMenusWorkspace'
 
 type MenuAiMessage = {
   id: string

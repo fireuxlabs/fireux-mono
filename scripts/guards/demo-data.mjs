@@ -1821,7 +1821,7 @@ export async function run(ctx) {
   }
 
   const kitchenWorkspaceSupplyWorkspaceFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Suppliers/useKitchenWorkspaceSupplyWorkspace.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Suppliers/useKitchenWorkspaceSupplyWorkspace.ts'
   const kitchenWorkspaceSupplyWorkspacePath = path.join(
     repoRoot,
     kitchenWorkspaceSupplyWorkspaceFile
@@ -1889,7 +1889,7 @@ export async function run(ctx) {
   }
 
   const kitchenWorkspaceDishesOperationFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishes.ts'
   const kitchenWorkspaceDishesOperationPath = path.join(
     repoRoot,
     kitchenWorkspaceDishesOperationFile
@@ -1915,7 +1915,7 @@ export async function run(ctx) {
     kitchenDishCollectionFile
   )
   const kitchenWorkspaceDishesFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishes.ts'
   const kitchenWorkspaceDishesPath = path.join(
     repoRoot,
     kitchenWorkspaceDishesFile

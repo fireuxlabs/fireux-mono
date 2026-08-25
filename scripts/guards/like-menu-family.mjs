@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-07-26
-// usage_note: run through pnpm guard; keeps adopted like-menu operation indexes on the records-then-tools spine and locks proven collection state handling.
+// usage_note: run through pnpm guard; keeps adopted like-menu record indexes and proven collection state handling aligned beneath page-owned Tools.
 // FILE: scripts/guards/like-menu-family.mjs
 
 import { existsSync, readFileSync } from 'node:fs'
@@ -10,50 +10,42 @@ const MEMBERS = [
   {
     name: 'Kitchen Menus',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/List.vue',
-    tools:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/List.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus/Menu.vue',
-    recordsTag: '<WorkspaceKitchenOperationsMenusList',
-    toolsTag: '<WorkspaceKitchenOperationsMenusTools',
-    inspectTag: '<WorkspaceKitchenOperationsMenusWorkspaceHeader',
-    updateTag: '<WorkspaceKitchenOperationsMenusEditDetails',
-    deleteTag: '<WorkspaceKitchenOperationsMenusDelete',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus/Menu.vue',
+    recordsTag: '<WorkspaceKitchenMenusList',
+    inspectTag: '<WorkspaceKitchenMenusWorkspaceHeader',
+    updateTag: '<WorkspaceKitchenMenusEditDetails',
+    deleteTag: '<WorkspaceKitchenMenusDelete',
     recordsLabel: 'aria-label="Menus"',
-    toolsLabel: 'aria-labelledby="create-menu-title"',
   },
   {
     name: 'Kitchen Dishes',
     index:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Index.vue',
     records:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Read.vue',
-    tools:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Tools.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Read.vue',
     detail:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Dish.vue',
-    recordsTag: '<WorkspaceKitchenOperationsDishesRead',
-    toolsTag: '<WorkspaceKitchenOperationsDishesTools',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Dish.vue',
+    recordsTag: '<WorkspaceKitchenDishesRead',
     inspectTag: 'aria-label="Menu placements"',
-    updateTag: '<WorkspaceKitchenOperationsDishesEdit',
-    deleteTag: '<WorkspaceKitchenOperationsDishesDelete',
+    updateTag: '<WorkspaceKitchenDishesEdit',
+    deleteTag: '<WorkspaceKitchenDishesDelete',
     recordsLabel: ':aria-label="catalogue.title"',
-    toolsLabel: ':aria-labelledby="`create-${catalogue.singular}-title`"',
     quickLook:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/QuickLook.vue',
-    quickLookTag: '<WorkspaceKitchenOperationsDishesQuickLook',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/QuickLook.vue',
+    quickLookTag: '<WorkspaceKitchenDishesQuickLook',
     detailAction: 'Open {{ catalogue.singular }}',
     finance:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Finance.vue',
-    financeTag: '<WorkspaceKitchenOperationsDishesFinance',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Finance.vue',
+    financeTag: '<WorkspaceKitchenDishesFinance',
     collectionState: {
       fetch:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/dish/fetch/useKitchenDishCollection.ts',
       controller:
-        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishes.ts',
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishes.ts',
       errorTitle: ':title="`${catalogue.title} unavailable`"',
     },
   },
@@ -74,7 +66,7 @@ export async function run(ctx) {
         ...violations.map((violation) => `  - ${violation}`),
         '',
         '[guard] Fix:',
-        '- Keep each adopted browse entry ordered as records → tools.',
+        '- Keep each adopted browse entry focused on its records; page-owned Tools render before AI and View.',
         '- Keep records visibly grouped without forcing a redundant heading card.',
         '- Keep collection tools limited to creation.',
         '- Keep inspection, update, and delete controls on the record detail.',
@@ -85,13 +77,12 @@ export async function run(ctx) {
     )
   }
 
-  console.log('[guard] ✅ like-menu operation family uses records then tools')
+  console.log('[guard] ✅ like-menu operation family keeps records beneath page-owned tools')
 }
 
 function validateMember(repoRoot, member, violations) {
   const indexSource = read(repoRoot, member.index, violations)
   const recordsSource = read(repoRoot, member.records, violations)
-  const toolsSource = read(repoRoot, member.tools, violations)
   const detailSource = read(repoRoot, member.detail, violations)
   const quickLookSource = member.quickLook
     ? read(repoRoot, member.quickLook, violations)
@@ -106,26 +97,15 @@ function validateMember(repoRoot, member, violations) {
       violations
     )
     const recordsPosition = indexSource.indexOf(member.recordsTag)
-    const toolsPosition = indexSource.indexOf(member.toolsTag)
 
     if (recordsPosition < 0) {
       violations.push(`${member.index} (${member.name} records list is missing)`)
     }
-    if (toolsPosition < 0) {
-      violations.push(`${member.index} (${member.name} tools list is missing)`)
-    }
-    if (
-      recordsPosition >= 0 &&
-      toolsPosition >= 0 &&
-      recordsPosition >= toolsPosition
-    ) {
-      violations.push(`${member.index} (${member.name} must render records before tools)`)
-    }
 
     for (const forbidden of [
       '<WorkspaceOperationWritePanel',
-      '<WorkspaceKitchenOperationsMenusCreation',
-      '<WorkspaceKitchenOperationsMenusQR',
+      '<WorkspaceKitchenMenusCreation',
+      '<WorkspaceKitchenMenusQR',
     ]) {
       if (indexSource.includes(forbidden)) {
         violations.push(
@@ -151,27 +131,6 @@ function validateMember(repoRoot, member, violations) {
         'quick-look browse members must retain their read-only preview',
         violations
       )
-    }
-  }
-  if (toolsSource) {
-    requireText(
-      toolsSource,
-      member.toolsLabel,
-      member.tools,
-      'the create tool must retain a named semantic surface',
-      violations
-    )
-    for (const forbidden of [
-      'Review menu sources',
-      'Guest links and QR codes',
-      'deleteMenu',
-      'updateMenu',
-    ]) {
-      if (toolsSource.includes(forbidden)) {
-        violations.push(
-          `${member.tools} (${forbidden} does not belong on the collection page)`
-        )
-      }
     }
   }
   if (detailSource) {

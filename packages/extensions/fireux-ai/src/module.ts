@@ -1,5 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { configurePages } from './config/module/pages-config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
@@ -40,6 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => configureRuntime(nuxt, options),
+      composables: registerComposablesDir,
       components: configureComponents,
       pages: configurePages,
       server: configureServer,

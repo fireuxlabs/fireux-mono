@@ -1,4 +1,4 @@
-export type KitchenDrinksToolHypothesis = { id: `kitchen.drinks.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' }
+export type KitchenDrinksToolHypothesis = { id: `kitchen.drinks.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' | 'available' }
 
 export const kitchenDrinksSearchDemand = {
   observedAt: '2026-08-23', geography: 'English-language web', language: 'English',
@@ -22,15 +22,55 @@ export const kitchenDrinksSearchDemand = {
     { label: 'BlueCart food and beverage Inventory software', url: 'https://www.bluecart.com/food-beverage-inventory-software', note: 'Validates beverage counting, stock, pour-cost, Recipe and replenishment jobs while illustrating their cross-capability nature.' },
     { label: 'Open University Bar Management', url: 'https://uou.ac.in/sites/default/files/slm/HM-401.pdf', note: 'Validates beverage-menu planning and pricing as accountable bar-management work rather than an automatic AI decision.' },
   ],
+  records: [
+  {
+    id: 'kitchen.drinks.drink',
+    label: 'Drink',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Drinks',
+    authority: 'The canonical Dish record with item kind drink owns the Kitchen-local sellable beverage identity.',
+    facts: [ 'stable Drink identity', 'drink item kind', 'name, description and image', 'lifecycle and audit stamps' ],
+    readBy: [
+      'kitchen.drinks.update-drink',
+      'kitchen.drinks.delete-drink',
+      'kitchen.drinks.track-stock',
+      'kitchen.drinks.calculate-cost',
+      'kitchen.drinks.manage-recipe',
+      'kitchen.drinks.review-menu'
+    ],
+    writtenBy: [ 'kitchen.drinks.create-drink', 'kitchen.drinks.update-drink', 'kitchen.drinks.delete-drink' ]
+  },
+  {
+    id: 'kitchen.drinks.operational-evidence',
+    label: 'Drink operational evidence',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Inventory, Recipes, Ingredients, Menus and Sales',
+    authority: 'Drinks coordinates beverage work through owner records rather than storing stock, Recipe, Menu or Sales copies.',
+    facts: [
+      'Inventory observations',
+      'Recipe measures and yield',
+      'Ingredient acquisition evidence',
+      'Menu placement and price',
+      'KitchenSale lines'
+    ],
+    readBy: [ 'kitchen.drinks.track-stock', 'kitchen.drinks.calculate-cost', 'kitchen.drinks.manage-recipe', 'kitchen.drinks.review-menu' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen owns the Drink and is it packaged, poured, mixed or non-alcoholic?', 'Which stable Ingredient or product identity represents the stocked beverage?', 'Which Recipe defines a mixed Drink, measures, method, garnish and yield?', 'Which unit connects purchased container, counted stock, Recipe measure and served portion?', 'Which Inventory observation or movement supports current availability?', 'Which effective Ingredient prices and conversions support cost per serve?', 'Which Menu placement and displayed price reference the Drink?', 'Which bounded KitchenSale lines support a beverage review?', 'Which jurisdiction-specific alcohol, allergen or serving facts require identified authority?', 'Which proposed Inventory, Recipe or Menu change must be handed to its owning capability?'],
   toolHypotheses: [
+    { id: 'kitchen.drinks.create-drink', label: 'Create Drink', layer: 'human', purpose: 'Create one Kitchen-owned sellable beverage.', inputs: ['name', 'optional description and image'], outputs: ['actor-stamped Drink'], evidence: ['current Kitchen and actor'], authority: 'The guarded Drink create mutation writes Drink-owned fields and Firestore rules authorize the selected Kitchen path.', approval: 'The operator explicitly submits the Drink.', status: 'available' },
+    { id: 'kitchen.drinks.update-drink', label: 'Update Drink', layer: 'human', purpose: 'Update the current Drink image, name or description, with contextual DrinksAI assistance where useful.', inputs: ['current Drink', 'operator-confirmed field changes', 'optional confirmed notes for an AI-assisted description'], outputs: ['actor-stamped Drink changes', 'editable AI proposal when requested'], evidence: ['canonical Drink identity', 'operator-confirmed changes and notes'], authority: 'Guarded Drink field and media mutations own canonical writes. DrinksAI may propose from supplied evidence but cannot update the Drink.', approval: 'The operator explicitly submits ordinary field changes and separately reviews, edits and approves every AI proposal.', status: 'available' },
+    { id: 'kitchen.drinks.delete-drink', label: 'Delete Drink', layer: 'human', purpose: 'Permanently remove one Drink after reviewing the selected record.', inputs: ['current Drink identity'], outputs: ['confirmed deletion'], evidence: ['canonical Drink and current Kitchen authority'], authority: 'The guarded Drink delete mutation targets only the selected Drink and Firestore rules authorize the Kitchen path.', approval: 'The destructive action requires explicit operator confirmation.', status: 'available' },
     { id: 'kitchen.drinks.track-stock', label: 'Beverage Inventory Tracker', layer: 'compound', purpose: 'Provide a Drink-focused stock view and send explicit beverage counts or movements to Inventory.', inputs: ['Drink or beverage Ingredient', 'location', 'quantity, unit and movement reason'], outputs: ['Inventory-owned observation or movement linked to the Drink'], evidence: ['canonical Drink and Ingredient identity', 'authorized observed quantity'], authority: 'Inventory remains the stock authority; this Tool cannot create a parallel Drink stock balance.', approval: 'The operator explicitly submits each observed count or movement.', status: 'requested' },
     { id: 'kitchen.drinks.calculate-cost', label: 'Drink Cost Calculator', layer: 'ai-assisted', purpose: 'Calculate direct cost per serve from Recipe measures and effective Ingredient prices.', inputs: ['Drink', 'Recipe', 'Ingredient prices, units and yields'], outputs: ['source-linked Drink cost with effective time and unknowns'], evidence: ['canonical Recipe and Ingredient records'], authority: 'The Tool does not invent prices, measures, conversions, wastage or Menu price.', approval: 'Calculation is read-only; accepting a Recipe or Menu change is separate.', status: 'requested' },
     { id: 'kitchen.drinks.manage-recipe', label: 'Cocktail Recipe Management', layer: 'compound', purpose: 'Create or update the Recipe used by a mixed Drink through Recipe-owned commands.', inputs: ['Drink', 'Recipe ingredients, measures, method and yield', 'named changes'], outputs: ['Recipe-owned actor-stamped record linked to the Drink'], evidence: ['authorized Ingredient identities and current Recipe'], authority: 'Recipe remains authoritative; the Drink capability does not store a duplicate method or yield.', approval: 'An authorized operator confirms the Recipe changes.', status: 'requested' },
     { id: 'kitchen.drinks.review-menu', label: 'Beverage Menu Review', layer: 'compound', purpose: 'Assemble availability, price, placement, cost and bounded sales evidence for Drinks on a Menu.', inputs: ['Drink set', 'Menu placements and prices', 'Inventory availability', 'cost and KitchenSale evidence'], outputs: ['source-linked beverage Menu review and proposed actions'], evidence: ['owning capability records with explicit scope'], authority: 'The Tool does not invent profitability or silently change Inventory, Drink, Recipe or Menu records.', approval: 'Review is read-only; every accepted change is delegated and explicitly approved.', status: 'requested' },
   ] satisfies KitchenDrinksToolHypothesis[],
   aiContract: {
-    drinksAI: ['Own Drink interpretation, beverage-focused deductions and the Drink Tool catalogue.', 'Resolve Inventory, Recipe, Ingredient, Menu and KitchenSale evidence from their owning capabilities.', 'Keep canonical facts, derived calculations, proposals and accepted cross-capability changes distinct.', 'Never invent stock, cost, measures, price, sales, allergens or alcohol-control facts.', 'Expose every current Tool as requested until trusted implementation and registration exist.'],
+    drinksAI: ['Own Drink interpretation, beverage-focused deductions and the Drink Tool catalogue.', 'Resolve Inventory, Recipe, Ingredient, Menu and KitchenSale evidence from their owning capabilities.', 'Keep canonical facts, derived calculations, proposals and accepted cross-capability changes distinct.', 'Never invent stock, cost, measures, price, sales, allergens or alcohol-control facts.', 'Expose Create Drink and Update Drink as available and preserve the requested status of unimplemented Tools.'],
     kitchenAI: ['Recognise Drink intent and delegate it to DrinksAI.', 'Pass selected Kitchen and authorized context without copying beverage expertise.', 'Coordinate explicit handoffs among DrinksAI, InventoryAI, RecipesAI, MenusAI and Finance evidence.', 'Discover real Tool availability through DrinksAI registration and preserve approval boundaries.'],
     activation: ['Canonical Drink identity and specification records are confirmed.', 'Trusted Ingredient, Recipe, Inventory, Menu and KitchenSale readers exist.', 'Beverage units, yields, effective prices and movement rules are explicit.', 'Cross-capability commands preserve ownership, authorization, stamps and approvals.', 'Tool registration, UI and end-to-end verification are complete.'],
   },

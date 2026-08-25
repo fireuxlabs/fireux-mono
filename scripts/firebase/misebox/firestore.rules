@@ -1387,7 +1387,8 @@ service cloud.firestore {
               'orders',
               'private',
               'sales',
-              'team'
+              'team',
+              'waste-events'
             ]);
           }
 
@@ -1415,6 +1416,58 @@ service cloud.firestore {
           return exists(
             /databases/$(database)/documents/kitchens/$(kitchenId)
           );
+        }
+
+        match /waste-events/{wasteEventId} {
+          function isValidKitchenWasteEvent(data) {
+            return data is map &&
+              data.keys().hasAll([
+                'kitchen_id', 'item_name', 'quantity', 'unit', 'reason',
+                'source', 'occurred_at', 'notes', 'created', 'updated'
+              ]) &&
+              data.keys().hasOnly([
+                'kitchen_id', 'item_name', 'quantity', 'unit', 'reason',
+                'source', 'occurred_at', 'notes', 'created', 'updated'
+              ]) &&
+              data.kitchen_id == kitchenId &&
+              isValidBoundedString(data.item_name, 300) &&
+              data.item_name.size() > 0 &&
+              data.quantity is number &&
+              data.quantity > 0 && data.quantity <= 1000000 &&
+              isValidBoundedString(data.unit, 80) && data.unit.size() > 0 &&
+              data.reason in [
+                'spoilage', 'preparation', 'overproduction',
+                'cooking_error', 'returned', 'other'
+              ] &&
+              data.source in [
+                'storage', 'prep', 'production', 'service',
+                'customer_return', 'other'
+              ] &&
+              data.occurred_at is timestamp &&
+              isValidBoundedString(data.notes, 5000) &&
+              validCreatedStamp(data.created) &&
+              validUpdatedStamp(data.updated);
+          }
+
+          allow get, list: if hasKitchenWorkflowParent() &&
+            canReadWorkspace('kitchens', kitchenId);
+          allow create: if hasKitchenWorkflowParent() &&
+            isValidFirestoreDocumentId(wasteEventId) &&
+            canOperateWorkspace('kitchens', kitchenId) &&
+            isValidKitchenWasteEvent(request.resource.data) &&
+            request.resource.data.occurred_at == request.time &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == workspaceManagementAppId(
+              get(workspaceRootPath('kitchens', kitchenId)).data
+            ) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update, delete: if false;
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
         }
 
         match /stations/{stationId} {

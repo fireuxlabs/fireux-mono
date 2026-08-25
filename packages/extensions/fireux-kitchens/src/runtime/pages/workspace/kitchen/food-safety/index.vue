@@ -1,19 +1,21 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-food-safety">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Food Safety" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="food-safety" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="food-safety" />
+          <WorkspaceKitchenCapabilityAI
             operation="food-safety"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="food-safety" />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="food-safety" />
+          <WorkspaceKitchenCapabilityView operation="food-safety" />
+          <WorkspaceKitchenCapabilityGuidingLiterature
+            operation="food-safety"
+          />
           <WorkspaceKitchenResearchSegue
             capability="Food Safety"
             base-path="/workspace/kitchen/food-safety/search-demand"

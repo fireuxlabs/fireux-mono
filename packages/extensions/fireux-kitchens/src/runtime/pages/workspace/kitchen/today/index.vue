@@ -8,14 +8,18 @@
       <template #body>
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
           <header class="grid gap-3 border-b border-default pb-8">
-            <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
+            <p
+              class="m-0 text-xs font-semibold uppercase tracking-wide text-primary"
+            >
               Daily coordination
             </p>
             <h1 class="m-0 text-3xl font-semibold text-highlighted">
               What needs attention today?
             </h1>
             <p class="m-0 max-w-3xl text-base text-muted">
-              Open the Kitchen capability that owns the work. As those capabilities gain live, time-bound records, this page can summarise them without copying their authority.
+              Open the Kitchen capability that owns the work. As those
+              capabilities gain live, time-bound records, this page can
+              summarise them without copying their authority.
             </p>
           </header>
 
@@ -37,8 +41,12 @@
                 class="h-auto justify-start p-4 text-left"
               >
                 <span class="grid gap-1">
-                  <span class="font-semibold text-highlighted">{{ item.label }}</span>
-                  <span class="text-sm font-normal text-muted">{{ item.question }}</span>
+                  <span class="font-semibold text-highlighted">{{
+                    item.label
+                  }}</span>
+                  <span class="text-sm font-normal text-muted">{{
+                    item.question
+                  }}</span>
                 </span>
               </UButton>
             </div>

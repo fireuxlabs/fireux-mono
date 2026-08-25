@@ -22,6 +22,41 @@ export const kitchenPerformanceSearchDemand = {
     { label: 'Toast Kitchen operations reporting', url: 'https://central.toasttab.com/articles/Knowledge/Kitchen-Reports-Overview', note: 'Validates fulfillment timing from receipt through completion and handoff, while explicitly depending on KDS records.' },
     { label: 'Lightspeed KDS statistics', url: 'https://k-series-support.lightspeedhq.com/hc/en-us/articles/4403156122651-KDS-Statistics', note: 'Validates product-level preparation counts and timing by selected period when a KDS provides the source events.' },
   ],
+  records: [
+  {
+    id: 'kitchen.performance.operational-evidence',
+    label: 'Operational performance evidence',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Orders, Mise, Stations, Waste, Inventory and Sales',
+    authority: 'Performance reads bounded events from their owners and never stores a copied operational history.',
+    facts: [
+      'Order timestamps and transitions',
+      'Mise completion evidence',
+      'Station routing',
+      'Waste and Inventory observations',
+      'KitchenSales'
+    ],
+    readBy: [
+      'kitchen.performance.review-service-timing',
+      'kitchen.performance.review-stations',
+      'kitchen.performance.review-production',
+      'kitchen.performance.compare-periods'
+    ],
+    writtenBy: []
+  },
+  {
+    id: 'kitchen.performance.review',
+    label: 'Performance review',
+    kind: 'projection',
+    status: 'requested',
+    owner: 'Performance',
+    authority: 'A review is a source-linked comparison with coverage and uncertainty, not a stored causal or personnel judgement.',
+    facts: [ 'scope and period', 'measure definitions', 'source links and coverage', 'observations, uncertainty and exclusions' ],
+    readBy: [],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen, owner-local service or period and measure definition apply?', 'Which explicit lifecycle event starts and ends each duration?', 'Does every included Order or work item contain both authoritative timestamps?', 'Which Station mapping applied when the work occurred?', 'Which volume, item count, order type, channel or complexity context accompanies timing?', 'Which Mise tasks were planned, started, completed, blocked or late under the same definitions?', 'Which readiness requirement version and service context produced each check result?', 'Which missing, anomalous or excluded records affect coverage?', 'Are percentiles, averages and on-time measures calculated over the same eligible population?', 'Which observation is a supported measure rather than a claim about people, quality, cause or profit?'],
   toolHypotheses: [
     { id: 'kitchen.performance.review-service-timing', label: 'Service Timing Report', layer: 'ai-assisted', purpose: 'Summarise complete Order lifecycle durations, volumes and coverage for an explicit Kitchen-local period.', inputs: ['completed Order transition histories', 'period', 'named start and end events'], outputs: ['count, duration distribution, percentiles, on-time measures and missing coverage'], evidence: ['authoritative timestamped Order transitions only'], authority: 'The Tool cannot derive observed timing from estimates, current status or one update stamp.', approval: 'Read-only reporting needs no mutation approval.', status: 'requested' },

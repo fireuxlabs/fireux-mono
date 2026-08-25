@@ -120,15 +120,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const kitchenDemoTypes = read(repoRoot, `${kitchenBase}demo/core/types.ts`)
   const kitchenWorkspaceIngredients = read(
     repoRoot,
-    `${kitchenBase}composables/workspace/operations/Ingredients/useKitchenWorkspaceIngredients.ts`
+    `${kitchenBase}composables/workspace/Ingredients/useKitchenWorkspaceIngredients.ts`
   )
   const kitchenWorkspaceIngredientRead = read(
     repoRoot,
-    `${kitchenBase}components/Workspace/Operations/Ingredients/Read.vue`
+    `${kitchenBase}components/Workspace/Ingredients/Read.vue`
   )
   const kitchenIngredientRoots = read(
     repoRoot,
-    `${kitchenBase}composables/workspace/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
+    `${kitchenBase}composables/workspace/Ingredients/fetch/useKitchenIngredientRoots.ts`
   )
   const supplierWorkspaceIngredients = read(
     repoRoot,

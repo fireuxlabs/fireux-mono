@@ -1,4 +1,4 @@
-export type KitchenStationsToolHypothesis = { id: `kitchen.stations.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' }
+export type KitchenStationsToolHypothesis = { id: `kitchen.stations.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' | 'available' }
 
 export const kitchenStationsSearchDemand = {
   observedAt: '2026-08-23', geography: 'English-language web', language: 'English',
@@ -22,15 +22,39 @@ export const kitchenStationsSearchDemand = {
     { label: 'LS Central KDS item routing', url: 'https://help.lscentral180.lsretail.com/Content/LS-Hospitality/Kitchen-Display-System/On-KDS-Item-Routing.htm', note: 'Validates separating item-to-production-section routing from display-Station mapping.' },
     { label: 'Unilever Food Solutions mise en place checklist', url: 'https://www.unileverfoodsolutions.co.in/wp-content/uploads/2021/04/Work-Smart-Mise-en-Place-Checklist-for-Chefs-Unilever-Food-Solutions.pdf', note: 'Validates Station readiness as a concrete pre-service Kitchen concern.' },
   ],
+  records: [
+  {
+    id: 'kitchen.stations.station',
+    label: 'Kitchen Station',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Stations',
+    authority: 'Station owns the stable named production destination and its lifecycle and display order.',
+    facts: [ 'Station identity and name', 'status and display order', 'audit stamps' ],
+    readBy: [ 'kitchen.stations.assign-dishes', 'kitchen.stations.set-readiness', 'kitchen.stations.set-competencies' ],
+    writtenBy: [ 'kitchen.stations.create-station' ]
+  },
+  {
+    id: 'kitchen.stations.configuration',
+    label: 'Station configuration',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Stations',
+    authority: 'Routing, readiness requirements and competency requirements are versioned configuration, not live Mise or Team evidence.',
+    facts: [ 'Dish or stage routing', 'readiness requirements', 'competency requirements', 'effective version and approval' ],
+    readBy: [],
+    writtenBy: [ 'kitchen.stations.assign-dishes', 'kitchen.stations.set-readiness', 'kitchen.stations.set-competencies' ]
+  }
+],
   recordQuestions: ['What is the Station called and what production role does it represent?', 'Which Dishes, preparation stages or work types route there?', 'Does work route in parallel or through an ordered Station sequence?', 'Which screens, printers or endpoints serve the Station without defining it?', 'Which readiness requirements apply before a service?', 'Which competencies are required and which Team evidence supports an assignment?', 'When is a Station active, unavailable or retired, and what downstream mappings depend on it?'],
   toolHypotheses: [
-    { id: 'kitchen.stations.create-station', label: 'Set Up Kitchen Station', layer: 'human', purpose: 'Create one named Kitchen production destination.', inputs: ['name', 'role', 'display order', 'optional description'], outputs: ['KitchenStation'], evidence: ['current Kitchen and actor'], authority: 'A trusted command must verify Kitchen write authority and unique identity.', approval: 'The operator explicitly submits the Station.', status: 'requested' },
+    { id: 'kitchen.stations.create-station', label: 'Add Station', layer: 'human', purpose: 'Create one named Kitchen production destination.', inputs: ['name'], outputs: ['active KitchenStation with the next display order'], evidence: ['current Kitchen, actor and existing Station order'], authority: 'The guarded Station create mutation writes the selected Kitchen path and Firestore rules authorize it.', approval: 'The operator explicitly submits the Station.', status: 'available' },
     { id: 'kitchen.stations.assign-dishes', label: 'Assign Dishes to Station', layer: 'human', purpose: 'Connect Dishes or preparation stages to their responsible Station.', inputs: ['Station', 'Dishes or stages', 'optional sequence'], outputs: ['reviewable routing configuration'], evidence: ['authorized Station and Dish identities'], authority: 'The command changes configuration only and does not create live Order work.', approval: 'The operator confirms the affected routing mappings.', status: 'requested' },
     { id: 'kitchen.stations.set-readiness', label: 'Set Station Readiness Checklist', layer: 'human', purpose: 'Define the checks required before a Station is ready for service.', inputs: ['Station', 'named checks', 'applicable service context'], outputs: ['versioned readiness requirements'], evidence: ['Kitchen policy and Station needs'], authority: 'Defining requirements is distinct from recording a completed check.', approval: 'The operator confirms checklist changes.', status: 'requested' },
     { id: 'kitchen.stations.set-competencies', label: 'Set Station Competencies', layer: 'human', purpose: 'Record competencies required to work a Station.', inputs: ['Station', 'competency requirements'], outputs: ['versioned Station requirements'], evidence: ['Kitchen operating policy'], authority: 'The Tool cannot grant Team roles or claim a person has a competency.', approval: 'The operator confirms requirement changes.', status: 'requested' },
   ] satisfies KitchenStationsToolHypothesis[],
   aiContract: {
-    stationsAI: ['Own Station interpretation, configuration evidence and its Tool catalogue.', 'Keep Station identity separate from devices, people and live work.', 'Use only authorized Dish, Team and Kitchen configuration evidence.', 'Never infer competency or readiness from assignment alone.', 'Expose all current capability Tools as requested until trusted registration is complete.'],
+    stationsAI: ['Own Station interpretation, configuration evidence and its Tool catalogue.', 'Keep Station identity separate from devices, people and live work.', 'Use only authorized Dish, Team and Kitchen configuration evidence.', 'Never infer competency or readiness from assignment alone.', 'Expose Add Station as available and preserve the requested status of unimplemented Tools.'],
     kitchenAI: ['Recognise Station intent and delegate it to StationsAI.', 'Pass selected Kitchen and authorized context without copying Station expertise.', 'Discover real Tool availability through StationsAI registration.', 'Preserve Team, Mise and Orders authority when presenting Station deductions.'],
     activation: ['Canonical Station configuration and relationships are confirmed.', 'Trusted commands implement each Tool contract end to end.', 'Routing dependencies and retirement behaviour are validated.', 'Tool registration reports truthful availability.', 'Authorization, approval, audit behaviour, UI and verification are complete.'],
   },

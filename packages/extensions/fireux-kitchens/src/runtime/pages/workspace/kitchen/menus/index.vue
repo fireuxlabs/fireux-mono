@@ -1,41 +1,20 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-menus">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Menus" />
-
-        <UDashboardToolbar>
-          <template #right>
-            <UButton
-              v-if="canWrite"
-              to="/workspace/kitchen/menus/create#import-menu"
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-upload"
-              size="sm"
-            >
-              Import
-            </UButton>
-            <UButton
-              v-if="canWrite"
-              to="/workspace/kitchen/menus/create#create-menu"
-              icon="i-lucide-link"
-              size="sm"
-            >
-              Create from URL
-            </UButton>
-          </template>
-        </UDashboardToolbar>
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="menus" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="menus" />
-          <WorkspaceKitchenOperationsCapabilityView operation="menus" />
-          <WorkspaceKitchenOperationsMenus />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="menus" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="menus" />
+          <WorkspaceKitchenCapabilityAI
+            operation="menus"
+            :action-targets="menuActionTargets"
+          />
+          <WorkspaceKitchenCapabilityView operation="menus" />
+          <WorkspaceKitchenMenus />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="menus" />
           <WorkspaceKitchenResearchSegue
             capability="Menus"
             base-path="/workspace/kitchen/menus/search-demand"
@@ -47,11 +26,21 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspace } from '../../../../kitchen/composables/workspace/core/useKitchenWorkspace'
+import { computed } from 'vue'
+import { provideKitchenMenusWorkspace } from '../../../../kitchen/composables/workspace/Menus/useKitchenMenusWorkspace'
 
-const {
-  runtime: { canWrite },
-} = useKitchenWorkspace()
+const menusWorkspace = provideKitchenMenusWorkspace()
+const menuActionTargets = computed(() =>
+  menusWorkspace.menus.value.flatMap((menu) =>
+    ['kitchen.menus.update-menu', 'kitchen.menus.delete-menu'].map(
+      (actionId) => ({
+        actionId,
+        targetId: menu.id,
+        label: String(menu.name || 'Untitled Menu').trim(),
+      })
+    )
+  )
+)
 
 definePageMeta({
   layout: 'workspace',

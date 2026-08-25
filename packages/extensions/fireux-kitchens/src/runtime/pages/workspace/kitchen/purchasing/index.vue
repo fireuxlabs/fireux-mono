@@ -1,19 +1,19 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-purchasing">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Purchasing" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="purchasing" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="purchasing" />
+          <WorkspaceKitchenCapabilityAI
             operation="purchasing"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="purchasing" />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="purchasing" />
+          <WorkspaceKitchenCapabilityView operation="purchasing" />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="purchasing" />
           <WorkspaceKitchenResearchSegue
             capability="Purchasing"
             base-path="/workspace/kitchen/purchasing/search-demand"

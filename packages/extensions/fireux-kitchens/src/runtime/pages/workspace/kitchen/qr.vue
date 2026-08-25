@@ -21,7 +21,7 @@
             </p>
           </UCard>
 
-          <WorkspaceKitchenOperationsMenusQR />
+          <WorkspaceKitchenMenusQR />
         </section>
       </template>
     </UDashboardPanel>

@@ -18,6 +18,8 @@ import { kitchenSuppliersSearchDemand } from './suppliers-search-demand'
 import { kitchenTeamSearchDemand } from './team-search-demand'
 import { kitchenWasteReportSearchDemand } from './waste-report-search-demand'
 import { kitchenWasteSearchDemand } from './waste-search-demand'
+import type { KitchenCapabilityResearchRecord } from './capability-research'
+import { kitchenWasteEventRecordTool } from '../tools/waste'
 
 export type KitchenOperationToolStatus =
   | 'requested'
@@ -40,21 +42,31 @@ type ResearchTool = {
   label: string
   purpose: string
   status: 'requested' | 'available'
-  evidence?: readonly string[]
-  inputs?: readonly string[]
   authority: string
   approval: string
 }
 
+const recordIdsForTool = (
+  records: readonly KitchenCapabilityResearchRecord[],
+  toolId: `kitchen.${string}.${string}`
+) =>
+  records
+    .filter(
+      (record) =>
+        record.readBy.includes(toolId) || record.writtenBy.includes(toolId)
+    )
+    .map((record) => record.id)
+
 const researchTools = (
-  tools: readonly ResearchTool[]
+  tools: readonly ResearchTool[],
+  records: readonly KitchenCapabilityResearchRecord[]
 ): readonly KitchenOperationToolCapability[] =>
   tools.map((tool) => ({
     id: tool.id,
     label: tool.label,
     description: tool.purpose,
     status: tool.status,
-    requiredRecords: tool.evidence || tool.inputs || [],
+    requiredRecords: recordIdsForTool(records, tool.id),
     authority: tool.authority,
     approval: tool.approval,
   }))
@@ -70,7 +82,7 @@ const liveTeamTools: readonly KitchenOperationToolCapability[] =
     status: tool.surfaces.agent.callable
       ? ('agent-ready' as const)
       : ('available' as const),
-    requiredRecords: [tool.context.target],
+    requiredRecords: recordIdsForTool(kitchenTeamSearchDemand.records, tool.id),
     authority: tool.context.constraints?.join(' ') || 'Selected Kitchen Team.',
     approval:
       tool.confirmation === 'required'
@@ -78,36 +90,104 @@ const liveTeamTools: readonly KitchenOperationToolCapability[] =
         : 'No mutation confirmation is required.',
   }))
 
+const wasteTools = researchTools(
+  kitchenWasteSearchDemand.toolHypotheses,
+  kitchenWasteSearchDemand.records
+).map((tool) =>
+  tool.id === kitchenWasteEventRecordTool.id
+    ? {
+        ...tool,
+        label: kitchenWasteEventRecordTool.surfaces.human.label,
+        description: kitchenWasteEventRecordTool.surfaces.human.description,
+        authority: kitchenWasteEventRecordTool.context.constraints.join(' '),
+        approval:
+          'The operator explicitly reviews and submits the Waste event.',
+      }
+    : tool
+)
+
 export const kitchenOperationToolCapabilities = {
-  identity: researchTools(kitchenIdentitySearchDemand.toolHypotheses),
-  dishes: researchTools(kitchenDishesSearchDemand.toolHypotheses),
-  drinks: researchTools(kitchenDrinksSearchDemand.toolHypotheses),
-  ingredients: researchTools(kitchenIngredientsSearchDemand.toolHypotheses),
-  'food-safety': researchTools(kitchenFoodSafetySearchDemand.toolHypotheses),
-  menus: researchTools(kitchenMenusSearchDemand.toolHypotheses),
-  mise: researchTools(kitchenMiseSearchDemand.toolHypotheses),
-  orders: researchTools(kitchenOrdersSearchDemand.toolHypotheses),
-  inventory: researchTools(kitchenInventorySearchDemand.toolHypotheses),
-  purchasing: researchTools(kitchenPurchasingSearchDemand.toolHypotheses),
-  receiving: researchTools(kitchenReceivingSearchDemand.toolHypotheses),
-  waste: researchTools(kitchenWasteSearchDemand.toolHypotheses),
-  recipes: researchTools(kitchenRecipesSearchDemand.toolHypotheses),
-  stations: researchTools(kitchenStationsSearchDemand.toolHypotheses),
+  identity: researchTools(
+    kitchenIdentitySearchDemand.toolHypotheses,
+    kitchenIdentitySearchDemand.records
+  ),
+  dishes: researchTools(
+    kitchenDishesSearchDemand.toolHypotheses,
+    kitchenDishesSearchDemand.records
+  ),
+  drinks: researchTools(
+    kitchenDrinksSearchDemand.toolHypotheses,
+    kitchenDrinksSearchDemand.records
+  ),
+  ingredients: researchTools(
+    kitchenIngredientsSearchDemand.toolHypotheses,
+    kitchenIngredientsSearchDemand.records
+  ),
+  'food-safety': researchTools(
+    kitchenFoodSafetySearchDemand.toolHypotheses,
+    kitchenFoodSafetySearchDemand.records
+  ),
+  menus: researchTools(
+    kitchenMenusSearchDemand.toolHypotheses,
+    kitchenMenusSearchDemand.records
+  ),
+  mise: researchTools(
+    kitchenMiseSearchDemand.toolHypotheses,
+    kitchenMiseSearchDemand.records
+  ),
+  orders: researchTools(
+    kitchenOrdersSearchDemand.toolHypotheses,
+    kitchenOrdersSearchDemand.records
+  ),
+  inventory: researchTools(
+    kitchenInventorySearchDemand.toolHypotheses,
+    kitchenInventorySearchDemand.records
+  ),
+  purchasing: researchTools(
+    kitchenPurchasingSearchDemand.toolHypotheses,
+    kitchenPurchasingSearchDemand.records
+  ),
+  receiving: researchTools(
+    kitchenReceivingSearchDemand.toolHypotheses,
+    kitchenReceivingSearchDemand.records
+  ),
+  waste: wasteTools,
+  recipes: researchTools(
+    kitchenRecipesSearchDemand.toolHypotheses,
+    kitchenRecipesSearchDemand.records
+  ),
+  stations: researchTools(
+    kitchenStationsSearchDemand.toolHypotheses,
+    kitchenStationsSearchDemand.records
+  ),
   team: [
     ...liveTeamTools,
-    ...researchTools(kitchenTeamSearchDemand.proposedTools),
+    ...researchTools(
+      kitchenTeamSearchDemand.proposedTools,
+      kitchenTeamSearchDemand.records
+    ),
   ],
-  suppliers: researchTools(kitchenSuppliersSearchDemand.toolHypotheses),
-  finance: researchTools(kitchenSalesSearchDemand.toolHypotheses),
-  costs: researchTools(kitchenCostsSearchDemand.toolHypotheses),
-  'waste-report': researchTools(
-    kitchenWasteReportSearchDemand.toolHypotheses
+  suppliers: researchTools(
+    kitchenSuppliersSearchDemand.toolHypotheses,
+    kitchenSuppliersSearchDemand.records
   ),
-  performance: researchTools(kitchenPerformanceSearchDemand.toolHypotheses),
-} as const satisfies Record<
-  string,
-  readonly KitchenOperationToolCapability[]
->
+  finance: researchTools(
+    kitchenSalesSearchDemand.toolHypotheses,
+    kitchenSalesSearchDemand.records
+  ),
+  costs: researchTools(
+    kitchenCostsSearchDemand.toolHypotheses,
+    kitchenCostsSearchDemand.records
+  ),
+  'waste-report': researchTools(
+    kitchenWasteReportSearchDemand.toolHypotheses,
+    kitchenWasteReportSearchDemand.records
+  ),
+  performance: researchTools(
+    kitchenPerformanceSearchDemand.toolHypotheses,
+    kitchenPerformanceSearchDemand.records
+  ),
+} as const satisfies Record<string, readonly KitchenOperationToolCapability[]>
 
 export type KitchenOperationCapabilitySlug =
   keyof typeof kitchenOperationToolCapabilities

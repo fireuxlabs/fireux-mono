@@ -15,6 +15,12 @@ const handlers = [
     method: 'post',
     handler: './runtime/server/api/workspace/kitchen/menus/ai.post',
   },
+  {
+    route: '/api/workspace/kitchen/drinks/description',
+    method: 'post',
+    handler:
+      './runtime/server/api/workspace/kitchen/drinks/description.post',
+  },
 ] satisfies FireuxServerHandler[]
 
 export function configureServer(resolver: Resolver) {

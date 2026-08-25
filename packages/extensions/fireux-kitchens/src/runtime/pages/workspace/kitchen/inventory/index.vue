@@ -1,19 +1,19 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-inventory">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Inventory" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="inventory" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="inventory" />
+          <WorkspaceKitchenCapabilityAI
             operation="inventory"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="inventory" />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="inventory" />
+          <WorkspaceKitchenCapabilityView operation="inventory" />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="inventory" />
           <WorkspaceKitchenResearchSegue
             capability="Inventory"
             base-path="/workspace/kitchen/inventory/search-demand"

@@ -1,7 +1,7 @@
 # Misebox GPT Context
 
-Updated: 2026-08-23
-Ref: 7f18d4e91
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -348,7 +348,15 @@ Before each task:
   remains governed by the shared `fireux-ai` disabled, simulator, codex, and
   app modes. Local Codex testing receives the same bounded KitchenAI envelope
   as the provider and identifies its execution lane in the response. Named
-  operation-agent scopes are logical bounded delegations inside that envelope,
+  KitchenAI voice input is push-to-talk transcription, not a parallel agent or
+  a separate command path. The Workspace-ignorant recorder belongs to
+  `fireux-ai`; Misebox owns the authenticated Kitchen endpoint that forwards a
+  short, bounded clip for server-side transcription. Misebox does not persist
+  the clip. The returned transcript enters the ordinary KitchenAI composer for
+  operator review and is never submitted automatically, so existing reasoning,
+  tool selection, confirmation, and authorization remain authoritative. Spoken
+  responses and realtime duplex voice are not current capabilities.
+  Named capability-agent scopes are logical bounded delegations inside that envelope,
   not automatic extra model calls: KitchenAI currently consults MenuAI's exact
   Menu manifest and confirmed Menu context for its Kitchen summary. An
   operation agent gains a separate inference only when independent reasoning
@@ -356,17 +364,25 @@ Before each task:
   agent catalogue is composed at
   `fireux-misebox/runtime/ai/workspace-agents`: MiseboxAI is an explicit
   ecosystem node beneath CoreAI and parents only KitchenAI, while
-  `fireux-kitchens` owns its exact operation-agent members. Bringli alone hosts
+  `fireux-kitchens` owns its exact capability-agent members. Bringli alone hosts
   SupplierAI and the Supplier Workspace; Misebox consumes bounded Supplier truth
-  through the Kitchen-owned Suppliers operation and never acquires Supplier
+  through the Kitchen-owned Suppliers capability and never acquires Supplier
   selection, mutation authority, onboarding, or agent coordination. Each
   Workspace coordinator declares its selected entity kind, id parameter,
   required selection, mutation authority, and owner-labelled context
   providers. Agent catalogue entries start with no tools and use only
-  source-defined top-level Operations; speculative child capabilities such as
+  source-defined capability doorways; the user-facing Operations group is
+  navigation, not their filesystem or route owner. Speculative children such as
   Stockholding do not enter the agent spine. KitchenAI and MenuAI may attach
   one short structured capability tip to their existing private Kitchen usage
   record for later operator review; the visible answer excludes that marker.
+  Capability maturity changes the evidence and runnable Tool catalogue supplied
+  to the model; it never selects a hand-written reply, phrase matcher, or
+  alternate request path. KitchenAI and each capability AI receive the current
+  question plus registered context, records, and Tool metadata. The model
+  interprets language and chooses relevant registered actions; application code
+  only validates the selected action, opens its UI surface, and enforces the
+  Tool's authority and approval contract.
   Workspace jobs and domain authority must prove each tool separately.
   TeamAI's proved tools are `kitchen.team.create-member`,
   `kitchen.team.read-members`, `kitchen.team.update-member`,
@@ -603,19 +619,116 @@ Before each task:
   human tools, AI-assisted tools, compound tools, and approvals. Production
   landing copy may summarise only capabilities already proved by those child
   sources; the research corpus remains distinct from live operational evidence.
+  A capability-owned catalogue is the semantic source for Tool labels,
+  descriptions, authority, approval, and maturity. The Workspace maintains only
+  the concrete UI handler needed to open an available Tool's route or modal.
+  Capability AI receives that capability's handled actions; KitchenAI receives
+  the combined handled actions. Neither AI may advertise a `requested` Tool as
+  runnable, and every mutation still requires its Tool's explicit approval.
   Waste is the first complete capability-level language baseline. Its explicit
   route sequence is `/workspace/kitchen/waste/search-demand` for observed
   evidence, `/analysis` for operator jobs and required record questions, then
   `/tools` for named Tool specifications and the WasteAI/KitchenAI delegation
   contract. The Kitchen-owned source keeps Google Autocomplete observations,
   independent validation literature, interpretation, and proposed responses
-  visibly separate. Its four current Tool specifications remain `requested`:
-  record a Waste event, review Waste patterns, calculate only supported Waste
-  cost, and propose an evidenced reduction action. None is registered as an
-  available Tool or product promise until its canonical records, trusted
-  reader or command, authority, approval, UI, audit behaviour, and verification
-  exist. Later capability passes may follow this three-stage page shape without
-  creating a second App-domain search-demand registry.
+  visibly separate. Record Waste is the first available Tool: it creates one
+  immutable, actor-stamped `waste-events` child record through the authorized
+  current Kitchen and records item name, quantity, unit, reason, source, occurrence,
+  and optional notes. It does not adjust Inventory or infer cost. Review Waste
+  patterns, supported Waste cost, and evidenced reduction proposals remain
+  `requested` until their readers, authority, UI, and verification exist. Later
+  capability passes may follow this three-stage page shape without creating a
+  second App-domain search-demand registry. The ordinary capability routes now
+  use the named Kitchen Research presentation family: `Evidence`, `Analysis`,
+  and `ToolSpecifications` render capability-owned hard-coded research models.
+  Each Nuxt route still owns its panel, navbar, body slot, metadata, URL, and
+  imported capability source directly. Today and Overview retain their
+  aggregate presentations, while Team retains its distinct live-versus-proposed
+  Tool presentation; these differences do not create another research system.
+  Every specialist capability research source also declares its record map.
+  Each entry distinguishes capability-owned records, references to another
+  owner, and derived projections; marks the source `available`, `partial`, or
+  `requested`; and names the Tool specifications that read or write it. The
+  Analysis stage renders that map, and ordinary Tool specifications project the
+  same links. A projection is never promoted to stored truth merely to complete
+  the map, and a proposed record does not imply an implemented model or path.
+  The runtime operation-agent catalogue derives each Tool's `requiredRecords`
+  from these same record links; it does not reinterpret free-text inputs or
+  maintain another record-requirement list. Human availability and agent
+  callability remain separate: a working UI Tool is `available`, while only a
+  registered trusted agent executor may be `agent-ready`.
+  A target-aware doorway supplies bounded `{ actionId, targetId, label }`
+  candidates from the capability's current canonical collection. AI may select
+  only one supplied candidate and the client opens that record's existing
+  route; this is navigation, not an agent mutation. Drinks proves the contract,
+  and Dishes, Recipes, Menus and Mise reuse it for their already-available
+  record actions. Untargeted toolbar actions remain unchanged. Ingredients and
+  Stations do not participate until they have both an available target Tool
+  and a real record-detail surface.
+  DishesAI is connected through the same shared KitchenAI inference path as
+  DrinksAI. It receives only authorized canonical `item_kind: food` Dish
+  records and the status-bearing Dishes Tool catalogue. It may identify direct
+  field evidence such as a missing image or absent description, but Recipe,
+  Ingredient, Menu price, sales, allergen, stock, cost and profitability facts
+  remain unavailable unless their owning records are explicitly supplied.
+  DrinksAI receives authorized canonical `item_kind: drink` records, its
+  status-bearing Tool catalogue, and its source research contract. Its
+  registration names Recipes, Ingredients, Inventory, Menus, and Finance as
+  optional owner-labelled evidence providers; that registration does not
+  manufacture their records. It may explain future beverage deductions and
+  identify direct Drink-field evidence today. A poor-stock-holding or
+  remove-from-menu recommendation requires a traceable Drink relationship,
+  compatible Inventory evidence, bounded usage or Sales, effective cost, and
+  Menu placement. Until those owner records are supplied, DrinksAI must state
+  the evidence gap and must not make the recommendation for a real Drink.
+  RecipesAI is connected through that same shared inference path and receives
+  only authorized canonical Recipe identity records plus the Recipes Tool
+  catalogue. It may identify missing names or descriptions and open the
+  existing Recipe detail surface. Ingredients, quantities, method, yield,
+  portions, allergens, cost, scaling and production readiness remain unknown
+  until their owning Recipe-production records and readers genuinely exist.
+  IngredientsAI is connected through the shared KitchenAI inference path. It
+  receives a bounded authorized read of the selected Kitchen's Ingredient
+  links, their canonical root Ingredient identity fields, unresolved link ids,
+  and the status-bearing Ingredients Tool catalogue. It may reason from stored
+  name, aliases, category, kind, status and image presence. Units, conversions,
+  food facts, allergens, nutrition, Supplier offers, prices, receipts, stock,
+  replenishment, Recipe usage and Waste remain unavailable unless their owning
+  evidence is supplied explicitly. Add Ingredient remains a human-available
+  selection Tool; no requested Tool is agent-executable.
+  MiseAI is connected through the shared KitchenAI inference path and receives
+  authorized canonical Prep Task records plus the status-bearing Mise Tool
+  catalogue. It may identify explicitly blocked work and other direct stored
+  states, then open the existing create or task-detail surfaces. It does not
+  silently change a task, and it cannot invent quantities, Station or Team
+  identity, demand, Recipe requirements, deadlines, completion, shortages or
+  Waste evidence.
+  FoodSafetyAI is connected to the same shared inference path as a bounded
+  research-only specialist. It receives the capability-owned operator-job
+  literature and status-bearing requested Tool catalogue, while explicitly
+  declaring operational evidence not connected. It cannot claim an approved
+  plan, a reading, limit, schedule, deviation, corrective action, product
+  disposition, legal advice, or compliance result. Live deductions remain
+  unavailable until canonical Food Safety plan, check, and corrective-action
+  records and their trusted readers genuinely exist.
+  StationsAI is connected through the shared KitchenAI inference path and
+  receives only authorized canonical Kitchen Station records plus the
+  status-bearing Stations Tool catalogue. It may identify that no Station has
+  been created and open the available Add Station modal. Name, description,
+  active state, and display order are direct evidence; Dish routing, devices,
+  readiness, completed checks, Team assignment or competency, Prep workload,
+  Orders, performance, capacity, and service state remain unavailable unless
+  their owning records are explicitly supplied.
+  OrdersAI is connected through the shared KitchenAI inference path as a
+  privacy-bounded read-only specialist. It receives authorized canonical Order
+  identity, lifecycle state, type, channel, requested and estimated timing,
+  service references, non-customer fulfilment labels, item labels and
+  quantities, checked state, and audit timestamps. Customer identity, contact
+  details, notes, pricing, and payment are excluded from its inference
+  envelope. All Orders Tools remain requested: OrdersAI cannot mutate an Order
+  or infer payment, allergens, completion beyond stored status, delivery,
+  handoff, routing, Recipe work, stock, cost, profitability, urgency, delay,
+  performance, or causation.
   Inventory is the second differentiated member and follows the same three
   stages. Its language boundary treats physical counts as observations and
   levels, variance, supported value, and replenishment needs as deductions.
@@ -656,9 +769,10 @@ Before each task:
   Kitchen-owned production destination, distinct from its display device,
   assigned person, and current work. Stations own routing and readiness
   configuration; Mise and Orders own each live work projection, while Team owns
-  membership and competency evidence. Station records and partial UI do not by
-  themselves make the four catalogue Tools available; they remain `requested`
-  until their end-to-end contracts and registration are verified.
+  membership and competency evidence. Add Station is `available` through the
+  existing trusted create command and its Workspace modal. Routing, readiness,
+  and Station-analysis specifications remain `requested` until their end-to-end
+  contracts and registration are verified.
   Suppliers is the eighth differentiated member and is explicitly the
   Kitchen-side relationship capability, not ownership of the Supplier Entity.
   Supplier owns identity and offers; the Kitchen owns its connection and local
@@ -678,33 +792,38 @@ Before each task:
   referenced items. Imports remain source-linked proposals until reviewed;
   publication is an explicit projection; QR is only a doorway. Menu engineering
   uses bounded authoritative sales and cost evidence and leaves missing values
-  unknown. All four catalogue specifications remain `requested`.
+  unknown. Create Menu is `available` through the current reviewed creation
+  route. Import, publication, and engineering remain `requested` until their
+  complete Tool contracts are registered and verified.
   Dishes is the eleventh differentiated member. Dish owns the sellable food-item
   specification; Recipe owns production method and yield, Ingredient owns food
   facts and purchasing identity, Menu owns placement and displayed offer, and
   Finance supplies bounded KitchenSale measures. Dish cost, popularity and
   contribution remain derived evidence with explicit sources, scope and
-  unknowns. All four catalogue specifications remain `requested`.
+  unknowns. Create Dish is `available` through the current trusted creation
+  route; cost, popularity, and contribution specifications remain `requested`.
   Drinks is the twelfth differentiated member. Drink owns the sellable beverage
   specification, while Inventory owns beverage stock, Recipe owns mixed-drink
   method and yield, Menu owns placement and displayed price, and Finance owns
   bounded sales measures. Drink-facing stock, Recipe and Menu Tools are compound
-  handoffs to those authorities, never duplicate storage. All four catalogue
-  specifications remain `requested` even though the AI handshake is connected.
+  handoffs to those authorities, never duplicate storage. Create Drink is
+  `available` through the current trusted creation route; stock, Recipe, and
+  Menu handoffs remain `requested`.
   Recipes is the thirteenth differentiated member. Recipe owns its versioned
   Ingredients, quantities, method, expected yield and portion conversion.
   Ingredient owns identity and effective price evidence; Dish and Drink
   reference approved Recipes; Mise consumes scaled projections for work. Scaling
   never overwrites the base Recipe, observed and expected yield stay distinct,
-  and missing conversions or prices remain unknown. All four specifications
-  remain `requested`.
+  and missing conversions or prices remain unknown. Create Recipe is
+  `available` through the current Workspace modal and trusted command. Scaling,
+  costing, and production handoffs remain `requested`.
   Ingredients is the fourteenth differentiated member. Ingredient owns stable
   Kitchen identity, working units and reviewed food facts. Supplier offers,
   prices and receipts remain commercial evidence; Inventory owns quantities and
   replenishment policy; Waste owns loss events; Recipes, Dishes and Drinks own
-  their explicit references. Ingredient-facing count, reorder and Waste Tools
-  are compound handoffs, not duplicate storage. All four specifications remain
-  `requested`.
+  their explicit references. Add Ingredient is `available` through the current
+  canonical selection route. Count, reorder, and Waste Tools are compound
+  handoffs, not duplicate storage, and remain `requested`.
   Sales is the fifteenth differentiated member and remains bounded by immutable
   completed KitchenSales and the existing authorized gross-Sales projection.
   It owns daily reporting, item rollups, reconciliation and equivalent-period

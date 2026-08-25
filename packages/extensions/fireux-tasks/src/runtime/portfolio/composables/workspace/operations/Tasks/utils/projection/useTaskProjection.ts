@@ -1,4 +1,4 @@
-import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import type { TaskCreateInput } from '../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()

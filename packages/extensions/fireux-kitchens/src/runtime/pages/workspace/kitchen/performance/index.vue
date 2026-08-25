@@ -1,25 +1,27 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-performance">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Performance" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="performance" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="performance" />
+          <WorkspaceKitchenCapabilityAI
             operation="performance"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="performance" />
+          <WorkspaceKitchenCapabilityView operation="performance" />
           <UAlert
             color="neutral"
             variant="soft"
             title="Supported measures only"
             description="Performance comparisons require authoritative service, production, or readiness records. This doorway does not infer labour, productivity, or profit."
           />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="performance" />
+          <WorkspaceKitchenCapabilityGuidingLiterature
+            operation="performance"
+          />
           <WorkspaceKitchenResearchSegue
             capability="Performance"
             base-path="/workspace/kitchen/performance/search-demand"

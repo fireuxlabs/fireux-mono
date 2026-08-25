@@ -1,15 +1,15 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1 flex-col gap-4">
-    <WorkspaceKitchenOperationsCapabilityTools operation="orders" />
-    <WorkspaceKitchenOperationsCapabilityAI operation="orders" />
-    <WorkspaceKitchenOperationsCapabilityView operation="orders" />
-    <WorkspaceKitchenOperationsOrders />
-    <WorkspaceKitchenOperationsGuidingLiterature operation="orders" />
+  <section class="workspace-surface">
+    <WorkspaceKitchenCapabilityTools operation="orders" />
+    <WorkspaceKitchenCapabilityAI operation="orders" />
+    <WorkspaceKitchenCapabilityView operation="orders" />
+    <WorkspaceKitchenOrders />
+    <WorkspaceKitchenCapabilityGuidingLiterature operation="orders" />
     <WorkspaceKitchenResearchSegue
       capability="Orders & Service"
       base-path="/workspace/kitchen/orders/search-demand"
     />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">

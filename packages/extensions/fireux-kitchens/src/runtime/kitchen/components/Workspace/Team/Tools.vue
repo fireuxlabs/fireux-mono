@@ -17,7 +17,7 @@
         :label="createTool.label"
         :icon="createTool.icon"
         :disabled="!canWrite"
-        @click="addMemberOpen = true"
+        @click="performAction(createTool.id)"
       />
     </div>
 
@@ -40,17 +40,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 import { useKitchenTeamTools } from '../../../composables/workspace/team/useKitchenTeamTools'
+import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
-const addMemberOpen = ref(false)
 const { kitchenId, canWrite } = useKitchenWorkspaceTeam()
 const toast = useToast()
 const tools = useKitchenTeamTools()
 const createTool = tools.find(
   (candidate) => candidate.id === 'kitchen.team.create-member'
 )!
+const { activeToolId, performAction, closeTool } =
+  useKitchenCapabilityTools('team')
+const addMemberOpen = computed({
+  get: () => activeToolId.value === createTool.id,
+  set: (value: boolean) => {
+    if (!value) closeTool()
+  },
+})
 const handleMemberCreated = (result: { name: string }) => {
   addMemberOpen.value = false
   toast.add({

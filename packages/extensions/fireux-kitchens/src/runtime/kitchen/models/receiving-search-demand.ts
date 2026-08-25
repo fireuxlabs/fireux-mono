@@ -33,6 +33,36 @@ export const kitchenReceivingSearchDemand = {
     { label: 'StateFoodSafety receiving temperature log', url: 'https://www.statefoodsafety.com/Resources/Resources/receiving-temperature-log', note: 'Validates actor-stamped receiving temperatures and preventing temperature-abused food from being accepted.' },
     { label: 'Canadian Food Inspection Agency traceability inspection guidance', url: 'https://inspection.canada.ca/en/inspection-and-enforcement/guidance-food-activities/preventive-control-inspection/traceability-inspection', note: 'Validates integrity, damage, spoilage, contamination, temperature and receiving traceability as bounded control concerns.' },
   ],
+  records: [
+  {
+    id: 'kitchen.receiving.receipt',
+    label: 'Receiving record',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Receiving',
+    authority: 'Receipt records what physically arrived against a referenced commitment and preserves each line disposition.',
+    facts: [
+      'Supplier delivery and purchase reference',
+      'delivered quantities and units',
+      'inspection observations',
+      'accept, reject or hold disposition',
+      'actor, time and completion'
+    ],
+    readBy: [ 'kitchen.receiving.inspect-lines', 'kitchen.receiving.review-discrepancies', 'kitchen.receiving.complete-receipt' ],
+    writtenBy: [ 'kitchen.receiving.open-delivery', 'kitchen.receiving.inspect-lines', 'kitchen.receiving.complete-receipt' ]
+  },
+  {
+    id: 'kitchen.receiving.inventory-movement',
+    label: 'Accepted Inventory movement',
+    kind: 'reference',
+    status: 'requested',
+    owner: 'Inventory',
+    authority: 'Only explicitly accepted receipt quantities may be handed to Inventory through its trusted command.',
+    facts: [ 'accepted item and quantity', 'compatible unit', 'receipt and line identity', 'actor and occurrence time' ],
+    readBy: [ 'kitchen.receiving.complete-receipt' ],
+    writtenBy: []
+  }
+],
   recordQuestions: [
     'Which Supplier, delivery, purchase order and paperwork identify this receipt?',
     'What product, pack, quantity and weight were ordered, delivered and accepted?',

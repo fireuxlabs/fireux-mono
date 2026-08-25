@@ -8,7 +8,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenOperationsMenusOrderingPreOrder />
+        <WorkspaceKitchenMenusOrderingPreOrder />
       </template>
     </UDashboardPanel>
   </div>

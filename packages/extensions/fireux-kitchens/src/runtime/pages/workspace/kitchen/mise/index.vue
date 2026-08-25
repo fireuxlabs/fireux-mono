@@ -1,18 +1,21 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-mise">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Mise" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="mise" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="mise" />
-          <WorkspaceKitchenOperationsCapabilityView operation="mise" />
-          <WorkspaceKitchenOperationsMise />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="mise" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="mise" />
+          <WorkspaceKitchenCapabilityAI
+            operation="mise"
+            :suggestions="miseSuggestions"
+            :action-targets="miseActionTargets"
+          />
+          <WorkspaceKitchenCapabilityView operation="mise" />
+          <WorkspaceKitchenMise />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="mise" />
           <WorkspaceKitchenResearchSegue
             capability="Mise"
             base-path="/workspace/kitchen/mise/search-demand"
@@ -24,9 +27,27 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenMiseWorkspace } from '../../../../kitchen/composables/workspace/operations/Mise/useKitchenMiseWorkspace'
+import { computed } from 'vue'
+import { buildMiseAttentionSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { provideKitchenMiseWorkspace } from '../../../../kitchen/composables/workspace/Mise/useKitchenMiseWorkspace'
 
-provideKitchenMiseWorkspace()
+const miseWorkspace = provideKitchenMiseWorkspace()
+const miseSuggestions = computed(() =>
+  buildMiseAttentionSuggestions(miseWorkspace.miseTasks.value)
+)
+const miseActionTargets = computed(() =>
+  miseWorkspace.miseTasks.value.flatMap((task) =>
+    [
+      'kitchen.mise.update-prep-task',
+      'kitchen.mise.change-prep-status',
+      'kitchen.mise.delete-prep-task',
+    ].map((actionId) => ({
+      actionId,
+      targetId: task.id,
+      label: String(task.title || 'Untitled Prep Task').trim(),
+    }))
+  )
+)
 
 definePageMeta({
   layout: 'workspace',

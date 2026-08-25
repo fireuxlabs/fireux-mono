@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-08-19
-Ref: e23268507
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -41,8 +41,8 @@ Map component folder and naming conventions.
 
 - The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
   components remain entity-owned (`runtime/kitchen/components/Cards`,
-  `runtime/supplier/components/Collection`, and an entity's
-  `components/Workspace/Operations`) while pages remain route-first.
+  `runtime/supplier/components/Collection`, and an entity's direct
+  `components/Workspace/<Capability>`) while pages remain route-first.
 - `atoms` own foundations or one semantic visual role, such as system tokens
   and the `.fx-type-*` vocabulary. They do not own a form, card, or page
   composition.
@@ -272,7 +272,8 @@ The entity-scoped destination is:
 - `runtime/<entity>/components/Workspace/Overview`
 - `runtime/<entity>/components/Workspace/Identity`
 - `runtime/<entity>/components/Workspace/Team`
-- `runtime/<entity>/components/Workspace/Operations`
+- `runtime/<entity>/components/Workspace/Capability` for shared capability chrome
+- `runtime/<entity>/components/Workspace/<Capability>` for a named capability
 - `runtime/<entity>/components/Workspace/Sundries`
 
 Shared Workspace presentation remains under `runtime/components/Workspace`.

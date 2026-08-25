@@ -192,7 +192,7 @@ const DIRECT_SPACING_LITERAL_EXCLUDED_PREFIXES = [
 const APPROVED_DIRECT_SPACING_VALUES = new Map([
   // Exact reviewed microgeometry, artwork, or viewport geometry; not reusable rhythm.
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Orders/utils/useKitchenOrderReceiptPrint.ts',
     new Set([
       'padding-block:10px',
       'margin-top:4px',
@@ -355,7 +355,7 @@ const OWNED_TYPOGRAPHY_DELTA_PATHS = new Set([
   // Component-owned artwork, output geometry, or cohesive tenant display type.
   'packages/core/fireux-core/src/runtime/components/Design/PaletteStrip.vue',
   'packages/core/fireux-core/src/runtime/components/effects/LandingEffect.vue',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Orders/utils/useKitchenOrderReceiptPrint.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Orders/utils/useKitchenOrderReceiptPrint.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/components/Json.vue',
   'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
   'projects/misebox/baeren-ringgenberg/app/components/Baeren/Home/Hero.vue',

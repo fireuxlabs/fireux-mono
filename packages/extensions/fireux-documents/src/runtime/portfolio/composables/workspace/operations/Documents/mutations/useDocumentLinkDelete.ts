@@ -4,7 +4,7 @@ import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { DocumentLinkStorage } from '../../../../../models/document-link.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

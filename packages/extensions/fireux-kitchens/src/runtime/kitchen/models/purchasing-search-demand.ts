@@ -35,6 +35,46 @@ export const kitchenPurchasingSearchDemand = {
     { label: 'Pearson food-service purchasing chapter', url: 'https://www.pearsonhighered.com/assets/samplechapter/0/1/3/4/013474506X.pdf', note: 'Validates product specifications and the separation between purchasing and receiving responsibilities.' },
     { label: 'Nebraska Extension restaurant operations checklist', url: 'https://food.unl.edu/sites/unl.edu.ianr.extension-food/files/media/file/restaurant-editable-checklist.pdf', note: 'Validates creating and retaining purchase orders as restaurant operating records.' },
   ],
+  records: [
+  {
+    id: 'kitchen.purchasing.requirement',
+    label: 'Purchase requirement',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Purchasing',
+    authority: 'A requirement records what the Kitchen needs and why without selecting or committing to a Supplier.',
+    facts: [ 'Ingredient or Product need', 'quantity, unit and required date', 'source and urgency', 'requester' ],
+    readBy: [ 'kitchen.purchasing.compare-offers' ],
+    writtenBy: [ 'kitchen.purchasing.prepare-requisition' ]
+  },
+  {
+    id: 'kitchen.purchasing.order',
+    label: 'Purchase order',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Purchasing',
+    authority: 'Purchase order owns the reviewed commitment, exact Supplier offer, price, currency, terms, approval and transmission state.',
+    facts: [
+      'Supplier and offer identity',
+      'lines, packs, units and prices',
+      'terms and required delivery',
+      'approval and transmission evidence'
+    ],
+    readBy: [ 'kitchen.purchasing.approve-and-send' ],
+    writtenBy: [ 'kitchen.purchasing.create-order', 'kitchen.purchasing.approve-and-send' ]
+  },
+  {
+    id: 'kitchen.purchasing.offer',
+    label: 'Supplier offer',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Supplier',
+    authority: 'Purchasing compares current Supplier-owned offers but does not rewrite their identity or commercial facts.',
+    facts: [ 'SKU and pack', 'unit and availability', 'price, currency and quote time', 'lead time and terms' ],
+    readBy: [ 'kitchen.purchasing.compare-offers', 'kitchen.purchasing.create-order' ],
+    writtenBy: []
+  }
+],
   recordQuestions: [
     'Which Kitchen requirement does each requested line satisfy?',
     'Which Supplier and exact offer, specification, pack and unit apply?',

@@ -238,7 +238,8 @@
               'orders',
               'private',
               'sales',
-              'team'
+              'team',
+              'waste-events'
             ]);
           }
 

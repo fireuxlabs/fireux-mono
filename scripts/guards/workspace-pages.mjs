@@ -26,13 +26,13 @@ const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
 const KITCHEN_MENUS_COMPONENT_ROOT =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Menus'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Menus'
 const KITCHEN_RECIPES_COMPONENT_ROOT =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Recipes'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Recipes'
 const KITCHEN_RECIPES_FETCH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
 const KITCHEN_RECIPES_CONTROLLER =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Recipes/useKitchenWorkspaceRecipes.ts'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Recipes/useKitchenWorkspaceRecipes.ts'
 const KITCHEN_WASTE_DEV =
   'packages/ecosystem/fireux-misebox/src/runtime/components/Workspace/Kitchen/Waste/Dev.vue'
 const STANDARD_SURFACES = new Set([
@@ -141,7 +141,7 @@ const CONSOLE_OPERATION_CONTRACTS = {
 }
 
 const CONSOLE_BASE_CAPABILITIES = ['overview', 'identity', 'team']
-const KITCHEN_TOOL_BACKED_OPERATIONS = new Set([
+const KITCHEN_TOOL_BACKED_CAPABILITIES = new Set([
   'dishes',
   'drinks',
   'ingredients',
@@ -204,6 +204,7 @@ export async function run(ctx) {
   validateWorkspaceMenuCanon(repoRoot, violations)
   validateWorkspaceOperationContracts(repoRoot, violations)
   validateWorkspaceAIContracts(repoRoot, violations)
+  validateKitchenResearchRecords(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
   validateKitchenRecipesWorkspace(repoRoot, violations)
 
@@ -240,6 +241,53 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ workspace pages use the explicit page contract')
+}
+
+function validateKitchenResearchRecords(repoRoot, violations) {
+  const capabilities = [
+    ...CONSOLE_OPERATION_CONTRACTS.kitchen.operations,
+    'identity',
+    'team',
+  ]
+
+  for (const capability of capabilities) {
+    const modelName = capability === 'finance' ? 'sales' : capability
+    const relative = `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/${modelName}-search-demand.ts`
+    const fullPath = path.join(repoRoot, relative)
+    if (!existsSync(fullPath)) {
+      violations.push(
+        `${relative} (missing Kitchen capability research source)`
+      )
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    if (!/\n\s*records\s*:\s*\[/.test(source)) {
+      violations.push(`${relative} (missing capability-owned record map)`)
+      continue
+    }
+
+    const toolStart = Math.max(
+      source.indexOf('toolHypotheses:'),
+      source.indexOf('proposedTools:')
+    )
+    const toolEnd = source.indexOf('aiContract:', toolStart)
+    if (toolStart < 0 || toolEnd < 0) continue
+
+    const toolBlock = source.slice(toolStart, toolEnd)
+    const toolIds = new Set(
+      [...toolBlock.matchAll(/id:\s*'(kitchen\.[^']+)'/g)].map(
+        (match) => match[1]
+      )
+    )
+    for (const toolId of toolIds) {
+      if (source.split(toolId).length - 1 < 2) {
+        violations.push(
+          `${relative} (${toolId} is not linked from its record map)`
+        )
+      }
+    }
+  }
 }
 
 function validateWorkspaceOperationAIPlaceholder(repoRoot, violations) {
@@ -466,30 +514,26 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
           continue
         }
         const operationSource = routeSource
-        if (
-          !operationSource.includes(
-            `<WorkspaceKitchenOperationsGuidingLiterature operation="${operation}" />`
-          )
-        ) {
+        const guidingLiteratureMarker = new RegExp(
+          `<WorkspaceKitchenCapabilityGuidingLiterature\\s+operation="${operation}"\\s*/>`
+        )
+        if (!guidingLiteratureMarker.test(operationSource)) {
           violations.push(
-            `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must render its catalogue-backed guiding literature)`
+            `${contract.routeRoot}/${operation} (Kitchen Workspace capability must render its catalogue-backed guiding literature)`
           )
         }
         const viewMarker =
           operation === 'drinks'
-            ? '<WorkspaceKitchenOperationsDishesRead'
-            : `<WorkspaceKitchenOperationsCapabilityView operation="${operation}"`
+            ? '<WorkspaceKitchenDishesRead'
+            : `<WorkspaceKitchenCapabilityView operation="${operation}"`
         const viewIndex = operationSource.indexOf(viewMarker)
         if (viewIndex < 0) {
           violations.push(
-            `${contract.routeRoot}/${operation} (Kitchen Workspace Operation must expose its catalogue-backed View)`
+            `${contract.routeRoot}/${operation} (Kitchen Workspace capability must expose its catalogue-backed View)`
           )
-        } else if (KITCHEN_TOOL_BACKED_OPERATIONS.has(operation)) {
-          const toolsMarker =
-            operation === 'drinks'
-              ? '<WorkspaceKitchenOperationsDishesTools'
-              : `<WorkspaceKitchenOperationsCapabilityTools operation="${operation}"`
-          const aiMarker = '<WorkspaceKitchenOperationsCapabilityAI'
+        } else if (KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)) {
+          const toolsMarker = `<WorkspaceKitchenCapabilityTools operation="${operation}"`
+          const aiMarker = '<WorkspaceKitchenCapabilityAI'
           const toolsIndex = operationSource.indexOf(toolsMarker)
           const aiIndex = operationSource.indexOf(aiMarker)
           const aiCloseIndex = operationSource.indexOf('>', aiIndex)
@@ -505,7 +549,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
             viewIndex <= aiIndex
           ) {
             violations.push(
-              `${contract.routeRoot}/${operation} (tool-backed Kitchen Operations must compose Tools, AI, then View)`
+              `${contract.routeRoot}/${operation} (tool-backed Kitchen capabilities must compose Tools, AI, then View)`
             )
           }
         }
@@ -565,7 +609,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         'utf8'
       )
       for (const operation of contract.operations.filter((operation) =>
-        KITCHEN_TOOL_BACKED_OPERATIONS.has(operation)
+        KITCHEN_TOOL_BACKED_CAPABILITIES.has(operation)
       )) {
         if (
           !capabilityCatalogue.includes(`  ${operation}: [`) &&
@@ -655,7 +699,7 @@ function routeCandidatesForCapability(repoRoot, routeRoot, capability) {
 function validateKitchenRecipesWorkspace(repoRoot, violations) {
   const files = {
     Index: {
-      required: /\bprovideKitchenRecipesWorkspace\s*\(/,
+      required: /\buseKitchenRecipesWorkspace\s*\(/,
       forbidden: /\buseKitchenWorkspaceRecipes\s*\(/,
     },
     Read: {
@@ -666,6 +710,18 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
       required: /\buseKitchenRecipesWorkspace\s*\(/,
       forbidden: /\buseKitchenWorkspaceRecipes\s*\(/,
     },
+  }
+
+  const route =
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/recipes/index.vue'
+  const routeSource = readFileSync(path.join(repoRoot, route), 'utf8')
+  if (
+    !/\bprovideKitchenRecipesWorkspace\s*\(/.test(routeSource) ||
+    /\buseKitchenWorkspaceRecipes\s*\(/.test(routeSource)
+  ) {
+    violations.push(
+      `${route} (must provide the route-owned Kitchen Recipes workspace once)`
+    )
   }
 
   for (const [name, contract] of Object.entries(files)) {
@@ -741,7 +797,7 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
 function validateKitchenMenusWorkspace(repoRoot, violations) {
   const files = {
     Index: {
-      required: /\bprovideKitchenMenusWorkspace\s*\(/,
+      required: /\buseKitchenMenusWorkspace\s*\(/,
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
     List: {
@@ -752,6 +808,19 @@ function validateKitchenMenusWorkspace(repoRoot, violations) {
       required: /\buseKitchenMenusWorkspace\s*\(/,
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
+  }
+
+
+  const route =
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue'
+  const routeSource = readFileSync(path.join(repoRoot, route), 'utf8')
+  if (
+    !/\bprovideKitchenMenusWorkspace\s*\(/.test(routeSource) ||
+    /\buseKitchenWorkspaceMenus\s*\(/.test(routeSource)
+  ) {
+    violations.push(
+      `${route} (must provide the route-owned Kitchen Menus workspace once)`
+    )
   }
 
   for (const [name, contract] of Object.entries(files)) {
@@ -841,6 +910,7 @@ function scan(dir, repoRoot, violations, seenPages) {
     seenPages.add(relative)
     validateRenderedPageRoot(relative, template, pageMeta, violations)
     validateRouteMetaPlacement(relative, pageMeta, violations)
+    validateKitchenResearchPageFamily(relative, template, violations)
 
     if (surface && !STANDARD_SURFACES.has(surface)) {
       violations.push(`${relative} (invalid workspaceSurface: ${surface})`)
@@ -871,6 +941,30 @@ function scan(dir, repoRoot, violations, seenPages) {
     }
 
     validateDirectContract(relative, template, script, pageMeta, violations)
+  }
+}
+
+function validateKitchenResearchPageFamily(relative, template, violations) {
+  const match = relative.match(
+    /packages\/extensions\/fireux-kitchens\/src\/runtime\/pages\/workspace\/kitchen\/([^/]+)\/search-demand\/(index|analysis|tools)\.vue$/
+  )
+  if (!match) return
+
+  const [, capability, stage] = match
+  if (capability === 'today' || capability === 'overview') return
+  if (capability === 'team' && stage === 'tools') return
+
+  const component =
+    stage === 'index'
+      ? 'WorkspaceKitchenResearchEvidence'
+      : stage === 'analysis'
+        ? 'WorkspaceKitchenResearchAnalysis'
+        : 'WorkspaceKitchenResearchToolSpecifications'
+
+  if (!new RegExp(`<${component}\\b`).test(template)) {
+    violations.push(
+      `${relative} (ordinary Kitchen research stages must use ${component})`
+    )
   }
 }
 

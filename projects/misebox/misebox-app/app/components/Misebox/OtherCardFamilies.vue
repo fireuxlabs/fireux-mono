@@ -140,10 +140,10 @@
   :variants="['cell', 'pill']"
 >
   <MiseboxCardSpecimen label="Cell">
-    <WorkspaceKitchenOperationsMiseCardsCell v-bind="miseCell" />
+    <WorkspaceKitchenMiseCardsCell v-bind="miseCell" />
   </MiseboxCardSpecimen>
   <MiseboxCardSpecimen label="Pill">
-    <WorkspaceKitchenOperationsMiseCardsPill v-bind="misePill" />
+    <WorkspaceKitchenMiseCardsPill v-bind="misePill" />
   </MiseboxCardSpecimen>
 </MiseboxCardFamilySection>
 
@@ -157,7 +157,7 @@
   :variants="['cell']"
 >
   <MiseboxCardSpecimen label="Cell" candidate>
-    <WorkspaceKitchenOperationsIngredientsCardsCell
+    <WorkspaceKitchenIngredientsCardsCell
       id="beef-mince"
       to="/"
       title="Ground beef"
@@ -176,7 +176,7 @@
   :variants="['cell']"
 >
   <MiseboxCardSpecimen label="Cell" candidate>
-    <WorkspaceKitchenOperationsSuppliersCardsCell
+    <WorkspaceKitchenSuppliersCardsCell
       v-bind="kitchenSupplierCell"
     />
   </MiseboxCardSpecimen>

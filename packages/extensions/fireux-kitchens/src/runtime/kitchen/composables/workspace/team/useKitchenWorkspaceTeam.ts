@@ -8,7 +8,7 @@ import {
   type KitchenTeamMember,
 } from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { useKitchenWorkspaceReadPage } from '../operations/Shared/useKitchenWorkspaceReadPage'
+import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 
 function createKitchenWorkspaceTeam() {
   const { selection, runtime } = useKitchenWorkspace()

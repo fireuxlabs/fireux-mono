@@ -1,18 +1,21 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-recipes">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Recipes" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="recipes" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="recipes" />
-          <WorkspaceKitchenOperationsCapabilityView operation="recipes" />
-          <WorkspaceKitchenOperationsRecipes />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="recipes" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="recipes" />
+          <WorkspaceKitchenCapabilityAI
+            operation="recipes"
+            :suggestions="recipeSuggestions"
+            :action-targets="recipeActionTargets"
+          />
+          <WorkspaceKitchenCapabilityView operation="recipes" />
+          <WorkspaceKitchenRecipes />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="recipes" />
           <WorkspaceKitchenResearchSegue
             capability="Recipes"
             base-path="/workspace/kitchen/recipes/search-demand"
@@ -24,6 +27,26 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { buildMissingRecipeDescriptionSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { provideKitchenRecipesWorkspace } from '../../../../kitchen/composables/workspace/Recipes/useKitchenRecipesWorkspace'
+
+const recipesWorkspace = provideKitchenRecipesWorkspace()
+const recipeSuggestions = computed(() =>
+  buildMissingRecipeDescriptionSuggestions(recipesWorkspace.recipes.value)
+)
+const recipeActionTargets = computed(() =>
+  recipesWorkspace.recipes.value.flatMap((recipe) =>
+    ['kitchen.recipes.update-recipe', 'kitchen.recipes.delete-recipe'].map(
+      (actionId) => ({
+        actionId,
+        targetId: recipe.id,
+        label: String(recipe.name || 'Untitled Recipe').trim(),
+      })
+    )
+  )
+)
+
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

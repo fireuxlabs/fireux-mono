@@ -1,7 +1,7 @@
 # Runtime filesystem ownership
 
-Updated: 2026-08-22
-Ref: da689ed54
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -115,8 +115,8 @@ or capability:
 
 ```text
 src/runtime/kitchen/
-├── components/Workspace/Operations/Menus/
-├── composables/workspace/operations/menus/
+├── components/Workspace/Menus/
+├── composables/workspace/Menus/
 ├── models/menu/
 └── server/operations/menus/
 ```
@@ -148,10 +148,12 @@ src/runtime/kitchen/composables/workspace/
 src/runtime/kitchen/server/
 ```
 
-The module registration may preserve established component names such as
-`WorkspaceKitchenOperationsOrders`; a filesystem move does not require a public
-component or composable rename. Kitchen domain models and commands do not move
-under Workspace merely because Workspace consumes them.
+Workspace capability components and composables sit directly beneath their
+entity-owned Workspace role, producing names such as `WorkspaceKitchenOrders`.
+`Operations` may group capability doorways in navigation, but it is not a
+universal filesystem owner or component-name segment. Genuine domain commands
+and workflows may remain under `server/operations`; Kitchen domain models and
+commands do not move under Workspace merely because Workspace consumes them.
 
 ## Other cross-cutting concepts
 

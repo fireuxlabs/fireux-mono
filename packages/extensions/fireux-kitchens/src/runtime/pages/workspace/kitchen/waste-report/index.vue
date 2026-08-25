@@ -1,25 +1,27 @@
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-waste-report">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Waste Report" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="waste-report" />
-          <WorkspaceKitchenOperationsCapabilityAI
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="waste-report" />
+          <WorkspaceKitchenCapabilityAI
             operation="waste-report"
             :show-suggestion-cards="false"
           />
-          <WorkspaceKitchenOperationsCapabilityView operation="waste-report" />
+          <WorkspaceKitchenCapabilityView operation="waste-report" />
           <UAlert
             color="neutral"
             variant="soft"
             title="Operational evidence first"
             description="This report can summarise only Waste recorded by the Kitchen Waste capability. It does not invent missing quantities, reasons, or costs."
           />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="waste-report" />
+          <WorkspaceKitchenCapabilityGuidingLiterature
+            operation="waste-report"
+          />
           <WorkspaceKitchenResearchSegue
             capability="Waste Report"
             base-path="/workspace/kitchen/waste-report/search-demand"

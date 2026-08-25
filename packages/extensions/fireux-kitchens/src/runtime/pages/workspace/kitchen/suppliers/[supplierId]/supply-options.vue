@@ -8,7 +8,7 @@
 
       <template #body>
         <section class="space-y-4">
-          <WorkspaceKitchenOperationsSuppliersSupplyOptions />
+          <WorkspaceKitchenSuppliersSupplyOptions />
         </section>
       </template>
     </UDashboardPanel>

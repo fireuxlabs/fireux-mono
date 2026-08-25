@@ -1,7 +1,7 @@
 # Finance map
 
-Updated: 2026-08-23
-Ref: 1e55eece7
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -235,14 +235,14 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/dish-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/demo-dishes.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Dishes/finance.ts`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Dishes/useKitchenWorkspaceDishFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Dishes/useKitchenWorkspaceDishFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceSummary.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceTrend.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceCalendar.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceDayDetail.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/FinanceRoundup.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Dishes/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/finance/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/finance/restaurant-labour-cost.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Tools/RestaurantLabourCostCalculator.vue`

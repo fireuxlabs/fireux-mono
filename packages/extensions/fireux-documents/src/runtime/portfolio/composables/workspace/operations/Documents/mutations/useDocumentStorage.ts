@@ -11,7 +11,7 @@ import { useFirebaseStorage } from 'fireux-core/runtime/composables/fireux/fires
 import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

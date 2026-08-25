@@ -23,11 +23,11 @@ const contracts = [
     'updateJob',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Mise/mutations/useKitchenMiseUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Mise/mutations/useKitchenMiseUpdate.ts',
     'updateKitchenMise',
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/operations/Stations/mutations/useKitchenStationUpdate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Stations/mutations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
   ],
   [

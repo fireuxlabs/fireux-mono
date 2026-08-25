@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-25 — Use the real read-only Orders board as the Main App hero proof. -->
 <template>
-  <WorkspaceKitchenOperationsOrdersRail
+  <WorkspaceKitchenOrdersRail
     v-if="heroPassOrders.length"
     class="misebox-home__service-pass"
     accent="success"
@@ -15,7 +15,7 @@
       aria-hidden="true"
       inert
     >
-      <WorkspaceKitchenOperationsOrdersTicketPresentation
+      <WorkspaceKitchenOrdersTicketPresentation
         v-for="order in heroPassOrders"
         :key="order.id"
         :order="order"
@@ -24,7 +24,7 @@
         prominent
       />
     </div>
-  </WorkspaceKitchenOperationsOrdersRail>
+  </WorkspaceKitchenOrdersRail>
 
   <UAlert
     v-else-if="productDemoError"

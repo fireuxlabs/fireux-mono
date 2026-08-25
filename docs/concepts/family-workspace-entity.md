@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-08-23
-Ref: 7f18d4e91
+Updated: 2026-08-24
+Ref: d0caff27b
 Role: map, not canon
 
 ## Purpose
@@ -44,12 +44,12 @@ Kitchen and Project prove the Workspace Entity family beyond their shared
 Index anatomy. Both use the canonical `/workspace/{family}` route, one
 request-scoped `useXWorkspace` runtime, outcome-bound selection, root-owned
 Team authority, the shared shell and navigation groups, and entity-owned
-Overview, Identity, Team, Operations, and debug adapters.
+Overview, Identity, Team, named capability, and debug adapters.
 
 Their material differences remain domain-owned. Project is a private FireUX
-control-plane Entity with Apps and Ecosystem Operations and no production
+control-plane Entity with Apps and Ecosystem capabilities and no production
 Create flow. Kitchen is a domain-database Entity with Live and Demo sources,
-trusted onboarding, food-service Operations, and optional same-ID Place identity. Those
+trusted onboarding, food-service capabilities, and optional same-ID Place identity. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
@@ -134,14 +134,14 @@ migration verification, and protected Workspace consumer are complete.
 
 ## Accepted deltas
 
-| Delta                                                        | State      | Why it exists                                                                                                                                                            | Evidence or owner                                                                                                          |
-| ------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                                          |
-| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                                            | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                                     |
-| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                       | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                               |
-| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                             | `projects/fireux/fireux-blank`                                                                                             |
-| Project has no Create                                        | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                                                         | Project entity declaration and internal control-plane APIs                                                                 |
-| Operation folders differ by domain                           | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                                                           | current source uses each owner's `components/Workspace/Operations` and `composables/workspace/operations` capability paths |
+| Delta                                                        | State      | Why it exists                                                                                                                                                            | Evidence or owner                                                                                             |
+| ------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                             |
+| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                                            | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                        |
+| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                       | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
+| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                             | `projects/fireux/fireux-blank`                                                                                |
+| Project has no Create                                        | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                                                         | Project entity declaration and internal control-plane APIs                                                    |
+| Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                          | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
 
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.

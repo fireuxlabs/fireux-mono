@@ -71,7 +71,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { ClientCard } from '../../../../../composables/workspace/operations/Clients/utils/view/useClientInterface'
+import type { ClientCard } from '../../../../../composables/workspace/Clients/utils/view/useClientInterface'
 
 type PillProps = Pick<
   ClientCard.Card,

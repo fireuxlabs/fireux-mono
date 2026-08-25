@@ -27,11 +27,73 @@ export async function run({ repoRoot }) {
   const operationCapabilities = await source(repoRoot, operationCapabilityFile)
   if (
     !operationCapabilities.includes('const researchTools =') ||
-    !operationCapabilities.includes('.toolHypotheses)') ||
+    !operationCapabilities.includes('.toolHypotheses,') ||
+    !operationCapabilities.includes('.records') ||
+    !operationCapabilities.includes('requiredRecords: recordIdsForTool') ||
     operationCapabilities.includes('const requested =')
   ) {
     violations.push(
-      `${operationCapabilityFile}: capability Tools must project the capability-owned search-demand hypotheses instead of maintaining a second requested-Tool catalogue.`
+      `${operationCapabilityFile}: capability Tools must project hypotheses and required record ids from the capability-owned research source instead of maintaining a second catalogue.`
+    )
+  }
+
+  const availableRecordTools = [
+    ['dishes', 'create-dish', 'Dishes/Write.vue', 'createDish'],
+    ['dishes', 'update-dish', 'Dishes/Edit.vue', 'updateDish'],
+    ['dishes', 'delete-dish', 'Dishes/Delete.vue', 'deleteDish'],
+    ['drinks', 'create-drink', 'Dishes/Write.vue', 'createDish'],
+    ['drinks', 'update-drink', 'Dishes/Edit.vue', 'updateDish'],
+    ['drinks', 'delete-drink', 'Dishes/Delete.vue', 'deleteDish'],
+    ['recipes', 'create-recipe', 'Recipes/Write.vue', 'createRecipe'],
+    ['recipes', 'update-recipe', 'Recipes/Detail.vue', 'updateRecipe'],
+    ['recipes', 'delete-recipe', 'Recipes/Detail.vue', 'deleteRecipe'],
+    ['menus', 'create-menu', 'Menus/Creation/Index.vue', 'CreationUrl'],
+    ['menus', 'update-menu', 'Menus/Edit/Details.vue', 'updateMenu'],
+    ['menus', 'delete-menu', 'Menus/Delete.vue', 'deleteMenu'],
+    [
+      'ingredients',
+      'add-ingredient',
+      'Ingredients/Write.vue',
+      'selectIngredient',
+    ],
+    [
+      'stations',
+      'create-station',
+      'Stations/Write.vue',
+      'createKitchenStation',
+    ],
+    ['waste', 'record-event', 'Waste/Create.vue', 'recordWaste'],
+  ]
+  const kitchenComponentRoot =
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace'
+  for (const [capability, action, component, proof] of availableRecordTools) {
+    const catalogueFile = `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/${capability}-search-demand.ts`
+    const catalogue = await source(repoRoot, catalogueFile)
+    const toolId = `kitchen.${capability}.${action}`
+    const availablePattern = new RegExp(
+      `id:\\s*'${toolId.replaceAll('.', '\\.')}'[\\s\\S]{0,1800}?status:\\s*'available'`
+    )
+    if (!availablePattern.test(catalogue)) {
+      violations.push(
+        `${catalogueFile}: ${toolId} must remain explicitly available while its guarded surface exists.`
+      )
+    }
+    const componentFile = `${kitchenComponentRoot}/${component}`
+    const componentSource = await source(repoRoot, componentFile)
+    if (!componentSource.includes(proof)) {
+      violations.push(
+        `${componentFile}: ${toolId} is advertised as available but its ${proof} proof is missing.`
+      )
+    }
+  }
+
+  const menuCatalogue = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/menus-search-demand.ts'
+  )
+  if (menuCatalogue.includes("id: 'kitchen.menus.import-menu'")) {
+    violations.push(
+      'Create Menu already owns its AI-assisted source import; Menu Import must not reappear as a second Tool.'
     )
   }
   const definitionFiles = (await readdir(join(repoRoot, definitionRoot)))
@@ -59,16 +121,36 @@ export async function run({ repoRoot }) {
   )
   const miseSurface = await source(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/CapabilityTools.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Capability/Tools.vue'
   )
   const miseRecordSurfaces = await Promise.all(
     ['Edit.vue', 'Write.vue', 'Delete.vue'].map((file) =>
       source(
         repoRoot,
-        `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Operations/Mise/${file}`
+        `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Mise/${file}`
       )
     )
   )
+
+  const wasteDefinition = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/waste/record-event.ts'
+  )
+  const wasteRegistry = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/waste/index.ts'
+  )
+  if (
+    !wasteDefinition.includes("id: 'kitchen.waste.record-event'") ||
+    !wasteDefinition.includes('inputSchema:') ||
+    !wasteDefinition.includes('agent: { callable: false }') ||
+    !wasteRegistry.includes('kitchenWasteHumanTools') ||
+    !operationCapabilities.includes('kitchenWasteEventRecordTool')
+  ) {
+    violations.push(
+      'Kitchen Waste must project Record Waste from its domain-owned human Tool definition.'
+    )
+  }
   if (
     ![
       'kitchen.mise.create-prep-task',
@@ -82,7 +164,7 @@ export async function run({ repoRoot }) {
       (definition) => !definition.includes('agent: { callable: false }')
     ) ||
     !miseRegistry.includes('kitchenMiseHumanTools') ||
-    !miseSurface.includes('WorkspaceKitchenOperationsMiseTools') ||
+    !miseSurface.includes('WorkspaceKitchenMiseTools') ||
     ![
       'kitchenMisePrepTaskUpdateTool',
       'kitchenMisePrepStatusChangeTool',
@@ -169,6 +251,147 @@ export async function run({ repoRoot }) {
   ) {
     violations.push(
       'Kitchen operation agents must project Team tool ids from the canonical registry.'
+    )
+  }
+  const kitchenAgentContext = await source(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/context.ts'
+  )
+  const kitchenAgentAnswer = await source(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/answer.ts'
+  )
+  if (
+    !kitchenAgentAnswer.includes(
+      "findMiseboxOperationAgent('kitchen', operation)"
+    ) ||
+    !kitchenAgentAnswer.includes("requestedAgent?.name || 'KitchenAI'") ||
+    /agentName = '(?:Dishes|Recipes|Mise|FoodSafety|Stations|Orders)AI'/.test(
+      kitchenAgentAnswer
+    )
+  ) {
+    violations.push(
+      'KitchenAI must resolve capability agents from the registered catalogue, not a hard-coded agent-name switch.'
+    )
+  }
+  if (
+    !/dishes:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(
+      operationAgents
+    ) ||
+    !kitchenAgentContext.includes("request.operation !== 'dishes'") ||
+    !kitchenAgentContext.includes("dish.item_kind === 'food'") ||
+    !kitchenAgentAnswer.includes("operation === 'dishes'")
+  ) {
+    violations.push(
+      'DishesAI must remain connected to authorized canonical food Dish records through the shared KitchenAI inference path.'
+    )
+  }
+  if (
+    !/recipes:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(
+      operationAgents
+    ) ||
+    !kitchenAgentContext.includes("request.operation !== 'recipes'") ||
+    !kitchenAgentContext.includes('normalizeRecipe') ||
+    !kitchenAgentAnswer.includes("operation === 'recipes'")
+  ) {
+    violations.push(
+      'RecipesAI must remain connected to authorized canonical Recipe identity records through the shared KitchenAI inference path.'
+    )
+  }
+  if (
+    !/mise:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(operationAgents) ||
+    !kitchenAgentContext.includes("request.operation !== 'mise'") ||
+    !kitchenAgentContext.includes('normalizeKitchenMiseTask') ||
+    !kitchenAgentAnswer.includes("operation === 'mise'")
+  ) {
+    violations.push(
+      'MiseAI must remain connected to authorized canonical Prep Task records through the shared KitchenAI inference path.'
+    )
+  }
+  if (
+    !/'food-safety':\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(
+      operationAgents
+    ) ||
+    !kitchenAgentAnswer.includes("operation === 'food-safety'") ||
+    !kitchenAgentAnswer.includes("authority: 'research-only'") ||
+    !kitchenAgentAnswer.includes("operational_evidence: 'not-connected'") ||
+    !kitchenAgentAnswer.includes('kitchenFoodSafetySearchDemand')
+  ) {
+    violations.push(
+      'FoodSafetyAI must keep source research distinct from unavailable operational evidence while using the shared KitchenAI inference path.'
+    )
+  }
+  if (
+    !/stations:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(
+      operationAgents
+    ) ||
+    !kitchenAgentContext.includes("request.operation !== 'stations'") ||
+    !kitchenAgentContext.includes('normalizeKitchenStation') ||
+    !kitchenAgentAnswer.includes("operation === 'stations'")
+  ) {
+    violations.push(
+      'StationsAI must remain connected to authorized canonical Kitchen Station records through the shared KitchenAI inference path.'
+    )
+  }
+  if (
+    !/orders:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(
+      operationAgents
+    ) ||
+    !kitchenAgentContext.includes("request.operation !== 'orders'") ||
+    !kitchenAgentContext.includes(
+      'collection(`kitchens/${request.kitchenId}/orders`)'
+    ) ||
+    !kitchenAgentAnswer.includes("operation === 'orders'") ||
+    !kitchenAgentAnswer.includes("authority: 'advisory-read-only'") ||
+    !kitchenAgentAnswer.includes('Customer identity, contact details')
+  ) {
+    violations.push(
+      'OrdersAI must remain a privacy-bounded read-only projection of authorized canonical Kitchen Orders through the shared KitchenAI inference path.'
+    )
+  }
+
+  const capabilityTools = await source(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/useKitchenCapabilityTools.ts'
+  )
+  const workspaceActions = await source(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/runtime/server/agent/kitchen/workspace-actions.ts'
+  )
+  const targetAwareCapabilities = [
+    ['dishes', 'dishActionTargets', ['update-dish', 'delete-dish']],
+    ['drinks', 'drinkActionTargets', ['update-drink', 'delete-drink']],
+    ['recipes', 'recipeActionTargets', ['update-recipe', 'delete-recipe']],
+    ['menus', 'menuActionTargets', ['update-menu', 'delete-menu']],
+    [
+      'mise',
+      'miseActionTargets',
+      ['update-prep-task', 'change-prep-status', 'delete-prep-task'],
+    ],
+  ]
+  for (const [capability, targets, actions] of targetAwareCapabilities) {
+    const page = await source(
+      repoRoot,
+      `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${capability}/index.vue`
+    )
+    if (
+      !page.includes(`:action-targets="${targets}"`) ||
+      !actions.every((action) =>
+        capabilityTools.includes(`'kitchen.${capability}.${action}':`)
+      )
+    ) {
+      violations.push(
+        `${capability}: available record Tools must retain their target-aware AI doorway through the existing detail route.`
+      )
+    }
+  }
+  if (
+    !capabilityTools.includes("kind: 'target-route'") ||
+    !workspaceActions.includes('request.actionTargets') ||
+    !workspaceActions.includes('targetId: selected.targetId')
+  ) {
+    violations.push(
+      'Target-aware AI doorways must select only supplied canonical record candidates and return the chosen record id to the existing detail route.'
     )
   }
 

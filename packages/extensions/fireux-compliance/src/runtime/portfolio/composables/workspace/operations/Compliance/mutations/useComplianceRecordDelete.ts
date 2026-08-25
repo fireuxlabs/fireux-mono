@@ -4,7 +4,7 @@ import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { ComplianceRecordStorage } from '../../../../../models/compliance-record.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

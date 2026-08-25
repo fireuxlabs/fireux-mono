@@ -89,6 +89,30 @@ export const kitchenInventorySearchDemand = {
       note: 'Validates item-and-unit counts, inventory sheets and variance as operational inventory concerns.',
     },
   ],
+  records: [
+  {
+    id: 'kitchen.inventory.observation',
+    label: 'Inventory observation',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Inventory',
+    authority: 'A physical count or movement must record observed quantity, unit, location, actor and time without rewriting Ingredient identity.',
+    facts: [ 'Ingredient or stock item', 'quantity and unit', 'location and reason', 'actor and occurrence time' ],
+    readBy: [ 'kitchen.inventory.review-levels', 'kitchen.inventory.propose-replenishment' ],
+    writtenBy: [ 'kitchen.inventory.prepare-count', 'kitchen.inventory.record-count' ]
+  },
+  {
+    id: 'kitchen.inventory.level',
+    label: 'Inventory level',
+    kind: 'projection',
+    status: 'requested',
+    owner: 'Inventory',
+    authority: 'Current level is a derived view over compatible observations and movements, never an unexplained mutable number.',
+    facts: [ 'opening evidence', 'accepted movements', 'latest counts', 'coverage and unresolved variance' ],
+    readBy: [ 'kitchen.inventory.review-levels', 'kitchen.inventory.propose-replenishment' ],
+    writtenBy: []
+  }
+],
   recordQuestions: [
     'Which Ingredient or other countable stock item is being counted?',
     'Where is it stored, how much is present, and in which count unit?',

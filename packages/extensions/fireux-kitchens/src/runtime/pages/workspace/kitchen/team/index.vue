@@ -1,6 +1,5 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <NuxtPage v-if="hasMemberRoute" />
     <UDashboardPanel v-else id="workspace-kitchen-team">
       <template #header>
@@ -9,7 +8,6 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenTeamToolMap />
           <WorkspaceKitchenTeamTools />
           <WorkspaceKitchenTeamAI />
           <WorkspaceKitchenTeam v-if="hasTeam" />
@@ -17,6 +15,7 @@
             capability="Team"
             base-path="/workspace/kitchen/team/search-demand"
           />
+          <WorkspaceKitchenTeamToolMap v-if="isDevelopment" />
         </section>
       </template>
     </UDashboardPanel>
@@ -32,6 +31,7 @@ const team = provideKitchenWorkspaceTeam()
 const hasTeam = computed(() => team.teamMembers.value.length > 0)
 const memberSlug = useRouteParam('memberSlug')
 const hasMemberRoute = computed(() => Boolean(memberSlug.value))
+const isDevelopment = import.meta.dev
 
 definePageMeta({
   layout: 'workspace',

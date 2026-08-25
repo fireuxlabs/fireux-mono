@@ -1,6 +1,5 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-ingredients">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Ingredients" />
@@ -20,12 +19,14 @@
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="ingredients" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="ingredients" />
-          <WorkspaceKitchenOperationsCapabilityView operation="ingredients" />
-          <WorkspaceKitchenOperationsIngredients />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="ingredients" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="ingredients" />
+          <WorkspaceKitchenCapabilityAI operation="ingredients" />
+          <WorkspaceKitchenCapabilityView operation="ingredients" />
+          <WorkspaceKitchenIngredients />
+          <WorkspaceKitchenCapabilityGuidingLiterature
+            operation="ingredients"
+          />
           <WorkspaceKitchenResearchSegue
             capability="Ingredients"
             base-path="/workspace/kitchen/ingredients/search-demand"
@@ -37,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenIngredientsWorkspace } from '../../../../kitchen/composables/workspace/operations/Ingredients/useKitchenIngredientsWorkspace'
+import { provideKitchenIngredientsWorkspace } from '../../../../kitchen/composables/workspace/Ingredients/useKitchenIngredientsWorkspace'
 
 const { canWrite } = provideKitchenIngredientsWorkspace()
 

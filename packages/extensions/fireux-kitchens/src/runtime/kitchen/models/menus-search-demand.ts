@@ -1,4 +1,4 @@
-export type KitchenMenusToolHypothesis = { id: `kitchen.menus.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' }
+export type KitchenMenusToolHypothesis = { id: `kitchen.menus.${string}`; label: string; layer: 'human' | 'ai-assisted' | 'compound'; purpose: string; inputs: readonly string[]; outputs: readonly string[]; evidence: readonly string[]; authority: string; approval: string; status: 'requested' | 'available' }
 
 export const kitchenMenusSearchDemand = {
   observedAt: '2026-08-23', geography: 'English-language web', language: 'English',
@@ -22,15 +22,45 @@ export const kitchenMenusSearchDemand = {
     { label: 'Otter restaurant Menu management', url: 'https://www.tryotter.com/products/menu-management', note: 'Validates operator demand for managing item availability and distributing Menu changes across supported channels.' },
     { label: 'Basic Kitchen and Food Service Management', url: 'https://opentextbc.ca/basickitchenandfoodservicemanagement/chapter/menu-engineering/', note: 'Validates popularity and contribution margin as the evidence axes used by conventional Menu engineering.' },
   ],
+  records: [
+  {
+    id: 'kitchen.menus.menu',
+    label: 'Kitchen Menu',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Menus',
+    authority: 'Menu owns offer identity, content structure, placements, displayed prices and publication configuration.',
+    facts: [
+      'Menu identity and role',
+      'sections and item placements',
+      'captured prices and availability',
+      'publication state and source'
+    ],
+    readBy: [ 'kitchen.menus.update-menu', 'kitchen.menus.delete-menu', 'kitchen.menus.engineer-menu', 'kitchen.menus.publish-menu' ],
+    writtenBy: [ 'kitchen.menus.create-menu', 'kitchen.menus.update-menu', 'kitchen.menus.delete-menu', 'kitchen.menus.publish-menu' ]
+  },
+  {
+    id: 'kitchen.menus.performance-evidence',
+    label: 'Menu performance evidence',
+    kind: 'reference',
+    status: 'partial',
+    owner: 'Dishes, Drinks, Costs and Sales',
+    authority: 'Menu engineering reads canonical item, cost and bounded Sales evidence and does not store invented profitability.',
+    facts: [ 'Dish and Drink identity', 'supported direct cost', 'KitchenSale quantity and value', 'period and coverage' ],
+    readBy: [ 'kitchen.menus.engineer-menu' ],
+    writtenBy: []
+  }
+],
   recordQuestions: ['Which Kitchen owns the Menu and what service, audience or channel is it for?', 'Which version is draft, approved, published, scheduled or retired?', 'Which sections exist and in what order?', 'Which Dish or Drink record does each placement reference?', 'Which displayed name, description, price and availability are Menu-specific presentation choices?', 'Which dietary or allergen statements resolve from authoritative Ingredient, Recipe, Dish or Drink evidence?', 'Which source document or URL produced an imported proposal and what has a human reviewed?', 'Which publication targets use this approved version and when were they updated?', 'Which authoritative sales and cost measures support any engineering conclusion?', 'Which missing evidence or stale publication must remain visible?'],
   toolHypotheses: [
-    { id: 'kitchen.menus.build-menu', label: 'Restaurant Menu Builder', layer: 'human', purpose: 'Create and arrange Menu sections and references to reviewed Dishes and Drinks.', inputs: ['Kitchen', 'Menu purpose', 'Dish and Drink references', 'section and placement choices'], outputs: ['draft Menu composition'], evidence: ['canonical Dish and Drink records'], authority: 'The Tool stores Menu composition without copying ownership of recipes, allergens or operational stock.', approval: 'An authorized operator explicitly saves the draft changes.', status: 'requested' },
-    { id: 'kitchen.menus.import-menu', label: 'Menu Import Tool', layer: 'ai-assisted', purpose: 'Extract a reviewable Menu proposal from a document, image or URL.', inputs: ['source document, image or URL', 'target Kitchen'], outputs: ['source-linked extraction proposal and unresolved matches'], evidence: ['original source and extraction trace'], authority: 'The Tool does not silently create authoritative items, overwrite existing records or publish.', approval: 'An operator reviews and accepts each proposed record or match.', status: 'requested' },
+    { id: 'kitchen.menus.create-menu', label: 'Create Menu', layer: 'human', purpose: 'Create a Menu from an uploaded document, image or URL through a reviewable AI-assisted draft.', inputs: ['source document, image or URL', 'Menu name', 'target Kitchen and currency'], outputs: ['source-linked extraction draft', 'confirmed Menu, sections and item records'], evidence: ['original source', 'AI extraction trace', 'operator-reviewed draft'], authority: 'Source capture does not create a Menu. The trusted confirmation command validates the reviewed draft before writing Menu-owned records and referenced Kitchen items.', approval: 'The operator explicitly confirms the reviewed draft before canonical records are created.', status: 'available' },
+    { id: 'kitchen.menus.update-menu', label: 'Update Menu', layer: 'human', purpose: 'Update Menu-owned details, sections, placements, presentation and ordering configuration.', inputs: ['current Menu', 'operator-confirmed named changes', 'authorized Dish and Drink references'], outputs: ['actor-stamped Menu changes'], evidence: ['canonical Menu and referenced item identities'], authority: 'Menu commands update Menu-owned composition and presentation without rewriting Dish or Drink records.', approval: 'The operator explicitly submits each change.', status: 'available' },
+    { id: 'kitchen.menus.delete-menu', label: 'Delete Menu', layer: 'human', purpose: 'Permanently remove one Menu after reviewing the selected record.', inputs: ['current Menu identity'], outputs: ['confirmed deletion'], evidence: ['canonical Menu and current Kitchen authority'], authority: 'The Menu delete command verifies Kitchen write authority and deletes only the selected Menu.', approval: 'The destructive action requires explicit operator confirmation.', status: 'available' },
     { id: 'kitchen.menus.engineer-menu', label: 'Menu Engineering Calculator', layer: 'ai-assisted', purpose: 'Compare Menu-item popularity and contribution margin from bounded authoritative evidence.', inputs: ['Menu version', 'period', 'KitchenSale measures', 'approved item costs'], outputs: ['source-linked Menu engineering view with unknowns'], evidence: ['authoritative bounded sales and cost records'], authority: 'The Tool never invents cost, profit or sales and does not mutate the Menu from an analysis.', approval: 'Analysis is read-only; accepting a proposed Menu change is separate and explicit.', status: 'requested' },
     { id: 'kitchen.menus.publish-menu', label: 'Menu Publishing', layer: 'compound', purpose: 'Publish an approved Menu version to selected supported destinations.', inputs: ['approved Menu version', 'publication targets', 'effective timing'], outputs: ['publication result, target status and stable doorway'], evidence: ['reviewed Menu and target-specific validation'], authority: 'The Tool publishes a projection and preserves the canonical Menu, target result and prior version.', approval: 'An authorized operator explicitly approves publication or scheduling.', status: 'requested' },
   ] satisfies KitchenMenusToolHypothesis[],
   aiContract: {
-    menusAI: ['Own Menu composition, import interpretation, engineering deductions and publication proposals.', 'Resolve Dish, Drink, sales and cost evidence from their owning capabilities.', 'Keep source extraction, canonical records, approved Menu and published projection distinct.', 'Never invent prices, allergens, availability, costs, sales or publication success.', 'Expose every current Tool as requested until trusted implementation and registration exist.'],
+    menusAI: ['Own Menu composition, import interpretation, engineering deductions and publication proposals.', 'Resolve Dish, Drink, sales and cost evidence from their owning capabilities.', 'Keep source extraction, canonical records, approved Menu and published projection distinct.', 'Never invent prices, allergens, availability, costs, sales or publication success.', 'Expose Create Menu, Update Menu and Delete Menu as available and preserve the requested status of unimplemented Tools.'],
     kitchenAI: ['Recognise Menu intent and delegate it to MenusAI.', 'Pass selected Kitchen and authorized context without copying Menu expertise.', 'Coordinate explicit handoffs to Dish, Drink, Finance, Inventory and publishing capabilities.', 'Discover real Tool availability through MenusAI registration and preserve approval boundaries.'],
     activation: ['Canonical Menu, section, placement, version and publication records are confirmed.', 'Trusted readers and commands implement the contracts.', 'Dish, Drink, sales, cost and allergen authority boundaries are explicit.', 'Import provenance, review and publication results remain auditable.', 'Tool registration, authorization, approvals, UI and verification are complete.'],
   },

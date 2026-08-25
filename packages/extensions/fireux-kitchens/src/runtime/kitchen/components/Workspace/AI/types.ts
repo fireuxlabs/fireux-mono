@@ -25,6 +25,12 @@ export type KitchenAIToolNugget = {
   icon: string
 }
 
+export type KitchenCapabilityActionTarget = {
+  actionId: string
+  targetId: string
+  label: string
+}
+
 export type KitchenAIWelcomeMessage = {
   id: number
   role: 'user' | 'assistant'

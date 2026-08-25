@@ -14,16 +14,16 @@
             >
               Search demand
             </UButton>
-            <UBadge color="neutral" variant="outline">Handshake</UBadge>
+            <UBadge color="primary" variant="soft">Connected</UBadge>
           </div>
         </div>
       </template>
 
       <ol class="grid gap-2 text-sm text-toned">
-        <li>1. KitchenAI receives the WasteAI prompt.</li>
-        <li>2. KitchenAI passes temporary restaurant-Waste context.</li>
-        <li>3. WasteAI returns the typed context it received.</li>
-        <li>4. KitchenAI presents the response without a model call.</li>
+        <li>1. Record Waste is registered to WasteAI.</li>
+        <li>2. WasteAI and KitchenAI receive the same available action.</li>
+        <li>3. The action opens the Waste-owned recording modal.</li>
+        <li>4. Submission creates one immutable Kitchen Waste event.</li>
       </ol>
     </UCard>
 

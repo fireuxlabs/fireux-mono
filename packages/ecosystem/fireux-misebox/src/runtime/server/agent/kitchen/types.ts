@@ -11,7 +11,14 @@ export type KitchenAgentRequest = {
   prompt: string
   operation: string
   pendingTool: PendingTeamTool | null
-  availableActions: KitchenWorkspaceActionId[]
+  availableActions: string[]
+  actionTargets: KitchenAgentActionTarget[]
+}
+
+export type KitchenAgentActionTarget = {
+  actionId: string
+  targetId: string
+  label: string
 }
 
 export type KitchenWorkspaceActionId =

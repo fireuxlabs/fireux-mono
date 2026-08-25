@@ -79,6 +79,49 @@ export const kitchenTeamSearchDemand = {
       note: 'Validates equipment-specific training, safe work practices and age-sensitive restrictions rather than generic skill labels.',
     },
   ],
+  records: [
+  {
+    id: 'kitchen.team.member',
+    label: 'Kitchen Team member',
+    kind: 'owned',
+    status: 'available',
+    owner: 'Team',
+    authority: 'Team owns the Kitchen-local named member and keeps it distinct from User identity, App membership and access.',
+    facts: [ 'member identity and optional User link', 'Kitchen role and status', 'permissions and audit stamps' ],
+    readBy: [
+      'kitchen.team.read-members',
+      'kitchen.team.update-member',
+      'kitchen.team.delete-member',
+      'kitchen.team.create-invitation',
+      'kitchen.team.record-station-competence',
+      'kitchen.team.record-training',
+      'kitchen.team.create-handover'
+    ],
+    writtenBy: [ 'kitchen.team.create-member', 'kitchen.team.update-member', 'kitchen.team.delete-member' ]
+  },
+  {
+    id: 'kitchen.team.competence-evidence',
+    label: 'Competence and training evidence',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Team',
+    authority: 'Reviewed, dated evidence remains separate from roles, permissions and unverified uploaded material.',
+    facts: [ 'member and requirement', 'evidence source and reviewer', 'effective and expiry dates', 'review status' ],
+    readBy: [],
+    writtenBy: [ 'kitchen.team.record-station-competence', 'kitchen.team.record-training' ]
+  },
+  {
+    id: 'kitchen.team.handover',
+    label: 'Shift handover',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Team',
+    authority: 'Handover owns its time-bound envelope and references unresolved records without copying them.',
+    facts: [ 'period and author', 'recipient scope', 'linked operational records', 'notes and acknowledgement' ],
+    readBy: [],
+    writtenBy: [ 'kitchen.team.create-handover' ]
+  }
+],
   recordQuestions: [
     'Which selected Kitchen owns this Team member row?',
     'Is this a named member, linked User, AppUser or authorized operator—and which relationships actually exist?',

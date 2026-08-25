@@ -1,18 +1,21 @@
-<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Workspace Spine pass: move workspace access metadata to the route and classify its surface. -->
 <template>
-  <div class="flex min-h-full min-w-0 flex-1">
+  <div>
     <UDashboardPanel id="workspace-kitchen-dishes">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Dishes" />
       </template>
 
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceKitchenOperationsCapabilityTools operation="dishes" />
-          <WorkspaceKitchenOperationsCapabilityAI operation="dishes" />
-          <WorkspaceKitchenOperationsCapabilityView operation="dishes" />
-          <WorkspaceKitchenOperationsDishes />
-          <WorkspaceKitchenOperationsGuidingLiterature operation="dishes" />
+        <section class="workspace-surface">
+          <WorkspaceKitchenCapabilityTools operation="dishes" />
+          <WorkspaceKitchenCapabilityAI
+            operation="dishes"
+            :suggestions="dishSuggestions"
+            :action-targets="dishActionTargets"
+          />
+          <WorkspaceKitchenCapabilityView operation="dishes" />
+          <WorkspaceKitchenDishes />
+          <WorkspaceKitchenCapabilityGuidingLiterature operation="dishes" />
           <WorkspaceKitchenResearchSegue
             capability="Dishes"
             base-path="/workspace/kitchen/dishes/search-demand"
@@ -24,9 +27,25 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/operations/Dishes/useKitchenDishesWorkspace'
+import { computed } from 'vue'
+import { buildMissingDishImageSuggestions } from '../../../../kitchen/models/operation-suggestions'
+import { provideKitchenDishesWorkspace } from '../../../../kitchen/composables/workspace/Dishes/useKitchenDishesWorkspace'
 
-provideKitchenDishesWorkspace()
+const dishesWorkspace = provideKitchenDishesWorkspace()
+const dishSuggestions = computed(() =>
+  buildMissingDishImageSuggestions(dishesWorkspace.dishes.value)
+)
+const dishActionTargets = computed(() =>
+  dishesWorkspace.dishes.value.flatMap((dish) =>
+    ['kitchen.dishes.update-dish', 'kitchen.dishes.delete-dish'].map(
+      (actionId) => ({
+        actionId,
+        targetId: dish.id,
+        label: String(dish.name || 'Untitled Dish').trim(),
+      })
+    )
+  )
+)
 
 definePageMeta({
   layout: 'workspace',

@@ -4,7 +4,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from 'fireux-properties/runtime/portfolio/composables/workspace/operations/useActivePortfolio'
+} from 'fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio'
 import { TaskStorage, type Task } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()

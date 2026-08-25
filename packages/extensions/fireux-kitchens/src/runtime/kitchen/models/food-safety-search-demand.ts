@@ -22,6 +22,51 @@ export const kitchenFoodSafetySearchDemand = {
     { label: 'UK Food Standards Agency HACCP-based procedures guidance', url: 'https://www.food.gov.uk/sites/default/files/media/document/moc-4-2-haccp.pdf', note: 'Validates corrective-action and monitoring records as evidence used to verify a HACCP-based system.' },
     { label: 'Crystal HACCP platform description', url: 'https://crystalhaccp.com/platform', note: 'Validates current market language around plans, checks, temperatures, inspections, corrective actions and dated evidence.' },
   ],
+  records: [
+  {
+    id: 'kitchen.food-safety.plan',
+    label: 'Food Safety plan',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Food Safety',
+    authority: 'The approved, versioned Kitchen control plan must remain distinct from generic guidance and generated drafts.',
+    facts: [
+      'jurisdiction and reviewed sources',
+      'hazards and controls',
+      'limits, frequencies and responsibilities',
+      'approval and version'
+    ],
+    readBy: [ 'kitchen.food-safety.record-check', 'kitchen.food-safety.review-deviation', 'kitchen.food-safety.prepare-evidence-review' ],
+    writtenBy: [ 'kitchen.food-safety.maintain-plan' ]
+  },
+  {
+    id: 'kitchen.food-safety.check',
+    label: 'Food Safety check',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Food Safety',
+    authority: 'A check records an actual observation against one approved control with actor and time.',
+    facts: [
+      'control and plan version',
+      'observation, reading, unit and instrument',
+      'actor and occurrence time',
+      'pass, fail or uncertainty'
+    ],
+    readBy: [ 'kitchen.food-safety.review-deviation', 'kitchen.food-safety.prepare-evidence-review' ],
+    writtenBy: [ 'kitchen.food-safety.record-check' ]
+  },
+  {
+    id: 'kitchen.food-safety.corrective-action',
+    label: 'Corrective action',
+    kind: 'owned',
+    status: 'requested',
+    owner: 'Food Safety',
+    authority: 'Corrective action records what accountable people actually did; AI cannot manufacture disposition or compliance.',
+    facts: [ 'deviation', 'containment and disposition', 'responsibility and follow-up', 'review evidence' ],
+    readBy: [ 'kitchen.food-safety.prepare-evidence-review' ],
+    writtenBy: [ 'kitchen.food-safety.record-corrective-action' ]
+  }
+],
   recordQuestions: ['Which approved plan version, hazard and control require this work?', 'Which jurisdiction, Kitchen policy or reviewed source defines the applicable rule or limit?', 'What must be checked, at what frequency, where and by which accountable role?', 'What observation, reading, unit, instrument, actor and time constitute the record?', 'Did the result pass, fail or remain uncertain against the applicable rule?', 'What immediate containment, product disposition, cause correction and follow-up occurred?', 'Which Ingredient, Recipe or Dish allergen facts support the control without being copied?', 'Which missing, late or superseded evidence must remain visible during review?'],
   toolHypotheses: [
     { id: 'kitchen.food-safety.maintain-plan', label: 'Maintain Food Safety Plan', layer: 'human', purpose: 'Create and version the Kitchen-specific plan, hazards, controls and verification responsibilities.', inputs: ['Kitchen processes', 'reviewed jurisdiction guidance', 'hazards, controls and responsible roles'], outputs: ['versioned draft or approved Food Safety plan'], evidence: ['source-identified guidance and accountable review'], authority: 'The Tool never labels generated text approved or legally sufficient without authorized review.', approval: 'An accountable operator explicitly approves each plan version.', status: 'requested' },
