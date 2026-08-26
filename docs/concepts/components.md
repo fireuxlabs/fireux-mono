@@ -1,7 +1,7 @@
 # Components spine map
 
 Updated: 2026-08-26
-Ref: d0caff27b
+Ref: e5a742124
 Role: map, not canon
 
 ## Purpose
@@ -31,6 +31,12 @@ Map component folder and naming conventions.
   `src/runtime/<entity>/components`, following `runtime-filesystem.md`.
 - App UI belongs under `app/components`; reusable entity implementation does
   not move into an App merely to preserve conventional Nuxt discovery.
+- App-owned Workspace composition uses
+  `{Ecosystem}Workspace{Entity}{Job}` and the matching
+  `components/{Ecosystem}/Workspace/{Entity}/{Job}.vue` path. Route placement
+  such as Landing is not part of that component identity. For example,
+  `MiseboxWorkspaceKitchenHero` is the Misebox-owned Kitchen Workspace Hero;
+  package-owned children retain their package family names.
 - Declared Entity components live beneath `runtime/<entity>/components` and
   are registered with prefixes that preserve established component names.
   Confirmed parent-owned record/operation components live beneath their parent
