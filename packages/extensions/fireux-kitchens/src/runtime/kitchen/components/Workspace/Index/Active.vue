@@ -37,7 +37,7 @@ const entity = computed<WorkspaceEntityCard>(() => {
   return {
     id: String(props.kitchen.id || '').trim(),
     title,
-    subtitle: tagline || address,
+    subtitle: tagline || address || 'My Kitchen',
     meta: tagline && address ? address : undefined,
     imageUrl: card?.imageUrl,
     imageAlt: `${title} identity`,

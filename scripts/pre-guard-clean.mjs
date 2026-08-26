@@ -63,11 +63,32 @@ const DEV_PROCESS_MARKERS = [
   '@nuxt/cli/dist/dev/',
 ]
 
+function processRunsInRepo(pid) {
+  try {
+    const output = execFileSync(
+      'lsof',
+      ['-a', '-p', pid, '-d', 'cwd', '-Fn'],
+      {
+        encoding: 'utf8',
+        timeout: 5_000,
+      }
+    )
+    const cwd = output
+      .split('\n')
+      .find((line) => line.startsWith('n'))
+      ?.slice(1)
+
+    return cwd === repoRoot || cwd?.startsWith(`${repoRoot}${path.sep}`)
+  } catch {
+    return false
+  }
+}
+
 function activeDevProcesses() {
   try {
     const output = execFileSync(
-      'pgrep',
-      ['-af', DEV_PROCESS_MARKERS.join('|')],
+      'ps',
+      ['-ax', '-o', 'pid=', '-o', 'command='],
       {
         encoding: 'utf8',
         timeout: 5_000,
@@ -88,18 +109,10 @@ function activeDevProcesses() {
       })
       .filter(({ pid, command }) =>
         pid !== String(process.pid) &&
-        command.includes(repoRoot) &&
-        DEV_PROCESS_MARKERS.some((marker) => command.includes(marker))
+        DEV_PROCESS_MARKERS.some((marker) => command.includes(marker)) &&
+        (command.includes(repoRoot) || processRunsInRepo(pid))
       )
   } catch (error) {
-    if (
-      error &&
-      typeof error === 'object' &&
-      'status' in error &&
-      error.status === 1
-    ) {
-      return []
-    }
     return [
       {
         pid: '?',

@@ -1,23 +1,43 @@
 <template>
-  <section class="grid gap-4" aria-labelledby="my-kitchens-title">
+  <section class="grid gap-4" aria-label="Kitchen Workspace">
     <USkeleton
       v-if="workspace.targets.pending.value"
       class="h-28 rounded-xl"
       aria-label="Loading active Kitchen"
     />
     <WorkspaceKitchenIndexActive
-      v-else-if="workspace.selection.kitchen.value"
+      v-else-if="!showEmptyState && workspace.selection.kitchen.value"
       :kitchen="workspace.selection.kitchen.value"
     />
-    <WorkspaceActiveEntity
-      v-else
-      label="Kitchen"
-      :changeable="false"
-      empty-title="No Kitchen yet"
-      empty-description="Start a Kitchen below to open its Workspace."
+    <Create
+      v-else-if="workspace.targets.outcome.value !== 'error'"
+      launcher="inline"
+      label="Find your Kitchen"
+      @created="createdKitchen"
     />
 
-    <div class="flex flex-wrap items-end justify-between gap-3">
+    <div
+      v-if="
+        canPreviewEmptyState &&
+        !showEmptyState &&
+        workspace.selection.kitchen.value
+      "
+      class="flex justify-end"
+    >
+      <UButton
+        label="Empty"
+        color="neutral"
+        variant="ghost"
+        size="xs"
+        icon="i-lucide-circle-dashed"
+        @click="emptyWorkspace"
+      />
+    </div>
+
+    <div
+      v-if="showCollectionControls"
+      class="flex flex-wrap items-end justify-between gap-3"
+    >
       <div class="grid gap-1">
         <h2
           id="my-kitchens-title"
@@ -29,12 +49,9 @@
           {{ description }}
         </p>
       </div>
-      <UBadge color="neutral" variant="soft">
-        {{ subscriptionLabel }}
-      </UBadge>
     </div>
 
-    <div class="grid gap-3 md:grid-cols-2">
+    <div v-if="showCollectionControls" class="grid gap-3 md:grid-cols-2">
       <USkeleton
         v-if="workspace.targets.pending.value"
         class="h-28 rounded-xl"
@@ -60,23 +77,19 @@
       </UAlert>
 
       <KitchenCardsCell
-        v-for="item in kitchenCells"
+        v-for="item in otherKitchenCells"
         v-else
         :key="item.card.id"
         v-bind="item.card"
         :badges="kitchenBadges(item)"
         action
-        :selected="
-          !requiresChangeRequest(item.card.id) &&
-          item.card.id === workspace.selection.kitchenId.value
-        "
         @action="openKitchen(item)"
       />
 
       <Create
         v-if="showCreateCell"
         launcher="cell"
-        :label="kitchenCells.length ? 'Add another Kitchen' : 'Start a Kitchen'"
+        :label="kitchenCells.length ? 'Add a Kitchen' : 'Find your Kitchen'"
         :description="createDescription"
         @created="createdKitchen"
       />
@@ -89,9 +102,9 @@
         <div class="card__media">
           <UAvatar icon="i-lucide-building-2" size="md" class="shrink-0" />
           <div class="card__content card__stack">
-            <div class="card__title">Add another Kitchen</div>
+            <div class="card__title">Manage every Kitchen</div>
             <div class="card__subtitle">
-              Upgrade to Business to create more Kitchens.
+              Upgrade to Business to switch freely and add Kitchens.
             </div>
           </div>
         </div>
@@ -128,23 +141,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, ref, watchEffect } from '#imports'
+import { computed, navigateTo, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import Create from './Create.vue'
 
-const { appAccess, appAccessOutcome } = useUser()
+const { appAccess, appAccessOutcome, isAdmin, isDeveloper } = useUser()
 const workspace = useKitchenWorkspace()
 const { workspaceTarget } = useKitchenInterface()
+const showEmptyState = ref(false)
 
 const subscription = computed(() =>
   appAccessOutcome.value === 'ready' ? appAccess.value.subscription : 'free'
 )
-const subscriptionLabel = computed(
-  () => subscription.value.charAt(0).toUpperCase() + subscription.value.slice(1)
-)
 const canCreateMultiple = computed(() => subscription.value === 'business')
+const canPreviewEmptyState = computed(() => isDeveloper.value || isAdmin.value)
 
 const kitchenCells = computed(() => {
   const cells = workspace.targets.kitchens.value.flatMap((kitchen) => {
@@ -166,30 +178,45 @@ const kitchenCells = computed(() => {
       left.card.id.localeCompare(right.card.id)
   )
 })
-const title = computed(() =>
-  kitchenCells.value.length > 1 ? 'My Kitchens' : 'My Kitchen'
+const otherKitchenCells = computed(() =>
+  kitchenCells.value.filter(
+    (item) => item.card.id !== workspace.selection.kitchenId.value
+  )
 )
+const title = computed(() => {
+  if (!kitchenCells.value.length) return 'Find your Kitchen'
+  if (otherKitchenCells.value.length) return 'Other Kitchens'
+  return 'Add a Kitchen'
+})
 const description = computed(() => {
-  if (kitchenCells.value.length <= 1) {
-    return 'Open your Kitchen or finish setting it up.'
+  if (!kitchenCells.value.length) {
+    return 'Search Misebox and Google, or continue with a name.'
   }
-  return canCreateMultiple.value
-    ? 'Choose a Kitchen or add another.'
-    : 'One Kitchen can be active. Request a change to open another.'
+  if (otherKitchenCells.value.length)
+    return 'Choose another Kitchen to work in.'
+  return 'Business supports multiple Kitchens.'
 })
 const showCreateCell = computed(
   () =>
     workspace.targets.outcome.value !== 'pending' &&
     workspace.targets.outcome.value !== 'error' &&
-    (!kitchenCells.value.length || canCreateMultiple.value)
+    canCreateMultiple.value
 )
 const showUpgradeCell = computed(
-  () => kitchenCells.value.length > 0 && !canCreateMultiple.value
+  () => otherKitchenCells.value.length > 0 && !canCreateMultiple.value
+)
+const showCollectionControls = computed(
+  () =>
+    !showEmptyState.value &&
+    (workspace.targets.pending.value ||
+      workspace.targets.outcome.value === 'error' ||
+      otherKitchenCells.value.length > 0 ||
+      canCreateMultiple.value)
 )
 const createDescription = computed(() =>
   kitchenCells.value.length
     ? 'Business supports multiple Kitchens.'
-    : 'Create the Kitchen, then add its identity and Menu.'
+    : 'Search Misebox and Google, or continue with a name.'
 )
 const debugObjects = computed(() => ({
   activeKitchen: workspace.selection.kitchen.value,
@@ -229,26 +256,8 @@ function kitchenBadges(item: (typeof kitchenCells.value)[number]) {
   return badges
 }
 
-watchEffect(() => {
-  if (
-    appAccessOutcome.value !== 'ready' ||
-    workspace.targets.outcome.value !== 'ready' ||
-    (workspace.selection.kitchenId.value &&
-      !requiresChangeRequest(workspace.selection.kitchenId.value))
-  ) {
-    return
-  }
-  const first = kitchenCells.value[0]?.card
-  if (!first?.id) return
-  workspace.actions.selectKitchen(
-    first.id,
-    first.name,
-    first.prop || 'My Kitchen',
-    first.imageUrl
-  )
-})
-
 async function createdKitchen(id: string) {
+  showEmptyState.value = false
   workspace.actions.selectKitchen(id)
   await workspace.targets.refresh()
 }
@@ -259,6 +268,7 @@ async function openKitchen(item: (typeof kitchenCells.value)[number]) {
     changeRequestOpen.value = true
     return
   }
+  showEmptyState.value = false
   workspace.actions.selectKitchen(
     item.card.id,
     item.card.name,
@@ -288,6 +298,7 @@ const changeRequestDescription = computed(() => {
 function confirmKitchenChange() {
   const item = requestedKitchen.value
   if (!item) return
+  showEmptyState.value = false
   workspace.actions.selectKitchen(
     item.card.id,
     item.card.name,
@@ -296,5 +307,10 @@ function confirmKitchenChange() {
   )
   changeRequestOpen.value = false
   requestedKitchenId.value = ''
+}
+
+function emptyWorkspace() {
+  showEmptyState.value = true
+  workspace.actions.clearSelectedKitchen()
 }
 </script>
