@@ -262,11 +262,6 @@ export async function completeSupplierOnboarding(
       })
     }
 
-    mutations.update(memberships, uid, {
-      workspace_enabled: true,
-      updated: serverAuditStamp({ by: uid }),
-    })
-
     return {
       ok: true,
       supplier_id: supplierId,

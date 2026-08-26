@@ -246,8 +246,7 @@ const canOpenWorkspace = computed(
     appOutcome.value === 'ready' &&
     membershipOutcome.value === 'ready' &&
     Boolean(hasWorkspaceEntry.value) &&
-    (appUser.value?.role === 'admin' || appUser.value?.role === 'dev') &&
-    appUser.value.workspace_enabled === true
+    Boolean(appUser.value)
 )
 const canManageApp = computed(
   () =>

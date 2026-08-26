@@ -3,60 +3,25 @@
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: add a focused public biography editor. -->
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: require the route-owned active User refs for profile mutations. -->
 <template>
-  <section class="space-y-4" aria-labelledby="public-profile-fields">
-    <div>
-      <h2 id="public-profile-fields" class="text-lg font-semibold text-highlighted">
-        Edit your profile
-      </h2>
-      <p class="mt-1 text-sm text-muted">
-        Update one detail at a time. Each change saves as soon as you confirm it.
-      </p>
-    </div>
-
+  <section aria-label="Edit profile">
     <ClientOnly>
-      <div v-if="user" class="space-y-4">
-        <UPageCard
-          title="Profile photo"
-          description="Use a clear image people will recognise across your apps."
-          icon="i-lucide-image"
-          variant="subtle"
-        >
-          <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
+      <UPageCard v-if="user" variant="subtle">
+        <div class="space-y-6 sm:space-y-8">
+          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+            <p class="text-sm font-medium text-highlighted">Avatar</p>
             <MoleculesFormsFirestoreImagePicker
               :src="proxiedAvatarUrl"
               :alt="user.display_name || user.handle || 'User'"
               :initials="avatarInitials"
-              button-label="Change profile photo"
+              button-label="Change avatar"
               :loading="avatarUploading"
               :update-function="handleAvatarUpload"
             />
-
-            <div class="min-w-0 flex-1 text-center sm:text-left">
-              <p class="text-sm text-toned">
-                Choose a square photo or image for the best crop.
-              </p>
-              <p
-                v-if="avatarUploading"
-                class="mt-2 inline-flex items-center gap-2 text-xs font-medium text-primary"
-                role="status"
-              >
-                <UIcon name="i-lucide-loader-circle" class="size-3.5 animate-spin" />
-                Uploading photo…
-              </p>
-              <p v-else class="mt-2 text-xs text-dimmed">
-                Select the camera button on your photo to replace it.
-              </p>
-            </div>
           </div>
-        </UPageCard>
 
-        <UPageCard
-          title="Name and handle"
-          description="These are the public details shown on your User card."
-          icon="i-lucide-id-card"
-          variant="subtle"
-        >
-          <div class="space-y-5">
+          <USeparator />
+
+          <div class="grid gap-6 sm:grid-cols-2">
             <MoleculesFormsFirestoreSimpleField
               label="Display name"
               :firebase-value="user.display_name"
@@ -67,37 +32,25 @@
               :formatting-function="DisplayName.format"
             />
 
-            <USeparator />
-
-            <MoleculesFormsFirestoreSimpleField
-              label="Handle"
-              :firebase-value="user.handle"
-              placeholder="your-handle"
-              :update-function="handleUpdateHandle"
-              :validation-function="Handle.validate"
-              :formatting-function="Handle.format"
-            />
-
-            <UAlert
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-at-sign"
-              title="Your public address"
-              :description="publicAddress"
-            />
+            <div>
+              <MoleculesFormsFirestoreSimpleField
+                label="Handle"
+                :firebase-value="user.handle"
+                placeholder="your-handle"
+                :update-function="handleUpdateHandle"
+                :validation-function="Handle.validate"
+                :formatting-function="Handle.format"
+              />
+              <p class="mt-2 font-mono text-xs text-dimmed">{{ profileAddress }}</p>
+            </div>
           </div>
-        </UPageCard>
 
-        <UPageCard
-          title="About you"
-          description="A short introduction for your User card and public profile."
-          icon="i-lucide-align-left"
-          variant="subtle"
-        >
+          <USeparator />
+
           <MoleculesFormsFirestoreSimpleField
             label="Bio"
             :firebase-value="user.bio"
-            placeholder="Tell people what you build, do or care about."
+            placeholder="Bio"
             type="textarea"
             :rows="5"
             :maxlength="280"
@@ -105,8 +58,33 @@
             :validation-function="Bio.validate"
             :formatting-function="Bio.format"
           />
-        </UPageCard>
-      </div>
+
+          <USeparator />
+
+          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+            <p class="text-sm font-medium text-highlighted">
+              Ping: {{ user.ping }}
+            </p>
+            <div class="flex flex-wrap gap-2 sm:justify-end">
+              <UButton
+                v-for="name in pingNames"
+                :key="name"
+                :label="name"
+                :color="user.ping === name ? 'primary' : 'neutral'"
+                :variant="user.ping === name ? 'solid' : 'soft'"
+                @click="handleUpdatePing(name)"
+              />
+            </div>
+          </div>
+
+          <USeparator />
+
+          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+            <p class="text-sm font-medium text-highlighted">User ID</p>
+            <UInput :model-value="user.id" disabled class="w-full font-mono" />
+          </div>
+        </div>
+      </UPageCard>
 
       <MoleculesStateCard v-else entity="profile" kind="document" loading />
     </ClientOnly>
@@ -118,7 +96,7 @@ import { computed, ref } from 'vue'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
-import type { User } from '../../models/user.model.ts'
+import { USER_PINGS, type User } from '../../models/user.model.ts'
 
 import type { UserRefs } from '../../composables/firestore/fetch/useUserFetch'
 import { useUserUpdate } from '../../composables/firestore/mutations/useUserUpdate'
@@ -127,7 +105,6 @@ const props = defineProps<{ user: User | null; userRefs: UserRefs }>()
 
 const toast = useToastify()
 const userUpdate = useUserUpdate(props.userRefs, 'UserEditCore')
-const coreProfile = userUpdate.core.profile
 
 const user = computed(() => props.user)
 const { useProxiedAvatar } = useAvatarProxy()
@@ -143,7 +120,7 @@ const avatarInitials = computed(() => {
     .map((part) => part[0]?.toUpperCase())
     .join('')
 })
-const publicAddress = computed(() => {
+const profileAddress = computed(() => {
   const handle = String(user.value?.handle || '').trim().replace(/^@+/, '')
   return handle
     ? `/users/${handle}`
@@ -166,26 +143,32 @@ const withToast =
     }
   }
 
-const handleUpdateDisplayName = withToast(coreProfile.rename, {
+const handleUpdateDisplayName = withToast(userUpdate.name, {
   success: 'Display name updated',
   failure: 'Failed to update display name',
 })
 
-const handleUpdateBio = withToast(coreProfile.setBio, {
+const handleUpdateBio = withToast(userUpdate.bio, {
   success: 'Bio updated',
   failure: 'Failed to update bio',
 })
 
-const handleUpdateHandle = withToast(coreProfile.setHandle, {
+const handleUpdateHandle = withToast(userUpdate.handle, {
   success: 'Handle updated',
   failure: 'Failed to update handle',
+})
+
+const pingNames = USER_PINGS
+const handleUpdatePing = withToast(userUpdate.ping, {
+  success: 'Ping updated',
+  failure: 'Failed to update ping',
 })
 
 const avatarUploading = ref(false)
 async function handleAvatarUpload(file: File) {
   avatarUploading.value = true
   try {
-    await coreProfile.uploadAvatar(file)
+    await userUpdate.avatar(file)
     toast.success('Avatar updated')
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'

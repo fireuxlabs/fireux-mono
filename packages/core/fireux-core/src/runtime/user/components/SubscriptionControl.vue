@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { computed, navigateTo, ref, useToast } from '#imports'
+import type { AppUserSubscription } from '../../app/models/app-user.model'
 import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
 import { useDeveloperAccess } from '../composables/useDeveloperAccess'
 import { useUser } from '../composables/useUser'
@@ -28,6 +29,7 @@ const { appAccess } = useUser()
 const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
 const pending = ref(false)
 const toast = useToast()
+const subscriptions: AppUserSubscription[] = ['free', 'premium', 'business']
 const presentations = {
   free: {
     label: 'Free',
@@ -57,12 +59,8 @@ async function handleClick() {
     return
   }
 
-  const requested =
-    appAccess.value.subscription === 'free'
-      ? 'premium'
-      : appAccess.value.subscription === 'premium'
-        ? 'business'
-        : 'free'
+  const currentIndex = subscriptions.indexOf(appAccess.value.subscription)
+  const requested = subscriptions[(currentIndex + 1) % subscriptions.length]!
 
   pending.value = true
   try {

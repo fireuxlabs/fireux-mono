@@ -3,10 +3,9 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: preserve a canonical safe avatar on clear and upload.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: construct Firebase write and Storage clients only when a User edit runs.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography through the canonical public User updater.
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../../composables/fireux/firestore/vuefire'
-import type { User } from '../../../../models/user.model.ts'
+import { useRequireUser } from '../../../../../composables/fireux/firebase/useRequireUser'
+import { isUserPing, type User } from '../../../../models/user.model.ts'
 import { useImageStorage } from '../../../../../composables/fireux/firebase/useImageStorage'
-import { useFirestoreUpdate } from '../../../../../composables/fireux/firestore/operations/useFirestoreUpdate'
 import { ensureAvatarUrl } from '../../../../../composables/fireux/firestore/utils/useEnsureCommon'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useUserHandleUpdate } from '../../mutations/useUserHandleUpdate'
@@ -31,7 +30,6 @@ function avatarFileExtension(source: File | Blob): string {
 }
 
 export function useCoreUserUpdate(user: UserRefs) {
-  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const { DisplayName, Bio, AvatarUrl, Handle } =
     useUserFormattingAndValidation()
   const { updateHandle } = useUserHandleUpdate()
@@ -43,14 +41,27 @@ export function useCoreUserUpdate(user: UserRefs) {
     return id
   }
 
-  const updateCore = (data: Record<string, unknown>) =>
-    useFirestoreUpdate({ databaseId: identityDatabaseId }).updateDocument<User>(
-      'users',
-      requireCoreId(),
-      data as Partial<User>
-    )
+  const updateCoreProfile = async (
+    data: Partial<Pick<User, 'display_name' | 'bio' | 'avatar' | 'ping'>>
+  ) => {
+    const firebaseUser = await useRequireUser()
+    if (firebaseUser.uid !== requireCoreId()) {
+      throw new Error('A User may update only their own profile.')
+    }
+    const token = await firebaseUser.getIdToken()
+    await $fetch('/api/internal/user/profile', {
+      method: 'PATCH',
+      headers: { authorization: `Bearer ${token}` },
+      body: data,
+    })
+  }
 
-  const updateCorePublicIdentity = (data: Partial<User>) => updateCore(data)
+  const ping = async (ping: User['ping']) => {
+    if (!isUserPing(ping)) {
+      throw new Error('Invalid ping.')
+    }
+    await updateCoreProfile({ ping })
+  }
 
   const formatAndValidate = <T>(
     formatter: {
@@ -68,66 +79,69 @@ export function useCoreUserUpdate(user: UserRefs) {
     return formatted
   }
 
-  const profile = {
-    rename: async (displayName: string) => {
-      const formatted = formatAndValidate(
-        DisplayName,
-        displayName,
-        'Invalid display name'
-      )
-      await updateCorePublicIdentity({ display_name: formatted })
-    },
-    setBio: async (bio: string) => {
-      const formatted = formatAndValidate(Bio, bio, 'Invalid bio')
-      await updateCorePublicIdentity({ bio: formatted })
-    },
-    setAvatarUrl: async (url: string | null) => {
-      const formatted = formatAndValidate(
-        AvatarUrl,
-        url ?? '',
-        'Invalid avatar URL'
-      )
-      const resolved = formatted
-        ? formatted
-        : await ensureAvatarUrl(
-            `${'users'}/${requireCoreId()}/avatar/current`,
-            [USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
-            true,
-            {
-              fallback: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
-            }
-          )
-      await updateCorePublicIdentity({
-        avatar: resolved,
-      })
-    },
-    uploadAvatar: async (source: File | Blob) => {
-      const id = requireCoreId()
-      const extension = avatarFileExtension(source)
-      const path = `${'users'}/${id}/avatar/${Date.now()}.${extension}`
-      const { uploadImage } = useImageStorage()
-      const url = await uploadImage(path, source)
-      const formatted = formatAndValidate(
-        AvatarUrl,
-        url,
-        'Avatar upload did not return a valid HTTPS URL'
-      )
-      await updateCorePublicIdentity({ avatar: formatted })
-      return formatted
-    },
-    setHandle: async (handle: string) => {
-      const normalized = formatAndValidate(
-        Handle,
-        handle ?? '',
-        'Invalid handle'
-      )
-      const uid = requireCoreId()
-      if (!normalized) throw new Error('Handle cannot be empty.')
-      await updateHandle(uid, normalized)
-    },
+  const name = async (displayName: string) => {
+    const formatted = formatAndValidate(
+      DisplayName,
+      displayName,
+      'Invalid display name'
+    )
+    await updateCoreProfile({ display_name: formatted })
+  }
+  const bio = async (bio: string) => {
+    const formatted = formatAndValidate(Bio, bio, 'Invalid bio')
+    await updateCoreProfile({ bio: formatted })
+  }
+  const avatarUrl = async (url: string | null) => {
+    const formatted = formatAndValidate(
+      AvatarUrl,
+      url ?? '',
+      'Invalid avatar URL'
+    )
+    const resolved = formatted
+      ? formatted
+      : await ensureAvatarUrl(
+          `${'users'}/${requireCoreId()}/avatar/current`,
+          [USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
+          true,
+          {
+            fallback: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
+          }
+        )
+    await updateCoreProfile({
+      avatar: resolved,
+    })
+  }
+  const avatar = async (source: File | Blob) => {
+    const id = requireCoreId()
+    const extension = avatarFileExtension(source)
+    const path = `${'users'}/${id}/avatar/${Date.now()}.${extension}`
+    const { uploadImage } = useImageStorage()
+    const url = await uploadImage(path, source)
+    const formatted = formatAndValidate(
+      AvatarUrl,
+      url,
+      'Avatar upload did not return a valid HTTPS URL'
+    )
+    await updateCoreProfile({ avatar: formatted })
+    return formatted
+  }
+  const handle = async (handle: string) => {
+    const normalized = formatAndValidate(
+      Handle,
+      handle ?? '',
+      'Invalid handle'
+    )
+    const uid = requireCoreId()
+    if (!normalized) throw new Error('Handle cannot be empty.')
+    await updateHandle(uid, normalized)
   }
 
   return {
-    profile,
+    name,
+    bio,
+    avatar,
+    avatarUrl,
+    handle,
+    ping,
   }
 }

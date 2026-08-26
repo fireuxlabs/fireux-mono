@@ -4,102 +4,75 @@
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: isolate root User outcomes and reuse one active-user binding. -->
 <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
 <template>
-  <UDashboardPanel id="user-profile">
+  <div class="min-h-full">
+    <UDashboardPanel id="user-profile" :ui="{ body: 'lg:py-12' }">
     <template #header>
       <LayoutsDashboardNavbar title="Profile" />
     </template>
 
     <template #body>
-      <UPage>
-        <UPageBody class="pagebody">
-          <UPageHeader
-            :title="userCard?.displayName || 'Profile'"
-            description="Manage what people can see and review the account details only you can access."
-          >
-            <template #headline>
-              <div class="flex flex-wrap items-center gap-2">
-                <span>{{ userCard?.handle || 'Your profile' }}</span>
-                <UserAccessBadge :subscription="subscription" />
-              </div>
-            </template>
+      <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 lg:gap-10">
+          <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <UAvatar
+                :src="userCard?.avatarUrl || undefined"
+                :alt="userCard?.displayName || 'Your profile'"
+                size="2xl"
+                class="ring-2 ring-default"
+              />
 
-            <template #links>
+              <div class="min-w-0 flex-1">
+                <h1 class="truncate text-2xl font-semibold tracking-tight text-highlighted">
+                  {{ userCard?.displayName || 'Your profile' }}
+                </h1>
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                  <span class="text-sm text-muted">{{ userCard?.handle || 'No handle' }}</span>
+                  <UserAccessBadge :subscription="subscription" />
+                </div>
+              </div>
+
               <UButton
                 v-if="userCard?.to"
                 :to="userCard.to"
-                label="View public profile"
+                label="Open profile"
                 icon="i-lucide-external-link"
                 color="neutral"
                 variant="soft"
+                class="shrink-0"
               />
-            </template>
-          </UPageHeader>
+          </div>
 
-          <div class="space-y-10">
-            <section class="space-y-5" aria-labelledby="public-profile-section">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2
-                    id="public-profile-section"
-                    class="text-xl font-semibold text-highlighted"
-                  >
-                    Public
-                  </h2>
-                  <p class="mt-1 text-sm text-muted">
-                    Your photo, name, handle and bio are visible across FireUX apps.
-                  </p>
-                </div>
-
-                <UBadge
-                  label="Visible to everyone"
-                  icon="i-lucide-globe-2"
-                  color="primary"
-                  variant="soft"
-                />
-              </div>
-
+          <section class="space-y-5" aria-label="User editor">
               <MoleculesStateCard
                 v-if="isLoading"
-                entity="public profile"
+                entity="profile"
                 kind="document"
                 loading
               />
 
               <MoleculesStateCard
                 v-else-if="userError"
-                entity="public profile"
+                entity="profile"
                 kind="document"
                 state="error"
               />
 
               <MoleculesStateCard
                 v-else-if="isMissing"
-                entity="public profile"
+                entity="profile"
                 kind="document"
                 state="missing"
               />
 
               <ClientOnly v-else-if="resolvedUser">
-                <LayoutsDashboardProfileEdit>
-                  <template #preview>
-                    <UserEditPreview
-                      v-if="userCard"
-                      :card="userCard"
-                    />
-                  </template>
-
-                  <template #core>
-                    <UserEditCore
-                      :user="resolvedUser"
-                      :user-refs="userApi"
-                    />
-                  </template>
-                </LayoutsDashboardProfileEdit>
+                <UserEditCore
+                  :user="resolvedUser"
+                  :user-refs="userApi"
+                />
               </ClientOnly>
 
               <MoleculesStateCard
                 v-else
-                entity="public profile"
+                entity="profile"
                 kind="document"
                 loading
               />
@@ -146,29 +119,9 @@
                   </div>
                 </div>
               </UPageCard>
-            </section>
+          </section>
 
-            <section class="space-y-5" aria-labelledby="private-profile-section">
-              <div class="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2
-                    id="private-profile-section"
-                    class="text-xl font-semibold text-highlighted"
-                  >
-                    Private
-                  </h2>
-                  <p class="mt-1 text-sm text-muted">
-                    Account details shown here are visible only to you.
-                  </p>
-                </div>
-
-                <UBadge
-                  label="Only you"
-                  icon="i-lucide-lock-keyhole"
-                  color="neutral"
-                  variant="soft"
-                />
-              </div>
+          <section class="space-y-5" aria-label="Account details">
 
               <MoleculesStateCard
                 v-if="privateOutcome === 'idle' || privateOutcome === 'pending'"
@@ -183,7 +136,7 @@
                 kind="document"
                 state="error"
                 title="Private details unavailable"
-                description="Your public profile still works, but private account details could not be loaded."
+                description="Your profile still works, but private account details could not be loaded."
               />
 
               <MoleculesStateCard
@@ -192,13 +145,12 @@
                 kind="document"
                 state="missing"
                 title="Private account record missing"
-                description="Your public profile still works, but the private account record needs to be restored."
+                description="Your profile still works, but the private account record needs to be restored."
               />
 
               <UPageCard
                 v-else-if="privateUser"
-                title="Account details"
-                description="Sign-in and signup-agreement details that never appear on your public profile."
+                title="Account"
                 icon="i-lucide-shield-check"
                 variant="subtle"
               >
@@ -230,10 +182,7 @@
                 </dl>
 
                 <template #footer>
-                  <div class="flex flex-wrap items-center justify-between gap-3">
-                    <p class="text-sm text-muted">
-                      Manage your account and current session in Settings.
-                    </p>
+                  <div class="flex justify-end">
                     <UButton
                       to="/dashboard/settings"
                       label="Settings"
@@ -251,12 +200,11 @@
                 kind="document"
                 loading
               />
-            </section>
-          </div>
-        </UPageBody>
-      </UPage>
+          </section>
+      </div>
     </template>
-  </UDashboardPanel>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

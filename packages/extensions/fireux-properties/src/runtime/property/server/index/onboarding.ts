@@ -219,11 +219,6 @@ export async function completePropertyOnboarding(
       })
     }
 
-    mutations.update(memberships, uid, {
-      workspace_enabled: true,
-      updated: serverAuditStamp({ by: uid }),
-    })
-
     return {
       ok: true,
       property_id: propertyId,

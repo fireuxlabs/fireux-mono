@@ -30,7 +30,6 @@ export type CurrentAppMembership = {
   id: string
   role: AppUserRole
   subscription: AppUserSubscription
-  workspace_enabled: boolean
   onboarding_status: AppUserOnboardingStatus
   profiles: string[]
 }

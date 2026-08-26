@@ -1,6 +1,5 @@
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
-import { resolveAppUserAccess } from '../../utils/app-user-access.ts'
 import { requireFirebaseBearerUser } from '../../../server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
@@ -38,19 +37,10 @@ function membershipDto(
   const role = value.role
   const subscription = value.subscription
   const onboardingStatus = value.onboarding_status
-  const normalizedMembership = {
-    ...value,
-    role,
-    subscription,
-    onboarding_status: onboardingStatus,
-  }
-  const access = resolveAppUserAccess(normalizedMembership)
-
   return {
     id,
     role,
     subscription,
-    workspace_enabled: access.hasAdminAuthority,
     onboarding_status: onboardingStatus,
     profiles,
   }

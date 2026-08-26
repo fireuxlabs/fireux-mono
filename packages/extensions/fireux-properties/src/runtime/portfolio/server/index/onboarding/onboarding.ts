@@ -137,11 +137,6 @@ export async function completePortfolioOnboarding(
       })
     }
 
-    mutations.update(memberships, current.uid, {
-      workspace_enabled: true,
-      updated: serverAuditStamp({ by: current.uid }),
-    })
-
     return {
       ok: true,
       portfolio_id: portfolioId,

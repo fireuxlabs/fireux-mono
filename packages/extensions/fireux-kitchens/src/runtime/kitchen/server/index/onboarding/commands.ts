@@ -225,11 +225,6 @@ export async function completeKitchenOnboarding(
       )
     }
 
-    mutations.update(memberships, current.uid, {
-      workspace_enabled: true,
-      updated: serverAuditStamp({ by: current.uid }),
-    })
-
     return {
       ok: true,
       kitchen_id: locator.kitchenId,

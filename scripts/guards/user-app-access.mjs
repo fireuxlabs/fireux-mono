@@ -229,10 +229,25 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/app/server/context/read.ts'
   )
   assert.match(context, /profileSnapshots\[index\]\?\.exists/)
-  assert.match(context, /workspace_enabled: access\.hasAdminAuthority/)
+  assert.doesNotMatch(
+    context,
+    /workspace_enabled/,
+    'Current App context must not recreate stale Workspace authority on AppUser.'
+  )
   assert.doesNotMatch(context, /workspace_targets/)
   assert.match(context, /subscription/)
   assert.doesNotMatch(context, /access_tier|has_premium_access|is_premium/)
+
+  const dashboardOverview = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue'
+  )
+  assert.match(dashboardOverview, /Boolean\(appUser\.value\)/)
+  assert.doesNotMatch(
+    dashboardOverview,
+    /workspace_enabled/,
+    'Workspace entry must come from App membership; entity Team owns selected-target authority.'
+  )
 
   const settings = read(
     repoRoot,
@@ -254,6 +269,11 @@ export async function run({ repoRoot }) {
   assert.doesNotMatch(subscriptionControl, /userId:/)
   assert.match(subscriptionControl, /const pending = ref\(false\)/)
   assert.match(subscriptionControl, /@click="handleClick"/)
+  assert.match(subscriptionControl, /\['free', 'premium', 'business'\]/)
+  assert.match(
+    subscriptionControl,
+    /\(currentIndex \+ 1\) % subscriptions\.length/
+  )
   assert.match(subscriptionControl, /if \(!canToggle\.value\)/)
   assert.match(subscriptionControl, /navigateTo\('\/pricing'\)/)
   assert.match(subscriptionControl, /useDeveloperAccess/)

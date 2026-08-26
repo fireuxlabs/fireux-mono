@@ -111,11 +111,6 @@ export async function completeBlankOnboarding(
       created: serverAuditStamp({ by: uid, appId }),
       updated: serverAuditStamp({ by: uid }),
     })
-    transaction.update(membershipRef, {
-      workspace_enabled: true,
-      updated: serverAuditStamp({ by: uid }),
-    })
-
     return {
       ok: true,
       id: rootRef.id,

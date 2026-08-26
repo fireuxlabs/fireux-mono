@@ -60,6 +60,6 @@ export async function readKitchenOnboardingActor(
     db,
     membershipRef,
     role,
-    canOwnMultipleWorkspaces: access.canOwnMultipleWorkspaces,
+    canOwnMultipleWorkspaces: access.hasBusinessSubscription,
   }
 }

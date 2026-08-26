@@ -1,4 +1,4 @@
-import type { User } from '../models/user.model.ts'
+import { isUserPing, type User } from '../models/user.model.ts'
 import { resolveUserAvatarSource } from './user-avatar'
 
 const USER_HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{2,29}$/
@@ -24,6 +24,7 @@ export function normalizeUser(idValue: unknown, value: unknown): User | null {
 
   const candidateHandle = text(source.handle).toLowerCase()
   const candidateBio = text(source.bio)
+  const candidatePing = text(source.ping)
 
   return {
     id,
@@ -31,6 +32,7 @@ export function normalizeUser(idValue: unknown, value: unknown): User | null {
     display_name: text(source.display_name),
     bio: candidateBio.length <= 280 ? candidateBio : '',
     avatar: resolveUserAvatarSource(source.avatar),
+    ping: isUserPing(candidatePing) ? candidatePing : 'Mark',
   }
 }
 

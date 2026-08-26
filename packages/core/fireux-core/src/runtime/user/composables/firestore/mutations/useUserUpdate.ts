@@ -83,8 +83,13 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   }
 
   return {
-    core,
     app,
     update,
+    name: core.name,
+    bio: core.bio,
+    avatar: core.avatar,
+    avatarUrl: core.avatarUrl,
+    handle: core.handle,
+    ping: core.ping,
   }
 }

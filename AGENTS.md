@@ -2,7 +2,7 @@
 
 Purpose: short operating router for AI agents working in `fireux-mono`.
 
-Effective: 2026-08-18
+Effective: 2026-08-26
 
 ## Mandatory Entry
 
@@ -79,6 +79,24 @@ Before editing an entity, console, route family, model, collection manager, publ
 5. Patch the smallest useful slice.
 
 If a tiny behavior needs a broad diff, stop and report the missing seam.
+
+## Proof Rule
+
+When testing whether a pipeline works, build the smallest observable proof:
+
+1. One temporary value or field.
+2. One writer.
+3. One reader.
+4. One plain visible result.
+
+Do not add a value catalogue, multiple controls, presentation variants,
+generalized API, reusable framework, compatibility layer, or speculative
+validation to a proof. Make the direct path work first. Add product behavior
+only after the proof succeeds, and remove temporary proof code when it has
+served its purpose.
+
+If the proof expands beyond those four parts, stop and explain why before
+editing further.
 
 Package runtime ownership is entity-scoped. Root technical directories are
 the shared FireUX spine or a Nuxt entrypoint boundary; entity-owned

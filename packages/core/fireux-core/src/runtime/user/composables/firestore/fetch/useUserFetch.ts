@@ -17,6 +17,8 @@ import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
+import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 
 export type UserFetchOutcome =
   | 'idle'
@@ -32,6 +34,7 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     bio: '',
     avatar: '',
     handle: '',
+    ping: 'Mark',
   }
 }
 
@@ -123,14 +126,22 @@ export function useUserFetch(
     Boolean(uid.value && includePrivate)
   )
 
-  // Active-user surfaces consume the same bounded identity summary as other User surfaces.
-  // consume the same bounded server projection as every other User surface.
-  // This avoids coupling dashboard/header availability to raw client Rules.
-  const coreState = useUserIdentitySummary(uid)
+  const ownerCoreState = includePrivate
+    ? useFirestoreRead({
+        databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+      }).firestoreFetchDoc<User>('users', uid)
+    : null
+  const summaryCoreState = includePrivate ? null : useUserIdentitySummary(uid)
   const privateState = includePrivate ? useCurrentUserAccount() : null
-  const coreUserRef = coreState.user
-  const corePending = coreState.pending
-  const coreError = coreState.error
+  const coreUserRef = includePrivate
+    ? ownerCoreState!.data
+    : summaryCoreState!.user
+  const corePending = includePrivate
+    ? ownerCoreState!.pending
+    : summaryCoreState!.pending
+  const coreError = includePrivate
+    ? ownerCoreState!.error
+    : summaryCoreState!.error
   const privateUserRef = computed(() => privateState?.account.value ?? null)
   const privatePending = computed(() =>
     privateScopeRequested.value ? Boolean(privateState?.pending.value) : false

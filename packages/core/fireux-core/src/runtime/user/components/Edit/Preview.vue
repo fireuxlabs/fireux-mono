@@ -6,7 +6,7 @@
       <div class="flex items-start justify-between gap-4">
         <div>
           <h2 class="text-base font-semibold text-highlighted">
-            Public preview
+            Profile preview
           </h2>
           <p class="mt-1 text-sm text-muted">
             The identity people see across your apps.
@@ -14,8 +14,8 @@
         </div>
 
         <UBadge
-          label="Public"
-          icon="i-lucide-globe-2"
+          label="Profile"
+          icon="i-lucide-user-round"
           color="primary"
           variant="soft"
           size="sm"
