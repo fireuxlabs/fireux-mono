@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -124,6 +124,7 @@ const promptSuggestions = computed(() =>
     : workspaceToolSuggestions.value
 )
 const prompt = ref('')
+const mounted = ref(false)
 const messages = ref<KitchenAIWelcomeMessage[]>([])
 const submitting = ref(false)
 const commandResult = ref<KitchenAIWelcomeMessage | null>(null)
@@ -153,6 +154,7 @@ const subscriptionLabel = computed(() => {
 })
 const workspaceTitle = computed(() => {
   if (props.agent || resolvedOperation.value) return resolvedTitle.value
+  if (!mounted.value) return 'Build and run your Kitchen with KitchenAI'
   return selectedKitchenName.value
     ? `Run ${selectedKitchenName.value} with KitchenAI`
     : `Build and run your${subscriptionLabel.value ? ` ${subscriptionLabel.value}` : ''} Kitchen with KitchenAI`
@@ -164,6 +166,9 @@ const availableKitchenNames = computed(() =>
 )
 const workspaceDescription = computed(() => {
   if (props.description || props.agent) return resolvedDescription.value
+  if (!mounted.value) {
+    return 'Create a Kitchen, bring in what you already have, and use KitchenAI to find the next useful step.'
+  }
   if (!isAuthenticated.value) {
     return 'Create a Kitchen, bring in what you already have, and use KitchenAI to find the next useful step.'
   }
@@ -189,6 +194,10 @@ const workspaceDescription = computed(() => {
     return `${names[0]} is available to you. Select it to use its live evidence, or continue from a blank Kitchen context.`
   }
   return `You have ${names.length} Kitchens available. Choose the Kitchen you want me to work with.`
+})
+
+onMounted(() => {
+  mounted.value = true
 })
 
 const selectedLiveScope = computed(() => ({

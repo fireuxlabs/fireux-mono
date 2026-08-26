@@ -1,7 +1,7 @@
 <template>
   <section class="grid gap-4" aria-label="Kitchen Workspace">
     <USkeleton
-      v-if="workspace.targets.pending.value"
+      v-if="!mounted || workspace.targets.pending.value"
       class="h-28 rounded-xl"
       aria-label="Loading active Kitchen"
     />
@@ -19,6 +19,7 @@
     <div
       v-if="
         canPreviewEmptyState &&
+        mounted &&
         !showEmptyState &&
         workspace.selection.kitchen.value
       "
@@ -130,6 +131,7 @@
     </UModal>
 
     <DevDebugPanel
+      v-if="mounted"
       title="Kitchen collection debug"
       scope="workspace"
       object-origin="fetched"
@@ -141,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, ref } from '#imports'
+import { computed, navigateTo, onMounted, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
@@ -151,6 +153,11 @@ const { appAccess, appAccessOutcome, isAdmin, isDeveloper } = useUser()
 const workspace = useKitchenWorkspace()
 const { workspaceTarget } = useKitchenInterface()
 const showEmptyState = ref(false)
+const mounted = ref(false)
+
+onMounted(() => {
+  mounted.value = true
+})
 
 const subscription = computed(() =>
   appAccessOutcome.value === 'ready' ? appAccess.value.subscription : 'free'
@@ -207,6 +214,7 @@ const showUpgradeCell = computed(
 )
 const showCollectionControls = computed(
   () =>
+    mounted.value &&
     !showEmptyState.value &&
     (workspace.targets.pending.value ||
       workspace.targets.outcome.value === 'error' ||

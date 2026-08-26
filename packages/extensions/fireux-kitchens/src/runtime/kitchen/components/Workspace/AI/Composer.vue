@@ -48,7 +48,7 @@
         @update:model-value="emit('update:modelValue', $event)"
       />
       <UButton
-        v-if="voice.supported.value"
+        v-if="mounted && voice.supported.value"
         type="button"
         :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
         :color="voice.recording.value ? 'error' : 'neutral'"
@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useVoiceRecorder } from 'fireux-ai/runtime/composables/useVoiceRecorder'
 import PromptInput from './PromptInput.vue'
@@ -122,11 +122,16 @@ const emit = defineEmits<{
   file: [file: File]
 }>()
 const fileInput = ref<HTMLInputElement | null>(null)
+const mounted = ref(false)
 const voice = useVoiceRecorder()
 const transcribing = ref(false)
 const transcriptionError = ref('')
 const voiceError = computed(() => transcriptionError.value || voice.error.value)
 let recordingTimeout: ReturnType<typeof setTimeout> | null = null
+
+onMounted(() => {
+  mounted.value = true
+})
 
 function selectFile(event: Event) {
   const input = event.target as HTMLInputElement

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <WorkspaceKitchenCreateForm
+    <Form
       v-if="launcher === 'inline'"
       :title="label"
       @created="emit('created', $event)"
@@ -38,7 +38,7 @@
       :ui="{ content: 'sm:max-w-xl' }"
     >
       <template #body>
-        <WorkspaceKitchenCreateForm title="" @created="created" />
+        <Form title="" @created="created" />
       </template>
     </UModal>
   </div>
@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import Form from './Create/Form.vue'
 
 const {
   showLauncher = true,
