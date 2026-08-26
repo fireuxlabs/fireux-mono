@@ -1,28 +1,28 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw workspace debug label. -->
 <!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: delegate selected-target chrome to Core. -->
 <template>
-  <WorkspaceCurrentEntity
-    label="Property"
-    :selected-id="propertyId"
-    :description="propertyName"
+  <WorkspaceActiveEntity
+    label="Portfolio"
+    :active-id="portfolioId"
+    :description="portfolioName"
     @clear="emit('clear')"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Property } from '../../../models/property.model.ts'
+import type { PortfolioWorkspaceEntity } from '../../../composables/workspace/core/usePortfolioWorkspace'
 
 const props = defineProps<{
-  property?: Property | null
-  propertyId?: string
+  portfolio?: PortfolioWorkspaceEntity | null
+  portfolioId?: string
 }>()
 
 const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
-const propertyName = computed(() =>
-  String(props.property?.identity?.name || props.property?.slug || '').trim()
+const portfolioName = computed(() =>
+  String(props.portfolio?.name || props.portfolio?.slug || '').trim()
 )
 </script>

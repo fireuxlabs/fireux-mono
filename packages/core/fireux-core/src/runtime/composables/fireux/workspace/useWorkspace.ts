@@ -15,32 +15,32 @@ export function useWorkspace(workspace: string) {
     default: () => '',
     sameSite: 'lax',
   })
-  const currentId = useState<string>(key, () => normalizeString(cookie.value))
-  const currentName = useState<string>(`${key}-current-name`, () => '')
-  const currentDescription = useState<string>(
+  const activeId = useState<string>(key, () => normalizeString(cookie.value))
+  const activeName = useState<string>(`${key}-current-name`, () => '')
+  const activeDescription = useState<string>(
     `${key}-current-description`,
     () => ''
   )
-  const currentImage = useState<string>(`${key}-current-image`, () => '')
+  const activeImage = useState<string>(`${key}-current-image`, () => '')
 
-  const setCurrent = (id: string, name = '', description = '', image = '') => {
+  const activate = (id: string, name = '', description = '', image = '') => {
     const value = normalizeString(id)
     const nextName = normalizeString(name)
     const nextDescription = normalizeString(description)
     const nextImage = normalizeString(image)
-    currentId.value = value
-    currentName.value = value ? nextName : ''
-    currentDescription.value = value ? nextDescription : ''
-    currentImage.value = value ? nextImage : ''
+    activeId.value = value
+    activeName.value = value ? nextName : ''
+    activeDescription.value = value ? nextDescription : ''
+    activeImage.value = value ? nextImage : ''
     cookie.value = value
   }
 
   return {
-    currentId: computed(() => currentId.value),
-    currentName: computed(() => currentName.value),
-    currentDescription: computed(() => currentDescription.value),
-    currentImage: computed(() => currentImage.value),
-    setCurrent,
-    clearCurrent: () => setCurrent(''),
+    activeId: computed(() => activeId.value),
+    activeName: computed(() => activeName.value),
+    activeDescription: computed(() => activeDescription.value),
+    activeImage: computed(() => activeImage.value),
+    activate,
+    clearActive: () => activate(''),
   }
 }

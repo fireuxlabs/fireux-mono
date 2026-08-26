@@ -1,7 +1,7 @@
 <template>
-  <WorkspaceCurrentEntity
+  <WorkspaceActiveEntity
     label="Kitchen"
-    :selected-id="kitchen.id"
+    :active-id="kitchen.id"
     :entity="entity"
     :changeable="false"
     icon="i-lucide-chef-hat"
@@ -35,7 +35,7 @@ const entity = computed<WorkspaceEntityCard>(() => {
   const tagline = String(props.kitchen.tagline || '').trim()
 
   return {
-    id: props.kitchen.id,
+    id: String(props.kitchen.id || '').trim(),
     title,
     subtitle: tagline || address,
     meta: tagline && address ? address : undefined,
@@ -44,7 +44,6 @@ const entity = computed<WorkspaceEntityCard>(() => {
     imageFit: 'contain',
     imageBackground: card?.mediaBackdropColor,
     icon: 'i-lucide-chef-hat',
-    badges: card?.badges,
   }
 })
 </script>

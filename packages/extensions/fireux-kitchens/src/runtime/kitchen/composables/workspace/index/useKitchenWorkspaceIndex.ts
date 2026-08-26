@@ -28,8 +28,12 @@ export function useKitchenWorkspaceIndex() {
   const presentation = computed(() =>
     readKitchenPresentationIdentity(kitchen.value)
   )
-  const name = computed(() => presentation.value.displayName)
-  const description = computed(() => presentation.value.tagline)
+  const name = computed(
+    () =>
+      String(kitchen.value?.short_name || '').trim() ||
+      presentation.value.displayName
+  )
+  const description = computed(() => presentation.value.tagline || 'My Kitchen')
   const image = computed(
     () =>
       presentation.value.cardImageUrl ||
@@ -45,8 +49,8 @@ export function useKitchenWorkspaceIndex() {
     }
   )
 
-  const setCurrent = (kitchenId: string) => {
-    workspace.setCurrent(kitchenId)
+  const activate = (kitchenId: string) => {
+    workspace.activate(kitchenId)
   }
 
   const load = async (force = false) => {
@@ -57,7 +61,7 @@ export function useKitchenWorkspaceIndex() {
       return
     }
 
-    const preferredId = workspace.currentId.value
+    const preferredId = workspace.activeId.value
     if (
       !force &&
       status.value === 'ready' &&
@@ -85,7 +89,7 @@ export function useKitchenWorkspaceIndex() {
       status.value = 'ready'
       const currentId = String(response.current?.id || '').trim()
       if (currentId) {
-        workspace.setCurrent(
+        workspace.activate(
           currentId,
           name.value,
           description.value,
@@ -99,7 +103,7 @@ export function useKitchenWorkspaceIndex() {
     }
   }
 
-  watch([hasAuthState, currentUser, workspace.currentId], () => void load(), {
+  watch([hasAuthState, currentUser, workspace.activeId], () => void load(), {
     immediate: true,
   })
   onScopeDispose(() => {
@@ -107,7 +111,7 @@ export function useKitchenWorkspaceIndex() {
   })
 
   return {
-    current: computed(() => ({
+    active: computed(() => ({
       kitchen: kitchen.value,
       id: id.value,
       outcome: outcome.value,
@@ -117,7 +121,7 @@ export function useKitchenWorkspaceIndex() {
       canWrite: kitchen.value?.can_write === true,
     })),
     actions: {
-      setCurrent,
+      activate,
       refresh: () => load(true),
     },
   }

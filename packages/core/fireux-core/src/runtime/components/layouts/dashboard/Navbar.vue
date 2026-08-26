@@ -2,6 +2,10 @@
 <!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: label the notification control for assistive technology. -->
 <template>
   <UDashboardNavbar :title="title" :ui="ui ?? { right: 'gap-3' }">
+    <template v-if="!showTitle" #left>
+      <UDashboardSidebarCollapse />
+    </template>
+
     <template #leading>
       <UDashboardSidebarCollapse />
     </template>
@@ -41,8 +45,9 @@ withDefaults(
     title: string
     ui?: any
     showSubscription?: boolean
+    showTitle?: boolean
   }>(),
-  { showSubscription: true }
+  { showSubscription: true, showTitle: true }
 )
 
 const { open: openNotifications, unreadCount } = useWorkspaceNotifications()

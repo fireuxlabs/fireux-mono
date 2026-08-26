@@ -8,7 +8,7 @@ import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 export function useKitchenWorkspaceTools() {
   const { isAuthenticated } = useAuth()
   const { appAccess, appAccessOutcome } = useUser()
-  const { currentId, currentName, currentDescription, currentImage } =
+  const { activeId, activeName, activeDescription, activeImage } =
     useWorkspace('kitchen')
   const createKitchenOpen = useState(
     'kitchen-workspace-create-open',
@@ -23,16 +23,16 @@ export function useKitchenWorkspaceTools() {
   )
 
   const kitchenComplete = computed(() =>
-    Boolean(currentName.value && currentDescription.value && currentImage.value)
+    Boolean(activeName.value && activeDescription.value && activeImage.value)
   )
   const kitchenTool = computed(() => {
     if (accessPending.value) return null
-    if (!currentId.value || appAccess.value.hasBusinessSubscription) {
+    if (!activeId.value || appAccess.value.hasBusinessSubscription) {
       return {
         id: 'create-kitchen' as const,
         kind: 'create' as const,
         label: 'Create Kitchen',
-        suggestion: currentId.value
+        suggestion: activeId.value
           ? 'Help me create another Kitchen'
           : 'Help me create my Kitchen',
       }
@@ -42,7 +42,7 @@ export function useKitchenWorkspaceTools() {
         id: 'complete-kitchen' as const,
         kind: 'complete' as const,
         label: 'Complete Kitchen',
-        suggestion: `Help me complete ${currentName.value || 'my Kitchen'}`,
+        suggestion: `Help me complete ${activeName.value || 'my Kitchen'}`,
       }
     }
     return null

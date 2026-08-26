@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
@@ -87,6 +88,7 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
+const { membership } = useCurrentAppContext()
 const { isAuthenticated } = useAuth()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
@@ -143,11 +145,17 @@ const selectedKitchenName = computed(() =>
       ''
   ).trim()
 )
+const subscriptionLabel = computed(() => {
+  const subscription = membership.value?.subscription
+  return subscription
+    ? subscription.charAt(0).toUpperCase() + subscription.slice(1)
+    : ''
+})
 const workspaceTitle = computed(() => {
   if (props.agent || resolvedOperation.value) return resolvedTitle.value
   return selectedKitchenName.value
     ? `Run ${selectedKitchenName.value} with KitchenAI`
-    : 'Build and run your Kitchen with KitchenAI'
+    : `Build and run your${subscriptionLabel.value ? ` ${subscriptionLabel.value}` : ''} Kitchen with KitchenAI`
 })
 const availableKitchenNames = computed(() =>
   kitchenWorkspace.targets.kitchens.value

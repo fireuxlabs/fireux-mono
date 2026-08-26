@@ -121,6 +121,29 @@
   text-align: center;
 }
 
+.kitchen-ai-welcome--landing {
+  width: 100%;
+  min-height: 0;
+  align-content: start;
+  gap: calc(var(--spacing) * 4);
+  margin: 0;
+  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--ui-bg-elevated);
+  box-shadow: var(--shadow-sm);
+}
+
+.kitchen-ai-welcome--landing .kitchen-ai-welcome__intro {
+  justify-items: start;
+  text-align: left;
+}
+
+.kitchen-ai-welcome--landing .kitchen-ai-welcome__starters,
+.kitchen-ai-welcome--landing .kitchen-ai-welcome__tools {
+  justify-content: flex-start;
+}
+
 @media (max-width: 40rem) {
   .kitchen-ai-welcome {
     min-height: auto;
@@ -141,5 +164,9 @@
   .kitchen-ai-welcome__composer {
     padding: var(--spacing);
     border-radius: calc(var(--ui-radius) * 2);
+  }
+
+  .kitchen-ai-welcome--landing {
+    padding: calc(var(--spacing) * 4);
   }
 }

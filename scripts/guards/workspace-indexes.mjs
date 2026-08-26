@@ -32,12 +32,30 @@ const REMOVED_SOURCE_NAMES = [
   'WorkspaceTargetCollection',
 ]
 const DOMAIN_WORKSPACES = [
-  ['project', 'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspace.ts'],
-  ['kitchen', 'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'],
-  ['portfolio', 'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/core/usePortfolioWorkspace.ts'],
-  ['property', 'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/core/usePropertyWorkspace.ts'],
-  ['supplier', 'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspace.ts'],
-  ['blank', 'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/core/useBlankWorkspace.ts'],
+  [
+    'project',
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspace.ts',
+  ],
+  [
+    'kitchen',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts',
+  ],
+  [
+    'portfolio',
+    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/core/usePortfolioWorkspace.ts',
+  ],
+  [
+    'property',
+    'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/core/usePropertyWorkspace.ts',
+  ],
+  [
+    'supplier',
+    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/core/useSupplierWorkspace.ts',
+  ],
+  [
+    'blank',
+    'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/core/useBlankWorkspace.ts',
+  ],
 ]
 
 export async function run(ctx) {
@@ -55,17 +73,28 @@ export async function run(ctx) {
   )
   for (const file of REMOVED_FILES) {
     if (existsSync(path.join(workspaceRoot, file))) {
-      violations.push(`Core Workspace still contains removed compatibility file ${file}`)
+      violations.push(
+        `Core Workspace still contains removed compatibility file ${file}`
+      )
     }
   }
 
-  const workspaceSource = readFileSync(path.join(workspaceRoot, 'useWorkspace.ts'), 'utf8')
-  for (const required of ['currentId', 'setCurrent', 'clearCurrent']) {
+  const workspaceSource = readFileSync(
+    path.join(workspaceRoot, 'useWorkspace.ts'),
+    'utf8'
+  )
+  for (const required of ['activeId', 'activate', 'clearActive']) {
     if (!workspaceSource.includes(required)) {
       violations.push(`useWorkspace must expose ${required}`)
     }
   }
-  for (const forbidden of ['targets', 'collection', 'demo', 'test', 'operation']) {
+  for (const forbidden of [
+    'targets',
+    'collection',
+    'demo',
+    'test',
+    'operation',
+  ]) {
     if (new RegExp(`\\b${forbidden}\\b`, 'i').test(workspaceSource)) {
       violations.push(`useWorkspace must remain ignorant of ${forbidden}`)
     }
@@ -75,7 +104,9 @@ export async function run(ctx) {
     const source = readFileSync(file, 'utf8')
     for (const removed of REMOVED_SOURCE_NAMES) {
       if (source.includes(removed)) {
-        violations.push(`${relative(repoRoot, file)} still consumes removed ${removed}`)
+        violations.push(
+          `${relative(repoRoot, file)} still consumes removed ${removed}`
+        )
       }
     }
   }
@@ -88,67 +119,85 @@ export async function run(ctx) {
     }
     const source = readFileSync(fullPath, 'utf8')
     if (!source.includes(`useWorkspace('${workspace}')`)) {
-      violations.push(`${relativeFile} must select its named entity through useWorkspace('${workspace}')`)
+      violations.push(
+        `${relativeFile} must select its named entity through useWorkspace('${workspace}')`
+      )
     }
   }
 
-  const currentEntity = readFileSync(
+  const activeEntity = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/components/Workspace/CurrentEntity.vue'
+      'packages/core/fireux-core/src/runtime/components/Workspace/ActiveEntity.vue'
     ),
     'utf8'
   )
-  const kitchenSelected = readFileSync(
+  const kitchenActive = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index/Selected.vue'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index/Active.vue'
     ),
     'utf8'
   )
-  const projectSelected = readFileSync(
+  const projectActive = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index/Selected.vue'
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index/Active.vue'
     ),
     'utf8'
   )
   for (const [label, source] of [
-    ['Kitchen', kitchenSelected],
-    ['Project', projectSelected],
+    ['Kitchen', kitchenActive],
+    ['Project', projectActive],
   ]) {
-    if (!source.includes('<WorkspaceCurrentEntity')) {
-      violations.push(`${label} must use the shared selected-entity anatomy`)
+    if (!source.includes('<WorkspaceActiveEntity')) {
+      violations.push(`${label} must use the shared active-entity anatomy`)
     }
   }
-  if (currentEntity.includes('workspace-selected-target__')) {
+  if (activeEntity.includes('workspace-selected-entity__')) {
     violations.push(
-      'WorkspaceCurrentEntity styles must target its current selected-entity anatomy'
+      'WorkspaceActiveEntity must not retain selected-entity terminology'
     )
   }
-  if (!currentEntity.includes('changeable?: boolean')) {
+  if (!activeEntity.includes('changeable?: boolean')) {
     violations.push(
-      'WorkspaceCurrentEntity must allow current-only families to omit switching'
+      'WorkspaceActiveEntity must allow one-entity families to omit switching'
     )
   }
 
-  const writeGuard = readFileSync(path.join(workspaceRoot, 'useWorkspaceWriteGuard.ts'), 'utf8')
-  if (!writeGuard.includes('currentId.value')) {
-    violations.push('Workspace write guard must reject writes without a current entity id')
+  const writeGuard = readFileSync(
+    path.join(workspaceRoot, 'useWorkspaceWriteGuard.ts'),
+    'utf8'
+  )
+  if (!writeGuard.includes('activeId.value')) {
+    violations.push(
+      'Workspace write guard must reject writes without an active Entity id'
+    )
   }
-  for (const forbidden of ['demo', 'WorkspaceData', 'useWorkspaceDataAuthority']) {
+  for (const forbidden of [
+    'demo',
+    'WorkspaceData',
+    'useWorkspaceDataAuthority',
+  ]) {
     if (writeGuard.includes(forbidden)) {
-      violations.push(`Workspace write guard must not retain ${forbidden} compatibility`)
+      violations.push(
+        `Workspace write guard must not retain ${forbidden} compatibility`
+      )
     }
   }
 
   if (violations.length) {
     throw new Error(
-      ['[guard] ❌ Workspace spine drift detected:', ...violations.map(value => `  - ${value}`)].join('\n')
+      [
+        '[guard] ❌ Workspace spine drift detected:',
+        ...violations.map((value) => `  - ${value}`),
+      ].join('\n')
     )
   }
 
-  console.log('[guard] ✅ Workspace keeps one current entity id and domain-owned collections')
+  console.log(
+    '[guard] ✅ Workspace keeps one active Entity id and domain-owned collections'
+  )
 }
 
 function collectFiles(dir, files) {
@@ -157,7 +206,8 @@ function collectFiles(dir, files) {
     const fullPath = path.join(dir, entry)
     const stat = statSync(fullPath)
     if (stat.isDirectory()) collectFiles(fullPath, files)
-    else if (fullPath.endsWith('.vue') || fullPath.endsWith('.ts')) files.push(fullPath)
+    else if (fullPath.endsWith('.vue') || fullPath.endsWith('.ts'))
+      files.push(fullPath)
   }
 }
 

@@ -1,18 +1,18 @@
-<!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: centralize selected-entity chrome and clear behavior. -->
+<!-- Workspace Entity canon: one active Entity drives the Workspace context. -->
 <template>
-  <section class="workspace-selected-entity">
+  <section class="workspace-active-entity">
     <UCard
-      v-if="selectedId"
+      v-if="activeId"
       variant="subtle"
-      class="workspace-selected-entity__surface"
+      class="workspace-active-entity__surface"
     >
-      <div class="workspace-selected-entity__layout">
-        <div class="workspace-selected-entity__identity">
-          <div v-if="$slots.selected" class="workspace-selected-entity__legacy">
+      <div class="workspace-active-entity__layout">
+        <div class="workspace-active-entity__identity">
+          <div v-if="$slots.active" class="workspace-active-entity__legacy">
             <slot
-              name="selected"
-              :title="selectedTitle"
-              :description="selectedDescription"
+              name="active"
+              :title="activeTitle"
+              :description="activeDescription"
             />
           </div>
 
@@ -23,9 +23,9 @@
                 :src="entity.imageUrl"
                 :alt="entity.imageAlt || entity.title"
                 size="md"
-                class="workspace-selected-entity__avatar"
+                class="workspace-active-entity__avatar"
                 :class="{
-                  'workspace-selected-entity__avatar--contain':
+                  'workspace-active-entity__avatar--contain':
                     entity.imageFit === 'contain',
                 }"
                 :style="mediaStyle"
@@ -33,9 +33,9 @@
 
               <span
                 v-else
-                class="workspace-selected-entity__icon"
+                class="workspace-active-entity__icon"
                 :class="{
-                  'workspace-selected-entity__icon--error': outcome === 'error',
+                  'workspace-active-entity__icon--error': outcome === 'error',
                 }"
                 aria-hidden="true"
               >
@@ -48,15 +48,15 @@
                         : entity?.icon || icon
                   "
                   :class="{
-                    'workspace-selected-entity__spinner': outcome === 'pending',
+                    'workspace-active-entity__spinner': outcome === 'pending',
                   }"
                 />
               </span>
             </slot>
 
-            <div class="workspace-selected-entity__copy">
-              <div class="workspace-selected-entity__eyebrow">
-                <span>{{ selectedTitle }}</span>
+            <div class="workspace-active-entity__copy">
+              <div class="workspace-active-entity__eyebrow">
+                <span>{{ activeTitle }}</span>
                 <UBadge
                   v-if="outcome === 'pending'"
                   color="neutral"
@@ -75,19 +75,19 @@
                 </UBadge>
               </div>
 
-              <p class="workspace-selected-entity__title">
+              <p class="workspace-active-entity__title">
                 {{ displayTitle }}
               </p>
               <p
                 v-if="displayDescription"
-                class="workspace-selected-entity__description"
+                class="workspace-active-entity__description"
               >
                 {{ displayDescription }}
               </p>
 
               <div
                 v-if="$slots.meta || entity?.badges?.length"
-                class="workspace-selected-entity__meta"
+                class="workspace-active-entity__meta"
               >
                 <slot name="meta" :entity="entity" :outcome="outcome" />
 
@@ -107,7 +107,7 @@
 
         <div
           v-if="$slots.actions || changeable"
-          class="workspace-selected-entity__actions"
+          class="workspace-active-entity__actions"
         >
           <slot name="actions" :entity="entity" :outcome="outcome" />
 
@@ -144,7 +144,7 @@ import type { WorkspaceEntityCard } from './types'
 const props = withDefaults(
   defineProps<{
     label: string
-    selectedId?: string
+    activeId?: string
     description?: string
     entity?: WorkspaceEntityCard | null
     outcome?: WorkspaceEntityOutcome
@@ -155,7 +155,7 @@ const props = withDefaults(
     emptyDescription?: string
   }>(),
   {
-    selectedId: '',
+    activeId: '',
     description: '',
     entity: null,
     outcome: 'ready',
@@ -172,11 +172,11 @@ const emit = defineEmits<{
 }>()
 
 const label = computed(() => String(props.label ?? '').trim() || 'Entity')
-const selectedId = computed(() => String(props.selectedId ?? '').trim())
-const selectedDescription = computed(
-  () => String(props.description ?? '').trim() || selectedId.value
+const activeId = computed(() => String(props.activeId ?? '').trim())
+const activeDescription = computed(
+  () => String(props.description ?? '').trim() || activeId.value
 )
-const selectedTitle = computed(() => `Selected ${label.value}`)
+const activeTitle = computed(() => `Active ${label.value}`)
 const displayTitle = computed(() => {
   const entityTitle = String(props.entity?.title ?? '').trim()
   if (entityTitle) return entityTitle
@@ -186,7 +186,7 @@ const displayTitle = computed(() => {
 
   if (props.outcome === 'pending') return `Loading ${label.value}`
   if (props.outcome === 'error') return `${label.value} unavailable`
-  return selectedId.value
+  return activeId.value
 })
 const displayDescription = computed(() => {
   const entityDescription = String(
@@ -195,12 +195,12 @@ const displayDescription = computed(() => {
   if (entityDescription) return entityDescription
 
   if (props.outcome === 'pending') {
-    return `Restoring the selected ${label.value.toLowerCase()}.`
+    return `Restoring the active ${label.value.toLowerCase()}.`
   }
   if (props.outcome === 'error') {
-    return `The selected ${label.value.toLowerCase()} could not be loaded.`
+    return `The active ${label.value.toLowerCase()} could not be loaded.`
   }
-  return displayTitle.value === selectedId.value ? '' : selectedId.value
+  return displayTitle.value === activeId.value ? '' : activeId.value
 })
 const emptyTitle = computed(() => props.emptyTitle || `Choose a ${label.value}`)
 const emptyDescription = computed(
@@ -216,11 +216,11 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
 </script>
 
 <style scoped>
-.workspace-selected-entity {
+.workspace-active-entity {
   min-width: 0;
 }
 
-.workspace-selected-entity__surface {
+.workspace-active-entity__surface {
   overflow: hidden;
   border-color: color-mix(in srgb, var(--ui-primary) 16%, var(--ui-border));
   background:
@@ -230,29 +230,30 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
       transparent 42%
     ),
     color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
-  box-shadow: 0 1rem 3rem color-mix(in srgb, var(--ui-bg-inverted) 7%, transparent);
+  box-shadow: 0 1rem 3rem
+    color-mix(in srgb, var(--ui-bg-inverted) 7%, transparent);
 }
 
-.workspace-selected-entity__layout {
+.workspace-active-entity__layout {
   display: grid;
   gap: calc(var(--spacing) * 4);
   min-width: 0;
 }
 
-.workspace-selected-entity__identity {
+.workspace-active-entity__identity {
   display: flex;
   align-items: center;
   gap: calc(var(--spacing) * 3);
   min-width: 0;
 }
 
-.workspace-selected-entity__legacy {
+.workspace-active-entity__legacy {
   width: 100%;
   min-width: 0;
 }
 
-.workspace-selected-entity__avatar,
-.workspace-selected-entity__icon {
+.workspace-active-entity__avatar,
+.workspace-active-entity__icon {
   width: calc(var(--spacing) * 13);
   height: calc(var(--spacing) * 13);
   flex: 0 0 auto;
@@ -261,90 +262,90 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
   background: var(--ui-bg-elevated);
 }
 
-.workspace-selected-entity__avatar--contain :deep(img) {
+.workspace-active-entity__avatar--contain :deep(img) {
   object-fit: contain;
   padding: calc(var(--spacing) * 1.5);
 }
 
-.workspace-selected-entity__icon {
+.workspace-active-entity__icon {
   display: grid;
   place-items: center;
   color: var(--ui-primary);
 }
 
-.workspace-selected-entity__icon--error {
+.workspace-active-entity__icon--error {
   color: var(--ui-error);
 }
 
-.workspace-selected-entity__icon :deep(svg) {
+.workspace-active-entity__icon :deep(svg) {
   width: calc(var(--spacing) * 5);
   height: calc(var(--spacing) * 5);
 }
 
-.workspace-selected-entity__spinner {
-  animation: workspace-selected-entity-spin 1s linear infinite;
+.workspace-active-entity__spinner {
+  animation: workspace-active-entity-spin 1s linear infinite;
 }
 
-.workspace-selected-entity__copy {
+.workspace-active-entity__copy {
   display: grid;
   gap: var(--spacing);
   min-width: 0;
 }
 
-.workspace-selected-entity__eyebrow,
-.workspace-selected-entity__meta,
-.workspace-selected-entity__actions {
+.workspace-active-entity__eyebrow,
+.workspace-active-entity__meta,
+.workspace-active-entity__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: calc(var(--spacing) * 2);
 }
 
-.workspace-selected-entity__eyebrow {
+.workspace-active-entity__eyebrow {
   color: var(--ui-text-muted);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
 }
 
-.workspace-selected-entity__title,
-.workspace-selected-entity__description {
+.workspace-active-entity__title,
+.workspace-active-entity__description {
   overflow: hidden;
   margin: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.workspace-selected-entity__title {
+.workspace-active-entity__title {
   color: var(--ui-text-highlighted);
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   line-height: var(--leading-tight);
 }
 
-.workspace-selected-entity__description {
+.workspace-active-entity__description {
   color: var(--ui-text-toned);
   font-size: var(--text-xs);
 }
 
-.workspace-selected-entity__actions {
+.workspace-active-entity__actions {
   justify-content: flex-end;
 }
 
-@keyframes workspace-selected-entity-spin {
+@keyframes workspace-active-entity-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (min-width: 640px) {
-  .workspace-selected-entity__layout {
+  .workspace-active-entity__layout {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .workspace-selected-entity__spinner {
+  .workspace-active-entity__spinner {
     animation: none;
   }
 }

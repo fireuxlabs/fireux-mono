@@ -9,7 +9,7 @@
       <Create
         v-else-if="kitchenTool?.kind === 'create'"
         class="kitchen-workspace-tools__slot"
-        @created="setCurrent"
+        @created="activate"
       />
       <UButton
         v-else-if="kitchenTool?.kind === 'complete'"
@@ -21,9 +21,9 @@
       />
       <KitchenCardsPill
         v-else-if="kitchenComplete"
-        :title="currentName"
-        :subtitle="currentDescription"
-        :image-url="currentImage"
+        :title="activeName"
+        :subtitle="activeDescription"
+        :image-url="activeImage"
         to="/workspace/kitchen/identity"
         link
         :show-badges="false"
@@ -38,7 +38,7 @@ import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/u
 import { useKitchenWorkspaceTools } from '../../../composables/workspace/index/useKitchenWorkspaceTools'
 import Create from '../Create.vue'
 
-const { currentName, currentDescription, currentImage, setCurrent } =
+const { activeName, activeDescription, activeImage, activate } =
   useWorkspace('kitchen')
 const { accessPending, kitchenComplete, kitchenTool } =
   useKitchenWorkspaceTools()

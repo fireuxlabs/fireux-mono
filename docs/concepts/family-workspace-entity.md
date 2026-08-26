@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-08-24
-Ref: d0caff27b
+Updated: 2026-08-26
+Ref: 74e1e9eef
 Role: map, not canon
 
 ## Purpose
@@ -42,7 +42,7 @@ Every Workspace Entity must share these rules:
 
 Kitchen and Project prove the Workspace Entity family beyond their shared
 Index anatomy. Both use the canonical `/workspace/{family}` route, one
-request-scoped `useXWorkspace` runtime, outcome-bound selection, root-owned
+request-scoped `useXWorkspace` runtime, outcome-bound active Entity, root-owned
 Team authority, the shared shell and navigation groups, and entity-owned
 Overview, Identity, Team, named capability, and debug adapters.
 
@@ -87,26 +87,26 @@ migration verification, and protected Workspace consumer are complete.
   Entity-specific management validation, projections, messages, and
   transactions remain in the owning entity slice.
 
-- Workspace is the shared selected-workspace surface, not the entity owner.
+- Workspace is the shared active-Entity surface, not the entity owner.
   Shared Workspace components and composables remain in the root technical
   spine. Entity-specific Workspace components and composables move to
   `runtime/<entity>/components/Workspace` and
   `runtime/<entity>/composables/workspace`; entity models and server commands do
   not move under Workspace merely because it consumes them.
 
-- `useWorkspace(workspace)` persists only one current Entity id and exposes
-  set/clear actions. It owns no directory, authority query, source mode,
+- `useWorkspace(workspace)` persists only one active Entity id and exposes
+  activate/clear actions. It owns no directory, authority query, source mode,
   storage routing, runtime anatomy, or debug projection.
 - Each domain's `useXWorkspaceIndex` proves access through its authoritative
-  relationship, reads at most the current Entity, and exposes `current`,
+  relationship, reads at most the active Entity, and exposes `active`,
   `access`, and bounded `actions`. Outcomes are `idle`, `pending`, `error`,
   `empty`, or `ready`; read failure never becomes an empty authority result.
 - No available Entity produces the Create state. One accessible Entity may
   become current automatically. Choosing among several is a User relationship
   action outside the baseline Workspace index.
-- Capability runtimes receive the established current Entity id and load only
+- Capability runtimes receive the established active Entity id and load only
   their own records. They do not reconstruct an Entity directory or another
-  current-Entity authority.
+  active-Entity authority.
 - Domain Index composables expose named Entity collections and actions
   directly. Core does not own a generic directory-index adapter.
 - `team/{uid}` grants Workspace membership and names its roles and permissions.
@@ -127,7 +127,7 @@ migration verification, and protected Workspace consumer are complete.
   Kitchen-owned. Domain
   packages own their transactions, so Core does not enumerate present or
   future Workspace families.
-- Index establishes the current Entity and owns its Create doorway. Overview,
+- Index establishes the active Entity and owns its Create doorway. Overview,
   Identity, Team, and Operations remain separate current-workspace concerns;
   Create is never a current-workspace menu peer.
   A family adds only sheets backed by a real lifecycle.
@@ -160,7 +160,7 @@ Index outcome contract.
 Shared names:
 
 - `WorkspaceXIndex`
-- `WorkspaceXIndexSelected`
+- `WorkspaceXIndexActive`
 - `WorkspaceXIndexTargets`
 - `WorkspaceXOverview`
 - `useXWorkspace`
@@ -173,7 +173,7 @@ Conditional names:
   a real Workspace sheet.
 - `WorkspaceXTeam` and `useXWorkspaceTeam` when target authority or domain people are
   exposed.
-- `WorkspaceXOperationsY` and `useXWorkspaceY` for selected-target domain work.
+- `WorkspaceXOperationsY` and `useXWorkspaceY` for active-Entity domain work.
 
 Kitchen may use nested Identity sections because the sheet has Place,
 publication, theme, hours, delivery, and payment concerns. That is an accepted
@@ -184,7 +184,7 @@ composition delta, not permission to fork the Workspace Index spine.
 ### Now
 
 - Preserve the guard-backed six-family Index parity.
-- Keep one family-owned target outcome and one outcome-bound selection.
+- Keep one family-owned target outcome and one outcome-bound active Entity.
 - Keep Team as a Workspace peer and the single Workspace membership authority.
   Kitchen-specific operational roles may extend that record without creating
   another access list.

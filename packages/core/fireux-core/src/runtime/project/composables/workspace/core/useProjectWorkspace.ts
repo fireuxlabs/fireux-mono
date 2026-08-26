@@ -12,7 +12,7 @@ function createProjectWorkspace() {
   const project = computed<ProjectSurface | null>(
     () =>
       collection.projects.value.find(
-        (item) => normalizeString(item.id) === workspace.currentId.value
+        (item) => normalizeString(item.id) === workspace.activeId.value
       ) ?? null
   )
 
@@ -26,7 +26,7 @@ function createProjectWorkspace() {
     },
     selection: {
       project,
-      projectId: workspace.currentId,
+      projectId: workspace.activeId,
       hasSelection: computed(() => Boolean(project.value)),
     },
     runtime: {
@@ -39,8 +39,8 @@ function createProjectWorkspace() {
       canWrite: computed(() => false),
     },
     actions: {
-      selectProject: workspace.setCurrent,
-      clearSelectedProject: workspace.clearCurrent,
+      selectProject: workspace.activate,
+      clearSelectedProject: workspace.clearActive,
     },
   }
 }

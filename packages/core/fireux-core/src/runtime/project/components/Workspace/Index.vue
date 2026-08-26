@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Project target outcome contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceProjectIndexSelected
+    <WorkspaceProjectIndexActive
       :project="project"
       :project-id="projectId"
       :outcome="outcome"

@@ -35,9 +35,18 @@ function normalizeWorkspace(
   const id = asString(value.id)
   const name = asString(value.name)
   const to = asString(value.to)
-  if (!id || !name || !to?.startsWith('/workspace/')) return undefined
+  if (!id || !name || !to?.startsWith('/')) return undefined
 
   return { id, name, to }
+}
+
+function ownsOperationPath(
+  workspace: FireuxMetaOperationWorkspace,
+  operationPath: string
+) {
+  return workspace.to === '/'
+    ? operationPath.startsWith(`/workspace/${workspace.id}/`)
+    : operationPath.startsWith(`${workspace.to}/`)
 }
 
 function normalizeOperation(value: unknown): FireuxMetaOperation | undefined {
@@ -54,7 +63,7 @@ function normalizeOperation(value: unknown): FireuxMetaOperation | undefined {
     !description ||
     !to ||
     !workspace ||
-    !to.startsWith(`${workspace.to}/`)
+    !ownsOperationPath(workspace, to)
   ) {
     return undefined
   }

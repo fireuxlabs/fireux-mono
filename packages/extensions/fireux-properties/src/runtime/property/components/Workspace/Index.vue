@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Property target outcome contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspacePropertyIndexSelected
+    <WorkspacePropertyIndexActive
       :property="property"
       :property-id="propertyId"
       @clear="clearProperty"

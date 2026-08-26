@@ -1,17 +1,32 @@
 <template>
   <div v-if="canCreate">
+    <button
+      v-if="launcher === 'cell'"
+      type="button"
+      class="card card--cell fx-action-surface min-h-28 appearance-none text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      @click="openCreate"
+    >
+      <div class="card__media">
+        <UAvatar icon="i-lucide-plus" size="md" class="shrink-0" />
+        <div class="card__content card__stack">
+          <div class="card__title">{{ label }}</div>
+          <div class="card__subtitle">{{ description }}</div>
+        </div>
+      </div>
+    </button>
+
     <UButton
-      label="Create Kitchen"
+      v-else-if="showLauncher"
+      :label="label"
       icon="i-lucide-plus"
       color="primary"
-      @click="open = true"
+      @click="openCreate"
     />
 
     <UModal
-      :open="open"
+      v-model:open="open"
       title="Create your Kitchen"
       :ui="{ content: 'sm:max-w-2xl', body: 'p-0 sm:p-0' }"
-      @update:open="open = $event"
     >
       <template #body>
         <form
@@ -190,6 +205,17 @@ type SelectedPlace = {
 }
 
 const canCreate = computed(() => true)
+const {
+  showLauncher = true,
+  launcher = 'button',
+  label = 'Start one Kitchen',
+  description = '',
+} = defineProps<{
+  showLauncher?: boolean
+  launcher?: 'button' | 'cell'
+  label?: string
+  description?: string
+}>()
 const { createKitchenOpen: open } = useKitchenWorkspaceTools()
 const { createKitchen } = useKitchenCreate()
 const toast = useToast()
@@ -222,10 +248,14 @@ watch(query, () => {
   locationError.value = ''
 })
 
-watch(manualName, (name) => {
+watch(manualName, (name: string) => {
   if (name.trim()) selection.value = null
   error.value = ''
 })
+
+function openCreate() {
+  open.value = true
+}
 
 async function searchNearby() {
   await resolveBrowserLocation(true)

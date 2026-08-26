@@ -7,7 +7,7 @@ type KitchenWorkspaceSelectionInput = {
 }
 
 export function useKitchenWorkspaceSelection() {
-  const { currentId, setCurrent, clearCurrent } = useWorkspace('kitchen')
+  const { activeId, activate, clearActive } = useWorkspace('kitchen')
 
   const setKitchenWorkspaceSelection = (
     selectionPatch: KitchenWorkspaceSelectionInput = {}
@@ -17,14 +17,14 @@ export function useKitchenWorkspaceSelection() {
       selectionPatch.kitchenId !== undefined
     const nextId = hasNextId
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
-      : currentId.value
+      : activeId.value
 
-    setCurrent(nextId)
+    activate(nextId)
   }
 
   return {
-    selectedId: currentId,
+    selectedId: activeId,
     setKitchenWorkspaceSelection,
-    clearKitchenWorkspaceSelection: clearCurrent,
+    clearKitchenWorkspaceSelection: clearActive,
   }
 }

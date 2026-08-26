@@ -9,19 +9,21 @@ export function useKitchenWorkspace() {
   const workspace = useWorkspace('kitchen')
   const fireux = useFireUXConfig()
   const kitchens = useKitchenWorkspaceKitchens()
-  const kitchenId = workspace.currentId
+  const kitchenId = workspace.activeId
   const kitchen = computed(
     () =>
       kitchens.kitchens.value.find(
-        item => normalizeString(item.id) === kitchenId.value
+        (item) => normalizeString(item.id) === kitchenId.value
       ) ?? null
   )
 
   watch(
     [kitchenId, kitchen, kitchens.outcome],
-    ([id, selected, outcome]) => {
-      if (!id || selected || (outcome !== 'ready' && outcome !== 'empty')) return
-      workspace.clearCurrent()
+    (values: [string, unknown, string]) => {
+      const [id, activeEntity, outcome] = values
+      if (!id || activeEntity || (outcome !== 'ready' && outcome !== 'empty'))
+        return
+      workspace.clearActive()
     },
     { immediate: true }
   )
@@ -55,8 +57,8 @@ export function useKitchenWorkspace() {
       canCreate: computed(() => true),
     },
     actions: {
-      selectKitchen: workspace.setCurrent,
-      clearSelectedKitchen: workspace.clearCurrent,
+      selectKitchen: workspace.activate,
+      clearSelectedKitchen: workspace.clearActive,
     },
   }
 }

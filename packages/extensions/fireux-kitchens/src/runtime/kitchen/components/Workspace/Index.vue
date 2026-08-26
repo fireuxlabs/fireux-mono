@@ -1,7 +1,7 @@
 <template>
   <section class="workspace-surface workspace-surface--compact">
     <template v-if="clientReady && hasIdentity">
-      <UCard v-if="current.outcome === 'pending' || current.outcome === 'idle'">
+      <UCard v-if="active.outcome === 'pending' || active.outcome === 'idle'">
         <div class="flex items-center gap-3 text-sm text-muted">
           <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin" />
           Loading your Kitchen
@@ -9,7 +9,7 @@
       </UCard>
 
       <UAlert
-        v-else-if="current.outcome === 'error'"
+        v-else-if="active.outcome === 'error'"
         color="error"
         variant="subtle"
         icon="i-lucide-triangle-alert"
@@ -27,9 +27,9 @@
         </template>
       </UAlert>
 
-      <WorkspaceKitchenIndexSelected
-        v-else-if="current.kitchen"
-        :kitchen="current.kitchen"
+      <WorkspaceKitchenIndexActive
+        v-else-if="active.kitchen"
+        :kitchen="active.kitchen"
       />
 
       <div v-else class="px-6 py-10 text-center">
@@ -54,9 +54,9 @@ import { computed } from 'vue'
 import { useKitchenWorkspaceIndex } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 import { useKitchenWorkspaceIndexEntry } from '../../composables/workspace/index/useKitchenWorkspaceIndexEntry'
 
-const { current, actions } = useKitchenWorkspaceIndex()
+const { active, actions } = useKitchenWorkspaceIndex()
 const { clientReady, hasIdentity } = useKitchenWorkspaceIndexEntry(
-  computed(() => current.value.id),
+  computed(() => active.value.id),
   true,
   actions.refresh
 )

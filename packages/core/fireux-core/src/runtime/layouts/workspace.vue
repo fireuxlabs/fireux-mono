@@ -4,7 +4,6 @@
       id="core-workspace"
       v-model:open="open"
       collapsible
-      resizable
       class="workspace-shell__sidebar"
     >
       <template #header="{ collapsed }">
@@ -245,13 +244,13 @@ const prominentFamilyRootNav = computed(() =>
   familyRootNav.value
     .filter((item) => item.prominent)
     .map((item) => {
-      const currentName = workspaceState.currentName.value
-      if (!currentName) return item
+      const activeName = workspaceState.activeName.value
+      if (!activeName) return item
       return {
         ...item,
-        label: currentName,
+        label: activeName,
         description:
-          workspaceState.currentDescription.value ||
+          workspaceState.activeDescription.value ||
           `Current ${workspaceLabel.value}`,
       }
     })

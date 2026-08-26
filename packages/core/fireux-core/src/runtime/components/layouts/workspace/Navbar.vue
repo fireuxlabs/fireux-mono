@@ -1,5 +1,10 @@
 <template>
-  <LayoutsDashboardNavbar :title="title" :ui="ui" :show-subscription="false">
+  <LayoutsDashboardNavbar
+    :title="title"
+    :ui="ui"
+    :show-title="showTitle"
+    :show-subscription="false"
+  >
     <template #right>
       <div class="flex items-center gap-2">
         <UserSubscriptionControl />
@@ -13,5 +18,6 @@
 defineProps<{
   title: string
   ui?: any
+  showTitle?: boolean
 }>()
 </script>

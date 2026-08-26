@@ -15,7 +15,7 @@ function createBlankWorkspace() {
   const blank = computed<BlankSurface | null>(
     () =>
       collection.blanks.value.find(
-        (item) => normalizeString(item.id) === workspace.currentId.value
+        (item) => normalizeString(item.id) === workspace.activeId.value
       ) ?? null
   )
 
@@ -30,7 +30,7 @@ function createBlankWorkspace() {
     },
     selection: {
       blank,
-      blankId: workspace.currentId,
+      blankId: workspace.activeId,
       hasSelection: computed(() => Boolean(blank.value)),
     },
     runtime: {
@@ -44,8 +44,8 @@ function createBlankWorkspace() {
       canWrite: computed(() => false),
     },
     actions: {
-      selectBlank: workspace.setCurrent,
-      clearSelectedBlank: workspace.clearCurrent,
+      selectBlank: workspace.activate,
+      clearSelectedBlank: workspace.clearActive,
     },
   }
 }

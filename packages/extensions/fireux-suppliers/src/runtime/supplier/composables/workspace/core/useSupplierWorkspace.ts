@@ -20,7 +20,7 @@ function createSupplierWorkspace() {
   const supplier = computed<SupplierSurface | null>(
     () =>
       collection.suppliers.value.find(
-        (item) => normalizeString(item.id) === workspace.currentId.value
+        (item) => normalizeString(item.id) === workspace.activeId.value
       ) ?? null
   )
   const canWrite = computed(() => targetHasOperator(supplier.value, uid.value))
@@ -39,7 +39,7 @@ function createSupplierWorkspace() {
     },
     selection: {
       supplier,
-      supplierId: workspace.currentId,
+      supplierId: workspace.activeId,
       hasSelection: computed(() => Boolean(supplier.value)),
     },
     runtime: {
@@ -52,8 +52,8 @@ function createSupplierWorkspace() {
       canWrite,
     },
     actions: {
-      selectSupplier: workspace.setCurrent,
-      clearSelectedSupplier: workspace.clearCurrent,
+      selectSupplier: workspace.activate,
+      clearSelectedSupplier: workspace.clearActive,
     },
   }
 }

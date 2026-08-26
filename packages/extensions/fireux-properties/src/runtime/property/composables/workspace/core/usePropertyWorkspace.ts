@@ -27,7 +27,7 @@ function createPropertyWorkspace() {
   const property = computed<PropertySurface | null>(
     () =>
       collection.properties.value.find(
-        (item) => normalizeString(item.id) === workspace.currentId.value
+        (item) => normalizeString(item.id) === workspace.activeId.value
       ) ?? null
   )
   const canWrite = computed(() => targetHasOperator(property.value, uid.value))
@@ -46,7 +46,7 @@ function createPropertyWorkspace() {
     },
     selection: {
       property,
-      propertyId: workspace.currentId,
+      propertyId: workspace.activeId,
       hasSelection: computed(() => Boolean(property.value)),
     },
     runtime: {
@@ -59,8 +59,8 @@ function createPropertyWorkspace() {
       canWrite,
     },
     actions: {
-      selectProperty: workspace.setCurrent,
-      clearSelectedProperty: workspace.clearCurrent,
+      selectProperty: workspace.activate,
+      clearSelectedProperty: workspace.clearActive,
     },
   }
 }

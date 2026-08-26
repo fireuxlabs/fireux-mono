@@ -37,7 +37,7 @@ function createPortfolioWorkspace() {
   const portfolio = computed<PortfolioWorkspaceEntity | null>(
     () =>
       collection.portfolios.value.find(
-        (item) => normalizeString(item.id) === workspace.currentId.value
+        (item) => normalizeString(item.id) === workspace.activeId.value
       ) ?? null
   )
   const portfolioCard = computed(() => {
@@ -63,10 +63,10 @@ function createPortfolioWorkspace() {
     },
     selection: {
       portfolio,
-      portfolioId: workspace.currentId,
+      portfolioId: workspace.activeId,
       portfolioCard,
-      portfolioState: { id: workspace.currentId, entity: portfolio },
-      selectedId: workspace.currentId,
+      portfolioState: { id: workspace.activeId, entity: portfolio },
+      selectedId: workspace.activeId,
       hasSelection: computed(() => Boolean(portfolio.value)),
     },
     runtime: {
@@ -79,8 +79,8 @@ function createPortfolioWorkspace() {
       canWrite,
     },
     actions: {
-      selectPortfolio: workspace.setCurrent,
-      clearSelectedPortfolio: workspace.clearCurrent,
+      selectPortfolio: workspace.activate,
+      clearSelectedPortfolio: workspace.clearActive,
     },
   }
 }

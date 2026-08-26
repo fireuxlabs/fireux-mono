@@ -1,7 +1,7 @@
 # Workspace
 
-Updated: 2026-08-25
-Ref: 79efa4a44
+Updated: 2026-08-26
+Ref: 74e1e9eef
 Role: map, not canon
 
 ## Purpose
@@ -34,12 +34,12 @@ do not authorize `/workspace/**` product routes or visible Workspace terminology
 - `useWorkspace`
 - `useWorkspaceAccess`
 - `useWorkspaceDemoData`
-- `WorkspaceCurrentEntity`
+- `WorkspaceActiveEntity`
 - `WorkspaceEntityCollection`
 - `useWorkspaceTeam`
 
-Workspace is a shared surface and current-entity primitive, not an entity
-owner. Shared Workspace shells, navigation, current ID, and outcome primitives
+Workspace is a shared surface and active-Entity primitive, not an entity
+owner. Shared Workspace shells, navigation, active ID, and outcome primitives
 remain in the root technical spine. Kitchen, Supplier, Project, and other
 entity-specific Workspace adapters belong beneath their entity roots according
 to `runtime-filesystem.md`. Nuxt pages and API handlers retain their framework
@@ -79,7 +79,7 @@ paths and delegate inward.
   duplicate Entity summaries, account controls, research literature, or
   development diagnostics as peer production surfaces.
 - Back navigation and page-level actions stay in the navbar right slot.
-- The selected-workspace menu follows one structural order: Overview,
+- The active-Workspace menu follows one structural order: Overview,
   Identity, the family's top-level Operations, then Team when that family has
   a real collaboration lifecycle. Hand-authored route order does not redefine
   those groups. AI belongs at a product-owned doorway or inside a bounded
@@ -138,9 +138,9 @@ paths and delegate inward.
   using the shared transition still needs the real root. Only an explicit,
   justified `pageTransition: false` route is exempt from that root check. The
   guard does not constrain body geometry.
-- The workspace-indexes guard enforces each guarded Index contract. Kitchen is
-  current-only; older directory-style families retain their selected-target
-  contract until they are migrated deliberately.
+- The workspace-indexes guard enforces each guarded Index contract. Every
+  family exposes one active Entity; directory-style families additionally
+  expose targets that can be activated.
 - Tables remains a Front-of-House boundary. Kitchen Orders may cross that
   boundary, but table layout, seating, tabs, and payment are not Kitchen-owned
   capabilities.
@@ -158,7 +158,7 @@ paths and delegate inward.
 ## Source-backed capability map
 
 The visible Workspace tree is the naming authority for entity server and client
-slices. `Index` establishes the current Entity and presents Create when none is
+slices. `Index` establishes the active Entity and presents Create when none is
 available; Create is not a current-workspace peer.
 
 Every Workspace bakes in Index, Overview, Identity, Team, and Notifications.
@@ -189,26 +189,26 @@ behaviour; the map does not require empty symmetry.
   `runtime/<entity>/components/Workspace/Overview/Index.vue`.
 - `Team` always sits beside `Operations`; richer membership workflows remain
   optional domain-owned behaviour.
-- `Operations` is for selected-target work and may contain domain-specific child folders.
+- `Operations` is for active-Entity work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped workspace surfaces that are not yet core sheets or confirmed operations.
 
 ## Index pattern
 
-- A Workspace is the current Entity context used by its capabilities. It is not
+- A Workspace is the active Entity context used by its capabilities. It is not
   the User's Entity directory, a Demo catalogue, or a tenant-policy manager.
 - The User relationship determines which Entities are available. A Workspace
-  may resolve that relationship to establish one current Entity, but it does
+  may resolve that relationship to establish one active Entity, but it does
   not expose the relationship collection as Workspace state.
 - No available Entity produces the create/onboarding state. One available
   Entity becomes current automatically. Switching among multiple available
   Entities is a User action outside the baseline Workspace index.
-- `WorkspaceXIndex` renders the current Entity and the request state required to
+- `WorkspaceXIndex` renders the active Entity and the request state required to
   establish it. It renders Create only when the authoritative relationship is
   settled and empty.
 - `useXWorkspaceIndex` exposes a small contract: `current`, `access`, and
   `actions`. It does not expose target sections, source modes, tenant state,
   Demo state, storage routing, or debug anatomy.
-- Domain capability runtimes are added behind the current Entity only when a
+- Domain capability runtimes are added behind the active Entity only when a
   real capability needs their records, write authority, or Firestore path.
   Those concerns must not be pulled back into the index pre-emptively.
 - The Kitchen index resolves its current Kitchen from the bounded authenticated
@@ -246,13 +246,13 @@ behaviour; the map does not require empty symmetry.
 
 ## Operations
 
-- Operations are child surfaces inside a selected workspace target.
+- Operations are child surfaces inside an active Workspace Entity.
 - Identity and Team are first-class Workspace peer capabilities, not Operations.
   Overview, Index/Create, dev tooling, and child/detail routes are also not
-  Operations. A selected-target report such as Kitchen Finance is an Operation
+  Operations. An active-Entity report such as Kitchen Finance is an Operation
   when it has its own operational workspace.
 - An Entity `models/operations.ts` catalogue contains only entity-specific
-  selected-target Operations. Landing, discovery, and operation AI consumers
+  active-Entity Operations. Landing, discovery, and operation AI consumers
   may use that list without accidentally publishing baked-in Workspace
   capabilities as Operations.
 - Operations must not leak into Firestore entity root folders.
@@ -276,7 +276,7 @@ behaviour; the map does not require empty symmetry.
   read-only quick look first when leaving the operation would interrupt the
   operator's scan; that preview must expose the deliberate detail-route action.
 - `Detail.vue` is justified for operations; it can start as a small selected-record surface and grow detail-level read/write children.
-- The matching operation composable is `useXWorkspaceOperation`; it owns selected target, child collection path, pending/write permissions, and debug wiring.
+- The matching operation composable is `useXWorkspaceOperation`; it owns the active Entity, child collection path, pending/write permissions, and debug wiring.
 - A rendered operation mounts that stateful data graph once. Its operation root
   provides a named workspace and descendant list, toolbar, and debug components
   inject the same workspace; descendants must not independently call the
@@ -291,7 +291,7 @@ behaviour; the map does not require empty symmetry.
 
 ## Similarities
 
-- All workspace entities need target selection or a selected target.
+- Every Workspace has one active Entity or an explicit no-active-Entity state.
 - Workspace Entities always own Team authority, while a Workspace Team editor is
   exposed only when its lifecycle is implemented.
 - All workspace indexes should stay thin.
@@ -301,7 +301,7 @@ behaviour; the map does not require empty symmetry.
 - Domain differences, their reasons, migration debt, and alignment roadmap live
   in `family-workspace-entity.md`.
 - A difference in operation children is expected; a difference in Index target
-  outcome, selection authority, or error semantics is drift unless guarded and
+  outcome, active-Entity authority, or error semantics is drift unless guarded and
   explained there.
 
 Demo, test, and simulation:
