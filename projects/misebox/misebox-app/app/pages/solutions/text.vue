@@ -7,15 +7,15 @@
         provider="Go QR"
         open
       >
-        <p class="text-sm text-muted">
-          Coming soon.
-        </p>
+        <p class="text-sm text-muted">Coming soon.</p>
       </AppToolFoldaway>
     </SolutionTool>
   </SolutionPage>
 </template>
 
 <script setup lang="ts">
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 const solution = {
   title: 'Text',
   description: 'Test the Go QR text tool from Misebox.',
@@ -28,19 +28,16 @@ const solution = {
   dev: {
     endpoints: [],
   },
-  seo: {
-    title: 'Text',
-    ogTitle: 'Text',
-    twitterTitle: 'Text',
-    description: 'Test the Go QR text tool from Misebox.',
-    ogDescription: 'Test the Go QR text tool from Misebox.',
-    twitterDescription: 'Test the Go QR text tool from Misebox.',
-  },
 }
 
 definePageMeta({
   layout: 'landing',
 })
 
-useSeoMeta(solution.seo)
+useSeo({
+  title: `${solution.title} - Misebox`,
+  description: solution.description,
+  path: '/solutions/text',
+  robots: 'noindex, nofollow',
+})
 </script>

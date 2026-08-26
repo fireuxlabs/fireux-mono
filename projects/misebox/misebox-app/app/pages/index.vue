@@ -12,13 +12,13 @@
       <template #body>
         <section class="workspace-surface">
           <WorkspaceKitchenTools />
-          <WorkspaceKitchenAI
-            title="What would you like to work on?"
-            agent-label=""
-            :starters="[]"
-          />
-          <WorkspaceKitchen />
-          <WorkspaceKitchenDev v-if="isDevelopment" />
+          <main class="workspace-surface__primary">
+            <WorkspaceKitchenAI
+              title="What would you like to work on?"
+              agent-label=""
+              :starters="[]"
+            />
+          </main>
         </section>
       </template>
     </UDashboardPanel>
@@ -31,12 +31,9 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { appMeta } from '../meta'
 
-const isDevelopment = import.meta.dev
 const kitchenWorkspace = useWorkspace('kitchen')
-const pageTitle = computed(() =>
-  kitchenWorkspace.currentName.value
-    ? `Run ${kitchenWorkspace.currentName.value} with KitchenAI`
-    : 'Build and run your Kitchen with KitchenAI'
+const pageTitle = computed(
+  () => kitchenWorkspace.currentName.value || 'Kitchen Workspace'
 )
 
 definePageMeta({

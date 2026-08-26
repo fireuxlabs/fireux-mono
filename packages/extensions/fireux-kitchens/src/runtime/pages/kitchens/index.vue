@@ -9,6 +9,13 @@
           serving, and the ways you can order.
         </p>
 
+        <div class="kitchens-hero__actions">
+          <UButton to="/" trailing-icon="i-lucide-arrow-right">
+            Start your Kitchen
+          </UButton>
+          <span>One Kitchen and one published Menu are free.</span>
+        </div>
+
         <ul class="kitchens-hero__benefits" aria-label="Directory benefits">
           <li>
             <UIcon name="i-lucide-chef-hat" />
@@ -47,8 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   tag: 'kitchens',
@@ -70,7 +77,12 @@ definePageMeta({
 
 const pageTitle = 'Kitchens'
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | ${pageTitle}` })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description:
+    'Browse the Misebox Kitchen directory to discover restaurant profiles, current Menus and available ways to order.',
+  path: '/kitchens',
+})
 </script>
 
 <style scoped>
@@ -113,6 +125,16 @@ useHead({ title: `${appName} | ${pageTitle}` })
   color: var(--ui-text-muted);
   font-size: clamp(var(--text-base), 1.4vw, var(--text-xl));
   line-height: 1.65;
+}
+
+.kitchens-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
+  align-items: center;
+  margin-top: calc(var(--spacing) * 6);
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
 }
 
 .kitchens-hero__benefits {

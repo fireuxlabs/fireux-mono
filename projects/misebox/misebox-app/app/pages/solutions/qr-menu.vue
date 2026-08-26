@@ -9,6 +9,11 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'landing',
 })
@@ -17,7 +22,8 @@ const goQrBaseUrl = 'https://go-qr.web.app'
 
 const solution = {
   title: 'QR menu',
-  description: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
+  description:
+    'Upload a menu photo or document, choose a short link, and get a QR menu.',
   instructions: [
     {
       title: 'Upload menu',
@@ -78,15 +84,19 @@ const solution = {
       },
     ],
   },
-  seo: {
-    title: 'QR menu',
-    ogTitle: 'QR menu',
-    twitterTitle: 'QR menu',
-    description: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
-    ogDescription: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
-    twitterDescription: 'Upload a menu photo or document, choose a short link, and get a QR menu.',
-  },
 }
 
-useSeoMeta(solution.seo)
+useSeo({
+  title: `${solution.title} - Misebox`,
+  description: solution.description,
+  path: '/solutions/qr-menu',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
+})
 </script>

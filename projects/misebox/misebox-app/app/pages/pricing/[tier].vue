@@ -11,11 +11,18 @@ import type { RouteLocationNormalized } from 'vue-router'
 
 const { appName, contactEmail, tiers } = useMiseboxPricing()
 const route = useRoute()
-const tierId = computed(() => String(route.params.tier || ''))
+const tierId = computed(() => {
+  const value = String(route.params.tier || '')
+  if (value === 'premium') return 'pro'
+  if (value === 'business') return 'managed'
+  return value
+})
 definePageMeta({
   layout: 'landing',
   validate: (route: RouteLocationNormalized) =>
-    ['free', 'pro', 'managed', 'your-app'].includes(String(route.params.tier)),
+    ['free', 'premium', 'business', 'your-app'].includes(
+      String(route.params.tier)
+    ),
 })
 useSeoMeta({ title: () => `${tierId.value} pricing · Misebox` })
 </script>

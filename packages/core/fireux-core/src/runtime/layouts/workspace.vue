@@ -18,12 +18,7 @@
             >
               <AppBrandLogo size="small" alt="FireUX" />
             </NuxtLink>
-            <NuxtLink
-              v-else
-              to="/about"
-              class="inline-flex"
-              aria-label="Home"
-            >
+            <NuxtLink v-else to="/about" class="inline-flex" aria-label="Home">
               <AppBrandWordmark size="card" alt="FireUX" />
             </NuxtLink>
           </div>
@@ -71,7 +66,9 @@
                 >
                   <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
                   <span v-if="!collapsed" class="min-w-0 text-left">
-                    <strong class="block truncate text-sm font-medium text-highlighted">
+                    <strong
+                      class="block truncate text-sm font-medium text-highlighted"
+                    >
                       {{ item.label }}
                     </strong>
                     <small class="block truncate text-xs text-muted">
@@ -110,7 +107,9 @@
               >
                 <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
                 <span v-if="!collapsed" class="min-w-0 text-left">
-                  <strong class="block truncate text-sm font-medium text-highlighted">
+                  <strong
+                    class="block truncate text-sm font-medium text-highlighted"
+                  >
                     {{ item.label }}
                   </strong>
                   <small class="block truncate text-xs text-muted">
@@ -175,18 +174,7 @@
     </main>
   </UDashboardGroup>
 
-  <ClientOnly>
-    <UBadge
-      v-if="roleLens"
-      :label="roleLens.label"
-      :icon="roleLens.icon"
-      :color="roleLens.color"
-      variant="soft"
-      size="sm"
-      class="pointer-events-none fixed right-4 bottom-4 z-50 shadow-lg ring-1 ring-default"
-      aria-live="off"
-    />
-  </ClientOnly>
+  <LayoutsSharedRoleBadge />
 
   <LayoutsSharedNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
@@ -205,34 +193,18 @@ import {
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
 import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
-import { useUser } from '../user/composables/useUser'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
 const isDevelopment = import.meta.dev
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const workspaceNav = useWorkspaceNav()
-const { appUser } = useUser()
-const roleLens = computed(() => {
-  if (appUser.value?.role === 'dev') {
-    return {
-      label: 'Developer view',
-      icon: 'i-lucide-code-2',
-      color: 'warning' as const,
-    }
-  }
-  if (appUser.value?.role === 'admin') {
-    return {
-      label: 'Admin view',
-      icon: 'i-lucide-shield-check',
-      color: 'info' as const,
-    }
-  }
-  return null
-})
 const route = useRoute()
 const workspace = computed(() =>
-  workspaceFamilyFromRouteContext(String(route.path || ''), route.meta.workspace)
+  workspaceFamilyFromRouteContext(
+    String(route.path || ''),
+    route.meta.workspace
+  )
 )
 const workspaceState = useWorkspace(workspace.value)
 const topNav = computed(() =>

@@ -1,9 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
-    <section
-      class="border-b border-default bg-default/70 py-16"
-    >
+    <section class="border-b border-default bg-default/70 py-16">
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="fx-type-headline">
@@ -16,10 +14,19 @@
             {{ appMeta.getStarted.hero.description }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton :to="appMeta.getStarted.hero.primaryAction.to" color="primary" size="lg">
+            <UButton
+              :to="appMeta.getStarted.hero.primaryAction.to"
+              color="primary"
+              size="lg"
+            >
               {{ appMeta.getStarted.hero.primaryAction.label }}
             </UButton>
-            <UButton :to="appMeta.getStarted.hero.secondaryAction.to" color="neutral" variant="ghost" size="lg">
+            <UButton
+              :to="appMeta.getStarted.hero.secondaryAction.to"
+              color="neutral"
+              variant="ghost"
+              size="lg"
+            >
               {{ appMeta.getStarted.hero.secondaryAction.label }}
             </UButton>
           </div>
@@ -31,7 +38,11 @@
             {{ appMeta.getStarted.snapshotTitle }}
           </p>
           <ul class="space-y-3">
-            <li v-for="tick in appMeta.getStarted.snapshotTicks" :key="tick" class="flex items-start gap-3">
+            <li
+              v-for="tick in appMeta.getStarted.snapshotTicks"
+              :key="tick"
+              class="flex items-start gap-3"
+            >
               <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
               <span>{{ tick }}</span>
             </li>
@@ -70,7 +81,10 @@
             </p>
             <ul class="mt-4 space-y-2 text-sm text-muted">
               <li v-for="item in step.items" :key="item" class="flex gap-2">
-                <UIcon name="i-lucide-arrow-right" class="mt-0.5 text-primary" />
+                <UIcon
+                  name="i-lucide-arrow-right"
+                  class="mt-0.5 text-primary"
+                />
                 <span>{{ item }}</span>
               </li>
             </ul>
@@ -110,12 +124,21 @@
             {{ appMeta.getStarted.afterSetup.card.title }}
           </p>
           <ul class="mt-5 space-y-2">
-            <li v-for="bullet in appMeta.getStarted.afterSetup.card.bullets" :key="bullet" class="flex gap-2">
+            <li
+              v-for="bullet in appMeta.getStarted.afterSetup.card.bullets"
+              :key="bullet"
+              class="flex gap-2"
+            >
               <UIcon name="i-lucide-zap" class="text-primary" />
               <span>{{ bullet }}</span>
             </li>
           </ul>
-          <UButton :to="appMeta.getStarted.afterSetup.card.action.to" block class="mt-6" color="primary">
+          <UButton
+            :to="appMeta.getStarted.afterSetup.card.action.to"
+            block
+            class="mt-6"
+            color="primary"
+          >
             {{ appMeta.getStarted.afterSetup.card.action.label }}
           </UButton>
         </div>
@@ -125,6 +148,10 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 
 definePageMeta({
@@ -141,9 +168,18 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
+useSeo({
   title: appMeta.seoGetStarted.title,
   description: appMeta.seoGetStarted.description,
+  path: '/get-started',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 
 const steps = appMeta.getStarted.steps

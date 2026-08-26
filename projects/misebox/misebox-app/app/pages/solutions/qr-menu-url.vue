@@ -1,9 +1,6 @@
 <template>
   <SolutionPage :solution="solution">
-    <ProviderGoQrTools
-      tool="url"
-      :payload="tool"
-    />
+    <ProviderGoQrTools tool="url" :payload="tool" />
     <SolutionInstructions :items="solution.instructions" />
     <SolutionIntegrations :integrations="solution.integrations" />
     <SolutionUpgrades :items="solution.upgrades" />
@@ -12,6 +9,11 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'landing',
 })
@@ -84,19 +86,24 @@ const solution = {
       {
         method: 'GET',
         path: 'Go QR /api/tools/url',
-        description: 'Creates a configured Go QR URL tool with Misebox menu labels.',
+        description:
+          'Creates a configured Go QR URL tool with Misebox menu labels.',
       },
     ],
   },
-  seo: {
-    title: 'Menu URL QR',
-    ogTitle: 'Menu URL QR',
-    twitterTitle: 'Menu URL QR',
-    description: 'Paste an existing menu URL and get a printable QR menu.',
-    ogDescription: 'Paste an existing menu URL and get a printable QR menu.',
-    twitterDescription: 'Paste an existing menu URL and get a printable QR menu.',
-  },
 }
 
-useSeoMeta(solution.seo)
+useSeo({
+  title: `${solution.title} - Misebox`,
+  description: solution.description,
+  path: '/solutions/qr-menu-url',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
+})
 </script>

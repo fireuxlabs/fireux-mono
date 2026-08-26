@@ -97,6 +97,8 @@ export type FireuxMetaSolution = {
   cta?: FireuxMetaCta
   /** Optional search intent phrases for export/search tooling. */
   keywords?: string[]
+  /** Factual Operations that prove capabilities used by this Solution. */
+  operationSlugs?: string[]
   /** Ecosystem or app that owns the canonical solution. */
   owner?: FireuxMetaSolutionOwner
   /** Optional canonical destination when this catalogue is composed by a parent app. */

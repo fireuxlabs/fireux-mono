@@ -11,21 +11,24 @@ export function useUserPermissions(user: UserRefs) {
   const appUser = user.appUser as {
     value: CurrentAppMembership | null | undefined
   }
-  const access = computed(() => resolveAppUserAccess(appUser.value))
-  const isAdmin = computed(() => access.value.hasAdminAuthority)
-  const isDeveloper = computed(() => access.value.hasDeveloperAuthority)
+  const appAccess = computed(() => resolveAppUserAccess(appUser.value))
+  const appAccessOutcome = user.appOutcome
+  const isAdmin = computed(() => appAccess.value.hasAdminAuthority)
+  const isDeveloper = computed(() => appAccess.value.hasDeveloperAuthority)
   const subscription = computed<UserSubscription>(
-    () => access.value.subscription
+    () => appAccess.value.subscription
   )
   const hasPremiumSubscription = computed(
-    () => access.value.hasPremiumSubscription
+    () => appAccess.value.hasPremiumSubscription
   )
   const hasBusinessSubscription = computed(
-    () => access.value.hasBusinessSubscription
+    () => appAccess.value.hasBusinessSubscription
   )
   const canOwnMultipleWorkspaces = hasBusinessSubscription
 
   return {
+    appAccess,
+    appAccessOutcome,
     isAdmin,
     isDeveloper,
     subscription,

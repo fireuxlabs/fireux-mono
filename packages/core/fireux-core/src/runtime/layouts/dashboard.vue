@@ -21,7 +21,9 @@
             orientation="vertical"
           />
 
-          <USeparator v-if="topNav.length && (middleNav.length || bottomNav.length)" />
+          <USeparator
+            v-if="topNav.length && (middleNav.length || bottomNav.length)"
+          />
 
           <UNavigationMenu
             v-if="middleNav.length"
@@ -40,7 +42,9 @@
           />
 
           <div class="mt-auto lg:hidden">
-            <USeparator v-if="topNav.length || middleNav.length || bottomNav.length" />
+            <USeparator
+              v-if="topNav.length || middleNav.length || bottomNav.length"
+            />
 
             <div class="pt-3">
               <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
@@ -63,6 +67,8 @@
       <NuxtPage />
     </main>
   </UDashboardGroup>
+
+  <LayoutsSharedRoleBadge />
 
   <LayoutsSharedNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
@@ -89,7 +95,6 @@ const activeProfileState = useState<string | null>(
 
 const { isOpen: isNotificationsSlideoverOpen } = useWorkspaceNotifications()
 const { desktop, baseNavFilter, resolveItemPosition } = useDashboardNav()
-
 useAuthRedirect()
 
 const routeProfileId = computed(

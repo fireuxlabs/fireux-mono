@@ -1,75 +1,74 @@
 <template>
-  <ClientOnly>
-    <UButton
-      v-if="canManageSubscription"
-      :label="subscriptionLabel"
-      :icon="subscriptionIcon"
-      :loading="pending"
-      :disabled="pending"
-      color="neutral"
-      variant="soft"
-      size="sm"
-      :aria-label="`Switch subscription from ${subscriptionLabel} to ${nextSubscriptionLabel}`"
-      @click="toggleSubscription"
-    />
-    <UserAccessBadge v-else :subscription="subscription" />
-  </ClientOnly>
+  <UButton
+    :label="presentation.label"
+    :icon="presentation.icon"
+    :color="presentation.color"
+    variant="soft"
+    size="xs"
+    type="button"
+    :disabled="pending"
+    :loading="pending"
+    class="rounded-full"
+    :aria-label="
+      canToggle
+        ? `Switch ${presentation.label} subscription view`
+        : `View pricing for ${presentation.label}`
+    "
+    @click="handleClick"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useToast, watch } from '#imports'
-import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
+import { computed, navigateTo, ref, useToast } from '#imports'
 import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
+import { useDeveloperAccess } from '../composables/useDeveloperAccess'
 import { useUser } from '../composables/useUser'
 
-const { isAdmin, isDeveloper, subscription } = useUser()
+const { appAccess } = useUser()
+const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
 const pending = ref(false)
-const displayedSubscription = ref<AppUserSubscription>(subscription.value)
 const toast = useToast()
-const presentation = {
-  free: { label: 'Free', icon: 'i-lucide-user-round' },
-  premium: { label: 'Premium', icon: 'i-lucide-crown' },
-  business: { label: 'Business', icon: 'i-lucide-building-2' },
-} as const satisfies Record<
-  AppUserSubscription,
-  { label: string; icon: string }
->
-const order: AppUserSubscription[] = ['free', 'premium', 'business']
-const canManageSubscription = computed(() => isAdmin.value || isDeveloper.value)
-const subscriptionLabel = computed(
-  () => presentation[displayedSubscription.value].label
-)
-const subscriptionIcon = computed(
-  () => presentation[displayedSubscription.value].icon
-)
-const nextSubscription = computed<AppUserSubscription>(() => {
-  const currentIndex = order.indexOf(displayedSubscription.value)
-  return order[(currentIndex + 1) % order.length] || 'free'
-})
-const nextSubscriptionLabel = computed(
-  () => presentation[nextSubscription.value].label
+const presentations = {
+  free: {
+    label: 'Free',
+    icon: 'i-lucide-user-round',
+    color: 'neutral' as const,
+  },
+  premium: {
+    label: 'Premium',
+    icon: 'i-lucide-crown',
+    color: 'warning' as const,
+  },
+  business: {
+    label: 'Business',
+    icon: 'i-lucide-building-2',
+    color: 'primary' as const,
+  },
+}
+const presentation = computed(() => presentations[appAccess.value.subscription])
+const canToggle = computed(
+  () => isConfiguredDeveloper.value || appAccess.value.role === 'dev'
 )
 
-watch(subscription, (value) => {
-  displayedSubscription.value = value
-})
+async function handleClick() {
+  if (pending.value) return
+  if (!canToggle.value) {
+    await navigateTo('/pricing')
+    return
+  }
 
-async function toggleSubscription() {
-  if (!canManageSubscription.value || pending.value) return
+  const requested =
+    appAccess.value.subscription === 'free'
+      ? 'premium'
+      : appAccess.value.subscription === 'premium'
+        ? 'business'
+        : 'free'
+
   pending.value = true
   try {
-    const result = await mutateAppMembership({
+    await mutateAppMembership({
       action: 'set-self-subscription',
-      subscription: nextSubscription.value,
-    })
-    if (result.subscription) {
-      displayedSubscription.value = result.subscription
-    }
-    toast.add({
-      title: `${presentation[displayedSubscription.value].label} enabled`,
-      description: 'Your current App subscription has been updated.',
-      color: 'success',
-      icon: 'i-lucide-circle-check',
+      subscription: requested,
     })
   } catch (error) {
     toast.add({
@@ -79,7 +78,6 @@ async function toggleSubscription() {
           ? error.message
           : 'Your subscription could not be changed.',
       color: 'error',
-      icon: 'i-lucide-triangle-alert',
     })
   } finally {
     pending.value = false

@@ -37,9 +37,9 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Misebox — Menu and kitchen management',
+      title: 'Misebox — Free restaurant menu and Kitchen workspace',
       description:
-        'Publish menus, organise kitchen prep and manage restaurant orders with Misebox.',
+        'Start one Kitchen and publish one restaurant Menu without signing up. Use free restaurant tools, choose Premium for multiple Menus, or Business for multiple Kitchens.',
     },
   },
   about: {
@@ -295,12 +295,12 @@ User
   getStarted: {
     hero: {
       eyebrow: 'Start with one Kitchen',
-      title: 'Connect your menu, prep, and service workflow',
+      title: 'Start your Kitchen without signing up',
       description:
-        'Create a Kitchen workspace, structure what you serve, and connect the preparation and service work behind it without rebuilding the same information in separate tools.',
+        'Create one Kitchen, publish one Menu, and use its open Workspace tools. Sign in to keep the Kitchen with your account, choose Premium for more Menus, or Business for more Kitchens.',
       primaryAction: {
-        label: 'Create a Kitchen workspace',
-        to: '/kitchens',
+        label: 'Start one Kitchen',
+        to: '/',
       },
       secondaryAction: {
         label: 'Try the interactive demo',

@@ -7,7 +7,7 @@ import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 
 export function useKitchenWorkspaceTools() {
   const { isAuthenticated } = useAuth()
-  const { canOwnMultipleWorkspaces } = useUser()
+  const { appAccess, appAccessOutcome } = useUser()
   const { currentId, currentName, currentDescription, currentImage } =
     useWorkspace('kitchen')
   const createKitchenOpen = useState(
@@ -15,12 +15,19 @@ export function useKitchenWorkspaceTools() {
     () => false
   )
   const capabilityTools = useKitchenCapabilityToolDirectory()
+  const accessPending = computed(
+    () =>
+      isAuthenticated.value &&
+      (appAccessOutcome.value === 'idle' ||
+        appAccessOutcome.value === 'pending')
+  )
 
   const kitchenComplete = computed(() =>
     Boolean(currentName.value && currentDescription.value && currentImage.value)
   )
   const kitchenTool = computed(() => {
-    if (!currentId.value || canOwnMultipleWorkspaces.value) {
+    if (accessPending.value) return null
+    if (!currentId.value || appAccess.value.hasBusinessSubscription) {
       return {
         id: 'create-kitchen' as const,
         kind: 'create' as const,
@@ -62,9 +69,7 @@ export function useKitchenWorkspaceTools() {
       kitchenTool.value?.suggestion,
       userTool.value?.suggestion,
       exploreAction.suggestion,
-      ...capabilityTools.tools.value.map(
-        ({ tool }) => `Use ${tool.label}`
-      ),
+      ...capabilityTools.tools.value.map(({ tool }) => `Use ${tool.label}`),
     ].filter((suggestion): suggestion is string => Boolean(suggestion))
   )
   const availableActions = computed(() =>
@@ -97,6 +102,7 @@ export function useKitchenWorkspaceTools() {
   }
 
   return {
+    accessPending,
     createKitchenOpen,
     kitchenComplete,
     kitchenTool,

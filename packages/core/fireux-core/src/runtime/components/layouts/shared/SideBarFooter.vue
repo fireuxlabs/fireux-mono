@@ -25,7 +25,6 @@
       v-else-if="pillUser"
       v-bind="pillUser"
       :link="Boolean(pillUser.to)"
-      :show-badges="false"
       class="mt-auto w-full"
     />
 

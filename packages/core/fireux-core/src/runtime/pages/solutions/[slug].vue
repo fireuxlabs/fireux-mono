@@ -60,6 +60,30 @@
         </div>
       </UCard>
 
+      <UCard v-if="relatedOperations.length" variant="subtle">
+        <template #header>
+          <h2 class="m-0 text-base font-semibold text-highlighted">
+            Related operations
+          </h2>
+        </template>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <NuxtLink
+            v-for="operation in relatedOperations"
+            :key="operation.id"
+            :to="`/operations/${operation.slug}`"
+            class="grid gap-1 rounded-lg p-3 hover:bg-elevated"
+          >
+            <span class="font-semibold text-highlighted">
+              {{ operation.title }}
+            </span>
+            <span class="text-sm leading-6 text-muted">
+              {{ operation.description }}
+            </span>
+          </NuxtLink>
+        </div>
+      </UCard>
+
       <UCard v-if="isAdmin && hasAdminPlanning" variant="subtle">
         <template #header>
           <div class="flex flex-wrap items-center gap-2">
@@ -155,11 +179,19 @@ import {
   useSeo,
 } from '../../composables/fireux/seo/useSeo'
 import { useUser } from '../../user/composables/useUser'
-import type { FireuxMetaSolution } from '../../../config/app/meta-content'
+import type {
+  FireuxMetaOperation,
+  FireuxMetaSolution,
+} from '../../../config/app/meta-content'
 
 type SolutionsResponse = {
   ok: boolean
   solutions: FireuxMetaSolution[]
+}
+
+type OperationsResponse = {
+  ok: boolean
+  operations: FireuxMetaOperation[]
 }
 
 const route = useRoute()
@@ -175,12 +207,22 @@ const requestedSlug = computed(() =>
 const { data } = await useAsyncData('public-app-solutions', () =>
   $fetch<SolutionsResponse>('/api/app/solutions')
 )
+const { data: operationsData } = await useAsyncData(
+  'public-app-operations',
+  () => $fetch<OperationsResponse>('/api/app/operations')
+)
 
 const solution = computed(() =>
   (data.value?.solutions || []).find(
     (entry) => entry.slug === requestedSlug.value
   )
 )
+const relatedOperations = computed(() => {
+  const slugs = new Set(solution.value?.operationSlugs || [])
+  return (operationsData.value?.operations || []).filter(
+    (operation) => operation.slug && slugs.has(operation.slug)
+  )
+})
 const solutionPath = computed(() =>
   requestedSlug.value
     ? `/solutions/${encodeURIComponent(requestedSlug.value)}`
@@ -242,6 +284,10 @@ useSeo({
           canonicalUrl: context.canonicalUrl,
           description: context.description,
           image: context.image,
+          items: relatedOperations.value.map((operation) => ({
+            name: operation.title,
+            url: context.absoluteUrl(`/operations/${operation.slug}`),
+          })),
           title: context.title,
         })
       : null,

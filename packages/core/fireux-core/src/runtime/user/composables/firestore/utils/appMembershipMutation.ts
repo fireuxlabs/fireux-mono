@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: send membership and privilege mutations through the authenticated server boundary.
 
-import { refreshNuxtData } from '#imports'
+import { refreshNuxtData, useNuxtData } from '#imports'
+import type { CurrentAppContextResponse } from '../../../../app/models/app-context.model.ts'
 import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
@@ -25,6 +26,10 @@ function responseMessage(payload: unknown, fallback: string) {
 export async function mutateAppMembership(
   input: AppMembershipMutationInput
 ): Promise<AppMembershipMutationResult> {
+  const currentContext = useNuxtData<{
+    requestUid: string
+    response: CurrentAppContextResponse
+  } | null>(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
   const user = await useRequireUser()
   const token = await user.getIdToken()
   const response = await fetch('/api/internal/app/membership', {
@@ -47,6 +52,24 @@ export async function mutateAppMembership(
   }
 
   const result = payload as AppMembershipMutationResult
-  await refreshNuxtData(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
+  const current = currentContext.data.value
+  if (
+    input.action === 'set-self-subscription' &&
+    result.subscription &&
+    current?.response.membership
+  ) {
+    currentContext.data.value = {
+      ...current,
+      response: {
+        ...current.response,
+        membership: {
+          ...current.response.membership,
+          subscription: result.subscription,
+        },
+      },
+    }
+  } else {
+    await refreshNuxtData(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
+  }
   return result
 }

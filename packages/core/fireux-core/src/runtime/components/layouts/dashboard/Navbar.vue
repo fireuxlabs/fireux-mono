@@ -7,7 +7,7 @@
     </template>
 
     <template #right>
-      <UserSubscriptionControl />
+      <UserSubscriptionControl v-if="showSubscription" />
       <slot name="right" />
 
       <UTooltip :text="notificationTooltip" :shortcuts="['N']">
@@ -36,15 +36,16 @@
 import { computed } from 'vue'
 import { useWorkspaceNotifications } from '../../../composables/fireux/workspace/useWorkspaceNotifications'
 
-defineProps<{
-  title: string
-  ui?: any
-}>()
+withDefaults(
+  defineProps<{
+    title: string
+    ui?: any
+    showSubscription?: boolean
+  }>(),
+  { showSubscription: true }
+)
 
-const {
-  open: openNotifications,
-  unreadCount,
-} = useWorkspaceNotifications()
+const { open: openNotifications, unreadCount } = useWorkspaceNotifications()
 const unreadLabel = computed(() =>
   unreadCount.value > 99 ? '99+' : unreadCount.value
 )

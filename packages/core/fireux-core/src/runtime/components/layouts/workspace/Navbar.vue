@@ -1,5 +1,5 @@
 <template>
-  <LayoutsDashboardNavbar :title="title" :ui="ui">
+  <LayoutsDashboardNavbar :title="title" :ui="ui" :show-subscription="false">
     <template #right>
       <div class="flex items-center gap-2">
         <UserSubscriptionControl />

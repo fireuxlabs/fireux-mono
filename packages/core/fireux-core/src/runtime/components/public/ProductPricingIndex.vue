@@ -6,9 +6,10 @@
   >
     <template #intro>
       <p class="text-sm leading-6 text-toned">
-        Free is functional. Pro gives the operation more capacity. Managed adds
-        practical help from FireUX. Your App gives the business its own
-        identity.
+        {{
+          props.intro ||
+          'Free is functional. Pro gives the operation more capacity. Managed adds practical help. Your App gives the business its own identity.'
+        }}
       </p>
     </template>
 
@@ -28,6 +29,7 @@ const props = defineProps<{
   appName: string
   description: string
   tiers: readonly PricingTier[]
+  intro?: string
 }>()
 const plans = computed(() =>
   props.tiers.map((tier) => ({

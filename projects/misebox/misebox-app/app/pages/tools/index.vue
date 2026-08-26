@@ -13,8 +13,9 @@
             Restaurant tools
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
-            Use Misebox tools for Kitchen operations, restaurant costs and
-            ordering.
+            Open free restaurant tools without signing in. Start one Kitchen
+            when a tool needs Kitchen context, or use a standalone calculator
+            directly.
           </p>
         </header>
 
@@ -53,7 +54,7 @@ const tools = [
   {
     name: 'Kitchen tools',
     description:
-      'Use Team, preparation and compound Kitchen workflows in Misebox.',
+      'Start one Kitchen and use its available preparation, Menu and service tools without signing in.',
     to: '/tools/kitchen',
   },
   {
@@ -73,7 +74,7 @@ const tools = [
 useSeo({
   title: 'Restaurant Tools · Misebox',
   description:
-    'Use Misebox restaurant tools for Kitchen operations, labour cost calculation and online ordering.',
+    'Use free Misebox restaurant tools without signing in, including Kitchen tools, a labour cost calculator and online ordering.',
   path: '/tools',
   jsonLdBuilder: ({ canonicalUrl, description, title, absoluteUrl }) => ({
     '@context': 'https://schema.org',

@@ -7,7 +7,8 @@
           Restaurant labour cost calculator
         </h1>
         <p class="mx-auto mt-4 max-w-2xl text-muted">
-          Add sales, wages and employment costs to calculate total labour cost and labour percentage.
+          Add sales, wages and employment costs to calculate total labour cost
+          and labour percentage. No sign-in is required.
         </p>
       </header>
 
@@ -17,11 +18,12 @@
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#imports'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
-useSeoMeta({
+useSeo({
   title: 'Restaurant Labour Cost Calculator — Misebox',
   description:
-    'Calculate restaurant labour cost and labour percentage from sales, wages, employer costs and other labour costs.',
+    'Calculate restaurant labour cost and labour percentage from sales, wages and employer costs for free, without signing in.',
+  path: '/tools/restaurant-labour-cost',
 })
 </script>

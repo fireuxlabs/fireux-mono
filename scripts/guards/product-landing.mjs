@@ -830,7 +830,10 @@ export async function run(ctx) {
   const miseboxWorkspacePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
   const kitchenMiseBoard = read(repoRoot, KITCHEN_MISE_BOARD_PATH)
   const kitchenMiseCollection = read(repoRoot, KITCHEN_MISE_COLLECTION_PATH)
-  const kitchenMiseWorkspaceRead = read(repoRoot, KITCHEN_MISE_CONSOLE_READ_PATH)
+  const kitchenMiseWorkspaceRead = read(
+    repoRoot,
+    KITCHEN_MISE_CONSOLE_READ_PATH
+  )
   const kitchenMisePresentation = read(repoRoot, KITCHEN_MISE_PRESENTATION_PATH)
   const miseboxWorkspacePreviewComponents = Object.fromEntries(
     Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
@@ -1215,7 +1218,7 @@ export async function run(ctx) {
       'type PricingProfile',
       'satisfies PricingProfile',
       `export function ${contract.composableName}()`,
-      'return usePricing(',
+      'usePricing(',
     ]) {
       if (!contract.composable.includes(required)) {
         violations.push(
@@ -1580,14 +1583,18 @@ export async function run(ctx) {
   }
 
   if (
-    miseboxWorkspacePreviewComponents.dishDetail.includes(':src="dish.imageUrl"')
+    miseboxWorkspacePreviewComponents.dishDetail.includes(
+      ':src="dish.imageUrl"'
+    )
   ) {
     violations.push(
       `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.dishDetail}: Dish image belongs to the persistent page selector rather than the swappable overview`
     )
   }
 
-  for (const [key, source] of Object.entries(miseboxWorkspacePreviewComponents)) {
+  for (const [key, source] of Object.entries(
+    miseboxWorkspacePreviewComponents
+  )) {
     const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
     for (const forbidden of [
       'useMiseboxProductDemo(',
@@ -1605,7 +1612,9 @@ export async function run(ctx) {
   }
 
   if (
-    miseboxWorkspacePreviewComponents.mise.includes('KITCHEN_MISE_STATUS_OPTIONS')
+    miseboxWorkspacePreviewComponents.mise.includes(
+      'KITCHEN_MISE_STATUS_OPTIONS'
+    )
   ) {
     violations.push(
       `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: must consume the Kitchen-owned Mise task board instead of rebuilding status presentation`

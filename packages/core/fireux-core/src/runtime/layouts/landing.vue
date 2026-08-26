@@ -10,6 +10,8 @@
 
     <LayoutsDefaultFooter />
     <LayoutsSharedFloatingChatButton />
+
+    <LayoutsSharedRoleBadge />
   </div>
 </template>
 

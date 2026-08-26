@@ -1,25 +1,17 @@
 <template>
-  <NuxtLink
-    v-if="link && to"
-    :to="to"
-    class="pill"
-  >
+  <NuxtLink v-if="link && to" :to="to" class="pill">
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (handle || undefined) : undefined"
+      :description="showSubtitle ? handle || undefined : undefined"
       :avatar="avatar"
       size="sm"
     />
   </NuxtLink>
 
-  <div
-    v-else
-    class="pill"
-    @click="onClick"
-  >
+  <div v-else class="pill" @click="onClick">
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (handle || undefined) : undefined"
+      :description="showSubtitle ? handle || undefined : undefined"
       :avatar="avatar"
       size="sm"
     />
@@ -36,10 +28,12 @@ import {
   type UserCard,
 } from '../../composables/useUserInterface'
 
-type PillProps = Partial<Pick<
-  UserCard.Card,
-  'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
->> & {
+type PillProps = Partial<
+  Pick<
+    UserCard.Card,
+    'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
+  >
+> & {
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean
@@ -76,8 +70,8 @@ const onClick = (event?: MouseEvent) => {
 }
 
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() =>
-  props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+const proxiedAvatarUrl = useProxiedAvatar(
+  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
 )
 const avatarAlt = computed(() => props.displayName || props.handle || 'User')
 const avatar = computed(() => ({

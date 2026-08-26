@@ -1,6 +1,6 @@
 # Workspace
 
-Updated: 2026-08-23
+Updated: 2026-08-25
 Ref: 79efa4a44
 Role: map, not canon
 
@@ -71,6 +71,13 @@ paths and delegate inward.
   `flex min-h-full min-w-0 flex-1`; a bare block wrapper can stop
   `UDashboardPanel` from filling the remaining Workspace width.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
+- A Workspace page presents one dominant primary canvas. Supporting Tools and
+  contextual AI may share an optional context rail when the route has a real
+  focused View; on narrower screens that rail follows the primary canvas. A
+  product doorway whose primary job is AI keeps AI in the canvas and places
+  only its compact current-Entity/create control above it. Do not stack
+  duplicate Entity summaries, account controls, research literature, or
+  development diagnostics as peer production surfaces.
 - Back navigation and page-level actions stay in the navbar right slot.
 - The selected-workspace menu follows one structural order: Overview,
   Identity, the family's top-level Operations, then Team when that family has

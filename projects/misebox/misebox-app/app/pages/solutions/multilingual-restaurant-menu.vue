@@ -15,6 +15,11 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'landing',
 })
@@ -25,7 +30,8 @@ const sproochliBaseUrl = import.meta.dev
 
 const solution = {
   title: 'Multilingual restaurant menu',
-  description: 'Prepare public menu translations with Sproochli while Misebox keeps menu truth.',
+  description:
+    'Prepare public menu translations with Sproochli while Misebox keeps menu truth.',
   instructions: [
     {
       title: 'Choose menu',
@@ -71,7 +77,8 @@ const solution = {
       {
         method: 'GET',
         path: 'Sproochli /tools/menu',
-        description: 'Embeds the Sproochli menu translation tool with Misebox menu labels.',
+        description:
+          'Embeds the Sproochli menu translation tool with Misebox menu labels.',
       },
       {
         method: 'GET',
@@ -80,15 +87,19 @@ const solution = {
       },
     ],
   },
-  seo: {
-    title: 'Multilingual restaurant menu',
-    ogTitle: 'Multilingual restaurant menu',
-    twitterTitle: 'Multilingual restaurant menu',
-    description: 'Prepare public menu translations with Sproochli while Misebox keeps menu truth.',
-    ogDescription: 'Prepare public menu translations with Sproochli while Misebox keeps menu truth.',
-    twitterDescription: 'Prepare public menu translations with Sproochli while Misebox keeps menu truth.',
-  },
 }
 
-useSeoMeta(solution.seo)
+useSeo({
+  title: `${solution.title} - Misebox`,
+  description: solution.description,
+  path: '/solutions/multilingual-restaurant-menu',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
+})
 </script>

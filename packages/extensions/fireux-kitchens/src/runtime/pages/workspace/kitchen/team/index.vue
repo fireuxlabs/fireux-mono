@@ -12,14 +12,26 @@
 
       <template #body>
         <section class="workspace-surface">
-          <WorkspaceKitchenTeamTools />
-          <WorkspaceKitchenTeamAI />
-          <WorkspaceKitchenTeam v-if="hasTeam" />
-          <WorkspaceKitchenResearchSegue
-            capability="Team"
-            base-path="/workspace/kitchen/team/search-demand"
-          />
-          <WorkspaceKitchenTeamToolMap v-if="isDevelopment" />
+          <div class="workspace-surface__split">
+            <main class="workspace-surface__primary">
+              <WorkspaceKitchenTeam v-if="hasTeam || teamPending" />
+              <UAlert
+                v-else
+                color="neutral"
+                variant="subtle"
+                icon="i-lucide-users"
+                title="No team members yet"
+                description="Add the first person to begin this Kitchen Team."
+              />
+            </main>
+
+            <aside class="workspace-surface__context" aria-label="Team tools">
+              <div class="workspace-surface workspace-surface--compact">
+                <WorkspaceKitchenTeamTools />
+                <WorkspaceKitchenTeamAI />
+              </div>
+            </aside>
+          </div>
         </section>
       </template>
     </UDashboardPanel>
@@ -33,9 +45,9 @@ import { provideKitchenWorkspaceTeam } from '../../../../kitchen/composables/wor
 
 const team = provideKitchenWorkspaceTeam()
 const hasTeam = computed(() => team.teamMembers.value.length > 0)
+const teamPending = team.pending
 const memberSlug = useRouteParam('memberSlug')
 const hasMemberRoute = computed(() => Boolean(memberSlug.value))
-const isDevelopment = import.meta.dev
 
 definePageMeta({
   layout: 'workspace',

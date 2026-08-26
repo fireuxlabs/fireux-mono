@@ -12,11 +12,19 @@ export const miseboxSolutions = [
   {
     slug: 'digital-restaurant-menu',
     title: 'Digital restaurant menu',
-    description: 'Publish an online restaurant menu from kitchen-owned menu data.',
+    description:
+      'Create one Kitchen and publish one online restaurant Menu for free without signing up.',
     icon: 'i-lucide-utensils',
     status: 'live',
     keywords: ['digital restaurant menu', 'online restaurant menu'],
-    cta: { label: 'Open kitchens', to: '/kitchens' },
+    operationSlugs: ['menus'],
+    body: 'Start with a Kitchen name, structure one Menu, and publish it as a public restaurant Menu. Misebox keeps the published Menu connected to its Kitchen instead of treating it as an isolated document.',
+    steps: [
+      'Start one Kitchen without signing up.',
+      'Create and structure one Menu with sections, dishes, and prices.',
+      'Publish the Menu for guests, then choose Premium if you need more than one Menu.',
+    ],
+    cta: { label: 'Start one Kitchen', to: '/' },
   },
   {
     slug: 'qr-menu-url',
@@ -39,48 +47,79 @@ export const miseboxSolutions = [
   {
     slug: 'restaurant-menu-management',
     title: 'Restaurant menu management',
-    description: 'Manage sections, dishes, prices, status, and public menu presentation in one workflow.',
+    description:
+      'Create, structure, and publish one restaurant Menu for free, then choose Premium to manage multiple Menus.',
     icon: 'i-lucide-list-tree',
     status: 'live',
-    keywords: ['restaurant menu management software', 'menu management software'],
+    keywords: [
+      'restaurant menu management software',
+      'menu management software',
+    ],
+    operationSlugs: ['menus'],
+    body: 'Misebox connects Menu sections, dishes, prices, publication status, and public presentation to one Kitchen. The open Workspace lets you start one Kitchen and one Menu without signing up.',
+    steps: [
+      'Start a Kitchen and create its first Menu.',
+      'Organise sections, dishes, prices, availability, and presentation.',
+      'Publish the Menu, or choose Premium when the Kitchen needs multiple Menus.',
+    ],
     cta: { label: 'Open kitchen workspace', to: '/workspace/kitchen/menus' },
   },
   {
     slug: 'restaurant-menu-builder',
     title: 'Restaurant menu builder',
-    description: 'Build a menu from dishes, sections, prices, and public presentation settings.',
+    description:
+      'Build and publish one restaurant Menu from sections, dishes, prices, and presentation settings without signing up.',
     icon: 'i-lucide-panels-top-left',
     status: 'live',
-    keywords: ['restaurant menu builder', 'online menu builder for restaurants'],
+    keywords: [
+      'restaurant menu builder',
+      'online menu builder for restaurants',
+    ],
+    operationSlugs: ['menus'],
+    body: 'Use the open Kitchen Workspace as an online restaurant Menu builder. Start with one Kitchen, arrange the Menu you serve, and publish it for guests.',
+    steps: [
+      'Name the Kitchen that owns the Menu.',
+      'Add sections, dishes, prices, and public presentation.',
+      'Publish one Menu for free; choose Premium to create and manage additional Menus.',
+    ],
     cta: { label: 'Create menu', to: '/workspace/kitchen/menus' },
   },
   {
     slug: 'allergen-menu-software',
     title: 'Allergen menu software',
-    description: 'Connect allergen and dietary information to dishes and public menu display.',
+    description:
+      'Connect allergen and dietary information to dishes and public menu display.',
     icon: 'i-lucide-shield-check',
     status: 'planned',
     keywords: ['allergen menu software', 'restaurant allergen menu'],
+    operationSlugs: ['dishes', 'ingredients', 'menus'],
   },
   {
     slug: 'multilingual-restaurant-menu',
     title: 'Multilingual restaurant menu',
-    description: 'Publish restaurant menus in more than one language with translation support.',
+    description:
+      'Publish restaurant menus in more than one language with translation support.',
     icon: 'i-lucide-languages',
     status: 'bridge',
     keywords: ['multilingual restaurant menu', 'restaurant menu translation'],
+    operationSlugs: ['menus'],
     relatedApp: {
       name: 'Sproochli',
       to: 'https://sproochli.web.app',
       external: true,
-      description: 'Sproochli owns translation-ready public pages and language workflows.',
+      description:
+        'Sproochli owns translation-ready public pages and language workflows.',
     },
-    cta: { label: 'Prepare translation', to: '/solutions/multilingual-restaurant-menu' },
+    cta: {
+      label: 'Prepare translation',
+      to: '/solutions/multilingual-restaurant-menu',
+    },
   },
   {
     slug: 'restaurant-ingredient-management',
     title: 'Restaurant ingredient management',
-    description: 'A dedicated ingredient workspace for each kitchen, designed around one reusable ingredient library.',
+    description:
+      'A dedicated ingredient workspace for each kitchen, designed around one reusable ingredient library.',
     icon: 'i-lucide-carrot',
     status: 'coming-soon',
     body: 'Coming soon. The catalogue and add-by-name workflow are in place; final data access and detail linking are still being completed before launch.',
@@ -89,40 +128,51 @@ export const miseboxSolutions = [
       'Enter an ingredient name to reuse an exact shared record or create one when missing.',
       'Keep the kitchen selection separate while the ingredient record stays reusable.',
     ],
-    keywords: ['restaurant ingredient management', 'kitchen ingredient management'],
+    keywords: [
+      'restaurant ingredient management',
+      'kitchen ingredient management',
+    ],
+    operationSlugs: ['ingredients'],
     cta: { label: 'See ingredient operation', to: '/operations/ingredients' },
   },
   {
     slug: 'recipe-management-software',
     title: 'Recipe management software',
-    description: 'Store kitchen recipes with yields, ingredient lines, steps, and dish links.',
+    description:
+      'Store kitchen recipes with yields, ingredient lines, steps, and dish links.',
     icon: 'i-lucide-notebook-tabs',
     status: 'live',
     keywords: ['recipe management software', 'restaurant recipe management'],
+    operationSlugs: ['recipes'],
     cta: { label: 'Open recipes', to: '/workspace/kitchen/recipes' },
   },
   {
     slug: 'kitchen-prep-planner',
     title: 'Kitchen prep planner',
-    description: 'Plan prep work by station, recipe, menu, assignment, and service readiness.',
+    description:
+      'Plan prep work by station, recipe, menu, assignment, and service readiness.',
     icon: 'i-lucide-clipboard-list',
     status: 'live',
     keywords: ['kitchen prep planner', 'restaurant prep planner'],
+    operationSlugs: ['mise'],
     cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
   },
   {
     slug: 'restaurant-prep-list',
     title: 'Restaurant prep list',
-    description: 'Give the team a daily prep list tied to tasks, status, stations, and service.',
+    description:
+      'Give the team a daily prep list tied to tasks, status, stations, and service.',
     icon: 'i-lucide-list-checks',
     status: 'live',
     keywords: ['restaurant prep list', 'kitchen prep list'],
+    operationSlugs: ['mise'],
     cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
   },
   {
     slug: 'kitchen-team-management',
     title: 'Kitchen team management',
-    description: 'Manage kitchen roles, stations, access, and team responsibilities.',
+    description:
+      'Manage kitchen roles, stations, access, and team responsibilities.',
     icon: 'i-lucide-users',
     status: 'planned',
     keywords: ['kitchen team management', 'restaurant team management'],
@@ -131,16 +181,22 @@ export const miseboxSolutions = [
   {
     slug: 'restaurant-supplier-management',
     title: 'Restaurant supplier management',
-    description: 'Connect suppliers, ingredients, products, sourcing, and kitchen needs.',
+    description:
+      'Connect suppliers, ingredients, products, sourcing, and kitchen needs.',
     icon: 'i-lucide-truck',
     status: 'planned',
-    keywords: ['restaurant supplier management', 'restaurant supplier software'],
+    keywords: [
+      'restaurant supplier management',
+      'restaurant supplier software',
+    ],
+    operationSlugs: ['suppliers'],
     cta: { label: 'Open suppliers', to: '/workspace/kitchen/suppliers' },
   },
   {
     slug: 'restaurant-hiring-software',
     title: 'Restaurant hiring software',
-    description: 'Publish hospitality roles and connect kitchens with chefs and professionals.',
+    description:
+      'Publish hospitality roles and connect kitchens with chefs and professionals.',
     icon: 'i-lucide-briefcase-business',
     status: 'live',
     keywords: ['restaurant hiring software', 'hospitality hiring software'],
@@ -149,7 +205,8 @@ export const miseboxSolutions = [
   {
     slug: 'chef-profile-page',
     title: 'Chef profile page',
-    description: 'Create a public chef profile that shows experience, roles, and kitchen fit.',
+    description:
+      'Create a public chef profile that shows experience, roles, and kitchen fit.',
     icon: 'i-lucide-chef-hat',
     status: 'live',
     keywords: ['chef profile page', 'chef portfolio profile'],
@@ -158,7 +215,8 @@ export const miseboxSolutions = [
   {
     slug: 'restaurant-profile-page',
     title: 'Restaurant profile page',
-    description: 'Show a kitchen, menu, location, team identity, and hiring context.',
+    description:
+      'Show a kitchen, menu, location, team identity, and hiring context.',
     icon: 'i-lucide-store',
     status: 'live',
     keywords: ['restaurant profile page', 'kitchen profile page'],
@@ -167,10 +225,19 @@ export const miseboxSolutions = [
   {
     slug: 'restaurant-operations-software',
     title: 'Restaurant operations software',
-    description: 'Run menus, dishes, recipes, prep, team, suppliers, orders, and hiring from one kitchen workspace.',
+    description:
+      'Run menus, dishes, recipes, prep, team, suppliers, orders, and hiring from one kitchen workspace.',
     icon: 'i-lucide-layout-dashboard',
     status: 'planned',
     keywords: ['restaurant operations software', 'kitchen operations software'],
+    operationSlugs: [
+      'menus',
+      'dishes',
+      'recipes',
+      'mise',
+      'orders',
+      'suppliers',
+    ],
     cta: { label: 'Open workspace', to: '/' },
   },
 ] satisfies FireuxMetaSolution[]

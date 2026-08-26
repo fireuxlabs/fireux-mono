@@ -134,7 +134,7 @@ export async function run({ repoRoot }) {
       actorUid: 'admin',
       actorRole: 'admin',
     }),
-    { ok: true, userId: 'admin' }
+    { ok: false, statusCode: 403, message: 'Developer access is required.' }
   )
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
@@ -142,7 +142,7 @@ export async function run({ repoRoot }) {
       actorUid: 'user',
       actorRole: 'user',
     }),
-    { ok: false, statusCode: 403, message: 'App admin access is required.' }
+    { ok: false, statusCode: 403, message: 'Developer access is required.' }
   )
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
@@ -250,10 +250,21 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue'
   )
-  assert.match(subscriptionControl, /isAdmin\.value \|\| isDeveloper\.value/)
   assert.match(subscriptionControl, /action: 'set-self-subscription'/)
   assert.doesNotMatch(subscriptionControl, /userId:/)
   assert.match(subscriptionControl, /const pending = ref\(false\)/)
+  assert.match(subscriptionControl, /@click="handleClick"/)
+  assert.match(subscriptionControl, /if \(!canToggle\.value\)/)
+  assert.match(subscriptionControl, /navigateTo\('\/pricing'\)/)
+  assert.match(subscriptionControl, /useDeveloperAccess/)
+  assert.match(subscriptionControl, /const \{ appAccess \} = useUser\(\)/)
+  assert.match(
+    subscriptionControl,
+    /isConfiguredDeveloper\.value \|\| appAccess\.value\.role === 'dev'/
+  )
+  assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
+  assert.doesNotMatch(subscriptionControl, /<select/)
+  assert.doesNotMatch(subscriptionControl, /<UButtonGroup/)
 
   const dashboardNavbar = read(
     repoRoot,
@@ -266,6 +277,7 @@ export async function run({ repoRoot }) {
   assert.match(dashboardNavbar, /<UserSubscriptionControl/)
   assert.match(workspaceNavbar, /<LayoutsDashboardNavbar/)
   assert.match(workspaceNavbar, /<UserSubscriptionControl/)
+  assert.match(workspaceNavbar, /:show-subscription="false"/)
 
   const sidebarFooter = read(
     repoRoot,
@@ -283,6 +295,45 @@ export async function run({ repoRoot }) {
   assert.match(dashboardLayout, /class="workspace-shell"/)
   assert.match(dashboardLayout, /class="workspace-shell__sidebar"/)
   assert.match(dashboardLayout, /<main class="workspace-shell__canvas">/)
+  assert.match(dashboardLayout, /<LayoutsSharedRoleBadge/)
+
+  const landingLayout = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/layouts/landing.vue'
+  )
+  assert.match(landingLayout, /<LayoutsSharedRoleBadge/)
+
+  const workspaceLayout = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/layouts/workspace.vue'
+  )
+  const roleBadge = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/layouts/shared/RoleBadge.vue'
+  )
+  const laTapLayout = read(
+    repoRoot,
+    'projects/misebox/la-tap-berne/app/layouts/latap-default.vue'
+  )
+  assert.match(workspaceLayout, /<LayoutsSharedRoleBadge/)
+  assert.match(laTapLayout, /<LayoutsSharedRoleBadge/)
+  assert.match(roleBadge, /useDeveloperAccess/)
+  assert.match(
+    roleBadge,
+    /isDeveloper\.value \|\| appAccess\.value\.role === 'dev'/
+  )
+  assert.match(roleBadge, /appAccessOutcome\.value !== 'ready'/)
+  assert.match(roleBadge, /label: 'Developer'/)
+
+  const subscriptionMutationClient = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/utils/appMembershipMutation.ts'
+  )
+  assert.match(
+    subscriptionMutationClient,
+    /input\.action === 'set-self-subscription'/
+  )
+  assert.match(subscriptionMutationClient, /subscription: result\.subscription/)
 
   const activeUserFetch = read(
     repoRoot,
