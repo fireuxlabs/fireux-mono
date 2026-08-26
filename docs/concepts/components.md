@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-08-24
+Updated: 2026-08-26
 Ref: d0caff27b
 Role: map, not canon
 
@@ -347,10 +347,13 @@ the root Workspace folder.
   duplication, not abstraction.
 - Shared molecules exist for repeated multi-element contracts that Nuxt UI
   does not own by itself. `MoleculesDisclosurePanel` owns the standard
-  collapsible trigger and open-state chevron; `MoleculesCreateCard` owns the
-  recurring create-workflow card header and body rhythm; and
-  `MoleculesActionSurface` owns the linked, action-button, or static root of an
-  entity card. These components do not own domain copy or domain card content.
+  collapsible trigger and open-state chevron, and `MoleculesActionSurface`
+  owns the linked, action-button, or static root of an entity card. Ordinary
+  create cards use `UCard` directly. Editable field molecules own their
+  display, edit, save, cancel, and error lifecycle; their `value` and `update`
+  props are transport-neutral and therefore use the `FormsEditable` vocabulary rather
+  than naming Firestore. These components do not own domain copy or domain
+  card content.
 - Disabled interactive cards must use the action-surface contract. Styling a
   `NuxtLink` or clickable `div` with reduced opacity does not disable
   navigation, provide button semantics, or remove it from keyboard operation.

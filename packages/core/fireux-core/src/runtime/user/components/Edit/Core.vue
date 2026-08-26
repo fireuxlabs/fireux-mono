@@ -7,79 +7,91 @@
     <ClientOnly>
       <UPageCard v-if="user" variant="subtle">
         <div class="space-y-6 sm:space-y-8">
-          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+          <div
+            class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
+          >
             <p class="text-sm font-medium text-highlighted">Avatar</p>
-            <MoleculesFormsFirestoreImagePicker
+            <MoleculesFormsEditableImagePicker
               :src="proxiedAvatarUrl"
               :alt="user.display_name || user.handle || 'User'"
               :initials="avatarInitials"
               button-label="Change avatar"
               :loading="avatarUploading"
-              :update-function="handleAvatarUpload"
+              :update="handleAvatarUpload"
             />
           </div>
 
           <USeparator />
 
           <div class="grid gap-6 sm:grid-cols-2">
-            <MoleculesFormsFirestoreSimpleField
+            <MoleculesFormsEditableSimpleField
               label="Display name"
-              :firebase-value="user.display_name"
+              :value="user.display_name"
               placeholder="Display name"
               :maxlength="60"
-              :update-function="handleUpdateDisplayName"
+              :update="handleUpdateDisplayName"
               :validation-function="DisplayName.validate"
               :formatting-function="DisplayName.format"
             />
 
             <div>
-              <MoleculesFormsFirestoreSimpleField
+              <MoleculesFormsEditableSimpleField
                 label="Handle"
-                :firebase-value="user.handle"
+                :value="user.handle"
                 placeholder="your-handle"
-                :update-function="handleUpdateHandle"
+                :update="handleUpdateHandle"
                 :validation-function="Handle.validate"
                 :formatting-function="Handle.format"
               />
-              <p class="mt-2 font-mono text-xs text-dimmed">{{ profileAddress }}</p>
+              <p class="mt-2 font-mono text-xs text-dimmed">
+                {{ profileAddress }}
+              </p>
             </div>
           </div>
 
           <USeparator />
 
-          <MoleculesFormsFirestoreSimpleField
+          <MoleculesFormsEditableSimpleField
             label="Bio"
-            :firebase-value="user.bio"
+            :value="user.bio"
             placeholder="Bio"
             type="textarea"
             :rows="5"
             :maxlength="280"
-            :update-function="handleUpdateBio"
+            :update="handleUpdateBio"
             :validation-function="Bio.validate"
             :formatting-function="Bio.format"
           />
 
           <USeparator />
 
-          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
-            <p class="text-sm font-medium text-highlighted">
-              Ping: {{ user.ping }}
-            </p>
-            <div class="flex flex-wrap gap-2 sm:justify-end">
-              <UButton
-                v-for="name in pingNames"
-                :key="name"
-                :label="name"
-                :color="user.ping === name ? 'primary' : 'neutral'"
-                :variant="user.ping === name ? 'solid' : 'soft'"
-                @click="handleUpdatePing(name)"
-              />
+          <div
+            v-if="appUser"
+            class="flex flex-col gap-4 rounded-lg bg-elevated/50 p-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <div class="flex items-center gap-2">
+                <p class="font-medium text-highlighted">Your plan</p>
+                <UBadge color="neutral" variant="soft" class="capitalize">
+                  {{ appUser.subscription }}
+                </UBadge>
+              </div>
+              <p class="mt-1 text-sm text-muted">
+                Compare Free, Premium and Business.
+              </p>
             </div>
+            <UButton
+              label="View plans"
+              to="/pricing"
+              trailing-icon="i-lucide-arrow-right"
+            />
           </div>
 
-          <USeparator />
+          <USeparator v-if="appUser" />
 
-          <div class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center">
+          <div
+            class="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
+          >
             <p class="text-sm font-medium text-highlighted">User ID</p>
             <UInput :model-value="user.id" disabled class="w-full font-mono" />
           </div>
@@ -96,7 +108,7 @@ import { computed, ref } from 'vue'
 import { useAvatarProxy } from '../../../composables/media/useAvatarProxy'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useUserFormattingAndValidation } from '../../composables/firestore/utils/validation/useUserFormatting'
-import { USER_PINGS, type User } from '../../models/user.model.ts'
+import type { User } from '../../models/user.model'
 
 import type { UserRefs } from '../../composables/firestore/fetch/useUserFetch'
 import { useUserUpdate } from '../../composables/firestore/mutations/useUserUpdate'
@@ -104,13 +116,15 @@ import { useUserUpdate } from '../../composables/firestore/mutations/useUserUpda
 const props = defineProps<{ user: User | null; userRefs: UserRefs }>()
 
 const toast = useToastify()
-const userUpdate = useUserUpdate(props.userRefs, 'UserEditCore')
+const userUpdate = useUserUpdate(props.userRefs)
 
 const user = computed(() => props.user)
+const appUser = computed(() => props.userRefs.appUser.value ?? null)
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
 const avatarInitials = computed(() => {
-  const name = user.value?.display_name || user.value?.handle || user.value?.id || 'U'
+  const name =
+    user.value?.display_name || user.value?.handle || user.value?.id || 'U'
   const trimmed = name.trim()
   if (!trimmed) return 'U'
   return trimmed
@@ -121,7 +135,9 @@ const avatarInitials = computed(() => {
     .join('')
 })
 const profileAddress = computed(() => {
-  const handle = String(user.value?.handle || '').trim().replace(/^@+/, '')
+  const handle = String(user.value?.handle || '')
+    .trim()
+    .replace(/^@+/, '')
   return handle
     ? `/users/${handle}`
     : 'Choose a handle to create a profile address people can share.'
@@ -131,7 +147,7 @@ const { DisplayName, Bio, Handle } = useUserFormattingAndValidation()
 
 type Msg = { success: string; failure: string }
 const withToast =
-  <T>(op: (v: T) => Promise<unknown>, m: Msg) =>
+  <T,>(op: (v: T) => Promise<unknown>, m: Msg) =>
   async (value: T) => {
     try {
       await op(value)
@@ -156,12 +172,6 @@ const handleUpdateBio = withToast(userUpdate.bio, {
 const handleUpdateHandle = withToast(userUpdate.handle, {
   success: 'Handle updated',
   failure: 'Failed to update handle',
-})
-
-const pingNames = USER_PINGS
-const handleUpdatePing = withToast(userUpdate.ping, {
-  success: 'Ping updated',
-  failure: 'Failed to update ping',
 })
 
 const avatarUploading = ref(false)

@@ -13,26 +13,26 @@
     </template>
 
     <div class="grid gap-5">
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         :label="handoffLabel"
         type="textarea"
         :rows="2"
         :maxlength="240"
-        :firebase-value="handoffInstructions"
+        :value="handoffInstructions"
         :placeholder="handoffPlaceholder"
         :disabled="disabled"
         disabled-message="This menu is read-only."
-        :update-function="updateHandoffInstructions"
+        :update="updateHandoffInstructions"
       />
 
-      <MoleculesFormsFirestoreChoiceGroup
+      <MoleculesFormsEditableChoiceGroup
         label="Required customer details"
         empty-label="All contact details are optional"
-        :firebase-value="requiredFields"
+        :value="requiredFields"
         :options="contactOptions"
         :disabled="disabled"
         disabled-message="This menu is read-only."
-        :update-function="updateRequiredFields"
+        :update="updateRequiredFields"
       />
     </div>
   </UCard>

@@ -64,16 +64,16 @@ import type { PropType } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
-  firebaseValue: { type: Array as PropType<string[]>, default: () => [] },
+  value: { type: Array as PropType<string[]>, default: () => [] },
   itemPlaceholder: { type: String, default: 'Item' },
   newItemPlaceholder: { type: String, default: 'Add new item' },
-  updateFunction: { type: Function, default: () => {} },
+  update: { type: Function, default: () => {} },
   maxItems: { type: Number, default: undefined },
   maxLength: { type: Number, default: undefined },
 })
 
 const isEditing = ref(false)
-const localValue = ref<string[]>([...props.firebaseValue])
+const localValue = ref<string[]>([...props.value])
 const newItem = ref('')
 const errorMessage = ref('')
 
@@ -90,7 +90,7 @@ const canAdd = computed(
 )
 
 watch(
-  () => props.firebaseValue,
+  () => props.value,
   (newVal: string[]) => {
     localValue.value = [...newVal]
   },
@@ -99,12 +99,12 @@ watch(
 
 function startEditing() {
   errorMessage.value = ''
-  localValue.value = [...props.firebaseValue]
+  localValue.value = [...props.value]
   isEditing.value = true
 }
 
 function cancelEditing() {
-  localValue.value = [...props.firebaseValue]
+  localValue.value = [...props.value]
   isEditing.value = false
 }
 
@@ -117,7 +117,7 @@ async function checkButtonClicked() {
   }
 
   try {
-    await props.updateFunction([...localValue.value])
+    await props.update([...localValue.value])
     console.log('[ArrayOfStrings] Updated:', localValue.value)
   } catch (error) {
     console.error('[ArrayOfStrings] Update error:', error)
@@ -188,7 +188,7 @@ function validateValues(values: unknown[]): string | null {
 async function deleteButtonClicked() {
   localValue.value = []
   try {
-    await props.updateFunction([])
+    await props.update([])
     console.log('[ArrayOfStrings] Cleared:', localValue.value)
   } catch (error) {
     console.error('[ArrayOfStrings] Delete error:', error)

@@ -12,13 +12,13 @@
     <form class="space-y-4" @submit.prevent="addDish">
       <UFormField label="Image">
         <div class="flex flex-col items-start gap-2">
-          <MoleculesFormsFirestoreImagePicker
+          <MoleculesFormsEditableImagePicker
             :src="imagePreviewUrl"
             :alt="name.trim() || `New ${catalogue.singular}`"
             :initials="imageInitials"
             :button-label="`Choose ${catalogue.singular} image`"
             :disabled="saving || !canCreateDish"
-            :update-function="stageImage"
+            :update="stageImage"
           />
           <p class="text-xs text-dimmed">
             Use a transparent-background source. It will be stored as a 1200 ×

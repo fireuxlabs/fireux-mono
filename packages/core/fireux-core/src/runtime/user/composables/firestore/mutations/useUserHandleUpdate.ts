@@ -1,5 +1,3 @@
-// User handle writes use the trusted User endpoint instead of client writes.
-
 import { refreshNuxtData } from '#imports'
 import type {
   UserHandleInput,
@@ -24,22 +22,22 @@ function responseMessage(payload: unknown, fallback: string) {
 export function useUserHandleUpdate() {
   const updateHandle = async (
     uid: string,
-    desiredHandle: string,
+    handle: string,
     create?: UserHandleInput['create']
   ): Promise<UserHandleResult> => {
-    const normalizedUid = String(uid || '').trim()
-    if (!normalizedUid) throw new Error('Missing uid')
+    const userId = String(uid || '').trim()
+    if (!userId) throw new Error('User is not ready.')
 
-    const validation = validateUserHandleForPublicRoute(desiredHandle)
+    const validation = validateUserHandleForPublicRoute(handle)
     if (!validation.isValid)
       throw new Error(validation.message || 'Invalid handle')
 
-    const user = await useRequireUser()
-    if (user.uid !== normalizedUid) {
-      throw new Error('A handle can only be claimed for the signed-in user.')
+    const signedInUser = await useRequireUser()
+    if (signedInUser.uid !== userId) {
+      throw new Error('You can only update your own handle.')
     }
 
-    const token = await user.getIdToken()
+    const token = await signedInUser.getIdToken()
     const body: UserHandleInput = {
       handle: validation.handle,
       ...(create ? { create } : {}),
@@ -59,7 +57,7 @@ export function useUserHandleUpdate() {
       )
     }
 
-    await refreshNuxtData(userIdentitySummaryAsyncDataKey(normalizedUid))
+    await refreshNuxtData(userIdentitySummaryAsyncDataKey(userId))
 
     return payload as UserHandleResult
   }

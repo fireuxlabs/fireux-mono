@@ -154,7 +154,7 @@ const contractSolutions = [
           </div>
         </MoleculesDisclosurePanel>
 
-        <MoleculesCreateCard>
+        <UCard :ui="{ body: 'fx-card-body-stack' }">
           <template #header>
             <div class="workspace-card-header">
               <h3 class="workspace-card-header__title">Create project</h3>
@@ -168,7 +168,7 @@ const contractSolutions = [
             <UInput model-value="Design system specimen" />
           </UFormField>
           <UButton label="Create project" />
-        </MoleculesCreateCard>
+        </UCard>
       </div>
     </section>
 
@@ -295,8 +295,9 @@ const contractSolutions = [
       <div>
         <h2 class="fx-type-section-title">Cross-tree shared patterns</h2>
         <p class="fx-type-caption">
-          These contracts recur across public components, entity cards, workspace
-          surfaces, and route pages without becoming generic business shells.
+          These contracts recur across public components, entity cards,
+          workspace surfaces, and route pages without becoming generic business
+          shells.
         </p>
       </div>
 

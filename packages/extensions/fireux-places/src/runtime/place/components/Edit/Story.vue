@@ -9,22 +9,22 @@
     </template>
 
     <div class="grid gap-5">
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Brand tagline"
-        :firebase-value="place?.brand_tagline"
+        :value="place?.brand_tagline"
         placeholder="Warm cocktails, tapas, and mountain hospitality"
         :maxlength="140"
-        :update-function="handleBrandTagline"
+        :update="handleBrandTagline"
       />
 
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="About"
         type="textarea"
         :rows="5"
-        :firebase-value="place?.about"
+        :value="place?.about"
         placeholder="A short public description of the venue."
         :maxlength="900"
-        :update-function="handleAbout"
+        :update="handleAbout"
       />
 
       <section class="rounded-xl border border-default p-4">

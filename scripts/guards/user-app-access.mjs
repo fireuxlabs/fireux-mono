@@ -134,7 +134,7 @@ export async function run({ repoRoot }) {
       actorUid: 'admin',
       actorRole: 'admin',
     }),
-    { ok: false, statusCode: 403, message: 'Developer access is required.' }
+    { ok: true, userId: 'admin' }
   )
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
@@ -142,7 +142,11 @@ export async function run({ repoRoot }) {
       actorUid: 'user',
       actorRole: 'user',
     }),
-    { ok: false, statusCode: 403, message: 'Developer access is required.' }
+    {
+      ok: false,
+      statusCode: 403,
+      message: 'Developer or admin access is required.',
+    }
   )
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
@@ -277,11 +281,12 @@ export async function run({ repoRoot }) {
   assert.match(subscriptionControl, /if \(!canToggle\.value\)/)
   assert.match(subscriptionControl, /navigateTo\('\/pricing'\)/)
   assert.match(subscriptionControl, /useDeveloperAccess/)
-  assert.match(subscriptionControl, /const \{ appAccess \} = useUser\(\)/)
   assert.match(
     subscriptionControl,
-    /isConfiguredDeveloper\.value \|\| appAccess\.value\.role === 'dev'/
+    /const \{ appAccess, appAccessOutcome \} = useUser\(\)/
   )
+  assert.match(subscriptionControl, /if \(outcome !== 'ready'\) return/)
+  assert.match(subscriptionControl, /appAccess\.value\.role === 'admin'/)
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)
   assert.doesNotMatch(subscriptionControl, /<UButtonGroup/)
@@ -351,9 +356,9 @@ export async function run({ repoRoot }) {
   )
   assert.match(
     subscriptionMutationClient,
-    /input\.action === 'set-self-subscription'/
+    /void refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/
   )
-  assert.match(subscriptionMutationClient, /subscription: result\.subscription/)
+  assert.doesNotMatch(subscriptionMutationClient, /useNuxtData/)
 
   const activeUserFetch = read(
     repoRoot,

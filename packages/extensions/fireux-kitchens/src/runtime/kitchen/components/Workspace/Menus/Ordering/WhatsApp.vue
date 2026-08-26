@@ -12,32 +12,32 @@
     </template>
 
     <div class="grid gap-5">
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Recipient WhatsApp number"
         type="tel"
         :maxlength="24"
-        :firebase-value="recipientPhone"
+        :value="recipientPhone"
         placeholder="+41 79 123 45 67"
         :disabled="disabled"
         disabled-message="This menu is read-only."
         :validation-function="validateRecipientPhone"
-        :update-function="updateRecipientPhone"
+        :update="updateRecipientPhone"
       />
 
-      <MoleculesFormsFirestoreCheckbox
+      <MoleculesFormsEditableCheckbox
         label="WhatsApp Pre-order alerts"
         display-label="Current alert state"
         checkbox-label="Send new Pre-orders to this number"
         true-label="Alerts enabled"
         false-label="Alerts disabled"
-        :firebase-value="enabled"
+        :value="enabled"
         :disabled="disabled || !recipientPhone"
         :disabled-message="
           disabled
             ? 'This menu is read-only.'
             : 'Add a valid international number first.'
         "
-        :update-function="updateEnabled"
+        :update="updateEnabled"
       />
 
       <UAlert

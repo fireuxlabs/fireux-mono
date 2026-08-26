@@ -74,12 +74,12 @@
 
       <div class="space-y-4">
         <div class="flex justify-center">
-          <MoleculesFormsFirestoreImagePicker
+          <MoleculesFormsEditableImagePicker
             :src="imageUrl"
             :alt="place?.name || 'Place'"
             :initials="avatarInitials"
             avatar-class="!rounded-xl"
-            :update-function="canEditImage ? handleAvatarUpload : undefined"
+            :update="canEditImage ? handleAvatarUpload : undefined"
           />
         </div>
 

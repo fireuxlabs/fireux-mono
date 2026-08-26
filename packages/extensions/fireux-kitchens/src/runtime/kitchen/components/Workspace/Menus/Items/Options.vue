@@ -17,25 +17,25 @@
         :key="`${row.id}-${optionIndex}`"
         class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Option label"
-          :firebase-value="option.label"
+          :value="option.label"
           placeholder="Option label"
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateOptionLabel"
-          :update-function="(value) => saveOptionLabel(optionIndex, value)"
+          :update="(value) => saveOptionLabel(optionIndex, value)"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Option price"
           type="number"
-          :firebase-value="option.price"
+          :value="option.price"
           placeholder="0"
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateVariantPrice"
-          :update-function="(value) => saveOptionPrice(optionIndex, value)"
+          :update="(value) => saveOptionPrice(optionIndex, value)"
         />
 
         <div class="flex items-end">
@@ -101,25 +101,25 @@
         :key="`${row.id}-add-on-${addOnIndex}`"
         class="grid gap-3 rounded-md border border-default p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
       >
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Add-on label"
-          :firebase-value="addOn.label"
+          :value="addOn.label"
           placeholder="Add-on label"
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateOptionLabel"
-          :update-function="(value) => saveAddOnLabel(addOnIndex, value)"
+          :update="(value) => saveAddOnLabel(addOnIndex, value)"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Add-on price"
           type="number"
-          :firebase-value="addOn.price"
+          :value="addOn.price"
           placeholder="0"
           :disabled="!canWrite"
           disabled-message="This menu is read-only."
           :validation-function="validateAddOnPrice"
-          :update-function="(value) => saveAddOnPrice(addOnIndex, value)"
+          :update="(value) => saveAddOnPrice(addOnIndex, value)"
         />
 
         <div class="flex items-end">

@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/Firestore/SimpleField.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/editable/SimpleField.vue -->
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize the single display-field type recipe. -->
 <template>
   <div class="flex w-full flex-col">
@@ -56,18 +56,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-    useEditableStringField,
-    type FormattingFn,
-    type UpdateFn,
-    type ValidationFn,
-} from '../../../../composables/forms/useEditableStringField';
+  useEditableStringField,
+  type FormattingFn,
+  type UpdateFn,
+  type ValidationFn,
+} from '../../../../composables/forms/useEditableStringField'
 
 const props = withDefaults(
   defineProps<{
     label?: string
-    firebaseValue?: string | number | null
+    value?: string | number | null
     placeholder?: string
-    updateFunction: UpdateFn
+    update: UpdateFn
     type?: string
     maxlength?: number
     validationFunction?: ValidationFn
@@ -79,7 +79,7 @@ const props = withDefaults(
   }>(),
   {
     label: '',
-    firebaseValue: '',
+    value: '',
     placeholder: '',
     type: 'text',
     maxlength: 500,
@@ -113,7 +113,7 @@ const {
   saveOnEnter,
 } = useEditableStringField({
   label: () => props.label,
-  firebaseValue: () => props.firebaseValue,
+  value: () => props.value,
   placeholder: () => props.placeholder,
   type: () => props.type,
   maxlength: () => props.maxlength,
@@ -123,7 +123,7 @@ const {
   disabledMessage: () => props.disabledMessage,
   validationFunction: () => props.validationFunction,
   formattingFunction: () => props.formattingFunction,
-  updateFunction: props.updateFunction,
+  update: props.update,
   emitUpdated: (value: string) => emit('updated', value),
 })
 

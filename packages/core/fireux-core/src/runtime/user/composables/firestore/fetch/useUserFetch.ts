@@ -28,14 +28,15 @@ export type UserFetchOutcome =
   | 'error'
 
 function normalizeCoreUser(raw: User, fallbackId: string): User {
-  return normalizeUser(raw.id || fallbackId, raw) ?? {
-    id: fallbackId,
-    display_name: '',
-    bio: '',
-    avatar: '',
-    handle: '',
-    ping: 'Mark',
-  }
+  return (
+    normalizeUser(raw.id || fallbackId, raw) ?? {
+      id: fallbackId,
+      display_name: '',
+      bio: '',
+      avatar: '',
+      handle: '',
+    }
+  )
 }
 
 function normalizeUserAccount(

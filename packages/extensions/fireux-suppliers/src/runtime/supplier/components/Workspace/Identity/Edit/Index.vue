@@ -29,38 +29,38 @@
       </template>
 
       <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Organization name"
-          :firebase-value="name"
+          :value="name"
           placeholder="Supplier organization name"
           :maxlength="120"
-          :update-function="handleName"
+          :update="handleName"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Tagline"
-          :firebase-value="tagline"
+          :value="tagline"
           placeholder="Short supplier tagline"
           :maxlength="120"
-          :update-function="handleTagline"
+          :update="handleTagline"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Headline"
-          :firebase-value="headline"
+          :value="headline"
           placeholder="Supplier headline"
           :maxlength="160"
-          :update-function="handleHeadline"
+          :update="handleHeadline"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Summary"
           type="textarea"
           :rows="3"
-          :firebase-value="summary"
+          :value="summary"
           placeholder="Short supplier summary"
           :maxlength="300"
-          :update-function="handleSummary"
+          :update="handleSummary"
         />
       </div>
     </UCard>

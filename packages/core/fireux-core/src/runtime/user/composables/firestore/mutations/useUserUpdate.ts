@@ -1,95 +1,73 @@
-// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: keep private client updates within account preferences.
-// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer the private Firestore writer until an owner action runs in the browser.
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
-import {
-  type UserAccountUpdateInput,
-  UserAccountStorage,
-} from '../../../models/user-account.model.ts'
-import { useFirestoreUpdate } from '../../../../composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
+import { useImageStorage } from '../../../../composables/fireux/firebase/useImageStorage'
+import type { User } from '../../../models/user.model'
 import type { UserRefs } from '../fetch/useUserFetch'
-import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate'
-import { useAppUserUpdate } from '../utils/update/useAppUserUpdate'
-import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
+import { useUserHandleUpdate } from './useUserHandleUpdate'
 
-const loggedInitKeys = new Set<string>()
+function avatarExtension(source: File | Blob): string {
+  const name =
+    typeof File !== 'undefined' && source instanceof File ? source.name : ''
+  const fromName = name.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase()
+  if (fromName === 'jpg' || fromName === 'jpeg') return 'jpg'
+  if (fromName === 'png' || fromName === 'webp' || fromName === 'gif') {
+    return fromName
+  }
 
-export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
-  const core = useCoreUserUpdate(user)
-  const app = useAppUserUpdate(user)
-  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
-  const cfg = useFireUXConfig()
+  const mime = source.type.toLowerCase()
+  if (mime === 'image/jpeg') return 'jpg'
+  if (mime === 'image/png') return 'png'
+  if (mime === 'image/webp') return 'webp'
+  if (mime === 'image/gif') return 'gif'
+  return 'jpg'
+}
+
+export function useUserUpdate({ user }: UserRefs) {
+  const { updateHandle } = useUserHandleUpdate()
+
+  const getUserId = () => {
+    if (!user.value?.id) throw new Error('User is not ready.')
+    return user.value.id
+  }
 
   const update = async (
-    data: UserAccountUpdateInput,
-    options: { private: true }
+    change: Partial<Pick<User, 'display_name' | 'bio' | 'avatar'>>
   ) => {
-    if (options.private !== true) {
-      throw new Error(
-        '[useUserUpdate] Private updates require { private: true }.'
-      )
+    const signedInUser = await useRequireUser()
+    if (signedInUser.uid !== getUserId()) {
+      throw new Error('You can only update your own profile.')
     }
-
-    const uid = user.coreUser?.value?.id ?? user.user?.value?.id
-    if (!uid) throw new Error('[useUserUpdate] Missing user id')
-    if (!user.privateUser?.value) {
-      throw new Error('Private account record is not available for this user.')
-    }
-
-    const keys = Object.keys(data)
-    if (keys.some((key) => key !== 'preferences')) {
-      throw new Error(
-        '[useUserUpdate] Email, terms, and account stamps are server-owned.'
-      )
-    }
-
-    const identityUpdate = useFirestoreUpdate({
-      databaseId: identityDatabaseId,
+    const token = await signedInUser.getIdToken()
+    await $fetch('/api/internal/user/profile', {
+      method: 'PATCH',
+      headers: { authorization: `Bearer ${token}` },
+      body: change,
     })
-    await identityUpdate.updateDocument(
-      `${'users'}/${uid}/${UserAccountStorage.collection}`,
-      UserAccountStorage.document,
-      data
-    )
   }
 
-  // Canon: both docs use the SAME uid as their document id
-  const coreUid = user.coreUser?.value?.id ?? user.user?.value?.id ?? null
-
-  // NOTE: appUser.id is ALSO uid (NOT appId)
-  const appUserUid = user.appUser?.value?.id ?? null
-
-  const activeAppId = cfg.appId
-
-  if (cfg.devMode) {
-    if (coreUid && appUserUid && coreUid !== appUserUid) {
-      throw new Error(
-        `[useUserUpdate] core uid (${coreUid}) != appUser uid (${appUserUid}); source=${sourceLabel}`
-      )
-    }
+  const name = async (displayName: string) => {
+    await update({ display_name: displayName })
   }
 
-  // During initial boot it is normal for user/app context to be unavailable.
-  // Only log once when fully initialized, and only in dev.
-  if (cfg.devMode && coreUid && activeAppId) {
-    const key = `${sourceLabel}:${coreUid}:${activeAppId}`
-    if (!loggedInitKeys.has(key)) {
-      loggedInitKeys.add(key)
-      console.info('[useUserUpdate] initialized', {
-        uid: coreUid,
-        appId: activeAppId,
-        source: sourceLabel,
-      })
-    }
+  const bio = async (bio: string) => {
+    await update({ bio })
+  }
+
+  const avatar = async (source: File | Blob) => {
+    const path = `users/${getUserId()}/avatar/${Date.now()}.${avatarExtension(source)}`
+    const { uploadImage } = useImageStorage()
+    const url = await uploadImage(path, source)
+    await update({ avatar: url })
+    return url
+  }
+
+  const handle = async (handle: string) => {
+    await updateHandle(getUserId(), handle)
   }
 
   return {
-    app,
-    update,
-    name: core.name,
-    bio: core.bio,
-    avatar: core.avatar,
-    avatarUrl: core.avatarUrl,
-    handle: core.handle,
-    ping: core.ping,
+    name,
+    bio,
+    avatar,
+    handle,
   }
 }

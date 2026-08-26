@@ -3,12 +3,12 @@
     <div v-if="supplier" class="space-y-6">
       <UCard>
         <div class="space-y-4">
-          <MoleculesFormsFirestoreArrayOfStrings
+          <MoleculesFormsEditableArrayOfStrings
             label="Delivery Areas"
-            :firebase-value="deliveryAreas"
+            :value="deliveryAreas"
             item-placeholder="Delivery area"
             new-item-placeholder="Add delivery area"
-            :update-function="handleDeliveryAreas"
+            :update="handleDeliveryAreas"
           />
         </div>
       </UCard>

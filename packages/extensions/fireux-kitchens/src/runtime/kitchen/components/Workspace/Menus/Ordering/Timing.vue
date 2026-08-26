@@ -21,76 +21,76 @@
 
     <div class="grid gap-6">
       <div class="grid gap-4 md:grid-cols-2">
-        <MoleculesFormsFirestoreCheckbox
+        <MoleculesFormsEditableCheckbox
           v-if="allowAsap"
           :label="`Immediate ${surfaceLabel.toLowerCase()}`"
           :display-label="`ASAP ${surfaceLabel.toLowerCase()}`"
           :checkbox-label="`Allow ‘As soon as possible’ while ${surfaceLabel} is open`"
           true-label="Available"
           false-label="Scheduled only"
-          :firebase-value="asapEnabled"
+          :value="asapEnabled"
           :disabled="disabled"
           disabled-message="This menu is read-only."
-          :update-function="updateAsapEnabled"
+          :update="updateAsapEnabled"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           :label="noticeLabel"
           type="number"
-          :firebase-value="noticeMinutes"
+          :value="noticeMinutes"
           placeholder="45"
           :maxlength="5"
           :disabled="disabled"
           disabled-message="This menu is read-only."
           :validation-function="validateNoticeMinutes"
-          :update-function="updateNoticeMinutes"
+          :update="updateNoticeMinutes"
         />
 
-        <MoleculesFormsFirestoreSelect
+        <MoleculesFormsEditableSelect
           :label="`${timeLabel} interval`"
-          :firebase-value="slotIntervalMinutes"
+          :value="slotIntervalMinutes"
           :options="slotIntervalOptions"
           :disabled="disabled"
           disabled-message="This menu is read-only."
-          :update-function="updateSlotInterval"
+          :update="updateSlotInterval"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Scheduling horizon (days)"
           type="number"
-          :firebase-value="scheduleHorizonDays"
+          :value="scheduleHorizonDays"
           placeholder="7"
           :maxlength="2"
           :disabled="disabled"
           disabled-message="This menu is read-only."
           :validation-function="validateScheduleHorizon"
-          :update-function="updateScheduleHorizon"
+          :update="updateScheduleHorizon"
         />
       </div>
 
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Customer message"
         type="textarea"
         :rows="2"
         :maxlength="240"
-        :firebase-value="message"
+        :value="message"
         :placeholder="customerMessagePlaceholder"
         :disabled="disabled"
         disabled-message="This menu is read-only."
-        :update-function="updateMessage"
+        :update="updateMessage"
       />
 
       <div class="grid gap-4 rounded-lg border border-default p-4">
-        <MoleculesFormsFirestoreCheckbox
+        <MoleculesFormsEditableCheckbox
           :label="`${surfaceLabel} service hours`"
           display-label="Hours source"
           checkbox-label="Use Menu service hours"
           true-label="Menu hours"
           false-label="Custom hours"
-          :firebase-value="inheritMenuHours"
+          :value="inheritMenuHours"
           :disabled="disabled"
           disabled-message="This menu is read-only."
-          :update-function="updateHoursInheritance"
+          :update="updateHoursInheritance"
         />
 
         <UAlert
@@ -110,17 +110,17 @@
           "
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           v-else
           :label="`Custom ${surfaceLabel} hours`"
           type="textarea"
           :rows="7"
-          :firebase-value="customHoursText"
+          :value="customHoursText"
           placeholder="Tuesday - Saturday 08:00 - 13:00"
           :disabled="disabled"
           disabled-message="This menu is read-only."
           :validation-function="validateCustomHours"
-          :update-function="updateCustomHours"
+          :update="updateCustomHours"
         />
       </div>
     </div>

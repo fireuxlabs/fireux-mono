@@ -10,7 +10,7 @@
       <MoleculesFormsTop
         :label="''"
         :is-editing="isEditing"
-        :has-data="!!props.firebaseValue"
+        :has-data="!!props.value"
         :error-message="errorMessage"
         @start-editing="startEditing"
         @check="saveChanges"
@@ -62,9 +62,9 @@ import { ref, computed, watchEffect } from 'vue'
 
 const props = defineProps({
   label: { type: String, default: '' },
-  firebaseValue: { type: String, default: '' },
+  value: { type: String, default: '' },
   placeholder: { type: String, default: '' },
-  updateFunction: { type: Function, required: true },
+  update: { type: Function, required: true },
   deleteFunction: { type: Function, default: () => {} },
   type: { type: String, default: 'text' }, // 'text', 'textarea', 'phone', 'email', etc.
   rows: { type: Number, default: 4 },
@@ -94,7 +94,7 @@ const inputType = computed(() => {
 
 // Watch for prop changes to update local value
 watchEffect(() => {
-  localValue.value = props.firebaseValue || ''
+  localValue.value = props.value || ''
 })
 
 // Computed display value
@@ -133,14 +133,14 @@ const startEditing = () => {
 }
 
 const cancelEditing = () => {
-  localValue.value = props.firebaseValue || ''
+  localValue.value = props.value || ''
   isEditing.value = false
   errorMessage.value = ''
 }
 
 const deleteValue = async () => {
   try {
-    await props.updateFunction('')
+    await props.update('')
     localValue.value = ''
     errorMessage.value = ''
   } catch (error) {
@@ -168,7 +168,7 @@ const saveChanges = async () => {
       ? props.formattingFunction(trimmedValue)
       : trimmedValue
 
-    await props.updateFunction(valueToSave)
+    await props.update(valueToSave)
     isEditing.value = false
     errorMessage.value = ''
   } catch (error) {

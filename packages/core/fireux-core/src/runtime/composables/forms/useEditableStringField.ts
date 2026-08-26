@@ -21,7 +21,7 @@ export type UpdateFn = (value: string) => unknown | Promise<unknown>
 
 type Options = {
   label?: MaybeRefOrGetter<string>
-  firebaseValue?: MaybeRefOrGetter<string | number | null | undefined>
+  value?: MaybeRefOrGetter<string | number | null | undefined>
   placeholder?: MaybeRefOrGetter<string>
   type?: MaybeRefOrGetter<string>
   maxlength?: MaybeRefOrGetter<number>
@@ -31,7 +31,7 @@ type Options = {
   disabledMessage?: MaybeRefOrGetter<string>
   validationFunction?: MaybeRefOrGetter<ValidationFn>
   formattingFunction?: MaybeRefOrGetter<FormattingFn>
-  updateFunction: UpdateFn
+  update: UpdateFn
   emitUpdated?: (value: string) => void
 }
 
@@ -74,7 +74,7 @@ export function useEditableStringField(options: Options) {
   })
 
   watch(
-    () => toValue(options.firebaseValue),
+    () => toValue(options.value),
     (next: string | number | null | undefined) => {
       if (!isEditing.value) {
         const nextValue = toStringValue(next)
@@ -88,7 +88,7 @@ export function useEditableStringField(options: Options) {
   const effectiveValue = computed(() =>
     optimisticValue.value !== null
       ? optimisticValue.value
-      : toStringValue(toValue(options.firebaseValue))
+      : toStringValue(toValue(options.value))
   )
 
   const displayValue = computed(() => {
@@ -101,13 +101,13 @@ export function useEditableStringField(options: Options) {
 
   function startEditing() {
     if (disabled.value) return
-    draft.value = toStringValue(toValue(options.firebaseValue))
+    draft.value = toStringValue(toValue(options.value))
     isEditing.value = true
     errorMessage.value = ''
   }
 
   function cancel() {
-    draft.value = toStringValue(toValue(options.firebaseValue))
+    draft.value = toStringValue(toValue(options.value))
     isEditing.value = false
     errorMessage.value = ''
   }
@@ -119,7 +119,7 @@ export function useEditableStringField(options: Options) {
     saving.value = true
     errorMessage.value = ''
     try {
-      await options.updateFunction('')
+      await options.update('')
       options.emitUpdated?.('')
       isEditing.value = false
       optimisticValue.value = ''
@@ -170,7 +170,7 @@ export function useEditableStringField(options: Options) {
 
     saving.value = true
     try {
-      await options.updateFunction(valueToSave)
+      await options.update(valueToSave)
       options.emitUpdated?.(valueToSave)
       optimisticValue.value = valueToSave
       draft.value = valueToSave

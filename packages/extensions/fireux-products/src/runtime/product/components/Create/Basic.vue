@@ -12,12 +12,18 @@
       placeholder="Description"
       class="unstyled-textarea"
     />
-    <MoleculesFormsStateRichText v-model="product.content" />
+    <UTextarea
+      v-model="product.content"
+      :rows="6"
+      autoresize
+      placeholder="Content"
+      class="w-full"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../composables/create/useCreateProductState';
+import { useCreateProductState } from '../../composables/create/useCreateProductState'
 
 // Shared creation state
 const { product, isSlugTaken } = await useCreateProductState()

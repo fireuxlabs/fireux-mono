@@ -76,16 +76,16 @@
             class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-default bg-default p-3"
           >
             <div class="min-w-0 flex-1">
-              <MoleculesFormsFirestoreSimpleField
+              <MoleculesFormsEditableSimpleField
                 class="menu-section-name-field"
                 :label="displaySectionLabel(section)"
-                :firebase-value="section.label"
+                :value="section.label"
                 placeholder="Section name"
                 :maxlength="160"
                 :disabled="!canWrite"
                 disabled-message="This menu is read-only."
                 :validation-function="validateSectionLabel"
-                :update-function="
+                :update="
                   (value) => saveSectionLabel(section.id, value)
                 "
               />

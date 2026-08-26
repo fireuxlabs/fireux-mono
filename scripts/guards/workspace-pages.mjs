@@ -22,6 +22,8 @@ const CONSOLE_SHARED_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue'
 const CONSOLE_AI_CAPABILITY_PLACEHOLDER =
   'packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/CapabilityPlaceholder.vue'
+const MISEBOX_DASHBOARD_WORKSPACE =
+  'projects/misebox/misebox-app/app/pages/dashboard/workspace.vue'
 const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
@@ -198,6 +200,7 @@ export async function run(ctx) {
   const seenPages = new Set()
 
   validateWorkspaceLayout(repoRoot, violations)
+  validateMiseboxWorkspaceDoorway(repoRoot, violations)
   validateWorkspaceNavigationLifecycle(repoRoot, violations)
   validateWorkspaceOperationAIPlaceholder(repoRoot, violations)
   validateWorkspaceEntityComponentHierarchy(repoRoot, violations)
@@ -241,6 +244,26 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ workspace pages use the explicit page contract')
+}
+
+function validateMiseboxWorkspaceDoorway(repoRoot, violations) {
+  const fullPath = path.join(repoRoot, MISEBOX_DASHBOARD_WORKSPACE)
+  if (!existsSync(fullPath)) {
+    violations.push(
+      `${MISEBOX_DASHBOARD_WORKSPACE} (missing Misebox Workspace Main doorway)`
+    )
+    return
+  }
+
+  const source = readFileSync(fullPath, 'utf8')
+  if (
+    !source.includes("key: 'dashboard-workspace'") ||
+    !source.includes("await navigateTo('/', { replace: true })")
+  ) {
+    violations.push(
+      `${MISEBOX_DASHBOARD_WORKSPACE} (Dashboard Workspace must enter Misebox Workspace Main at /)`
+    )
+  }
 }
 
 function validateKitchenResearchRecords(repoRoot, violations) {
@@ -809,7 +832,6 @@ function validateKitchenMenusWorkspace(repoRoot, violations) {
       forbidden: /\buseKitchenWorkspaceMenus\s*\(/,
     },
   }
-
 
   const route =
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue'

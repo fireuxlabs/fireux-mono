@@ -10,14 +10,14 @@
     </template>
 
     <div class="section__item">
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Description"
         type="textarea"
         :rows="3"
         :maxlength="500"
-        :firebase-value="app.description"
+        :value="app.description"
         placeholder="Describe your application..."
-        :update-function="handleDescriptionUpdate"
+        :update="handleDescriptionUpdate"
       />
     </div>
   </UCard>

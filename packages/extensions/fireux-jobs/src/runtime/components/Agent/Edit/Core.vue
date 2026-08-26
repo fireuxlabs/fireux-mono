@@ -10,90 +10,90 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Title"
-          :firebase-value="title"
+          :value="title"
           placeholder="Ex: Hospitality hiring team"
           :maxlength="60"
-          :update-function="handleTitle"
+          :update="handleTitle"
           :validation-function="DisplayName.validate"
           :formatting-function="DisplayName.format"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Summary"
           type="textarea"
           :rows="3"
           :maxlength="200"
-          :firebase-value="summary"
+          :value="summary"
           placeholder="One short paragraph for listings"
-          :update-function="handleSummary"
+          :update="handleSummary"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Bio"
           type="textarea"
           :rows="6"
           :maxlength="2000"
-          :firebase-value="bio"
+          :value="bio"
           placeholder="Long-form hiring profile bio"
-          :update-function="handleBio"
+          :update="handleBio"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Hiring Profile Image URL"
-          :firebase-value="imageUrl"
+          :value="imageUrl"
           placeholder="Optional: image URL for this hiring profile"
           :maxlength="400"
-          :update-function="handleImage"
+          :update="handleImage"
         />
 
-        <MoleculesFormsFirestoreArrayOfStrings
+        <MoleculesFormsEditableArrayOfStrings
           label="Placement Types"
-          :firebase-value="placementTypes"
+          :value="placementTypes"
           item-placeholder="Placement type"
           new-item-placeholder="Add placement type"
-          :update-function="handlePlacementTypes"
+          :update="handlePlacementTypes"
         />
 
-        <MoleculesFormsFirestoreArrayOfStrings
+        <MoleculesFormsEditableArrayOfStrings
           label="Tags"
-          :firebase-value="tags"
+          :value="tags"
           item-placeholder="Tag"
           new-item-placeholder="Add tag"
-          :update-function="handleTags"
+          :update="handleTags"
         />
 
-        <MoleculesFormsFirestoreArrayOfStrings
+        <MoleculesFormsEditableArrayOfStrings
           label="Coverage Areas"
-          :firebase-value="coverageAreas"
+          :value="coverageAreas"
           item-placeholder="Coverage area"
           new-item-placeholder="Add coverage area"
-          :update-function="handleCoverageAreas"
+          :update="handleCoverageAreas"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Public Business Email"
-          :firebase-value="contactEmail"
+          :value="contactEmail"
           placeholder="Ex: hello@example.com"
           :maxlength="120"
-          :update-function="handleContactEmail"
+          :update="handleContactEmail"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Public Business Phone"
-          :firebase-value="contactPhone"
+          :value="contactPhone"
           placeholder="Optional"
           :maxlength="40"
-          :update-function="handleContactPhone"
+          :update="handleContactPhone"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Public Business Website"
-          :firebase-value="websiteUrl"
+          :value="websiteUrl"
           placeholder="Ex: https://example.com"
           :maxlength="200"
-          :update-function="handleWebsiteUrl"
+          :update="handleWebsiteUrl"
         />
       </div>
     </UPageCard>

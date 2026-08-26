@@ -8,15 +8,16 @@ export type ObjectArrayDateSortFields = {
   endYearKey?: string
 }
 
-export const defaultObjectArrayDateSortFields: Required<ObjectArrayDateSortFields> = {
-  ongoingKey: 'ongoing',
-  fromYearKey: 'from_year',
-  fromMonthKey: 'from_month',
-  toYearKey: 'to_year',
-  toMonthKey: 'to_month',
-  startYearKey: 'start_year',
-  endYearKey: 'end_year',
-}
+export const defaultObjectArrayDateSortFields: Required<ObjectArrayDateSortFields> =
+  {
+    ongoingKey: 'ongoing',
+    fromYearKey: 'from_year',
+    fromMonthKey: 'from_month',
+    toYearKey: 'to_year',
+    toMonthKey: 'to_month',
+    startYearKey: 'start_year',
+    endYearKey: 'end_year',
+  }
 
 export function objectArrayHasDateFields(
   list: any[],
@@ -42,8 +43,18 @@ function monthToNumber(value: unknown): number | null {
   const numeric = Number(raw)
   if (Number.isFinite(numeric) && numeric >= 1 && numeric <= 12) return numeric
   const months = [
-    'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-    'jul', 'aug', 'sep', 'oct', 'nov', 'dec',
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec',
   ]
   const index = months.indexOf(raw.slice(0, 3))
   return index >= 0 ? index + 1 : null
@@ -55,7 +66,10 @@ function toNumber(value: unknown): number | null {
   return Number.isFinite(raw) ? raw : null
 }
 
-function resolveDateParts(item: any, fields: Required<ObjectArrayDateSortFields>) {
+function resolveDateParts(
+  item: any,
+  fields: Required<ObjectArrayDateSortFields>
+) {
   const ongoing = Boolean(item?.[fields.ongoingKey])
   const fromYear = toNumber(
     item?.[fields.fromYearKey] ?? item?.[fields.startYearKey]
@@ -82,7 +96,8 @@ export function sortObjectArrayByDate(
     .map((item, index) => ({ item, index, ...resolveDateParts(item, fields) }))
     .sort((a, b) => {
       if (a.ongoing !== b.ongoing) return a.ongoing ? -1 : 1
-      const endDifference = (b.endValue ?? -Infinity) - (a.endValue ?? -Infinity)
+      const endDifference =
+        (b.endValue ?? -Infinity) - (a.endValue ?? -Infinity)
       if (endDifference) return endDifference
       const startDifference =
         (b.startValue ?? -Infinity) - (a.startValue ?? -Infinity)

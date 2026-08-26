@@ -6,10 +6,10 @@
 <!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: use idempotent server materializers without raw Company existence reads. -->
 <!-- Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich experience through bounded exact Place reads. -->
 <template>
-  <MoleculesFormsFirestoreObjectArray
+  <MoleculesFormsEditableObjectArray
     :label="label"
-    :firebase-value="items"
-    :update-function="onSave"
+    :value="items"
+    :update="onSave"
     :item-title="itemTitle"
     :item-date="itemDate"
     :show-actions="true"
@@ -198,7 +198,7 @@
         </UButton>
       </div>
     </template>
-  </MoleculesFormsFirestoreObjectArray>
+  </MoleculesFormsEditableObjectArray>
 </template>
 
 <script setup lang="ts">

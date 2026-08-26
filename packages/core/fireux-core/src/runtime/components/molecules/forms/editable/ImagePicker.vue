@@ -1,4 +1,4 @@
-<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/ImagePicker.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ImagePicker.vue -->
 <!-- Concurrent edit — 2026-07-21 15:46 CEST — User Profile polish: make the shared image action named, keyboard-accessible, and upload-aware. -->
 <template>
   <div class="avatar-container">
@@ -23,7 +23,7 @@
       icon="i-lucide-camera"
       color="neutral"
       variant="solid"
-      size="lg"
+      size="sm"
       square
       :aria-label="buttonLabel"
       :title="buttonLabel"
@@ -47,7 +47,7 @@ const props = defineProps<{
   loading?: boolean
   disabled?: boolean
   // Parent-provided handler to process selected file (e.g., upload then update URL)
-  updateFunction?: (file: File) => unknown
+  update?: (file: File) => unknown
 }>()
 
 const inputRef = ref<HTMLInputElement | null>(null)
@@ -63,7 +63,7 @@ async function onFileChange(e: Event) {
   const file = input?.files?.[0]
   if (!file) return
   try {
-    await props.updateFunction?.(file)
+    await props.update?.(file)
   } finally {
     // Reset the input so selecting the same file still triggers a change.
     if (input) input.value = ''
@@ -74,9 +74,8 @@ async function onFileChange(e: Event) {
 <style scoped>
 .avatar-container {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex;
+  width: fit-content;
   margin-bottom: calc(var(--spacing) * 2);
 }
 .avatar {
@@ -85,10 +84,9 @@ async function onFileChange(e: Event) {
 }
 .upload-button {
   position: absolute;
-  bottom: -6px;
-  right: -6px;
+  right: -4px;
+  bottom: -4px;
   border-radius: 9999px;
-  min-width: calc(var(--spacing) * 11);
-  min-height: calc(var(--spacing) * 11);
+  box-shadow: var(--shadow-md);
 }
 </style>

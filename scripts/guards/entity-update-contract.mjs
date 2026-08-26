@@ -7,106 +7,120 @@ import { join } from 'node:path'
 
 const contracts = [
   [
-    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogUpdate.ts',
+    'fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogUpdate.ts',
     'updateBlogPost',
+    ['blogPostId'],
   ],
   [
-    'packages/extensions/fireux-compliance/src/runtime/portfolio/composables/workspace/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
+    'fireux-compliance/src/runtime/portfolio/composables/workspace/operations/Compliance/mutations/useComplianceRecordUpdate.ts',
     'updateComplianceRecord',
+    ['complianceRecordId'],
   ],
   [
-    'packages/extensions/fireux-documents/src/runtime/portfolio/composables/workspace/operations/Documents/mutations/useDocumentUpdate.ts',
+    'fireux-documents/src/runtime/portfolio/composables/workspace/operations/Documents/mutations/useDocumentUpdate.ts',
     'updateDocumentRecord',
+    ['documentId'],
   ],
   [
-    'packages/extensions/fireux-jobs/src/runtime/job/composables/firestore/mutations/useJobUpdate.ts',
+    'fireux-jobs/src/runtime/job/composables/firestore/mutations/useJobUpdate.ts',
     'updateJob',
+    ['jobId'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Mise/mutations/useKitchenMiseUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/workspace/Mise/mutations/useKitchenMiseUpdate.ts',
     'updateKitchenMise',
+    ['kitchenId', 'taskId'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Stations/mutations/useKitchenStationUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/workspace/Stations/mutations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
+    ['kitchenId', 'stationId'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/mutations/useKitchenTeamMemberUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/workspace/team/mutations/useKitchenTeamMemberUpdate.ts',
     'updateKitchenTeamMember',
+    ['kitchenId', 'memberId'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/ingredient/composables/firestore/mutations/useIngredientUpdate.ts',
+    'fireux-kitchens/src/runtime/ingredient/composables/firestore/mutations/useIngredientUpdate.ts',
     'updateIngredient',
+    ['ingredientId'],
   ],
   [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenUpdate.ts',
+    'fireux-kitchens/src/runtime/kitchen/composables/firestore/mutations/useKitchenUpdate.ts',
     'updateKitchen',
+    ['kitchenId'],
   ],
   [
-    'packages/extensions/fireux-products/src/runtime/product/composables/firestore/mutations/useProductUpdate.ts',
+    'fireux-products/src/runtime/product/composables/firestore/mutations/useProductUpdate.ts',
     'updateProduct',
+    ['productId'],
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Clients/mutations/useClientUpdate.ts',
+    'fireux-properties/src/runtime/portfolio/composables/workspace/operations/Clients/mutations/useClientUpdate.ts',
     'updateClient',
+    ['clientId'],
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/Units/mutations/useUnitUpdate.ts',
+    'fireux-properties/src/runtime/portfolio/composables/workspace/operations/Units/mutations/useUnitUpdate.ts',
     'updateUnit',
+    ['unitId'],
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
+    'fireux-properties/src/runtime/portfolio/composables/firestore/mutations/usePortfolioUpdate.ts',
     'updatePortfolio',
+    ['portfolioId'],
   ],
   [
-    'packages/extensions/fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyUpdate.ts',
+    'fireux-properties/src/runtime/property/composables/firestore/mutations/usePropertyUpdate.ts',
     'updatePropertyRoot',
+    ['propertyId'],
   ],
   [
-    'packages/extensions/fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/useReservationUpdate.ts',
+    'fireux-reservations/src/runtime/property/composables/workspace/operations/Reservations/useReservationUpdate.ts',
     'updateReservation',
+    ['reservationId'],
   ],
   [
-    'packages/extensions/fireux-tasks/src/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate.ts',
+    'fireux-tasks/src/runtime/portfolio/composables/workspace/operations/Tasks/mutations/useTaskUpdate.ts',
     'updateTask',
+    ['taskId'],
   ],
   [
-    'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierUpdate.ts',
+    'fireux-suppliers/src/runtime/supplier/composables/firestore/mutations/useSupplierUpdate.ts',
     'updateSupplierRoot',
+    ['supplierId'],
   ],
 ]
 
 export async function run({ repoRoot }) {
   const violations = []
-  for (const [file, command] of contracts) {
-    const source = await readFile(join(repoRoot, file), 'utf8')
-    const escaped = command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  for (const [file, command, identities] of contracts) {
+    const path = `packages/extensions/${file}`
+    const source = await readFile(join(repoRoot, path), 'utf8')
     const declaration = new RegExp(
-      `(?:function\\s+${escaped}|(?:const|let)\\s+${escaped}\\s*=\\s*(?:async\\s*)?)\\s*\\(\\s*input\\s*:`,
+      `(?:function\\s+${command}|(?:const|let)\\s+${command}\\s*=\\s*(?:async\\s*)?)\\s*\\(\\s*input\\s*:`,
       'm'
     )
-    if (!declaration.test(source) || !/\bchanges\s*:/.test(source)) {
-      violations.push(
-        `${file}: ${command} must accept one typed input object with named identity and changes.`
-      )
+    const returned = new RegExp(`return\\s*{[^}]*\\b${command}\\b`, 's')
+    const problems = []
+    if (!declaration.test(source)) problems.push('typed input parameter')
+    for (const identity of identities) {
+      if (!source.includes(`input.${identity}`)) {
+        problems.push(`input.${identity}`)
+      }
     }
-  }
-  const teamServerFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/update.ts'
-  const teamServer = await readFile(join(repoRoot, teamServerFile), 'utf8')
-  if (
-    !teamServer.includes('input: UpdateKitchenTeamMemberInput') ||
-    !teamServer.includes('changes: KitchenTeamMemberChanges') ||
-    !teamServer.includes('updates: KitchenTeamMemberUpdate[]')
-  ) {
-    violations.push(
-      `${teamServerFile}: manual and batch Team updates must share the canonical changes contract.`
-    )
+    if (!source.includes('input.changes')) problems.push('input.changes')
+    if (!returned.test(source)) problems.push(`return { ${command} }`)
+
+    if (problems.length) {
+      violations.push(`${path}: ${command} is missing ${problems.join(', ')}.`)
+    }
   }
   if (violations.length) {
     throw new Error(`Entity update contract drift:\n${violations.join('\n')}`)
   }
   console.log(
-    '[guard] ✅ ordinary entity update commands use named identity and changes'
+    '[guard] ✅ guarded update commands read named identity and changes'
   )
 }

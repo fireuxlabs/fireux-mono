@@ -36,46 +36,60 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
-type SelectOption = string | { label: string, value: string }
+type SelectOption = string | { label: string; value: string }
 type UpdateFn = (value: string) => unknown | Promise<unknown>
 
-const props = withDefaults(defineProps<{
-  disabled?: boolean
-  disabledMessage?: string
-  firebaseValue?: string | number | null
-  label: string
-  options: SelectOption[]
-  placeholder?: string
-  updateFunction: UpdateFn
-}>(), {
-  disabled: false,
-  disabledMessage: '',
-  firebaseValue: '',
-  placeholder: 'Select an option',
-})
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean
+    disabledMessage?: string
+    value?: string | number | null
+    label: string
+    options: SelectOption[]
+    placeholder?: string
+    update: UpdateFn
+  }>(),
+  {
+    disabled: false,
+    disabledMessage: '',
+    value: '',
+    placeholder: 'Select an option',
+  }
+)
 
 const isEditing = ref(false)
 const draft = ref('')
 const optimisticValue = ref<string | null>(null)
 const saving = ref(false)
 const errorMessage = ref('')
-const sourceValue = computed(() => String(props.firebaseValue ?? ''))
-const effectiveValue = computed(() => optimisticValue.value ?? sourceValue.value)
-const normalizedOptions = computed(() => props.options.map(option =>
-  typeof option === 'string' ? { label: option, value: option } : option
-))
-const displayValue = computed(() =>
-  normalizedOptions.value.find(option => option.value === effectiveValue.value)?.label ||
-  effectiveValue.value ||
-  props.placeholder ||
-  'Not set'
+const sourceValue = computed(() => String(props.value ?? ''))
+const effectiveValue = computed(
+  () => optimisticValue.value ?? sourceValue.value
+)
+const normalizedOptions = computed(() =>
+  props.options.map((option) =>
+    typeof option === 'string' ? { label: option, value: option } : option
+  )
+)
+const displayValue = computed(
+  () =>
+    normalizedOptions.value.find(
+      (option) => option.value === effectiveValue.value
+    )?.label ||
+    effectiveValue.value ||
+    props.placeholder ||
+    'Not set'
 )
 
-watch(sourceValue, () => {
-  if (isEditing.value) return
-  optimisticValue.value = null
-  draft.value = sourceValue.value
-}, { immediate: true })
+watch(
+  sourceValue,
+  () => {
+    if (isEditing.value) return
+    optimisticValue.value = null
+    draft.value = sourceValue.value
+  },
+  { immediate: true }
+)
 
 function startEditing() {
   if (props.disabled) return
@@ -95,14 +109,13 @@ async function persist(value: string) {
   saving.value = true
   errorMessage.value = ''
   try {
-    await props.updateFunction(value)
+    await props.update(value)
     optimisticValue.value = value
     draft.value = value
     isEditing.value = false
   } catch (error) {
-    errorMessage.value = error instanceof Error
-      ? error.message
-      : 'Failed to save this setting.'
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Failed to save this setting.'
   } finally {
     saving.value = false
   }

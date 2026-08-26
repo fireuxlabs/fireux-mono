@@ -47,13 +47,19 @@
 
 .professional-profile__navigator {
   align-items: center;
-  background: color-mix(in srgb, var(--ui-bg-elevated) 82%, transparent);
-  border: 1px solid var(--ui-border);
+  backdrop-filter: blur(calc(var(--spacing) * 4));
+  background: color-mix(in srgb, var(--ui-bg) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
   border-radius: calc(var(--ui-radius) * 3);
+  box-shadow: 0 calc(var(--spacing) * 2) calc(var(--spacing) * 8)
+    color-mix(in srgb, var(--ui-bg-inverted) 8%, transparent);
   display: flex;
   gap: calc(var(--spacing) * 4);
   min-width: 0;
   padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3);
+  position: sticky;
+  top: calc(var(--spacing) * 3);
+  z-index: 20;
 }
 
 .professional-profile__navigator-label {
@@ -301,6 +307,37 @@
   .professional-profile__expertise-grid,
   .professional-profile__community-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .public-profile-detail :deep(.public-profile-hero) {
+    background:
+      radial-gradient(
+        circle at 88% 12%,
+        color-mix(in srgb, var(--ui-primary) 16%, transparent),
+        transparent 34%
+      ),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--ui-bg-elevated) 92%, transparent),
+        color-mix(in srgb, var(--ui-bg) 82%, transparent)
+      );
+  }
+
+  .public-profile-detail :deep(.public-profile-hero__layout) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .public-profile-detail :deep(.public-profile-hero__stats) {
+    border-top: 1px solid var(--ui-border);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-top: calc(var(--spacing) * 5);
+    width: 100%;
+  }
+
+  .public-profile-detail :deep(.public-profile-hero__stat) {
+    min-height: calc(var(--spacing) * 20);
   }
 }
 

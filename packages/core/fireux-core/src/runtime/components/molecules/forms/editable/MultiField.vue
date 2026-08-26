@@ -51,9 +51,9 @@ type StringMap = Record<string, string>
 
 const props = defineProps({
   label: { type: String, default: '' },
-  firebaseValue: { type: Object as PropType<StringMap>, default: () => ({}) },
+  value: { type: Object as PropType<StringMap>, default: () => ({}) },
   placeholder: { type: String, default: '' },
-  updateFunction: { type: Function, required: true },
+  update: { type: Function, required: true },
   deleteFunction: { type: Function, default: () => {} },
   placeholders: { type: Object as PropType<StringMap>, required: true },
   commas: { type: Boolean, default: true },
@@ -72,7 +72,7 @@ const joinedValue = computed(() =>
 
 // Watch for prop changes to update local value
 watch(
-  () => props.firebaseValue,
+  () => props.value,
   (newValue: StringMap) => {
     if (!isEditing.value) {
       localValue.value = newValue ? { ...newValue } : {}
@@ -83,20 +83,20 @@ watch(
 
 // Editing handlers
 function startEditing() {
-  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
+  localValue.value = props.value ? { ...props.value } : {}
   errorMessage.value = ''
   isEditing.value = true
 }
 
 function cancelEditing() {
-  localValue.value = props.firebaseValue ? { ...props.firebaseValue } : {}
+  localValue.value = props.value ? { ...props.value } : {}
   errorMessage.value = ''
   isEditing.value = false
 }
 
 async function saveChanges() {
   try {
-    await props.updateFunction(localValue.value)
+    await props.update(localValue.value)
     errorMessage.value = ''
     isEditing.value = false
   } catch (error) {
@@ -107,7 +107,7 @@ async function saveChanges() {
 
 async function deleteValue() {
   try {
-    await props.updateFunction({})
+    await props.update({})
     localValue.value = {}
     errorMessage.value = ''
     isEditing.value = false

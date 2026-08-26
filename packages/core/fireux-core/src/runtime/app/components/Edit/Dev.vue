@@ -6,7 +6,7 @@
       <div
         class="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.8fr)] xl:items-start"
       >
-        <MoleculesFormsFirestoreAppImages :app="app" />
+        <MoleculesFormsEditableAppImages :app="app" />
 
         <UPageCard
           title="Build connection"

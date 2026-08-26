@@ -32,6 +32,7 @@ export type ProfileDirectoryMapper = (
 export type ProfileDirectoryConfig = {
   kind: ProfileKind
   mapProfile: ProfileDirectoryMapper
+  rootCollection?: string
 }
 
 function normalizeLimit(value: unknown): number {
@@ -53,11 +54,14 @@ function mapEntry(
   mode: 'index' | 'detail'
 ): ProfileDirectoryEntry | null {
   const path = profileSnapshot.ref.path.split('/')
-  const userId =
-    path.length === 4 &&
-    path[0] === 'users' &&
-    path[2] === 'profiles' &&
-    path[3] === config.kind
+  const userId = config.rootCollection
+    ? path.length === 2 && path[0] === config.rootCollection
+      ? profileSnapshot.id
+      : ''
+    : path.length === 4 &&
+        path[0] === 'users' &&
+        path[2] === 'profiles' &&
+        path[3] === config.kind
       ? path[1]
       : ''
   if (!profileSnapshot.exists || !userId || userId !== userSnapshot.id) {
@@ -79,23 +83,25 @@ function setPublicHeaders(event: H3Event) {
   })
 }
 
-export function createProfileDirectoryHandler(
-  config: ProfileDirectoryConfig
-) {
+export function createProfileDirectoryHandler(config: ProfileDirectoryConfig) {
   return defineEventHandler(async (event: H3Event) => {
     setPublicHeaders(event)
     const limit = normalizeLimit(getQuery(event).limit)
     const db = getRuntimeIdentityFirestore()
-    const profileSnapshot = await db
-      .collectionGroup('profiles')
-      .where('kind', '==', config.kind)
-      .limit(limit)
-      .get()
+    const profileSnapshot = config.rootCollection
+      ? await db.collection(config.rootCollection).limit(limit).get()
+      : await db
+          .collectionGroup('profiles')
+          .where('kind', '==', config.kind)
+          .limit(limit)
+          .get()
     const userSnapshots = profileSnapshot.empty
       ? []
       : await db.getAll(
           ...profileSnapshot.docs.map((profile) =>
-            db.doc(`users/${profile.ref.parent.parent?.id || ''}`)
+            db.doc(
+              `users/${config.rootCollection ? profile.id : profile.ref.parent.parent?.id || ''}`
+            )
           )
         )
 
@@ -115,9 +121,7 @@ export function createProfileDirectoryHandler(
   })
 }
 
-export function createProfileDetailHandler(
-  config: ProfileDirectoryConfig
-) {
+export function createProfileDetailHandler(config: ProfileDirectoryConfig) {
   return defineEventHandler(async (event: H3Event) => {
     setPublicHeaders(event)
     const identifier = requireFirestoreDocumentId(
@@ -148,7 +152,11 @@ export function createProfileDetailHandler(
     const handleUser = handleSnapshot?.docs[0] ?? null
     const id = handleUser?.id ?? identifier
     const [profile, user] = await db.getAll(
-      db.doc(`users/${id}/profiles/${config.kind}`),
+      db.doc(
+        config.rootCollection
+          ? `${config.rootCollection}/${id}`
+          : `users/${id}/profiles/${config.kind}`
+      ),
       db.doc(`users/${id}`)
     )
     const item = mapEntry(config, profile, user, 'detail')

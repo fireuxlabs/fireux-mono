@@ -1,11 +1,12 @@
 <template>
   <section class="space-y-4">
-    <MoleculesCreateCard>
+    <UCard :ui="{ body: 'fx-card-body-stack' }">
       <template #header>
         <div class="space-y-1">
           <div class="font-medium">Select a place</div>
           <div class="text-sm text-dimmed">
-            We’ll use the existing company if it exists, or create the record if it doesn’t.
+            We’ll use the existing company if it exists, or create the record if
+            it doesn’t.
           </div>
         </div>
       </template>
@@ -19,7 +20,7 @@
       <div v-if="error" class="text-sm text-error">
         {{ error }}
       </div>
-    </MoleculesCreateCard>
+    </UCard>
   </section>
 </template>
 

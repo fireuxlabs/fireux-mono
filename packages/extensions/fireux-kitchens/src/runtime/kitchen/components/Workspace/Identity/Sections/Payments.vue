@@ -12,14 +12,14 @@
           {{ group.description }}
         </p>
 
-        <MoleculesFormsFirestoreChoiceGroup
+        <MoleculesFormsEditableChoiceGroup
           :label="group.label"
-          :firebase-value="methodsFor(group.orderTypes)"
+          :value="methodsFor(group.orderTypes)"
           :options="group.options"
           :disabled="!canWrite"
           disabled-message="This kitchen is read-only."
           :empty-label="`No ${group.label.toLowerCase()} payment methods configured`"
-          :update-function="updateFunctions[group.id]"
+          :update="updateFunctions[group.id]"
         />
       </UCard>
     </div>

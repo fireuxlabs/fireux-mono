@@ -69,11 +69,11 @@
           </UButton>
         </div>
 
-        <MoleculesFormsFirestoreObjectArray
+        <MoleculesFormsEditableObjectArray
           v-else
           label="Kitchen opening times"
-          :firebase-value="hours.windows"
-          :update-function="saveWindows"
+          :value="hours.windows"
+          :update="saveWindows"
           :item-title="operationHoursItemTitle"
           :item-subtitle="operationHoursItemSubtitle"
           :show-actions="canWrite"
@@ -154,7 +154,7 @@
               Add time window
             </UButton>
           </template>
-        </MoleculesFormsFirestoreObjectArray>
+        </MoleculesFormsEditableObjectArray>
 
         <p v-if="error" class="text-sm text-error">
           {{ error }}

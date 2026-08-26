@@ -17,13 +17,13 @@
     <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
       <UFormField label="Image">
         <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsFirestoreImagePicker
+          <MoleculesFormsEditableImagePicker
             v-if="canWrite"
             :src="dishImageUrl"
             :alt="dishName || catalogue.singular"
             :initials="imageInitials"
             :loading="imageUploading"
-            :update-function="handleImageUpload"
+            :update="handleImageUpload"
           />
           <UAvatar
             v-else
@@ -55,27 +55,27 @@
           </p>
         </UFormField>
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Name"
-          :firebase-value="dishName"
+          :value="dishName"
           :placeholder="`${singularTitle} name`"
           :maxlength="140"
           :disabled="!canWrite"
           :disabled-message="`This ${catalogue.singular} is read-only.`"
           :validation-function="validateDishName"
-          :update-function="handleName"
+          :update="handleName"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Description"
           type="textarea"
           :rows="5"
-          :firebase-value="dishDescription"
+          :value="dishDescription"
           :placeholder="`Default ${catalogue.singular} description`"
           :maxlength="800"
           :disabled="!canWrite"
           :disabled-message="`This ${catalogue.singular} is read-only.`"
-          :update-function="handleDescription"
+          :update="handleDescription"
         />
 
         <WorkspaceKitchenDrinksDescriptionAssistant

@@ -139,13 +139,11 @@
           'display_name',
           'bio',
           'avatar',
-          'handle',
-          'ping'
+          'handle'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
         validOptionalText(data, 'bio', 280) &&
         isValidUserAvatar(data.avatar) &&
-        (!('ping' in data) || data.ping in ['Mark', 'luke', 'john']) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$');
     }
@@ -171,8 +169,7 @@
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'display_name',
           'bio',
-          'avatar',
-          'ping'
+          'avatar'
         ]);
       allow delete: if false;
 

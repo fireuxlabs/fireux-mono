@@ -10,7 +10,6 @@
       </template>
 
       <template #body>
-        <div>{{ user?.ping }}</div>
         <section class="workspace-surface">
           <WorkspaceKitchenTools />
           <main class="workspace-surface__primary">
@@ -30,10 +29,8 @@
 import { computed } from 'vue'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { appMeta } from '../meta'
 
-const { currentUser: user } = useUser()
 const kitchenWorkspace = useWorkspace('kitchen')
 const pageTitle = computed(
   () => kitchenWorkspace.currentName.value || 'Kitchen Workspace'

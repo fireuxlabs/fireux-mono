@@ -12,7 +12,7 @@
     </template>
 
     <div v-if="items.length" class="section__item">
-      <MoleculesFormsFirestoreListActions
+      <MoleculesFormsEditableListActions
         :items="items"
         :action-approve="onApprove"
         :action-reject="onRemove"

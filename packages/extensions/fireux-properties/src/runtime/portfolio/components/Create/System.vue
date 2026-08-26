@@ -1,5 +1,5 @@
 <template>
-  <MoleculesCreateCard>
+  <UCard :ui="{ body: 'fx-card-body-stack' }">
     <template #header>
       <div class="space-y-1">
         <div class="text-sm font-semibold">{{ headerTitle }}</div>
@@ -45,7 +45,7 @@
       :cancel-to="cancelTo"
       @created="$emit('created', $event)"
     />
-  </MoleculesCreateCard>
+  </UCard>
 </template>
 
 <script setup lang="ts">

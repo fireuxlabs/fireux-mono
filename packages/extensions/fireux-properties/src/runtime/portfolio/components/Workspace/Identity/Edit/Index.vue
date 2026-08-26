@@ -29,52 +29,52 @@
       </template>
 
       <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Name"
-          :firebase-value="name"
+          :value="name"
           placeholder="Portfolio name"
           :maxlength="120"
-          :update-function="handleName"
+          :update="handleName"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Tagline"
-          :firebase-value="tagline"
+          :value="tagline"
           placeholder="Short portfolio tagline"
           :maxlength="120"
-          :update-function="handleTagline"
+          :update="handleTagline"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Owner"
-          :firebase-value="ownerLabel"
+          :value="ownerLabel"
           placeholder="Owner label"
           :maxlength="120"
-          :update-function="handleOwnerLabel"
+          :update="handleOwnerLabel"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Strategy"
-          :firebase-value="strategyLabel"
+          :value="strategyLabel"
           placeholder="Strategy label"
           :maxlength="120"
-          :update-function="handleStrategyLabel"
+          :update="handleStrategyLabel"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Region"
-          :firebase-value="regionLabel"
+          :value="regionLabel"
           placeholder="Region label"
           :maxlength="120"
-          :update-function="handleRegionLabel"
+          :update="handleRegionLabel"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Notes"
-          :firebase-value="notes"
+          :value="notes"
           placeholder="Short portfolio notes"
           :maxlength="240"
-          :update-function="handleNotes"
+          :update="handleNotes"
         />
       </div>
     </UCard>

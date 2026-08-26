@@ -13,40 +13,40 @@
 		</template>
 
 		<div class="grid gap-4 md:grid-cols-2">
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Name"
-				:firebase-value="place?.name"
+				:value="place?.name"
 				placeholder="e.g. Yellow Velo"
 				:maxlength="120"
-				:update-function="handleManualName"
+				:update="handleManualName"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Formatted address"
-				:firebase-value="place?.formatted_address"
+				:value="place?.formatted_address"
 				placeholder="Postgasse 11, 3800 Interlaken, Switzerland"
 				:maxlength="200"
-				:update-function="handleManualAddress"
+				:update="handleManualAddress"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Search term"
-				:firebase-value="place?.search_term"
+				:value="place?.search_term"
 				placeholder="yellow velo postgasse 11, 3800 interlaken, switzerland"
 				:maxlength="240"
-				:update-function="handleManualSearchTerm"
+				:update="handleManualSearchTerm"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Latitude"
 				type="number"
-				:firebase-value="place?.lat"
+				:value="place?.lat"
 				placeholder="46.6868497"
-				:update-function="handleManualLat"
+				:update="handleManualLat"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Longitude"
 				type="number"
-				:firebase-value="place?.lng"
+				:value="place?.lng"
 				placeholder="7.8542379"
-				:update-function="handleManualLng"
+				:update="handleManualLng"
 			/>
 		</div>
 	</UCard>

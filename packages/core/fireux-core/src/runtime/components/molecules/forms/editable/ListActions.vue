@@ -1,4 +1,4 @@
-<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/ListActions.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/molecules/forms/editable/ListActions.vue -->
 <template>
   <div class="space-y-3">
     <div
@@ -185,7 +185,7 @@ const handleReject = (id: string) => runAction(actionReject, id)
 const handleToggle = (id: string, next: boolean) =>
   runToggle(actionToggle, id, next)
 
-defineOptions({ name: 'MoleculesFormsFirestoreListActions' })
+defineOptions({ name: 'MoleculesFormsEditableListActions' })
 </script>
 
 <style scoped>

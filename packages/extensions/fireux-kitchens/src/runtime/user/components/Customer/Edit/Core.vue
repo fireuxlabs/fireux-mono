@@ -9,12 +9,12 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Name"
-          :firebase-value="customerName"
+          :value="customerName"
           placeholder="Your ordering name"
           :maxlength="80"
-          :update-function="handleName"
+          :update="handleName"
         />
 
         <UFormField label="Phone">
@@ -79,14 +79,14 @@
           {{ inlineState }}
         </p>
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Allergy note"
           type="textarea"
           :rows="3"
           :maxlength="500"
-          :firebase-value="allergyNote"
+          :value="allergyNote"
           placeholder="Optional allergy or intolerance note"
-          :update-function="handleAllergyNote"
+          :update="handleAllergyNote"
         />
       </div>
     </UPageCard>

@@ -238,7 +238,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'display_name',
     'handle',
     'id',
-    'ping',
   ])
   const userNormalizer = read(
     repoRoot,

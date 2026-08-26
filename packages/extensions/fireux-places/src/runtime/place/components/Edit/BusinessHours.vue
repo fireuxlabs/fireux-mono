@@ -20,10 +20,10 @@
 			description="Set the Place timezone above before saving business hours."
 		/>
 
-		<MoleculesFormsFirestoreObjectArray
+		<MoleculesFormsEditableObjectArray
 			label="Opening times"
-			:firebase-value="businessHours.windows"
-			:update-function="saveWindows"
+			:value="businessHours.windows"
+			:update="saveWindows"
 			:item-title="itemTitle"
 			:item-subtitle="itemSubtitle"
 			show-actions
@@ -93,7 +93,7 @@
 					Add time window
 				</UButton>
 			</template>
-		</MoleculesFormsFirestoreObjectArray>
+		</MoleculesFormsEditableObjectArray>
 	</UCard>
 </template>
 

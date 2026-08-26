@@ -87,11 +87,18 @@
               <div class="object-array__item-body grid gap-3">
                 <div v-if="editingIndex !== index">
                   <div
-                    v-if="getItemTitle(item, index) || getItemDate(item, index) || showActions"
+                    v-if="
+                      getItemTitle(item, index) ||
+                      getItemDate(item, index) ||
+                      showActions
+                    "
                     class="object-array__item-header"
                   >
                     <div class="object-array__item-title">
-                      <h3 v-if="getItemTitle(item, index)" class="fx-type-card-title">
+                      <h3
+                        v-if="getItemTitle(item, index)"
+                        class="fx-type-card-title"
+                      >
                         {{ getItemTitle(item, index) }}
                       </h3>
                     </div>
@@ -151,7 +158,9 @@
                     :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
-                    <div class="rounded border border-dashed border-primary/30 bg-primary/10 p-4">
+                    <div
+                      class="rounded border border-dashed border-primary/30 bg-primary/10 p-4"
+                    >
                       <div v-if="hasSchema" class="space-y-3">
                         <div
                           v-for="field in fields"
@@ -181,7 +190,9 @@
                           <UCheckbox
                             v-else-if="field.type === 'checkbox'"
                             v-model="draftItem[field.key]"
-                            :label="field.label || field.placeholder || field.key"
+                            :label="
+                              field.label || field.placeholder || field.key
+                            "
                           />
                         </div>
 
@@ -259,8 +270,8 @@ type ObjectArrayField = {
 
 const props = defineProps<{
   label?: string
-  firebaseValue: any[] | undefined
-  updateFunction: (value: any[]) => Promise<void> | void
+  value: any[] | undefined
+  update: (value: any[]) => Promise<void> | void
   itemTitle?: (item: any, index: number) => string
   itemDate?: (item: any, index: number) => string
   itemSubtitle?: (item: any, index: number) => string
@@ -290,7 +301,7 @@ const dateFields = computed(() => ({
 }))
 
 const items = computed(() => {
-  const src = props.firebaseValue || []
+  const src = props.value || []
   if (!src.length) return src
   if (editingIndex.value !== null) return src
   if (!sortByDate.value) return src
@@ -352,7 +363,7 @@ async function saveItemEditing() {
 
   if (maxItems.value !== undefined && next.length > maxItems.value) return
 
-  await props.updateFunction(next)
+  await props.update(next)
   cancelItemEditing()
 }
 
@@ -367,7 +378,7 @@ function push(item: any) {
 async function remove(index: number) {
   const src = items.value
   const next = [...src.slice(0, index), ...src.slice(index + 1)]
-  await props.updateFunction(next)
+  await props.update(next)
   if (editingIndex.value === index) cancelItemEditing()
 }
 

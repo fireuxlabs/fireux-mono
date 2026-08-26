@@ -2,7 +2,6 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../../utils/firestore-mutations/targets'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { runGuardedServerTransaction } from '../../../utils/firestore-mutations/server-transaction'
-import { isUserPing } from '../../../../user/models/user.model.ts'
 
 function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
@@ -16,7 +15,7 @@ function readChange(body: unknown): Record<string, string> {
   const keys = Object.keys(input)
   if (
     keys.length !== 1 ||
-    !['display_name', 'bio', 'avatar', 'ping'].includes(keys[0]!)
+    !['display_name', 'bio', 'avatar'].includes(keys[0]!)
   ) {
     badRequest('Update one profile field at a time.')
   }
@@ -39,10 +38,6 @@ function readChange(body: unknown): Record<string, string> {
   ) {
     badRequest('Avatar must be an HTTPS URL.')
   }
-  if (key === 'ping' && !isUserPing(value)) {
-    badRequest('Ping is invalid.')
-  }
-
   return { [key]: value }
 }
 

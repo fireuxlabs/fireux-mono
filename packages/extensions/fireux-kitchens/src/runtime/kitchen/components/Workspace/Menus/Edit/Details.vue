@@ -16,40 +16,40 @@
     </template>
 
     <div class="grid gap-4 md:grid-cols-2">
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Name"
-        :firebase-value="menuName"
+        :value="menuName"
         placeholder="Comida Casera"
         :maxlength="120"
         :disabled="!canWrite"
         disabled-message="This menu is read-only."
         :validation-function="validateMenuName"
-        :update-function="handleName"
+        :update="handleName"
       />
 
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Identifier"
-        :firebase-value="menuId"
+        :value="menuId"
         placeholder="pizza-snacks-and-drinks"
         :maxlength="80"
         :disabled="!canWrite"
         disabled-message="This menu is read-only."
         :validation-function="validateMenuId"
         :formatting-function="formatMenuId"
-        :update-function="handleMenuId"
+        :update="handleMenuId"
       />
 
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         class="md:col-span-2"
         label="Menu description"
         type="textarea"
         :rows="3"
-        :firebase-value="menuDescription"
+        :value="menuDescription"
         placeholder="Short guest-facing description"
         :maxlength="500"
         :disabled="!canWrite"
         disabled-message="This menu is read-only."
-        :update-function="handleDescription"
+        :update="handleDescription"
       />
     </div>
   </UCard>

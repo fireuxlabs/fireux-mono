@@ -1,7 +1,9 @@
 <template>
   <div class="flex flex-col gap-1">
     <div class="flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2 text-sm font-medium text-default min-w-0">
+      <div
+        class="flex items-center gap-2 text-sm font-medium text-default min-w-0"
+      >
         <Icon :name="icon" mode="svg" class="size-4 shrink-0" />
         <span class="truncate">{{ label }}</span>
       </div>
@@ -11,7 +13,10 @@
       </div>
     </div>
 
-    <div v-if="!isEditing" class="w-full rounded-md fx-field-surface px-3 py-2 text-sm">
+    <div
+      v-if="!isEditing"
+      class="w-full rounded-md fx-field-surface px-3 py-2 text-sm"
+    >
       <a
         v-if="displayText"
         :href="toHref(displayText)"
@@ -52,7 +57,9 @@
         :model-value="modelValue"
         :placeholder="computedPlaceholder"
         class="w-full"
-        @update:model-value="(v: unknown) => emit('update:modelValue', String(v ?? ''))"
+        @update:model-value="
+          (v: unknown) => emit('update:modelValue', String(v ?? ''))
+        "
         @keyup.enter="emit('enter')"
         @keyup.esc="emit('esc')"
       />
@@ -82,7 +89,9 @@ const emit = defineEmits<{
 
 const computedPlaceholder = computed(() => props.placeholder ?? '')
 const leading = computed(() => (props.leading ?? '').trim())
-const displayText = computed(() => (props.displayValue ?? props.modelValue ?? '').trim())
+const displayText = computed(() =>
+  (props.displayValue ?? props.modelValue ?? '').trim()
+)
 
 function onInput(e: Event) {
   const target = e.target as HTMLInputElement | null

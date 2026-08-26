@@ -74,38 +74,38 @@
           <MoleculesDisclosurePanel class="w-full" title="Edit item" size="sm">
             <div class="mt-3 grid gap-4 rounded-lg border border-default p-3">
               <div class="grid gap-4 md:grid-cols-2">
-                <MoleculesFormsFirestoreSimpleField
+                <MoleculesFormsEditableSimpleField
                   label="Dish name"
-                  :firebase-value="row.label"
+                  :value="row.label"
                   placeholder="Dish name"
                   :maxlength="160"
                   :disabled="!canWrite"
                   disabled-message="This menu is read-only."
                   :validation-function="validateDishName"
-                  :update-function="(value) => saveDishName(row, value)"
+                  :update="(value) => saveDishName(row, value)"
                 />
 
-                <MoleculesFormsFirestoreSimpleField
+                <MoleculesFormsEditableSimpleField
                   label="Menu price"
                   type="number"
-                  :firebase-value="row.price"
+                  :value="row.price"
                   placeholder="0"
                   :disabled="!canWrite"
                   disabled-message="This menu is read-only."
-                  :update-function="(value) => saveItemPrice(row, value)"
+                  :update="(value) => saveItemPrice(row, value)"
                 />
               </div>
 
-              <MoleculesFormsFirestoreSimpleField
+              <MoleculesFormsEditableSimpleField
                 label="Dish description"
                 type="textarea"
                 :rows="3"
-                :firebase-value="row.dish?.description || ''"
+                :value="row.dish?.description || ''"
                 placeholder="Dish description"
                 :maxlength="800"
                 :disabled="!canWrite"
                 disabled-message="This menu is read-only."
-                :update-function="(value) => saveDishDescription(row, value)"
+                :update="(value) => saveDishDescription(row, value)"
               />
 
               <ItemsOptions

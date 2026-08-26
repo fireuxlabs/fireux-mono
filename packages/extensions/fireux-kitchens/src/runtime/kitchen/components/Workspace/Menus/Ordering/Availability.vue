@@ -14,28 +14,28 @@
     </template>
 
     <div class="grid gap-5">
-      <MoleculesFormsFirestoreCheckbox
+      <MoleculesFormsEditableCheckbox
         :label="`Accepting ${surfaceLabel} orders`"
         display-label="Current operational state"
         :checkbox-label="`Accept new ${surfaceLabel} orders`"
         true-label="Accepting orders"
         false-label="Paused"
-        :firebase-value="acceptingOrders"
+        :value="acceptingOrders"
         :disabled="disabled"
         disabled-message="This menu is read-only."
-        :update-function="updateAcceptingOrders"
+        :update="updateAcceptingOrders"
       />
 
-      <MoleculesFormsFirestoreSimpleField
+      <MoleculesFormsEditableSimpleField
         label="Pause message"
         type="textarea"
         :rows="2"
         :maxlength="240"
-        :firebase-value="pauseMessage"
+        :value="pauseMessage"
         :placeholder="defaultPauseMessage"
         :disabled="disabled"
         disabled-message="This menu is read-only."
-        :update-function="updatePauseMessage"
+        :update="updatePauseMessage"
       />
 
       <UAlert

@@ -13,45 +13,45 @@
 		</template>
 
 		<div class="grid gap-4 md:grid-cols-2">
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Instagram"
 				type="url"
-				:firebase-value="socialLinks.instagram"
+				:value="socialLinks.instagram"
 				placeholder="https://instagram.com/example"
 				:maxlength="240"
-				:update-function="(value) => handleSocialLink('instagram', value)"
+				:update="(value) => handleSocialLink('instagram', value)"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Facebook"
 				type="url"
-				:firebase-value="socialLinks.facebook"
+				:value="socialLinks.facebook"
 				placeholder="https://facebook.com/example"
 				:maxlength="240"
-				:update-function="(value) => handleSocialLink('facebook', value)"
+				:update="(value) => handleSocialLink('facebook', value)"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="TikTok"
 				type="url"
-				:firebase-value="socialLinks.tiktok"
+				:value="socialLinks.tiktok"
 				placeholder="https://tiktok.com/@example"
 				:maxlength="240"
-				:update-function="(value) => handleSocialLink('tiktok', value)"
+				:update="(value) => handleSocialLink('tiktok', value)"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="LinkedIn"
 				type="url"
-				:firebase-value="socialLinks.linkedin"
+				:value="socialLinks.linkedin"
 				placeholder="https://linkedin.com/company/example"
 				:maxlength="240"
-				:update-function="(value) => handleSocialLink('linkedin', value)"
+				:update="(value) => handleSocialLink('linkedin', value)"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="YouTube"
 				type="url"
-				:firebase-value="socialLinks.youtube"
+				:value="socialLinks.youtube"
 				placeholder="https://youtube.com/@example"
 				:maxlength="240"
-				:update-function="(value) => handleSocialLink('youtube', value)"
+				:update="(value) => handleSocialLink('youtube', value)"
 			/>
 		</div>
 	</UCard>

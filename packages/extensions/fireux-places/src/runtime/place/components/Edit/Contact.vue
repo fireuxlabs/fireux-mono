@@ -13,51 +13,51 @@
 		</template>
 
 		<div class="grid gap-4 md:grid-cols-2">
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Short name"
-				:firebase-value="place?.short_name"
+				:value="place?.short_name"
 				placeholder="Optional short name"
 				:maxlength="80"
-				:update-function="handleShortName"
+				:update="handleShortName"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Phone"
-				:firebase-value="place?.phone"
+				:value="place?.phone"
 				placeholder="+41 ..."
 				:maxlength="80"
-				:update-function="handlePhone"
+				:update="handlePhone"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Email"
 				type="email"
-				:firebase-value="place?.email"
+				:value="place?.email"
 				placeholder="hello@example.com"
 				:maxlength="160"
-				:update-function="handleEmail"
+				:update="handleEmail"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Website"
 				type="url"
-				:firebase-value="place?.website"
+				:value="place?.website"
 				placeholder="https://example.com"
 				:maxlength="240"
-				:update-function="handleWebsite"
+				:update="handleWebsite"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Currency"
-				:firebase-value="place?.default_currency_code"
+				:value="place?.default_currency_code"
 				placeholder="CHF"
 				:maxlength="3"
 				:validation-function="validateCurrencyCode"
 				:formatting-function="formatCurrencyCode"
-				:update-function="handleCurrencyCode"
+				:update="handleCurrencyCode"
 			/>
-			<MoleculesFormsFirestoreSimpleField
+			<MoleculesFormsEditableSimpleField
 				label="Timezone"
-				:firebase-value="place?.timezone"
+				:value="place?.timezone"
 				placeholder="Europe/Zurich"
 				:maxlength="80"
-				:update-function="handleTimezone"
+				:update="handleTimezone"
 			/>
 		</div>
 	</UCard>

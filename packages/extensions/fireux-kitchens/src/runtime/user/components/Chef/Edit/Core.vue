@@ -8,48 +8,48 @@
       variant="outline"
     >
       <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Title"
-          :firebase-value="title"
+          :value="title"
           placeholder="Ex: Head Chef"
           :maxlength="60"
-          :update-function="handleTitle"
+          :update="handleTitle"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Summary"
           type="textarea"
           :rows="3"
           :maxlength="200"
-          :firebase-value="summary"
+          :value="summary"
           placeholder="Short listing summary"
-          :update-function="handleSummary"
+          :update="handleSummary"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Bio"
           type="textarea"
           :rows="6"
           :maxlength="2000"
-          :firebase-value="bio"
+          :value="bio"
           placeholder="Long-form chef bio"
-          :update-function="handleBio"
+          :update="handleBio"
         />
 
-        <MoleculesFormsFirestoreSimpleField
+        <MoleculesFormsEditableSimpleField
           label="Chef Image URL"
-          :firebase-value="imageUrl"
+          :value="imageUrl"
           placeholder="Optional: image URL for this chef profile"
           :maxlength="400"
-          :update-function="handleImage"
+          :update="handleImage"
         />
 
-        <MoleculesFormsFirestoreArrayOfStrings
+        <MoleculesFormsEditableArrayOfStrings
           label="Signature Dishes"
-          :firebase-value="signatureDishes"
+          :value="signatureDishes"
           item-placeholder="Signature dish"
           new-item-placeholder="Add signature dish"
-          :update-function="handleSignatureDishes"
+          :update="handleSignatureDishes"
         />
       </div>
     </UPageCard>

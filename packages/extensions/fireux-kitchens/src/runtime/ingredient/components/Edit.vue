@@ -13,11 +13,11 @@
     <div class="space-y-4">
       <UFormField label="Image">
         <div class="flex flex-col items-center gap-2">
-          <MoleculesFormsFirestoreImagePicker
+          <MoleculesFormsEditableImagePicker
             :src="ingredient.image_url || ''"
             :alt="ingredient.name || 'Ingredient'"
             :initials="imageInitials"
-            :update-function="handleImageUpload"
+            :update="handleImageUpload"
           />
           <p v-if="imageUploading" class="text-xs text-muted">
             Uploading image...

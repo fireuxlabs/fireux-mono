@@ -7,7 +7,7 @@
 
     <div class="grid gap-4">
       <div v-for="item in socialItems" :key="item.platform" class="grid gap-2">
-        <MoleculesFormsFirestoreSocialLink
+        <MoleculesFormsEditableSocialLink
           :id="`social-${item.platform}`"
           :label="item.label"
           :icon="item.icon"
@@ -54,7 +54,11 @@
                   @click="cancelPlatform(item.platform)"
                 />
               </UTooltip>
-              <UTooltip v-if="displayUrl(item.platform)" text="Clear" :popper="{ placement: 'top' }">
+              <UTooltip
+                v-if="displayUrl(item.platform)"
+                text="Clear"
+                :popper="{ placement: 'top' }"
+              >
                 <UButton
                   aria-label="Clear"
                   color="error"
@@ -66,7 +70,7 @@
               </UTooltip>
             </template>
           </template>
-        </MoleculesFormsFirestoreSocialLink>
+        </MoleculesFormsEditableSocialLink>
 
         <UAlert
           v-if="rowError[item.platform]"
@@ -89,11 +93,11 @@ import { createEmptyAppSocialLinks } from '../../../../app/composables/firestore
 type SocialLinks = App['social_links']
 
 const props = defineProps({
-  firebaseValue: {
+  value: {
     type: Object as PropType<SocialLinks>,
     default: () => createEmptyAppSocialLinks(),
   },
-  updateFunction: { type: Function, required: true },
+  update: { type: Function, required: true },
 })
 
 type SocialPlatform = keyof SocialLinks
@@ -176,7 +180,7 @@ const baseForPlatform = (platform: SocialPlatform): string => {
 
 // Computed properties
 const hasData = computed(() => {
-  const src = props.firebaseValue || {}
+  const src = props.value || {}
   for (const platform of platforms.value) {
     const raw = (src as any)[platform]
     if (typeof raw === 'string' && raw.trim()) return true
@@ -295,12 +299,12 @@ function toDisplayUrl(platform: SocialPlatform, raw: unknown): string {
 }
 
 function displayUrl(platform: SocialPlatform): string {
-  return toDisplayUrl(platform, (props.firebaseValue as any)?.[platform])
+  return toDisplayUrl(platform, (props.value as any)?.[platform])
 }
 
 // Watch for prop changes
 watch(
-  () => props.firebaseValue,
+  () => props.value,
   (newValue: SocialLinks) => {
     // Keep draft synced for non-editing rows (so opening edit reflects latest).
     const nextDraft = { ...draft.value }
@@ -320,7 +324,7 @@ function startPlatform(platform: SocialPlatform) {
   rowError.value = { ...rowError.value, [platform]: '' }
   draft.value = {
     ...draft.value,
-    [platform]: toEditableSocial(platform, (props.firebaseValue as any)?.[platform]),
+    [platform]: toEditableSocial(platform, (props.value as any)?.[platform]),
   }
 }
 
@@ -329,7 +333,7 @@ function cancelPlatform(platform: SocialPlatform) {
   rowError.value = { ...rowError.value, [platform]: '' }
   draft.value = {
     ...draft.value,
-    [platform]: toEditableSocial(platform, (props.firebaseValue as any)?.[platform]),
+    [platform]: toEditableSocial(platform, (props.value as any)?.[platform]),
   }
 }
 
@@ -338,19 +342,20 @@ async function savePlatform(platform: SocialPlatform) {
     const raw = String(draft.value[platform] ?? '')
     const next: SocialLinks = {
       ...createEmptyAppSocialLinks(),
-      ...(props.firebaseValue || createEmptyAppSocialLinks()),
+      ...(props.value || createEmptyAppSocialLinks()),
     }
 
     const normalized = normalizeSocial(platform, raw)
     ;(next as any)[platform] = normalized
 
-    await props.updateFunction(next)
+    await props.update(next)
     rowError.value = { ...rowError.value, [platform]: '' }
     if (editingPlatform.value === platform) editingPlatform.value = null
   } catch (e) {
     rowError.value = {
       ...rowError.value,
-      [platform]: e instanceof Error ? e.message : `${platform} is not a valid URL`,
+      [platform]:
+        e instanceof Error ? e.message : `${platform} is not a valid URL`,
     }
   }
 }
@@ -359,10 +364,10 @@ async function clearPlatform(platform: SocialPlatform) {
   try {
     const next: SocialLinks = {
       ...createEmptyAppSocialLinks(),
-      ...(props.firebaseValue || createEmptyAppSocialLinks()),
+      ...(props.value || createEmptyAppSocialLinks()),
     }
     ;(next as any)[platform] = ''
-    await props.updateFunction(next)
+    await props.update(next)
 
     const nextDraft = { ...draft.value }
     delete nextDraft[platform]
@@ -372,7 +377,8 @@ async function clearPlatform(platform: SocialPlatform) {
   } catch (e) {
     rowError.value = {
       ...rowError.value,
-      [platform]: e instanceof Error ? e.message : `${platform} is not a valid URL`,
+      [platform]:
+        e instanceof Error ? e.message : `${platform} is not a valid URL`,
     }
   }
 }

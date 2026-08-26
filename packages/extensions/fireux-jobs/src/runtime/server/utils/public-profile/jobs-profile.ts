@@ -32,7 +32,7 @@ function strings(value: unknown, maxItems: number, maxLength = 240): string[] {
 
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 }
 
@@ -174,44 +174,64 @@ export const mapProfessionalProfile: ProfileDirectoryMapper = (data, mode) => {
             data.other_experience,
             ProfessionalConstraints.otherExperience
           ),
-          languages: rows(data.languages, ProfessionalConstraints.languages, (entry) => ({
-          language: text(entry.language, 120),
-          proficiency: text(entry.proficiency, 120),
-        })),
-          certifications: rows(data.certifications, ProfessionalConstraints.certifications, (entry) => ({
-          name: text(entry.name, 240),
-          year: year(entry.year),
-          place_name: text(entry.place_name, 240),
-          formatted_address: text(entry.formatted_address, 500),
-            document_url: readHttpsUrl(entry.document_url),
-            image_url: readHttpsUrl(entry.image_url),
-        })),
-          education: rows(data.education, ProfessionalConstraints.education, (entry) => ({
-          institution: text(entry.institution, 240),
-          degree: text(entry.degree, 240),
-          start_year: year(entry.start_year),
-          end_year: year(entry.end_year),
-          ongoing: entry.ongoing === true,
-          formatted_address: text(entry.formatted_address, 500),
-            document_url: readHttpsUrl(entry.document_url),
-            image_url: readHttpsUrl(entry.image_url),
-        })),
-          volunteering: rows(data.volunteering, ProfessionalConstraints.volunteering, (entry) => ({
-          organization: text(entry.organization, 240),
-          role: text(entry.role, 160),
-          from_year: year(entry.from_year),
-          to_year: year(entry.to_year),
-          ongoing: entry.ongoing === true,
-          responsibilities: text(entry.responsibilities, 4_000),
-        })),
-          projects: rows(data.projects, ProfessionalConstraints.projects, (entry) => ({
-          name: text(entry.name, 240),
-          role: text(entry.role, 160),
-          from_year: year(entry.from_year),
-          to_year: year(entry.to_year),
-          ongoing: entry.ongoing === true,
-          responsibilities: text(entry.responsibilities, 4_000),
-        })),
+          languages: rows(
+            data.languages,
+            ProfessionalConstraints.languages,
+            (entry) => ({
+              language: text(entry.language, 120),
+              proficiency: text(entry.proficiency, 120),
+            })
+          ),
+          certifications: rows(
+            data.certifications,
+            ProfessionalConstraints.certifications,
+            (entry) => ({
+              name: text(entry.name, 240),
+              year: year(entry.year),
+              place_name: text(entry.place_name, 240),
+              formatted_address: text(entry.formatted_address, 500),
+              document_url: readHttpsUrl(entry.document_url),
+              image_url: readHttpsUrl(entry.image_url),
+            })
+          ),
+          education: rows(
+            data.education,
+            ProfessionalConstraints.education,
+            (entry) => ({
+              institution: text(entry.institution, 240),
+              degree: text(entry.degree, 240),
+              start_year: year(entry.start_year),
+              end_year: year(entry.end_year),
+              ongoing: entry.ongoing === true,
+              formatted_address: text(entry.formatted_address, 500),
+              document_url: readHttpsUrl(entry.document_url),
+              image_url: readHttpsUrl(entry.image_url),
+            })
+          ),
+          volunteering: rows(
+            data.volunteering,
+            ProfessionalConstraints.volunteering,
+            (entry) => ({
+              organization: text(entry.organization, 240),
+              role: text(entry.role, 160),
+              from_year: year(entry.from_year),
+              to_year: year(entry.to_year),
+              ongoing: entry.ongoing === true,
+              responsibilities: text(entry.responsibilities, 4_000),
+            })
+          ),
+          projects: rows(
+            data.projects,
+            ProfessionalConstraints.projects,
+            (entry) => ({
+              name: text(entry.name, 240),
+              role: text(entry.role, 160),
+              from_year: year(entry.from_year),
+              to_year: year(entry.to_year),
+              ongoing: entry.ongoing === true,
+              responsibilities: text(entry.responsibilities, 4_000),
+            })
+          ),
         }
       : {}),
   }
@@ -225,4 +245,5 @@ export const agentProfileDirectory: ProfileDirectoryConfig = {
 export const professionalProfileDirectory: ProfileDirectoryConfig = {
   kind: 'professional',
   mapProfile: mapProfessionalProfile,
+  rootCollection: 'professionals',
 }

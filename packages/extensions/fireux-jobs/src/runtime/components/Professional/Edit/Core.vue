@@ -9,52 +9,52 @@
         variant="outline"
       >
         <div class="space-y-4">
-          <MoleculesFormsFirestoreSimpleField
+          <MoleculesFormsEditableSimpleField
             label="Job title"
-            :firebase-value="headline"
+            :value="headline"
             placeholder="Ex: Freelance Chef"
             :maxlength="60"
-            :update-function="handleHeadline"
+            :update="handleHeadline"
           />
 
-          <MoleculesFormsFirestoreSimpleField
+          <MoleculesFormsEditableSimpleField
             label="Summary"
             type="textarea"
             :rows="3"
             :maxlength="200"
-            :firebase-value="summary"
+            :value="summary"
             placeholder="Short listing summary"
-            :update-function="handleSummary"
+            :update="handleSummary"
           />
 
-          <MoleculesFormsFirestoreSimpleField
+          <MoleculesFormsEditableSimpleField
             label="Bio"
             type="textarea"
             :rows="6"
             :maxlength="2000"
-            :firebase-value="bio"
+            :value="bio"
             placeholder="Long-form professional bio"
-            :update-function="handleBio"
+            :update="handleBio"
           />
 
           <div class="flex flex-col items-center gap-2">
-            <MoleculesFormsFirestoreImagePicker
+            <MoleculesFormsEditableImagePicker
               :src="imageUrl"
               :alt="headline || 'Professional'"
               :initials="imageInitials"
-              :update-function="handleImageUpload"
+              :update="handleImageUpload"
             />
             <p v-if="imageUploading" class="text-xs text-muted">
               Uploading image…
             </p>
           </div>
 
-          <MoleculesFormsFirestoreArrayOfStrings
+          <MoleculesFormsEditableArrayOfStrings
             label="Positions"
-            :firebase-value="positions"
+            :value="positions"
             item-placeholder="Position"
             new-item-placeholder="Add position"
-            :update-function="handlePositions"
+            :update="handlePositions"
             :max-items="ProfessionalConstraints.positions"
             :max-length="ProfessionalConstraints.stringItemLength"
           />
