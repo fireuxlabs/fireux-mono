@@ -135,14 +135,14 @@ export async function run(ctx) {
   const kitchenActive = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index/Active.vue'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/ActiveCard.vue'
     ),
     'utf8'
   )
   const projectActive = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index/Active.vue'
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/ActiveCard.vue'
     ),
     'utf8'
   )

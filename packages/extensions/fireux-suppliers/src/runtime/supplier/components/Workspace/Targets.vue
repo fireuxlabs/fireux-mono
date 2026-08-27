@@ -31,7 +31,7 @@ import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fir
 import {
   useSupplierInterface,
   type SupplierSurface,
-} from '../../../composables/firestore/utils/view/useSupplierInterface'
+} from '../../composables/firestore/utils/view/useSupplierInterface'
 
 const props = withDefaults(
   defineProps<{

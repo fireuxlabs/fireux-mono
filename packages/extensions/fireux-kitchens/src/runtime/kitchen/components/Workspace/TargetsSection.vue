@@ -25,9 +25,9 @@
 import { computed } from 'vue'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
 import type { WorkspaceTargetCard as WorkspaceTargetCardType } from 'fireux-core/runtime/components/Workspace/types'
-import type { KitchenFetchSource } from '../../../composables/firestore/fetch/useKitchenFetch'
-import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenFetchSource } from '../../composables/firestore/fetch/useKitchenFetch'
+import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 
 const props = withDefaults(
   defineProps<{

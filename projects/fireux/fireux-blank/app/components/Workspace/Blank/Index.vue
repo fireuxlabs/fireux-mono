@@ -1,13 +1,13 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Blank target outcome contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceBlankIndexActive
+    <WorkspaceBlankActiveCard
       :blank="blank"
       :blank-id="blankId"
       @clear="clearBlank"
     />
 
-    <WorkspaceBlankIndexTargets
+    <WorkspaceBlankTargets
       :collection="blanks"
       :outcome="outcome"
       @select="selectBlank"

@@ -31,7 +31,7 @@ import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fir
 import {
   usePortfolioInterface,
   type PortfolioSurface,
-} from '../../../composables/firestore/utils/view/usePortfolioInterface'
+} from '../../composables/firestore/utils/view/usePortfolioInterface'
 
 const props = withDefaults(
   defineProps<{

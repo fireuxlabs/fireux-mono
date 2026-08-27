@@ -5,6 +5,10 @@ export function useDevUi() {
   const route = useRoute()
   const panelOpen = useState('fireux_dev_panel_open', () => false)
   const notesVisible = useState('fireux_dev_notes_visible', () => true)
+  const componentLabelsVisible = useState(
+    'fireux_dev_component_labels_visible',
+    () => false
+  )
   const supportsInlineNotes = computed(() =>
     [
       '/kitchens',
@@ -30,10 +34,16 @@ export function useDevUi() {
     notesVisible.value = !notesVisible.value
   }
 
+  const toggleComponentLabels = () => {
+    componentLabelsVisible.value = !componentLabelsVisible.value
+  }
+
   return {
+    componentLabelsVisible,
     panelOpen,
     notesVisible,
     supportsInlineNotes,
+    toggleComponentLabels,
     togglePanel,
     toggleNotes,
   }

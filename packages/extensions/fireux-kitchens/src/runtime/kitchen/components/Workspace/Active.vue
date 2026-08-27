@@ -9,7 +9,7 @@
       aria-label="Loading active Kitchen"
     />
 
-    <WorkspaceKitchenIndexActive
+    <WorkspaceKitchenActiveCard
       v-else-if="!showEmptyState && workspace.selection.kitchen.value"
       :kitchen="workspace.selection.kitchen.value"
       :show-kitchens-action="showKitchensAction"

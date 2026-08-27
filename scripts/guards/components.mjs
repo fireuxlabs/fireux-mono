@@ -79,6 +79,7 @@ const CORE_SHARED_COMPONENT_FAMILIES = new Set([
   'layouts',
   'molecules',
 ])
+const WORKSPACE_INDEX_NAMESPACE = /\/components\/Workspace\/Index$/
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -368,6 +369,13 @@ function scan(dir, violations, repoRoot) {
     const stat = statSync(fullPath)
 
     if (stat.isDirectory()) {
+      const normalizedPath = fullPath.split(path.sep).join('/')
+      if (WORKSPACE_INDEX_NAMESPACE.test(normalizedPath)) {
+        violations.push(
+          `${path.relative(repoRoot, fullPath)} (Index.vue is the Workspace family entrypoint, not a child namespace)`
+        )
+        continue
+      }
       if (
         entry.toLowerCase() === 'organisms' &&
         isComponentTreePath(fullPath)

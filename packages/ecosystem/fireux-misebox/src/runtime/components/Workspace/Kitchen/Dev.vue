@@ -108,7 +108,7 @@
               experience.
             </p>
 
-            <WorkspaceKitchenIndexTargetSection
+            <WorkspaceKitchenTargetsSection
               title="Live kitchens"
               description="Switch the live Kitchen used for development."
               source="live"

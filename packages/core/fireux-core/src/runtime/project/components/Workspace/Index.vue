@@ -3,14 +3,14 @@
   <section class="workspace-surface workspace-surface--compact">
     <WorkspaceProjectHero />
 
-    <WorkspaceProjectIndexActive
+    <WorkspaceProjectActiveCard
       :project="project"
       :project-id="projectId"
       :outcome="outcome"
       @clear="clearProject"
     />
 
-    <WorkspaceProjectIndexTargets
+    <WorkspaceProjectTargets
       :collection="projects"
       :outcome="outcome"
       @select="selectProject"

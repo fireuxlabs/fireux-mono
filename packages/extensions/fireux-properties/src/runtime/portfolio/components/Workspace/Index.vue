@@ -1,13 +1,13 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Portfolio target outcome contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspacePortfolioIndexActive
+    <WorkspacePortfolioActiveCard
       :portfolio="portfolio"
       :portfolio-id="portfolioId"
       @clear="clearPortfolio"
     />
 
-    <WorkspacePortfolioIndexTargets
+    <WorkspacePortfolioTargets
       :collection="portfolios"
       :outcome="outcome"
       @select="selectPortfolio"

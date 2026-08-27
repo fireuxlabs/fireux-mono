@@ -1,5 +1,5 @@
-import { defineNuxtPlugin } from '#imports'
-import type { ComponentPublicInstance } from 'vue'
+import { defineNuxtPlugin, useState } from '#imports'
+import { watch, type ComponentPublicInstance } from 'vue'
 
 type LabelledInstance = ComponentPublicInstance & {
   $options: {
@@ -20,9 +20,14 @@ const LABEL_ROOT_ID = 'fireux-component-labels'
 export default defineNuxtPlugin((nuxtApp) => {
   if (!import.meta.dev) return
 
+  const labelsVisible = useState(
+    'fireux_dev_component_labels_visible',
+    () => false
+  )
   const targets = new Map<HTMLElement, TargetLabel>()
   const instanceTargets = new WeakMap<object, HTMLElement>()
   const root = createLabelRoot()
+  root.hidden = !labelsVisible.value
   const resizeObserver = new ResizeObserver(scheduleRender)
   let renderFrame = 0
 
@@ -106,6 +111,11 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
   })
 
+  const stopWatchingVisibility = watch(labelsVisible, (visible) => {
+    root.hidden = !visible
+    if (visible) scheduleRender()
+  })
+
   window.addEventListener('scroll', scheduleRender, true)
   window.addEventListener('resize', scheduleRender)
 
@@ -113,6 +123,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('app:unmounted', () => {
     window.removeEventListener('scroll', scheduleRender, true)
     window.removeEventListener('resize', scheduleRender)
+    stopWatchingVisibility()
     resizeObserver.disconnect()
     if (renderFrame) cancelAnimationFrame(renderFrame)
     root.remove()

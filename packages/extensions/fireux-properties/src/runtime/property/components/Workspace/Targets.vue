@@ -27,8 +27,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceTargetOutcome } from 'fireux-core/runtime/composables/fireux/workspace/workspace-outcome'
-import type { Property } from '../../../models/property.model.ts'
-import { usePropertyInterface } from '../../../composables/firestore/utils/view/usePropertyInterface'
+import type { Property } from '../../models/property.model.ts'
+import { usePropertyInterface } from '../../composables/firestore/utils/view/usePropertyInterface'
 
 const props = withDefaults(
   defineProps<{

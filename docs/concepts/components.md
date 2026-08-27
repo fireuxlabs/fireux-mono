@@ -331,7 +331,9 @@ Inside `runtime/<entity>/components`:
 
 The entity-scoped destination is:
 
-- `runtime/<entity>/components/Workspace/Index`
+- `runtime/<entity>/components/Workspace/Index.vue` for the family entrypoint
+- `runtime/<entity>/components/Workspace/ActiveCard.vue` for the selected Entity presentation
+- `runtime/<entity>/components/Workspace/Targets.vue` for the selectable target collection
 - `runtime/<entity>/components/Workspace/Overview`
 - `runtime/<entity>/components/Workspace/Identity`
 - `runtime/<entity>/components/Workspace/Team`
@@ -346,12 +348,17 @@ the root Workspace folder.
 
 ## Workspace bucket rule
 
-- Every Workspace Entity uses `Index`, `Overview`, `Identity`, and `Team`.
+- Every Workspace Entity uses an `Index.vue` entrypoint plus `Overview`,
+  `Identity`, and `Team` where those surfaces exist.
   Entity-specific `Operations` and temporary `Sundries` remain optional.
   Notifications is supplied once by the shared Workspace shell.
-- These buckets are directories. Prefer
+- Surface buckets are directories. Prefer
   `runtime/<entity>/components/Workspace/Overview/Index.vue` over a peer
   `Overview.vue` file.
+- `Index.vue` is the path-derived family entrypoint, never a namespace.
+  Named children remain peers or live beneath a semantic owner so generated
+  names read as `WorkspaceKitchenActiveCard` and `WorkspaceKitchenTargets`,
+  never `WorkspaceKitchenIndexActive` or `WorkspaceKitchenIndexTargets`.
 - `Team` is a shared workspace access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
 - `Sundries` quarantines parked or underdeveloped workspace surfaces so they do not pretend to be confirmed operations.
@@ -377,9 +384,10 @@ the root Workspace folder.
   Nested Core families such as `molecules` keep their path-derived
   `Molecules*` names; do not flatten or alias the same files through a second
   component-directory registration.
-- In development, Core labels visible authored Vue component roots through its
-  fixed hotpink inspection overlay. Keep those labels out of component markup;
-  production does not run the overlay.
+- In development, Core can label visible authored Vue component roots through
+  its fixed hotpink inspection overlay. Labels default off and toggle from the
+  existing floating developer controls without a reload. Keep those labels out
+  of component markup; production does not run the overlay.
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.

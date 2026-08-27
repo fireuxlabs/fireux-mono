@@ -1,6 +1,6 @@
 <template>
   <form class="grid max-w-md gap-3" @submit.prevent="submit">
-    <WorkspaceKitchenIndexActive
+    <WorkspaceKitchenActiveCard
       v-if="manifestKitchen"
       :kitchen="manifestKitchen"
       draft

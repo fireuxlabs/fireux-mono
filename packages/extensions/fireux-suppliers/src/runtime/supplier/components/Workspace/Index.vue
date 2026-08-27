@@ -1,13 +1,13 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Supplier target outcome contract. -->
 <template>
   <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceSupplierIndexActive
+    <WorkspaceSupplierActiveCard
       :supplier="supplier"
       :supplier-id="supplierId"
       @clear="clearSupplier"
     />
 
-    <WorkspaceSupplierIndexTargets
+    <WorkspaceSupplierTargets
       :collection="suppliers"
       :outcome="outcome"
       @select="selectSupplier"

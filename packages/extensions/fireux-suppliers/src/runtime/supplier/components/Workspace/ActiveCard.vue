@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SupplierSurface } from '../../../composables/firestore/utils/view/useSupplierInterface'
+import type { SupplierSurface } from '../../composables/firestore/utils/view/useSupplierInterface'
 
 const props = defineProps<{
   supplier?: SupplierSurface | null

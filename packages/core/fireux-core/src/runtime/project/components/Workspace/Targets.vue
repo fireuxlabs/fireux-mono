@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { WorkspaceTargetOutcome } from '../../../../composables/fireux/workspace/workspace-outcome'
-import type { ProjectSurface } from '../../../composables/useProjectInterface'
-import { useProjectInterface } from '../../../composables/useProjectInterface'
+import type { WorkspaceTargetOutcome } from '../../../composables/fireux/workspace/workspace-outcome'
+import type { ProjectSurface } from '../../composables/useProjectInterface'
+import { useProjectInterface } from '../../composables/useProjectInterface'
 
 const props = withDefaults(
   defineProps<{

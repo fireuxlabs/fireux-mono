@@ -109,6 +109,28 @@
               </UTooltip>
 
               <UTooltip
+                :text="
+                  componentLabelsVisible
+                    ? 'Hide component labels'
+                    : 'Show component labels'
+                "
+                :popper="{ placement: 'top' }"
+              >
+                <UButton
+                  :aria-label="
+                    componentLabelsVisible
+                      ? 'Hide component labels'
+                      : 'Show component labels'
+                  "
+                  size="xs"
+                  variant="ghost"
+                  :color="componentLabelsVisible ? 'warning' : 'neutral'"
+                  icon="i-lucide-tags"
+                  @click="toggleComponentLabels()"
+                />
+              </UTooltip>
+
+              <UTooltip
                 text="Collapse dev controls"
                 :popper="{ placement: 'top' }"
               >
@@ -190,9 +212,11 @@ const manifestHref = withBuildVersion(
 // App shell owns global colour-mode activation; components should only consume resolved mode.
 useColorMode()
 const {
+  componentLabelsVisible,
   panelOpen,
   notesVisible,
   supportsInlineNotes,
+  toggleComponentLabels,
   toggleNotes,
   togglePanel,
 } = useDevUi()

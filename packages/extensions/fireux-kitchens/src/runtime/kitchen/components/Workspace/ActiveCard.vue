@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { WorkspaceEntityCard } from 'fireux-core/runtime/components/Workspace/types'
-import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 
 const props = withDefaults(
   defineProps<{

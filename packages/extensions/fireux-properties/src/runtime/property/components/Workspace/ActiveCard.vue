@@ -2,27 +2,27 @@
 <!-- Concurrent edit — 2026-07-21 21:23 CEST — Workspace index parity: delegate selected-target chrome to Core. -->
 <template>
   <WorkspaceActiveEntity
-    label="Portfolio"
-    :active-id="portfolioId"
-    :description="portfolioName"
+    label="Property"
+    :active-id="propertyId"
+    :description="propertyName"
     @clear="emit('clear')"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PortfolioWorkspaceEntity } from '../../../composables/workspace/core/usePortfolioWorkspace'
+import type { Property } from '../../models/property.model.ts'
 
 const props = defineProps<{
-  portfolio?: PortfolioWorkspaceEntity | null
-  portfolioId?: string
+  property?: Property | null
+  propertyId?: string
 }>()
 
 const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
-const portfolioName = computed(() =>
-  String(props.portfolio?.name || props.portfolio?.slug || '').trim()
+const propertyName = computed(() =>
+  String(props.property?.identity?.name || props.property?.slug || '').trim()
 )
 </script>

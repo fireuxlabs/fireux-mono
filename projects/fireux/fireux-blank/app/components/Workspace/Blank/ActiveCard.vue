@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Blank } from '../../../../models/blank.model'
+import type { Blank } from '../../../models/blank.model'
 
 const props = defineProps<{
   blank?: Blank | null
