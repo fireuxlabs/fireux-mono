@@ -1,5 +1,5 @@
 <template>
-  <PricingPage
+  <AppPricingPage
     description="Pricing for multilingual QR pages and translation products."
   >
     <section class="rounded-md border border-default bg-default p-5">
@@ -10,20 +10,17 @@
         Translation products live in Products.
       </h2>
       <p class="mt-3 text-muted">
-        Sproochli pricing explains language and localisation packages. The actual buyable records belong in the shared Products system.
+        Sproochli pricing explains language and localisation packages. The
+        actual buyable records belong in the shared Products system.
       </p>
     </section>
 
     <template #actions>
-      <UButton
-        to="/products"
-        icon="i-lucide-box"
-        size="lg"
-      >
+      <UButton to="/products" icon="i-lucide-box" size="lg">
         View products
       </UButton>
     </template>
-  </PricingPage>
+  </AppPricingPage>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +42,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Pricing - Sproochli',
-  description: 'Sproochli pricing for multilingual QR pages and translation products.',
+  description:
+    'Sproochli pricing for multilingual QR pages and translation products.',
 })
 </script>

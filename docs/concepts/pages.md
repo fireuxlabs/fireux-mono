@@ -1,6 +1,6 @@
 # Pages
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 Ref: 1813a2f9e
 Role: map, not canon
 
@@ -104,7 +104,7 @@ Map how route pages should be built and where consensus is still forming.
 - App and extension administration stays in named route pages and advertises
   itself through `adminSurface` route metadata. The shared Admin dashboard
   discovers those enabled tools; it does not hard-code optional domains.
-- Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Admin.vue`,
+- Start at `packages/core/fireux-core/src/runtime/app/components/Dashboard/Admin.vue`,
   `packages/core/fireux-core/src/runtime/composables/navigation/useDashboardNav.ts`,
   and the enabled package pages under `src/runtime/pages/dashboard`.
 

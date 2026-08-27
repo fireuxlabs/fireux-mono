@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="supplier"
     title="Suppliers"
     description="Add comma-separated supplier slugs to feature on public supplier surfaces."

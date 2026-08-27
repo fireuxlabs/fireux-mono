@@ -1,5 +1,5 @@
 <template>
-  <OperationGuidingLiterature v-if="operation" :operation="operation" />
+  <AppOperationGuidingLiterature v-if="operation" :operation="operation" />
 </template>
 
 <script setup lang="ts">

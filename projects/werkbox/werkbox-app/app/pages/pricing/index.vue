@@ -1,5 +1,5 @@
 <template>
-  <PricingCatalogue
+  <AppPricingCatalogue
     :app-name="appName"
     :description="description"
     :tiers="tiers"

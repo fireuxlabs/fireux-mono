@@ -10,7 +10,7 @@
       </template>
 
       <template #body>
-        <WorkspaceKitchenIndex />
+        <MiseboxHome />
       </template>
     </UDashboardPanel>
   </div>

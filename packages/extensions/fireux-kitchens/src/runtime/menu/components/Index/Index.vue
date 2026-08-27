@@ -70,7 +70,7 @@
       </UPage>
     </template>
 
-    <EntityCollectionPage
+    <CollectionPage
       v-else
       data-menu-projection="index"
       data-menu-index-kind="collection"
@@ -86,7 +86,7 @@
       <template #secondary>
         <MenuCTA />
       </template>
-    </EntityCollectionPage>
+    </CollectionPage>
   </div>
 </template>
 

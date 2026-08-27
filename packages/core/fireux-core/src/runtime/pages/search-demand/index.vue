@@ -6,22 +6,26 @@
     />
 
     <UPageBody>
-      <SearchDemandStageNav current="domain" />
+      <AppSearchDemandStageNav current="domain" />
 
-      <MoleculesStateCard surface="collection"
+      <MoleculesStateCard
+        surface="collection"
         v-if="pending"
         title="Loading search demand"
         description="Reading this App’s research evidence…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <MoleculesStateCard surface="collection"
-        v-else-if="error" state="error"
+      <MoleculesStateCard
+        surface="collection"
+        v-else-if="error"
+        state="error"
         title="Search demand unavailable"
         description="This App’s research evidence could not be loaded."
         icon="i-lucide-triangle-alert"
       />
-      <MoleculesStateCard surface="collection"
+      <MoleculesStateCard
+        surface="collection"
         v-else-if="!demand"
         title="No demand research yet"
         description="No tool-sourced search observations have been recorded for this App."
@@ -44,19 +48,34 @@
         </section>
 
         <div class="search-demand-groups">
-          <details v-for="group in observationGroups" :key="group.seed" class="search-demand-group">
+          <details
+            v-for="group in observationGroups"
+            :key="group.seed"
+            class="search-demand-group"
+          >
             <summary>
               <div>
                 <p class="search-demand-eyebrow">Seed</p>
                 <h2>{{ group.seed }}</h2>
               </div>
-              <span>{{ group.observations.length }} suggestion{{ group.observations.length === 1 ? '' : 's' }}</span>
+              <span
+                >{{ group.observations.length }} suggestion{{
+                  group.observations.length === 1 ? '' : 's'
+                }}</span
+              >
             </summary>
 
             <div class="search-demand-group-body">
               <ol>
-                <li v-for="observation in group.observations" :key="observationKey(observation)">
-                  <ULink v-if="observation.source_url" :to="observation.source_url" target="_blank">
+                <li
+                  v-for="observation in group.observations"
+                  :key="observationKey(observation)"
+                >
+                  <ULink
+                    v-if="observation.source_url"
+                    :to="observation.source_url"
+                    target="_blank"
+                  >
                     {{ observation.query }}
                   </ULink>
                   <span v-else>{{ observation.query }}</span>
@@ -76,9 +95,15 @@
         <section class="search-demand-next">
           <p class="search-demand-eyebrow">Next stage</p>
           <h2>Turn the observations into a demand map.</h2>
-          <p>Group the evidence into operator jobs, state confidence and preserve the research gaps.</p>
+          <p>
+            Group the evidence into operator jobs, state confidence and preserve
+            the research gaps.
+          </p>
           <div>
-            <UButton to="/search-demand/analysis" trailing-icon="i-lucide-arrow-right">
+            <UButton
+              to="/search-demand/analysis"
+              trailing-icon="i-lucide-arrow-right"
+            >
               Open demand map
             </UButton>
           </div>
@@ -91,7 +116,11 @@
           title="Search demand (JSON)"
           context="Tool-sourced App-domain search observations"
           :objects="observations"
-          :derived="{ domain: demand.domain, operator: demand.operator, description: demand.description }"
+          :derived="{
+            domain: demand.domain,
+            operator: demand.operator,
+            description: demand.description,
+          }"
           :default-open="false"
         />
       </template>
@@ -122,7 +151,10 @@ const observationGroups = computed(() => {
   const groups = new Map<string, SearchDemandObservation[]>()
 
   for (const observation of observations.value) {
-    const seed = String(observation.metrics?.find(metric => metric.label === 'Seed')?.value ?? 'Other evidence')
+    const seed = String(
+      observation.metrics?.find((metric) => metric.label === 'Seed')?.value ??
+        'Other evidence'
+    )
     groups.set(seed, [...(groups.get(seed) ?? []), observation])
   }
 
@@ -148,27 +180,98 @@ function observationKey(observation: SearchDemandObservation): string {
 definePageMeta({
   layout: 'default',
   title: 'Understand the domain',
-  description: 'Define an App’s operator boundary and review its tool-sourced search evidence.',
+  description:
+    'Define an App’s operator boundary and review its tool-sourced search evidence.',
 })
 </script>
 
 <style scoped>
-.search-demand-page { max-width: 64rem; margin-inline: auto; }
-.search-demand-summary { display: grid; gap: calc(var(--spacing) * 2); padding-block: calc(var(--spacing) * 8); border-bottom: 1px solid var(--ui-border); }
-.search-demand-summary h2 { font-size: var(--text-xl); font-weight: var(--font-weight-bold); }
-.search-demand-summary p { color: var(--ui-text-muted); }
-.search-demand-groups { display: grid; }
-.search-demand-group { border-bottom: 1px solid var(--ui-border); }
-.search-demand-group summary { display: flex; align-items: start; justify-content: space-between; gap: calc(var(--spacing) * 4); padding-block: calc(var(--spacing) * 5); cursor: pointer; list-style: none; }
-.search-demand-group summary::-webkit-details-marker { display: none; }
-.search-demand-group summary::after { content: '+'; color: var(--ui-text-muted); font-size: var(--text-xl); }
-.search-demand-group[open] summary::after { content: '−'; }
-.search-demand-group-body { display: grid; gap: calc(var(--spacing) * 4); padding-block-end: calc(var(--spacing) * 6); }
-.search-demand-group h2 { font-size: var(--text-lg); font-weight: var(--font-weight-semibold); }
-.search-demand-group summary > span, .search-demand-context { margin-inline-start: auto; color: var(--ui-text-muted); font-size: var(--text-sm); }
-.search-demand-group ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: calc(var(--spacing) * 2) calc(var(--spacing) * 6); padding-inline-start: calc(var(--spacing) * 5); list-style: decimal; }
-.search-demand-next { display: grid; gap: calc(var(--spacing) * 4); margin-block: calc(var(--spacing) * 10); padding: calc(var(--spacing) * 6); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-bg-muted); }
-.search-demand-next h2 { font-size: var(--text-xl); font-weight: var(--font-weight-semibold); }
-.search-demand-next > p { color: var(--ui-text-muted); }
-.search-demand-eyebrow { color: var(--ui-primary); font-size: var(--text-xs); font-weight: var(--font-weight-bold); letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+.search-demand-page {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+.search-demand-summary {
+  display: grid;
+  gap: calc(var(--spacing) * 2);
+  padding-block: calc(var(--spacing) * 8);
+  border-bottom: 1px solid var(--ui-border);
+}
+.search-demand-summary h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+}
+.search-demand-summary p {
+  color: var(--ui-text-muted);
+}
+.search-demand-groups {
+  display: grid;
+}
+.search-demand-group {
+  border-bottom: 1px solid var(--ui-border);
+}
+.search-demand-group summary {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  padding-block: calc(var(--spacing) * 5);
+  cursor: pointer;
+  list-style: none;
+}
+.search-demand-group summary::-webkit-details-marker {
+  display: none;
+}
+.search-demand-group summary::after {
+  content: '+';
+  color: var(--ui-text-muted);
+  font-size: var(--text-xl);
+}
+.search-demand-group[open] summary::after {
+  content: '−';
+}
+.search-demand-group-body {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+  padding-block-end: calc(var(--spacing) * 6);
+}
+.search-demand-group h2 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+}
+.search-demand-group summary > span,
+.search-demand-context {
+  margin-inline-start: auto;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+.search-demand-group ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: calc(var(--spacing) * 2) calc(var(--spacing) * 6);
+  padding-inline-start: calc(var(--spacing) * 5);
+  list-style: decimal;
+}
+.search-demand-next {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+  margin-block: calc(var(--spacing) * 10);
+  padding: calc(var(--spacing) * 6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: var(--ui-bg-muted);
+}
+.search-demand-next h2 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+}
+.search-demand-next > p {
+  color: var(--ui-text-muted);
+}
+.search-demand-eyebrow {
+  color: var(--ui-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
 </style>

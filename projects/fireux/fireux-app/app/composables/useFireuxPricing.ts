@@ -1,7 +1,7 @@
 import {
   usePricing,
   type PricingProfile,
-} from 'fireux-core/runtime/composables/fireux/pricing/usePricing'
+} from 'fireux-core/runtime/app/composables/pricing/usePricing'
 
 const fireuxPricingProfile = {
   appName: 'FireUX',

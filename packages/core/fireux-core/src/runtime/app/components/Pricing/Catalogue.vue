@@ -1,5 +1,5 @@
 <template>
-  <PricingPage
+  <AppPricingPage
     :title="`${props.appName} pricing`"
     :description="props.description"
     :plans="plans"
@@ -18,17 +18,17 @@
         Get started
       </UButton>
     </template>
-  </PricingPage>
+  </AppPricingPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PricingTier } from '../../composables/fireux/pricing/usePricing'
+import type { AppPricingTier } from '../../composables/pricing/usePricing'
 
 const props = defineProps<{
   appName: string
   description: string
-  tiers: readonly PricingTier[]
+  tiers: readonly AppPricingTier[]
   intro?: string
 }>()
 const plans = computed(() =>

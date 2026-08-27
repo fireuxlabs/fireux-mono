@@ -26,14 +26,14 @@
       </UFormField>
 
       <!-- Keywords -->
-      <MoleculesFormsArrayOfStrings
+      <BlogCreateArrayOfStrings
         v-model="blogPost.keywords"
         label="Keywords"
         item-placeholder="Keyword"
         new-item-placeholder="Add new keyword"
       />
       <!-- Tags -->
-      <MoleculesFormsArrayOfStrings
+      <BlogCreateArrayOfStrings
         v-model="blogPost.tags"
         label="Tags"
         item-placeholder="Tag"

@@ -17,7 +17,7 @@
           :headline="operation.workspace.name"
         />
         <UPageBody class="space-y-4">
-          <OperationGuidingLiterature :operation="operation" />
+          <AppOperationGuidingLiterature :operation="operation" />
 
           <div class="flex flex-wrap gap-3">
             <UButton

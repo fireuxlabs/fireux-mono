@@ -233,10 +233,10 @@ Before each task:
   pack while retaining its own semantic primary palette. Tenant Misebox Apps
   remain on Nuxt UI unless their own App config deliberately selects a pack;
   ecosystem membership never applies app chrome implicitly.
-- The Main App's steam remains project-owned atmosphere, composed through Core
-  `EffectsAmbient`. Core owns fixed viewport layering and content isolation;
-  Misebox owns the original client-initialized puff treatment and its
-  reduced-motion state.
+- The Main App owns both its fixed ambient landing layer and its Steam
+  atmosphere. The page owns viewport layering and content isolation; the
+  visual owns the original client-initialized puff treatment and its
+  reduced-motion state. Core has no generic effects wrapper.
 - The ecosystem package must not own tenant-id branches, Kitchen/Menu source
   defaults, or a competing Menu renderer. Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
@@ -247,6 +247,14 @@ Before each task:
   Project Apps do not repeat those integration values.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
+- The Misebox Main App home composes the Kitchen-owned
+  `WorkspaceKitchen` for live selection, creation, and collection state.
+  App-owned hero, operation doorways, free tools, discovery, and copy live
+  beneath `Misebox/Home`; the App does not create a parallel
+  `WorkspaceKitchen` component family or duplicate Kitchen operation truth.
+  `Misebox/Landing/WorkspacePreview` remains a separate read-only product proof
+  backed by Kitchen-owned Demo records and is not part of the live Workspace
+  entry.
 - Misebox product literature follows `docs/concepts/product-language.md`.
   Start with the owning package's fields, states, commands, and child pages;
   derive operation copy from those children, derive Kitchen Workspace copy from

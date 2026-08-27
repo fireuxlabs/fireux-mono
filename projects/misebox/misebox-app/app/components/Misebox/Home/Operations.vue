@@ -50,54 +50,32 @@
 </template>
 
 <script setup lang="ts">
-const operations = [
-  [
-    'Restaurant Menus',
-    'Create, structure and publish restaurant Menus.',
-    '/operations/menus',
-    'i-lucide-book-open',
-  ],
-  [
-    'Dishes',
-    'Manage the Dishes used across Menus and Recipes.',
-    '/operations/dishes',
-    'i-lucide-utensils',
-  ],
-  [
-    'Recipes',
-    'Maintain Recipe ingredients, methods and yields.',
-    '/operations/recipes',
-    'i-lucide-notebook-tabs',
-  ],
-  [
-    'Kitchen prep',
-    'Plan and track preparation work before service.',
-    '/operations/mise',
-    'i-lucide-list-checks',
-  ],
-  [
-    'Restaurant orders',
-    'Run the Kitchen order board and service queue.',
-    '/operations/orders',
-    'i-lucide-receipt-text',
-  ],
-  [
-    'Kitchen sales',
-    'Review bounded sales measures by period.',
-    '/operations/finance',
-    'i-lucide-chart-column',
-  ],
-  [
-    'Suppliers',
-    'Connect Suppliers, catalogues and supply options.',
-    '/operations/suppliers',
-    'i-lucide-truck',
-  ],
-  [
-    'Ingredients',
-    'Maintain the Ingredients used by the Kitchen.',
-    '/operations/ingredients',
-    'i-lucide-carrot',
-  ],
-].map(([label, description, to, icon]) => ({ label, description, to, icon }))
+import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
+
+const featuredSlugs = [
+  'menus',
+  'dishes',
+  'recipes',
+  'mise',
+  'orders',
+  'finance',
+  'suppliers',
+  'ingredients',
+] as const
+
+const operations = featuredSlugs.flatMap((slug) => {
+  const operation = kitchenOperations.find(
+    (candidate) => candidate.slug === slug
+  )
+  return operation
+    ? [
+        {
+          label: operation.title,
+          description: operation.description,
+          to: `/operations/${operation.slug}`,
+          icon: operation.icon,
+        },
+      ]
+    : []
+})
 </script>

@@ -8,7 +8,7 @@
     <template #body>
       <UPage>
         <UPageBody class="pagebody">
-          <AdminFeaturedSlugsSelection
+          <DashboardAdminFeaturedSlugsSelection
             field="featured_app_slugs"
             headline="Public directory curation"
             title="Featured apps"
@@ -51,7 +51,9 @@
                     :key="row.slug"
                     action
                     :aria-label="`${isSelected(row.slug, selectedValues) ? 'Remove' : 'Feature'} ${row.card.displayName}`"
-                    :class="selectionClass(isSelected(row.slug, selectedValues))"
+                    :class="
+                      selectionClass(isSelected(row.slug, selectedValues))
+                    "
                     @activate="toggleSlug(row.slug)"
                   >
                     <AppCardsCell
@@ -61,16 +63,26 @@
                     />
                     <UBadge
                       class="absolute right-3 top-3"
-                      :color="isSelected(row.slug, selectedValues) ? 'primary' : 'neutral'"
-                      :variant="isSelected(row.slug, selectedValues) ? 'solid' : 'soft'"
+                      :color="
+                        isSelected(row.slug, selectedValues)
+                          ? 'primary'
+                          : 'neutral'
+                      "
+                      :variant="
+                        isSelected(row.slug, selectedValues) ? 'solid' : 'soft'
+                      "
                     >
-                      {{ isSelected(row.slug, selectedValues) ? 'Featured' : 'Feature' }}
+                      {{
+                        isSelected(row.slug, selectedValues)
+                          ? 'Featured'
+                          : 'Feature'
+                      }}
                     </UBadge>
                   </MoleculesActionSurface>
                 </div>
               </UPageCard>
             </template>
-          </AdminFeaturedSlugsSelection>
+          </DashboardAdminFeaturedSlugsSelection>
         </UPageBody>
       </UPage>
     </template>
@@ -80,7 +92,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
-import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/FeaturedSlugsSelection.vue'
+import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
 import {
   useAppInterface,
   type AppCard,
@@ -100,16 +112,14 @@ const selectableApps = computed(() =>
       )
     )
 )
-const selectableRows = computed<{ slug: string, card: AppCard.Card }[]>(() =>
+const selectableRows = computed<{ slug: string; card: AppCard.Card }[]>(() =>
   selectableApps.value
     .map((app) => {
       const slug = clean(app.slug)
       const card = appCell(app as Parameters<typeof appCell>[0])
       return slug && card ? { slug, card } : null
     })
-    .filter((row): row is { slug: string, card: AppCard.Card } =>
-      Boolean(row)
-    )
+    .filter((row): row is { slug: string; card: AppCard.Card } => Boolean(row))
 )
 
 const isSelected = (slug: string, selectedValues: string[]) =>

@@ -22,7 +22,7 @@ domain capability, and intentionally App-owned branded presentation.
 An ordinary Entity Collection Page uses this composition:
 
 ```text
-EntityCollectionPage
+CollectionPage
 ├── Entity collection manager
 │   ├── CollectionHeader
 │   ├── MoleculesStateCard surface="collection"
@@ -105,14 +105,14 @@ They inherit lower contracts where sensible:
 - accessibility and responsive fundamentals;
 - Core semantic tokens and Nuxt UI primitives.
 
-Do not route these branded surfaces through `EntityCollectionPage` merely to make
+Do not route these branded surfaces through `CollectionPage` merely to make
 their templates resemble ordinary Entity Collection Pages. Do not move their aesthetic
 into Core. Their branded presentation is an accepted product-family boundary,
 not drift.
 
 ## Component ownership
 
-- `EntityCollectionPage` is shared Core composition, not an Entity engine.
+- `CollectionPage` is shared Core composition, not an Entity engine.
 - `MoleculesStateCard` owns shared loading, unavailable, missing, and empty
   semantics. Ordinary managers select its `collection` presentation surface;
   they do not maintain a second Collection-only state component.
@@ -146,7 +146,7 @@ When this family changes:
 
 ## Current decisions
 
-- Ordinary Entity Collection Pages share `EntityCollectionPage`.
+- Ordinary Entity Collection Pages share `CollectionPage`.
 - Entity filters, actions, card facts, read authority, and route policy remain
   legitimate domain deltas.
 - Yellow Velo and Interlaken aesthetic families remain App-owned.

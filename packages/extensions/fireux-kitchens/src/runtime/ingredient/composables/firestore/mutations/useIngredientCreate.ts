@@ -1,6 +1,6 @@
 import { refreshNuxtData } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { IngredientDetailResponse } from '../../../models/ingredient-collection.model.ts'
+import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 import type {
   Ingredient,
   IngredientCreateInput,

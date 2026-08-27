@@ -8,7 +8,7 @@
     <template #body>
       <UPage>
         <UPageBody class="pagebody">
-          <AdminFeaturedSlugsSelection
+          <DashboardAdminFeaturedSlugsSelection
             field="featured_ecosystem_slugs"
             headline="Public directory curation"
             title="Featured ecosystems"
@@ -51,7 +51,9 @@
                     :key="row.slug"
                     action
                     :aria-label="`${isSelected(row.slug, selectedValues) ? 'Remove' : 'Feature'} ${row.card.title}`"
-                    :class="selectionClass(isSelected(row.slug, selectedValues))"
+                    :class="
+                      selectionClass(isSelected(row.slug, selectedValues))
+                    "
                     @activate="toggleSlug(row.slug)"
                   >
                     <EcosystemCardsCell
@@ -61,16 +63,26 @@
                     />
                     <UBadge
                       class="absolute right-3 top-3"
-                      :color="isSelected(row.slug, selectedValues) ? 'primary' : 'neutral'"
-                      :variant="isSelected(row.slug, selectedValues) ? 'solid' : 'soft'"
+                      :color="
+                        isSelected(row.slug, selectedValues)
+                          ? 'primary'
+                          : 'neutral'
+                      "
+                      :variant="
+                        isSelected(row.slug, selectedValues) ? 'solid' : 'soft'
+                      "
                     >
-                      {{ isSelected(row.slug, selectedValues) ? 'Featured' : 'Feature' }}
+                      {{
+                        isSelected(row.slug, selectedValues)
+                          ? 'Featured'
+                          : 'Feature'
+                      }}
                     </UBadge>
                   </MoleculesActionSurface>
                 </div>
               </UPageCard>
             </template>
-          </AdminFeaturedSlugsSelection>
+          </DashboardAdminFeaturedSlugsSelection>
         </UPageBody>
       </UPage>
     </template>
@@ -80,7 +92,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useHead } from '#imports'
-import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/FeaturedSlugsSelection.vue'
+import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
@@ -105,9 +117,8 @@ const selectableRows = computed<
       })
       return slug && card ? { slug, card } : null
     })
-    .filter(
-      (row): row is { slug: string; card: EcosystemInterfaceCard } =>
-        Boolean(row)
+    .filter((row): row is { slug: string; card: EcosystemInterfaceCard } =>
+      Boolean(row)
     )
     .sort((a, b) => a.card.title.localeCompare(b.card.title))
 )

@@ -1,5 +1,5 @@
 <template>
-  <EntityCollectionPage
+  <CollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -11,7 +11,7 @@
     <template #secondary>
       <ProductCTA />
     </template>
-  </EntityCollectionPage>
+  </CollectionPage>
 </template>
 
 <script setup lang="ts">

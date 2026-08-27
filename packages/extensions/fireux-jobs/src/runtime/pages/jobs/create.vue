@@ -59,7 +59,7 @@
           :description="errorMessage"
         />
 
-        <MoleculesCreateShell
+        <CreateShell
           :loading="submitting"
           submit-label="Create draft"
           @clear="onReset"
@@ -72,7 +72,7 @@
           <template #preview>
             <JobCreatePreview :form="form" />
           </template>
-        </MoleculesCreateShell>
+        </CreateShell>
       </div>
     </UPageBody>
   </UPage>

@@ -67,19 +67,14 @@ const CARD_ANATOMY_RE = new Map([
   ['Preview.vue', /class\s*=\s*["'][^"']*\bpreview\b/],
 ])
 const CORE_SHARED_COMPONENT_FAMILIES = new Set([
-  'Admin',
   'Auth',
   'Collection',
+  'Create',
   'Dashboard',
-  'Entity',
-  'Operation',
-  'Pricing',
+  'Onboarding',
   'Provider',
-  'SearchDemand',
   'Workspace',
   'dev',
-  'docs',
-  'effects',
   'landing',
   'layouts',
   'molecules',
@@ -97,7 +92,7 @@ export async function run(ctx) {
 
   validateMiseboxCardSpecimen(repoRoot, violations)
   validateCoreSharedComponentFamilies(repoRoot, violations)
-  validateEntityCollectionPagePresentation(repoRoot, violations)
+  validateCollectionPagePresentation(repoRoot, violations)
   validateEntityDetailPresentation(repoRoot, violations)
 
   if (violations.length) {
@@ -147,9 +142,9 @@ function validateCoreSharedComponentFamilies(repoRoot, violations) {
   }
 }
 
-function validateEntityCollectionPagePresentation(repoRoot, violations) {
+function validateCollectionPagePresentation(repoRoot, violations) {
   const surfacePath =
-    'packages/core/fireux-core/src/runtime/components/Entity/Collection/Page.vue'
+    'packages/core/fireux-core/src/runtime/components/Collection/Page.vue'
   const retiredSurfacePath =
     'packages/core/fireux-core/src/runtime/components/public/IndexSurface.vue'
   const ordinaryConsumers = [
@@ -194,7 +189,7 @@ function validateEntityCollectionPagePresentation(repoRoot, violations) {
   } else {
     const source = readFileSync(absoluteSurfacePath, 'utf8')
     if (
-      !source.includes("name: 'EntityCollectionPage'") ||
+      !source.includes("name: 'CollectionPage'") ||
       !source.includes('entity-collection-page__hero')
     ) {
       violations.push(
@@ -213,9 +208,9 @@ function validateEntityCollectionPagePresentation(repoRoot, violations) {
     const absolutePath = path.join(repoRoot, consumerPath)
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
-    if (!source.includes('<EntityCollectionPage')) {
+    if (!source.includes('<CollectionPage')) {
       violations.push(
-        `${consumerPath} (ordinary Entity Collection Page must consume EntityCollectionPage)`
+        `${consumerPath} (ordinary Entity Collection Page must consume CollectionPage)`
       )
     }
   }
@@ -238,7 +233,7 @@ function validateEntityCollectionPagePresentation(repoRoot, violations) {
     const absolutePath = path.join(repoRoot, routePath)
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
-    if (source.includes('<EntityCollectionPage')) {
+    if (source.includes('<CollectionPage')) {
       violations.push(
         `${routePath} (App-owned branded family must retain its named presentation instead of the ordinary Entity Collection Page shell)`
       )

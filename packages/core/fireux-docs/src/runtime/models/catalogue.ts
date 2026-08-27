@@ -80,33 +80,6 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Surfaces',
-    componentName: 'MoleculesMetricBadge',
-    name: 'MetricBadge',
-    slug: 'metric-badge',
-    description: 'A compact value and label presented as one readable metric.',
-    responsibility: 'Present a labelled measurement with optional iconography.',
-    source: molecules('MetricBadge'),
-    uses: [
-      page(
-        'projects/fireux/fireux-app/app/pages/design/components/contracts.vue'
-      ),
-    ],
-    passed: [
-      'value',
-      'label',
-      'icon',
-      'variant',
-      'color',
-      'size',
-      'title',
-      'ariaLabel',
-    ],
-    derived: 'the accessible label and optional icon visibility',
-    props: 8,
-    children: ['UBadge', 'UIcon'],
-  }),
-  molecule({
-    category: 'Surfaces',
     componentName: 'MoleculesStateCard',
     name: 'StateCard',
     slug: 'state-card',
@@ -140,14 +113,14 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Forms',
-    componentName: 'MoleculesCreateShell',
+    componentName: 'CreateShell',
     name: 'CreateShell',
     slug: 'create-shell',
     description:
       'A Write and Preview shell with clear, submit, and loading states.',
     responsibility:
       'Compose a create flow around owner-provided fields and preview.',
-    source: molecules('Create/Shell'),
+    source: core('Create/Shell'),
     uses: [
       page('packages/extensions/fireux-jobs/src/runtime/pages/jobs/create.vue'),
       component(
@@ -159,49 +132,6 @@ export const fireuxDocsCatalogue = [
     props: 2,
     booleans: 1,
     children: ['UCard', 'UTabs', 'UButton'],
-  }),
-  molecule({
-    category: 'Forms',
-    componentName: 'MoleculesFormsArrayOfStrings',
-    name: 'ArrayOfStrings',
-    slug: 'array-of-strings',
-    description: 'An editable ordered list of short text values.',
-    responsibility: 'Edit a string array through one labelled field.',
-    source: molecules('forms/ArrayOfStrings'),
-    uses: [
-      component(
-        'packages/extensions/fireux-blogs/src/runtime/components/Blog/Create/Advanced.vue'
-      ),
-    ],
-    passed: ['label', 'modelValue', 'itemPlaceholder', 'newItemPlaceholder'],
-    derived: 'editing state, formatted value, and validation message',
-    props: 4,
-    children: ['UInput', 'UButton'],
-  }),
-  molecule({
-    category: 'Forms',
-    componentName: 'MoleculesFormsBrandPalette',
-    name: 'BrandPalette',
-    slug: 'brand-palette',
-    description: 'A focused editor for selected and inherited brand colours.',
-    responsibility: 'Edit the cross-industry brand palette contract.',
-    source: molecules('forms/BrandPalette'),
-    uses: [
-      component(
-        'packages/extensions/fireux-places/src/runtime/place/components/Onboarding/Brand.vue'
-      ),
-    ],
-    passed: [
-      'modelValue',
-      'inherited',
-      'disabled',
-      'activeLabel',
-      'inheritLabel',
-    ],
-    derived: 'effective selected or inherited colour for each palette field',
-    props: 5,
-    booleans: 1,
-    children: ['UFormField', 'UInput'],
   }),
   molecule({
     category: 'Forms',
@@ -291,12 +221,12 @@ export const fireuxDocsCatalogue = [
   }),
   molecule({
     category: 'Onboarding',
-    componentName: 'MoleculesOnboardingSystem',
+    componentName: 'OnboardingShell',
     name: 'OnboardingSystem',
     slug: 'onboarding-system',
     description: 'A staged onboarding shell for an owner-provided journey.',
     responsibility: 'Present one onboarding stage and its progress.',
-    source: molecules('onboarding/System'),
+    source: core('Onboarding/Shell'),
     uses: [
       component(
         'packages/extensions/fireux-places/src/runtime/place/components/Onboarding.vue'
@@ -310,32 +240,16 @@ export const fireuxDocsCatalogue = [
     props: 2,
     children: ['UCard', 'UProgress', 'UAlert'],
   }),
-  molecule({
-    category: 'Profiles',
-    componentName: 'MoleculesProfilesAdminCreateCard',
-    name: 'AdminCreateCard',
-    slug: 'admin-create-card',
-    description:
-      'A bounded administrator action for creating one profile record.',
-    responsibility: 'Present profile creation copy, progress, and failure.',
-    source: molecules('profiles/AdminCreateCard'),
-    uses: [component(core('Dashboard/Admin'))],
-    passed: ['title', 'description', 'buttonLabel', 'loading', 'error'],
-    derived: 'whether the action is loading and whether an error renders',
-    props: 5,
-    booleans: 1,
-    children: ['UPageCard', 'UButton'],
-  }),
   {
     category: 'Page',
-    componentName: 'EntityCollectionPage',
-    name: 'EntityCollectionPage',
+    componentName: 'CollectionPage',
+    name: 'CollectionPage',
     slug: 'entity-collection-page',
     description: 'The shared shell for an ordinary Entity Collection Page.',
     owner: 'Entity Collection Page',
     responsibility: 'Compose the shared Entity Collection Page shell.',
     scope: 'cross-industry',
-    source: core('Entity/Collection/Page'),
+    source: core('Collection/Page'),
     usedBy: [
       page('packages/core/fireux-core/src/runtime/pages/apps/index.vue'),
       page('packages/core/fireux-core/src/runtime/pages/users/index.vue'),

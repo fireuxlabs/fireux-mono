@@ -47,13 +47,12 @@ Map component folder and naming conventions.
   `src/runtime/<entity>/components`, following `runtime-filesystem.md`.
 - App UI belongs under `app/components`; reusable entity implementation does
   not move into an App merely to preserve conventional Nuxt discovery.
-- App-owned Workspace composition uses `Workspace{Entity}{Job}` and the
-  matching `components/Workspace{Entity}/{Job}.vue` path. The joined family
-  directory keeps App composition distinct from package-owned
-  `components/Workspace/<Entity>` implementation. The App already
-  supplies the ecosystem boundary, so repeating its name adds no ownership
-  information. For example, `WorkspaceKitchenHero` is the App-owned Kitchen
-  Workspace Hero; package-owned children retain their package family names.
+- Entity-owned live Workspace composition remains beneath
+  `runtime/<entity>/components/Workspace`; Apps consume those named entrypoints
+  rather than creating a parallel `Workspace{Entity}` namespace. App-specific
+  product framing belongs beneath the App owner and surface, such as
+  `Misebox/Home`. Read-only landing previews remain App-owned presentation and
+  do not become live Workspace authority.
 - Declared Entity components live beneath `runtime/<entity>/components` and
   are registered with prefixes that preserve established component names.
   Confirmed parent-owned record/operation components live beneath their parent
@@ -66,37 +65,41 @@ Map component folder and naming conventions.
 default destination for UI whose owner is unclear. The current families were
 reviewed against authored consumers on 2026-08-27:
 
-| Family         | Owner and admission reason                                                                         |
-| -------------- | -------------------------------------------------------------------------------------------------- |
-| `Admin`        | Cross-entity administration primitives used by extension Entities and Apps.                        |
-| `Auth`         | Core-owned authentication composition used by Core routes and App initialization.                  |
-| `Collection`   | Cross-entity collection presentation primitives.                                                   |
-| `Dashboard`    | Core-owned default Dashboard composition.                                                          |
-| `Entity`       | Explicit cross-entity page and collection contracts.                                               |
-| `Operation`    | Cross-domain operation literature primitives with more than one domain consumer.                   |
-| `Pricing`      | Cross-App pricing route composition.                                                               |
-| `Provider`     | Cross-App Tool-provider frames and transport presentation.                                         |
-| `SearchDemand` | Core-owned Search Demand route composition; it is a product surface, not an Entity.                |
-| `Workspace`    | Cross-entity Workspace mechanics and presentation primitives.                                      |
-| `dev`          | Cross-package developer inspection and drift tooling.                                              |
-| `docs`         | Core-owned documentation-layout composition.                                                       |
-| `effects`      | Cross-App visual-effect containers and shared effects.                                             |
-| `landing`      | Cross-App landing composition whose truth remains App-owned.                                       |
-| `layouts`      | Shared layout chrome consumed by Nuxt layouts; these are components, not route layout entrypoints. |
-| `molecules`    | Small cross-entity interaction and form contracts not supplied by Nuxt UI.                         |
+| Family       | Owner and admission reason                                                                         |
+| ------------ | -------------------------------------------------------------------------------------------------- |
+| `Auth`       | Core-owned authentication composition used by Core routes and App initialization.                  |
+| `Collection` | Cross-entity collection header and page presentation contracts.                                    |
+| `Dashboard`  | Core-owned Dashboard composition, including cross-entity administration panels.                    |
+| `Provider`   | Cross-App Tool-provider frames and transport presentation.                                         |
+| `Workspace`  | Cross-entity Workspace mechanics and presentation primitives.                                      |
+| `dev`        | Cross-package developer inspection and drift tooling.                                              |
+| `landing`    | Cross-App landing composition whose truth remains App-owned.                                       |
+| `layouts`    | Shared layout chrome consumed by Nuxt layouts; these are components, not route layout entrypoints. |
+| `molecules`  | Small cross-entity interaction and form contracts not supplied by Nuxt UI.                         |
 
-Core-only consumption does not by itself make `Auth`, `Dashboard`, `docs`, or
-`SearchDemand` misplaced: Core owns those framework or product surfaces and
-their components do not claim Entity authority. Conversely, reuse inside one
+Core-only consumption does not by itself make `Auth` or `Dashboard`
+misplaced: Core owns those framework surfaces and their components do not
+claim Entity authority. Conversely, reuse inside one
 Entity or one industry is insufficient for admission to this root. New root
 families require a named owner and durable cross-entity or Core-surface reason;
 `scripts/guards/components.mjs` rejects undeclared families and loose root
 components. Access state is not an owner: the former `public` bucket was
-removed. Pricing keeps its owned SEO and offer composition, while ordinary
-pages and catalogues compose Nuxt UI's `UPage`, `UPageHeader`, `UPageBody`,
-`UPageGrid`, and `UPageCard` directly. The unused `Design/PaletteStrip` family
-and unreferenced landing/layout components were retired rather than preserved
-as speculative seams.
+removed. App pricing keeps its owned SEO and offer composition beneath
+`runtime/app`, while ordinary pages and catalogues compose Nuxt UI's `UPage`,
+`UPageHeader`, `UPageBody`, `UPageGrid`, and `UPageCard` directly. Dashboard
+administration lives beneath `Dashboard/Admin`; FireUX-App-only selection UI
+stays in that App. The unused `Design/PaletteStrip` family, three unconsumed
+editable-form components, and unreferenced landing/layout components were
+retired rather than preserved as speculative seams.
+
+The former root `Entity/Collection/Page` contract is `Collection/Page`: its
+job is cross-entity collection presentation, and a generic `Entity` directory
+would compete with the declared owner-first Entity spines. Search Demand and
+Operation literature consume App models and therefore live beneath
+`runtime/app/components`; they are adjacent App capabilities, not a generic
+capability bucket. Documentation navigation and the docs layout belong to
+`fireux-docs`. Visual effects belong to the App whose presentation they serve;
+Core supplies no generic effects family or decorative one-off wrappers.
 
 ## CSS-to-component mapping
 
@@ -276,11 +279,10 @@ as speculative seams.
   join, or fall back across those sources. The Misebox window preserves its
   single `demo` envelope without adopting orbit geometry or motion. The orbit
   is a landing compositor, not a fourth Card variant and not a Sci-Fire-only
-  component. Core
-  `EffectsAmbient` owns the fixed viewport, isolation, content-stack, and print
-  contract for project-owned landing art. FireUX Stars and Misebox Steam are
-  the sibling visual consumers: they share the outer layer and reduced-motion
-  contract while retaining distinct app-owned character. FireUX Stars uses the
+  component. Each Main App owns the fixed viewport, isolation, content-stack,
+  and print contract for its landing art. FireUX Stars and Misebox Steam are
+  sibling App visuals with the same required reduced-motion behavior while
+  retaining distinct app-owned character. FireUX Stars uses the
   deterministic Core field helper; Misebox Steam retains its project-owned
   client-initialized puff lifecycle. Core
   `LandingAppCollection` renders the bounded public App directory controller
@@ -382,7 +384,7 @@ the root Workspace folder.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
 - Staged entity onboarding uses the small shared
-  `MoleculesOnboardingSystem` shell for structure, stage progress, error
+  `OnboardingShell` shell for structure, stage progress, error
   placement, and slots. Each domain retains its own `XOnboarding` root and one
   `XOnboarding<Stage>` component per visible decision; domain copy, drafts,
   validation, actions, navigation, and creation never move into the shared
@@ -425,6 +427,14 @@ the root Workspace folder.
   props are transport-neutral and therefore use the `FormsEditable` vocabulary rather
   than naming Firestore. These components do not own domain copy or domain
   card content.
+- A shared form molecule needs repeated cross-domain use. A one-consumer field
+  belongs to that domain, and a docs-catalogue entry is not a consumer. Thin
+  display wrappers such as a labelled `UBadge` stay inline unless a durable
+  interaction or accessibility contract survives multiple consumers.
+- Repeated create and onboarding composition are named shared product
+  contracts, not atomic-design molecules. Their Core entrypoints are
+  `Create/Shell` and `Onboarding/Shell`; each consumer retains its domain data,
+  copy, validation, and writes.
 - Disabled interactive cards must use the action-surface contract. Styling a
   `NuxtLink` or clickable `div` with reduced opacity does not disable
   navigation, provide button semantics, or remove it from keyboard operation.

@@ -126,13 +126,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createError } from '#imports'
-import type { PricingTier } from '../../composables/fireux/pricing/usePricing'
+import type { AppPricingTier } from '../../composables/pricing/usePricing'
 
 const props = defineProps<{
   appName: string
   contactEmail: string
   tierId: string
-  tiers: readonly PricingTier[]
+  tiers: readonly AppPricingTier[]
 }>()
 const tier = computed(() =>
   props.tiers.find((item) => item.id === props.tierId)

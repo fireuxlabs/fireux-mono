@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import type { IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-collection.model.ts'
+import type { IngredientDirectoryPage } from '../../../../ingredient/models/ingredient-directory.model.ts'
 import { listIngredientsForCurator } from '../../../../ingredient/server/curation.ts'
 
 export default defineEventHandler(

@@ -22,7 +22,7 @@
         />
       </UCard>
 
-      <MoleculesCreateShell
+      <CreateShell
         :loading="submitting"
         submit-label="Create"
         @clear="onReset"
@@ -35,7 +35,7 @@
         <template #preview>
           <JobCreatePreview :form="form" />
         </template>
-      </MoleculesCreateShell>
+      </CreateShell>
     </ClientOnly>
   </div>
 </template>

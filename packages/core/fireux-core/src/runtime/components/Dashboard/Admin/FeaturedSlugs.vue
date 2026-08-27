@@ -1,7 +1,9 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div
+        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div class="space-y-1">
           <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
           <p v-if="description" class="text-sm text-muted">{{ description }}</p>
@@ -14,11 +16,7 @@
     </template>
 
     <div class="space-y-4">
-      <UTextarea
-        v-model="draft"
-        :rows="5"
-        :placeholder="placeholder"
-      />
+      <UTextarea v-model="draft" :rows="5" :placeholder="placeholder" />
 
       <div v-if="slugs.length" class="flex flex-wrap gap-2">
         <UBadge
@@ -56,17 +54,20 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useAppPublicSettings } from '../../app/composables/useAppPublicSettings'
+import { useAppPublicSettings } from '../../../app/composables/useAppPublicSettings'
 
-const props = withDefaults(defineProps<{
-  field: `featured_${string}_slugs`
-  title: string
-  description?: string
-  placeholder?: string
-}>(), {
-  description: '',
-  placeholder: 'slug-one, slug-two',
-})
+const props = withDefaults(
+  defineProps<{
+    field: `featured_${string}_slugs`
+    title: string
+    description?: string
+    placeholder?: string
+  }>(),
+  {
+    description: '',
+    placeholder: 'slug-one, slug-two',
+  }
+)
 
 const { settings, updateFeaturedSlugs } = useAppPublicSettings()
 const draft = ref('')
@@ -80,7 +81,9 @@ const savedSlugs = computed(() => {
 })
 
 const slugs = computed(() => parseSlugs(draft.value))
-const isDirty = computed(() => slugs.value.join('\n') !== savedSlugs.value.join('\n'))
+const isDirty = computed(
+  () => slugs.value.join('\n') !== savedSlugs.value.join('\n')
+)
 
 watch(
   savedSlugs,

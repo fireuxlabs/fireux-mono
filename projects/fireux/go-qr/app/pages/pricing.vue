@@ -1,7 +1,5 @@
 <template>
-  <PricingPage
-    description="Create your first QR doc free."
-  >
+  <AppPricingPage description="Create your first QR doc free.">
     <section class="rounded-md border border-default bg-default p-5">
       <p class="text-sm font-semibold uppercase tracking-wide text-muted">
         Current MVP
@@ -13,20 +11,17 @@
         Upload one doc, choose a public path, and get a shareable QR page.
       </p>
       <p class="mt-3 text-sm text-muted">
-        More docs, private access, custom domains, and owner tools can come later. Today the product is intentionally simple.
+        More docs, private access, custom domains, and owner tools can come
+        later. Today the product is intentionally simple.
       </p>
     </section>
 
     <template #actions>
-      <UButton
-        to="/"
-        icon="i-lucide-qr-code"
-        size="lg"
-      >
+      <UButton to="/" icon="i-lucide-qr-code" size="lg">
         Create your first QR doc free
       </UButton>
     </template>
-  </PricingPage>
+  </AppPricingPage>
 </template>
 
 <script setup lang="ts">
@@ -48,8 +43,11 @@ useSeoMeta({
   title: 'Pricing - Go QR',
   ogTitle: 'Pricing - Go QR',
   twitterTitle: 'Pricing - Go QR',
-  description: 'Create your first QR doc free. Upload one public doc and get a QR code.',
-  ogDescription: 'Create your first QR doc free. Upload one public doc and get a QR code.',
-  twitterDescription: 'Create your first QR doc free. Upload one public doc and get a QR code.',
+  description:
+    'Create your first QR doc free. Upload one public doc and get a QR code.',
+  ogDescription:
+    'Create your first QR doc free. Upload one public doc and get a QR code.',
+  twitterDescription:
+    'Create your first QR doc free. Upload one public doc and get a QR code.',
 })
 </script>

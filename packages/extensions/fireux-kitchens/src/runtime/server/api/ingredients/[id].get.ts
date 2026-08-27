@@ -6,7 +6,7 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { IngredientDetailResponse } from '../../../ingredient/models/ingredient-collection.model.ts'
+import type { IngredientDetailResponse } from '../../../ingredient/models/ingredient-directory.model.ts'
 import { normalizeIngredient } from '../../../ingredient/server/normalize.ts'
 
 export default defineEventHandler(

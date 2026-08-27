@@ -1,5 +1,5 @@
 <template>
-  <EntityCollectionPage
+  <CollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -16,7 +16,7 @@
       <AppCollectionMine :controller="appsController" />
       <AppCTA :controller="appsController" />
     </template>
-  </EntityCollectionPage>
+  </CollectionPage>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 // Product Demo composable: browser data loading and stable exports.
 import { useAsyncData, useRequestFetch } from '#imports'
-import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-collection.model'
+import type { IngredientDirectoryPage } from 'fireux-kitchens/runtime/ingredient/models/ingredient-directory.model'
 import { experiences } from './misebox-product-demo-experiences'
 import { loadMiseboxProductDemo } from './loadMiseboxProductDemo'
 import type {

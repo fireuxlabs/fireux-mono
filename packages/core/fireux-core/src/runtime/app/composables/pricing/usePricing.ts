@@ -1,15 +1,15 @@
 import { computed } from 'vue'
 import type { LandingPricingPlan } from '../../../../types/landing-product'
 
-export type PricingTierId =
+export type AppPricingTierId =
   | 'free'
   | 'pro'
   | 'managed'
   | 'your-app'
   | 'your-ecosystem'
 
-export type PricingTier = LandingPricingPlan & {
-  id: PricingTierId
+export type AppPricingTier = LandingPricingPlan & {
+  id: AppPricingTierId
   eyebrow: string
   included: readonly string[]
   notIncluded: readonly string[]
@@ -35,8 +35,8 @@ export function usePricing(profile: PricingProfile) {
     () => profile.includesEcosystemTier === true
   )
 
-  const tiers = computed<readonly PricingTier[]>(() => {
-    const common: PricingTier[] = [
+  const tiers = computed<readonly AppPricingTier[]>(() => {
+    const common: AppPricingTier[] = [
       {
         id: 'free',
         eyebrow: `${appName.value} pricing`,

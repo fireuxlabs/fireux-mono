@@ -1,5 +1,5 @@
 <template>
-  <EntityCollectionPage
+  <CollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     description="Explore venues, locations, and the physical places behind local services."
@@ -11,7 +11,7 @@
     <template #secondary>
       <PlaceCTA />
     </template>
-  </EntityCollectionPage>
+  </CollectionPage>
 </template>
 
 <script setup lang="ts">

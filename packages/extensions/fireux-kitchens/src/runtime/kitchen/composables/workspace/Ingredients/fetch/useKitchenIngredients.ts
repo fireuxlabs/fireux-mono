@@ -15,7 +15,7 @@ import {
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../firestore/utils/paths/useKitchenChildCollection'
-import { type IngredientDirectoryPage } from '../../../../../ingredient/models/ingredient-collection.model.ts'
+import { type IngredientDirectoryPage } from '../../../../../ingredient/models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../../../ingredient/utils/ingredient.ts'
 import {
   KitchenIngredientStorage,

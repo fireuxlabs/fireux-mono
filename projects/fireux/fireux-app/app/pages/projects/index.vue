@@ -1,5 +1,5 @@
 <template>
-  <EntityCollectionPage
+  <CollectionPage
     eyebrow="Discover"
     title="Projects"
     description="Browse FireUX Projects and the Apps connected to each one."
@@ -56,7 +56,8 @@
         description="See the Apps connected to each Project."
       />
 
-      <MoleculesStateCard surface="collection"
+      <MoleculesStateCard
+        surface="collection"
         v-if="pending"
         title="Loading Projects"
         description="Finding Projects…"
@@ -64,8 +65,10 @@
         loading
       />
 
-      <MoleculesStateCard surface="collection"
-        v-else-if="error" state="error"
+      <MoleculesStateCard
+        surface="collection"
+        v-else-if="error"
+        state="error"
         title="Projects unavailable"
         description="Projects could not be loaded. Please try again."
         icon="i-lucide-triangle-alert"
@@ -147,15 +150,14 @@
                   <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
                 </NuxtLink>
               </div>
-              <p v-else class="project-card__empty">
-                No Apps connected yet.
-              </p>
+              <p v-else class="project-card__empty">No Apps connected yet.</p>
             </div>
           </div>
         </article>
       </div>
 
-      <MoleculesStateCard surface="collection"
+      <MoleculesStateCard
+        surface="collection"
         v-else
         icon="i-lucide-folders"
         title="No Projects yet"
@@ -175,7 +177,7 @@
         @closed="unloadDevJson"
       />
     </section>
-  </EntityCollectionPage>
+  </CollectionPage>
 </template>
 
 <script setup lang="ts">

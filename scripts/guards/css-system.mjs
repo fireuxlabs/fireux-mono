@@ -27,8 +27,6 @@ const CORE_CARD_ORBIT_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.vue'
 const CORE_CARD_SURFACE_PATH =
   'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-surfaces.scss'
-const CORE_AMBIENT_EFFECT_PATH =
-  'packages/core/fireux-core/src/runtime/components/effects/Ambient.vue'
 const CORE_AMBIENT_FIELD_PATH =
   'packages/core/fireux-core/src/runtime/utils/ambient-field.ts'
 const AMBIENT_EFFECT_CONSUMERS = [
@@ -354,7 +352,6 @@ const TAILWIND_TRACKING_TOKENS = new Map([
 const OWNED_TYPOGRAPHY_DELTA_PATHS = new Set([
   // Component-owned artwork, output geometry, or cohesive tenant display type.
   'packages/core/fireux-core/src/runtime/components/Design/PaletteStrip.vue',
-  'packages/core/fireux-core/src/runtime/components/effects/LandingEffect.vue',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Orders/utils/useKitchenOrderReceiptPrint.ts',
   'packages/extensions/fireux-kitchens/src/runtime/menu/components/Json.vue',
   'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
@@ -840,21 +837,7 @@ function assertAmbientEffectArchitecture(repoRoot) {
     return readFileSync(filePath, 'utf8')
   }
 
-  const ambientSource = readRequiredSource(CORE_AMBIENT_EFFECT_PATH)
   const fieldSource = readRequiredSource(CORE_AMBIENT_FIELD_PATH)
-
-  for (const required of [
-    'class="fx-ambient__effect"',
-    'class="fx-ambient__content"',
-    'position: fixed',
-    'isolation: isolate',
-    'contain: strict',
-    '@media print',
-  ]) {
-    if (!ambientSource.includes(required)) {
-      violations.push(`${CORE_AMBIENT_EFFECT_PATH} is missing ${required}`)
-    }
-  }
 
   for (const required of ['ambientUnit', 'ambientRange']) {
     if (!fieldSource.includes(required)) {
@@ -871,9 +854,18 @@ function assertAmbientEffectArchitecture(repoRoot) {
     const pageSource = readRequiredSource(page)
     const visualSource = readRequiredSource(visual)
 
-    for (const required of ['<EffectsAmbient', '<template #effect>']) {
+    for (const required of [
+      'class="landing-ambient__effect"',
+      'class="landing-ambient__content"',
+      'position: fixed',
+      'isolation: isolate',
+      'contain: strict',
+      '@media print',
+    ]) {
       if (!pageSource.includes(required)) {
-        violations.push(`${page} must compose the Core ${required} seam`)
+        violations.push(
+          `${page} is missing its App-owned ambient ${required} contract`
+        )
       }
     }
 

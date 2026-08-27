@@ -53,11 +53,7 @@
       />
     </div>
 
-    <MoleculesOnboardingSystem
-      v-else-if="preview"
-      family="kitchen"
-      :stage="shellStage"
-    >
+    <OnboardingShell v-else-if="preview" family="kitchen" :stage="shellStage">
       <template #intro>
         <span
           class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
@@ -128,7 +124,7 @@
           </UButton>
         </div>
       </template>
-    </MoleculesOnboardingSystem>
+    </OnboardingShell>
   </section>
 </template>
 

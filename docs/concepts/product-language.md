@@ -192,7 +192,7 @@ or advertise the FireUX ecosystem-creation offer.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
+- `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 
 ## Verification

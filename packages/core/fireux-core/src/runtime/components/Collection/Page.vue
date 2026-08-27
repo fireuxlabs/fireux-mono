@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'EntityCollectionPage' })
+defineOptions({ name: 'CollectionPage' })
 
 withDefaults(
   defineProps<{

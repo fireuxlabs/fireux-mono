@@ -12,18 +12,12 @@
               {{ props.title }}
             </h1>
 
-            <p
-              v-if="props.description"
-              class="text-lg text-muted"
-            >
+            <p v-if="props.description" class="text-lg text-muted">
               {{ props.description }}
             </p>
           </div>
 
-          <div
-            v-if="$slots.intro"
-            class="max-w-3xl"
-          >
+          <div v-if="$slots.intro" class="max-w-3xl">
             <slot name="intro" />
           </div>
         </UContainer>
@@ -47,10 +41,7 @@
                 {{ group.title }}
               </h2>
 
-              <p
-                v-if="group.description"
-                class="text-sm text-muted"
-              >
+              <p v-if="group.description" class="text-sm text-muted">
                 {{ group.description }}
               </p>
             </div>
@@ -82,13 +73,13 @@
 <script setup lang="ts">
 import { useHead, useRequestURL } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import {
   buildPricingOfferCatalog,
   normalizePricingPlanGroups,
   type PricingPlan,
   type PricingPlanGroup,
-} from '../../utils/pricingPage'
+} from '../../utils/pricing/page'
 
 const props = withDefaults(
   defineProps<{

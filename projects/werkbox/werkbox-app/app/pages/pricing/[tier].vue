@@ -1,5 +1,5 @@
 <template>
-  <PricingTier
+  <AppPricingTier
     :app-name="appName"
     :contact-email="contactEmail"
     :tier-id="tierId"

@@ -1,14 +1,13 @@
 <template>
-  <div class="min-h-full">
-    <EffectsAmbient class="min-h-full">
-      <template #effect>
-        <ClientOnly>
-          <EffectsSteam />
-        </ClientOnly>
-      </template>
-
+  <div class="landing-ambient min-h-full">
+    <div class="landing-ambient__effect" aria-hidden="true">
+      <ClientOnly>
+        <EffectsSteam />
+      </ClientOnly>
+    </div>
+    <div class="landing-ambient__content">
       <MiseboxLandingIndex />
-    </EffectsAmbient>
+    </div>
   </div>
 </template>
 
@@ -30,3 +29,30 @@ useAppLandingSeo({
   language: 'en',
 })
 </script>
+
+<style scoped>
+.landing-ambient {
+  position: relative;
+  isolation: isolate;
+}
+
+.landing-ambient__effect {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  contain: strict;
+  pointer-events: none;
+}
+
+.landing-ambient__content {
+  position: relative;
+  z-index: 1;
+}
+
+@media print {
+  .landing-ambient__effect {
+    display: none;
+  }
+}
+</style>

@@ -8,7 +8,7 @@
     <template #body>
       <UPage>
         <UPageBody class="pagebody">
-          <DashboardAdmin />
+          <AppDashboardAdmin />
         </UPageBody>
       </UPage>
     </template>
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { definePageMeta, useHead } from '#imports'
-import DashboardAdmin from '../../../components/Dashboard/Admin.vue'
+import AppDashboardAdmin from '../../../app/components/Dashboard/Admin.vue'
 
 definePageMeta({
   layout: 'dashboard',

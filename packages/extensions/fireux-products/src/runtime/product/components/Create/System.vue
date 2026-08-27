@@ -1,5 +1,5 @@
 <template>
-  <MoleculesCreateShell
+  <CreateShell
     :loading="isCreating"
     submit-label="Create"
     @submit="handleCreate"
@@ -11,7 +11,7 @@
     <template #preview>
       <ProductCreatePreview />
     </template>
-  </MoleculesCreateShell>
+  </CreateShell>
 
   <UModal
     v-model="isClearConfirmOpen"
@@ -27,9 +27,7 @@
         >
           Cancel
         </UButton>
-        <UButton color="error" @click="confirmClear">
-          Clear draft
-        </UButton>
+        <UButton color="error" @click="confirmClear"> Clear draft </UButton>
       </div>
     </template>
   </UModal>
@@ -42,11 +40,8 @@ import { useCreateProductState } from '../../composables/create/useCreateProduct
 import { useProductCreate } from '../../composables/firestore/mutations/useProductCreate'
 import type { StripePriceInput } from '../../utils/product.ts'
 
-const {
-  product,
-  resetCreateProductState,
-  getProductPayload,
-} = await useCreateProductState()
+const { product, resetCreateProductState, getProductPayload } =
+  await useCreateProductState()
 
 const { resetCreatePricesState, pricesPayload } = useCreatePricesState()
 

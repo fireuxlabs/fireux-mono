@@ -122,7 +122,7 @@ The domain root owns:
 - button meaning and completion behavior; and
 - the components rendered in each stage.
 
-For current onboarding, `MoleculesOnboardingSystem` receives one small stage
+For current onboarding, `OnboardingShell` receives one small stage
 object and exposes `intro`, default, and `footer` slots. `PlaceOnboarding` and
 `KitchenOnboarding` own what those slots mean.
 

@@ -27,7 +27,5 @@ const introductions = {
   premium: 'Manage your Kitchen and publish multiple Menus.',
   business: 'Manage multiple Kitchens, Menus and teams.',
 } as const
-const introduction = computed(
-  () => introductions[appAccess.value.subscription]
-)
+const introduction = computed(() => introductions[appAccess.value.subscription])
 </script>

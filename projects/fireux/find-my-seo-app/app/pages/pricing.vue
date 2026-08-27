@@ -1,5 +1,5 @@
 <template>
-  <PricingPage
+  <AppPricingPage
     description="Pricing for SEO profile, discovery, and lead products."
   >
     <section class="rounded-md border border-default bg-default p-5">
@@ -10,20 +10,17 @@
         SEO marketplace products live in Products.
       </h2>
       <p class="mt-3 text-muted">
-        Find My SEO pricing explains profile, discovery, and lead packages. The actual buyable records belong in the shared Products system.
+        Find My SEO pricing explains profile, discovery, and lead packages. The
+        actual buyable records belong in the shared Products system.
       </p>
     </section>
 
     <template #actions>
-      <UButton
-        to="/products"
-        icon="i-lucide-box"
-        size="lg"
-      >
+      <UButton to="/products" icon="i-lucide-box" size="lg">
         View products
       </UButton>
     </template>
-  </PricingPage>
+  </AppPricingPage>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +42,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Pricing - Find My SEO',
-  description: 'Find My SEO pricing for SEO profile, discovery, and lead products.',
+  description:
+    'Find My SEO pricing for SEO profile, discovery, and lead products.',
 })
 </script>

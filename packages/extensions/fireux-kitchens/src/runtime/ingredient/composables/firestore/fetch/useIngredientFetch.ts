@@ -1,6 +1,6 @@
 import { useAsyncData } from '#imports'
 import { computed, type ComputedRef } from 'vue'
-import type { IngredientDetailResponse } from '../../../models/ingredient-collection.model.ts'
+import type { IngredientDetailResponse } from '../../../models/ingredient-directory.model.ts'
 import type { Ingredient } from '../../../utils/ingredient.ts'
 
 export type IngredientFetchState = {

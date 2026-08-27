@@ -36,7 +36,7 @@
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">Preview</h2>
-        <EntityCollectionPage
+        <CollectionPage
           v-if="entry.slug === 'entity-collection-page'"
           eyebrow="Discover"
           title="Apps"
@@ -49,7 +49,7 @@
           <template #secondary>
             <UCard>Secondary page-owned action child</UCard>
           </template>
-        </EntityCollectionPage>
+        </CollectionPage>
 
         <MoleculesActionSurface
           v-else-if="entry.slug === 'action-surface'"
@@ -60,15 +60,6 @@
           <p class="text-sm text-dimmed">This whole surface is one action.</p>
         </MoleculesActionSurface>
 
-        <MoleculesMetricBadge
-          v-else-if="entry.slug === 'metric-badge'"
-          icon="i-lucide-users"
-          :value="24"
-          label="members"
-          color="primary"
-          size="lg"
-        />
-
         <div
           v-else-if="entry.slug === 'state-card'"
           class="grid gap-4 md:grid-cols-2"
@@ -77,7 +68,7 @@
           <MoleculesStateCard entity="app" kind="document" state="missing" />
         </div>
 
-        <MoleculesCreateShell
+        <CreateShell
           v-else-if="entry.slug === 'create-shell'"
           submit-label="Create record"
         >
@@ -87,20 +78,7 @@
           <template #preview
             ><p class="text-sm text-dimmed">Record preview</p></template
           >
-        </MoleculesCreateShell>
-
-        <MoleculesFormsArrayOfStrings
-          v-else-if="entry.slug === 'array-of-strings'"
-          v-model="stringItems"
-          label="Capabilities"
-          item-placeholder="Capability"
-        />
-
-        <MoleculesFormsBrandPalette
-          v-else-if="entry.slug === 'brand-palette'"
-          v-model="brandPalette"
-          :inherited="inheritedPalette"
-        />
+        </CreateShell>
 
         <MoleculesFormsEditableCheckbox
           v-else-if="entry.slug === 'editable-checkbox'"
@@ -124,7 +102,7 @@
           :update="updateSelect"
         />
 
-        <MoleculesOnboardingSystem
+        <OnboardingShell
           v-else-if="entry.slug === 'onboarding-system'"
           family="example"
           :stage="onboardingStage"
@@ -138,14 +116,7 @@
           <p class="text-sm text-dimmed">
             The owner supplies the current step.
           </p>
-        </MoleculesOnboardingSystem>
-
-        <MoleculesProfilesAdminCreateCard
-          v-else-if="entry.slug === 'admin-create-card'"
-          title="Create profile"
-          description="Create the initial profile record for this user."
-          button-label="Create profile"
-        />
+        </OnboardingShell>
       </section>
 
       <section class="grid gap-4 lg:grid-cols-2">
@@ -243,15 +214,6 @@ const review = computed(() =>
     : { color: 'warning' as const, label: 'Review' as const, reasons: [] }
 )
 
-const stringItems = ref(['Identity', 'Members'])
-const brandPalette = ref({
-  primary_color: '#ff4f00',
-  secondary_color: '#111827',
-})
-const inheritedPalette = {
-  primary_color: '#00dc82',
-  secondary_color: '#020420',
-}
 const checkboxValue = ref(true)
 const updateCheckbox = async (value: boolean) => {
   checkboxValue.value = value

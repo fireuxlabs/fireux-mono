@@ -73,8 +73,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
-import { useApp } from '../../app/composables/useApp'
+import { useFireUXConfig } from '../../composables/config/FireUXConfig'
+import { useApp } from '../../composables/useApp'
 
 type AdminSurfaceMeta = {
   surface?: boolean

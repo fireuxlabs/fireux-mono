@@ -36,14 +36,23 @@
           </div>
 
           <div class="preview__meta">
-            <span v-if="shortName" class="font-mono text-xs text-dimmed">@{{ shortName }}</span>
-            <span v-if="id" class="font-mono text-xs text-dimmed break-all">{{ id }}</span>
+            <span v-if="shortName" class="font-mono text-xs text-dimmed"
+              >@{{ shortName }}</span
+            >
+            <span v-if="id" class="font-mono text-xs text-dimmed break-all">{{
+              id
+            }}</span>
 
-            <MoleculesMetricBadge
+            <UBadge
               v-if="typeof userCount === 'number'"
-              icon="i-lucide-users"
-              :value="userCount"
-            />
+              color="neutral"
+              variant="soft"
+              size="xs"
+              :aria-label="`${userCount} users`"
+            >
+              <UIcon name="i-lucide-users" class="size-3" />
+              {{ userCount }}
+            </UBadge>
           </div>
         </div>
       </div>
@@ -52,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PropType } from 'vue';
+import type { PropType } from 'vue'
 
 defineOptions({ inheritAttrs: false })
 

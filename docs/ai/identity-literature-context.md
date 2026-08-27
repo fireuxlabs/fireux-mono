@@ -99,9 +99,11 @@ summarises its children; it does not create a second product promise.
 - `packages/core/fireux-core/src/runtime/components/landing/EcosystemHome.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue`
 - `packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue`
-- `packages/core/fireux-core/src/runtime/components/Pricing/Catalogue.vue`
-- `packages/core/fireux-core/src/runtime/components/Pricing/Tier.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
+- `packages/core/fireux-core/src/runtime/app/components/Pricing/Catalogue.vue`
+- `packages/core/fireux-core/src/runtime/app/components/Pricing/Page.vue`
+- `packages/core/fireux-core/src/runtime/app/components/Pricing/Tier.vue`
+- `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
+- `packages/core/fireux-core/src/runtime/app/utils/pricing/page.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 - `projects/*/*-app/app/components/*/Landing`
 - `scripts/guards/product-landing.mjs`

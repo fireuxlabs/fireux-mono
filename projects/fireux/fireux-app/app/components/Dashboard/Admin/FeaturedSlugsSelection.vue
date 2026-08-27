@@ -1,10 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: make featured selection outcome-safe and bind save controls to App-admin authority. -->
 <template>
-  <UPageHeader
-    :headline="headline"
-    :title="title"
-    :description="description"
-  >
+  <UPageHeader :headline="headline" :title="title" :description="description">
     <template #links>
       <UButton
         :to="backTo"
@@ -77,39 +73,39 @@
       </div>
     </UPageCard>
 
-    <slot
-      :selected-values="draftSlugs"
-      :toggle-slug="toggleSlug"
-    />
+    <slot :selected-values="draftSlugs" :toggle-slug="toggleSlug" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useToastify } from '../../composables/ui/useToastify'
+import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import {
   useAppPublicSettings,
   type AppFeaturedSlugField,
-} from '../../app/composables/useAppPublicSettings'
+} from 'fireux-core/runtime/app/composables/useAppPublicSettings'
 
-const props = withDefaults(defineProps<{
-  field: AppFeaturedSlugField
-  headline?: string
-  title?: string
-  description?: string
-  emptyLabel?: string
-  savedLabel?: string
-  failedLabel?: string
-  backTo?: string
-}>(), {
-  headline: 'Admin curation',
-  title: 'Featured slugs',
-  description: 'Select slugs to feature on public surfaces.',
-  emptyLabel: 'No featured slugs selected yet.',
-  savedLabel: 'Featured slugs saved',
-  failedLabel: 'Failed to save featured slugs',
-  backTo: '/dashboard/admin',
-})
+const props = withDefaults(
+  defineProps<{
+    field: AppFeaturedSlugField
+    headline?: string
+    title?: string
+    description?: string
+    emptyLabel?: string
+    savedLabel?: string
+    failedLabel?: string
+    backTo?: string
+  }>(),
+  {
+    headline: 'Admin curation',
+    title: 'Featured slugs',
+    description: 'Select slugs to feature on public surfaces.',
+    emptyLabel: 'No featured slugs selected yet.',
+    savedLabel: 'Featured slugs saved',
+    failedLabel: 'Failed to save featured slugs',
+    backTo: '/dashboard/admin',
+  }
+)
 
 const toast = useToastify()
 const {

@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="kitchen"
     title="Kitchens"
     description="Add comma-separated kitchen slugs to feature on public kitchen surfaces."

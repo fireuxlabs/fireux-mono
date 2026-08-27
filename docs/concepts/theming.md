@@ -140,7 +140,7 @@ compatibility path also persist a sparse two-colour `brand_palette` on Place
 and Kitchen. Those are migration source, not the target ownership model,
 and must not be mistaken for Workspace or App palette authority. The
 existing gallery and public Place/business-card presentations may evolve, but
-they do not justify more Place theme fields yet. Core `BrandPalette` stays a
+they do not justify more Place theme fields yet. Place `Onboarding/BrandPalette` stays a
 coherent App-template value object, not a collection of colour atoms.
 Presentation resolves dynamically from Place through Workspace and App layers;
 inherited values are not copied upward during onboarding. Current source

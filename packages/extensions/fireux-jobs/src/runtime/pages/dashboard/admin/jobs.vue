@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="job"
     title="Jobs"
     description="Add comma-separated job slugs to feature on Jobs pages."

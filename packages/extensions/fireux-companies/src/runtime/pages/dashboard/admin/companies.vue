@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="company"
     title="Companies"
     description="Add comma-separated company slugs to feature on public company surfaces."

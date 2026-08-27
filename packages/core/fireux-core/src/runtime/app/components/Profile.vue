@@ -1,7 +1,9 @@
 <template>
   <UCard class="profile">
     <template #header>
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div
+        class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div class="flex min-w-0 items-center gap-4">
           <UAvatar
             :src="card.thumbnailUrl || undefined"
@@ -40,15 +42,16 @@
                 @{{ card.shortName }}
               </UBadge>
 
-              <MoleculesMetricBadge
+              <UBadge
                 v-if="typeof card.userCount === 'number'"
-                icon="i-lucide-users"
-                :value="card.userCount"
-                label="users"
                 size="xs"
                 variant="soft"
                 color="neutral"
-              />
+                :aria-label="`${card.userCount} users`"
+              >
+                <UIcon name="i-lucide-users" class="size-3" />
+                {{ card.userCount }} users
+              </UBadge>
 
               <UBadge
                 v-for="badge in card.badges"
@@ -94,18 +97,14 @@
         v-if="showTagline && card.tagline"
         class="rounded-2xl border border-default bg-muted/30 p-4"
       >
-        <div class="fx-type-label">
-          Tagline
-        </div>
+        <div class="fx-type-label">Tagline</div>
         <div class="mt-2 text-base text-default">
           {{ card.tagline }}
         </div>
       </section>
 
       <section v-if="showDescription" class="space-y-2">
-        <div class="fx-type-label">
-          Description
-        </div>
+        <div class="fx-type-label">Description</div>
         <div class="text-sm leading-6 text-toned">
           <span v-if="model.description">{{ model.description }}</span>
           <span v-else class="italic">No description yet.</span>
@@ -137,9 +136,7 @@
 
       <section v-if="showPeople" class="grid gap-4">
         <div class="rounded-2xl border border-default p-4 space-y-3">
-          <div class="fx-type-label">
-            Creator
-          </div>
+          <div class="fx-type-label">Creator</div>
 
           <UserCardsPill
             v-if="model.creatorCard"
@@ -149,7 +146,10 @@
             class="block"
           />
 
-          <div v-else-if="model.creatorId" class="font-mono text-sm text-dimmed">
+          <div
+            v-else-if="model.creatorId"
+            class="font-mono text-sm text-dimmed"
+          >
             {{ model.creatorId }}
           </div>
 
@@ -157,15 +157,15 @@
             No creator recorded.
           </div>
         </div>
-
       </section>
 
       <section v-if="showSocials" class="space-y-3">
-        <div class="fx-type-label">
-          Links
-        </div>
+        <div class="fx-type-label">Links</div>
 
-        <div v-if="socialItems.length" class="flex flex-wrap items-center gap-2">
+        <div
+          v-if="socialItems.length"
+          class="flex flex-wrap items-center gap-2"
+        >
           <UButton
             v-for="item in socialItems"
             :key="item.platform"
@@ -181,9 +181,7 @@
           </UButton>
         </div>
 
-        <div v-else class="text-sm italic text-dimmed">
-          No links available.
-        </div>
+        <div v-else class="text-sm italic text-dimmed">No links available.</div>
       </section>
     </div>
   </UCard>

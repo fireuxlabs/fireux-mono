@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="place"
     title="Places"
     description="Add comma-separated place slugs to feature on public place surfaces."

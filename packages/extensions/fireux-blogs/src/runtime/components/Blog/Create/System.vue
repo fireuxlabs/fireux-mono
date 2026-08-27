@@ -1,5 +1,5 @@
 <template>
-  <MoleculesCreateShell
+  <CreateShell
     :loading="isCreating"
     submit-label="Publish"
     @submit="handleCreate"
@@ -11,7 +11,7 @@
     <template #preview>
       <BlogCreatePreview />
     </template>
-  </MoleculesCreateShell>
+  </CreateShell>
 </template>
 
 <script setup lang="ts">

@@ -38,7 +38,7 @@
             description="Only app admins can create products."
           />
 
-          <MoleculesCreateShell
+          <CreateShell
             v-else
             :loading="isCreating"
             submit-label="Create product"
@@ -51,17 +51,17 @@
             <template #preview>
               <ProductCreatePreview />
             </template>
-          </MoleculesCreateShell>
+          </CreateShell>
 
           <div class="mt-6">
-<DevDebugPanel
-  object-origin="fetched"
+            <DevDebugPanel
+              object-origin="fetched"
               launcher
               include-route
               :title="'Create Product (JSON)'"
               context="dashboard/admin/products/create"
               :objects="devCreateJson"
-  :derived="{}"
+              :derived="{}"
               :default-open="false"
             />
           </div>
@@ -90,7 +90,8 @@ definePageMeta({
   roles: ['admin'],
 })
 
-const { canManageProducts, pending: permissionsPending } = useProductPermissions()
+const { canManageProducts, pending: permissionsPending } =
+  useProductPermissions()
 const { appName } = useFireUXConfig()
 const toast = useToastify()
 

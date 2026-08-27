@@ -36,7 +36,7 @@
       @click="clearImage"
     />
 
-    <MoleculesFormsBrandPalette
+    <PlaceOnboardingBrandPalette
       :model-value="brandPalette"
       :disabled="!paletteEditable"
       active-label="Place colour"

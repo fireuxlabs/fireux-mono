@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="agent"
     title="Agents"
     description="Add comma-separated agent slugs to feature on public agent surfaces."

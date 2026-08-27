@@ -1,5 +1,5 @@
 <template>
-  <EntityCollectionPage
+  <CollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -11,7 +11,7 @@
     <template #secondary>
       <PropertyCTA />
     </template>
-  </EntityCollectionPage>
+  </CollectionPage>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +37,8 @@ definePageMeta({
   layout: 'default',
   name: 'PropertiesIndexPage',
   title: 'Properties',
-  description: 'Find and join properties, or create your own Property Workspace.',
+  description:
+    'Find and join properties, or create your own Property Workspace.',
 })
 
 const pageTitle = 'Properties'

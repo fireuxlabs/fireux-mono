@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { FireuxMetaOperation } from '../../../config/app/meta-content'
+import type { FireuxMetaOperation } from '../../../../config/app/meta-content'
 
 const props = defineProps<{ operation: FireuxMetaOperation }>()
 const headingId = computed(

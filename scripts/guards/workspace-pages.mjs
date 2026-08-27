@@ -617,7 +617,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
         'utf8'
       )
       if (
-        !publicOperationPage.includes('OperationGuidingLiterature') ||
+        !publicOperationPage.includes('AppOperationGuidingLiterature') ||
         !publicOperationPage.includes('operation.headline || operation.title')
       ) {
         violations.push(

@@ -36,7 +36,7 @@
             description="Only app admins can publish blog posts."
           />
 
-          <MoleculesCreateShell
+          <CreateShell
             v-else
             :loading="isCreating"
             submit-label="Publish"
@@ -49,7 +49,7 @@
             <template #preview>
               <BlogCreatePreview />
             </template>
-          </MoleculesCreateShell>
+          </CreateShell>
         </UPageBody>
       </UPage>
     </template>

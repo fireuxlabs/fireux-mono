@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspace'
+import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 
 withDefaults(
   defineProps<{

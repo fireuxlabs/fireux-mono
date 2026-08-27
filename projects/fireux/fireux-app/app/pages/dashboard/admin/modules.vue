@@ -8,7 +8,7 @@
     <template #body>
       <UPage>
         <UPageBody class="pagebody">
-          <AdminFeaturedSlugsSelection
+          <DashboardAdminFeaturedSlugsSelection
             field="featured_module_slugs"
             headline="Public catalogue curation"
             title="Featured modules"
@@ -30,14 +30,19 @@
                     :key="module.id"
                     action
                     :aria-label="`${isSelected(module.id, selectedValues) ? 'Remove' : 'Feature'} ${module.name}`"
-                    :class="selectionClass(isSelected(module.id, selectedValues))"
+                    :class="
+                      selectionClass(isSelected(module.id, selectedValues))
+                    "
                     @activate="toggleSlug(module.id)"
                   >
                     <div class="flex items-start gap-3 p-2 pr-20">
                       <div
                         class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-elevated"
                       >
-                        <UIcon :name="module.icon" class="size-5 text-primary" />
+                        <UIcon
+                          :name="module.icon"
+                          class="size-5 text-primary"
+                        />
                       </div>
                       <div class="min-w-0">
                         <p class="font-semibold text-highlighted">
@@ -52,16 +57,26 @@
 
                     <UBadge
                       class="absolute right-3 top-3"
-                      :color="isSelected(module.id, selectedValues) ? 'primary' : 'neutral'"
-                      :variant="isSelected(module.id, selectedValues) ? 'solid' : 'soft'"
+                      :color="
+                        isSelected(module.id, selectedValues)
+                          ? 'primary'
+                          : 'neutral'
+                      "
+                      :variant="
+                        isSelected(module.id, selectedValues) ? 'solid' : 'soft'
+                      "
                     >
-                      {{ isSelected(module.id, selectedValues) ? 'Featured' : 'Feature' }}
+                      {{
+                        isSelected(module.id, selectedValues)
+                          ? 'Featured'
+                          : 'Feature'
+                      }}
                     </UBadge>
                   </MoleculesActionSurface>
                 </div>
               </UPageCard>
             </template>
-          </AdminFeaturedSlugsSelection>
+          </DashboardAdminFeaturedSlugsSelection>
         </UPageBody>
       </UPage>
     </template>
@@ -70,7 +85,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/FeaturedSlugsSelection.vue'
+import DashboardAdminFeaturedSlugsSelection from '../../../components/Dashboard/Admin/FeaturedSlugsSelection.vue'
 import { fireuxExtensionModules } from '../../../module-catalogue'
 
 const modules = [...fireuxExtensionModules].sort((a, b) =>

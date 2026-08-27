@@ -1,5 +1,5 @@
 <template>
-  <AdminDomainCurationPanel
+  <DashboardAdminDomainCurationPanel
     domain="professional"
     title="Professionals"
     description="Add comma-separated professional slugs to feature on public professional surfaces."

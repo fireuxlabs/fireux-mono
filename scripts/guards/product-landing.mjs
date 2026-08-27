@@ -55,11 +55,11 @@ const CORE_PRICING_STRIP_PATH =
 const CORE_PRODUCT_PRICING_STRIP_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue'
 const CORE_PRODUCT_PRICING_SOURCE_PATH =
-  'packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts'
+  'packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts'
 const CORE_PRODUCT_PRICING_INDEX_PATH =
-  'packages/core/fireux-core/src/runtime/components/Pricing/Catalogue.vue'
+  'packages/core/fireux-core/src/runtime/app/components/Pricing/Catalogue.vue'
 const CORE_PRODUCT_PRICING_TIER_PATH =
-  'packages/core/fireux-core/src/runtime/components/Pricing/Tier.vue'
+  'packages/core/fireux-core/src/runtime/app/components/Pricing/Tier.vue'
 const CORE_OPERATION_RAIL_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/OperationRail.vue'
 const CORE_PRODUCT_LANDING_TYPE_PATH =
@@ -782,7 +782,7 @@ export async function run(ctx) {
   const productPricingStrip = read(repoRoot, CORE_PRODUCT_PRICING_STRIP_PATH)
   const productPricingSource = read(repoRoot, CORE_PRODUCT_PRICING_SOURCE_PATH)
   const productPricingIndex = read(repoRoot, CORE_PRODUCT_PRICING_INDEX_PATH)
-  const productPricingTier = read(repoRoot, CORE_PRODUCT_PRICING_TIER_PATH)
+  const productAppPricingTier = read(repoRoot, CORE_PRODUCT_PRICING_TIER_PATH)
   const operationRail = read(repoRoot, CORE_OPERATION_RAIL_PATH)
   const miseboxPricingStrip = read(repoRoot, MISEBOX_PRICING_STRIP_PATH)
   const fireuxPricingStrip = read(repoRoot, FIREUX_PRICING_STRIP_PATH)
@@ -1191,7 +1191,7 @@ export async function run(ctx) {
 
   for (const [filePath, source] of [
     [CORE_PRODUCT_PRICING_INDEX_PATH, productPricingIndex],
-    [CORE_PRODUCT_PRICING_TIER_PATH, productPricingTier],
+    [CORE_PRODUCT_PRICING_TIER_PATH, productAppPricingTier],
     [CORE_PRODUCT_PRICING_STRIP_PATH, productPricingStrip],
   ]) {
     for (const forbidden of [

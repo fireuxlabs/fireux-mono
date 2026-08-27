@@ -157,8 +157,9 @@ remain defensive at runtime, but module source must not advertise an absent
 shared or Entity role; `scripts/guards/runtime-registration.mjs` rejects those
 phantom targets.
 
-Core App proves the complete boundary: App-owned UI, state, models, and server
-jobs live under `runtime/app/{components,composables,models,server}`, while its
+Core App proves the complete boundary: App-owned UI, pricing, state, models,
+utilities, and server jobs live under
+`runtime/app/{components,composables,models,utils,server}`, while its
 Nuxt handlers remain under `runtime/server/api/**/app/` and delegate inward.
 The App scope does not repeat `app-` in child names such as `membership`,
 `projection`, or `initialization`.
@@ -290,8 +291,8 @@ registration and guard changes; it never starts a parallel target tree.
 | To-confirm concepts remain on their owning package spine                                                                          | `to-confirm` | Make the model decision before creating an Entity root; do not infer Entity status from a UI folder |
 | Nuxt pages, layouts, middleware, plugins, server API handlers, and static public projection remain in their framework directories | `accepted`   | Keep Nuxt discovery explicit and delegate substantial entity work inward                            |
 | Entities expose different technical roles and capabilities                                                                        | `accepted`   | Do not create empty folders or artificial symmetry                                                  |
-| First-level runtime roots mix unexplained feature names with technical roles and Entity owners                                     | `drift`      | Classify each root, then move one coherent capability without compatibility trees                    |
-| Empty local directories remain after a completed tracked migration                                                                 | `drift`      | Remove the local residue; empty untracked folders are not architecture or migration compatibility    |
+| First-level runtime roots mix unexplained feature names with technical roles and Entity owners                                    | `drift`      | Classify each root, then move one coherent capability without compatibility trees                   |
+| Empty local directories remain after a completed tracked migration                                                                | `drift`      | Remove the local residue; empty untracked folders are not architecture or migration compatibility   |
 
 ## Verification
 

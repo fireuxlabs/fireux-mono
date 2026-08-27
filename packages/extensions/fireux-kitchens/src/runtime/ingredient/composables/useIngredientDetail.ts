@@ -1,7 +1,7 @@
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
-import type { IngredientDetailResponse } from '../models/ingredient-collection.model.ts'
+import type { IngredientDetailResponse } from '../models/ingredient-directory.model.ts'
 import type { Ingredient } from '../utils/ingredient.ts'
 
 export type IngredientDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'

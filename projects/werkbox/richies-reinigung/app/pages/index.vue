@@ -1,8 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 12:17 CEST — Cleanbox-to-Werkbox app migration: preserve the Richies contact landing with consistent geography. -->
 <template>
   <div class="brand-landing">
-    <EffectsStars />
-
     <section class="brand-card" aria-labelledby="richies-brand">
       <img
         class="brand-avatar"
@@ -15,14 +13,18 @@
       <img
         class="brand-wordmark"
         src="/img/app/wordmark-light.png"
-        srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light-2x.png 2x"
+        srcset="
+          /img/app/wordmark-light.png    1x,
+          /img/app/wordmark-light-2x.png 2x
+        "
         alt="Richies Reinigung wordmark"
         width="320"
         height="80"
       />
 
       <p id="richies-brand" class="lede">
-        Richie’s Reinigung provides reliable, professional cleaning services for homes and businesses in Interlaken, Lauterbrunnen, and Wengen.
+        Richie’s Reinigung provides reliable, professional cleaning services for
+        homes and businesses in Interlaken, Lauterbrunnen, and Wengen.
       </p>
 
       <div class="cta-actions">
@@ -62,7 +64,8 @@ useSeoMeta({
 .brand-landing {
   position: relative;
   min-height: 100%;
-  padding: calc(var(--spacing) * 16) clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
+  padding: calc(var(--spacing) * 16)
+    clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
 }
 
 .brand-card {
@@ -150,11 +153,8 @@ useSeoMeta({
 
 <style global>
 body {
-  background: radial-gradient(
-      circle at top,
-      rgba(37, 99, 235, 0.35),
-      transparent 55%
-    ),
+  background:
+    radial-gradient(circle at top, rgba(37, 99, 235, 0.35), transparent 55%),
     linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
 }
 </style>

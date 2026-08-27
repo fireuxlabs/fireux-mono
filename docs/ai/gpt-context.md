@@ -616,12 +616,12 @@ requirement, report the exact missing seam before broad edits.
   `--ui-info` remains reserved for genuinely informational state. Projects
   keep brand primary colours and content, and must not copy the pack's
   selectors or CSS.
-- Core `EffectsAmbient` owns the viewport layer, isolation, content stacking,
-  and print suppression for the Main Apps' project-owned landing artwork.
-  FireUX Stars and Misebox Steam stay with their App and provide a
-  reduced-motion state. Stars uses Core's deterministic SSR-safe field helper;
-  Steam retains Misebox's client-initialized puff treatment behind the shared
-  page layer.
+- Main Apps own the viewport layer, isolation, content stacking, and print
+  suppression required by their landing artwork. FireUX Stars and Misebox
+  Steam stay with their App and provide a reduced-motion state. Stars uses
+  Core's deterministic SSR-safe field helper; Steam retains Misebox's
+  client-initialized puff treatment. Core has no generic effects component
+  family.
 - Start at `config/app/design-packs.ts`,
   `runtime/assets/styles/design-packs/sci-fire.css`, and
   `scripts/guards/css-system.mjs` when this contract changes.
