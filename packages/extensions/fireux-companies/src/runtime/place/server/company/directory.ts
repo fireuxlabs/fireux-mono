@@ -8,7 +8,7 @@ import {
   COMPANY_DIRECTORY_PAGE_SIZE,
   COMPANY_DIRECTORY_SCAN_BATCH_SIZE,
   type CompanyDirectoryPage,
-} from '../../models/company-directory.model.ts'
+} from '../../models/company-collection.model.ts'
 import { CompanyStorage } from '../../models/company.entity.ts'
 import { canonicalCompanyRole } from './canonical'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'

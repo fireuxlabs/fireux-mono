@@ -1,8 +1,28 @@
 <!-- Workspace Entity canon: one active Entity drives the Workspace context. -->
 <template>
   <section class="workspace-active-entity">
+    <div v-if="sparse" class="workspace-active-entity__manifest">
+      <UAvatar
+        v-if="entity?.imageUrl"
+        :src="entity.imageUrl"
+        :alt="entity.imageAlt || entity.title"
+        size="md"
+      />
+      <div v-if="displayTitle || displayDescription">
+        <p v-if="displayTitle" class="workspace-active-entity__title">
+          {{ displayTitle }}
+        </p>
+        <p
+          v-if="displayDescription"
+          class="workspace-active-entity__description"
+        >
+          {{ displayDescription }}
+        </p>
+      </div>
+    </div>
+
     <UCard
-      v-if="activeId"
+      v-else-if="activeId"
       variant="subtle"
       class="workspace-active-entity__surface"
     >
@@ -17,7 +37,12 @@
           </div>
 
           <template v-else>
-            <slot name="leading" :entity="entity" :outcome="outcome">
+            <slot
+              v-if="!sparse || entity?.imageUrl || entity?.icon"
+              name="leading"
+              :entity="entity"
+              :outcome="outcome"
+            >
               <UAvatar
                 v-if="entity?.imageUrl"
                 :src="entity.imageUrl"
@@ -55,7 +80,10 @@
             </slot>
 
             <div class="workspace-active-entity__copy">
-              <div class="workspace-active-entity__eyebrow">
+              <div
+                v-if="!sparse || outcome !== 'ready'"
+                class="workspace-active-entity__eyebrow"
+              >
                 <span>{{ activeTitle }}</span>
                 <UBadge
                   v-if="outcome === 'pending'"
@@ -75,7 +103,7 @@
                 </UBadge>
               </div>
 
-              <p class="workspace-active-entity__title">
+              <p v-if="displayTitle" class="workspace-active-entity__title">
                 {{ displayTitle }}
               </p>
               <p
@@ -153,6 +181,7 @@ const props = withDefaults(
     changeable?: boolean
     emptyTitle?: string
     emptyDescription?: string
+    sparse?: boolean
   }>(),
   {
     activeId: '',
@@ -164,6 +193,7 @@ const props = withDefaults(
     changeable: true,
     emptyTitle: '',
     emptyDescription: '',
+    sparse: false,
   }
 )
 
@@ -181,6 +211,8 @@ const displayTitle = computed(() => {
   const entityTitle = String(props.entity?.title ?? '').trim()
   if (entityTitle) return entityTitle
 
+  if (props.sparse) return ''
+
   const description = String(props.description ?? '').trim()
   if (description) return description
 
@@ -193,6 +225,8 @@ const displayDescription = computed(() => {
     props.entity?.subtitle || props.entity?.meta || ''
   ).trim()
   if (entityDescription) return entityDescription
+
+  if (props.sparse) return ''
 
   if (props.outcome === 'pending') {
     return `Restoring the active ${label.value.toLowerCase()}.`
@@ -217,6 +251,13 @@ const mediaStyle = computed<CSSProperties | undefined>(() =>
 
 <style scoped>
 .workspace-active-entity {
+  min-width: 0;
+}
+
+.workspace-active-entity__manifest {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 3);
   min-width: 0;
 }
 

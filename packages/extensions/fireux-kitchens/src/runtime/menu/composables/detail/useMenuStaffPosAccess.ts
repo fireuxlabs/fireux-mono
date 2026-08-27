@@ -1,5 +1,4 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { useRoute } from 'vue-router'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceAccess'
 import { useAuthRedirect } from 'fireux-core/runtime/user/composables/useAuthRedirect'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -13,7 +12,6 @@ export function useMenuStaffPosAccess(options: {
   enabled: MaybeRefOrGetter<boolean>
   menu: MaybeRefOrGetter<MenuManifest>
 }) {
-  const route = useRoute()
   const { uid } = useAuth()
   const menu = computed(() => toValue(options.menu))
   const appId = computed(() => text(menu.value.source.appId))
@@ -27,7 +25,7 @@ export function useMenuStaffPosAccess(options: {
   })
   const auth = useAuthRedirect({
     enabled: options.enabled,
-    unauthenticatedPath: `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`,
+    unauthenticatedPath: '/auth',
   })
   const canUseStaffPos = computed(() =>
     targetHasOperator(kitchen.value, text(uid.value))

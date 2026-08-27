@@ -285,6 +285,28 @@
       }
     },
     {
+      "name": "Sharer dev (3032)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:sharer",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 20
+      }
+    },
+    {
+      "name": "Kjordi dev (3034)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:kjordi",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 21
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -536,6 +558,28 @@
         "group": "Dev Servers",
         "order": 120
       }
+    },
+    {
+      "name": "Kill Sharer dev (3032)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:sharer",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 120
+      }
+    },
+    {
+      "name": "Kill Kjordi dev (3034)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:kjordi",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 121
+      }
     }
   ],
   "compounds": [
@@ -581,7 +625,9 @@
         "Interlaken Essen dev (3026)",
         "Book with Nats dev (3028)",
         "Friiites dev (3033)",
-        "AUSFinn Apartments dev (3029)"
+        "AUSFinn Apartments dev (3029)",
+        "Sharer dev (3032)",
+        "Kjordi dev (3034)"
       ]
     }
   ]

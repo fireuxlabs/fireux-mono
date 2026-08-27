@@ -72,6 +72,7 @@ export function useKitchenCreate() {
     input: KitchenCreateDraft
   ): Promise<KitchenCreateResult> {
     const placeId = normalizeString(input.place_id)
+    const kitchenId = normalizeString(input.kitchen_id)
     const name = normalizeString(input.name)
     if (!placeId && name) {
       const result = await $fetch<KitchenOnboardingCompleteResult>(
@@ -79,7 +80,7 @@ export function useKitchenCreate() {
         {
           method: 'POST',
           headers: await authHeaders(),
-          body: { name },
+          body: { name, ...(kitchenId ? { kitchen_id: kitchenId } : {}) },
         }
       )
       if (result?.ok !== true || !normalizeString(result.kitchen_id)) {

@@ -6,7 +6,7 @@ import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
   DetailResponse,
 } from '../../../models/utils/directory.ts'
-import type { ProfileDirectoryEntry } from '../../models/user-directory.model.ts'
+import type { ProfileDirectoryEntry } from '../../models/user-collection.model.ts'
 
 export type ProfileCollection =
   | 'agents'

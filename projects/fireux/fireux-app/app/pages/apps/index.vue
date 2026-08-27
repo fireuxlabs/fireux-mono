@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     title="Apps"
     description="Browse every App across the FireUX platform."
@@ -16,7 +16,7 @@
       <AppCollectionMine :controller="appsController" />
       <AppCTA :controller="appsController" />
     </template>
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

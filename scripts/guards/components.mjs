@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-08-19
-// usage_note: guard component naming, Entity Directory composition, resolved imports, and prop-driven Cards authority.
+// usage_note: guard component naming, Entity Collection Page composition, resolved imports, and prop-driven Cards authority.
 // FILE: scripts/guards/components.mjs
 // Component registration guard.
 
@@ -78,7 +78,7 @@ export async function run(ctx) {
   }
 
   validateMiseboxCardSpecimen(repoRoot, violations)
-  validateEntityDirectoryPresentation(repoRoot, violations)
+  validateEntityCollectionPagePresentation(repoRoot, violations)
   validateEntityDetailPresentation(repoRoot, violations)
 
   if (violations.length) {
@@ -104,9 +104,9 @@ export async function run(ctx) {
   console.log('[guard] ✅ component naming valid')
 }
 
-function validateEntityDirectoryPresentation(repoRoot, violations) {
+function validateEntityCollectionPagePresentation(repoRoot, violations) {
   const surfacePath =
-    'packages/core/fireux-core/src/runtime/components/Directory/Surface.vue'
+    'packages/core/fireux-core/src/runtime/components/Entity/Collection/Page.vue'
   const retiredSurfacePath =
     'packages/core/fireux-core/src/runtime/components/public/IndexSurface.vue'
   const ordinaryConsumers = [
@@ -145,15 +145,17 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
 
   const absoluteSurfacePath = path.join(repoRoot, surfacePath)
   if (!existsSync(absoluteSurfacePath)) {
-    violations.push(`${surfacePath} (missing shared Entity Directory surface)`)
+    violations.push(
+      `${surfacePath} (missing shared Entity Collection Page surface)`
+    )
   } else {
     const source = readFileSync(absoluteSurfacePath, 'utf8')
     if (
-      !source.includes("name: 'DirectorySurface'") ||
-      !source.includes('directory-surface__hero')
+      !source.includes("name: 'EntityCollectionPage'") ||
+      !source.includes('entity-collection-page__hero')
     ) {
       violations.push(
-        `${surfacePath} (must retain the named semantic Directory surface contract)`
+        `${surfacePath} (must retain the named Entity Collection Page contract)`
       )
     }
   }
@@ -168,9 +170,9 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
     const absolutePath = path.join(repoRoot, consumerPath)
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
-    if (!source.includes('<DirectorySurface')) {
+    if (!source.includes('<EntityCollectionPage')) {
       violations.push(
-        `${consumerPath} (ordinary Entity Directory must consume DirectorySurface)`
+        `${consumerPath} (ordinary Entity Collection Page must consume EntityCollectionPage)`
       )
     }
   }
@@ -180,11 +182,11 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
     if (
-      !source.includes('<CollectionDirectoryHeader') ||
-      !source.includes('<CollectionDirectoryState')
+      !source.includes('<CollectionHeader') ||
+      !source.includes('<CollectionState')
     ) {
       violations.push(
-        `${managerPath} (ordinary Entity manager must use shared Directory header and state anatomy)`
+        `${managerPath} (ordinary Entity manager must use shared Collection header and state anatomy)`
       )
     }
   }
@@ -193,9 +195,9 @@ function validateEntityDirectoryPresentation(repoRoot, violations) {
     const absolutePath = path.join(repoRoot, routePath)
     if (!existsSync(absolutePath)) continue
     const source = readFileSync(absolutePath, 'utf8')
-    if (source.includes('<DirectorySurface')) {
+    if (source.includes('<EntityCollectionPage')) {
       violations.push(
-        `${routePath} (App-owned branded family must retain its named presentation instead of the ordinary Directory shell)`
+        `${routePath} (App-owned branded family must retain its named presentation instead of the ordinary Entity Collection Page shell)`
       )
     }
   }

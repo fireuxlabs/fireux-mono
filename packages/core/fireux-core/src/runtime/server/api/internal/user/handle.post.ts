@@ -15,5 +15,21 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return updateUserHandle({ uid, payload: body })
+  try {
+    return await updateUserHandle({ uid, payload: body })
+  } catch (error) {
+    console.error('[User identity provisioning] failed', { uid, error })
+    const statusCode =
+      error && typeof error === 'object' && 'statusCode' in error
+        ? Number(error.statusCode)
+        : 0
+    if (statusCode >= 400 && statusCode < 500) throw error
+    if (import.meta.dev && error instanceof Error && error.message.trim()) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: `Public identity could not be created: ${error.message.trim()}`,
+      })
+    }
+    throw error
+  }
 })

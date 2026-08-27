@@ -19,7 +19,7 @@ evidence required before an Entity may be described as aligned.
 
 - Parent: [Spine](spine.md)
 - Horizontal: [Entities](entities.md), [Entity Detail](family-entity-detail.md),
-  [Entity Directory](family-entity-directory.md), [Debug](debug.md), and
+  [Entity Collection Page](family-entity-collection-page.md), [Debug](debug.md), and
   [Runtime filesystem](runtime-filesystem.md)
 - Firestore mutation authority:
   [`docs/ai/firestore-mutations-context.md`](../ai/firestore-mutations-context.md)

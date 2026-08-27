@@ -2,7 +2,7 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import type { CompanyDetailResponse } from '../../models/company-directory.model.ts'
+import type { CompanyDetailResponse } from '../../models/company-collection.model.ts'
 import { CompanyStorage } from '../../models/company.entity.ts'
 import { canonicalCompanyRole } from './canonical'
 

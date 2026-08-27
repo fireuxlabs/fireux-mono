@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -11,7 +11,7 @@
     <template #secondary>
       <PropertyCTA />
     </template>
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

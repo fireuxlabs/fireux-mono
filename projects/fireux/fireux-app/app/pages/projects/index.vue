@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     title="Projects"
     description="Browse FireUX Projects and the Apps connected to each one."
@@ -50,13 +50,13 @@
       </div>
     </template>
 
-    <section class="collection-directory project-collection">
-      <CollectionDirectoryHeader
+    <section class="entity-collection project-collection">
+      <CollectionHeader
         title="Active Projects"
         description="See the Apps connected to each Project."
       />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-if="pending"
         title="Loading Projects"
         description="Finding Projects…"
@@ -67,7 +67,7 @@
         aria-busy="true"
       />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="error"
         title="Projects unavailable"
         description="Projects could not be loaded. Please try again."
@@ -84,7 +84,7 @@
             @click="refresh"
           />
         </template>
-      </CollectionDirectoryState>
+      </CollectionState>
 
       <div
         v-else-if="projects.length"
@@ -159,7 +159,7 @@
         </article>
       </div>
 
-      <CollectionDirectoryState
+      <CollectionState
         v-else
         icon="i-lucide-folders"
         title="No Projects yet"
@@ -179,7 +179,7 @@
         @closed="unloadDevJson"
       />
     </section>
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

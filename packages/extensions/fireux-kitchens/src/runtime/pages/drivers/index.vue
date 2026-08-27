@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCTA />
     </template>
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

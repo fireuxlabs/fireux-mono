@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -12,7 +12,7 @@
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCTA />
     </template>
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

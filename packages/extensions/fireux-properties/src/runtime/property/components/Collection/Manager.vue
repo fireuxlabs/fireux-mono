@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory property-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection property-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -27,14 +27,14 @@
 
         <span
           v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading properties"
       description="Finding properties…"
@@ -45,7 +45,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Properties unavailable"
       description="Properties could not be loaded. Please try again."
@@ -62,7 +62,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <div v-else-if="cardsFiltered.length" class="grid gap-4">
       <PropertyCollectionList :cards="cardsFiltered" :variant="variant">
@@ -101,7 +101,7 @@
     </div>
 
     <div v-else class="grid gap-4">
-      <CollectionDirectoryState
+      <CollectionState
         icon="i-lucide-house"
         :title="query ? 'No matching properties' : 'No properties yet'"
         :description="

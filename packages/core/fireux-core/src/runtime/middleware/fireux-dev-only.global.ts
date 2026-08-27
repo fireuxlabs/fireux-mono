@@ -30,7 +30,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
   if (!auth.isAuthenticated) {
-    return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
+    return navigateTo('/auth')
   }
 
   const runtime = useRuntimeConfig()

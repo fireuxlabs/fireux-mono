@@ -1,7 +1,7 @@
 # Pages
 
-Updated: 2026-08-19
-Ref: 8287d99bb
+Updated: 2026-08-26
+Ref: 1813a2f9e
 Role: map, not canon
 
 ## Purpose
@@ -11,7 +11,7 @@ Map how route pages should be built and where consensus is still forming.
 ## Vertical links
 
 - Parent: nuxt4.md
-- Child: family-entity-directory.md
+- Child: family-entity-collection-page.md
 - Child: family-entity-detail.md
 - Child: family-workspace-entity.md
 - Child: family-menu.md
@@ -38,6 +38,10 @@ Map how route pages should be built and where consensus is still forming.
 - Page should delegate domain display to named components.
 - Page should use composables for data and state.
 - Page should not become a heavy script that calculates many tiny display props.
+- Page-descendant components keep their own bounded data responsibility. In
+  development, each responsible child may expose the objects it fetched or
+  received and the values it derived; the page does not aggregate every
+  child's internals into one debug payload. See `debug.md`.
 - Use `useRouteParam('<key>')` for normalized route params instead of repeating
   `String(route.params.x || '').trim()`.
 - Use `readRouteParam(route.params.<key>)` for a setup-time snapshot that does
@@ -49,7 +53,7 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Common route families
 
-- Entity Directory: `/xs`.
+- Entity Collection Page: `/xs`.
 - Entity Detail: `/xs/[id-or-slug]`.
 - Factual workspace-operation index: `/operations`; entries point to working
   `/workspace/*` operation routes and are distinct from authored `/solutions`.
@@ -106,7 +110,7 @@ Map how route pages should be built and where consensus is still forming.
 
 ## Index page notes
 
-- Root Entity Directory pages should use `XCollectionManager`.
+- Root Entity Collection Page pages should use `XCollectionManager`.
 - `XCollectionManager` should fetch its bounded entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Workspace indexes render `WorkspaceXIndex`.
@@ -125,8 +129,8 @@ Map how route pages should be built and where consensus is still forming.
 
 - Workspace route shells follow `workspace.md`; domain differences live below the
   route page.
-- Entity Directory presentation and authority differences live in
-  `family-entity-directory.md`.
+- Entity Collection Page presentation and authority differences live in
+  `family-entity-collection-page.md`.
 - Entity Detail route identity and operator-panel differences live in
   `family-entity-detail.md`.
 - Tenant route omission versus global explicit scope lives in
@@ -138,7 +142,7 @@ Map how route pages should be built and where consensus is still forming.
 ## Alignment roadmap
 
 - Now: keep route pages thin and preserve truthful route/HTTP outcomes.
-- Next: classify remaining Entity Directories and settle detail route identity per
+- Next: classify remaining Entity Collection Pages and settle detail route identity per
   entity.
 - Later: guard page families only after their structural and product deltas are
   explicit.

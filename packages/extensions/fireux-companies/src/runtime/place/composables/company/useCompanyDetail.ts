@@ -3,7 +3,7 @@ import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
   CompanyDetailResponse,
-} from '../../models/company-directory.model.ts'
+} from '../../models/company-collection.model.ts'
 import type { Company } from '../../models/company.model.ts'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 

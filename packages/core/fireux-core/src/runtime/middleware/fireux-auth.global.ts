@@ -23,6 +23,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const path = String(to.path || '')
   if (isWorkspacePath(path)) return
 
+  if (path === '/auth' && 'redirect' in to.query) {
+    const query = { ...to.query }
+    delete query.redirect
+    return navigateTo({ path: '/auth', query }, { replace: true })
+  }
+
   const meta = to.meta as Record<string, unknown>
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
@@ -36,7 +42,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
 
     if (!auth.isAuthenticated) {
-      return redirectTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
+      return redirectTo('/auth')
     }
 
     const roles = Array.isArray(meta.roles) ? meta.roles : []

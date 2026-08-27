@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-2">
     <div
-      v-if="isDev"
+      v-if="isDev && !bare"
       class="flex justify-end"
     >
       <UBadge
@@ -49,12 +49,14 @@ const props = withDefaults(defineProps<{
   title?: string
   authToken?: string
   providerBaseUrl?: string
+  bare?: boolean
 }>(), {
   tool: 'doc',
   payload: null,
   title: '',
   authToken: '',
   providerBaseUrl: '',
+  bare: false,
 })
 const emit = defineEmits<{
   'tool-result': [message: Record<string, unknown>]

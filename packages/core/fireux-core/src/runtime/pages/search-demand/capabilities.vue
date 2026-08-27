@@ -14,14 +14,14 @@
     <UPageBody>
       <SearchDemandStageNav current="capabilities" />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-if="pending"
         title="Loading capabilities"
         description="Reading this App’s capability decisions…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="error || !demand"
         title="Capability map unavailable"
         description="This App does not yet have a capability map."

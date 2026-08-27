@@ -138,7 +138,7 @@ Directory list and detail endpoints for one Entity must share:
 - bounded pagination and joins;
 - no browser N+1 loading of private/canonical records.
 
-The Entity Directory and Entity Detail maps own page-family expectations. This
+The Entity Collection Page and Entity Detail maps own page-family expectations. This
 map owns only the server transport boundary.
 
 ## Trusted create and command contract

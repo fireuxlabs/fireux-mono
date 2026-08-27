@@ -44,7 +44,7 @@
 }
 
 @media (max-width: 40rem) {
-  .market-app .directory-surface__hero {
+  .market-app .entity-collection-page__hero {
     padding-top: calc(var(--spacing) * 22);
   }
 

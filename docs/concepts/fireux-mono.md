@@ -23,6 +23,7 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Child: runtime-package.md
 - Child: app-config.md
 - Child: app-ignition.md
+- Child: sharer.md
 
 ## Horizontal links
 

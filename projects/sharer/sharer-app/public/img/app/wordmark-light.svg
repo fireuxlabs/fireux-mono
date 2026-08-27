@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <rect width="1200" height="300" fill="none"/>
+  <rect x="22" y="22" width="256" height="256" rx="58" fill="#6758E8"/>
+  <path d="M82 108h92l-26-26 18-18 57 57-57 57-18-18 26-26H82zM218 192h-92l26 26-18 18-57-57 57-57 18 18-26 26h92z" fill="#fff"/>
+  <text x="326" y="205" font-family="Arial, Helvetica, sans-serif" font-size="150" font-weight="700" fill="#15142A">Sharer</text>
+</svg>

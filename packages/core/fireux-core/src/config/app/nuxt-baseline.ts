@@ -82,7 +82,7 @@ export function configureAppModules(
     '@nuxt/icon',
     `fireux-${app.ecosystem}`,
     ...(appDatabaseRuntimeModule ? [appDatabaseRuntimeModule] : []),
-    NuxtfireModule,
+    [NuxtfireModule, { authEnabled: app.authEnabled !== false }],
     'fireux-core',
     '@vite-pwa/nuxt',
     ...withDefaultAppModules(app.modules),

@@ -948,7 +948,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const jobAuthorModelPath =
     'packages/extensions/fireux-jobs/src/runtime/job/models/job-author.model.ts'
   const jobDirectoryModelPath =
-    'packages/extensions/fireux-jobs/src/runtime/job/models/job-directory.model.ts'
+    'packages/extensions/fireux-jobs/src/runtime/job/models/job-collection.model.ts'
   const jobAuthorServerPath =
     'packages/extensions/fireux-jobs/src/runtime/job/server/identity/author.ts'
   const jobValidationPath =
@@ -1355,7 +1355,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const companyDirectoryModel = read(
     repoRoot,
-    'packages/extensions/fireux-companies/src/runtime/place/models/company-directory.model.ts'
+    'packages/extensions/fireux-companies/src/runtime/place/models/company-collection.model.ts'
   )
   const companyProjection = read(
     repoRoot,

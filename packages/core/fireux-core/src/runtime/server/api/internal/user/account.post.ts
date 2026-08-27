@@ -33,10 +33,26 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody<UserAccountProvisioningInput>(event)
-  return provisionUserAccount({
-    uid,
-    email,
-    emailVerified: decoded.email_verified === true,
-    termsVersion: readTermsVersion(body),
-  })
+  try {
+    return await provisionUserAccount({
+      uid,
+      email,
+      emailVerified: decoded.email_verified === true,
+      termsVersion: readTermsVersion(body),
+    })
+  } catch (error) {
+    console.error('[User account provisioning] failed', { uid, error })
+    const statusCode =
+      error && typeof error === 'object' && 'statusCode' in error
+        ? Number(error.statusCode)
+        : 0
+    if (statusCode >= 400 && statusCode < 500) throw error
+    if (import.meta.dev && error instanceof Error && error.message.trim()) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: `Account record could not be created: ${error.message.trim()}`,
+      })
+    }
+    throw error
+  }
 })

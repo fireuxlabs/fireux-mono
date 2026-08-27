@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory professional-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection professional-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -25,13 +25,13 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="collection-directory__count">
+        <span v-if="showCount && isSettled" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading professionals"
       description="Finding professional profiles…"
@@ -43,7 +43,7 @@
       aria-atomic="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Professionals unavailable"
       description="Professional profiles could not be loaded. Please try again."
@@ -66,7 +66,7 @@
       </template>
     </ProfessionalCollectionList>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-briefcase-business"
       :title="query ? 'No matching professionals' : 'No professionals yet'"

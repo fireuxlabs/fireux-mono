@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory ingredient-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection ingredient-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <div class="flex w-full flex-wrap items-center justify-end gap-2">
           <USelect
@@ -39,15 +39,15 @@
           />
           <span
             v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-            class="collection-directory__count"
+            class="entity-collection__count"
           >
             {{ countLabel }}
           </span>
         </div>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading ingredients"
       description="Finding ingredients…"
@@ -58,7 +58,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Ingredients unavailable"
       description="Ingredients could not be loaded. Please try again."
@@ -75,7 +75,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <IngredientCollectionList
       v-else-if="cardsFiltered.length"
@@ -95,7 +95,7 @@
       </template>
     </IngredientCollectionList>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-carrot"
       :title="

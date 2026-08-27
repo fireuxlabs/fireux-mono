@@ -312,6 +312,32 @@ const apps = [
     tooltip: 'Start Friiites dev (port 3033)',
     url: 'http://localhost:3033',
   },
+  {
+    key: 'sharer',
+    ecosystem: 'sharer',
+    name: 'Sharer',
+    icon: '$(server-process)',
+    port: 3032,
+    commandId: 'fireuxToolbar.startSharer',
+    taskLabel: 'pnpm dev:sharer',
+    terminalName: 'Sharer (3032)',
+    pnpmCommand: 'pnpm dev:sharer --host',
+    tooltip: 'Start Sharer dev (port 3032)',
+    url: 'http://localhost:3032',
+  },
+  {
+    key: 'kjordi',
+    ecosystem: 'sharer',
+    name: 'Kjordi',
+    icon: '$(server-process)',
+    port: 3034,
+    commandId: 'fireuxToolbar.startKjordi',
+    taskLabel: 'pnpm dev:kjordi',
+    terminalName: 'Kjordi (3034)',
+    pnpmCommand: 'pnpm dev:kjordi --host',
+    tooltip: 'Start Kjordi dev (port 3034)',
+    url: 'http://localhost:3034',
+  },
 ]
 
 module.exports = { apps }

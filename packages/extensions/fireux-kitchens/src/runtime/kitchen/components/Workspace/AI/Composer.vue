@@ -22,53 +22,76 @@
       @select="emit('update:modelValue', $event)"
     />
 
-    <form class="kitchen-ai-welcome__composer" @submit.prevent="emit('submit')">
-      <input
-        v-if="allowFile"
-        ref="fileInput"
-        class="sr-only"
-        type="file"
-        accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.xlsx,.xls"
-        @change="selectFile"
-      />
+    <input
+      v-if="allowFile"
+      ref="fileInput"
+      class="sr-only"
+      type="file"
+      accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.xlsx,.xls"
+      @change="selectFile"
+    />
+
+    <UChatPrompt
+      :model-value="modelValue"
+      class="kitchen-ai-welcome__composer"
+      :placeholder="placeholder"
+      :loading="submitting"
+      :aria-label="ariaLabel"
+      @update:model-value="emit('update:modelValue', $event)"
+      @submit.prevent="emit('submit')"
+    >
+      <template #footer>
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-1">
+            <UButton
+              v-if="allowFile"
+              type="button"
+              icon="i-lucide-paperclip"
+              color="neutral"
+              variant="ghost"
+              aria-label="Upload your existing menu"
+              @click="fileInput?.click()"
+            />
+            <UButton
+              v-if="mounted && voice.supported.value"
+              type="button"
+              :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
+              :color="voice.recording.value ? 'error' : 'neutral'"
+              :variant="voice.recording.value ? 'soft' : 'ghost'"
+              :loading="transcribing"
+              :disabled="submitting || transcribing"
+              :aria-label="
+                voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
+              "
+              @click="toggleVoice"
+            />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <UBadge color="neutral" variant="soft" size="sm">
+              {{ commandMode ? 'Commands' : 'KitchenAI' }}
+            </UBadge>
+            <UChatPromptSubmit :status="chatStatus" label="Send" />
+          </div>
+        </div>
+      </template>
+    </UChatPrompt>
+
+    <div
+      v-if="contextualActions.length"
+      class="kitchen-ai-welcome__actions"
+      aria-label="Contextual actions"
+    >
       <UButton
-        v-if="allowFile"
-        icon="i-lucide-paperclip"
+        v-for="action in contextualActions"
+        :key="action"
+        :label="action"
         color="neutral"
-        variant="ghost"
-        aria-label="Upload your existing menu"
-        @click="fileInput?.click()"
+        variant="soft"
+        size="sm"
+        @click="emit('update:modelValue', action)"
       />
-      <PromptInput
-        :model-value="modelValue"
-        class="kitchen-ai-welcome__input"
-        :placeholder="placeholder"
-        :suggestions="suggestions"
-        :aria-label="ariaLabel"
-        @update:model-value="emit('update:modelValue', $event)"
-      />
-      <UButton
-        v-if="mounted && voice.supported.value"
-        type="button"
-        :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
-        :color="voice.recording.value ? 'error' : 'neutral'"
-        :variant="voice.recording.value ? 'soft' : 'ghost'"
-        :loading="transcribing"
-        :disabled="submitting || transcribing"
-        :aria-label="
-          voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
-        "
-        @click="toggleVoice"
-      />
-      <UButton
-        type="submit"
-        icon="i-lucide-arrow-up"
-        color="primary"
-        :loading="submitting"
-        :disabled="!modelValue.trim() || submitting"
-        aria-label="Send"
-      />
-    </form>
+    </div>
 
     <p
       v-if="voice.recording.value || transcribing || voiceError"
@@ -88,11 +111,10 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useVoiceRecorder } from 'fireux-ai/runtime/composables/useVoiceRecorder'
-import PromptInput from './PromptInput.vue'
 import ToolNuggets from './ToolNuggets.vue'
 import type { KitchenAIStarter, KitchenAIToolNugget } from './types'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     modelValue?: string
     placeholder?: string
@@ -127,6 +149,10 @@ const voice = useVoiceRecorder()
 const transcribing = ref(false)
 const transcriptionError = ref('')
 const voiceError = computed(() => transcriptionError.value || voice.error.value)
+const chatStatus = computed(() =>
+  props.submitting ? 'submitted' : 'ready'
+)
+const contextualActions = computed(() => props.suggestions.slice(0, 4))
 let recordingTimeout: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {

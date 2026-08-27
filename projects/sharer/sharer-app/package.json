@@ -1,0 +1,32 @@
+{
+  "name": "sharer-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3032 --host 127.0.0.1",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
+    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project sharer-ecosystem --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project sharer-ecosystem --config firebase.json",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project sharer-ecosystem --config firebase.json",
+    "check:env": "node ../../../scripts/check-env.mjs",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
+  },
+  "dependencies": {
+    "@nuxt/icon": "2.x",
+    "@nuxt/ui": "^4.0.0-alpha.2",
+    "fireux-blogs": "workspace:*",
+    "fireux-core": "workspace:*",
+    "fireux-sharer": "workspace:*",
+    "nuxt": "4.4.6",
+    "vue": "3.5.20",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.4",
+    "rimraf": "^6.0.1"
+  }
+}

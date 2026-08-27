@@ -134,6 +134,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     region:
       process.env.NITRO_FIREBASE_REGION ||
       defaultNitroFirebaseRegion(app.ecosystem),
+    secrets: app.firebaseSecrets,
   })
 
   configViteWorkspace(nuxt)

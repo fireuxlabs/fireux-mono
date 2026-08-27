@@ -11,7 +11,7 @@ import {
   JOB_DIRECTORY_PAGE_SIZE,
   type JobDirectoryEntry,
   type JobDirectoryPage,
-} from '../models/job-directory.model.ts'
+} from '../models/job-collection.model.ts'
 
 export type JobDirectoryOutcome = 'pending' | 'error' | 'empty' | 'ready'
 
@@ -39,7 +39,7 @@ export function useJobDirectory(
   const pageSize = normalizePageSize(options.pageSize)
   const endpoint = `/api/jobs?limit=${pageSize}`
   const key = [
-    'job-directory',
+    'job-collection',
     `app=${encodeURIComponent(fireux.appId || 'app')}`,
     `categories=${encodeURIComponent(
       jobsConfig.categoryScope === 'all'

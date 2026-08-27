@@ -6,6 +6,18 @@ import { withBuildVersion } from '../utils/buildVersionUrl'
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'
 
+function readPaletteColor(
+  fireux: Record<string, unknown>,
+  role: 'accent' | 'canvas'
+): string | undefined {
+  const theme = fireux.theme
+  if (!theme || typeof theme !== 'object' || Array.isArray(theme)) return
+  const palette = (theme as Record<string, unknown>).palette
+  if (!palette || typeof palette !== 'object' || Array.isArray(palette)) return
+  const value = (palette as Record<string, unknown>)[role]
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined
+}
+
 export default defineEventHandler((event) => {
   const runtimeConfig = useRuntimeConfig()
   const pub = runtimeConfig.public || {}
@@ -22,9 +34,10 @@ export default defineEventHandler((event) => {
     (typeof pub.appDescription === 'string' && pub.appDescription.trim()) ||
     'FireUX application'
   const themeColor =
-    (typeof fireux.primaryColor === 'string' && fireux.primaryColor.trim()) ||
-    (typeof pub.primaryColor === 'string' && pub.primaryColor.trim()) ||
+    readPaletteColor(fireux, 'accent') ||
     DEFAULT_THEME
+  const backgroundColor =
+    readPaletteColor(fireux, 'canvas') || DEFAULT_BACKGROUND
   const brandAssets = useAssets()
   const buildId = runtimeConfig.app?.buildId
 
@@ -35,9 +48,10 @@ export default defineEventHandler((event) => {
     name,
     short_name: shortName,
     description,
+    lang: 'en',
     start_url: '/',
     display: 'standalone',
-    background_color: DEFAULT_BACKGROUND,
+    background_color: backgroundColor,
     theme_color: themeColor,
     icons: [
       {

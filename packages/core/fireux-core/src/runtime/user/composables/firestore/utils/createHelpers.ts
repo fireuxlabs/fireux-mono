@@ -59,10 +59,14 @@ async function requireCurrentMembershipContext(appId: string, uid: string) {
   const targetUid = String(uid || '').trim()
 
   if (!targetAppId || targetAppId !== currentAppId) {
-    throw new Error('[App membership] The target App is not the active runtime App.')
+    throw new Error(
+      '[App membership] The target App is not the active runtime App.'
+    )
   }
   if (!targetUid || actor.uid !== targetUid) {
-    throw new Error('[App membership] Self-service membership must target the signed-in user.')
+    throw new Error(
+      '[App membership] Self-service membership must target the signed-in user.'
+    )
   }
 }
 

@@ -8,7 +8,7 @@ import type {
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type {
   MenuDirectoryEntry,
-} from 'fireux-kitchens/runtime/menu/models/menu-directory.model'
+} from 'fireux-kitchens/runtime/menu/models/menu-collection.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   projectSupplierDemoWorld,

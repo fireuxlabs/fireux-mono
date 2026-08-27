@@ -1,5 +1,18 @@
 <template>
+  <div
+    v-if="qrOnly"
+    class="mx-auto aspect-square w-full max-w-80 bg-white p-3"
+  >
+    <img
+      v-if="qrDataUrl"
+      :src="qrDataUrl"
+      :alt="`QR code for ${normalizedUrl}`"
+      class="size-full"
+    >
+  </div>
+
   <GoQrProviderFrame
+    v-else
     :title="toolTitle"
     :description="toolDescription"
     endpoint="/api/tools/url"
@@ -75,7 +88,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { toDataURL } from 'qrcode'
+import { generateQR } from 'modqr'
 
 type UrlToolConfig = {
   copy?: {
@@ -89,10 +102,14 @@ type UrlToolConfig = {
     label?: string
     placeholder?: string
     initialValue?: string
+    autoGenerate?: boolean
     invalidMessage?: string
   }
   qr?: {
     centreLabel?: string
+  }
+  presentation?: {
+    qrOnly?: boolean
   }
 }
 
@@ -118,6 +135,7 @@ const openTargetLabel = computed(() =>
   text(props.tool?.copy?.openTargetLabel)
 )
 const qrCentreLabel = computed(() => text(props.tool?.qr?.centreLabel))
+const qrOnly = computed(() => props.tool?.presentation?.qrOnly === true)
 const normalizedUrl = computed(() => normalizeUrl(urlInput.value))
 const validUrl = computed(() => Boolean(normalizedUrl.value))
 const urlMessage = computed(() => {
@@ -125,44 +143,50 @@ const urlMessage = computed(() => {
   return validUrl.value ? normalizedUrl.value : text(props.tool?.url?.invalidMessage)
 })
 const downloadName = computed(() => {
-  const host = normalizedUrl.value ? new URL(normalizedUrl.value).hostname : 'url'
-  return `go-qr-${host.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`
+  const parsed = normalizedUrl.value ? new URL(normalizedUrl.value) : null
+  const host = parsed?.protocol === 'mailto:' ? 'email' : parsed?.hostname || 'url'
+  return `go-qr-${host.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.svg`
 })
 
 watch(
   () => text(props.tool?.url?.initialValue),
-  (value) => {
+  async (value) => {
     if (urlInput.value || !value) return
     urlInput.value = value
+    if (props.tool?.url?.autoGenerate) await createQr()
   },
   { immediate: true }
 )
 
 async function createQr() {
-  if (!validUrl.value) return
-
-  qrDataUrl.value = await toDataURL(normalizedUrl.value, {
-    errorCorrectionLevel: 'H',
-    width: 1024,
-    margin: 2,
-    color: {
-      dark: '#24134f',
-      light: '#ffffff',
-    },
+  if (!import.meta.client || !validUrl.value) return
+  const { svg } = generateQR(normalizedUrl.value, {
+    renderer: 'svg',
+    size: 1024,
+    margin: 4,
+    errorCorrection: 'H',
+    style: 'liquid',
+    finderStyle: 'extra-rounded',
+    foreground: '#17132f',
+    finderColor: '#5b3df5',
+    background: '#ffffff',
   })
+  if (!svg) throw new Error('QR SVG could not be created.')
+  qrDataUrl.value = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 }
 
 function normalizeUrl(value: string) {
   const trimmed = value.trim()
   if (!trimmed) return ''
 
-  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed)
+  const candidate = /^(?:mailto:|[a-z][a-z0-9+.-]*:\/\/)/i.test(trimmed)
     ? trimmed
     : `https://${trimmed}`
 
   try {
     const url = new URL(candidate)
-    if (!['http:', 'https:'].includes(url.protocol)) return ''
+    if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) return ''
+    if (url.protocol === 'mailto:' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url.pathname)) return ''
     return url.toString()
   } catch {
     return ''

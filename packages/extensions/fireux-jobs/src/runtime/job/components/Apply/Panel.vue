@@ -73,7 +73,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { JobApplicationDoorway } from '../../models/job-directory.model.ts'
+import type { JobApplicationDoorway } from '../../models/job-collection.model.ts'
 import { applyToJobRequest } from '../../composables/hiring/jobHiringClient'
 
 const props = defineProps<{

@@ -3,14 +3,14 @@
     v-if="directory"
     :to="surfaceTo"
     :action="action"
-    class="place-directory-card"
+    class="place-collection-card"
     @activate="emit('action')"
   >
-    <div class="place-directory-card__media">
+    <div class="place-collection-card__media">
       <img v-if="resolvedImageUrl" :src="resolvedImageUrl" alt="" loading="lazy">
       <UIcon v-else name="i-lucide-map-pin" aria-label="Venue photo not published" />
     </div>
-    <div class="place-directory-card__body">
+    <div class="place-collection-card__body">
       <UBadge
         v-if="showSource && sourceLabel"
         variant="soft"
@@ -134,12 +134,12 @@ const sourceLabel = computed(() =>
 </script>
 
 <style scoped>
-.place-directory-card { display: block; overflow: hidden; padding: 0; }
-.place-directory-card__media { aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
-.place-directory-card__media > img { width: 100%; height: 100%; object-fit: cover; }
-.place-directory-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
-.place-directory-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 5); }
-.place-directory-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
+.place-collection-card { display: block; overflow: hidden; padding: 0; }
+.place-collection-card__media { aspect-ratio: 16 / 10; background: var(--ui-bg-elevated); }
+.place-collection-card__media > img { width: 100%; height: 100%; object-fit: cover; }
+.place-collection-card__media > svg { width: 100%; height: 100%; padding: calc(var(--spacing) * 16); color: var(--ui-text-dimmed); }
+.place-collection-card__body { display: grid; gap: calc(var(--spacing) * 3); padding: calc(var(--spacing) * 5); }
+.place-collection-card__body h3 { margin: 0; color: var(--ui-text-highlighted); font-size: var(--text-xl); }
 .place-cell__address {
   display: flex;
   min-width: 0;

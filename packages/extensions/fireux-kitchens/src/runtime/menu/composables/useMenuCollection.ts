@@ -15,7 +15,7 @@ import {
   MENU_DIRECTORY_PAGE_SIZE,
   type MenuDirectoryEntry,
   type MenuDirectoryPage,
-} from '../models/menu-directory.model.ts'
+} from '../models/menu-collection.model.ts'
 import {
   menuRoutePath,
   rootMenuRouteScope,
@@ -80,7 +80,7 @@ export function useMenuCollection(
   })
   const key = computed(() =>
     [
-      'menu-directory',
+      'menu-collection',
       `app=${encodeURIComponent(fireux.appId || 'app')}`,
       `scope=${routeScope.value.kind}`,
       `kitchen=${encodeURIComponent(kitchenSlug.value)}`,

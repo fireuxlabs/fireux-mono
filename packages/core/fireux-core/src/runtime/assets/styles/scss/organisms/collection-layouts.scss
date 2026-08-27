@@ -17,17 +17,17 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
   min-width: 0;
 }
 
-/* Shared Entity Directory rhythm; domains continue to own cards and data. */
-:where(.collection-directory) {
+/* Shared Entity Collection Page rhythm; domains continue to own cards and data. */
+:where(.entity-collection) {
   display: grid;
   gap: clamp(calc(var(--spacing) * 7), 4vw, calc(var(--spacing) * 12));
 }
 
-:where(.collection-directory__search) {
+:where(.entity-collection__search) {
   width: min(calc(var(--spacing) * 72), 65vw);
 }
 
-:where(.collection-directory__count) {
+:where(.entity-collection__count) {
   min-width: max-content;
   margin-left: auto;
   align-self: center;
@@ -37,7 +37,7 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
   font-weight: var(--font-weight-semibold);
 }
 
-:where(.collection-directory .collection-stack) {
+:where(.entity-collection .collection-stack) {
   grid-template-columns: repeat(
     auto-fit,
     minmax(min(100%, calc(var(--spacing) * 80)), 1fr)
@@ -46,7 +46,7 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 }
 
 @media (min-width: 40rem) {
-  :where(.collection-directory__count) {
+  :where(.entity-collection__count) {
     margin-left: 0;
     align-self: auto;
   }

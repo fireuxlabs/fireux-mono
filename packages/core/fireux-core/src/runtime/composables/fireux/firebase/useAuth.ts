@@ -27,10 +27,7 @@ import {
   createAuthAccountProvisioner,
   type AccountProvisionState,
 } from './auth-account-provisioning'
-import {
-  resolveGoogleRedirectAuthResult,
-  signInWithGoogleAuth,
-} from './google-auth-actions'
+import { signInWithGoogleAuth } from './google-auth-actions'
 
 let authStateUnsubscribe: (() => void) | null = null
 let bindRetryTimer: ReturnType<typeof setTimeout> | null = null
@@ -151,8 +148,6 @@ export function useAuth() {
       armAuthStateResolution()
       lastBindError.value = null
 
-      void resolveGoogleRedirectResult().catch(() => {})
-
       return true
     } catch (e) {
       auth.value = null
@@ -176,7 +171,6 @@ export function useAuth() {
       if (!isReady.value) bind()
       armAuthStateResolution()
       scheduleBindRetry()
-      void resolveGoogleRedirectResult().catch(() => {})
     })
   }
 
@@ -220,10 +214,6 @@ export function useAuth() {
     if (!user?.uid) return user
     currentUser.value = user
     return user
-  }
-
-  function resolveGoogleRedirectResult() {
-    return resolveGoogleRedirectAuthResult(auth, ensureSignedInUser)
   }
 
   // ─────────────────────────────────────────────

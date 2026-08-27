@@ -1,7 +1,18 @@
 <template>
   <ClientOnly>
+    <UButton
+      v-if="roleBadge && interactive"
+      :to="roleBadge.to"
+      :label="roleBadge.label"
+      :icon="roleBadge.icon"
+      :color="roleBadge.color"
+      variant="soft"
+      size="xs"
+      class="fixed right-4 bottom-4 z-50 shadow-lg ring-1 ring-default"
+      :aria-label="`Open ${roleBadge.label} dashboard`"
+    />
     <UBadge
-      v-if="roleBadge"
+      v-else-if="roleBadge"
       :label="roleBadge.label"
       :icon="roleBadge.icon"
       :color="roleBadge.color"
@@ -18,6 +29,15 @@ import { computed } from 'vue'
 import { useDeveloperAccess } from '../../../user/composables/useDeveloperAccess'
 import { useUser } from '../../../user/composables/useUser'
 
+withDefaults(
+  defineProps<{
+    interactive?: boolean
+  }>(),
+  {
+    interactive: false,
+  }
+)
+
 const { appAccess, appAccessOutcome } = useUser()
 const { isDeveloper } = useDeveloperAccess()
 const roleBadge = computed(() => {
@@ -26,6 +46,7 @@ const roleBadge = computed(() => {
       label: 'Developer',
       icon: 'i-lucide-code-2',
       color: 'warning' as const,
+      to: '/dashboard/developer',
     }
   }
   if (appAccessOutcome.value !== 'ready') return null
@@ -34,6 +55,7 @@ const roleBadge = computed(() => {
       label: 'Admin',
       icon: 'i-lucide-shield-check',
       color: 'info' as const,
+      to: '/dashboard/admin',
     }
   }
   return null

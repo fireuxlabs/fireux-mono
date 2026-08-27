@@ -408,6 +408,9 @@ export function assertCorePwaCacheVersioning(repoRoot) {
   assert.match(shell, /withBuildVersion\(\s*'\/manifest\.webmanifest'/)
   assert.match(shell, /runtimeConfig\.app\?\.buildId/)
   assert.match(manifestRoute, /id:\s*'\/'/)
+  assert.match(manifestRoute, /readPaletteColor\(fireux,\s*'accent'\)/)
+  assert.match(manifestRoute, /readPaletteColor\(fireux,\s*'canvas'\)/)
+  assert.match(manifestRoute, /background_color:\s*backgroundColor/)
   assert.match(
     manifestRoute,
     /withBuildVersion\(brandAssets\.pwaIcon192,\s*buildId\)/

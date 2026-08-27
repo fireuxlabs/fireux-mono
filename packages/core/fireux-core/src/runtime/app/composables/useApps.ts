@@ -17,7 +17,13 @@ export type AppCollectionController = {
 export function useApps(endpoint = '/api/apps'): AppCollectionController {
   const { data, pending, error, refresh } = useAsyncData(
     `apps:${endpoint}`,
-    () => $fetch<CollectionResponse<App>>(endpoint),
+    async () => {
+      const response = await $fetch<CollectionResponse<App>>(endpoint)
+      if (response?.ok !== true || !Array.isArray(response.items)) {
+        throw new Error('The App collection response is invalid.')
+      }
+      return response
+    },
     { server: true, lazy: false }
   )
   const apps = computed<App[]>(() => data.value?.items ?? [])

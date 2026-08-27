@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory place-directory">
-    <CollectionDirectoryHeader
+  <section class="entity-collection place-collection">
+    <CollectionHeader
       :title="title"
       :description="description"
       compact
@@ -31,7 +31,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -50,14 +50,14 @@
 
         <span
           v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading places"
       description="Finding places…"
@@ -68,7 +68,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Places unavailable"
       description="Places could not be loaded. Please try again."
@@ -85,9 +85,9 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
-    <div v-else-if="cardsFiltered.length" class="place-directory__results">
+    <div v-else-if="cardsFiltered.length" class="place-collection__results">
       <PlaceCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <PlaceCardsPill v-bind="card" :link="linkEnabled" />
@@ -106,7 +106,7 @@
         description="The places already shown are still available."
       />
 
-      <div v-if="hasMore" class="place-directory__more">
+      <div v-if="hasMore" class="place-collection__more">
         <UButton
           label="Load more places"
           variant="soft"
@@ -118,7 +118,7 @@
       </div>
     </div>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-map-pin"
       :title="
@@ -324,12 +324,12 @@ function setActiveEntityFamily(family: string) {
 </script>
 
 <style scoped>
-.place-directory__results {
+.place-collection__results {
   display: grid;
   gap: calc(var(--spacing) * 6);
 }
 
-.place-directory__more {
+.place-collection__more {
   display: flex;
   justify-content: center;
 }

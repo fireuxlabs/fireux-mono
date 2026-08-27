@@ -12,10 +12,14 @@ export type GoQrUrlToolConfig = {
     label: string
     placeholder: string
     initialValue: string
+    autoGenerate: boolean
     invalidMessage: string
   }
   qr: {
     centreLabel: string
+  }
+  presentation: {
+    qrOnly: boolean
   }
 }
 
@@ -39,6 +43,7 @@ export function normalizeUrlToolConfig(input: unknown): GoQrUrlToolConfig {
   const copy = record(source.copy)
   const url = record(source.url)
   const qr = record(source.qr)
+  const presentation = record(source.presentation)
 
   return {
     copy: {
@@ -52,10 +57,14 @@ export function normalizeUrlToolConfig(input: unknown): GoQrUrlToolConfig {
       label: text(url.label),
       placeholder: text(url.placeholder),
       initialValue: text(url.initialValue),
+      autoGenerate: url.autoGenerate === true,
       invalidMessage: text(url.invalidMessage),
     },
     qr: {
       centreLabel: text(qr.centreLabel),
+    },
+    presentation: {
+      qrOnly: presentation.qrOnly === true,
     },
   }
 }

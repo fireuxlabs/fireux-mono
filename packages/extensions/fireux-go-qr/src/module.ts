@@ -26,7 +26,9 @@ function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
       process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
       process.env.GO_QR_PROVIDER_BASE_URL ||
       current.providerBaseUrl ||
-      'https://go-qr.web.app',
+      (nuxt.options.dev
+        ? 'http://localhost:3013'
+        : 'https://go-qr.web.app'),
   }
 }
 

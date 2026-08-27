@@ -1,7 +1,7 @@
-<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared Directory chrome and truthful projected outcomes. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared Collection chrome and truthful projected outcomes. -->
 <template>
-  <section id="open-jobs" class="collection-directory job-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section id="open-jobs" class="entity-collection job-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -9,7 +9,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -26,13 +26,13 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="collection-directory__count">
+        <span v-if="showCount && isSettled" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading jobs"
       description="Finding published jobs…"
@@ -44,7 +44,7 @@
       aria-atomic="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Jobs unavailable"
       description="Published jobs could not be loaded. Please try again."
@@ -62,7 +62,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <div v-else-if="cardsFiltered.length">
       <JobCollectionList :cards="cardsFiltered" :variant="variant">
@@ -94,7 +94,7 @@
     </div>
 
     <div v-else>
-      <CollectionDirectoryState
+      <CollectionState
         icon="i-lucide-briefcase-business"
         :title="
           query
@@ -125,7 +125,7 @@
             variant="soft"
           />
         </template>
-      </CollectionDirectoryState>
+      </CollectionState>
 
       <div v-if="hasMore && !query">
         <UButton
@@ -168,7 +168,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { JobDirectoryEntry } from '../../models/job-directory.model.ts'
+import type { JobDirectoryEntry } from '../../models/job-collection.model.ts'
 import { useJobDirectory } from '../../composables/useJobDirectory'
 import { useJobInterface } from '../../composables/firestore/utils/view/useJobInterface'
 

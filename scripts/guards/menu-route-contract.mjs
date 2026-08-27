@@ -75,7 +75,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const readSource = (relativePath) =>
     readFileSync(path.join(menuRuntime, relativePath), 'utf8')
-  const directoryModel = readSource('models/menu-directory.model.ts')
+  const directoryModel = readSource('models/menu-collection.model.ts')
   const collection = readSource('composables/useMenuCollection.ts')
   const manager = readSource('components/Collection/Manager.vue')
   const directoryReader = readSource('server/index/read.ts')

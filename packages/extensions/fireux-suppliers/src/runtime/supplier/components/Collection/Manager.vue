@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory supplier-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection supplier-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -27,14 +27,14 @@
 
         <span
           v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading suppliers"
       description="Finding suppliers…"
@@ -45,7 +45,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Suppliers unavailable"
       description="Suppliers could not be loaded. Please try again."
@@ -75,7 +75,7 @@
       </template>
     </SupplierCollectionList>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-truck"
       :title="query ? 'No matching suppliers' : 'No suppliers yet'"

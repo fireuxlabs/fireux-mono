@@ -10,7 +10,7 @@ import { useFireuxJobsConfig } from '../../composables/config/useFireuxJobsConfi
 import type {
   JobApplicationDoorway,
   JobDetailResponse,
-} from '../models/job-directory.model.ts'
+} from '../models/job-collection.model.ts'
 import type { Job } from '../models/job.model.ts'
 
 export type JobDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'

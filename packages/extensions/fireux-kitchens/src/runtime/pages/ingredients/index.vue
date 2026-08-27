@@ -1,13 +1,13 @@
 <!-- Ingredient creation stays in protected management; this route is the Directory. -->
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-carrot"
   >
     <IngredientCollectionManager />
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

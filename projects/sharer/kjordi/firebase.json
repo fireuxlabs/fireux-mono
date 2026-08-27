@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "kjordi-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "kjordi"
+    }
+  ],
+  "hosting": {
+    "site": "kjordi",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "kjordi",
+          "codebase": "kjordi-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

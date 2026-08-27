@@ -1,0 +1,86 @@
+// @fireux-ecosystem-rules-fragment sharer/identity-access
+// @fireux-core-rules open
+    // Sharer uses Core's canonical User, UserAccount, App, and AppUser paths.
+    // Identity creation and membership mutation remain server-owned.
+    function isSupportedDatabase() {
+      return database == 'sharer';
+    }
+
+    function isAuthenticated() {
+      return isSupportedDatabase() &&
+        request.auth != null &&
+        (
+          !('firebase' in request.auth.token) ||
+          !('sign_in_provider' in request.auth.token.firebase) ||
+          request.auth.token.firebase.sign_in_provider != 'anonymous'
+        );
+    }
+
+    // @fireux-core-rules owner
+    function isKnownApp(appId) {
+      return appId in ['sharer-app', 'kjordi'];
+    }
+
+    // @fireux-core-rules membership-path
+    function isAppMember(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in [
+          'admin', 'user', 'dev'
+        ];
+    }
+
+    function isAppAdmin(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in [
+          'admin', 'dev'
+        ];
+    }
+
+    function isReadableAppUser(data) {
+      return data is map &&
+        data.role in ['admin', 'user', 'dev'] &&
+        data.subscription in ['free', 'premium', 'business'];
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, update, delete: if false;
+
+      match /private/account {
+        allow get: if isOwner(userId);
+        allow list, create, update, delete: if false;
+      }
+
+      match /private/targets {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /notifications/{notificationId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId) && request.query.limit <= 50;
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /apps/{appId} {
+      allow get: if isAppMember(appId);
+      allow list, create, update, delete: if false;
+
+      match /users/{userId} {
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isReadableAppUser(resource.data)));
+        allow list: if isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isReadableAppUser(resource.data);
+        allow create, update, delete: if false;
+      }
+
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }

@@ -32,7 +32,7 @@ select their own bounded property targets.
   readers may read. Active stays claim one
   deterministic Property-scoped night document per occupied date in the same
   transaction as Reservation creation or lifecycle changes.
-- The BuenoHost global app owns ecosystem-level product-directory and management
+- The BuenoHost global app owns ecosystem-level product-collection and management
   composition.
 - Tenant apps own their property-specific presentation, copy, and
   contact/booking-channel configuration. Each root Property owns

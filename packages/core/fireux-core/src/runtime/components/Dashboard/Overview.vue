@@ -1,109 +1,114 @@
 <!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: lead with the real User and current workspace while preserving authority boundaries. -->
 <template>
-  <MoleculesStateCard
-    v-if="coreIsLoading"
-    entity="user overview"
-    kind="document"
-    loading
-  />
-
-  <MoleculesStateCard
-    v-else-if="coreIsError"
-    entity="user overview"
-    kind="document"
-    state="error"
-    title="Unable to load your user overview"
-    description="Your authentication works, but your account profile could not be loaded from Firestore right now."
-  >
-    <template #default>
-      <p class="text-xs text-dimmed">
-        This is usually a permissions or setup issue in the active identity doc.
-      </p>
-      <div class="mt-3 flex justify-center gap-2">
-        <UButton
-          to="/users/create"
-          label="Review user setup"
-          icon="i-lucide-user-round-plus"
-          size="sm"
-        />
-        <UButton
-          to="/auth"
-          label="Sign in again"
-          icon="i-lucide-refresh-cw"
-          size="sm"
-          color="neutral"
-          variant="soft"
-        />
-      </div>
-      <details v-if="isDev" class="mt-4 text-left">
-        <summary class="cursor-pointer text-xs text-dimmed">
-          Debug details (dev only)
-        </summary>
-        <pre class="mt-2 max-h-48 overflow-auto rounded border p-3 text-xs">{{ coreErrorDebug }}</pre>
-      </details>
-    </template>
-  </MoleculesStateCard>
-
-  <template v-else-if="coreUser && userCard">
-    <div class="space-y-4">
-      <DashboardOverviewUser
-        :card="userCard"
-        :has-custom-avatar="hasCustomAvatar"
-        :private-outcome="privateOutcome"
-      />
-
-      <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
-        <DashboardOverviewApp
-          :class="hasEcosystem ? 'xl:col-span-2' : ''"
-          :app-name="fireux.appName"
-          :app-short-name="fireux.appShortName"
-          :app-card="appCard"
-          :app-outcome="appOutcome"
-          :membership="resolvedAppUser"
-          :membership-outcome="membershipOutcome"
-          :profile-entries="appProfileEntries"
-          :can-open-workspace="canOpenWorkspace"
-          :workspace-path="workspaceEntryPath"
-          :workspace-label="workspaceEntryLabel"
-          :workspace-icon="workspaceEntryIcon"
-          :can-manage-app="canManageApp"
-          :can-self-join="canSelfJoin"
-        />
-        <DashboardOverviewEcosystem
-          v-if="hasEcosystem"
-          :name="ecosystemName"
-          :profile-entries="ecosystemProfileEntries"
-          :show-directory-action="fireux.isGlobal"
-        />
-      </div>
-    </div>
-  </template>
-
-  <div v-else-if="coreIsMissing" class="space-y-4">
-    <UPageHeader
-      headline="Overview"
-      title="Finish your User setup"
-      description="Your sign-in works, but the public identity behind this dashboard still needs to be restored."
+  <div class="contents">
+    <MoleculesStateCard
+      v-if="coreIsLoading"
+      entity="user overview"
+      kind="document"
+      loading
     />
-    <UAlert
-      color="warning"
-      variant="subtle"
-      orientation="horizontal"
-      icon="i-lucide-user-round-plus"
-      title="Public identity not set up"
-      description="Set up your User to restore the identity apps and profiles connect to."
-    >
-      <template #actions>
-        <UButton
-          to="/users/create"
-          label="Finish setup"
-          icon="i-lucide-arrow-right"
-        />
-      </template>
-    </UAlert>
-  </div>
 
-  <MoleculesStateCard v-else entity="user overview" kind="document" loading />
+    <MoleculesStateCard
+      v-else-if="coreIsError"
+      entity="user overview"
+      kind="document"
+      state="error"
+      title="Unable to load your user overview"
+      description="Your authentication works, but your account profile could not be loaded from Firestore right now."
+    >
+      <template #default>
+        <p class="text-xs text-dimmed">
+          This is usually a permissions or setup issue in the active identity
+          doc.
+        </p>
+        <div class="mt-3 flex justify-center gap-2">
+          <UButton
+            to="/users/create"
+            label="Review user setup"
+            icon="i-lucide-user-round-plus"
+            size="sm"
+          />
+          <UButton
+            to="/auth"
+            label="Sign in again"
+            icon="i-lucide-refresh-cw"
+            size="sm"
+            color="neutral"
+            variant="soft"
+          />
+        </div>
+        <details v-if="isDev" open class="mt-4 text-left">
+          <summary class="cursor-pointer text-xs text-dimmed">
+            Debug details (dev only)
+          </summary>
+          <pre class="mt-2 max-h-48 overflow-auto rounded border p-3 text-xs">{{
+            coreErrorDebug
+          }}</pre>
+        </details>
+      </template>
+    </MoleculesStateCard>
+
+    <template v-else-if="coreUser && userCard">
+      <div class="space-y-4">
+        <DashboardOverviewUser
+          :card="userCard"
+          :has-custom-avatar="hasCustomAvatar"
+          :private-outcome="privateOutcome"
+        />
+
+        <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
+          <DashboardOverviewApp
+            :class="hasEcosystem ? 'xl:col-span-2' : ''"
+            :app-name="fireux.appName"
+            :app-short-name="fireux.appShortName"
+            :app-card="appCard"
+            :app-outcome="appOutcome"
+            :membership="resolvedAppUser"
+            :membership-outcome="membershipOutcome"
+            :profile-entries="appProfileEntries"
+            :can-open-workspace="canOpenWorkspace"
+            :workspace-path="workspaceEntryPath"
+            :workspace-label="workspaceEntryLabel"
+            :workspace-icon="workspaceEntryIcon"
+            :can-manage-app="canManageApp"
+            :can-self-join="canSelfJoin"
+          />
+          <DashboardOverviewEcosystem
+            v-if="hasEcosystem"
+            :name="ecosystemName"
+            :profile-entries="ecosystemProfileEntries"
+            :show-directory-action="fireux.isGlobal"
+          />
+        </div>
+      </div>
+    </template>
+
+    <div v-else-if="coreIsMissing" class="space-y-4">
+      <UPageHeader
+        headline="Overview"
+        title="Finish your User setup"
+        description="Your sign-in works, but the public identity behind this dashboard still needs to be restored."
+      />
+      <UAlert
+        color="warning"
+        variant="subtle"
+        orientation="horizontal"
+        icon="i-lucide-user-round-plus"
+        title="Public identity not set up"
+        description="Set up your User to restore the identity apps and profiles connect to."
+      >
+        <template #actions>
+          <UButton
+            to="/users/create"
+            label="Finish setup"
+            icon="i-lucide-arrow-right"
+          />
+        </template>
+      </UAlert>
+    </div>
+
+    <MoleculesStateCard v-else entity="user overview" kind="document" loading />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -129,7 +134,7 @@ import type {
 const fireux = useFireUXConfig()
 const isDev = computed(() => import.meta.dev)
 const userApi = useUser()
-const { uid } = useAuth()
+const { uid, lastAccountProvisionError } = useAuth()
 const appContext = useCurrentAppContext()
 const { profile: appToCard } = useAppInterface()
 const runtimeConfig = useRuntimeConfig()
@@ -175,6 +180,8 @@ const coreErrorDebug = computed(() => {
         message: String(value || ''),
         authUid: uid.value || '',
         identityDatabaseId: identityDatabaseId.value,
+        documentPath: uid.value ? `users/${uid.value}` : '',
+        provisioningError: formatDebugError(lastAccountProvisionError.value),
       },
       null,
       2
@@ -195,11 +202,24 @@ const coreErrorDebug = computed(() => {
       stack: typeof record.stack === 'string' ? record.stack : undefined,
       authUid: uid.value || '',
       identityDatabaseId: identityDatabaseId.value,
+      documentPath: uid.value ? `users/${uid.value}` : '',
+      provisioningError: formatDebugError(lastAccountProvisionError.value),
     },
     null,
     2
   )
 })
+
+function formatDebugError(value: unknown) {
+  if (!value) return null
+  if (typeof value !== 'object') return String(value)
+  const error = value as { code?: unknown; message?: unknown; name?: unknown }
+  return {
+    code: String(error.code ?? ''),
+    name: String(error.name ?? ''),
+    message: String(error.message ?? ''),
+  }
+}
 const coreIsMissing = computed(
   () => coreOutcome.value === 'missing' || coreUser.value === null
 )
@@ -227,9 +247,11 @@ const membershipOutcome = computed<DashboardOverviewOutcome>(() => {
 const hasEcosystem = computed(() => Boolean(fireux.ecosystemId))
 const runtimeEcosystem = computed(
   () =>
-    (runtimeConfig.public as {
-      firebaseEcosystem?: { name?: unknown }
-    }).firebaseEcosystem
+    (
+      runtimeConfig.public as {
+        firebaseEcosystem?: { name?: unknown }
+      }
+    ).firebaseEcosystem
 )
 const ecosystemName = computed(() =>
   formatEcosystemName(runtimeEcosystem.value?.name)
@@ -290,7 +312,9 @@ const availableRows = computed<DashboardOverviewProfileEntry[]>(() =>
     .map((entry) => toProfileEntry(entry, false))
     .filter((entry): entry is DashboardOverviewProfileEntry => Boolean(entry))
 )
-const ecosystemProfileEntries = computed<DashboardOverviewProfileEntry[]>(() => [])
+const ecosystemProfileEntries = computed<DashboardOverviewProfileEntry[]>(
+  () => []
+)
 const appProfileEntries = computed<DashboardOverviewProfileEntry[]>(() => [
   ...activeRows.value,
   ...availableRows.value,

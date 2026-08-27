@@ -75,7 +75,6 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
 definePageMeta({ requiresAuth: false })
 
-const route = useRoute()
 const token = useRouteParam('token')
 const endpoint = computed(
   () => `/api/kitchen/member-invitations/${encodeURIComponent(token.value)}`
@@ -101,9 +100,7 @@ const failure = computed(
       error.value?.data?.statusMessage || error.value?.message || ''
     ).trim()
 )
-const authTo = computed(
-  () => `/auth?redirect=${encodeURIComponent(route.fullPath)}`
-)
+const authTo = computed(() => '/auth')
 const memberTo = computed(
   () =>
     `/workspace/kitchen/team#${acceptedSlug.value || normalizeSlug(invitation.value?.memberName)}`

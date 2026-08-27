@@ -1,0 +1,158 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Sharer uses Core's canonical User, UserAccount, App, and AppUser paths.
+    // Identity creation and membership mutation remain server-owned.
+    function isSupportedDatabase() {
+      return database == 'sharer';
+    }
+
+    function isAuthenticated() {
+      return isSupportedDatabase() &&
+        request.auth != null &&
+        (
+          !('firebase' in request.auth.token) ||
+          !('sign_in_provider' in request.auth.token.firebase) ||
+          request.auth.token.firebase.sign_in_provider != 'anonymous'
+        );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isKnownApp(appId) {
+      return appId in ['sharer-app', 'kjordi'];
+    }
+
+    function appMembershipPath(appId, userId) {
+      return /databases/$(database)/documents/apps/$(appId)/users/$(userId);
+    }
+
+    function isAppMember(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in [
+          'admin', 'user', 'dev'
+        ];
+    }
+
+    function isAppAdmin(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in [
+          'admin', 'dev'
+        ];
+    }
+
+    function isReadableAppUser(data) {
+      return data is map &&
+        data.role in ['admin', 'user', 'dev'] &&
+        data.subscription in ['free', 'premium', 'business'];
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, update, delete: if false;
+
+      match /private/account {
+        allow get: if isOwner(userId);
+        allow list, create, update, delete: if false;
+      }
+
+      match /private/targets {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /notifications/{notificationId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId) && request.query.limit <= 50;
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /apps/{appId} {
+      allow get: if isAppMember(appId);
+      allow list, create, update, delete: if false;
+
+      match /users/{userId} {
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isReadableAppUser(resource.data)));
+        allow list: if isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isReadableAppUser(resource.data);
+        allow create, update, delete: if false;
+      }
+
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
+    // ===============================================================
+    // Assumed data model
+    // ===============================================================
+    // share_profiles/{appId}: public display-only social links for one App.
+    // apps/{appId}/users/{uid}: private Core App membership authority.
+
+    function isValidLink(link) {
+      return link is map &&
+        link.keys().hasOnly(['id', 'label', 'url']) &&
+        link.keys().hasAll(['id', 'label', 'url']) &&
+        link.id is string && link.id.size() >= 1 && link.id.size() <= 80 &&
+        link.label is string && link.label.size() >= 1 && link.label.size() <= 40 &&
+        link.url is string && link.url.size() >= 5 && link.url.size() <= 2048 &&
+        ((link.label == 'Email' && link.id == 'email' &&
+          link.url.size() <= 254 && link.url.matches('^[^ @]+@[^ @]+[.][^ @]+$')) ||
+         (link.label != 'Email' && link.url.matches('^https?://.+')));
+    }
+
+    function isValidShareProfile(data, appId) {
+      return data.keys().hasOnly(['app_id', 'links', 'created', 'updated']) &&
+        data.keys().hasAll(['app_id', 'links', 'created', 'updated']) &&
+        data.app_id is string && data.app_id == appId &&
+        data.links is list && data.links.size() <= 10 &&
+        (data.links.size() < 1 || isValidLink(data.links[0])) &&
+        (data.links.size() < 2 || isValidLink(data.links[1])) &&
+        (data.links.size() < 3 || isValidLink(data.links[2])) &&
+        (data.links.size() < 4 || isValidLink(data.links[3])) &&
+        (data.links.size() < 5 || isValidLink(data.links[4])) &&
+        (data.links.size() < 6 || isValidLink(data.links[5])) &&
+        (data.links.size() < 7 || isValidLink(data.links[6])) &&
+        (data.links.size() < 8 || isValidLink(data.links[7])) &&
+        (data.links.size() < 9 || isValidLink(data.links[8])) &&
+        (data.links.size() < 10 || isValidLink(data.links[9])) &&
+        data.created is map &&
+        data.created.keys().hasAll(['at', 'by']) &&
+        data.created.keys().hasOnly(['at', 'by']) &&
+        data.created.at is timestamp &&
+        data.created.by is string && data.created.by == request.auth.uid &&
+        data.updated is map &&
+        data.updated.keys().hasAll(['at', 'by']) &&
+        data.updated.keys().hasOnly(['at', 'by']) &&
+        data.updated.at == request.time &&
+        data.updated.by is string && data.updated.by == request.auth.uid;
+    }
+
+    match /share_profiles/{appId} {
+      // Exact public doorways must also resolve a not-yet-created profile as
+      // missing. Validity remains enforced on every writer below.
+      allow get: if isKnownApp(appId);
+      allow list: if false;
+      allow create: if isAppAdmin(appId) &&
+        isValidShareProfile(request.resource.data, appId);
+      allow update: if isAppAdmin(appId) &&
+        request.resource.data.app_id == resource.data.app_id &&
+        request.resource.data.created == resource.data.created &&
+        isValidShareProfile(request.resource.data, appId);
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory user-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection user-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -25,13 +25,13 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="collection-directory__count">
+        <span v-if="showCount && isSettled" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading users"
       description="Finding users…"
@@ -43,7 +43,7 @@
       aria-atomic="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Users unavailable"
       description="Users are not available right now."
@@ -61,7 +61,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <UserCollectionList
       v-else-if="cardsFiltered.length"
@@ -84,7 +84,7 @@
       </template>
     </UserCollectionList>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-users-round"
       :title="query ? 'No matching users' : 'No users yet'"

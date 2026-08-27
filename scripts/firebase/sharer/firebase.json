@@ -1,0 +1,21 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Sharer",
+        "supportEmail": "d.m.watson1985@gmail.com",
+        "authorizedRedirectUris": [
+          "https://kjordi.web.app",
+          "https://sharify.web.app"
+        ]
+      }
+    }
+  },
+  "firestore": {
+    "database": "sharer",
+    "location": "europe-west6",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

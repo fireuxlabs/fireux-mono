@@ -1,9 +1,5 @@
 <template>
-  <UPageCard
-    title="Join this app"
-    :description="description"
-    variant="subtle"
-  >
+  <UPageCard title="Join this app" :description="description" variant="subtle">
     <div class="flex flex-wrap items-center gap-2">
       <UButton
         v-if="!isAuthenticated"
@@ -25,19 +21,11 @@
         Request to join
       </UButton>
 
-      <UBadge
-        v-else-if="hasPendingRequest"
-        color="warning"
-        variant="soft"
-      >
+      <UBadge v-else-if="hasPendingRequest" color="warning" variant="soft">
         Request pending
       </UBadge>
 
-      <UBadge
-        v-else-if="isAppMember"
-        color="primary"
-        variant="soft"
-      >
+      <UBadge v-else-if="isAppMember" color="primary" variant="soft">
         Joined
       </UBadge>
     </div>
@@ -46,12 +34,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
 import { useToastify } from '../../../composables/ui/useToastify'
 import { useFireUXConfig } from '../../composables/config/FireUXConfig'
 import { useAppJoinRequest } from '../../composables/firestore/mutations/useAppJoinRequest'
 
-const route = useRoute()
 const { appName } = useFireUXConfig()
 const {
   isAuthenticated,
@@ -79,9 +65,7 @@ const description = computed(() => {
 
   return `Ask an app admin to add you to ${appLabel.value}. This does not grant workspace access.`
 })
-const authTo = computed(
-  () => `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`
-)
+const authTo = computed(() => '/auth')
 
 async function submit() {
   if (!canRequest.value || submitting.value) return

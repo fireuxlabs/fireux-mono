@@ -1,5 +1,5 @@
 <template>
-  <DirectorySurface
+  <EntityCollectionPage
     eyebrow="Discover"
     :title="pageTitle"
     :description="pageDescription"
@@ -7,7 +7,7 @@
   >
     <!-- Directory family: use bounded canonical Users, not raw identity docs. -->
     <UserCollectionManager />
-  </DirectorySurface>
+  </EntityCollectionPage>
 </template>
 
 <script setup lang="ts">

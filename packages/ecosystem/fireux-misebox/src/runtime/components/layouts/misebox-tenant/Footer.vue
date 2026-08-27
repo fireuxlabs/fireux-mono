@@ -32,13 +32,9 @@
         role="dialog"
         :aria-labelledby="titleId"
       >
-        <UCard
-          class="misebox-tenant-footer__callout"
-        >
+        <UCard class="misebox-tenant-footer__callout">
           <div class="misebox-tenant-footer__callout-copy">
-            <p class="misebox-tenant-footer__callout-eyebrow">
-              Misebox
-            </p>
+            <p class="misebox-tenant-footer__callout-eyebrow">Misebox</p>
             <h2 :id="titleId">Venue tools and operator access.</h2>
             <p>
               Guests can visit Misebox. Head chefs and team members can sign in
@@ -79,7 +75,7 @@ import { ref, watch } from 'vue'
 import { useMiseboxTenantChrome } from '../../../composables/fireux/app/useMiseboxTenantChrome'
 
 const miseboxHomeUrl = 'https://misebox.app'
-const tenantWorkspaceTo = `/auth?redirect=${encodeURIComponent('/')}`
+const tenantWorkspaceTo = '/auth'
 const panelId = 'misebox-tenant-footer-panel'
 const titleId = 'misebox-tenant-footer-title'
 const triggerId = 'misebox-tenant-footer-trigger'

@@ -5,6 +5,7 @@ export type FireUXNitroConfig = {
   serverFunctionName: string
   region: string
   serviceAccount?: string
+  secrets?: string[]
 }
 
 export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
@@ -31,6 +32,7 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
       httpsOptions: {
         region: c.region,
         ...(c.serviceAccount ? { serviceAccount: c.serviceAccount } : {}),
+        ...(c.secrets?.length ? { secrets: c.secrets } : {}),
       },
     }
   }

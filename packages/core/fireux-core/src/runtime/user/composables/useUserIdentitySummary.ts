@@ -3,7 +3,7 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type { DetailResponse } from '../../models/utils/directory.ts'
-import type { UserIdentitySummary } from '../models/user-directory.model.ts'
+import type { UserIdentitySummary } from '../models/user-collection.model.ts'
 
 export type UserIdentitySummaryOutcome =
   | 'idle'

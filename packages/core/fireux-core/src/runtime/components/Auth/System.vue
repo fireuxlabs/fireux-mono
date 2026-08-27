@@ -45,32 +45,42 @@
         </template>
 
         <template v-else>
-          <UButton
-            block
-            color="neutral"
-            variant="subtle"
-            :loading="providerLoading"
-            :disabled="providerLoading"
-            icon="i-logos-google-icon"
-            @click="handleGoogle"
-          >
-            Continue with Google
-          </UButton>
-
           <UAlert
-            v-if="providerError"
+            v-if="authUnavailableMessage"
             color="error"
             variant="subtle"
-            title="Unable to sign in"
-            :description="providerError"
+            title="Sign-in is not available"
+            :description="authUnavailableMessage"
           />
 
-          <USeparator label="or continue with email" />
+          <template v-else>
+            <UButton
+              block
+              color="neutral"
+              variant="subtle"
+              :loading="providerLoading"
+              :disabled="providerLoading"
+              icon="i-logos-google-icon"
+              @click="handleGoogle"
+            >
+              Continue with Google
+            </UButton>
 
-          <AuthEmailPanel
-            :brand-label="ecosystemLabel"
-            :default-mode="authMode"
-          />
+            <UAlert
+              v-if="providerError"
+              color="error"
+              variant="subtle"
+              title="Unable to sign in"
+              :description="providerError"
+            />
+
+            <USeparator label="or continue with email" />
+
+            <AuthEmailPanel
+              :brand-label="ecosystemLabel"
+              :default-mode="authMode"
+            />
+          </template>
         </template>
       </div>
     </UCard>
@@ -83,10 +93,7 @@ import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../user/composables/useUser'
 import { useUserInterface } from '../../user/composables/useUserInterface'
-import {
-  resolveInternalRedirect,
-  userOnboardingPath,
-} from '../../utils/onboarding-route'
+import { userOnboardingPath } from '../../utils/onboarding-route'
 import { rememberAnonymousAccountUpgrade } from '../../composables/fireux/firebase/anonymous-account-upgrade'
 
 const router = useRouter()
@@ -94,6 +101,7 @@ const route = useRoute()
 const {
   authState,
   hasAuthState,
+  lastBindError,
   currentUser: authUser,
   signOutUser,
   signInWithGoogle,
@@ -103,6 +111,21 @@ const signOutLoading = ref(false)
 const providerLoading = ref(false)
 const providerError = ref('')
 const navigationInFlight = ref(false)
+const authUnavailableMessage = computed(() => {
+  const error = lastBindError.value
+  const code =
+    typeof error === 'object' && error !== null && 'code' in error
+      ? String((error as { code?: unknown }).code || '')
+      : ''
+  const message = error instanceof Error ? error.message : String(error || '')
+  if (
+    code === 'auth/configuration-not-found' ||
+    message.includes('CONFIGURATION_NOT_FOUND')
+  ) {
+    return 'Firebase Authentication has not been initialized for this App.'
+  }
+  return ''
+})
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
 const isTenantApp = computed(() => config.isTenant)
@@ -137,11 +160,8 @@ watch(
   { immediate: true }
 )
 const resolvedPostAuthPath = computed(() => {
-  const redirect = resolveInternalRedirect(route.query.redirect)
-  if (authMode.value === 'sign-up') return userOnboardingPath(redirect)
-  if (route.query.redirect != null) return redirect
-  if (route.path === '/auth') return '/dashboard'
-  return route.fullPath || '/dashboard'
+  if (authMode.value === 'sign-up') return userOnboardingPath('/dashboard')
+  return '/dashboard'
 })
 
 const authActionLabel = computed(() =>

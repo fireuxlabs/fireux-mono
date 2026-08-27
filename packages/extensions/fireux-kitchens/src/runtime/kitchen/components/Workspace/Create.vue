@@ -1,10 +1,6 @@
 <template>
   <div>
-    <Form
-      v-if="launcher === 'inline'"
-      :title="label"
-      @created="emit('created', $event)"
-    />
+    <Form v-if="launcher === 'inline'" @created="emit('created', $event)" />
 
     <button
       v-else-if="launcher === 'cell'"
@@ -38,7 +34,7 @@
       :ui="{ content: 'sm:max-w-xl' }"
     >
       <template #body>
-        <Form title="" @created="created" />
+        <Form @created="created" />
       </template>
     </UModal>
   </div>

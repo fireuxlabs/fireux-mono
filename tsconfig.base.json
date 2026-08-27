@@ -192,6 +192,11 @@
       "fireux-slap/*": ["./packages/ecosystem/fireux-slap/src/*"],
       "fireux-slap/runtime/*": [
         "./packages/ecosystem/fireux-slap/src/runtime/*"
+      ],
+      "fireux-sharer": ["./packages/ecosystem/fireux-sharer/src/module.ts"],
+      "fireux-sharer/*": ["./packages/ecosystem/fireux-sharer/src/*"],
+      "fireux-sharer/runtime/*": [
+        "./packages/ecosystem/fireux-sharer/src/runtime/*"
       ]
     }
   }

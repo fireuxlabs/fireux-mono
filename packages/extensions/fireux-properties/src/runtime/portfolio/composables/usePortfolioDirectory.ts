@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import type { PortfolioDirectoryPage } from '../models/portfolio-read.model.ts'
 
 export function usePortfolioDirectory() {
-  const state = useAsyncData<PortfolioDirectoryPage>('portfolio-directory', () =>
+  const state = useAsyncData<PortfolioDirectoryPage>('portfolio-collection', () =>
     $fetch('/api/portfolios'), { default: () => ({ items: [] }) }
   )
   const extra = ref<PortfolioDirectoryPage['items']>([])

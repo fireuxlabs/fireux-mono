@@ -60,7 +60,10 @@ Identity preparation is progressive and validates both availability and dimensio
 
 The owning App bundle additionally carries `wordmark.png`, `favicon.ico`,
 `pwa/icon-192.png` and `pwa/icon-512.png`. Those are build outputs and runtime
-assets, not extra Storage-master decisions for template readiness.
+assets, not extra Storage-master decisions for template readiness. Core owns
+the runtime PWA manifest and composes its identity, colours, and versioned icon
+URLs from App config plus this bundle; tenant Apps must not add a static local
+manifest.
 
 The executable stage contract lives in
 `runtime/models/operations/entity-asset-onboarding.ts`. Inspection surfaces

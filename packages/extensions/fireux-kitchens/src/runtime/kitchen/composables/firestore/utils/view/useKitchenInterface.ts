@@ -123,7 +123,10 @@ export function useKitchenInterface() {
       id,
       visibility,
       display_name: identity.displayName || safeString(place.name),
-      tagline: identity.tagline || safeString(place.brand_tagline),
+      tagline:
+        identity.tagline ||
+        safeString(place.tagline) ||
+        safeString(place.brand_tagline),
       display_image_url: safeString(place.image_url),
       image_shade: identity.imageShade || merged.image_shade,
       food_gallery: Array.isArray(place.gallery_images)
@@ -175,7 +178,9 @@ export function useKitchenInterface() {
       shortName,
       formattedAddress,
       shortAddress,
-      tagline: safeString(kitchen.brand_tagline || kitchen.tagline),
+      tagline: safeString(
+        kitchen.tagline || kitchen.brand_tagline
+      ),
       about: safeString(kitchen.about),
       priceLevel: safeString(kitchen.price_level),
       fulfilmentModes: Array.isArray(kitchen.fulfilment?.modes)
@@ -310,7 +315,7 @@ export function useKitchenInterface() {
       imageShade: base.imageShade,
       imageKind: base.imageKind,
       mediaBackdropColor: safeString(target.media_backdrop_color),
-      prop: (target as any)?.brand_tagline,
+      prop: safeString(target.tagline || target.brand_tagline),
     }
   }
 
@@ -332,7 +337,7 @@ export function useKitchenInterface() {
       imageShade: kitchenIdentity.imageShade,
       imageKind: 'brand',
       mediaBackdropColor: kitchenIdentity.mediaBackdropColor,
-      prop: (target as any)?.brand_tagline,
+      prop: safeString(target.tagline || target.brand_tagline),
     }
   }
 

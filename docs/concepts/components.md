@@ -12,7 +12,7 @@ Map component folder and naming conventions.
 
 - Parent: nuxt-ui.md
 - Child: family-workspace-entity.md
-- Child: family-entity-directory.md
+- Child: family-entity-collection-page.md
 - Child: family-entity-detail.md
 - Child: card-family.md
 
@@ -26,17 +26,34 @@ Map component folder and naming conventions.
 
 ## Package components
 
+- The public FireUX component library is cross-industry. Its catalogue may
+  include only components whose owner and responsibility remain meaningful
+  without Kitchen, Property, Cleaning, Hospitality, or another industry
+  domain. Industry-designed compositions belong to the named `/templates/*`
+  family and may assemble cross-industry library components with domain-owned
+  capabilities. A domain component does not become library material merely
+  because it is reusable inside one industry.
+- Library admission requires a green input boundary: at most ten top-level
+  props. An eleven-prop amber component or seventeen-prop red component stays
+  with its current owner until its responsibility is made genuinely reusable;
+  the catalogue does not publish warning-state components as library APIs.
+- A visible domain component is composed beneath a Nuxt page (directly or
+  through another named child). Page descendants may present fetched records,
+  parent-passed records, and locally derived values, but each keeps that data
+  responsibility explicit. Global layout chrome and purely visual primitives
+  are not treated as page-domain components. See `pages.md` and `debug.md`.
 - Cross-entity package UI belongs under `src/runtime/components`.
 - Entity-owned package UI belongs under
   `src/runtime/<entity>/components`, following `runtime-filesystem.md`.
 - App UI belongs under `app/components`; reusable entity implementation does
   not move into an App merely to preserve conventional Nuxt discovery.
-- App-owned Workspace composition uses
-  `{Ecosystem}Workspace{Entity}{Job}` and the matching
-  `components/{Ecosystem}/Workspace/{Entity}/{Job}.vue` path. Route placement
-  such as Landing is not part of that component identity. For example,
-  `MiseboxWorkspaceKitchenHero` is the Misebox-owned Kitchen Workspace Hero;
-  package-owned children retain their package family names.
+- App-owned Workspace composition uses `Workspace{Entity}{Job}` and the
+  matching `components/Workspace{Entity}/{Job}.vue` path. The joined family
+  directory keeps App composition distinct from package-owned
+  `components/Workspace/<Entity>` implementation. The App already
+  supplies the ecosystem boundary, so repeating its name adds no ownership
+  information. For example, `WorkspaceKitchenHero` is the App-owned Kitchen
+  Workspace Hero; package-owned children retain their package family names.
 - Declared Entity components live beneath `runtime/<entity>/components` and
   are registered with prefixes that preserve established component names.
   Confirmed parent-owned record/operation components live beneath their parent

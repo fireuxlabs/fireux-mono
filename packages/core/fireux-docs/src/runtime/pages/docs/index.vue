@@ -7,12 +7,8 @@
     />
 
     <UPageBody>
-      <div class="grid gap-4 md:grid-cols-3">
-        <UCard
-          v-for="section in sections"
-          :key="section.to"
-          :to="section.to"
-        >
+      <div class="grid gap-4 md:grid-cols-2">
+        <UCard v-for="section in sections" :key="section.to" :to="section.to">
           <div class="space-y-2">
             <UIcon :name="section.icon" class="size-6 text-primary" />
             <h2 class="font-semibold">{{ section.label }}</h2>
@@ -31,6 +27,26 @@ definePageMeta({
 })
 
 const sections = [
+  {
+    label: 'Start',
+    description: 'Install FireUX as a Nuxt layer and add the first capability.',
+    icon: 'i-lucide-play',
+    to: '/docs/concepts/app-config',
+  },
+  {
+    label: 'Components',
+    description:
+      'Cross-industry page children, their ownership, and Nuxt UI foundations.',
+    icon: 'i-lucide-blocks',
+    to: '/docs/components',
+  },
+  {
+    label: 'Templates',
+    description:
+      'Industry-designed page compositions built from the cross-industry library.',
+    icon: 'i-lucide-panels-top-left',
+    to: '/templates',
+  },
   {
     label: 'Working agreement',
     description: 'The short router every repository task starts from.',

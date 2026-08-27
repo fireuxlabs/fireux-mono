@@ -117,9 +117,7 @@ const description = computed(() => {
 
   return `Ask the kitchen team for access to menus, orders, and operations.`
 })
-const authTo = computed(
-  () => `/auth?redirect=${encodeURIComponent(route.fullPath || '/')}`
-)
+const authTo = computed(() => '/auth')
 const requesterName = computed(() =>
   String(
     currentUser.value?.displayName || currentUser.value?.email || userId.value

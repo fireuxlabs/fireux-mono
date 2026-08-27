@@ -15,7 +15,7 @@ about them and where current coverage is incomplete.
 
 - Firestore stack: `docs/concepts/firestore-entity.md`
 - Workspace family: `docs/concepts/family-workspace-entity.md`
-- Entity Directory: `docs/concepts/family-entity-directory.md`
+- Entity Collection Page: `docs/concepts/family-entity-collection-page.md`
 - Entity detail: `docs/concepts/family-entity-detail.md`
 - Menu family: `docs/concepts/family-menu.md`
 - Finance records: `docs/concepts/finance.md`

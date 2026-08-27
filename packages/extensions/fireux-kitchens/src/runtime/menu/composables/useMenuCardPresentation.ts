@@ -1,6 +1,6 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useMenuServiceComputed } from './firestore/useMenu'
-import type { MenuDirectoryEntry } from '../models/menu-directory.model.ts'
+import type { MenuDirectoryEntry } from '../models/menu-collection.model.ts'
 import {
   menuRoutePath,
   type MenuRouteScope,

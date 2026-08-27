@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory app-collection">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection app-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,30 +8,16 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
-        <UButton
-          v-if="showVariantToggle"
-          size="sm"
-          color="neutral"
-          variant="ghost"
-          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
-          :aria-label="
-            variant === 'pill'
-              ? 'Switch to card view'
-              : 'Switch to compact view'
-          "
-          @click="toggleVariant"
-        />
-
-        <span v-if="showCount && isSettled" class="collection-directory__count">
+        <span v-if="showCount && isSettled" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading Apps"
       description="Finding Apps…"
@@ -42,7 +28,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Apps unavailable"
       description="Apps could not be loaded. Please try again."
@@ -59,22 +45,14 @@
           @click="refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
-    <AppCollectionList
+    <AppCollectionLauncher
       v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <AppCardsPill v-bind="card" :link="linkEnabled" />
-      </template>
-      <template #cell="{ card }">
-        <AppCardsCell v-bind="card" :link="linkEnabled" />
-      </template>
-    </AppCollectionList>
+      :apps="cardsFiltered"
+    />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-app-window"
       :title="query ? 'No apps match your search' : 'No apps yet'"
@@ -109,7 +87,6 @@ import { computed } from 'vue'
 import { useAppInterface } from '../../composables/useAppInterface'
 import type { App } from '../../models/app.model'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
-import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import type { AppCollectionController } from '../../composables/useApps'
 
 const props = withDefaults(
@@ -117,22 +94,16 @@ const props = withDefaults(
     controller: AppCollectionController
     title?: string
     description?: string
-    link?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
-    showVariantToggle?: boolean
     showCount?: boolean
-    initialVariant?: 'pill' | 'cell'
   }>(),
   {
     title: 'Apps',
     description: 'Browse canonical app records for the current ecosystem.',
-    link: true,
     searchPlaceholder: 'Search apps…',
     showSearch: true,
-    showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
   }
 )
 
@@ -151,36 +122,29 @@ const description = computed(() =>
       'Browse canonical app records for the current ecosystem.'
   )
 )
-const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search apps…')
 )
 const showSearch = computed(() => props.showSearch !== false)
-const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
-const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
-} = useAppInterface()
-const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<App, NonNullable<ReturnType<typeof makeCard>>>({
-    items: collection,
-    makeCard: (app) => makeCard(app),
-    initialVariant: props.initialVariant,
-  })
-
-const { cards: cardsFiltered } = useCollectionVariantCards({
-  items: visibleItems,
-  variant,
-  makeCard,
-  makePill,
-  makeCell,
+const { interface: makeCard } = useAppInterface()
+const { query, visibleItems, visibleCount } = useCollectionSearch<
+  App,
+  NonNullable<ReturnType<typeof makeCard>>
+>({
+  items: collection,
+  makeCard: (app) => makeCard(app),
 })
+
+const cardsFiltered = computed(() =>
+  visibleItems.value
+    .map((app) => makeCard(app))
+    .filter((card): card is NonNullable<typeof card> => Boolean(card))
+)
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value

@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory menu-directory">
-    <CollectionDirectoryHeader
+  <section class="entity-collection menu-collection">
+    <CollectionHeader
       :title="props.title"
       :description="props.description"
     >
@@ -10,7 +10,7 @@
           v-model="query"
           :placeholder="props.searchPlaceholder"
           aria-label="Search menus"
-          class="collection-directory__search"
+          class="entity-collection__search"
           icon="i-lucide-search"
         />
 
@@ -27,16 +27,16 @@
 
         <span
           v-if="props.showCount && isSettled"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
     <MenuCollectionPicks v-model="selectedPicks" />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="isLoading"
       title="Loading menus"
       description="Fetching the latest published menus…"
@@ -48,7 +48,7 @@
       aria-atomic="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome.kind === 'unavailable'"
       title="Menus unavailable"
       description="Published menus could not be loaded. Please try again."
@@ -66,12 +66,12 @@
           @click="index.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <div
       v-else-if="visibleItems.length"
-      class="menu-directory__entries"
-      :class="`menu-directory__entries--${variant}`"
+      class="menu-collection__entries"
+      :class="`menu-collection__entries--${variant}`"
     >
       <template v-for="menu in visibleItems" :key="menu.id">
         <MenuCardsPreview
@@ -94,7 +94,7 @@
       </template>
     </div>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-book-open-check"
       :title="hasActiveFilters ? 'No matching menus' : 'No menus yet'"
@@ -107,7 +107,7 @@
 
     <div
       v-if="outcome.kind === 'list' && index.hasMore.value"
-      class="menu-directory__more"
+      class="menu-collection__more"
     >
       <UButton
         type="button"
@@ -149,7 +149,7 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useMenuInterface } from '../../composables/firestore/utils/view/useMenuInterface'
 import type { MenuCollectionController } from '../../composables/useMenuCollection'
-import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-collection.model.ts'
 import { useKitchenServiceNow } from '../../../kitchen/composables/useKitchenServiceNow'
 import {
   menuMatchesCollectionPicks,
@@ -286,17 +286,17 @@ const devDerived = computed(() => ({
 </script>
 
 <style scoped>
-.menu-directory__more {
+.menu-collection__more {
   display: flex;
   justify-content: center;
 }
 
-.menu-directory__entries {
+.menu-collection__entries {
   display: grid;
   gap: calc(var(--spacing) * 4);
 }
 
-.menu-directory__entries--pill {
+.menu-collection__entries--pill {
   grid-template-columns: repeat(
     auto-fit,
     minmax(min(100%, calc(var(--spacing) * 80)), 1fr)

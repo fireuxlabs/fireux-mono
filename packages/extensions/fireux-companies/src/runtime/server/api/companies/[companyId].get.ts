@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam, setResponseHeaders } from 'h3'
-import type { CompanyDetailResponse } from '../../../place/models/company-directory.model.ts'
+import type { CompanyDetailResponse } from '../../../place/models/company-collection.model.ts'
 import { readCompanyDetail } from '../../../place/server/company/projection'
 
 export default defineEventHandler(

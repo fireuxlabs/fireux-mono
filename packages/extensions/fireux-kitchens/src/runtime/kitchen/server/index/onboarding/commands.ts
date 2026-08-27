@@ -1,8 +1,6 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 import { createError, type H3Event } from 'h3'
-import { getAuth } from 'firebase-admin/auth'
-import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -238,7 +236,7 @@ export async function completeKitchenOnboarding(
 }
 
 export async function createKitchenShell(event: H3Event, input: unknown) {
-  const body = request(input, ['name'])
+  const body = request(input, ['name', 'kitchen_id'])
   const name = text(body.name)
   if (!name || name.length > 120) {
     fail(400, 'Kitchen name is required and must be 120 characters or fewer.')
@@ -250,29 +248,70 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   })
   if (!current.canCreate)
     fail(403, 'Kitchen creation is disabled for this App.')
-  await assertKitchenCreationAllowance(current)
-
-  const kitchenId = current.db.collection('kitchens').doc().id
+  const requestedKitchenId = text(body.kitchen_id)
+  const existingKitchenIds = await readUserKitchenIds(current.uid)
+  const requestedRoot = requestedKitchenId
+    ? await current.db.collection('kitchens').doc(requestedKitchenId).get()
+    : null
+  if (!requestedRoot?.exists) await assertKitchenCreationAllowance(current)
+  const kitchenId = requestedKitchenId
+    ? requireFirestoreDocumentId(requestedKitchenId, 'Kitchen id')
+    : existingKitchenIds.length
+      ? current.db.collection('kitchens').doc().id
+      : current.uid
   const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
   const creatorName =
     current.authDisplayName || `Guest ${current.uid.slice(0, 6)}`
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [root, teamMember] = await Promise.all([
+    const [place, root, teamMember] = await Promise.all([
+      mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
       mutations.read(teamMembers, current.uid),
     ])
-    if (root.exists || teamMember.exists) {
-      fail(409, 'Kitchen shell identity already exists.')
+    if (root.exists || place.exists || teamMember.exists) {
+      if (
+        !root.exists ||
+        !place.exists ||
+        !teamMember.exists ||
+        text(teamMember.data?.user_id) !== current.uid ||
+        teamMember.data?.status !== 'active'
+      ) {
+        fail(409, 'Kitchen shell identity is incomplete.')
+      }
+      mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+        name,
+      })
+      mutations.update(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
+        name,
+      })
+      return {
+        ok: true as const,
+        kitchen_id: kitchenId,
+        action: 'update' as const,
+        created_root: false,
+        created_team_member: false,
+        slug: text(root.data?.slug),
+      }
     }
 
     const slug = normalizeSlug(name) || kitchenId.toLowerCase()
+    const created = serverAuditStamp({ by: current.uid, appId: current.appId })
+    mutations.create(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
+      name,
+      slug,
+      place_type: 'non_physical',
+      source: 'manual',
+      entity_families: ['kitchen'],
+      created,
+      updated: serverAuditStamp({ by: current.uid }),
+    })
     mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
       name,
       slug,
       status: 'active',
       visibility: false,
-      created: serverAuditStamp({ by: current.uid, appId: current.appId }),
+      created,
       updated: serverAuditStamp({ by: current.uid }),
     })
     mutations.create(
@@ -301,78 +340,4 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   })
 }
 
-export async function adoptAnonymousKitchen(event: H3Event, input: unknown) {
-  const body = request(input, ['kitchen_id', 'anonymous_token'])
-  const kitchenId = requireFirestoreDocumentId(body.kitchen_id, 'Kitchen id')
-  const anonymousToken = text(body.anonymous_token)
-  if (!anonymousToken) fail(400, 'Anonymous identity proof is required.')
-
-  const current = await actor(event, { allowMissingMembership: true })
-  const decoded = await getAuth(getAdminApp())
-    .verifyIdToken(anonymousToken, true)
-    .catch(() => null)
-  if (!decoded?.uid || decoded.firebase?.sign_in_provider !== 'anonymous') {
-    fail(401, 'Anonymous identity proof is invalid.')
-  }
-  const anonymousUid = requireFirestoreDocumentId(
-    decoded.uid,
-    'Anonymous user id'
-  )
-  if (anonymousUid === current.uid) {
-    return { ok: true as const, kitchen_id: kitchenId, adopted: false }
-  }
-
-  const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
-  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [root, anonymousMember, currentMember, user] = await Promise.all([
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
-      mutations.read(teamMembers, anonymousUid),
-      mutations.read(teamMembers, current.uid),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
-    ])
-    const rootCreated = root.data?.created as
-      | Record<string, unknown>
-      | undefined
-    if (!root.exists || text(rootCreated?.by) !== anonymousUid) {
-      fail(403, 'This anonymous identity did not create the Kitchen.')
-    }
-    if (
-      !anonymousMember.exists ||
-      text(anonymousMember.data?.user_id) !== anonymousUid ||
-      anonymousMember.data?.status !== 'active' ||
-      anonymousMember.data?.role !== 'owner'
-    ) {
-      fail(409, 'Anonymous Kitchen ownership is incomplete.')
-    }
-
-    const name =
-      text(user.data?.display_name) ||
-      current.authDisplayName ||
-      `User ${current.uid.slice(0, 6)}`
-    if (currentMember.exists) {
-      mutations.update(teamMembers, current.uid, {
-        user_id: current.uid,
-        role: 'owner',
-        status: 'active',
-        updated: serverAuditStamp({ by: current.uid }),
-      })
-    } else {
-      mutations.create(
-        teamMembers,
-        current.uid,
-        buildKitchenTeamMemberRecord({
-          appId: current.appId,
-          createdBy: current.uid,
-          kitchenId,
-          memberId: current.uid,
-          name,
-          role: 'owner',
-          slug: normalizeSlug(name) || 'owner',
-          userId: current.uid,
-        })
-      )
-    }
-    mutations.delete(teamMembers, anonymousUid)
-    return { ok: true as const, kitchen_id: kitchenId, adopted: true }
-  })
-}
+export { adoptAnonymousKitchen } from './adoption'

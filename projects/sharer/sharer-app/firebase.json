@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "sharer-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "sharerApp"
+    }
+  ],
+  "hosting": {
+    "site": "sharify",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "sharerApp",
+          "codebase": "sharer-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

@@ -12,7 +12,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - Parent: components.md
 - Parent: entities.md
-- Child: family-entity-directory.md
+- Child: family-entity-collection-page.md
 - Child: firestore-entity.md
 
 ## Horizontal links
@@ -154,9 +154,9 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - The Kitchen directory established the warmer, clearer root-manager
   hierarchy now shared with Menu and User through core
-  `CollectionDirectoryHeader`, `CollectionDirectoryState`, and the small
-  `collection-directory*` layout contract.
-- Root/global discovery pages may share Core `DirectorySurface`; this is page
+  `CollectionHeader`, `CollectionState`, and the small
+  `entity-collection*` layout contract.
+- Root/global discovery pages may share Core `EntityCollectionPage`; this is page
   presentation only and does not move domain collection ownership into core.
 - Domain card content, actions, data source, and genuine scoped behavior remain
   accepted deltas; visual convergence must not flatten domain meaning.

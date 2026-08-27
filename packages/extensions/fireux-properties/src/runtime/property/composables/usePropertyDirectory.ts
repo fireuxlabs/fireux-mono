@@ -37,7 +37,7 @@ export function usePropertyDirectory(
   const pageSize = normalizePageSize(options.pageSize)
   const endpoint = `/api/properties?limit=${pageSize}`
   const key = [
-    'property-directory',
+    'property-collection',
     `app=${encodeURIComponent(fireux.appId || 'app')}`,
     `limit=${pageSize}`,
   ].join('|')

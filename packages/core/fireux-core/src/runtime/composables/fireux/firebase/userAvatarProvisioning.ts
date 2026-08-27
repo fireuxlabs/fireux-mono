@@ -1,4 +1,5 @@
 import { useRequireUser } from './useRequireUser'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../user/utils/user-avatar'
 
 type UserAvatarProvisioningResponse = {
   ok: true
@@ -17,12 +18,17 @@ export async function provisionSignedInUserAvatar(
 ): Promise<string> {
   const normalizedSource = String(source || '').trim()
   if (!normalizedSource) throw new Error('An avatar source is required.')
+  if (normalizedSource === USER_ECOSYSTEM_AVATAR_SRC) {
+    return USER_ECOSYSTEM_AVATAR_SRC
+  }
 
   const imageResponse = await fetch(proxiedSource(normalizedSource), {
     cache: 'no-store',
   })
   if (!imageResponse.ok) {
-    throw new Error(`Avatar image could not be loaded (${imageResponse.status}).`)
+    throw new Error(
+      `Avatar image could not be loaded (${imageResponse.status}).`
+    )
   }
   const image = await imageResponse.blob()
   if (!image.type.startsWith('image/')) {
@@ -39,10 +45,16 @@ export async function provisionSignedInUserAvatar(
     body,
   })
   const payload = (await response.json().catch(() => null)) as
-    | UserAvatarProvisioningResponse
+    | (UserAvatarProvisioningResponse & {
+        message?: unknown
+        statusMessage?: unknown
+      })
     | null
   if (!response.ok || payload?.ok !== true || !payload.avatar) {
-    throw new Error(`Avatar could not be saved (${response.status}).`)
+    const detail = String(
+      payload?.statusMessage || payload?.message || ''
+    ).trim()
+    throw new Error(detail || `Avatar could not be saved (${response.status}).`)
   }
   return payload.avatar
 }

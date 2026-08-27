@@ -276,7 +276,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(
     existsSync(
-      file(repoRoot, `${kitchenBase}models/kitchen-directory.model.ts`)
+      file(repoRoot, `${kitchenBase}models/kitchen-collection.model.ts`)
     ),
     false,
     'Kitchen collections must return Kitchen[] without a directory-entry model.'

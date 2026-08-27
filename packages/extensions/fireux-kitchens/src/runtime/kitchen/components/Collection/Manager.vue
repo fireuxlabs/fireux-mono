@@ -1,21 +1,21 @@
 <template>
-  <section class="collection-directory kitchen-directory">
-    <div class="kitchen-directory__toolbar">
+  <section class="entity-collection kitchen-collection">
+    <div class="kitchen-collection__toolbar">
       <UInput
         v-model="query"
         :placeholder="searchPlaceholder"
         :aria-label="searchPlaceholder"
         icon="i-lucide-search"
         size="xl"
-        class="kitchen-directory__search"
+        class="kitchen-collection__search"
       />
 
-      <span v-if="showCount && isSettled" class="kitchen-directory__count">
+      <span v-if="showCount && isSettled" class="kitchen-collection__count">
         {{ countLabel }}
       </span>
     </div>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading kitchens"
       loading
@@ -27,7 +27,7 @@
       aria-atomic="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Kitchens unavailable"
       description="Kitchens could not be loaded. Please try again."
@@ -45,9 +45,9 @@
           @click="refreshCollection"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
-    <div v-else-if="cardsFiltered.length" class="kitchen-directory__results">
+    <div v-else-if="cardsFiltered.length" class="kitchen-collection__results">
       <KitchenCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <KitchenCardsPill
@@ -69,7 +69,7 @@
     </div>
 
     <div v-else>
-      <CollectionDirectoryState
+      <CollectionState
         icon="i-lucide-utensils"
         :title="query ? 'No matching kitchens' : 'No kitchens yet'"
         :description="
@@ -212,12 +212,12 @@ const countLabel = computed(() =>
 </script>
 
 <style scoped>
-.kitchen-directory__results {
+.kitchen-collection__results {
   display: grid;
   gap: calc(var(--spacing) * 5);
 }
 
-.kitchen-directory__toolbar {
+.kitchen-collection__toolbar {
   display: flex;
   gap: calc(var(--spacing) * 4);
   align-items: center;
@@ -227,26 +227,26 @@ const countLabel = computed(() =>
   border-bottom: 1px solid var(--ui-border);
 }
 
-.kitchen-directory__search {
+.kitchen-collection__search {
   width: min(100%, 38rem);
 }
 
-.kitchen-directory__count {
+.kitchen-collection__count {
   margin-left: auto;
   color: var(--ui-text-muted);
   font-size: 0.85rem;
   white-space: nowrap;
 }
 
-.kitchen-directory__more {
+.kitchen-collection__more {
   display: flex;
   justify-content: center;
 }
 
 @media (max-width: 640px) {
-  .kitchen-directory__toolbar { align-items: stretch; flex-direction: column; }
-  .kitchen-directory__search { width: 100%; }
-  .kitchen-directory__count { margin-left: 0; }
+  .kitchen-collection__toolbar { align-items: stretch; flex-direction: column; }
+  .kitchen-collection__search { width: 100%; }
+  .kitchen-collection__count { margin-left: 0; }
 }
 
 </style>

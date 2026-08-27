@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory portfolio-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection portfolio-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -27,14 +27,14 @@
 
         <span
           v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading portfolios"
       description="Finding portfolios…"
@@ -45,7 +45,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Portfolios unavailable"
       description="Portfolios could not be loaded. Please try again."
@@ -85,7 +85,7 @@
       />
     </div>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-building-2"
       :title="query ? 'No matching portfolios' : 'No portfolios yet'"

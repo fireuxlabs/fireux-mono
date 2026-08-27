@@ -112,7 +112,6 @@ export function useUserCreate() {
         uid,
         auth.isAnonymous
       ),
-      avatar: auth.photoURL ?? '',
     })
 
     // Sign-in should not mutate existing membership/admin roles.

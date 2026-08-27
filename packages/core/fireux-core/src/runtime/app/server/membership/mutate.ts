@@ -98,12 +98,12 @@ async function mutateInTransaction(
         mutations.create(
           memberships,
           actorUid,
-          initialMembership(actorUid, 'dev')
+          initialMembership(actorUid, 'admin')
         )
       else {
         requireCanonicalMembership(actorMembership ?? {})
         mutations.update(memberships, actorUid, {
-          role: 'dev',
+          role: 'admin',
           updated: stamp(actorUid),
         })
       }
@@ -114,7 +114,7 @@ async function mutateInTransaction(
         appId,
         userId: actorUid,
         created,
-        role: 'dev',
+        role: 'admin',
       }
     }
 

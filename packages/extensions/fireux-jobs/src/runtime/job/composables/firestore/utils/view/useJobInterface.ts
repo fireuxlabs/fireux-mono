@@ -4,7 +4,7 @@ import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/m
 import type {
   JobCompanySummary,
   JobPlaceSummary,
-} from '../../../../models/job-directory.model.ts'
+} from '../../../../models/job-collection.model.ts'
 import {
   JobStorage,
   type Job,

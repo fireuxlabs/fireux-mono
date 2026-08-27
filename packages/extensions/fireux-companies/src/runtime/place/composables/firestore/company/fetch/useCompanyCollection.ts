@@ -8,7 +8,7 @@ import {
 import {
   COMPANY_DIRECTORY_MAX_PAGE_SIZE,
   type CompanyDirectoryPage,
-} from '../../../../models/company-directory.model.ts'
+} from '../../../../models/company-collection.model.ts'
 import { CompanyStorage } from '../../../../models/company.entity.ts'
 import type { Company } from '../../../../models/company.model.ts'
 
@@ -31,7 +31,7 @@ export type UseCompanyCollectionReturn = {
 export function useCompanyCollection(): UseCompanyCollectionReturn {
   const collectionPath = computed(() => CompanyStorage.collection)
   const state = useAsyncData<CompanyDirectoryPage>(
-    `company-directory|limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
+    `company-collection|limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`,
     () =>
       $fetch<CompanyDirectoryPage>(
         `/api/companies?limit=${COMPANY_DIRECTORY_MAX_PAGE_SIZE}`

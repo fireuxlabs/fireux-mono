@@ -1,7 +1,7 @@
 # Debug surface map
 
-Updated: 2026-08-14
-Ref: d5efe9160
+Updated: 2026-08-26
+Ref: 1813a2f9e
 Role: map, not canon
 
 ## Purpose
@@ -22,6 +22,11 @@ Map how debug information should appear without becoming page noise.
 ## Current pattern
 
 - Use the shared FireUX debug component where available.
+- Scope component diagnostics to the rendered tree beneath a Nuxt page. Every
+  page-descendant component that owns a data or domain responsibility may show
+  its own bounded `objects` and `derived` values. Layout chrome, globally
+  mounted UI, and purely visual leaves do not gain debug panels merely because
+  they are Vue components.
 - Give each responsible page or component surface its own bounded debug panel
   when the diagnostics are useful. A page may therefore contain multiple
   panels when it composes multiple independently owned domains.
@@ -37,6 +42,11 @@ Map how debug information should appear without becoming page noise.
 - Every payload declares whether its objects were `fetched` by the owning
   surface or `passed` into it. The inspect view names that provenance rather
   than presenting an ambiguous object bucket.
+- A page-descendant component that reads its own bounded source reports
+  `object-origin="fetched"`. A child that receives records from its parent
+  reports `object-origin="passed"`. In either case, its `derived` payload
+  contains only values computed for that component's own presentation or
+  behavior.
 - Debug state stays with the source, reader, controller, or component that owns
   the diagnosed domain. Do not pass child internals up and back down merely to
   assemble one page-wide debug object.
@@ -81,6 +91,8 @@ Map how debug information should appear without becoming page noise.
 
 ## Avoid
 
+- Adding debug panels to components outside a page's rendered ownership tree,
+  or requiring purely visual leaves to invent empty data responsibilities.
 - Duplicate panels for the same responsibility or panels placed far from the
   surface they diagnose.
 - Page-wide debug aggregates that make the route shell know every child's

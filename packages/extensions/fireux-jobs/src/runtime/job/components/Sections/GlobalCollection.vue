@@ -64,7 +64,7 @@
 // Concurrent edit — 2026-07-21 13:09 CEST — Job Directory: render category while source App scope stays server-owned.
 import { computed } from 'vue'
 import { useJobDirectory } from '../../composables/useJobDirectory.ts'
-import type { JobDirectoryEntry } from '../../models/job-directory.model.ts'
+import type { JobDirectoryEntry } from '../../models/job-collection.model.ts'
 
 const { jobs: directoryJobs, outcome: sourceOutcome } = useJobDirectory()
 

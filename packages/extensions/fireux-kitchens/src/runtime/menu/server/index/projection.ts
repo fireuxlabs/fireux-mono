@@ -1,5 +1,5 @@
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
-import type { MenuDirectoryEntry } from '../../models/menu-directory.model.ts'
+import type { MenuDirectoryEntry } from '../../models/menu-collection.model.ts'
 import { guestDiscoverableMenuContexts } from '../../utils/menu-context'
 import { readMenuOrderingConfig } from '../ordering/config'
 import { menuSourceFromData } from '../payload/source'

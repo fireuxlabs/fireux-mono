@@ -22,14 +22,14 @@
 .kitchen-ai-welcome__mark {
   position: relative;
   display: grid;
-  width: 3rem;
-  height: 3rem;
+  width: calc(var(--spacing) * 12);
+  height: calc(var(--spacing) * 12);
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 2);
   background: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-bg));
   color: var(--ui-primary);
-  font-size: 1.35rem;
+  font-size: var(--text-xl);
 }
 
 .kitchen-ai-welcome__mark-ai {
@@ -94,25 +94,14 @@
 }
 
 .kitchen-ai-welcome__composer {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing);
-  padding: calc(var(--spacing) * 2);
-  border: 1px solid var(--ui-border-accented);
   border-radius: calc(var(--ui-radius) * 3);
-  background: var(--ui-bg-elevated);
   box-shadow: var(--shadow-lg);
 }
 
-.kitchen-ai-welcome__input {
-  min-width: 0;
-  flex: 1;
-}
-
-.kitchen-ai-prompt-input {
-  position: relative;
-  min-width: 0;
-  flex: 1;
+.kitchen-ai-welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
 }
 
 .kitchen-ai-welcome__privacy {
@@ -127,11 +116,7 @@
   align-content: start;
   gap: calc(var(--spacing) * 4);
   margin: 0;
-  padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 8));
-  border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 4);
-  background: var(--ui-bg-elevated);
-  box-shadow: var(--shadow-sm);
+  padding: 0;
 }
 
 .kitchen-ai-welcome--landing .kitchen-ai-welcome__intro {
@@ -166,7 +151,4 @@
     border-radius: calc(var(--ui-radius) * 2);
   }
 
-  .kitchen-ai-welcome--landing {
-    padding: calc(var(--spacing) * 4);
-  }
 }

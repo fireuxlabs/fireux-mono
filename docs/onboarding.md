@@ -50,10 +50,9 @@ This is the practical playbook for shared Core entity onboarding journeys.
 - Email and Google authentication do not pass or persist a legal version. A
   new authenticated identity continues to `/users/create`, where the explicit
   final action supplies the current version to trusted account provisioning.
-- Success returns to a valid `?redirect=` destination or `/dashboard`.
+- Successful sign-in opens `/dashboard`.
 - `/users/create` and `/apps/create` are protected doorways. Their client auth
-  guard sends guests to `/auth?redirect=<full doorway>` and returns them to the
-  same journey after authentication.
+  guard sends guests to `/auth`; sign-in does not retain the previous doorway.
 
 ## Current journey paths
 

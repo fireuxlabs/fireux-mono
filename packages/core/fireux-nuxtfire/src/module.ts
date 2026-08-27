@@ -19,6 +19,10 @@ type FirebaseAppConfig = {
   appId?: string
 }
 
+type FireuxNuxtfireOptions = {
+  authEnabled?: boolean
+}
+
 function requireNonEmpty(value: unknown, label: string): string {
   if (typeof value === 'string' && value.trim()) return value.trim()
   throw new Error(
@@ -36,13 +40,17 @@ function pickFirebaseRuntime(nuxt: any) {
   return { eco, app }
 }
 
-export default defineNuxtModule({
+export default defineNuxtModule<FireuxNuxtfireOptions>({
   meta: {
     name: 'fireux-nuxtfire',
     version: '0.1.0',
   },
 
-  async setup(_options: unknown, nuxt: any) {
+  defaults: {
+    authEnabled: true,
+  },
+
+  async setup(options, nuxt: any) {
     const resolver = createResolver(import.meta.url)
 
     const isDev = !!(nuxt.options as any).dev
@@ -97,11 +105,13 @@ export default defineNuxtModule({
       nuxt.options as any
     ).vuefire.config
 
-    // Ensure VueFire Auth module is installed.
+    // Authentication is the default, but public-only Apps may explicitly
+    // disable it until their identity capability is provisioned.
     const existingAuth = ((nuxt.options as any).vuefire.auth ?? {}) as any
+    const authEnabled = options.authEnabled !== false
     ;(nuxt.options as any).vuefire.auth = {
       ...existingAuth,
-      enabled: true,
+      enabled: authEnabled,
     }
 
     // Ensure `nuxt-vuefire` is installed AFTER we set `nuxt.options.vuefire`.
@@ -154,19 +164,21 @@ export default defineNuxtModule({
 
     // Nuxt plugins are prepended by default. Append the persistence plugin so
     // NuxtFire has created the default client App before getAuth() is called.
-    addPlugin(
-      {
-        src: resolver.resolve(
-          './runtime/plugins/firebase-auth-persistence.client.ts'
-        ),
-        mode: 'client',
-      },
-      { append: true }
-    )
+    if (authEnabled) {
+      addPlugin(
+        {
+          src: resolver.resolve(
+            './runtime/plugins/firebase-auth-persistence.client.ts'
+          ),
+          mode: 'client',
+        },
+        { append: true }
+      )
+    }
 
     if (isDev) {
       console.info(
-        '[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes'
+        `[fireux-nuxtfire] vuefire configured: yes, auth enabled: ${authEnabled ? 'yes' : 'no'}`
       )
     }
   },

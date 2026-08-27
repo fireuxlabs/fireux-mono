@@ -22,7 +22,7 @@ Entity's `composables` role, not inside its Firestore adapter.
 ## Links
 
 - Parent: `spine.md`
-- Route families: `pages.md`, `family-entity-directory.md`,
+- Route families: `pages.md`, `family-entity-collection-page.md`,
   `family-entity-detail.md`, `family-tenant-global.md`, `family-menu.md`
 - Factual language: `product-language.md`
 - Locale and reviewed copy: `translation.md`

@@ -2,6 +2,7 @@ import type { Kitchen } from './kitchen.model.ts'
 
 export type KitchenCreateInput = {
   place_id?: string
+  kitchen_id?: string
   name?: string
 }
 

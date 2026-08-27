@@ -91,7 +91,7 @@ export function useKitchenWorkspaceTools() {
       return true
     }
     if (id === 'sign-up' && userTool.value) {
-      await navigateTo('/auth?redirect=/')
+      await navigateTo('/auth')
       return true
     }
     if (id === exploreAction.id) {

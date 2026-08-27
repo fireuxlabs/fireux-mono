@@ -151,9 +151,10 @@ contract.
 | Family                        | Map                          | Strongest current evidence                                                                          | Current status                                                                                                                                      |
 | ----------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Apps That Slap ecosystem      | `apps-that-slap.md`          | Existing `fireux-slap` package, App registry, Firebase binding, and presentation contract           | Stable ecosystem spine is aligned; legacy App classifications require source-backed review before migration                                         |
+| Sharer ecosystem              | `sharer.md`                  | `fireux-sharer`, registered Sharer global App, and registered Kjordi tenant App                      | Ecosystem and tenant-App boundary are established; Share Profile persistence and QR consumption remain to-confirm                                    |
 | Workspace entity                | `family-workspace-entity.md`   | `scripts/guards/workspace-indexes.mjs`                                                                | Index spine is strong; lifecycle sheets still vary                                                                                                  |
 | Like-menu operation           | `family-like-menu.md`        | `scripts/guards/like-menu-family.mjs`                                                               | Menus is the guarded records-then-tools reference; new members require deliberate adoption                                                          |
-| Entity Directory              | `family-entity-directory.md` | Route pages plus collection-manager contracts                                                       | Ordinary Directories share a shell; App-owned branded families retain their own aesthetic                                                           |
+| Entity Collection Page              | `family-entity-collection-page.md` | Route pages plus collection-manager contracts                                                       | Ordinary Directories share a shell; App-owned branded families retain their own aesthetic                                                           |
 | Entity detail                 | `family-entity-detail.md`    | Bounded SSR projections and route pages                                                             | Transport rule is strong; route identity and actions are incomplete                                                                                 |
 | Tenant/global                 | `family-tenant-global.md`    | App config, `useFireUXConfig`, and `useWorkspace`                                                     | Runtime mode is shared; transfer and second-tenant proof remain incomplete                                                                          |
 | Menu                          | `family-menu.md`             | Entity declarations and menu route guard                                                            | Identity and route contexts are strong; content migration remains active                                                                            |
@@ -212,7 +213,7 @@ contract.
 
 ### Next
 
-- Align Entity Directory presentation where no product reason explains the current
+- Align Entity Collection Page presentation where no product reason explains the current
   split.
 - Resolve route identity per Entity Detail instead of changing all
   `[id]` and `[slug]` routes mechanically.

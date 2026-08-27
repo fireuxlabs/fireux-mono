@@ -1,8 +1,8 @@
 <template>
   <UPage class="ecosystem-detail"><UPageBody>
-    <CollectionDirectoryState v-if="pending" title="Loading Ecosystem" description="Finding this Ecosystem and its relationships…" icon="i-lucide-loader-circle" loading />
-    <CollectionDirectoryState v-else-if="failed" title="Ecosystem unavailable" description="This Ecosystem could not be loaded." icon="i-lucide-triangle-alert" />
-    <CollectionDirectoryState v-else-if="missing" title="Ecosystem not found" description="No active Ecosystem matches this address." icon="i-lucide-orbit"><template #actions><UButton to="/ecosystems" icon="i-lucide-arrow-left" variant="soft">Browse Ecosystems</UButton></template></CollectionDirectoryState>
+    <CollectionState v-if="pending" title="Loading Ecosystem" description="Finding this Ecosystem and its relationships…" icon="i-lucide-loader-circle" loading />
+    <CollectionState v-else-if="failed" title="Ecosystem unavailable" description="This Ecosystem could not be loaded." icon="i-lucide-triangle-alert" />
+    <CollectionState v-else-if="missing" title="Ecosystem not found" description="No active Ecosystem matches this address." icon="i-lucide-orbit"><template #actions><UButton to="/ecosystems" icon="i-lucide-arrow-left" variant="soft">Browse Ecosystems</UButton></template></CollectionState>
     <template v-else-if="ecosystem">
       <header class="ecosystem-detail__hero">
         <div class="ecosystem-detail__topline"><UButton to="/ecosystems" color="neutral" variant="ghost" icon="i-lucide-arrow-left" size="sm">All Ecosystems</UButton><UButton v-if="ecosystem.website_url" :to="ecosystem.website_url" target="_blank" color="neutral" variant="soft" icon="i-lucide-external-link" size="sm">Visit Ecosystem</UButton></div>
@@ -14,7 +14,7 @@
       </header>
 
       <section class="ecosystem-detail__section">
-        <CollectionDirectoryHeader :title="`Apps in ${ecosystem.name}`" :description="`${ecosystemApps.length} ${ecosystemApps.length === 1 ? 'App is' : 'Apps are'} connected through canonical App.ecosystem_id.`" />
+        <CollectionHeader :title="`Apps in ${ecosystem.name}`" :description="`${ecosystemApps.length} ${ecosystemApps.length === 1 ? 'App is' : 'Apps are'} connected through canonical App.ecosystem_id.`" />
         <div v-if="ecosystemApps.length" class="ecosystem-detail__apps">
           <NuxtLink v-for="app in ecosystemApps" :key="app.id" :to="`/apps/${app.id}`" class="ecosystem-detail__app">
             <div class="ecosystem-detail__visual"><img v-if="app.media?.cover_url" :src="app.media.cover_url" alt="" loading="lazy"><UIcon v-else name="i-lucide-app-window" aria-hidden="true" /></div>
@@ -24,7 +24,7 @@
       </section>
 
       <section v-if="project" class="ecosystem-detail__section">
-        <CollectionDirectoryHeader title="Owning Project" description="The Project connected through canonical Ecosystem.project_id." />
+        <CollectionHeader title="Owning Project" description="The Project connected through canonical Ecosystem.project_id." />
         <NuxtLink :to="`/projects/${project.id}`" class="ecosystem-detail__project"><UIcon name="i-lucide-folder-kanban" aria-hidden="true" /><div><p>Project</p><h2>{{ project.name }}</h2><span>{{ project.description }}</span></div><UIcon name="i-lucide-arrow-up-right" aria-hidden="true" /></NuxtLink>
       </section>
 

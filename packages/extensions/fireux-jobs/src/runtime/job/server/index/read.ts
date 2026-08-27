@@ -9,7 +9,7 @@ import {
   JOB_DIRECTORY_PAGE_SIZE,
   JOB_DIRECTORY_SCAN_BATCH_SIZE,
   type JobDirectoryPage,
-} from '../../models/job-directory.model.ts'
+} from '../../models/job-collection.model.ts'
 import {
   isJobDirectoryCandidate,
   projectJobDirectoryEntry,

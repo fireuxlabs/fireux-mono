@@ -8,20 +8,20 @@
     <UPageBody>
       <SearchDemandStageNav current="domain" />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-if="pending"
         title="Loading search demand"
         description="Reading this App’s research evidence…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="error"
         title="Search demand unavailable"
         description="This App’s research evidence could not be loaded."
         icon="i-lucide-triangle-alert"
       />
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="!demand"
         title="No demand research yet"
         description="No tool-sourced search observations have been recorded for this App."

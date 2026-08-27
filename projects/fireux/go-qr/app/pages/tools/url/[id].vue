@@ -32,10 +32,14 @@ type UrlToolConfig = {
     label: string
     placeholder: string
     initialValue: string
+    autoGenerate: boolean
     invalidMessage: string
   }
   qr: {
     centreLabel: string
+  }
+  presentation: {
+    qrOnly: boolean
   }
 }
 

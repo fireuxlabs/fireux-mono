@@ -60,6 +60,10 @@ export type FireuxAppConfig = {
   profiles?: string[]
   /** Whether a signed-in canonical User may create their own App membership. */
   selfJoinEnabled?: boolean
+  /** Whether this App installs Firebase Authentication. Defaults to true. */
+  authEnabled?: boolean
+  /** Secret Manager environment names attached only to this App's Firebase server function. */
+  firebaseSecrets?: string[]
   /** Optional public/dashboard nav item keys hidden by this app shell. */
   navHiddenKeys?: string[]
   /** App-level presentation overrides for inherited route navigation, keyed by nav key. */

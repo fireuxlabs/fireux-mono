@@ -22,6 +22,7 @@ import {
   missingKitchenDetailApiContract,
   missingMenuIndexContract,
   missingMenuQrContract,
+  platformAppsApiContract,
   profileIndexApiContract,
   privateKitchenIndexAuthContract,
   seoPageContract,
@@ -90,6 +91,7 @@ export const APP_REGISTRY = {
       '/workspace/project/ignitions',
     ],
     httpContracts: [
+      platformAppsApiContract(),
       seoPageContract('/', {
         title: 'FireUX — Projects, Apps, and Ecosystems',
         description:
@@ -887,6 +889,32 @@ export const APP_REGISTRY = {
     ],
     launchOrder: 18,
   },
+  sharer: {
+    key: 'sharer',
+    name: 'Sharer',
+    appId: 'sharer-app',
+    ecosystem: 'sharer',
+    databaseId: 'sharer',
+    role: 'global',
+    workspace: './projects/sharer/sharer-app',
+    port: 3032,
+    workspaces: [],
+    smokeRoutes: ['/'],
+    launchOrder: 20,
+  },
+  kjordi: {
+    key: 'kjordi',
+    name: 'Kjordi',
+    appId: 'kjordi',
+    ecosystem: 'sharer',
+    databaseId: 'sharer',
+    role: 'tenant',
+    workspace: './projects/sharer/kjordi',
+    port: 3034,
+    workspaces: [],
+    smokeRoutes: ['/'],
+    launchOrder: 21,
+  },
 }
 
 export const APP_GROUPS = {
@@ -915,6 +943,8 @@ export const APP_GROUPS = {
     'friiites',
     'baeren-ringgenberg',
     'interlaken-essen',
+    'sharer',
+    'kjordi',
   ],
 }
 

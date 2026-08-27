@@ -11,7 +11,7 @@ Kitchen-scoped structured content, directory route responses, or ordering.
 
 ## Links
 
-- Parents: `family-entity-directory.md`, `family-entity-detail.md`,
+- Parents: `family-entity-collection-page.md`, `family-entity-detail.md`,
   `server-api.md`, `tool-provider.md`
 - Child: `menu-ordering.md`
 - Horizontal: `entities.md`, `firestore-entity.md`, `workspace.md`,

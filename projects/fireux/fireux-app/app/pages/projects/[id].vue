@@ -1,7 +1,7 @@
 <template>
   <UPage class="project-detail">
     <UPageBody>
-      <CollectionDirectoryState
+      <CollectionState
         v-if="pending"
         title="Loading Project"
         description="Finding this Project and its Apps…"
@@ -9,14 +9,14 @@
         loading
       />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="failed"
         title="Project unavailable"
         description="This Project could not be loaded. Please try again."
         icon="i-lucide-triangle-alert"
       />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="missing"
         title="Project not found"
         description="No active Project matches this address."
@@ -27,7 +27,7 @@
             Browse Projects
           </UButton>
         </template>
-      </CollectionDirectoryState>
+      </CollectionState>
 
       <template v-else-if="project">
         <header class="project-detail__hero">
@@ -74,7 +74,7 @@
         </header>
 
         <section class="project-detail__section">
-          <CollectionDirectoryHeader
+          <CollectionHeader
             title="Apps in this Project"
             :description="appSectionDescription"
           />

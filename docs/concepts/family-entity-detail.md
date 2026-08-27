@@ -24,7 +24,7 @@ Every Entity Detail route should:
 - Prefer an endpoint-first SSR read for initial content, missing state,
   and failure state. Client Firestore may enrich an already-rendered object but
   must not become a second initial authority.
-- Use the same canonical root type as its sibling Entity Directory. Do not
+- Use the same canonical root type as its sibling Entity Collection Page. Do not
   create `PublicX`, `PublicXDetail`, or `projectPublicX` copies of root Entities.
 - Return truthful HTTP status for missing and failed reads. A client recovery
   branch must not turn a direct 404 or 5xx into HTTP 200.
@@ -89,7 +89,7 @@ repository-wide template rewrite.
 | Kitchen                           | authored slug     | `accepted`: one Kitchen server reader maps the unique authored slug to the stable Place-linked Kitchen root ID                                                                         |
 | Supplier                          | document id/slug  | `accepted`: the normalized organization slug is the canonical Supplier document id, and the detail reader returns canonical Supplier and Place records                                 |
 | Product                           | slug              | `accepted`: catalogue identity is public and human-readable                                                                                                                            |
-| Menu                              | menu route id     | `accepted`: the id participates in root, kitchen-directory, tenant, and contextual route grammar; see `family-menu.md`                                                                 |
+| Menu                              | menu route id     | `accepted`: the id participates in root, kitchen-collection, tenant, and contextual route grammar; see `family-menu.md`                                                                 |
 | App                               | id                | `accepted`: canonical App identity is already a public platform key                                                                                                                    |
 | Agent, Chef, Driver, Professional | User handle       | `accepted`: public identity uses the canonical User handle; the trusted projection resolves it to the uid-keyed profile and legacy uid requests redirect permanently to the handle URL |
 | Place                             | document id       | `accepted`: exact reads return `{ place: Place }`; the stable document id remains the route key                                                                                        |
@@ -135,7 +135,7 @@ review.
 
 ### Now
 
-- Keep Entity Directory and Entity Detail on the same canonical Entity type.
+- Keep Entity Collection Page and Entity Detail on the same canonical Entity type.
 - Preserve truthful SSR status and explicit server-owned joins.
 - Keep Menu route identity on the guarded route grammar.
 

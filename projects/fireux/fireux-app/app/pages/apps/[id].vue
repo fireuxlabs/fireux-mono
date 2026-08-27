@@ -1,13 +1,13 @@
 <template>
   <UPage class="app-detail">
     <UPageBody>
-      <CollectionDirectoryState v-if="pending" title="Loading App" description="Finding this App and its relationships…" icon="i-lucide-loader-circle" loading />
-      <CollectionDirectoryState v-else-if="failed" title="App unavailable" description="This App could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
-      <CollectionDirectoryState v-else-if="missing" title="App not found" description="No published App matches this address." icon="i-lucide-app-window">
+      <CollectionState v-if="pending" title="Loading App" description="Finding this App and its relationships…" icon="i-lucide-loader-circle" loading />
+      <CollectionState v-else-if="failed" title="App unavailable" description="This App could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
+      <CollectionState v-else-if="missing" title="App not found" description="No published App matches this address." icon="i-lucide-app-window">
         <template #actions>
           <UButton to="/apps" icon="i-lucide-arrow-left" variant="soft">Browse Apps</UButton>
         </template>
-      </CollectionDirectoryState>
+      </CollectionState>
 
       <template v-else-if="app">
         <header class="app-detail__hero">
@@ -33,7 +33,7 @@
         </header>
 
         <section class="app-detail__section">
-          <CollectionDirectoryHeader title="Where this App belongs" description="Canonical relationships from App.project_id and App.ecosystem_id." />
+          <CollectionHeader title="Where this App belongs" description="Canonical relationships from App.project_id and App.ecosystem_id." />
           <div class="app-detail__relationships">
             <NuxtLink v-if="project" :to="`/projects/${encodeURIComponent(project.id)}`" class="app-detail__relationship">
               <span class="app-detail__relationship-icon"><UIcon name="i-lucide-folder-kanban" aria-hidden="true" /></span>

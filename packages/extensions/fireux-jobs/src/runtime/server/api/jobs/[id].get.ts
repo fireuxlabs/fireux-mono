@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-load canonical Company and Place display relationships.
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public details enabled without a literal wildcard id.
 import { defineEventHandler, setResponseHeaders } from 'h3'
-import type { JobDetailResponse } from '../../../job/models/job-directory.model.ts'
+import type { JobDetailResponse } from '../../../job/models/job-collection.model.ts'
 import { readJobDetail } from '../../../job/server/identity/read.ts'
 
 export default defineEventHandler(async (event): Promise<JobDetailResponse> => {

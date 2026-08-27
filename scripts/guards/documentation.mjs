@@ -282,9 +282,7 @@ function inspectDocsViewerSource(repoRoot) {
 
   const source = readFileSync(absolutePath, 'utf8')
   if (
-    !/cwd:\s*repoRoot,[\s\S]{0,320}include:\s*['"]AGENTS\.md\*['"]/.test(
-      source
-    )
+    !/cwd:\s*repoRoot,[\s\S]{0,320}include:\s*['"]AGENTS\.md\*['"]/.test(source)
   ) {
     return [
       `${relativePath} must watch AGENTS.md through the file-bounded AGENTS.md* source; a literal include with repoRoot makes Nuxt Content watch the entire checkout.`,
@@ -292,6 +290,53 @@ function inspectDocsViewerSource(repoRoot) {
   }
 
   return []
+}
+
+function inspectDocsComponentCatalogue(repoRoot) {
+  const relativePath =
+    'packages/core/fireux-docs/src/runtime/catalogue/catalogue.ts'
+  const absolutePath = path.join(repoRoot, relativePath)
+  if (!existsSync(absolutePath)) {
+    return [`${relativePath} is missing.`]
+  }
+
+  const source = readFileSync(absolutePath, 'utf8')
+  const referencedSources = [
+    ...source.matchAll(/['"]((?:packages|projects)\/[^'"]+\.vue)['"]/g),
+  ].map((match) => match[1])
+  const violations = []
+
+  for (const match of source.matchAll(/propCount:\s*(\d+)/g)) {
+    const propCount = Number(match[1])
+    if (propCount > 10) {
+      violations.push(
+        `${relativePath} contains a ${propCount}-prop component; the cross-industry library admits only green components with at most 10 props.`
+      )
+    }
+  }
+
+  for (const referencedSource of referencedSources) {
+    if (!existsSync(path.join(repoRoot, referencedSource))) {
+      violations.push(
+        `${relativePath} references missing component usage source ${referencedSource}.`
+      )
+    }
+  }
+
+  if (
+    !source.includes('owner:') ||
+    !source.includes('responsibility:') ||
+    !source.includes("scope: 'cross-industry'") ||
+    !source.includes('usedBy:') ||
+    !source.includes('nuxtUiChildren:') ||
+    !source.includes('reviewFireuxDocsCatalogueEntry')
+  ) {
+    violations.push(
+      `${relativePath} must remain cross-industry and describe ownership, responsibility, repository usage, Nuxt UI children, and review signals.`
+    )
+  }
+
+  return violations
 }
 
 export async function run({ repoRoot = process.cwd() } = {}) {
@@ -324,6 +369,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ...inspectReferences(repoRoot, [...contextPaths, ...conceptPaths]),
     ...inspectTimestampComments(repoRoot),
     ...inspectDocsViewerSource(repoRoot),
+    ...inspectDocsComponentCatalogue(repoRoot),
   ]
 
   if (violations.length) {

@@ -35,9 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useRoute, useRouter } from '#imports'
+import { computed, ref, useRouter } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { resolveUserOnboardingDestination } from '../../utils/onboarding-route'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
@@ -53,7 +52,6 @@ const props = defineProps<{
 }>()
 
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
-const route = useRoute()
 const router = useRouter()
 
 const isSignUp = ref(props.defaultMode === 'sign-up')
@@ -77,17 +75,19 @@ const emailModeLabel = computed(() =>
 )
 const fields = computed(() => [
   ...(isSignUp.value
-    ? [{
-        name: 'name',
-        type: 'text' as const,
-        color: 'neutral' as const,
-        variant: 'outline' as const,
-        label: 'Name',
-        placeholder: 'Your name',
-        required: true,
-        autocomplete: 'name',
-        defaultValue: '',
-      }]
+    ? [
+        {
+          name: 'name',
+          type: 'text' as const,
+          color: 'neutral' as const,
+          variant: 'outline' as const,
+          label: 'Name',
+          placeholder: 'Your name',
+          required: true,
+          autocomplete: 'name',
+          defaultValue: '',
+        },
+      ]
     : []),
   {
     name: 'email',
@@ -162,11 +162,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
   try {
     result =
       mode === 'sign-up'
-        ? await signUpWithEmailPassword(
-            email,
-            password,
-            name
-          )
+        ? await signUpWithEmailPassword(email, password, name)
         : await signInWithEmailPassword(email, password)
   } catch (accountError) {
     error.value = {
@@ -182,8 +178,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
 
   if (result?.uid) {
     if (mode === 'sign-up') {
-      const redirect = resolveUserOnboardingDestination(route.query.redirect)
-      await router.push({ path: '/users/create', query: { redirect } })
+      await router.push('/users/create')
     }
     return
   }

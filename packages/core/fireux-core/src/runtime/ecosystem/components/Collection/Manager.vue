@@ -1,6 +1,6 @@
 <template>
-  <section class="collection-directory ecosystem-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection ecosystem-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -8,7 +8,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -25,13 +25,13 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="collection-directory__count">
+        <span v-if="showCount && isSettled" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading Ecosystems"
       description="Finding Ecosystems…"
@@ -42,7 +42,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Ecosystems unavailable"
       description="Ecosystems could not be loaded. Please try again."
@@ -59,7 +59,7 @@
           @click="refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <EcosystemCollectionList
       v-else-if="cardsFiltered.length"
@@ -74,7 +74,7 @@
       </template>
     </EcosystemCollectionList>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-orbit"
       :title="query ? 'No ecosystems match your search' : 'No ecosystems yet'"

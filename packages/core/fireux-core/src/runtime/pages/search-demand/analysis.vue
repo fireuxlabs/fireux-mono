@@ -14,14 +14,14 @@
     <UPageBody>
       <SearchDemandStageNav current="analysis" />
 
-      <CollectionDirectoryState
+      <CollectionState
         v-if="pending"
         title="Loading demand map"
         description="Reading this App’s demand analysis…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionDirectoryState
+      <CollectionState
         v-else-if="error || !demand"
         title="Demand map unavailable"
         description="This App does not yet have enough analysed search evidence."

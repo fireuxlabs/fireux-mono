@@ -15,7 +15,7 @@ import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-plac
 import type {
   JobDetailResponse,
   JobDirectoryEntry,
-} from '../../models/job-directory.model.ts'
+} from '../../models/job-collection.model.ts'
 import type { Job } from '../../models/job.model.ts'
 import { canonicalJobRoot } from '../core/validation.ts'
 import { projectSourceAppDoorway } from '../core/source-app-doorway.ts'

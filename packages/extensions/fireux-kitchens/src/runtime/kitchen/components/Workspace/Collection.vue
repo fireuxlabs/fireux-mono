@@ -1,40 +1,8 @@
 <template>
   <section class="grid gap-4" aria-label="Kitchen Workspace">
-    <USkeleton
-      v-if="!mounted || workspace.targets.pending.value"
-      class="h-28 rounded-xl"
-      aria-label="Loading active Kitchen"
-    />
-    <WorkspaceKitchenIndexActive
-      v-else-if="!showEmptyState && workspace.selection.kitchen.value"
-      :kitchen="workspace.selection.kitchen.value"
-    />
-    <Create
-      v-else-if="workspace.targets.outcome.value !== 'error'"
-      launcher="inline"
-      label="Find your Kitchen"
-      @created="createdKitchen"
-    />
-
-    <div
-      v-if="
-        canPreviewEmptyState &&
-        mounted &&
-        !showEmptyState &&
-        workspace.selection.kitchen.value
-      "
-      class="flex justify-end"
-    >
-      <UButton
-        label="Empty"
-        color="neutral"
-        variant="ghost"
-        size="xs"
-        icon="i-lucide-circle-dashed"
-        @click="emptyWorkspace"
-      />
-    </div>
-
+    <span v-if="isDev && showCollectionControls" style="color: hotpink">
+      WorkspaceKitchenCollectionHeader
+    </span>
     <div
       v-if="showCollectionControls"
       class="flex flex-wrap items-end justify-between gap-3"
@@ -52,6 +20,9 @@
       </div>
     </div>
 
+    <span v-if="isDev && showCollectionControls" style="color: hotpink">
+      WorkspaceKitchenCollectionList
+    </span>
     <div v-if="showCollectionControls" class="grid gap-3 md:grid-cols-2">
       <USkeleton
         v-if="workspace.targets.pending.value"
@@ -112,6 +83,9 @@
       </NuxtLink>
     </div>
 
+    <span v-if="isDev && changeRequestOpen" style="color: hotpink">
+      WorkspaceKitchenCollectionChangeRequest
+    </span>
     <UModal
       v-model:open="changeRequestOpen"
       title="Request Kitchen change"
@@ -130,6 +104,9 @@
       </template>
     </UModal>
 
+    <span v-if="isDev && mounted" style="color: hotpink">
+      DevDebugPanel
+    </span>
     <DevDebugPanel
       v-if="mounted"
       title="Kitchen collection debug"
@@ -149,10 +126,10 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import Create from './Create.vue'
 
-const { appAccess, appAccessOutcome, isAdmin, isDeveloper } = useUser()
+const { appAccess, appAccessOutcome } = useUser()
+const isDev = import.meta.dev
 const workspace = useKitchenWorkspace()
 const { workspaceTarget } = useKitchenInterface()
-const showEmptyState = ref(false)
 const mounted = ref(false)
 
 onMounted(() => {
@@ -163,8 +140,6 @@ const subscription = computed(() =>
   appAccessOutcome.value === 'ready' ? appAccess.value.subscription : 'free'
 )
 const canCreateMultiple = computed(() => subscription.value === 'business')
-const canPreviewEmptyState = computed(() => isDeveloper.value || isAdmin.value)
-
 const kitchenCells = computed(() => {
   const cells = workspace.targets.kitchens.value.flatMap((kitchen) => {
     const projected = workspaceTarget(kitchen)
@@ -215,7 +190,6 @@ const showUpgradeCell = computed(
 const showCollectionControls = computed(
   () =>
     mounted.value &&
-    !showEmptyState.value &&
     (workspace.targets.pending.value ||
       workspace.targets.outcome.value === 'error' ||
       otherKitchenCells.value.length > 0 ||
@@ -265,7 +239,6 @@ function kitchenBadges(item: (typeof kitchenCells.value)[number]) {
 }
 
 async function createdKitchen(id: string) {
-  showEmptyState.value = false
   workspace.actions.selectKitchen(id)
   await workspace.targets.refresh()
 }
@@ -276,7 +249,6 @@ async function openKitchen(item: (typeof kitchenCells.value)[number]) {
     changeRequestOpen.value = true
     return
   }
-  showEmptyState.value = false
   workspace.actions.selectKitchen(
     item.card.id,
     item.card.name,
@@ -306,7 +278,6 @@ const changeRequestDescription = computed(() => {
 function confirmKitchenChange() {
   const item = requestedKitchen.value
   if (!item) return
-  showEmptyState.value = false
   workspace.actions.selectKitchen(
     item.card.id,
     item.card.name,
@@ -317,8 +288,4 @@ function confirmKitchenChange() {
   requestedKitchenId.value = ''
 }
 
-function emptyWorkspace() {
-  showEmptyState.value = true
-  workspace.actions.clearSelectedKitchen()
-}
 </script>

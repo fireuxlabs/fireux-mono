@@ -1,6 +1,6 @@
 # Layouts spine map
 
-Updated: 2026-07-25
+Updated: 2026-08-26
 Ref: 796952bf0
 Role: map, not canon
 
@@ -32,6 +32,10 @@ declaring either one universal without render evidence.
   Layout transitions remain disabled by default, so a header, footer,
   background, sidebar, or other layout chrome stays mounted while navigation
   remains inside the same layout.
+- Core owns the floating Developer/Admin role badge and its role-derived
+  dashboard destination. Ordinary layouts render it passively; naked public
+  surfaces may opt into its interactive mode without repeating AppUser or
+  configured-developer checks.
 
 ## Current composition lanes
 
@@ -81,6 +85,7 @@ currently uses it.
 | Several Core and tenant layouts render `<NuxtPage />` | `to-confirm` | It is current source outside Workspace, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
 | Menu layout derives close behavior from route scope | `accepted` | Exit chrome is shared by the entire Menu route family and remains separate from Menu data fetching |
 | App-local branded layouts exist | `accepted` | Brand/navigation chrome can be app-owned; unexplained copies of package chrome remain drift |
+| Naked public surfaces may mount the interactive Core role badge | `accepted` | Role resolution and dashboard routing remain Core-owned even when an ordinary layout is intentionally absent |
 | Mechanically replacing every `<slot />` or `<NuxtPage />` | `drift` | Renderer choice depends on which layer already owns page rendering |
 
 ## Change checklist

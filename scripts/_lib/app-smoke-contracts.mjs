@@ -24,6 +24,14 @@ const appDetailContract = (route, appId) => ({
   excludes: ['App not found', 'App unavailable', 'Loading app…'],
 })
 
+const platformAppsApiContract = (route = '/api/platform/apps') => ({
+  route,
+  status: 200,
+  contentType: 'application/json',
+  includes: ['"ok": true', '"items"', '"id": "fireux-app"'],
+  excludes: ['"statusCode": 404'],
+})
+
 const profileIndexApiContract = (route) => ({
   route,
   status: 200,
@@ -643,6 +651,7 @@ const tenantMenuQrContract = (route, targetPath, options = {}) =>
 
 export {
   appDetailContract,
+  platformAppsApiContract,
   invalidMenuIndexCursorContract,
   jobIndexApiContract,
   kitchenDetailApiContract,

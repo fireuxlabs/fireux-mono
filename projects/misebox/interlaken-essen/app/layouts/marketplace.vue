@@ -1,13 +1,13 @@
 <template>
   <div class="market-app">
     <div class="market-backdrop" aria-hidden="true">
-      <img src="/img/app/background.png" alt="">
+      <img src="/img/app/background.png" alt="" />
     </div>
 
     <header class="market-header">
       <NuxtLink to="/" class="market-brand" aria-label="Interlaken Essen">
         <span class="market-brand__mark">
-          <img src="/img/app/logo.png" alt="">
+          <img src="/img/app/logo.png" alt="" />
         </span>
         <span>Interlaken Essen</span>
       </NuxtLink>
@@ -75,17 +75,14 @@
         <ClientOnly>
           <NuxtLink
             v-if="authPhase === 'guest'"
-            to="/auth?redirect=/mis"
+            to="/auth"
             class="market-account market-account--signin"
           >
             <UIcon name="i-lucide-user-round" aria-hidden="true" />
             <span class="market-account__label">{{ copy('sign_in') }}</span>
           </NuxtLink>
 
-          <UTooltip
-            v-else-if="isSignedIn"
-            :text="copy('my_interlaken_essen')"
-          >
+          <UTooltip v-else-if="isSignedIn" :text="copy('my_interlaken_essen')">
             <NuxtLink
               to="/mis"
               class="market-account market-account--avatar"
@@ -106,10 +103,7 @@
             </NuxtLink>
           </UTooltip>
 
-          <USkeleton
-            v-else
-            class="market-account__skeleton"
-          />
+          <USkeleton v-else class="market-account__skeleton" />
         </ClientOnly>
       </div>
     </header>
@@ -123,7 +117,7 @@
         src="/img/ecosystem/wordmark-light.png"
         alt="Misebox"
         class="market-footer__wordmark"
-      >
+      />
       <span>{{ copy('footer_tagline') }}</span>
     </footer>
   </div>
@@ -147,9 +141,7 @@ const { copy } = siteSproochli
 
 const headerAvatarName = computed(() =>
   String(
-    currentUser.value?.display_name ||
-    authUser.value?.displayName ||
-    ''
+    currentUser.value?.display_name || authUser.value?.displayName || ''
   ).trim()
 )
 

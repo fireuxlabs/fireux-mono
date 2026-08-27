@@ -1,9 +1,10 @@
 <template>
   <WorkspaceActiveEntity
     label="Kitchen"
-    :active-id="kitchen.id"
+    :active-id="draft ? '' : kitchen.id"
     :entity="entity"
     :changeable="false"
+    :sparse="draft"
     icon="i-lucide-chef-hat"
   />
 </template>
@@ -14,12 +15,15 @@ import type { WorkspaceEntityCard } from 'fireux-core/runtime/components/Workspa
 import type { KitchenSurface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 
-const props = defineProps<{ kitchen: KitchenSurface }>()
+const props = withDefaults(
+  defineProps<{ kitchen: KitchenSurface; draft?: boolean }>(),
+  { draft: false }
+)
 const { workspaceTarget } = useKitchenInterface()
 
 const entity = computed<WorkspaceEntityCard>(() => {
   const card = workspaceTarget(props.kitchen)
-  const title =
+  const persistedTitle =
     card?.name ||
     String(
       props.kitchen.display_name ||
@@ -33,17 +37,24 @@ const entity = computed<WorkspaceEntityCard>(() => {
       props.kitchen.short_address || props.kitchen.formatted_address || ''
     ).trim()
   const tagline = String(props.kitchen.tagline || '').trim()
+  const title = props.draft
+    ? String(props.kitchen.name || '').trim() || tagline
+    : persistedTitle
 
   return {
     id: String(props.kitchen.id || '').trim(),
     title,
-    subtitle: tagline || address || 'My Kitchen',
+    subtitle: props.draft
+      ? String(props.kitchen.name || '').trim()
+        ? tagline || address
+        : address
+      : tagline || address || 'My Kitchen',
     meta: tagline && address ? address : undefined,
     imageUrl: card?.imageUrl,
     imageAlt: `${title} identity`,
     imageFit: 'contain',
     imageBackground: card?.mediaBackdropColor,
-    icon: 'i-lucide-chef-hat',
+    icon: props.draft ? undefined : 'i-lucide-chef-hat',
   }
 })
 </script>

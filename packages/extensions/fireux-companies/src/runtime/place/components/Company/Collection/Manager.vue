@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 14:38 CEST — Company public projection: expose explicit bounded directory pagination. -->
 <template>
-  <section class="collection-directory company-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+  <section class="entity-collection company-collection">
+    <CollectionHeader :title="title" :description="description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -9,7 +9,7 @@
           :placeholder="searchPlaceholder"
           :aria-label="searchPlaceholder"
           icon="i-lucide-search"
-          class="collection-directory__search"
+          class="entity-collection__search"
         />
 
         <UButton
@@ -28,14 +28,14 @@
 
         <span
           v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="collection-directory__count"
+          class="entity-collection__count"
         >
           {{ countLabel }}
         </span>
       </template>
-    </CollectionDirectoryHeader>
+    </CollectionHeader>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-if="outcome === 'pending'"
       title="Loading companies"
       description="Finding companies…"
@@ -46,7 +46,7 @@
       aria-busy="true"
     />
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else-if="outcome === 'error'"
       title="Companies unavailable"
       description="Companies could not be loaded. Please try again."
@@ -63,7 +63,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionDirectoryState>
+    </CollectionState>
 
     <div v-else-if="cardsFiltered.length" class="grid gap-4">
       <CompanyCollectionList :cards="cardsFiltered" :variant="variant">
@@ -96,7 +96,7 @@
       </div>
     </div>
 
-    <CollectionDirectoryState
+    <CollectionState
       v-else
       icon="i-lucide-building-2"
       :title="query ? 'No companies match your search' : 'No companies yet'"

@@ -1,8 +1,5 @@
 <template>
-  <section
-    class="market-page market-personal"
-    aria-labelledby="personal-title"
-  >
+  <section class="market-page market-personal" aria-labelledby="personal-title">
     <div class="market-personal__content">
       <ClientOnly>
         <div
@@ -21,7 +18,7 @@
           <p class="market-intro">
             {{ copy('account_guest_intro') }}
           </p>
-          <NuxtLink to="/auth?redirect=/mis" class="market-personal__primary-action">
+          <NuxtLink to="/auth" class="market-personal__primary-action">
             <UIcon name="i-lucide-log-in" aria-hidden="true" />
             <strong>{{ copy('account_sign_in') }}</strong>
             <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
@@ -162,8 +159,13 @@
                       rows="4"
                       maxlength="500"
                       autocomplete="street-address"
-                      :placeholder="copy('account_delivery_address_placeholder')"
-                      :disabled="settingsState === 'loading' || settingsState === 'saving'"
+                      :placeholder="
+                        copy('account_delivery_address_placeholder')
+                      "
+                      :disabled="
+                        settingsState === 'loading' ||
+                        settingsState === 'saving'
+                      "
                     />
                   </label>
 
@@ -178,10 +180,16 @@
 
                   <button
                     type="submit"
-                    :disabled="settingsState === 'loading' || settingsState === 'saving'"
+                    :disabled="
+                      settingsState === 'loading' || settingsState === 'saving'
+                    "
                   >
                     <UIcon
-                      :name="settingsState === 'saving' ? 'i-lucide-loader-circle' : 'i-lucide-check'"
+                      :name="
+                        settingsState === 'saving'
+                          ? 'i-lucide-loader-circle'
+                          : 'i-lucide-check'
+                      "
                       aria-hidden="true"
                       :class="{ 'is-spinning': settingsState === 'saving' }"
                     />
@@ -235,7 +243,9 @@
                   >
                     <div>
                       <strong>{{ store.name }}</strong>
-                      <span>{{ storeStateLabel(store.publication_state) }}</span>
+                      <span>{{
+                        storeStateLabel(store.publication_state)
+                      }}</span>
                     </div>
                     <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
                   </NuxtLink>
@@ -270,10 +280,7 @@
             </div>
           </section>
 
-          <aside
-            v-if="showOnboardingReset"
-            class="market-personal__dev-reset"
-          >
+          <aside v-if="showOnboardingReset" class="market-personal__dev-reset">
             <div>
               <strong>{{ copy('account_dev_reset_title') }}</strong>
               <p>{{ copy('account_dev_reset_description') }}</p>

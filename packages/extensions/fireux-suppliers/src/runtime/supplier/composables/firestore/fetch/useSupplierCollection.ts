@@ -42,7 +42,7 @@ export function useSupplierCollection(
       : ''
   )
   const directory = useAsyncData<SupplierDirectoryResponse>(
-    'supplier-directory',
+    'supplier-collection',
     () =>
       sourceMode.value === 'live' && !usesTargetedRootRead.value
         ? $fetch<SupplierDirectoryResponse>('/api/suppliers')

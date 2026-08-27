@@ -1,10 +1,8 @@
 // Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: expose outcomes and enforce App-admin authority for field-level curation updates.
-import { doc, setDoc } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFireUXConfig } from './config/FireUXConfig'
 import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from '../../user/composables/useUser'
-import { useFirestoreResolver } from '../../composables/fireux/firestore/vuefire'
 
 export type AppFeaturedSlugField = `featured_${string}_slugs`
 
@@ -17,7 +15,6 @@ export type AppPublicSettings = {
 
 export function useAppPublicSettings() {
   const fireux = useFireUXConfig()
-  const resolveDb = useFirestoreResolver()
   const { isAdmin } = useUser()
   const collectionPath = `apps/${fireux.appId}/settings`
   const { firestoreFetchDoc } = useFirestoreRead()
@@ -47,11 +44,13 @@ export function useAppPublicSettings() {
       throw new Error('App admin access is required.')
     }
 
-    await setDoc(
-      doc(resolveDb(), collectionPath, 'public'),
-      { [field]: cleanList(values) },
-      { merge: true }
-    )
+    const response = await fetch('/api/internal/app/public-settings', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ field, values: cleanList(values) }),
+    })
+    if (!response.ok)
+      throw new Error(`App public settings could not be updated (${response.status}).`)
   }
 
   return {
