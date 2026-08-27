@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type { Company } from '../../models/company.model.ts'

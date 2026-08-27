@@ -3,7 +3,7 @@ import {
   defineFireuxOperationAgent,
   identityAgentCapabilities,
   type FireuxAgentContextProvider,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { propertyOperations } from './operations'
 
 const names = {

@@ -2,7 +2,6 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
-import { configureComponents } from './config/module/components-config'
 import { configureModulePages } from './config/module/pages-config'
 import { configurePublicAssets } from './config/module/public-assets-config'
 import { configureRuntimeConfig } from './config/module/runtime-config'
@@ -19,7 +18,6 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       ecosystem: ecosystemConfig,
       configureRuntimeConfig,
       configurePages: configureModulePages,
-      configureComponents,
       configurePublicAssets,
     })
 

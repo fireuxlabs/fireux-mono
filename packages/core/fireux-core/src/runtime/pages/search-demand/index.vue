@@ -8,20 +8,20 @@
     <UPageBody>
       <SearchDemandStageNav current="domain" />
 
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-if="pending"
         title="Loading search demand"
         description="Reading this App’s research evidence…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionState
-        v-else-if="error"
+      <MoleculesStateCard surface="collection"
+        v-else-if="error" state="error"
         title="Search demand unavailable"
         description="This App’s research evidence could not be loaded."
         icon="i-lucide-triangle-alert"
       />
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-else-if="!demand"
         title="No demand research yet"
         description="No tool-sourced search observations have been recorded for this App."

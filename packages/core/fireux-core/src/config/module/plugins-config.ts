@@ -12,6 +12,10 @@ export function configurePlugins(resolver: Resolver) {
       src: resolver.resolve('./runtime/plugins/inject-trace.server.ts'),
       mode: 'server' as const,
     },
+    {
+      src: resolver.resolve('./runtime/plugins/component-labels.client.ts'),
+      mode: 'client' as const,
+    },
   ]
 
   for (const p of plugins) {

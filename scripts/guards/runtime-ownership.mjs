@@ -16,12 +16,61 @@ const ENTITY_TECHNICAL_ROLES = new Set([
   'tools',
 ])
 
+const PORTFOLIO_RUNTIME_OWNERS = new Map([
+  [
+    'packages/extensions/fireux-properties/src/runtime/portfolio',
+    new Set(['components', 'composables', 'models', 'server', 'utils']),
+  ],
+  [
+    'packages/extensions/fireux-compliance/src/runtime/portfolio',
+    new Set(['composables', 'models']),
+  ],
+  [
+    'packages/extensions/fireux-documents/src/runtime/portfolio',
+    new Set(['composables', 'models']),
+  ],
+  [
+    'packages/extensions/fireux-tasks/src/runtime/portfolio',
+    new Set(['composables', 'models']),
+  ],
+])
+
+const PORTFOLIO_AUTHORITY_SEAM =
+  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/useActivePortfolio.ts'
+
+const GENERATED_DIRECTORY_NAMES = new Set([
+  '.firebase',
+  '.nuxt',
+  '.output',
+  '.turbo',
+  'coverage',
+  'dist',
+  'node_modules',
+])
+
 const LEGACY_ENTITY_PATHS = [
+  // Completed technical-role and Demo vocabulary migrations.
+  'packages/core/fireux-docs/src/runtime/catalogue',
+  'packages/extensions/fireux-ai/src/runtime/agents',
+  'packages/extensions/fireux-demo/src/runtime/media',
+  'packages/extensions/fireux-kitchens/src/runtime/test',
+  'packages/ecosystem/fireux-misebox/src/runtime/styles',
+  'packages/ecosystem/fireux-slap/src/runtime/presentation',
+  'projects/buenohost/buenohost-app/app/simulations',
+  'projects/fireux/find-my-seo-app/app/simulations',
+  'projects/fireux/sproochli/app/simulations',
   // Core entities. Entity-owned App components and composables use the App
   // scoped Nuxt spine; the old global App-labelled dumping grounds are closed.
   'packages/core/fireux-core/src/runtime/components/App',
   'packages/core/fireux-core/src/runtime/composables/fireux/app',
   'packages/core/fireux-core/src/runtime/components/molecules/forms/firestore/AppImages.vue',
+  'packages/core/fireux-core/src/runtime/components/EntityIndexCta.vue',
+  'packages/core/fireux-core/src/runtime/components/Entity/Index/Cta.vue',
+  'packages/core/fireux-core/src/runtime/components/Collection/State.vue',
+  'packages/core/fireux-core/src/runtime/components/public',
+  'packages/core/fireux-core/src/runtime/components/Page',
+  'packages/core/fireux-core/src/runtime/components/Operation/Grid.vue',
+  'packages/core/fireux-core/src/runtime/components/landing/SolutionsGrid.vue',
   'packages/core/fireux-core/src/runtime/components/Workspace/Project',
   'packages/core/fireux-core/src/runtime/components/Ecosystem',
   'packages/core/fireux-core/src/runtime/components/Project',
@@ -72,6 +121,7 @@ const LEGACY_ENTITY_PATHS = [
   'packages/extensions/fireux-properties/src/runtime/composables/fireux/portfolio',
   'packages/extensions/fireux-properties/src/runtime/composables/fireux/property',
   'packages/extensions/fireux-properties/src/runtime/server/portfolio',
+  'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/operations/useActivePortfolio.ts',
   'packages/extensions/fireux-properties/src/runtime/server/property',
   'packages/extensions/fireux-suppliers/src/runtime/components/Supplier',
   'packages/extensions/fireux-suppliers/src/runtime/components/Workspace/Supplier',
@@ -205,9 +255,48 @@ function hasAuthoredFile(target) {
   return false
 }
 
+function collectEmptyAuthoredDirectories(repoRoot, relativeRoot, emptyDirs) {
+  const root = path.join(repoRoot, relativeRoot)
+  if (!existsSync(root)) return
+
+  const entries = readdirSync(root, { withFileTypes: true })
+  if (entries.length === 0) {
+    emptyDirs.push(relativeRoot)
+    return
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || GENERATED_DIRECTORY_NAMES.has(entry.name)) {
+      continue
+    }
+    collectEmptyAuthoredDirectories(
+      repoRoot,
+      `${relativeRoot}/${entry.name}`,
+      emptyDirs
+    )
+  }
+}
+
 export async function run({ repoRoot = process.cwd() } = {}) {
   const violations = []
   const entityRoots = new Set()
+  const emptyAuthoredDirectories = []
+
+  collectEmptyAuthoredDirectories(
+    repoRoot,
+    'packages',
+    emptyAuthoredDirectories
+  )
+  collectEmptyAuthoredDirectories(
+    repoRoot,
+    'projects',
+    emptyAuthoredDirectories
+  )
+  for (const relativePath of emptyAuthoredDirectories) {
+    violations.push(
+      `${relativePath}/: empty authored directory makes retired ownership look active`
+    )
+  }
 
   for (const entity of entityMatrix) {
     if (
@@ -251,6 +340,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       ) {
         violations.push(
           `${relativeEntry}/: Entity root must use a scoped Nuxt technical role`
+        )
+      }
+    }
+  }
+
+  if (!existsSync(path.join(repoRoot, PORTFOLIO_AUTHORITY_SEAM))) {
+    violations.push(
+      `${PORTFOLIO_AUTHORITY_SEAM}: Portfolio authority seam is missing`
+    )
+  }
+
+  for (const [relativeRoot, allowedRoles] of PORTFOLIO_RUNTIME_OWNERS) {
+    const root = path.join(repoRoot, relativeRoot)
+    if (!existsSync(root)) continue
+
+    for (const entry of readdirSync(root, { withFileTypes: true })) {
+      if (entry.name === '.DS_Store') continue
+      if (!entry.isDirectory() || !allowedRoles.has(entry.name)) {
+        violations.push(
+          `${relativeRoot}/${entry.name}: package does not own this Portfolio technical role`
         )
       }
     }

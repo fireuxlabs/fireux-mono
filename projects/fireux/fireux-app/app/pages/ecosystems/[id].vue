@@ -1,8 +1,8 @@
 <template>
   <UPage class="ecosystem-detail"><UPageBody>
-    <CollectionState v-if="pending" title="Loading Ecosystem" description="Finding this Ecosystem and its relationships…" icon="i-lucide-loader-circle" loading />
-    <CollectionState v-else-if="failed" title="Ecosystem unavailable" description="This Ecosystem could not be loaded." icon="i-lucide-triangle-alert" />
-    <CollectionState v-else-if="missing" title="Ecosystem not found" description="No active Ecosystem matches this address." icon="i-lucide-orbit"><template #actions><UButton to="/ecosystems" icon="i-lucide-arrow-left" variant="soft">Browse Ecosystems</UButton></template></CollectionState>
+    <MoleculesStateCard surface="collection" v-if="pending" title="Loading Ecosystem" description="Finding this Ecosystem and its relationships…" icon="i-lucide-loader-circle" loading />
+    <MoleculesStateCard surface="collection" v-else-if="failed" state="error" title="Ecosystem unavailable" description="This Ecosystem could not be loaded." icon="i-lucide-triangle-alert" />
+    <MoleculesStateCard surface="collection" v-else-if="missing" state="missing" title="Ecosystem not found" description="No active Ecosystem matches this address." icon="i-lucide-orbit"><template #actions><UButton to="/ecosystems" icon="i-lucide-arrow-left" variant="soft">Browse Ecosystems</UButton></template></MoleculesStateCard>
     <template v-else-if="ecosystem">
       <header class="ecosystem-detail__hero">
         <div class="ecosystem-detail__topline"><UButton to="/ecosystems" color="neutral" variant="ghost" icon="i-lucide-arrow-left" size="sm">All Ecosystems</UButton><UButton v-if="ecosystem.website_url" :to="ecosystem.website_url" target="_blank" color="neutral" variant="soft" icon="i-lucide-external-link" size="sm">Visit Ecosystem</UButton></div>

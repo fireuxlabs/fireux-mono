@@ -17,24 +17,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading Apps"
       description="Finding Apps…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Apps unavailable"
       description="Apps could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -45,14 +43,15 @@
           @click="refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <AppCollectionLauncher
       v-else-if="cardsFiltered.length"
       :apps="cardsFiltered"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-app-window"
       :title="query ? 'No apps match your search' : 'No apps yet'"

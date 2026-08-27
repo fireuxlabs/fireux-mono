@@ -12,7 +12,7 @@ export function run(ctx) {
   const contract = read(`${runtime}/template-one.ts`)
   const page = read(`${runtime}/TemplateOnePage.vue`)
   const scene = read(`${runtime}/TemplateOneSceneOne.vue`)
-  const sceneCss = read(`${runtime}/styles/template-one-scene-one.css`)
+  const sceneCss = read(`${runtime}/assets/styles/template-one-scene-one.css`)
   const sceneFiles = [
     'TemplateOneSceneOne.vue',
     'TemplateOneMenuSection.vue',
@@ -71,7 +71,7 @@ export function run(ctx) {
   if (
     !scene.includes('data-landing-scene="hero"') ||
     !scene.includes('data-scene-layer="content"') ||
-    !scene.includes('styles/template-one-scene-one.css') ||
+    !scene.includes('assets/styles/template-one-scene-one.css') ||
     !existsSync(path.join(root, runtime, 'public/img/template-one/charcoal-texture.webp')) ||
     !sceneCss.includes("url('/img/template-one/charcoal-texture.webp')")
   ) violations.push('Template One Scene One must retain shared scene/layer anatomy and owned texture')

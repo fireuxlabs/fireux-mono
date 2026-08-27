@@ -294,7 +294,7 @@ function inspectDocsViewerSource(repoRoot) {
 
 function inspectDocsComponentCatalogue(repoRoot) {
   const relativePath =
-    'packages/core/fireux-docs/src/runtime/catalogue/catalogue.ts'
+    'packages/core/fireux-docs/src/runtime/models/catalogue.ts'
   const absolutePath = path.join(repoRoot, relativePath)
   if (!existsSync(absolutePath)) {
     return [`${relativePath} is missing.`]

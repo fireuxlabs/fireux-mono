@@ -4,7 +4,7 @@ import {
   identityAgentCapabilities,
   type FireuxAgentContextProvider,
   type FireuxOperationAgentCapability,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { supplierOperations } from './operations'
 
 type SupplierOperationSlug = (typeof supplierOperations)[number]['slug']

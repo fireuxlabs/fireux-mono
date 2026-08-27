@@ -31,7 +31,18 @@
               Choose the job closest to the App you need.
             </p>
           </div>
-          <PublicSolutionsGrid :solutions="featuredSolutions" />
+          <UPageGrid>
+            <UPageCard
+              v-for="solution in featuredSolutions"
+              :key="solution.slug"
+              :title="solution.title"
+              :description="solution.description"
+              :icon="solution.icon || 'i-lucide-lightbulb'"
+              :to="solution.to || `/solutions/${solution.slug}`"
+              :target="solution.external ? '_blank' : undefined"
+              variant="subtle"
+            />
+          </UPageGrid>
         </section>
 
         <section class="grid gap-5">

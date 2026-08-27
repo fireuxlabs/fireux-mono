@@ -15,7 +15,7 @@
 
         <div class="sproochli-hero__actions">
           <UButton
-            to="/info/bern-bike-rental/rental-instructions"
+            to="/get-started"
             color="primary"
             size="xl"
             icon="i-lucide-scan-line"
@@ -135,7 +135,7 @@
         <h2>Make the next thing people scan worth understanding.</h2>
       </div>
       <UButton
-        to="/info/bern-bike-rental/rental-instructions"
+        to="/get-started"
         color="neutral"
         variant="solid"
         size="xl"

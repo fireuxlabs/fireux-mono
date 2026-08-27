@@ -20,11 +20,8 @@ export const appMeta = {
   },
   routes: [
     { label: 'Home', path: '/', kind: 'public' },
-    { label: 'SEO Professionals', path: '/professionals', kind: 'public' },
-    { label: 'Technical SEO', path: '/categories/technical-seo', kind: 'public' },
     { label: 'SEO for SaaS', path: '/seo-for-saas', kind: 'public' },
     { label: 'SEO for eCommerce', path: '/seo-for-ecommerce', kind: 'public' },
-    { label: 'Case Studies', path: '/case-studies', kind: 'public' },
     { label: 'Dashboard', path: '/dashboard', kind: 'dashboard' },
     { label: 'Professional Profile', path: '/dashboard/professional/profile', kind: 'dashboard' },
   ],
@@ -75,8 +72,8 @@ export const metaContent = defineFireuxMeta({
   },
   cta: {
     primary: {
-      label: appMeta.landingPrimaryCtaLabel,
-      to: '/professionals',
+      label: 'Get started',
+      to: '/get-started',
     },
     secondary: {
       label: appMeta.landingSecondaryCtaLabel,
@@ -126,12 +123,12 @@ export const metaContent = defineFireuxMeta({
     {
       id: 'Professional',
       purpose: 'Public SEO provider identity used for discovery and comparison.',
-      to: '/professionals',
+      to: '/get-started',
     },
     {
       id: 'SeoCaseStudy',
       purpose: 'Structured proof attached to a professional or agency profile.',
-      to: '/case-studies',
+      to: '/get-started',
     },
     {
       id: 'Lead',

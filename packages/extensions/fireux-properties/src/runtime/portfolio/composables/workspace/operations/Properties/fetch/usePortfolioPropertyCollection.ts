@@ -3,7 +3,7 @@ import { collection, query, where, type Query } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useActivePortfolio } from '../../useActivePortfolio'
+import { useActivePortfolio } from '../../../useActivePortfolio'
 import {
   PropertyStorage,
   type Property,

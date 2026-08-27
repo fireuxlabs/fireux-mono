@@ -1,10 +1,6 @@
 <template>
   <section class="entity-collection place-collection">
-    <CollectionHeader
-      :title="title"
-      :description="description"
-      compact
-    >
+    <CollectionHeader :title="title" :description="description" compact>
       <template #controls>
         <UFieldGroup v-if="showFilters" size="sm">
           <UButton
@@ -57,24 +53,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading places"
       description="Finding places…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Places unavailable"
       description="Places could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -85,7 +79,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div v-else-if="cardsFiltered.length" class="place-collection__results">
       <PlaceCollectionList :cards="cardsFiltered" :variant="variant">
@@ -118,7 +112,8 @@
       </div>
     </div>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-map-pin"
       :title="

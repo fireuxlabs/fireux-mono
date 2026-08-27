@@ -31,10 +31,18 @@
       </p>
     </div>
 
-    <PublicSolutionsGrid
-      v-if="displayedSolutions.length"
-      :solutions="displayedSolutions"
-    />
+    <UPageGrid v-if="displayedSolutions.length">
+      <UPageCard
+        v-for="solution in displayedSolutions"
+        :key="solution.slug"
+        :title="solution.title"
+        :description="solution.description"
+        :icon="solution.icon || 'i-lucide-lightbulb'"
+        :to="solution.to || `/solutions/${solution.slug}`"
+        :target="solution.external ? '_blank' : undefined"
+        variant="subtle"
+      />
+    </UPageGrid>
 
     <UAlert
       v-else-if="variant === 'hub'"

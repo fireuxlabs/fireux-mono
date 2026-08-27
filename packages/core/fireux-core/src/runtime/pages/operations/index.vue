@@ -53,7 +53,19 @@
               Open workspace
             </NuxtLink>
           </div>
-          <PublicOperationsGrid :operations="group.operations" />
+          <UPageGrid>
+            <UPageCard
+              v-for="operation in group.operations"
+              :key="operation.id"
+              :title="operation.title"
+              :description="operation.description"
+              :icon="operation.icon || 'i-lucide-circle-dot'"
+              :to="
+                operation.slug ? `/operations/${operation.slug}` : operation.to
+              "
+              variant="subtle"
+            />
+          </UPageGrid>
         </section>
 
         <UAlert

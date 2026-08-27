@@ -5,11 +5,6 @@ import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
  * Register runtime components for this module.
  */
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components', {
-    global: false,
-    pathPrefix: true,
-  })
-
   registerComponentsDir(resolver, './runtime/place/components', {
     global: false,
     pathPrefix: true,

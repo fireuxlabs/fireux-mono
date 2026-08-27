@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 Ref: e5a742124
 Role: map, not canon
 
@@ -59,6 +59,44 @@ Map component folder and naming conventions.
   Confirmed parent-owned record/operation components live beneath their parent
   Entity scope. Root component families for still-to-confirm concepts remain
   on the package spine; neither case is automatic evidence for a new Entity.
+
+## Core shared component families
+
+`fireux-core/src/runtime/components` is a finite shared boundary, not the
+default destination for UI whose owner is unclear. The current families were
+reviewed against authored consumers on 2026-08-27:
+
+| Family         | Owner and admission reason                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| `Admin`        | Cross-entity administration primitives used by extension Entities and Apps.                        |
+| `Auth`         | Core-owned authentication composition used by Core routes and App initialization.                  |
+| `Collection`   | Cross-entity collection presentation primitives.                                                   |
+| `Dashboard`    | Core-owned default Dashboard composition.                                                          |
+| `Entity`       | Explicit cross-entity page and collection contracts.                                               |
+| `Operation`    | Cross-domain operation literature primitives with more than one domain consumer.                   |
+| `Pricing`      | Cross-App pricing route composition.                                                               |
+| `Provider`     | Cross-App Tool-provider frames and transport presentation.                                         |
+| `SearchDemand` | Core-owned Search Demand route composition; it is a product surface, not an Entity.                |
+| `Workspace`    | Cross-entity Workspace mechanics and presentation primitives.                                      |
+| `dev`          | Cross-package developer inspection and drift tooling.                                              |
+| `docs`         | Core-owned documentation-layout composition.                                                       |
+| `effects`      | Cross-App visual-effect containers and shared effects.                                             |
+| `landing`      | Cross-App landing composition whose truth remains App-owned.                                       |
+| `layouts`      | Shared layout chrome consumed by Nuxt layouts; these are components, not route layout entrypoints. |
+| `molecules`    | Small cross-entity interaction and form contracts not supplied by Nuxt UI.                         |
+
+Core-only consumption does not by itself make `Auth`, `Dashboard`, `docs`, or
+`SearchDemand` misplaced: Core owns those framework or product surfaces and
+their components do not claim Entity authority. Conversely, reuse inside one
+Entity or one industry is insufficient for admission to this root. New root
+families require a named owner and durable cross-entity or Core-surface reason;
+`scripts/guards/components.mjs` rejects undeclared families and loose root
+components. Access state is not an owner: the former `public` bucket was
+removed. Pricing keeps its owned SEO and offer composition, while ordinary
+pages and catalogues compose Nuxt UI's `UPage`, `UPageHeader`, `UPageBody`,
+`UPageGrid`, and `UPageCard` directly. The unused `Design/PaletteStrip` family
+and unreferenced landing/layout components were retired rather than preserved
+as speculative seams.
 
 ## CSS-to-component mapping
 
@@ -330,6 +368,16 @@ the root Workspace folder.
 ## Working rules
 
 - Prefer named domain components over vague generic shells.
+- Keep Entity index CTA copy, actions, permissions, and meaning with the
+  owning domain. Compose ordinary `UPageCTA` structure locally until materially
+  differentiated siblings prove a smaller shared structural contract.
+- Register each shared component source through one canonical auto-import tree.
+  Nested Core families such as `molecules` keep their path-derived
+  `Molecules*` names; do not flatten or alias the same files through a second
+  component-directory registration.
+- In development, Core labels visible authored Vue component roots through its
+  fixed hotpink inspection overlay. Keep those labels out of component markup;
+  production does not run the overlay.
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
@@ -381,8 +429,10 @@ the root Workspace folder.
   `NuxtLink` or clickable `div` with reduced opacity does not disable
   navigation, provide button semantics, or remove it from keyboard operation.
 - `MoleculesStateCard` represents an explicit `loading`, `empty`, `missing`, or
-  `error` outcome and can render as a standalone card or a bare state inside an
-  existing card. Missing data and failed reads are different outcomes. Use
+  `error` outcome and can render as a standalone card, a bare state inside an
+  existing card, or the established dashed `collection` surface. That surface
+  replaces the retired parallel `CollectionState` component. Missing data and
+  failed reads are different outcomes. Use
   `UAlert` for compact notices and actionable errors, and use `USkeleton` when
   the loading state needs to preserve the shape of real content.
 - Component-scoped CSS is for genuine domain layout and state deltas. Do not

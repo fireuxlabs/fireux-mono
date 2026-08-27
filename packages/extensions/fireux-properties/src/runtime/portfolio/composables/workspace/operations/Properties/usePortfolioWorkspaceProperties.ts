@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import {
   useActivePortfolio,
   type ActivePortfolioRuntime,
-} from '../useActivePortfolio'
+} from '../../useActivePortfolio'
 import { usePortfolioPropertyCollection } from './fetch/usePortfolioPropertyCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

@@ -4,7 +4,7 @@ import {
   defineFireuxWorkspaceAgent,
   defineFireuxOperationAgent,
   identityAgentCapabilities,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { projectAgentOperations } from 'fireux-core/runtime/project/models/agent-operations'
 
 export const fireuxAgent = defineFireuxAgentNode({

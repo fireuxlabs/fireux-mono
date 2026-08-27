@@ -14,15 +14,15 @@
     <UPageBody>
       <SearchDemandStageNav current="capabilities" />
 
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-if="pending"
         title="Loading capabilities"
         description="Reading this App’s capability decisions…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionState
-        v-else-if="error || !demand"
+      <MoleculesStateCard surface="collection"
+        v-else-if="error || !demand" :state="error ? 'error' : 'empty'"
         title="Capability map unavailable"
         description="This App does not yet have a capability map."
         icon="i-lucide-route"

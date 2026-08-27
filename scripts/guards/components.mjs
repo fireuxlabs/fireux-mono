@@ -66,6 +66,24 @@ const CARD_ANATOMY_RE = new Map([
   ['Pill.vue', /class\s*=\s*["'][^"']*\bpill\b/],
   ['Preview.vue', /class\s*=\s*["'][^"']*\bpreview\b/],
 ])
+const CORE_SHARED_COMPONENT_FAMILIES = new Set([
+  'Admin',
+  'Auth',
+  'Collection',
+  'Dashboard',
+  'Entity',
+  'Operation',
+  'Pricing',
+  'Provider',
+  'SearchDemand',
+  'Workspace',
+  'dev',
+  'docs',
+  'effects',
+  'landing',
+  'layouts',
+  'molecules',
+])
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -78,6 +96,7 @@ export async function run(ctx) {
   }
 
   validateMiseboxCardSpecimen(repoRoot, violations)
+  validateCoreSharedComponentFamilies(repoRoot, violations)
   validateEntityCollectionPagePresentation(repoRoot, violations)
   validateEntityDetailPresentation(repoRoot, violations)
 
@@ -102,6 +121,30 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ component naming valid')
+}
+
+function validateCoreSharedComponentFamilies(repoRoot, violations) {
+  const relativeRoot = 'packages/core/fireux-core/src/runtime/components'
+  const root = path.join(repoRoot, relativeRoot)
+  if (!existsSync(root)) {
+    violations.push(`${relativeRoot} (missing Core shared component root)`)
+    return
+  }
+
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (entry.name === '.DS_Store') continue
+    if (!entry.isDirectory()) {
+      violations.push(
+        `${relativeRoot}/${entry.name} (loose Core component has no named shared family)`
+      )
+      continue
+    }
+    if (!CORE_SHARED_COMPONENT_FAMILIES.has(entry.name)) {
+      violations.push(
+        `${relativeRoot}/${entry.name}/ (undeclared Core shared component family)`
+      )
+    }
+  }
 }
 
 function validateEntityCollectionPagePresentation(repoRoot, violations) {
@@ -183,10 +226,10 @@ function validateEntityCollectionPagePresentation(repoRoot, violations) {
     const source = readFileSync(absolutePath, 'utf8')
     if (
       !source.includes('<CollectionHeader') ||
-      !source.includes('<CollectionState')
+      !/<MoleculesStateCard\s+surface=["']collection["']/.test(source)
     ) {
       violations.push(
-        `${managerPath} (ordinary Entity manager must use shared Collection header and state anatomy)`
+        `${managerPath} (ordinary Entity manager must use the shared Collection header and collection-state surface)`
       )
     }
   }

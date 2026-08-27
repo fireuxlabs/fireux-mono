@@ -2,7 +2,7 @@ import {
   advisoryAgentCapabilities,
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { portfolioOperationAgents } from 'fireux-properties/runtime/portfolio/models/operation-agents'
 
 export const graniteAgent = defineFireuxAgentNode({

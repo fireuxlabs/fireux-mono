@@ -93,17 +93,6 @@
   color: var(--ui-text-toned);
 }
 
-.kitchen-ai-welcome__composer {
-  border-radius: calc(var(--ui-radius) * 3);
-  box-shadow: var(--shadow-lg);
-}
-
-.kitchen-ai-welcome__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--spacing) * 2);
-}
-
 .kitchen-ai-welcome__privacy {
   color: var(--ui-text-dimmed);
   font-size: var(--text-xs);
@@ -144,11 +133,6 @@
 
   .kitchen-ai-welcome__starters {
     justify-content: flex-start;
-  }
-
-  .kitchen-ai-welcome__composer {
-    padding: var(--spacing);
-    border-radius: calc(var(--ui-radius) * 2);
   }
 
 }

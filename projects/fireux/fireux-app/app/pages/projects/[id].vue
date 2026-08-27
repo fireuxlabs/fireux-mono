@@ -1,7 +1,7 @@
 <template>
   <UPage class="project-detail">
     <UPageBody>
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-if="pending"
         title="Loading Project"
         description="Finding this Project and its Apps…"
@@ -9,15 +9,15 @@
         loading
       />
 
-      <CollectionState
-        v-else-if="failed"
+      <MoleculesStateCard surface="collection"
+        v-else-if="failed" state="error"
         title="Project unavailable"
         description="This Project could not be loaded. Please try again."
         icon="i-lucide-triangle-alert"
       />
 
-      <CollectionState
-        v-else-if="missing"
+      <MoleculesStateCard surface="collection"
+        v-else-if="missing" state="missing"
         title="Project not found"
         description="No active Project matches this address."
         icon="i-lucide-folder-search"
@@ -27,7 +27,7 @@
             Browse Projects
           </UButton>
         </template>
-      </CollectionState>
+      </MoleculesStateCard>
 
       <template v-else-if="project">
         <header class="project-detail__hero">

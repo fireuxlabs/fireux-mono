@@ -11,7 +11,7 @@
       </template>
 
       <template #links>
-        <UButton to="/professionals" color="primary" icon="i-lucide-search">
+        <UButton to="/get-started" color="primary" icon="i-lucide-search">
           Browse professionals
         </UButton>
         <UButton

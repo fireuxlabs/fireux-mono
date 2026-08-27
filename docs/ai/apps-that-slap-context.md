@@ -32,7 +32,7 @@ away from genuine operational domains.
   and Friiites remains a Misebox tenant App.
 - FireUX Core owns only generic infrastructure and primitives. Apps That Slap
   owns its ecosystem identity and its opt-in presentation vocabulary.
-- Consuming `fireux-slap/runtime/presentation/apps-that-slap` does not change
+- Consuming `fireux-slap/runtime/models/presentation/apps-that-slap` does not change
   App ownership, `ecosystem`, Firebase binding, database authority, modules,
   routes, or deployment target. Domain records and behavior remain with their
   owning package and App.
@@ -58,7 +58,7 @@ Use this order:
 
 1. App source, package manifests, `defineFireuxConfig`, and executable guards.
 2. `packages/ecosystem/fireux-slap/src/module.ts` and `src/config/**`.
-3. `packages/ecosystem/fireux-slap/src/runtime/presentation/apps-that-slap.ts`.
+3. `packages/ecosystem/fireux-slap/src/runtime/models/presentation/apps-that-slap.ts`.
 4. `scripts/_lib/app-registry.mjs`, Firebase templates, project smoke contracts,
    and brand-asset guards.
 5. This context and `docs/concepts/apps-that-slap.md`.

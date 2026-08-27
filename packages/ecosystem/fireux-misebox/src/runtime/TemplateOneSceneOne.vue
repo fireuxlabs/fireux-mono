@@ -127,4 +127,4 @@ const themeStyle = computed(() => ({
 }))
 </script>
 
-<style scoped src="./styles/template-one-scene-one.css"></style>
+<style scoped src="./assets/styles/template-one-scene-one.css"></style>

@@ -1,29 +1,34 @@
 <template>
-  <PublicSimplePage
-    title="About"
-    description="BuenoHost turns stay information into a digital guest guide."
-    back-label="BuenoHost"
-  >
-    <section class="space-y-4">
-      <p class="text-muted">
-        BuenoHost is a FireUX standalone app for simple guest guides, house information, local notes, and QR-ready stay companions.
-      </p>
+  <main class="min-h-screen bg-default text-default">
+    <UContainer class="py-8 sm:py-10">
+      <UPage class="mx-auto max-w-2xl">
+        <UButton to="/" variant="link" class="px-0"> BuenoHost </UButton>
+        <UPageHeader
+          title="About"
+          description="BuenoHost turns stay information into a digital guest guide."
+        />
+        <UPageBody class="space-y-4">
+          <section class="space-y-4">
+            <p class="text-muted">
+              BuenoHost is a FireUX standalone app for simple guest guides,
+              house information, local notes, and QR-ready stay companions.
+            </p>
 
-      <p class="text-muted">
-        It starts small: one property, one guide, one QR surface. More property management features can grow from that clean base later.
-      </p>
-    </section>
+            <p class="text-muted">
+              It starts small: one property, one guide, one QR surface. More
+              property management features can grow from that clean base later.
+            </p>
+          </section>
 
-    <template #actions>
-      <UButton
-        to="/"
-        icon="i-lucide-home"
-        size="lg"
-      >
-        Back to BuenoHost
-      </UButton>
-    </template>
-  </PublicSimplePage>
+          <div class="flex flex-wrap gap-3">
+            <UButton to="/" icon="i-lucide-home" size="lg">
+              Back to BuenoHost
+            </UButton>
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+  </main>
 </template>
 
 <script setup lang="ts">

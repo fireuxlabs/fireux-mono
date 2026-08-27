@@ -15,8 +15,8 @@
             This page narrows Find My SEO to providers already positioned for that work.
           </p>
           <div class="flex gap-3">
-            <UButton to="/professionals?sector=SaaS" color="primary">Browse SaaS SEO providers</UButton>
-            <UButton to="/professionals" variant="soft">See all providers</UButton>
+            <UButton to="/get-started" color="primary">Browse SaaS SEO providers</UButton>
+            <UButton to="/get-started" variant="soft">See all providers</UButton>
           </div>
         </div>
       </UCard>

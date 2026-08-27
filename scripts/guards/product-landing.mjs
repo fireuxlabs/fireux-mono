@@ -57,9 +57,9 @@ const CORE_PRODUCT_PRICING_STRIP_PATH =
 const CORE_PRODUCT_PRICING_SOURCE_PATH =
   'packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts'
 const CORE_PRODUCT_PRICING_INDEX_PATH =
-  'packages/core/fireux-core/src/runtime/components/public/ProductPricingIndex.vue'
+  'packages/core/fireux-core/src/runtime/components/Pricing/Catalogue.vue'
 const CORE_PRODUCT_PRICING_TIER_PATH =
-  'packages/core/fireux-core/src/runtime/components/public/ProductPricingTier.vue'
+  'packages/core/fireux-core/src/runtime/components/Pricing/Tier.vue'
 const CORE_OPERATION_RAIL_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/OperationRail.vue'
 const CORE_PRODUCT_LANDING_TYPE_PATH =

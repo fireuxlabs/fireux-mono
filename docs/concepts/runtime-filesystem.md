@@ -1,6 +1,6 @@
 # Runtime filesystem ownership
 
-Updated: 2026-08-24
+Updated: 2026-08-27
 Ref: d0caff27b
 Role: map, not canon
 
@@ -29,6 +29,18 @@ registration is protected by `scripts/guards/runtime-registration.mjs`.
 
 The package root technical spine is shared. A child of an entity root is owned
 by that entity.
+
+The first runtime path segment must answer one of two questions without
+historical knowledge:
+
+1. Is this a Nuxt entrypoint or a shared technical role?
+2. Which declared Entity owns it?
+
+A first-level feature, product surface, workflow, transport, or implementation
+detail is drift unless it is itself a declared Entity or a Nuxt-required
+entrypoint. `Workspace`, `Detail`, `Directory`, `AI`, and similar concepts come
+after their owner and technical role, or remain in the shared technical spine
+only when their behavior is genuinely cross-entity.
 
 ```text
 src/runtime/
@@ -71,6 +83,30 @@ and the optional `demo` and `tools` roles. Entity roots use the repository's
 canonical entity name and do not become generic domain, feature, capability,
 content, AI, asset, or type buckets.
 
+An absent role is represented by an absent directory, not an empty placeholder.
+Filesystem migrations remove emptied source paths after their consumers move;
+otherwise cold readers and AI agents can mistake retired ownership for an
+active extension point. `scripts/guards/runtime-ownership.mjs` rejects empty
+authored directories under `packages` and `projects` while ignoring generated,
+dependency, build, and coverage trees.
+
+“Substantial” describes ownership, not size. An Entity scope is justified when
+the concept has its own canonical identity and authority and owns coherent
+behaviour across more than one technical role. File count, package name, or a
+Workspace screen is not sufficient evidence. A capability package may extend a
+declared Entity beneath the same Entity root without becoming a second owner;
+its scope contains only the technical roles and child records required by that
+named capability.
+
+Portfolio proves this cross-package form. `fireux-properties` owns Portfolio
+identity, presentation, Workspace authority, reads, writes, and server policy.
+`fireux-compliance`, `fireux-documents`, and `fireux-tasks` contribute named
+Portfolio-scoped operations and child-record models. They consume
+`fireux-properties/runtime/portfolio/composables/workspace/useActivePortfolio`
+and must not declare a competing Portfolio model, authority seam, component
+family, or server policy. `scripts/guards/runtime-ownership.mjs` protects that
+boundary and rejects the retired nested authority path.
+
 The package root may still contain shared roles such as `content`, `tools`,
 `types`, and `assets` when they genuinely serve several entities or Nuxt registration.
 Inside an Entity, typed catalogues and contracts belong in `models`, runtime
@@ -78,6 +114,14 @@ copy resolution and stateless helpers belong in `utils`, component-owned
 styles belong with `components`, AI orchestration belongs in `composables` or
 `server`, and actual operator tools belong in `tools`. This classification
 keeps the first level predictable without pretending those jobs do not exist.
+
+App-owned Demo modules are read-only product/world fixtures loaded through the
+guarded deferred Demo adapters. Ordinary public product routes use canonical
+Entity readers; they do not import eager App-local imitation records.
+`app/simulations` is retired filesystem vocabulary. Package tests live under
+`src/test`, outside projected `src/runtime`; static catalogues and presentation
+contracts belong in `models`, stateless delivery helpers in `utils`, and
+runtime CSS in `assets/styles`.
 
 ## Nuxt boundary
 
@@ -98,9 +142,20 @@ may be entity-specific without making the root directory its domain owner.
 Substantial entity behaviour belongs under the entity root; pages and handlers
 delegate to it.
 
+This makes the cold-reading route mechanical: begin at the framework entrypoint,
+follow its explicit import or registered component into the owner, then follow
+only named lower capabilities. Do not begin at a visual filename and infer its
+storage or product owner from the component name.
+
 Package modules register bounded entity component and composable directories
 through supported Nuxt Kit helpers. Models, server domain code, types, and
 ordinary utilities use explicit imports and need no discovery framework.
+Registration source is also part of the visible filesystem contract: it names
+only directories that currently exist and own authored code. A completed move
+removes both the old directory and its registration declaration. Helpers may
+remain defensive at runtime, but module source must not advertise an absent
+shared or Entity role; `scripts/guards/runtime-registration.mjs` rejects those
+phantom targets.
 
 Core App proves the complete boundary: App-owned UI, state, models, and server
 jobs live under `runtime/app/{components,composables,models,server}`, while its
@@ -235,6 +290,8 @@ registration and guard changes; it never starts a parallel target tree.
 | To-confirm concepts remain on their owning package spine                                                                          | `to-confirm` | Make the model decision before creating an Entity root; do not infer Entity status from a UI folder |
 | Nuxt pages, layouts, middleware, plugins, server API handlers, and static public projection remain in their framework directories | `accepted`   | Keep Nuxt discovery explicit and delegate substantial entity work inward                            |
 | Entities expose different technical roles and capabilities                                                                        | `accepted`   | Do not create empty folders or artificial symmetry                                                  |
+| First-level runtime roots mix unexplained feature names with technical roles and Entity owners                                     | `drift`      | Classify each root, then move one coherent capability without compatibility trees                    |
+| Empty local directories remain after a completed tracked migration                                                                 | `drift`      | Remove the local residue; empty untracked folders are not architecture or migration compatibility    |
 
 ## Verification
 

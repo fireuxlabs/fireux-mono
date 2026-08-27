@@ -301,7 +301,18 @@ const contractSolutions = [
         </p>
       </div>
 
-      <PublicSolutionsGrid :solutions="contractSolutions" />
+      <UPageGrid>
+        <UPageCard
+          v-for="solution in contractSolutions"
+          :key="solution.slug"
+          :title="solution.title"
+          :description="solution.description"
+          :icon="solution.icon || 'i-lucide-lightbulb'"
+          :to="solution.to || `/solutions/${solution.slug}`"
+          :target="solution.external ? '_blank' : undefined"
+          variant="subtle"
+        />
+      </UPageGrid>
 
       <div class="contract-grid">
         <UCard class="fx-card--public-action">

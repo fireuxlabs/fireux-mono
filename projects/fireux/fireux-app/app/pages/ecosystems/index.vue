@@ -15,8 +15,8 @@
 
     <section class="ecosystem-collection">
       <CollectionHeader title="Active Ecosystems" description="Each Ecosystem groups Apps and belongs to one Project." />
-      <CollectionState v-if="pending" title="Loading Ecosystems" description="Finding Ecosystems…" icon="i-lucide-loader-circle" loading />
-      <CollectionState v-else-if="failed" title="Ecosystems unavailable" description="Ecosystems could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
+      <MoleculesStateCard surface="collection" v-if="pending" title="Loading Ecosystems" description="Finding Ecosystems…" icon="i-lucide-loader-circle" loading />
+      <MoleculesStateCard surface="collection" v-else-if="failed" state="error" title="Ecosystems unavailable" description="Ecosystems could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
       <div v-else-if="ecosystems.length" class="ecosystem-grid">
         <article v-for="(ecosystem, index) in ecosystems" :key="ecosystem.id" class="ecosystem-card" :style="ecosystemTone(index)">
           <header>
@@ -41,7 +41,7 @@
           </div>
         </article>
       </div>
-      <CollectionState v-else title="No Ecosystems yet" description="Active Ecosystems will appear here." icon="i-lucide-orbit" />
+      <MoleculesStateCard surface="collection" v-else title="No Ecosystems yet" description="Active Ecosystems will appear here." icon="i-lucide-orbit" />
       <DevDebugPanel object-origin="fetched" launcher include-route title="Ecosystems (JSON)" context="Canonical Ecosystem directory projections with Project and App relationships derived separately" :objects="devJsonData" :derived="devDerived" :default-open="false" @opened="loadDevJson" @closed="unloadDevJson" />
     </section>
   </EntityCollectionPage>

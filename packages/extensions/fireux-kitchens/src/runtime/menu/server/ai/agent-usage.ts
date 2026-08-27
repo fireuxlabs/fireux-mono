@@ -1,5 +1,5 @@
 import { writeKitchenAgentUsage } from '../../../kitchen/server/ai/usage.ts'
-import type { FireuxAgentTip } from 'fireux-ai/runtime/agents/agent-tip'
+import type { FireuxAgentTip } from 'fireux-ai/runtime/models/agents/agent-tip'
 
 export async function writeKitchenMenuAgentUsage(input: {
   appId: string

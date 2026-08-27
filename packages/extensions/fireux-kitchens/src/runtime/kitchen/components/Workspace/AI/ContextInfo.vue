@@ -116,7 +116,7 @@ import type {
   FireuxOperationAgentCapability,
   FireuxOperationAgentDefinition,
   FireuxOperationAgentTool,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 
 const props = defineProps<{ agent: FireuxOperationAgentDefinition }>()
 const open = ref(false)

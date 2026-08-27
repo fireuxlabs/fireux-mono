@@ -36,7 +36,6 @@ export default defineNuxtModule<FireuxMarketplaceModuleOptions>({
         ),
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
-          './runtime/composables',
           './runtime/marketplace-store/composables',
         ]),
       server: configureServer,

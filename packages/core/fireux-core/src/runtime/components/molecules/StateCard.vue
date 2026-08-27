@@ -41,6 +41,9 @@
         </slot>
       </p>
       <slot />
+      <div v-if="$slots.actions" class="fx-state-card__actions">
+        <slot name="actions" />
+      </div>
     </div>
   </UCard>
 </template>
@@ -53,7 +56,7 @@ const props = withDefaults(
     entity?: string
     kind?: 'document' | 'collection'
     state?: 'loading' | 'empty' | 'missing' | 'error'
-    surface?: 'card' | 'bare'
+    surface?: 'card' | 'bare' | 'collection'
     title?: string
     description?: string
     icon?: string | null
@@ -114,7 +117,8 @@ const resolvedTitle = computed(() => {
   }
 
   const pretty = capitalize(name)
-  if (resolvedState.value === 'error') return `Unable to load ${name.toLowerCase()}`
+  if (resolvedState.value === 'error')
+    return `Unable to load ${name.toLowerCase()}`
   if (resolvedState.value === 'missing') return `${pretty} not found`
   return `No ${name.toLowerCase()} yet`
 })
@@ -169,7 +173,7 @@ const cardClass = computed(() => [
 ])
 
 const cardUi = computed(() =>
-  props.surface === 'bare'
+  props.surface === 'bare' || props.surface === 'collection'
     ? {
         root: 'rounded-none overflow-visible bg-transparent ring-0 divide-y-0 shadow-none',
         body: 'p-0 sm:p-0',
@@ -226,6 +230,26 @@ const bannerClass = computed(() => ({
 
 .fx-state-card--bare.fx-state-card--standard {
   padding: calc(var(--spacing) * 6) 0;
+}
+
+.fx-state-card--collection.fx-state-card--standard {
+  min-height: calc(var(--spacing) * 52);
+  padding: calc(var(--spacing) * 8);
+  border: 1px dashed color-mix(in srgb, var(--ui-primary) 28%, var(--ui-border));
+  border-radius: calc(var(--ui-radius) * 6);
+  background: color-mix(in srgb, var(--ui-primary) 3%, var(--ui-bg));
+}
+
+.fx-state-card--collection .fx-state-card__content {
+  min-height: calc(var(--spacing) * 36);
+  justify-content: center;
+}
+
+.fx-state-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: calc(var(--spacing) * 3);
 }
 
 .fx-state-card--error .fx-state-card__icon {

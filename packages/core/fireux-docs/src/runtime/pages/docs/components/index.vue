@@ -54,7 +54,7 @@
 import {
   fireuxDocsCatalogue,
   reviewFireuxDocsCatalogueEntry,
-} from '../../../catalogue/catalogue'
+} from '../../../models/catalogue'
 
 const reviewedEntries = fireuxDocsCatalogue
   .map((entry) => ({

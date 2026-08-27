@@ -1,5 +1,8 @@
 <template>
-  <section class="grid min-h-28 gap-4" aria-label="Active Kitchen">
+  <section
+    class="mx-auto grid min-h-28 w-full max-w-3xl gap-4"
+    aria-label="Active Kitchen"
+  >
     <USkeleton
       v-if="isResolving"
       class="h-28 rounded-xl"
@@ -9,6 +12,9 @@
     <WorkspaceKitchenIndexActive
       v-else-if="!showEmptyState && workspace.selection.kitchen.value"
       :kitchen="workspace.selection.kitchen.value"
+      :show-kitchens-action="showKitchensAction"
+      :kitchens-open="kitchensOpen"
+      @toggle-kitchens="emit('toggle-kitchens')"
     />
 
     <WorkspaceKitchenCreate
@@ -37,6 +43,20 @@
 import { computed, onMounted, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspace'
+
+withDefaults(
+  defineProps<{
+    showKitchensAction?: boolean
+    kitchensOpen?: boolean
+  }>(),
+  {
+    showKitchensAction: false,
+    kitchensOpen: false,
+  }
+)
+const emit = defineEmits<{
+  (event: 'toggle-kitchens'): void
+}>()
 
 const { isAdmin, isDeveloper } = useUser()
 const workspace = useKitchenWorkspace()

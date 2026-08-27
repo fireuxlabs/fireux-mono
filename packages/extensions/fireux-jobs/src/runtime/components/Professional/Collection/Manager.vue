@@ -31,25 +31,23 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading professionals"
       description="Finding professional profiles…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-atomic="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Professionals unavailable"
       description="Professional profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
       aria-atomic="true"
     />
 
@@ -66,7 +64,8 @@
       </template>
     </ProfessionalCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-briefcase-business"
       :title="query ? 'No matching professionals' : 'No professionals yet'"
@@ -78,8 +77,8 @@
     />
 
     <div>
-<DevDebugPanel
-  object-origin="fetched"
+      <DevDebugPanel
+        object-origin="fetched"
         launcher
         include-route
         :title="'Professionals (JSON)'"

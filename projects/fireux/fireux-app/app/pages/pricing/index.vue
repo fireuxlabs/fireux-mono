@@ -1,5 +1,5 @@
 <template>
-  <PublicProductPricingIndex
+  <PricingCatalogue
     :app-name="appName"
     :description="description"
     :tiers="tiers"

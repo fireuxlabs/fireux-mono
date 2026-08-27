@@ -38,9 +38,4 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'User',
   })
-
-  registerComponentsDir(resolver, './runtime/components/molecules', {
-    global: false,
-    pathPrefix: false,
-  })
 }

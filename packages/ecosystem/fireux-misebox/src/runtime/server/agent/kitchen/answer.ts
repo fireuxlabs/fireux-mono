@@ -3,7 +3,7 @@ import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
   extractFireuxAgentTip,
   fireuxAgentTipInstruction,
-} from 'fireux-ai/runtime/agents/agent-tip'
+} from 'fireux-ai/runtime/models/agents/agent-tip'
 import { writeKitchenAgentUsage } from 'fireux-kitchens/runtime/kitchen/server/ai/usage'
 import { kitchenFoodSafetySearchDemand } from 'fireux-kitchens/runtime/kitchen/models/food-safety-search-demand'
 import { kitchenIngredientsSearchDemand } from 'fireux-kitchens/runtime/kitchen/models/ingredients-search-demand'

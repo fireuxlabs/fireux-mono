@@ -2,7 +2,7 @@ import {
   advisoryAgentCapabilities,
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { propertyOperationAgents } from 'fireux-properties/runtime/property/models/operation-agents'
 
 export const buenoHostAgent = defineFireuxAgentNode({

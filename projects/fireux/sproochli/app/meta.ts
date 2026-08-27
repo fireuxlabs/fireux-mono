@@ -14,7 +14,6 @@ type SproochliRoute = {
 
 export const sproochliRoutes: SproochliRoute[] = [
   { label: 'Home', path: '/', kind: 'public' },
-  { label: 'Bike Rental Instructions', path: '/info/bern-bike-rental/rental-instructions', kind: 'public' },
   { label: 'Read-only Menus', path: '/menus', kind: 'public' },
   { label: 'Menu Translation Tool', path: '/tools/menu', kind: 'public' },
 ]
@@ -62,12 +61,12 @@ export const metaContent = defineFireuxMeta({
   },
   cta: {
     primary: {
-      label: 'View local info simulation',
-      to: '/info/bern-bike-rental/rental-instructions',
+      label: 'Get started',
+      to: '/get-started',
     },
     secondary: {
       label: 'View info page',
-      to: '/info/bern-bike-rental/rental-instructions',
+      to: '/get-started',
     },
     workspace: {
       label: 'Sproochli',
@@ -96,7 +95,7 @@ export const metaContent = defineFireuxMeta({
       keywords: ['multilingual QR page generator', 'QR code translation page'],
       cta: {
         label: 'View info page',
-        to: '/info/bern-bike-rental/rental-instructions',
+        to: '/get-started',
       },
     },
     {
@@ -130,7 +129,7 @@ export const metaContent = defineFireuxMeta({
       keywords: ['rental instructions translation', 'bike rental instructions translation'],
       cta: {
         label: 'View rental example',
-        to: '/info/bern-bike-rental/rental-instructions',
+        to: '/get-started',
       },
     },
     {
@@ -190,7 +189,7 @@ export const metaContent = defineFireuxMeta({
       keywords: ['public information translation', 'visitor information translation'],
       cta: {
         label: 'View info page',
-        to: '/info/bern-bike-rental/rental-instructions',
+        to: '/get-started',
       },
     },
     {

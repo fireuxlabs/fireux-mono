@@ -1,8 +1,8 @@
 <template>
-  <section class="grid gap-4" aria-label="Kitchen Workspace">
-    <span v-if="isDev && showCollectionControls" style="color: hotpink">
-      WorkspaceKitchenCollectionHeader
-    </span>
+  <section
+    class="mx-auto grid w-full max-w-3xl gap-4"
+    aria-label="Kitchen Workspace"
+  >
     <div
       v-if="showCollectionControls"
       class="flex flex-wrap items-end justify-between gap-3"
@@ -18,11 +18,19 @@
           {{ description }}
         </p>
       </div>
+
+      <UButton
+        v-if="showUpgradeCell"
+        to="/pricing"
+        label="Upgrade for multiple Kitchens"
+        color="neutral"
+        variant="link"
+        size="sm"
+        trailing-icon="i-lucide-arrow-right"
+        class="px-0"
+      />
     </div>
 
-    <span v-if="isDev && showCollectionControls" style="color: hotpink">
-      WorkspaceKitchenCollectionList
-    </span>
     <div v-if="showCollectionControls" class="grid gap-3 md:grid-cols-2">
       <USkeleton
         v-if="workspace.targets.pending.value"
@@ -66,26 +74,8 @@
         @created="createdKitchen"
       />
 
-      <NuxtLink
-        v-else-if="showUpgradeCell"
-        to="/pricing"
-        class="card card--cell fx-action-surface min-h-28 text-left"
-      >
-        <div class="card__media">
-          <UAvatar icon="i-lucide-building-2" size="md" class="shrink-0" />
-          <div class="card__content card__stack">
-            <div class="card__title">Manage every Kitchen</div>
-            <div class="card__subtitle">
-              Upgrade to Business to switch freely and add Kitchens.
-            </div>
-          </div>
-        </div>
-      </NuxtLink>
     </div>
 
-    <span v-if="isDev && changeRequestOpen" style="color: hotpink">
-      WorkspaceKitchenCollectionChangeRequest
-    </span>
     <UModal
       v-model:open="changeRequestOpen"
       title="Request Kitchen change"
@@ -104,9 +94,6 @@
       </template>
     </UModal>
 
-    <span v-if="isDev && mounted" style="color: hotpink">
-      DevDebugPanel
-    </span>
     <DevDebugPanel
       v-if="mounted"
       title="Kitchen collection debug"
@@ -126,8 +113,15 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import Create from './Create.vue'
 
+const props = withDefaults(
+  defineProps<{ expanded?: boolean; activeComplete?: boolean }>(),
+  {
+    expanded: true,
+    activeComplete: false,
+  }
+)
+
 const { appAccess, appAccessOutcome } = useUser()
-const isDev = import.meta.dev
 const workspace = useKitchenWorkspace()
 const { workspaceTarget } = useKitchenInterface()
 const mounted = ref(false)
@@ -174,8 +168,11 @@ const description = computed(() => {
   if (!kitchenCells.value.length) {
     return 'Search Misebox and Google, or continue with a name.'
   }
-  if (otherKitchenCells.value.length)
-    return 'Choose another Kitchen to work in.'
+  if (otherKitchenCells.value.length) {
+    return canCreateMultiple.value
+      ? 'Choose another Kitchen to work in.'
+      : 'Request a change to make another Kitchen active.'
+  }
   return 'Business supports multiple Kitchens.'
 })
 const showCreateCell = computed(
@@ -190,6 +187,7 @@ const showUpgradeCell = computed(
 const showCollectionControls = computed(
   () =>
     mounted.value &&
+    props.expanded &&
     (workspace.targets.pending.value ||
       workspace.targets.outcome.value === 'error' ||
       otherKitchenCells.value.length > 0 ||
@@ -205,7 +203,13 @@ const debugObjects = computed(() => ({
   kitchens: workspace.targets.kitchens.value,
 }))
 const debugState = computed(() => ({
+  expanded: props.expanded,
+  activeComplete: props.activeComplete,
+  collectionVisible: showCollectionControls.value,
   subscription: subscription.value,
+  kitchenAllowance: canCreateMultiple.value ? 'multiple' : 1,
+  kitchenCount: kitchenCells.value.length,
+  otherKitchenCount: otherKitchenCells.value.length,
   subscriptionOutcome: appAccessOutcome.value,
   targetOutcome: workspace.targets.outcome.value,
   activeKitchenId: workspace.selection.kitchenId.value,

@@ -15,25 +15,23 @@
       </span>
     </div>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading kitchens"
       loading
       icon="i-lucide-loader-circle"
       description="Finding kitchens…"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-atomic="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Kitchens unavailable"
       description="Kitchens could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
       aria-atomic="true"
     >
       <template #actions>
@@ -45,7 +43,7 @@
           @click="refreshCollection"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div v-else-if="cardsFiltered.length" class="kitchen-collection__results">
       <KitchenCollectionList :cards="cardsFiltered" :variant="variant">
@@ -65,11 +63,11 @@
           />
         </template>
       </KitchenCollectionList>
-
     </div>
 
     <div v-else>
-      <CollectionState
+      <MoleculesStateCard
+        surface="collection"
         icon="i-lucide-utensils"
         :title="query ? 'No matching kitchens' : 'No kitchens yet'"
         :description="
@@ -78,7 +76,6 @@
             : 'Kitchens will appear here when they are added.'
         "
       />
-
     </div>
 
     <div>
@@ -140,8 +137,12 @@ const props = withDefaults(
 )
 
 const fetched = useKitchenCollection()
-const { interface: makeCard, pill: makePill, cell: makeCell, surface } =
-  useKitchenInterface()
+const {
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+  surface,
+} = useKitchenInterface()
 const collectionSurface = computed<KitchenCollectionItem[]>(() =>
   fetched.collection.value
     .map((kitchen) => surface({ kitchen, place: kitchen.place }))
@@ -154,8 +155,9 @@ const refreshCollection = async () => {
 const isSettled = computed(
   () => outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(fetched.collection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(
+  fetched.collection
+)
 const title = computed(() => String(props.title || 'Kitchen collection'))
 const description = computed(() =>
   String(
@@ -185,15 +187,14 @@ const collection = computed<KitchenCollectionItem[]>(() =>
   )
 )
 
-const { query, variant, visibleItems, visibleCount } =
-  useCollectionSearch<
-    KitchenCollectionItem,
-    NonNullable<ReturnType<typeof makeCard>>
-  >({
-    items: collection,
-    makeCard: (kitchen: KitchenCollectionItem) => makeCard(kitchen),
-    initialVariant: props.initialVariant,
-  })
+const { query, variant, visibleItems, visibleCount } = useCollectionSearch<
+  KitchenCollectionItem,
+  NonNullable<ReturnType<typeof makeCard>>
+>({
+  items: collection,
+  makeCard: (kitchen: KitchenCollectionItem) => makeCard(kitchen),
+  initialVariant: props.initialVariant,
+})
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
@@ -244,9 +245,15 @@ const countLabel = computed(() =>
 }
 
 @media (max-width: 640px) {
-  .kitchen-collection__toolbar { align-items: stretch; flex-direction: column; }
-  .kitchen-collection__search { width: 100%; }
-  .kitchen-collection__count { margin-left: 0; }
+  .kitchen-collection__toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .kitchen-collection__search {
+    width: 100%;
+  }
+  .kitchen-collection__count {
+    margin-left: 0;
+  }
 }
-
 </style>

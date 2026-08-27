@@ -1,13 +1,13 @@
 <template>
   <UPage class="app-detail">
     <UPageBody>
-      <CollectionState v-if="pending" title="Loading App" description="Finding this App and its relationships…" icon="i-lucide-loader-circle" loading />
-      <CollectionState v-else-if="failed" title="App unavailable" description="This App could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
-      <CollectionState v-else-if="missing" title="App not found" description="No published App matches this address." icon="i-lucide-app-window">
+      <MoleculesStateCard surface="collection" v-if="pending" title="Loading App" description="Finding this App and its relationships…" icon="i-lucide-loader-circle" loading />
+      <MoleculesStateCard surface="collection" v-else-if="failed" state="error" title="App unavailable" description="This App could not be loaded. Please try again." icon="i-lucide-triangle-alert" />
+      <MoleculesStateCard surface="collection" v-else-if="missing" state="missing" title="App not found" description="No published App matches this address." icon="i-lucide-app-window">
         <template #actions>
           <UButton to="/apps" icon="i-lucide-arrow-left" variant="soft">Browse Apps</UButton>
         </template>
-      </CollectionState>
+      </MoleculesStateCard>
 
       <template v-else-if="app">
         <header class="app-detail__hero">

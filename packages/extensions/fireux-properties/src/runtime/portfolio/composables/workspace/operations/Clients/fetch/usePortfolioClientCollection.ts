@@ -5,7 +5,7 @@ import { ClientStorage } from '../../../../../models/client.model.ts'
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from '../../useActivePortfolio'
+} from '../../../useActivePortfolio'
 import type { Client } from '../../../../../models/client.model.ts'
 
 const safeString = (value: unknown) => String(value ?? '').trim()

@@ -35,7 +35,7 @@ export const surfaceItems = [
     description:
       'Give guests one mobile place for check-in, Wi-Fi, house rules, recommendations and checkout information.',
     icon: 'i-lucide-smartphone',
-    to: '/properties/preview-stay/info',
+    to: '/get-started',
     action: 'View guest guide',
     items: [
       'Guest URL',

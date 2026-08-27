@@ -1,5 +1,5 @@
 <template>
-  <PublicPricingPage
+  <PricingPage
     description="Pricing for SEO profile, discovery, and lead products."
   >
     <section class="rounded-md border border-default bg-default p-5">
@@ -23,7 +23,7 @@
         View products
       </UButton>
     </template>
-  </PublicPricingPage>
+  </PricingPage>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 # Runtime package family
 
-Updated: 2026-08-18
+Updated: 2026-08-27
 Ref: e23268507
 Role: map, not canon
 
@@ -80,6 +80,51 @@ Shared rules:
 Package lanes differ in ownership, not in whether module registration is
 explicit and reviewable.
 
+## Dependency roles
+
+The physical Core, Ecosystem, and Extension lanes are workspace organization.
+Dependency role supplies the missing architectural order inside those lanes:
+
+| Role | Job | May depend on |
+| --- | --- | --- |
+| Core foundation | Nuxt integration and product-neutral FireUX foundations | external libraries and a lower Core bridge |
+| Shared domain primitive | One bounded reusable capability or foundational Entity contract | Core and lower primitives |
+| Entity or parent-domain package | One coherent domain owner, including its related Entities and operations | Core, primitives, and named lower domain capabilities |
+| Ecosystem composition | Cross-package composition, ecosystem identity, configuration, and shared product behavior | Core, primitives, and domain packages |
+| Concrete App | Final route, brand, tenant, and product composition | its ecosystem plus explicitly enabled packages |
+
+Dependencies point downward. A dependency on a lower package does not transfer
+ownership: Kitchen may consume Place, Finance, Supplier, or Sproochli
+capabilities only through those packages' named seams. Cross-extension product
+composition that has no domain reason still belongs at the ecosystem or App
+layer.
+
+Package size is a review signal, not a reason to split. A large package remains
+coherent when its Entities, operations, authority, and public surfaces share
+one parent-domain owner. Split only when an independently reusable owner and a
+stable dependency boundary are already visible in current source.
+
+## Natural package-reading path
+
+For an unfamiliar runtime behavior:
+
+```text
+package.json + src/module.ts
+        ↓
+Nuxt entrypoint
+        ↓
+entity-owned implementation
+        ↓
+shared package capability
+        ↓
+Core or external primitive
+```
+
+`package.json` establishes declared dependency authority. `src/module.ts` and
+real `src/config/module/*` hooks establish discovery. Nuxt entrypoints adapt
+framework requests; they do not become the business owner. The entity or
+shared runtime path owns implementation. Guards verify the stable boundary.
+
 ## Registration steps
 
 The shared module-wiring vocabulary is `runtime`, `plugins`, `composables`,
@@ -104,6 +149,9 @@ parity.
 | Runtime surface exists but is not registered                                           | `drift`      | Add the smallest real module hook and a focused smoke route/import check                                    |
 | A reusable extension is added to every App without a universal product contract        | `drift`      | Keep Blog as the sole default; require every other extension, including Products, to be explicitly composed |
 | Declared Entity implementation uses a scoped Nuxt spine                                | `accepted`   | Keep it under `runtime/<entity>/<role>` and protect registration and completed legacy paths through guards  |
+| Extension lane contains both primitives and domain owners                              | `accepted`   | Use the dependency-role matrix to read ownership; do not add another physical lane without a migration need |
+| A package's primary dependency role cannot be explained from current source             | `to-confirm` | Resolve its owner and consumers before adding a package split, dependency, or permanent role guard          |
+| A large package owns several related Entities and operations                            | `to-confirm` | Test parent-domain cohesion; size alone is not evidence for either retaining or splitting the boundary      |
 
 ## Alignment roadmap
 
@@ -114,11 +162,15 @@ parity.
 - Use the implemented entity-scoped ownership in `runtime-filesystem.md`; do
   not add a second path or infer a new Entity from an unresolved record family.
 - Let package manifests declare actual dependency ownership.
+- Keep the repository dependency role and the package's runtime ownership
+  readable from its manifest, module entry, and first-level runtime shape.
 
 ### Next
 
 - Remove remaining no-op or scaffold-only config helpers when encountered.
 - Compare sibling packages by owned runtime surfaces and registration effects.
+- Review packages whose first-level runtime shape mixes unexplained feature,
+  technical, and owner names; classify each root before moving source.
 - Keep project-app overrides small and explicit.
 
 ### Later

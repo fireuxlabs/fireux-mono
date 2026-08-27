@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 Ref: 74e1e9eef
 Role: map, not canon
 
@@ -52,6 +52,12 @@ Create flow. Kitchen is a domain-database Entity with Live and Demo sources,
 trusted onboarding, food-service capabilities, and optional same-ID Place identity. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
+
+Their Index introductions also prove the shared `WorkspaceHero` structural
+seam. Core owns its Nuxt UI page-header anatomy; separately named
+`WorkspaceProjectHero` and `WorkspaceKitchenHero` siblings own their domain
+copy, actions, and state. The shared component does not receive Entity names,
+subscription rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns

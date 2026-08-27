@@ -1,6 +1,6 @@
 # FireUX Mono concept map
 
-Updated: 2026-08-18
+Updated: 2026-08-27
 Ref: e23268507
 Role: map, not canon
 
@@ -51,6 +51,63 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - `figma-export`: optional ignored local directory or symlink, never tracked.
 - `mirror`: active local comparison workspace generated from explicit file
   lists, Git changes, or model inventories; generated links are not source.
+
+## Repository ownership spine
+
+Read the workspace in one dependency direction:
+
+```text
+Core foundations
+    ↓
+Shared domain primitives
+    ↓
+Entity and parent-domain packages
+    ↓
+Ecosystem composition
+    ↓
+Concrete Apps
+```
+
+This is the repository comprehension spine, not a replacement for the three
+package lanes. `packages/extensions` contains both shared domain primitives
+and entity/parent-domain packages; the owning package and its dependencies
+determine its position. A primitive may still own an Entity: Place is a
+canonical Entity and also supplies lower Place capabilities to several domain
+packages.
+
+The current package classification is:
+
+| Repository role | Current packages |
+| --- | --- |
+| Core foundations | `fireux-core`, `fireux-docs`, `fireux-nuxtfire` |
+| Shared domain primitives | `fireux-ai`, `fireux-demo`, `fireux-finance`, `fireux-go-qr`, `fireux-places`, `fireux-sproochli`, `fireux-translation` |
+| Entity and parent-domain packages | `fireux-blogs`, `fireux-companies`, `fireux-compliance`, `fireux-documents`, `fireux-jobs`, `fireux-kitchens`, `fireux-marketplace`, `fireux-products`, `fireux-properties`, `fireux-reservations`, `fireux-suppliers`, `fireux-tasks` |
+| Ecosystem composition | `fireux-bringli`, `fireux-buenohost`, `fireux-fireux`, `fireux-granite`, `fireux-misebox`, `fireux-sharer`, `fireux-slap`, `fireux-werkbox` |
+| Concrete Apps | packages under `projects/<ecosystem>/<app>`; `projects/templates/fireux-template` is the guarded project template |
+
+Package role describes the primary dependency and ownership job. It does not
+authorize an upper layer to absorb a lower owner's implementation, and it
+does not require a package split merely because one package owns multiple
+related Entities.
+
+## Cold-reading path
+
+A human or agent entering an unfamiliar scope follows this bounded path:
+
+1. Read `AGENTS.md`, `docs/ai/gpt-context.md`, and the smallest applicable
+   scoped context.
+2. Read the owning package's `package.json` and `src/module.ts` to establish
+   dependencies and Nuxt registration.
+3. Start from the relevant Nuxt entrypoint under `pages`, `layouts`,
+   `middleware`, `plugins`, or `server/api`.
+4. Follow that adapter into `runtime/<entity>/<technical-role>` when one Entity
+   owns the behavior, or the root technical spine when it is genuinely shared.
+5. Follow dependencies only downward through the repository ownership spine.
+6. Verify the claim against the nearest working sibling and relevant guard.
+
+If that path requires searching unrelated component, composable, or server
+trees to discover the owner, classify the placement as drift or migration;
+do not normalize the ambiguity in documentation.
 
 ## Working notes
 

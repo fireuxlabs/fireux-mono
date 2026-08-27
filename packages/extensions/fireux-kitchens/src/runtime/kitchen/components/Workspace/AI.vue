@@ -32,7 +32,6 @@
       :starters="resolvedStarters"
       :ai-tools="props.aiTools"
       :allow-file="allowFile"
-      :command-mode="commandMode"
       :aria-label="composerAriaLabel"
       :submitting="submitting"
       @submit="sendPrompt"

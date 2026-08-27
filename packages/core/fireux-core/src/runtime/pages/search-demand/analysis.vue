@@ -14,15 +14,15 @@
     <UPageBody>
       <SearchDemandStageNav current="analysis" />
 
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-if="pending"
         title="Loading demand map"
         description="Reading this App’s demand analysis…"
         icon="i-lucide-loader-circle"
         loading
       />
-      <CollectionState
-        v-else-if="error || !demand"
+      <MoleculesStateCard surface="collection"
+        v-else-if="error || !demand" :state="error ? 'error' : 'empty'"
         title="Demand map unavailable"
         description="This App does not yet have enough analysed search evidence."
         icon="i-lucide-map"

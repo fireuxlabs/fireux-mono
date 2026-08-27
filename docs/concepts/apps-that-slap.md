@@ -53,7 +53,7 @@ project, database, or project tree.
 
 ## Reusable presentation boundary
 
-`fireux-slap/runtime/presentation/apps-that-slap` exports a presentation-only
+`fireux-slap/runtime/models/presentation/apps-that-slap` exports a presentation-only
 contract with the grammar:
 
 `Page -> Scenes -> optional Background / required Content / optional Foreground -> Elements`
@@ -70,7 +70,7 @@ seam.
 - `packages/ecosystem/fireux-slap/src/module.ts`
 - `packages/ecosystem/fireux-slap/src/config/firebase/ecosystem.config.ts`
 - `packages/ecosystem/fireux-slap/src/config/module/runtime-config.ts`
-- `packages/ecosystem/fireux-slap/src/runtime/presentation/apps-that-slap.ts`
+- `packages/ecosystem/fireux-slap/src/runtime/models/presentation/apps-that-slap.ts`
 - `scripts/_lib/app-registry.mjs`
 - `scripts/guards/ecosystem.mjs`
 - `scripts/guards/projects.mjs`

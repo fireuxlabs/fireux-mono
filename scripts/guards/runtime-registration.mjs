@@ -95,6 +95,12 @@ function findEmptyConfigurationHooks(repoRoot) {
 }
 
 function readRegistrationSource(packageRoot) {
+  return registrationSourceFiles(packageRoot)
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n')
+}
+
+function registrationSourceFiles(packageRoot) {
   const files = [path.join(packageRoot, 'src', 'module.ts')]
   const configRoot = path.join(packageRoot, 'src', 'config', 'module')
 
@@ -106,16 +112,44 @@ function readRegistrationSource(packageRoot) {
     }
   }
 
-  return files
-    .filter((file) => existsSync(file))
-    .map((file) => readFileSync(file, 'utf8'))
-    .join('\n')
+  return files.filter((file) => existsSync(file))
+}
+
+function findMissingRegistrationTargets(repoRoot) {
+  const violations = []
+  const registrationPathPattern =
+    /['"](\.\/runtime\/(?:[^'"]+\/)?(?:components|composables))['"]/g
+
+  for (const family of PACKAGE_FAMILIES) {
+    const familyRoot = path.join(repoRoot, 'packages', family)
+    for (const packageName of childDirectories(familyRoot)) {
+      const packageRoot = path.join(familyRoot, packageName)
+      for (const sourcePath of registrationSourceFiles(packageRoot)) {
+        const source = readFileSync(sourcePath, 'utf8')
+        for (const match of source.matchAll(registrationPathPattern)) {
+          const relativeTarget = match[1]
+          const target = path.resolve(
+            path.dirname(path.join(packageRoot, 'src', 'module.ts')),
+            relativeTarget
+          )
+          if (existsSync(target)) continue
+          violations.push({
+            sourcePath: path.relative(repoRoot, sourcePath),
+            targetPath: path.relative(repoRoot, target),
+          })
+        }
+      }
+    }
+  }
+
+  return violations
 }
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const violations = []
   const emptyHooks = findEmptyConfigurationHooks(repoRoot)
+  const missingRegistrationTargets = findMissingRegistrationTargets(repoRoot)
 
   const appBaselinePath = path.join(
     repoRoot,
@@ -157,6 +191,50 @@ export async function run(ctx) {
         '- Remove the empty hook, its module import, and its configureFireuxModule step.',
         '- Add a hook only when it performs real Nuxt runtime registration.',
         '- Keep models, types, info helpers, and utilities as explicit imports.',
+      ].join('\n')
+    )
+  }
+
+  if (missingRegistrationTargets.length) {
+    throw new Error(
+      [
+        '[guard] ❌ Runtime registration advertises missing directories:',
+        ...missingRegistrationTargets.map(
+          ({ sourcePath, targetPath }) =>
+            `  - ${sourcePath}: ${targetPath}`
+        ),
+        '',
+        '[guard] Fix:',
+        '- Remove registration for an absent role after its migration completes.',
+        '- Add a directory only when it owns authored runtime components or composables.',
+        '- Do not rely on registration helpers silently skipping missing paths.',
+      ].join('\n')
+    )
+  }
+
+  const coreComponentsPath = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/config/module/components-config.ts'
+  )
+  const coreComponentsSource = readFileSync(coreComponentsPath, 'utf8')
+  const coreRuntimeComponentsRegistrations = [
+    ...coreComponentsSource.matchAll(
+      /registerComponentsDir\(resolver,\s*['"]\.\/runtime\/components(?:\/[^'"]+)?['"]/g
+    ),
+  ]
+
+  if (
+    coreRuntimeComponentsRegistrations.length !== 1 ||
+    !coreComponentsSource.includes(
+      "registerComponentsDir(resolver, './runtime/components',"
+    )
+  ) {
+    throw new Error(
+      [
+        '[guard] ❌ Core shared component registration overlaps.',
+        '  - Register ./runtime/components exactly once with path prefixes.',
+        '  - Nested shared families such as molecules inherit that registration and keep one canonical auto-import name.',
+        '  - Do not flatten or alias a nested component subtree through a second registration.',
       ].join('\n')
     )
   }

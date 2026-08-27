@@ -84,7 +84,6 @@ export default defineNuxtModule<ModuleOptions>({
       plugins: configurePlugins,
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
-          './runtime/composables',
           './runtime/ingredient/composables',
           './runtime/kitchen/composables',
           './runtime/menu/composables',

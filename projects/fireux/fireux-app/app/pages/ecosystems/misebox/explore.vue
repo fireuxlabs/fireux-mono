@@ -1,142 +1,153 @@
 <template>
-  <PublicSimplePage
-    v-if="ecosystem"
-    :title="miseboxEcosystemProfile.title"
-    :description="miseboxEcosystemProfile.description"
-    :eyebrow="miseboxEcosystemProfile.eyebrow"
-    back-to="/ecosystems"
-    back-label="Ecosystems"
-  >
-    <section class="grid gap-4">
-      <div class="grid gap-1">
-        <h2 class="m-0 text-xl font-semibold text-highlighted">
-          FireUX and Misebox
-        </h2>
-        <p class="m-0 text-sm leading-6 text-muted">
-          FireUX is the parent platform. Misebox is the hospitality Ecosystem
-          that owns its products, operations, and Apps.
-        </p>
-      </div>
-
-      <div class="grid gap-4 md:grid-cols-2">
-        <UPageCard
-          v-for="item in miseboxEcosystemProfile.relationship"
-          :key="item.title"
-          :title="item.title"
-          :description="item.description"
-          :icon="item.icon"
-          variant="subtle"
+  <main v-if="ecosystem" class="min-h-screen bg-default text-default">
+    <UContainer class="py-8 sm:py-10">
+      <UPage class="mx-auto max-w-2xl">
+        <UButton to="/ecosystems" variant="link" class="px-0">
+          Ecosystems
+        </UButton>
+        <UPageHeader
+          :title="miseboxEcosystemProfile.title"
+          :description="miseboxEcosystemProfile.description"
+          :headline="miseboxEcosystemProfile.eyebrow"
         />
-      </div>
-    </section>
-
-    <section class="grid gap-4">
-      <div class="grid gap-1">
-        <h2 class="m-0 text-xl font-semibold text-highlighted">
-          Explore Misebox
-        </h2>
-        <p class="m-0 text-sm leading-6 text-muted">
-          Continue to the canonical Misebox pages for hospitality products and
-          published records.
-        </p>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2">
-        <UPageCard
-          v-for="pathway in miseboxEcosystemProfile.pathways"
-          :key="pathway.to"
-          :title="pathway.title"
-          :description="pathway.description"
-          :icon="pathway.icon"
-          :to="pathway.to"
-          target="_blank"
-          variant="subtle"
-        />
-      </div>
-    </section>
-
-    <section v-if="featuredSolutions.length" class="grid gap-4">
-      <div class="grid gap-1">
-        <h2 class="m-0 text-xl font-semibold text-highlighted">
-          Released Misebox solutions
-        </h2>
-        <p class="m-0 text-sm leading-6 text-muted">
-          These pages describe released jobs using the current Misebox Solution
-          catalogue. Planned work is not presented as available.
-        </p>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2">
-        <UPageCard
-          v-for="solution in featuredSolutions"
-          :key="solution.slug"
-          :title="solution.title"
-          :description="solution.description"
-          :icon="solution.icon"
-          :to="`https://misebox.app/solutions/${solution.slug}`"
-          target="_blank"
-          variant="subtle"
-        />
-      </div>
-    </section>
-
-    <section v-if="publishedApps.length" class="grid gap-4">
-      <div class="grid gap-1">
-        <h2 class="m-0 text-xl font-semibold text-highlighted">
-          Published Misebox Apps
-        </h2>
-        <p class="m-0 text-sm leading-6 text-muted">
-          Current Apps connected to Misebox in the bounded FireUX public
-          directory. App-owned descriptions appear when their owners publish
-          them.
-        </p>
-      </div>
-
-      <div class="grid gap-4 sm:grid-cols-2">
-        <UCard v-for="app in publishedApps" :key="app.id" variant="subtle">
-          <div class="flex items-start gap-4">
-            <img
-              v-if="app.media.logo_url"
-              :src="app.media.logo_url"
-              :alt="`${app.name} logo`"
-              width="48"
-              height="48"
-              loading="lazy"
-              class="size-12 shrink-0 rounded-lg object-contain"
-            />
-            <div class="min-w-0 flex-1 space-y-2">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="m-0 font-semibold text-highlighted">
-                  <NuxtLink :to="app.detail_url" class="hover:underline">
-                    {{ app.name }}
-                  </NuxtLink>
-                </h3>
-                <UBadge color="neutral" variant="soft" size="sm">
-                  {{ appRoleLabel(app.role) }}
-                </UBadge>
-              </div>
+        <UPageBody class="space-y-4">
+          <section class="grid gap-4">
+            <div class="grid gap-1">
+              <h2 class="m-0 text-xl font-semibold text-highlighted">
+                FireUX and Misebox
+              </h2>
               <p class="m-0 text-sm leading-6 text-muted">
-                {{ appSummary(app) }}
+                FireUX is the parent platform. Misebox is the hospitality
+                Ecosystem that owns its products, operations, and Apps.
               </p>
             </div>
-          </div>
-        </UCard>
-      </div>
-    </section>
 
-    <template #actions>
-      <UButton
-        :to="miseboxEcosystemProfile.websiteUrl"
-        target="_blank"
-        icon="i-lucide-external-link"
-      >
-        Visit Misebox
-      </UButton>
-      <UButton to="/ecosystems" color="neutral" variant="soft">
-        Browse Ecosystems
-      </UButton>
-    </template>
-  </PublicSimplePage>
+            <div class="grid gap-4 md:grid-cols-2">
+              <UPageCard
+                v-for="item in miseboxEcosystemProfile.relationship"
+                :key="item.title"
+                :title="item.title"
+                :description="item.description"
+                :icon="item.icon"
+                variant="subtle"
+              />
+            </div>
+          </section>
+
+          <section class="grid gap-4">
+            <div class="grid gap-1">
+              <h2 class="m-0 text-xl font-semibold text-highlighted">
+                Explore Misebox
+              </h2>
+              <p class="m-0 text-sm leading-6 text-muted">
+                Continue to the canonical Misebox pages for hospitality products
+                and published records.
+              </p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <UPageCard
+                v-for="pathway in miseboxEcosystemProfile.pathways"
+                :key="pathway.to"
+                :title="pathway.title"
+                :description="pathway.description"
+                :icon="pathway.icon"
+                :to="pathway.to"
+                target="_blank"
+                variant="subtle"
+              />
+            </div>
+          </section>
+
+          <section v-if="featuredSolutions.length" class="grid gap-4">
+            <div class="grid gap-1">
+              <h2 class="m-0 text-xl font-semibold text-highlighted">
+                Released Misebox solutions
+              </h2>
+              <p class="m-0 text-sm leading-6 text-muted">
+                These pages describe released jobs using the current Misebox
+                Solution catalogue. Planned work is not presented as available.
+              </p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <UPageCard
+                v-for="solution in featuredSolutions"
+                :key="solution.slug"
+                :title="solution.title"
+                :description="solution.description"
+                :icon="solution.icon"
+                :to="`https://misebox.app/solutions/${solution.slug}`"
+                target="_blank"
+                variant="subtle"
+              />
+            </div>
+          </section>
+
+          <section v-if="publishedApps.length" class="grid gap-4">
+            <div class="grid gap-1">
+              <h2 class="m-0 text-xl font-semibold text-highlighted">
+                Published Misebox Apps
+              </h2>
+              <p class="m-0 text-sm leading-6 text-muted">
+                Current Apps connected to Misebox in the bounded FireUX public
+                directory. App-owned descriptions appear when their owners
+                publish them.
+              </p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <UCard
+                v-for="app in publishedApps"
+                :key="app.id"
+                variant="subtle"
+              >
+                <div class="flex items-start gap-4">
+                  <img
+                    v-if="app.media.logo_url"
+                    :src="app.media.logo_url"
+                    :alt="`${app.name} logo`"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                    class="size-12 shrink-0 rounded-lg object-contain"
+                  />
+                  <div class="min-w-0 flex-1 space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="m-0 font-semibold text-highlighted">
+                        <NuxtLink :to="app.detail_url" class="hover:underline">
+                          {{ app.name }}
+                        </NuxtLink>
+                      </h3>
+                      <UBadge color="neutral" variant="soft" size="sm">
+                        {{ appRoleLabel(app.role) }}
+                      </UBadge>
+                    </div>
+                    <p class="m-0 text-sm leading-6 text-muted">
+                      {{ appSummary(app) }}
+                    </p>
+                  </div>
+                </div>
+              </UCard>
+            </div>
+          </section>
+
+          <div class="flex flex-wrap gap-3">
+            <UButton
+              :to="miseboxEcosystemProfile.websiteUrl"
+              target="_blank"
+              icon="i-lucide-external-link"
+            >
+              Visit Misebox
+            </UButton>
+            <UButton to="/ecosystems" color="neutral" variant="soft">
+              Browse Ecosystems
+            </UButton>
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+  </main>
 
   <UContainer v-else class="py-12">
     <UAlert
@@ -169,7 +180,10 @@ import {
   buildPublicPageJsonLd,
   useSeo,
 } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import type { EcosystemDirectoryEntry, PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
+import type {
+  EcosystemDirectoryEntry,
+  PlatformDirectoryResponse,
+} from 'fireux-core/runtime/models/utils/directory'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { miseboxEcosystemProfile } from 'fireux-misebox/runtime/content/ecosystem-profile'

@@ -3,7 +3,7 @@ import {
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
   findFireuxOperationAgent,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 
 export const miseboxAgent = defineFireuxAgentNode({

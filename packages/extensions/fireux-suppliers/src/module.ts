@@ -57,7 +57,6 @@ export default defineNuxtModule<FireuxSuppliersModuleOptions>({
     configureFireuxModule(resolver, nuxt, {
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
-          './runtime/composables',
           './runtime/supplier/composables',
         ]),
       components: configureComponents,

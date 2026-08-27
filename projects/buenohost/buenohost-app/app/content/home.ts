@@ -21,7 +21,7 @@ export type IntegrationCard = {
   appKey?: IntegrationAppKey
 }
 
-export const previewInfoPath = '/properties/preview-stay/info'
+export const previewInfoPath = '/get-started'
 
 export const stickerTopics = [
   'Welcome',

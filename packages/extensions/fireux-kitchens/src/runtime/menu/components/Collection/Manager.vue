@@ -1,9 +1,6 @@
 <template>
   <section class="entity-collection menu-collection">
-    <CollectionHeader
-      :title="props.title"
-      :description="props.description"
-    >
+    <CollectionHeader :title="props.title" :description="props.description">
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -36,25 +33,23 @@
 
     <MenuCollectionPicks v-model="selectedPicks" />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="isLoading"
       title="Loading menus"
       description="Fetching the latest published menus…"
       icon="i-lucide-loader-2"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-atomic="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome.kind === 'unavailable'"
       title="Menus unavailable"
       description="Published menus could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
       aria-atomic="true"
     >
       <template #actions>
@@ -66,7 +61,7 @@
           @click="index.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div
       v-else-if="visibleItems.length"
@@ -94,7 +89,8 @@
       </template>
     </div>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-book-open-check"
       :title="hasActiveFilters ? 'No matching menus' : 'No menus yet'"

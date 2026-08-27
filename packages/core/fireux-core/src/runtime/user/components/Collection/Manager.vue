@@ -31,25 +31,23 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading users"
       description="Finding users…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-atomic="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Users unavailable"
       description="Users are not available right now."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
       aria-atomic="true"
     >
       <template #actions>
@@ -61,7 +59,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <UserCollectionList
       v-else-if="cardsFiltered.length"
@@ -84,7 +82,8 @@
       </template>
     </UserCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-users-round"
       :title="query ? 'No matching users' : 'No users yet'"

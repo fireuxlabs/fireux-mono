@@ -34,24 +34,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading portfolios"
       description="Finding portfolios…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Portfolios unavailable"
       description="Portfolios could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     />
 
     <PortfolioCollectionList
@@ -85,7 +83,8 @@
       />
     </div>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-building-2"
       :title="query ? 'No matching portfolios' : 'No portfolios yet'"

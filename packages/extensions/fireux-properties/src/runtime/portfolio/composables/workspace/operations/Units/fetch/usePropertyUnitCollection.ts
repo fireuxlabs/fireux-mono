@@ -4,7 +4,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import {
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from '../../useActivePortfolio'
+} from '../../../useActivePortfolio'
 import {
   UnitStorage,
   type Unit,

@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: name the polished default world Misebox Restaurant.
 // Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add one stable fictional pizzeria identity without changing existing Demo ownership.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import type { KitchenDemoIdentity } from './types'
 
 export const deanosKitchenDemoIdentity = {

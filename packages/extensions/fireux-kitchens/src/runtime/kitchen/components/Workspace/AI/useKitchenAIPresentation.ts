@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { FireuxOperationAgentDefinition } from 'fireux-ai/runtime/agents/operation-agent'
+import type { FireuxOperationAgentDefinition } from 'fireux-ai/runtime/models/agents/operation-agent'
 import type { KitchenAIStarter } from './types'
 
 export type KitchenAIPresentationContext = {

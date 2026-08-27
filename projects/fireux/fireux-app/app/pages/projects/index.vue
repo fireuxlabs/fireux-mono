@@ -56,24 +56,20 @@
         description="See the Apps connected to each Project."
       />
 
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-if="pending"
         title="Loading Projects"
         description="Finding Projects…"
         icon="i-lucide-loader-circle"
         loading
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
       />
 
-      <CollectionState
-        v-else-if="error"
+      <MoleculesStateCard surface="collection"
+        v-else-if="error" state="error"
         title="Projects unavailable"
         description="Projects could not be loaded. Please try again."
         icon="i-lucide-triangle-alert"
-        role="alert"
-        aria-live="assertive"
+        state="error"
       >
         <template #actions>
           <UButton
@@ -84,7 +80,7 @@
             @click="refresh"
           />
         </template>
-      </CollectionState>
+      </MoleculesStateCard>
 
       <div
         v-else-if="projects.length"
@@ -159,7 +155,7 @@
         </article>
       </div>
 
-      <CollectionState
+      <MoleculesStateCard surface="collection"
         v-else
         icon="i-lucide-folders"
         title="No Projects yet"

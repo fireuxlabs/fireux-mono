@@ -34,24 +34,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading properties"
       description="Finding properties…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Properties unavailable"
       description="Properties could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -62,7 +60,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div v-else-if="cardsFiltered.length" class="grid gap-4">
       <PropertyCollectionList :cards="cardsFiltered" :variant="variant">
@@ -101,7 +99,8 @@
     </div>
 
     <div v-else class="grid gap-4">
-      <CollectionState
+      <MoleculesStateCard
+        surface="collection"
         icon="i-lucide-house"
         :title="query ? 'No matching properties' : 'No properties yet'"
         :description="

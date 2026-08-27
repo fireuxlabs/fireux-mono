@@ -1,7 +1,7 @@
 import {
   composeFireuxAgentInstruction,
   fireuxAgentBaseInstruction,
-} from 'fireux-ai/runtime/agents/instructions'
+} from 'fireux-ai/runtime/models/agents/instructions'
 import type { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import { kitchenOperationAgents } from 'fireux-kitchens/runtime/kitchen/models/operation-agents'
 import type {

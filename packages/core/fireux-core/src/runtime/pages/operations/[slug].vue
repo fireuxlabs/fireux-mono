@@ -1,27 +1,38 @@
 <!-- Concurrent edit — 2026-07-21 13:12 CEST — Operation detail surfaces: add catalogue-backed factual pages. -->
 <!-- Concurrent edit — 2026-07-21 13:16 CEST — Project Operation copy: use the authored description instead of generating an awkward title. -->
 <template>
-  <PublicSimplePage
-    v-if="operation"
-    :title="operation.headline || operation.title"
-    :description="operation.description"
-    :eyebrow="operation.workspace.name"
-    :back-to="`/operations#${operation.workspace.id}`"
-    back-label="Operations"
-  >
-    <OperationGuidingLiterature :operation="operation" />
+  <main v-if="operation" class="min-h-screen bg-default text-default">
+    <UContainer class="py-8 sm:py-10">
+      <UPage class="mx-auto max-w-2xl">
+        <UButton
+          :to="`/operations#${operation.workspace.id}`"
+          variant="link"
+          class="px-0"
+        >
+          Operations
+        </UButton>
+        <UPageHeader
+          :title="operation.headline || operation.title"
+          :description="operation.description"
+          :headline="operation.workspace.name"
+        />
+        <UPageBody class="space-y-4">
+          <OperationGuidingLiterature :operation="operation" />
 
-    <template #actions>
-      <UButton
-        :to="operation.to"
-        :icon="operation.icon"
-        color="primary"
-        trailing-icon="i-lucide-arrow-right"
-      >
-        Open {{ operation.title }}
-      </UButton>
-    </template>
-  </PublicSimplePage>
+          <div class="flex flex-wrap gap-3">
+            <UButton
+              :to="operation.to"
+              :icon="operation.icon"
+              color="primary"
+              trailing-icon="i-lucide-arrow-right"
+            >
+              Open {{ operation.title }}
+            </UButton>
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+  </main>
 </template>
 
 <script setup lang="ts">

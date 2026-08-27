@@ -4,7 +4,7 @@ import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from '../../useActivePortfolio'
+} from '../../../useActivePortfolio'
 import {
   ClientStorage,
   type Client,

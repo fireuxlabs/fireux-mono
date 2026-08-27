@@ -1,5 +1,5 @@
 <template>
-  <PublicPricingPage
+  <PricingPage
     description="Create your first QR doc free."
   >
     <section class="rounded-md border border-default bg-default p-5">
@@ -26,7 +26,7 @@
         Create your first QR doc free
       </UButton>
     </template>
-  </PublicPricingPage>
+  </PricingPage>
 </template>
 
 <script setup lang="ts">

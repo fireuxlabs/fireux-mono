@@ -34,24 +34,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading products"
       description="Finding products…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Products unavailable"
       description="Products could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     />
 
     <ProductCollectionList
@@ -67,7 +65,8 @@
       </template>
     </ProductCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-box"
       :title="query ? 'No products match your search' : 'No products yet'"
@@ -130,9 +129,7 @@ const props = withDefaults(
 )
 
 const fetched = useProductCollection()
-const collection = computed<Product[]>(
-  () => fetched.products.value ?? []
-)
+const collection = computed<Product[]>(() => fetched.products.value ?? [])
 const outcome = computed(() => fetched.outcome.value)
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)
@@ -160,10 +157,7 @@ const {
 } = useProductInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<
-    Product,
-    NonNullable<ReturnType<typeof makeCard>>
-  >({
+  useCollectionSearch<Product, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (product: Product) => makeCard(product),
     initialVariant: props.initialVariant,

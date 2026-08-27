@@ -34,24 +34,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading suppliers"
       description="Finding suppliers…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Suppliers unavailable"
       description="Suppliers could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     />
 
     <SupplierCollectionList
@@ -75,7 +73,8 @@
       </template>
     </SupplierCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-truck"
       :title="query ? 'No matching suppliers' : 'No suppliers yet'"
@@ -94,7 +93,10 @@
         :title="devJsonTitle"
         :context="devJsonContext"
         :objects="devJsonData"
-        :derived="{ companies: fetched.companies.value, places: fetched.places.value }"
+        :derived="{
+          companies: fetched.companies.value,
+          places: fetched.places.value,
+        }"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"

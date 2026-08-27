@@ -43,7 +43,6 @@ export default defineNuxtModule<ModuleOptions>({
         ),
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
-          './runtime/composables',
           './runtime/portfolio/composables',
         ]),
       pages: configurePages,

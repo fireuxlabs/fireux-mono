@@ -6,7 +6,18 @@
     :changeable="false"
     :sparse="draft"
     icon="i-lucide-chef-hat"
-  />
+  >
+    <template v-if="showKitchensAction" #actions>
+      <UButton
+        :label="kitchensOpen ? 'Hide Kitchens' : 'Kitchens'"
+        :icon="kitchensOpen ? 'i-lucide-chevron-up' : 'i-lucide-repeat-2'"
+        color="neutral"
+        variant="soft"
+        size="sm"
+        @click="emit('toggle-kitchens')"
+      />
+    </template>
+  </WorkspaceActiveEntity>
 </template>
 
 <script setup lang="ts">
@@ -16,9 +27,21 @@ import type { KitchenSurface } from '../../../composables/firestore/utils/view/u
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 
 const props = withDefaults(
-  defineProps<{ kitchen: KitchenSurface; draft?: boolean }>(),
-  { draft: false }
+  defineProps<{
+    kitchen: KitchenSurface
+    draft?: boolean
+    showKitchensAction?: boolean
+    kitchensOpen?: boolean
+  }>(),
+  {
+    draft: false,
+    showKitchensAction: false,
+    kitchensOpen: false,
+  }
 )
+const emit = defineEmits<{
+  (event: 'toggle-kitchens'): void
+}>()
 const { workspaceTarget } = useKitchenInterface()
 
 const entity = computed<WorkspaceEntityCard>(() => {

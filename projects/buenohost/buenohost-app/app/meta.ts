@@ -52,8 +52,8 @@ export const buenoHostLanguage = {
       to: '/workspace/property',
     },
     secondary: {
-      label: 'View local preview',
-      to: '/properties/preview-stay/info',
+      label: 'Get started',
+      to: '/get-started',
     },
     workspace: {
       label: 'Open host workspace',

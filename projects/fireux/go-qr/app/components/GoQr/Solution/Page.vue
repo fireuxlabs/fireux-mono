@@ -1,18 +1,26 @@
 <template>
-  <PublicSimplePage
-    :title="solution.title"
-    :description="solution.description"
-    back-to="/solutions"
-    back-label="Solutions"
-  >
-    <div class="space-y-8">
-      <slot />
-      <GoQrSolutionInstructions :items="literature.instructions" />
-      <GoQrSolutionIntegrations :integrations="literature.integrations" />
-      <GoQrSolutionUpgrades :items="literature.upgrades" />
-      <GoQrSolutionDev :dev="literature.dev" />
-    </div>
-  </PublicSimplePage>
+  <main class="min-h-screen bg-default text-default">
+    <UContainer class="py-8 sm:py-10">
+      <UPage class="mx-auto max-w-2xl">
+        <UButton to="/solutions" variant="link" class="px-0">
+          Solutions
+        </UButton>
+        <UPageHeader
+          :title="solution.title"
+          :description="solution.description"
+        />
+        <UPageBody class="space-y-4">
+          <div class="space-y-8">
+            <slot />
+            <GoQrSolutionInstructions :items="literature.instructions" />
+            <GoQrSolutionIntegrations :integrations="literature.integrations" />
+            <GoQrSolutionUpgrades :items="literature.upgrades" />
+            <GoQrSolutionDev :dev="literature.dev" />
+          </div>
+        </UPageBody>
+      </UPage>
+    </UContainer>
+  </main>
 </template>
 
 <script setup lang="ts">

@@ -3,7 +3,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { serverKitchenAiUsageTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { actualMenuAiCost } from '../../../menu/server/ai/cost.ts'
-import type { FireuxAgentTip } from 'fireux-ai/runtime/agents/agent-tip'
+import type { FireuxAgentTip } from 'fireux-ai/runtime/models/agents/agent-tip'
 
 export async function writeKitchenAgentUsage(input: {
   appId: string

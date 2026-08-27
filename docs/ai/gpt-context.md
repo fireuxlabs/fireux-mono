@@ -63,7 +63,13 @@ Marketplace Store, Product, Kitchen, Menu, Ingredient, Supplier, Portfolio,
 and Property families use that scoped runtime now. Their completed legacy
 paths are rejected by `scripts/guards/runtime-ownership.mjs`, and scoped Nuxt
 discovery is checked by `scripts/guards/runtime-registration.mjs`. Confirmed
-parent-owned records and operations live beneath their parent Entity scope;
+parent-owned records and operations live beneath their parent Entity scope. An
+Entity scope requires canonical identity and authority plus coherent behaviour
+across technical roles, not merely many files or a package name. Cross-package
+capability contributions may extend the owner's Entity root but do not gain
+competing Entity authority. Portfolio is the guarded example:
+`fireux-properties` owns Portfolio, while Compliance, Documents, and Tasks add
+only Portfolio-scoped operations and child-record models. Other
 to-confirm concepts remain on their owning package spine until their model
 decision is explicit. Do not invent an Entity root merely to make the tree look
 symmetrical.
@@ -422,7 +428,7 @@ requirement, report the exact missing seam before broad edits.
   by being catalogued. Cross-domain families such as Identity share
   capabilities while retaining named domain agents, authority, and context
   owners.
-  Start at `fireux-ai/runtime/agents/operation-agent`, then the owning Entity's
+  Start at `fireux-ai/runtime/models/agents/operation-agent`, then the owning Entity's
   `runtime/<entity>/models/operation-agents` catalogue.
 - Shared framework-neutral primitives are pure definitions under Core
   `runtime/tools/<scope>`; low-level utilities remain in their technical

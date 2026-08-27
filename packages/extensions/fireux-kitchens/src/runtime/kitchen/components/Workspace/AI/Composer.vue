@@ -33,7 +33,6 @@
 
     <UChatPrompt
       :model-value="modelValue"
-      class="kitchen-ai-welcome__composer"
       :placeholder="placeholder"
       :loading="submitting"
       :aria-label="ariaLabel"
@@ -67,28 +66,24 @@
             />
           </div>
 
-          <div class="flex items-center gap-2">
-            <UBadge color="neutral" variant="soft" size="sm">
-              {{ commandMode ? 'Commands' : 'KitchenAI' }}
-            </UBadge>
-            <UChatPromptSubmit :status="chatStatus" label="Send" />
-          </div>
+          <UChatPromptSubmit :status="chatStatus" label="Send" />
         </div>
       </template>
     </UChatPrompt>
 
     <div
       v-if="contextualActions.length"
-      class="kitchen-ai-welcome__actions"
-      aria-label="Contextual actions"
+      class="flex flex-wrap gap-2"
+      aria-label="Suggested Kitchen actions"
     >
       <UButton
         v-for="action in contextualActions"
         :key="action"
         :label="action"
         color="neutral"
-        variant="soft"
+        variant="outline"
         size="sm"
+        class="rounded-full"
         @click="emit('update:modelValue', action)"
       />
     </div>
@@ -122,7 +117,6 @@ const props = withDefaults(
     starters?: readonly KitchenAIStarter[]
     aiTools?: readonly KitchenAIToolNugget[]
     allowFile?: boolean
-    commandMode?: boolean
     ariaLabel?: string
     submitting?: boolean
   }>(),
@@ -133,7 +127,6 @@ const props = withDefaults(
     starters: () => [],
     aiTools: () => [],
     allowFile: true,
-    commandMode: false,
     ariaLabel: 'Ask KitchenAI',
     submitting: false,
   }

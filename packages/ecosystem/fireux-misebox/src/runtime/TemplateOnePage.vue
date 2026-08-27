@@ -60,4 +60,4 @@ const themeStyle = computed(() => ({
 }))
 </script>
 
-<style src="./styles/template-one-page.css"></style>
+<style src="./assets/styles/template-one-page.css"></style>

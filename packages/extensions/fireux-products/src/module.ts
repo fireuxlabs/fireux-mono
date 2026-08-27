@@ -67,7 +67,6 @@ export default defineNuxtModule({
         }),
       composables: (resolver) =>
         registerComposablesDirs(resolver, [
-          './runtime/composables',
           './runtime/product/composables',
         ]),
       components: configureComponents,

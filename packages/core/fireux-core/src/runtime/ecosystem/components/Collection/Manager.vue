@@ -31,24 +31,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading Ecosystems"
       description="Finding Ecosystems…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Ecosystems unavailable"
       description="Ecosystems could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -59,7 +57,7 @@
           @click="refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <EcosystemCollectionList
       v-else-if="cardsFiltered.length"
@@ -74,7 +72,8 @@
       </template>
     </EcosystemCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-orbit"
       :title="query ? 'No ecosystems match your search' : 'No ecosystems yet'"

@@ -1,6 +1,6 @@
 # Layouts spine map
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 Ref: 796952bf0
 Role: map, not canon
 
@@ -47,7 +47,6 @@ composition:
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
 - `packages/core/fireux-core/src/runtime/layouts/workspace.vue`
-- `projects/buenohost/buenohost-app/app/layouts/property-info.vue`
 
 Their content boundary is `<slot />`. The Menu layout is the clearest package
 example: it owns route-family close chrome while the page remains the content

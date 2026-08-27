@@ -35,24 +35,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading companies"
       description="Finding companies…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Companies unavailable"
       description="Companies could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -63,7 +61,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div v-else-if="cardsFiltered.length" class="grid gap-4">
       <CompanyCollectionList :cards="cardsFiltered" :variant="variant">
@@ -96,7 +94,8 @@
       </div>
     </div>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-building-2"
       :title="query ? 'No companies match your search' : 'No companies yet'"
@@ -191,10 +190,7 @@ const {
 } = useCompanyInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<
-    Place,
-    NonNullable<ReturnType<typeof makeCard>>
-  >({
+  useCollectionSearch<Place, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (place: Place) => makeCard(place),
     initialVariant: props.initialVariant,

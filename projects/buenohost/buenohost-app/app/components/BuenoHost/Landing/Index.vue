@@ -23,7 +23,7 @@
         ]"
         :action="{
           label: 'View guest guide',
-          to: '/properties/preview-stay/info',
+          to: '/get-started',
           icon: 'i-lucide-arrow-right',
         }"
       >

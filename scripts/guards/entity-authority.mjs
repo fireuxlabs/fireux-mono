@@ -18,6 +18,13 @@ const filesBelow = (rootPath) => {
   })
 }
 
+const typeScriptFilesIn = (rootPath) => {
+  if (!existsSync(rootPath)) return []
+  return readdirSync(rootPath)
+    .filter((name) => name.endsWith('.ts'))
+    .sort()
+}
+
 const typeFields = (source, typeName) => {
   const marker = `export type ${typeName} = {`
   const start = source.indexOf(marker)
@@ -50,25 +57,19 @@ const PROFILE_INDEX_UTIL =
   'packages/core/fireux-core/src/runtime/utils/profile-index.ts'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const coreModelFiles = readdirSync(
+  const coreModelFiles = typeScriptFilesIn(
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/core')
   )
-    .filter((name) => name.endsWith('.ts'))
-    .sort()
   assert.deepEqual(coreModelFiles, [])
 
-  const systemModelFiles = readdirSync(
+  const systemModelFiles = typeScriptFilesIn(
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/system')
   )
-    .filter((name) => name.endsWith('.ts'))
-    .sort()
   assert.deepEqual(systemModelFiles, [])
 
-  const utilityModelFiles = readdirSync(
+  const utilityModelFiles = typeScriptFilesIn(
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/utils')
   )
-    .filter((name) => name.endsWith('.ts'))
-    .sort()
   assert.deepEqual(utilityModelFiles, [
     'directory.ts',
     'entity-create.model.ts',

@@ -3,7 +3,7 @@ import {
   requirePortfolioWorkspaceWrite,
   useActivePortfolio,
   usePortfolioWorkspaceChildPath,
-} from '../../useActivePortfolio'
+} from '../../../useActivePortfolio'
 import { UnitStorage } from '../../../../../../property/models/unit.model.ts'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

@@ -2,7 +2,7 @@ import {
   advisoryAgentCapabilities,
   defineFireuxAgentNode,
   defineFireuxWorkspaceAgent,
-} from 'fireux-ai/runtime/agents/operation-agent'
+} from 'fireux-ai/runtime/models/agents/operation-agent'
 import { supplierOperationAgents } from 'fireux-suppliers/runtime/supplier/models/operation-agents'
 
 export const bringliAgent = defineFireuxAgentNode({

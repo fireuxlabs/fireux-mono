@@ -47,24 +47,22 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading ingredients"
       description="Finding ingredients…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Ingredients unavailable"
       description="Ingredients could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
     >
       <template #actions>
         <UButton
@@ -75,7 +73,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <IngredientCollectionList
       v-else-if="cardsFiltered.length"
@@ -95,7 +93,8 @@
       </template>
     </IngredientCollectionList>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else
       icon="i-lucide-carrot"
       :title="

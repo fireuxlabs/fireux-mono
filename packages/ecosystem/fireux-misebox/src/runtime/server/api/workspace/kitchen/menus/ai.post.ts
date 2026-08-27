@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
 import {
-  extractFireuxAgentTip, fireuxAgentTipInstruction, } from 'fireux-ai/runtime/agents/agent-tip'
+  extractFireuxAgentTip, fireuxAgentTipInstruction, } from 'fireux-ai/runtime/models/agents/agent-tip'
 import { UserContextStorage } from 'fireux-core/runtime/user/models/user-context.model'
 import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'

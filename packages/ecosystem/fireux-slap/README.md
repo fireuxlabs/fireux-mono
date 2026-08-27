@@ -7,7 +7,7 @@ product.
 
 App ownership is decided by product domain, not by which presentation contract
 an App consumes. Domain Apps remain in their real ecosystem when they import
-`fireux-slap/runtime/presentation/apps-that-slap`.
+`fireux-slap/runtime/models/presentation/apps-that-slap`.
 
 Start at `docs/ai/apps-that-slap-context.md` and
 `docs/concepts/apps-that-slap.md`. Current source and guards remain authority.

@@ -62,4 +62,4 @@ const style = computed(() => ({
 }))
 </script>
 
-<style scoped src="./styles/template-one-menu.css"></style>
+<style scoped src="./assets/styles/template-one-menu.css"></style>

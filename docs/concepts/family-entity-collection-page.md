@@ -1,6 +1,6 @@
 # Entity Collection Page family
 
-Updated: 2026-08-26
+Updated: 2026-08-27
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -25,7 +25,7 @@ An ordinary Entity Collection Page uses this composition:
 EntityCollectionPage
 ├── Entity collection manager
 │   ├── CollectionHeader
-│   ├── CollectionState
+│   ├── MoleculesStateCard surface="collection"
 │   ├── Entity Collection/List
 │   └── Entity Cards/*
 └── optional entity doorway
@@ -113,6 +113,9 @@ not drift.
 ## Component ownership
 
 - `EntityCollectionPage` is shared Core composition, not an Entity engine.
+- `MoleculesStateCard` owns shared loading, unavailable, missing, and empty
+  semantics. Ordinary managers select its `collection` presentation surface;
+  they do not maintain a second Collection-only state component.
 - `XCollectionManager` is the default root doorway and owns its default source.
 - `XCollectionList` and `XCards/*` remain Entity-owned.
 - `XCTA` is present only when an operator, onboarding, authoring, or management

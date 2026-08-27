@@ -232,7 +232,7 @@
 import {
   findFireuxDocsCatalogueEntry,
   reviewFireuxDocsCatalogueEntry,
-} from '../../../catalogue/catalogue'
+} from '../../../models/catalogue'
 
 const route = useRoute()
 const componentSlug = computed(() => String(route.params.component || ''))

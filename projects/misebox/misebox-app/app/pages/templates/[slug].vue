@@ -29,7 +29,7 @@ import { useTemplateOneProductDemo } from '~/composables/product-demo/useTemplat
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/operations/dishes/flagship-projection'
 import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
-import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 const route = useRoute()

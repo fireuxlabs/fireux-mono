@@ -32,25 +32,23 @@
       </template>
     </CollectionHeader>
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-if="outcome === 'pending'"
       title="Loading jobs"
       description="Finding published jobs…"
       icon="i-lucide-loader-circle"
       loading
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
       aria-atomic="true"
     />
 
-    <CollectionState
+    <MoleculesStateCard
+      surface="collection"
       v-else-if="outcome === 'error'"
       title="Jobs unavailable"
       description="Published jobs could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
-      role="alert"
-      aria-live="assertive"
+      state="error"
       aria-atomic="true"
     >
       <template #actions>
@@ -62,7 +60,7 @@
           @click="fetched.refresh"
         />
       </template>
-    </CollectionState>
+    </MoleculesStateCard>
 
     <div v-else-if="cardsFiltered.length">
       <JobCollectionList :cards="cardsFiltered" :variant="variant">
@@ -94,7 +92,8 @@
     </div>
 
     <div v-else>
-      <CollectionState
+      <MoleculesStateCard
+        surface="collection"
         icon="i-lucide-briefcase-business"
         :title="
           query
@@ -125,7 +124,7 @@
             variant="soft"
           />
         </template>
-      </CollectionState>
+      </MoleculesStateCard>
 
       <div v-if="hasMore && !query">
         <UButton

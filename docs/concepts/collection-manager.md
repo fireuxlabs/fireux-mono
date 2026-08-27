@@ -1,6 +1,6 @@
 # Collection manager family
 
-Updated: 2026-08-23
+Updated: 2026-08-27
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -132,9 +132,10 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   permission, and other read failures must not collapse into empty copy.
 - Counts are shown only for settled `ready` or `empty` outcomes. Search-empty
   copy is local presentation and remains distinct from an empty source.
-- Use the shared bare `MoleculesStateCard` for conventional manager states.
-  Domain directory presentations may use their established state component but
-  keep the same ordering and live-region semantics.
+- Use `MoleculesStateCard` for conventional manager states. Ordinary Entity
+  Collection managers select its `collection` surface for the established
+  dashed directory treatment. Domain-branded presentation may choose another
+  surface while keeping the same ordering and live-region semantics.
 - Do not expose raw backend errors on directory surfaces. A retained valid page may
   show a non-fatal pagination error without replacing the existing list.
 
@@ -154,7 +155,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - The Kitchen directory established the warmer, clearer root-manager
   hierarchy now shared with Menu and User through core
-  `CollectionHeader`, `CollectionState`, and the small
+  `CollectionHeader`, `MoleculesStateCard`, and the small
   `entity-collection*` layout contract.
 - Root/global discovery pages may share Core `EntityCollectionPage`; this is page
   presentation only and does not move domain collection ownership into core.
