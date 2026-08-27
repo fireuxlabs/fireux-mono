@@ -4,7 +4,7 @@
       <template #header>
         <LayoutsWorkspaceNavbar :title="pageTitle" :show-title="false">
           <template #right>
-            <MiseboxWorkspaceKitchenContextInfo />
+            <MiseboxWorkspaceKitchenMainInfo />
           </template>
         </LayoutsWorkspaceNavbar>
       </template>

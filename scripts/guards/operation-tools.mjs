@@ -303,7 +303,7 @@ export async function run({ repoRoot }) {
       `${workspaceMainContentFile}: Workspace Main context must remain concise and state the Business multi-Kitchen boundary.`
     )
   }
-  if (!workspaceMainPage.includes('MiseboxWorkspaceKitchenContextInfo')) {
+  if (!workspaceMainPage.includes('MiseboxWorkspaceKitchenMainInfo')) {
     violations.push(
       'projects/misebox/misebox-app/app/pages/index.vue: Workspace Main must expose its KitchenAI context modal in the page header.'
     )
