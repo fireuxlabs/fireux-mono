@@ -28,11 +28,7 @@
           autofocus
           :disabled="working"
         />
-        <UInput
-          v-model="tagline"
-          placeholder="Tagline"
-          :disabled="working"
-        />
+        <UInput v-model="tagline" placeholder="Tagline" :disabled="working" />
       </div>
     </div>
 
@@ -81,7 +77,6 @@
       title="Kitchen could not be created"
       :description="error"
     />
-
   </form>
 </template>
 
@@ -136,9 +131,7 @@ const imagePreview = ref('')
 const error = ref('')
 const working = ref(false)
 const searchName = computed(() => query.value.trim())
-const canSubmit = computed(() =>
-  Boolean(selection.value || searchName.value)
-)
+const canSubmit = computed(() => Boolean(selection.value || searchName.value))
 const initials = computed(() =>
   (searchName.value || 'K')
     .split(/\s+/)
@@ -252,18 +245,7 @@ async function submit() {
     imagePreview.value = ''
     selection.value = null
   } catch (cause) {
-    const failure = cause as {
-      data?: { statusMessage?: unknown; message?: unknown }
-      statusMessage?: unknown
-      message?: unknown
-    }
-    error.value = String(
-      failure.data?.statusMessage ||
-        failure.statusMessage ||
-        failure.data?.message ||
-        failure.message ||
-        'Try again.'
-    )
+    showError(cause)
   } finally {
     working.value = false
   }
@@ -271,17 +253,21 @@ async function submit() {
 
 function showError(cause: unknown) {
   const failure = cause as {
-    data?: { statusMessage?: unknown; message?: unknown }
+    data?: {
+      statusMessage?: unknown
+      message?: unknown
+    }
     statusMessage?: unknown
     message?: unknown
   }
-  error.value = String(
+  const message = String(
     failure.data?.statusMessage ||
       failure.statusMessage ||
       failure.data?.message ||
       failure.message ||
       'Try again.'
   )
+  error.value = message
 }
 </script>
 

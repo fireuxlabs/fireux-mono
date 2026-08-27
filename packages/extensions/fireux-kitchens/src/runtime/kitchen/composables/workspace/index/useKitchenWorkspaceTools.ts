@@ -8,7 +8,7 @@ import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
   const { isAuthenticated } = useAuth()
-  const { appAccess, appAccessOutcome } = useUser()
+  const { appAccessOutcome, canOwnMultipleWorkspaces } = useUser()
   const { activeId, activeName, activeDescription, activeImage } =
     useWorkspace('kitchen')
   const createKitchenOpen = useState(
@@ -29,13 +29,29 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
       workspace.targets.outcome.value === 'idle' ||
       workspace.targets.outcome.value === 'pending'
   )
+  const hasExistingKitchen = computed(
+    () => workspace.targets.kitchens.value.length > 0
+  )
+  const canCreateMultiple = canOwnMultipleWorkspaces
+  const canCreateKitchen = computed(
+    () =>
+      !workspacePending.value &&
+      (!hasExistingKitchen.value || canCreateMultiple.value)
+  )
+  const capacityConsumed = computed(
+    () =>
+      !workspacePending.value &&
+      hasExistingKitchen.value &&
+      !canCreateMultiple.value
+  )
 
   const kitchenComplete = computed(() =>
     Boolean(activeName.value && activeDescription.value && activeImage.value)
   )
   const kitchenTool = computed(() => {
     if (workspacePending.value) return null
-    if (!activeId.value || appAccess.value.hasBusinessSubscription) {
+    if (capacityConsumed.value && !activeId.value) return null
+    if (canCreateKitchen.value) {
       return {
         id: 'create-kitchen' as const,
         kind: 'create' as const,
@@ -111,6 +127,9 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
 
   return {
     workspacePending,
+    canCreateMultiple,
+    canCreateKitchen,
+    capacityConsumed,
     createKitchenOpen,
     kitchenComplete,
     kitchenTool,

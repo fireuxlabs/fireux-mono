@@ -73,7 +73,6 @@
         :description="createDescription"
         @created="createdKitchen"
       />
-
     </div>
 
     <UModal
@@ -110,6 +109,7 @@
 import { computed, navigateTo, onMounted, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
+import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import Create from './Create.vue'
 
@@ -123,6 +123,8 @@ const props = withDefaults(
 
 const { appAccess, appAccessOutcome } = useUser()
 const workspace = useKitchenWorkspace()
+const { workspacePending, canCreateMultiple } =
+  useKitchenWorkspaceTools(workspace)
 const { workspaceTarget } = useKitchenInterface()
 const mounted = ref(false)
 
@@ -133,7 +135,6 @@ onMounted(() => {
 const subscription = computed(() =>
   appAccessOutcome.value === 'ready' ? appAccess.value.subscription : 'free'
 )
-const canCreateMultiple = computed(() => subscription.value === 'business')
 const kitchenCells = computed(() => {
   const cells = workspace.targets.kitchens.value.flatMap((kitchen) => {
     const projected = workspaceTarget(kitchen)
@@ -176,10 +177,7 @@ const description = computed(() => {
   return 'Business supports multiple Kitchens.'
 })
 const showCreateCell = computed(
-  () =>
-    workspace.targets.outcome.value !== 'pending' &&
-    workspace.targets.outcome.value !== 'error' &&
-    canCreateMultiple.value
+  () => !workspacePending.value && canCreateMultiple.value
 )
 const showUpgradeCell = computed(
   () => otherKitchenCells.value.length > 0 && !canCreateMultiple.value
@@ -188,7 +186,7 @@ const showCollectionControls = computed(
   () =>
     mounted.value &&
     props.expanded &&
-    (workspace.targets.pending.value ||
+    (workspacePending.value ||
       workspace.targets.outcome.value === 'error' ||
       otherKitchenCells.value.length > 0 ||
       canCreateMultiple.value)
@@ -291,5 +289,4 @@ function confirmKitchenChange() {
   changeRequestOpen.value = false
   requestedKitchenId.value = ''
 }
-
 </script>

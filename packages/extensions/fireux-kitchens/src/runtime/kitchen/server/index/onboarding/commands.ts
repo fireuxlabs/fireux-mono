@@ -42,10 +42,7 @@ async function assertKitchenCreationAllowance(
 ) {
   const kitchenIds = await readUserKitchenIds(current.uid)
   if (kitchenIds.length && !current.canOwnMultipleWorkspaces) {
-    fail(
-      403,
-      'Creating another Kitchen requires a Business subscription.'
-    )
+    fail(403, 'Your current subscription supports one Kitchen.')
   }
 }
 
