@@ -4,8 +4,9 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
+import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
-export function useKitchenWorkspaceTools() {
+export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
   const { isAuthenticated } = useAuth()
   const { appAccess, appAccessOutcome } = useUser()
   const { activeId, activeName, activeDescription, activeImage } =
@@ -21,12 +22,19 @@ export function useKitchenWorkspaceTools() {
       (appAccessOutcome.value === 'idle' ||
         appAccessOutcome.value === 'pending')
   )
+  const workspacePending = computed(
+    () =>
+      accessPending.value ||
+      workspace.targets.pending.value ||
+      workspace.targets.outcome.value === 'idle' ||
+      workspace.targets.outcome.value === 'pending'
+  )
 
   const kitchenComplete = computed(() =>
     Boolean(activeName.value && activeDescription.value && activeImage.value)
   )
   const kitchenTool = computed(() => {
-    if (accessPending.value) return null
+    if (workspacePending.value) return null
     if (!activeId.value || appAccess.value.hasBusinessSubscription) {
       return {
         id: 'create-kitchen' as const,
@@ -34,7 +42,7 @@ export function useKitchenWorkspaceTools() {
         label: 'Create Kitchen',
         suggestion: activeId.value
           ? 'Help me create another Kitchen'
-          : 'Help me create my Kitchen',
+          : 'Tell us about your Kitchen',
       }
     }
     if (!kitchenComplete.value) {
@@ -102,7 +110,7 @@ export function useKitchenWorkspaceTools() {
   }
 
   return {
-    accessPending,
+    workspacePending,
     createKitchenOpen,
     kitchenComplete,
     kitchenTool,

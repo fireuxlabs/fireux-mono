@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-25
+Updated: 2026-08-27
 Ref: ca2812511
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -247,11 +247,13 @@ Before each task:
   Project Apps do not repeat those integration values.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
-- The Misebox Main App home composes the Kitchen-owned
-  `WorkspaceKitchen` for live selection, creation, and collection state.
-  App-owned hero, operation doorways, free tools, discovery, and copy live
-  beneath `Misebox/Home`; the App does not create a parallel
-  `WorkspaceKitchen` component family or duplicate Kitchen operation truth.
+- The Misebox Main App deliberately opens the Kitchen Workspace at `/`; it is
+  not a conventional Home or a separate marketing landing. Its App-owned
+  `MiseboxWorkspaceKitchenMain` composes the Kitchen-owned
+  `WorkspaceKitchenHero` and
+  `WorkspaceKitchen` selection, creation, and collection state, then adds only
+  Misebox KitchenAI placement, operation doorways, free tools, discovery, and
+  product literature. The App does not duplicate Kitchen operation truth.
   `Misebox/Landing/WorkspacePreview` remains a separate read-only product proof
   backed by Kitchen-owned Demo records and is not part of the live Workspace
   entry.

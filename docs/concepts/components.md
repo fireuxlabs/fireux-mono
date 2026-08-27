@@ -48,11 +48,13 @@ Map component folder and naming conventions.
 - App UI belongs under `app/components`; reusable entity implementation does
   not move into an App merely to preserve conventional Nuxt discovery.
 - Entity-owned live Workspace composition remains beneath
-  `runtime/<entity>/components/Workspace`; Apps consume those named entrypoints
-  rather than creating a parallel `Workspace{Entity}` namespace. App-specific
-  product framing belongs beneath the App owner and surface, such as
-  `Misebox/Home`. Read-only landing previews remain App-owned presentation and
-  do not become live Workspace authority.
+  `runtime/<entity>/components/Workspace`. An App that deliberately uses a
+  Workspace as its root product surface composes those entrypoints beneath the
+  matching `{App}Workspace{Entity}` App family; it owns only App-specific
+  framing, literature, and doorways there. Misebox therefore uses
+  `MiseboxWorkspaceKitchenMain` at `/` while `fireux-kitchens` owns
+  `WorkspaceKitchen` and `WorkspaceKitchenHero`. Read-only landing previews
+  remain App-owned presentation and do not become live Workspace authority.
 - Declared Entity components live beneath `runtime/<entity>/components` and
   are registered with prefixes that preserve established component names.
   Confirmed parent-owned record/operation components live beneath their parent

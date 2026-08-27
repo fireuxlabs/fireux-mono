@@ -6,19 +6,13 @@ export const sourceMeta = {
       bigPersonality: 'Manage your menu and kitchen<br>in one place.',
       headline: 'Menu and kitchen management',
     },
-    heroPrimaryLine:
-      'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
+    heroPrimaryLine: 'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
     primaryCtaLabel: 'Try the interactive demo',
     primaryCtaTo: '/demo',
     secondaryCtaLabel: 'See what works today',
     secondaryCtaTo: '/operations',
-    workspaceBridgeLine:
-      'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
-    heroBullets: [
-      'No signup required',
-      'Sample restaurant data',
-      'No live order is created',
-    ],
+    workspaceBridgeLine: 'Follow one <strong>connected workflow</strong> from guest menu to Kitchen handoff.',
+    heroBullets: ['No signup required', 'Sample restaurant data', 'No live order is created'],
     rightPanelItems: [
       {
         title: 'Publish',
@@ -37,9 +31,9 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Misebox — Free restaurant menu and Kitchen workspace',
+      title: 'Misebox — Create and manage your Kitchen profile',
       description:
-        'Start one Kitchen and publish one restaurant Menu without signing up. Use free restaurant tools, choose Premium for multiple Menus, or Business for multiple Kitchens.',
+        'Create and manage a Kitchen profile without an account. Add its name, tagline and image, or choose Business to manage multiple Kitchens.',
     },
   },
   about: {
@@ -70,8 +64,7 @@ export const sourceMeta = {
       keyConceptsTitle: 'Misebox - Key Concepts (Priority Order)',
       modulesEyebrow: 'Modules',
       modulesTitle: 'How we organize the app',
-      modulesDescription:
-        'Each module owns a clear part of operations, and together they power one kitchen workflow.',
+      modulesDescription: 'Each module owns a clear part of operations, and together they power one kitchen workflow.',
       entitiesEyebrow: 'Entities',
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
@@ -81,7 +74,8 @@ export const sourceMeta = {
     keyConcepts: [
       {
         title: 'Ecosystem',
-        description: 'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
+        description:
+          'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
       },
       {
         title: 'Kitchen Operations',
@@ -97,7 +91,8 @@ export const sourceMeta = {
       },
       {
         title: 'Jobs',
-        description: 'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
+        description:
+          'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
       },
       {
         title: 'Menus & Dishes',
@@ -113,7 +108,8 @@ export const sourceMeta = {
       },
       {
         title: 'Suppliers',
-        description: 'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
+        description:
+          'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
       },
       {
         title: 'Apps',
@@ -129,15 +125,7 @@ export const sourceMeta = {
         {
           name: 'fireux-kitchens',
           summary: 'Kitchen operations module for day-to-day execution.',
-          entities: [
-            'Kitchen',
-            'Menu',
-            'Dish',
-            'Ingredient',
-            'KitchenRecipe',
-            'KitchenMiseTask',
-            'KitchenTeamMember',
-          ],
+          entities: ['Kitchen', 'Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember'],
         },
         {
           name: 'fireux-jobs',
@@ -171,15 +159,7 @@ export const sourceMeta = {
           name: 'Kitchen',
           purpose: 'Operational kitchen identity and runtime context.',
           keyFields: ['id', 'name', 'short_address', 'image_url', 'is_test_kitchen'],
-          linksTo: [
-            'Menu',
-            'Dish',
-            'Ingredient',
-            'KitchenRecipe',
-            'KitchenMiseTask',
-            'KitchenTeamMember',
-            'Order',
-          ],
+          linksTo: ['Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember', 'Order'],
         },
         {
           name: 'Menu',
@@ -331,11 +311,7 @@ User
         badge: 'Step 2',
         title: 'Connect the menu to prep',
         copy: 'Structure menus, dishes, recipes, ingredients, and station work so one change does not have to be copied between tools.',
-        items: [
-          'Menu and dish structure',
-          'Recipes and ingredient relationships',
-          'Prep and station workflow',
-        ],
+        items: ['Menu and dish structure', 'Recipes and ingredient relationships', 'Prep and station workflow'],
       },
       {
         badge: 'Step 3',
@@ -366,8 +342,7 @@ User
       ],
       card: {
         eyebrow: 'Need a faster launch?',
-        title:
-          'Use express rollout when you need one operating model across multiple kitchens with minimal drift.',
+        title: 'Use express rollout when you need one operating model across multiple kitchens with minimal drift.',
         bullets: [
           'Daily implementation checkpoints.',
           'Menu and workflow mapping in parallel.',

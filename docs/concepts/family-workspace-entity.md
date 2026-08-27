@@ -55,11 +55,12 @@ field on either root or a generic owner of their records.
 
 Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or App surface
-owns its copy, actions, and state beneath its actual owner. The Misebox product
-entry therefore uses `MiseboxHomeHero`, while Kitchen owns the live
-  `WorkspaceKitchen` selection, creation, and collection lifecycle. The
-shared component does not receive Entity names, subscription rules, or
-capability configuration.
+owns its copy, actions, and state beneath its actual owner. Kitchen owns
+`WorkspaceKitchenHero` plus the live `WorkspaceKitchen` selection, creation,
+and collection lifecycle. The Misebox root composes those beneath its
+App-owned `MiseboxWorkspaceKitchenMain` and adds only Misebox literature and
+doorways. The shared component does not receive Entity names, subscription
+rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns

@@ -27,7 +27,7 @@
     <Composer
       v-if="!commandMode || !commandResult"
       v-model="prompt"
-      :placeholder="resolvedPlaceholder"
+      :placeholder="workspacePlaceholder"
       :suggestions="promptSuggestions"
       :starters="resolvedStarters"
       :ai-tools="props.aiTools"
@@ -41,10 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
@@ -87,14 +85,13 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
-const { membership } = useCurrentAppContext()
-const { isAuthenticated } = useAuth()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
+  workspacePending,
   suggestions: workspaceToolSuggestions,
   availableActions: availableWorkspaceActions,
   performAction: performWorkspaceAction,
-} = useKitchenWorkspaceTools()
+} = useKitchenWorkspaceTools(kitchenWorkspace)
 const {
   agentLabel: resolvedAgentLabel,
   hasContextIcon,
@@ -123,7 +120,6 @@ const promptSuggestions = computed(() =>
     : workspaceToolSuggestions.value
 )
 const prompt = ref('')
-const mounted = ref(false)
 const messages = ref<KitchenAIWelcomeMessage[]>([])
 const submitting = ref(false)
 const commandResult = ref<KitchenAIWelcomeMessage | null>(null)
@@ -145,31 +141,28 @@ const selectedKitchenName = computed(() =>
       ''
   ).trim()
 )
-const subscriptionLabel = computed(() => {
-  const subscription = membership.value?.subscription
-  return subscription
-    ? subscription.charAt(0).toUpperCase() + subscription.slice(1)
-    : ''
-})
 const workspaceTitle = computed(() => {
   if (props.agent || resolvedOperation.value) return resolvedTitle.value
-  if (!mounted.value) return 'Build and run your Kitchen with KitchenAI'
+  if (workspacePending.value) return 'Build and run your Kitchen with KitchenAI'
   return selectedKitchenName.value
     ? `Run ${selectedKitchenName.value} with KitchenAI`
-    : `Build and run your${subscriptionLabel.value ? ` ${subscriptionLabel.value}` : ''} Kitchen with KitchenAI`
+    : 'Tell us about your Kitchen'
 })
-const availableKitchenNames = computed(() =>
-  kitchenWorkspace.targets.kitchens.value
-    .map((kitchen) => String(kitchen.name || kitchen.slug || '').trim())
-    .filter(Boolean)
-)
+const workspacePlaceholder = computed(() => {
+  if (
+    props.agent ||
+    resolvedOperation.value ||
+    workspacePending.value ||
+    selectedKitchenName.value
+  ) {
+    return resolvedPlaceholder.value
+  }
+  return 'Tell us about your Kitchen…'
+})
 const workspaceDescription = computed(() => {
   if (props.description || props.agent) return resolvedDescription.value
-  if (!mounted.value) {
-    return 'Create a Kitchen, bring in what you already have, and use KitchenAI to find the next useful step.'
-  }
-  if (!isAuthenticated.value) {
-    return 'Create a Kitchen, bring in what you already have, and use KitchenAI to find the next useful step.'
+  if (workspacePending.value) {
+    return 'Describe, create and run your Kitchen from one conversation.'
   }
 
   const selectedName = selectedKitchenName.value
@@ -185,18 +178,7 @@ const workspaceDescription = computed(() => {
     return 'I could not load your available Kitchens. You can still begin from a blank Kitchen context.'
   }
 
-  const names = availableKitchenNames.value
-  if (!names.length) {
-    return 'Create your first Kitchen, bring in what you already have, and let KitchenAI guide the next useful step.'
-  }
-  if (names.length === 1) {
-    return `${names[0]} is available to you. Select it to use its live evidence, or continue from a blank Kitchen context.`
-  }
-  return `You have ${names.length} Kitchens available. Choose the Kitchen you want me to work with.`
-})
-
-onMounted(() => {
-  mounted.value = true
+  return 'Describe your Kitchen in your own words. KitchenAI can help you start with its name.'
 })
 
 const selectedLiveScope = computed(() => ({

@@ -2,7 +2,7 @@
   <section aria-label="Kitchen tools">
     <div class="kitchen-workspace-tools">
       <USkeleton
-        v-if="accessPending"
+        v-if="workspacePending"
         class="h-9 w-full rounded-lg"
         aria-label="Loading Kitchen access"
       />
@@ -40,7 +40,7 @@ import Create from '../Create.vue'
 
 const { activeName, activeDescription, activeImage, activate } =
   useWorkspace('kitchen')
-const { accessPending, kitchenComplete, kitchenTool } =
+const { workspacePending, kitchenComplete, kitchenTool } =
   useKitchenWorkspaceTools()
 </script>
 

@@ -59,8 +59,9 @@ const LEGACY_ENTITY_PATHS = [
   'projects/buenohost/buenohost-app/app/simulations',
   'projects/fireux/find-my-seo-app/app/simulations',
   'projects/fireux/sproochli/app/simulations',
-  'projects/misebox/misebox-app/app/components/WorkspaceKitchen',
   'projects/misebox/misebox-app/app/components/WorkspaceKitchenIndex.vue',
+  'projects/misebox/misebox-app/app/components/WorkspaceKitchen',
+  'projects/misebox/misebox-app/app/components/Misebox/Home',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Entry',
   // Core entities. Entity-owned App components and composables use the App
   // scoped Nuxt spine; the old global App-labelled dumping grounds are closed.

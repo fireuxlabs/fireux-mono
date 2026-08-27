@@ -1,13 +1,9 @@
 <template>
-  <UPageHeader
-    class="pageheader"
-    :title="title"
-    :description="description"
-  >
+  <UPageHero class="pageheader" :title="title" :description="description">
     <template v-if="$slots.links" #links>
       <slot name="links" />
     </template>
-  </UPageHeader>
+  </UPageHero>
 </template>
 
 <script setup lang="ts">

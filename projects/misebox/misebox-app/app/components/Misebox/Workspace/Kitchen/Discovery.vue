@@ -11,8 +11,8 @@
       />
       <UPageCard
         id="workspace-access"
-        title="Choose your Kitchen capacity"
-        description="Free supports one Kitchen and one published Menu. Premium adds multiple Menus. Business supports multiple Kitchens. Sign in to keep an anonymous Kitchen with your account."
+        title="Manage your Kitchen portfolio"
+        description="Free and Premium support one Kitchen. Business supports multiple Kitchens. Sign in to attach an anonymous Kitchen to your account."
         icon="i-lucide-badge-check"
         to="/pricing"
         variant="subtle"
