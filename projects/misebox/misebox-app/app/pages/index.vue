@@ -2,7 +2,7 @@
   <div>
     <UDashboardPanel id="misebox-kitchen-home">
       <template #header>
-        <LayoutsWorkspaceNavbar :title="pageTitle" :show-title="false">
+        <LayoutsWorkspaceNavbar title="Kitchen Workspace" :show-title="false">
           <template #right>
             <MiseboxWorkspaceKitchenMainInfo />
           </template>
@@ -17,15 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { appMeta } from '../meta'
 
-const kitchenWorkspace = useWorkspace('kitchen')
-const pageTitle = computed(
-  () => kitchenWorkspace.activeName.value || 'Kitchen Workspace'
-)
 definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',

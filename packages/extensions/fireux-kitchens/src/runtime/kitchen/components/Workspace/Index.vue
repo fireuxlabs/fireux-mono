@@ -22,7 +22,8 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
 
 const kitchen = useKitchenWorkspace()
-const { kitchenComplete: hasKitchenPresentation } = useKitchenWorkspaceTools()
+const { kitchenComplete: hasKitchenPresentation } =
+  useKitchenWorkspaceTools(kitchen)
 const { appAccess } = useUser()
 const kitchensOpen = ref(false)
 const hasKitchenChoices = computed(

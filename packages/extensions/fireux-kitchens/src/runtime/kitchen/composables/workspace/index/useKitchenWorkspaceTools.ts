@@ -1,16 +1,26 @@
 import { navigateTo, useState } from '#imports'
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
+import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
   const { isAuthenticated } = useAuth()
   const { appAccessOutcome, canOwnMultipleWorkspaces } = useUser()
-  const { activeId, activeName, activeDescription, activeImage } =
-    useWorkspace('kitchen')
+  const activeId = workspace.selection.kitchenId
+  const activePresentation = computed(() =>
+    readKitchenPresentationIdentity(workspace.selection.kitchen.value)
+  )
+  const activeName = computed(() => activePresentation.value.displayName)
+  const activeDescription = computed(() => activePresentation.value.tagline)
+  const activeImage = computed(
+    () =>
+      activePresentation.value.cardImageUrl ||
+      activePresentation.value.imageUrl ||
+      activePresentation.value.logoImageUrl
+  )
   const createKitchenOpen = useState(
     'kitchen-workspace-create-open',
     () => false
@@ -131,6 +141,9 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
     canCreateKitchen,
     capacityConsumed,
     createKitchenOpen,
+    activeName,
+    activeDescription,
+    activeImage,
     kitchenComplete,
     kitchenTool,
     userTool,

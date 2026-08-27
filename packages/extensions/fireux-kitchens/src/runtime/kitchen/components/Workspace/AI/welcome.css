@@ -99,22 +99,23 @@
   text-align: center;
 }
 
-.kitchen-ai-welcome--landing {
+.kitchen-ai-welcome--main {
   width: 100%;
+  max-width: 48rem;
   min-height: 0;
   align-content: start;
   gap: calc(var(--spacing) * 4);
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
 }
 
-.kitchen-ai-welcome--landing .kitchen-ai-welcome__intro {
+.kitchen-ai-welcome--main .kitchen-ai-welcome__intro {
   justify-items: start;
   text-align: left;
 }
 
-.kitchen-ai-welcome--landing .kitchen-ai-welcome__starters,
-.kitchen-ai-welcome--landing .kitchen-ai-welcome__tools {
+.kitchen-ai-welcome--main .kitchen-ai-welcome__starters,
+.kitchen-ai-welcome--main .kitchen-ai-welcome__tools {
   justify-content: flex-start;
 }
 
@@ -134,5 +135,4 @@
   .kitchen-ai-welcome__starters {
     justify-content: flex-start;
   }
-
 }

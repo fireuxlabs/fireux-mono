@@ -1,7 +1,11 @@
 <template>
-  <section class="kitchen-ai-welcome" aria-labelledby="kitchen-ai-title">
+  <section
+    class="kitchen-ai-welcome"
+    :class="{ 'kitchen-ai-welcome--main': mainWorkspace }"
+    aria-labelledby="kitchen-ai-title"
+  >
     <Intro
-      :agent-label="resolvedAgentLabel"
+      :agent-label="workspaceAgentLabel"
       :context-icon="resolvedContextIcon"
       :has-context-icon="hasContextIcon"
       :title="workspaceTitle"
@@ -29,7 +33,7 @@
       v-model="prompt"
       :placeholder="workspacePlaceholder"
       :suggestions="promptSuggestions"
-      :starters="resolvedStarters"
+      :starters="workspaceStarters"
       :ai-tools="props.aiTools"
       :allow-file="allowFile"
       :aria-label="composerAriaLabel"
@@ -88,6 +92,7 @@ const { appId: configuredAppId, appName } = useFireUXConfig()
 const kitchenWorkspace = useKitchenWorkspace()
 const {
   workspacePending,
+  activeName: selectedKitchenName,
   suggestions: workspaceToolSuggestions,
   availableActions: availableWorkspaceActions,
   performAction: performWorkspaceAction,
@@ -133,14 +138,14 @@ let messageId = 0
 const composerAriaLabel = computed(
   () => `Ask ${props.agent?.name || 'KitchenAI'}`
 )
-
-const selectedKitchenName = computed(() =>
-  String(
-    kitchenWorkspace.selection.kitchen.value?.name ||
-      kitchenWorkspace.selection.kitchen.value?.slug ||
-      ''
-  ).trim()
+const mainWorkspace = computed(() => !props.agent && !resolvedOperation.value)
+const workspaceAgentLabel = computed(() =>
+  mainWorkspace.value ? '' : resolvedAgentLabel.value
 )
+const workspaceStarters = computed(() =>
+  mainWorkspace.value ? [] : resolvedStarters.value
+)
+
 const workspaceTitle = computed(() => {
   if (props.agent || resolvedOperation.value) return resolvedTitle.value
   if (workspacePending.value) return 'Build and run your Kitchen with KitchenAI'

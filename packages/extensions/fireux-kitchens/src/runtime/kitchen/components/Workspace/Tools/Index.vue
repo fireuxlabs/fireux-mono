@@ -34,14 +34,20 @@
 </template>
 
 <script setup lang="ts">
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
 import { useKitchenWorkspaceTools } from '../../../composables/workspace/index/useKitchenWorkspaceTools'
 import Create from '../Create.vue'
 
-const { activeName, activeDescription, activeImage, activate } =
-  useWorkspace('kitchen')
-const { workspacePending, kitchenComplete, kitchenTool } =
-  useKitchenWorkspaceTools()
+const workspace = useKitchenWorkspace()
+const {
+  activeName,
+  activeDescription,
+  activeImage,
+  workspacePending,
+  kitchenComplete,
+  kitchenTool,
+} = useKitchenWorkspaceTools(workspace)
+const activate = workspace.actions.selectKitchen
 </script>
 
 <style scoped>

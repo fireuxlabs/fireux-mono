@@ -16,7 +16,15 @@
         type="button"
         @click="performAction(kitchenTool.id)"
       />
-      <slot name="links" />
+      <slot name="links">
+        <UButton
+          to="/tools"
+          label="Browse restaurant tools"
+          color="neutral"
+          variant="soft"
+          trailing-icon="i-lucide-arrow-right"
+        />
+      </slot>
     </template>
   </WorkspaceHero>
 </template>
@@ -33,11 +41,9 @@ const {
   workspacePending,
   kitchenComplete: complete,
   kitchenTool,
+  activeName,
   performAction,
 } = useKitchenWorkspaceTools(workspace)
-const activeName = computed(() =>
-  String(workspace.selection.kitchen.value?.name || '').trim()
-)
 const introduction = computed(() => {
   if (workspacePending.value) {
     return 'Add a name, tagline and image to create your Kitchen profile.'
