@@ -103,27 +103,25 @@ onMounted(() => {
   mounted.value = true
 })
 
-watch(
-  [
-    workspacePending,
-    () => workspace.selection.kitchenId.value,
-    () => workspace.targets.kitchens.value,
-  ],
-  ([pending, activeId, kitchens]) => {
-    const existing = kitchens[0]
-    if (
-      pending ||
-      activeId ||
-      kitchens.length !== 1 ||
-      !existing ||
-      canCreateKitchen.value
-    )
-      return
-    showEmptyState.value = false
-    workspace.actions.selectKitchen(existing.id)
-  },
-  { immediate: true }
-)
+function selectOnlyKitchen() {
+  const kitchens = workspace.targets.kitchens.value
+  const existing = kitchens[0]
+  const existingId = String(existing?.id || '').trim()
+  if (
+    workspacePending.value ||
+    workspace.selection.kitchenId.value ||
+    kitchens.length !== 1 ||
+    !existingId ||
+    canCreateKitchen.value
+  )
+    return
+  showEmptyState.value = false
+  workspace.actions.selectKitchen(existingId)
+}
+
+watch(workspacePending, selectOnlyKitchen, { immediate: true })
+watch(() => workspace.selection.kitchenId.value, selectOnlyKitchen)
+watch(() => workspace.targets.kitchens.value, selectOnlyKitchen)
 
 async function createdKitchen(id: string) {
   showEmptyState.value = false

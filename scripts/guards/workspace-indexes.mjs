@@ -156,10 +156,11 @@ export async function run(ctx) {
     )
   }
   if (
+    !kitchenWorkspaceActive.includes('function selectOnlyKitchen()') ||
     !kitchenWorkspaceActive.includes('const existing = kitchens[0]') ||
     !kitchenWorkspaceActive.includes('kitchens.length !== 1') ||
     !kitchenWorkspaceActive.includes(
-      'workspace.actions.selectKitchen(existing.id)'
+      'workspace.actions.selectKitchen(existingId)'
     )
   ) {
     violations.push(

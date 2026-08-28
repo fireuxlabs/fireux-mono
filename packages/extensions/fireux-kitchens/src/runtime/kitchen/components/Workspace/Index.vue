@@ -33,12 +33,13 @@ const hasKitchenChoices = computed(
       appAccess.value.hasBusinessSubscription)
 )
 
+watch(hasKitchenPresentation, (complete: boolean, wasComplete?: boolean) => {
+  if (complete && !wasComplete) kitchensOpen.value = false
+})
 watch(
-  [hasKitchenPresentation, () => kitchen.selection.kitchenId.value],
-  ([complete, activeId], [wasComplete, previousId]) => {
-    if ((complete && !wasComplete) || (activeId && activeId !== previousId)) {
-      kitchensOpen.value = false
-    }
+  () => kitchen.selection.kitchenId.value,
+  (activeId: string | null, previousId: string | null) => {
+    if (activeId && activeId !== previousId) kitchensOpen.value = false
   }
 )
 </script>

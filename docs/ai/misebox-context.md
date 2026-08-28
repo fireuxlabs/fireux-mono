@@ -60,7 +60,8 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
 
 ## Kitchen and Place
 
-- Canonical Kitchen root is exactly `id`, `slug`, `status`, and `visibility`.
+- Canonical Kitchen root is exactly `id`, `name`, `slug`, `status`, and
+  `visibility`.
 - A name-only Kitchen shell may use a generated id while being manifested.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,
   classification, price level, currency/timezone, and business hours.

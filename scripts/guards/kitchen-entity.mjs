@@ -247,8 +247,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(manager, /<KitchenCollectionList :cards="cardsFiltered"/)
   assert.doesNotMatch(manager, /management_mode|Root kitchens|App kitchens/)
   assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
-  assert.match(collection, /useAsyncData<Kitchen\[]>/)
-  assert.match(collection, /collection:\s*ComputedRef<Kitchen\[]>/)
+  assert.match(
+    collection,
+    /KitchenCollectionRecord = Kitchen & \{ place: Place \}/
+  )
+  assert.match(collection, /useAsyncData<KitchenCollectionRecord\[]>/)
+  assert.match(
+    collection,
+    /collection:\s*ComputedRef<KitchenCollectionRecord\[]>/
+  )
   assert.match(collection, /includeHidden=true/)
   assert.match(collection, /getIdToken\(\)/)
   assert.match(collection, /watch\(\s*\[hasAuthState,\s*uid\]/)

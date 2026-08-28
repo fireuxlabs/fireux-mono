@@ -144,9 +144,10 @@ const {
   surface,
 } = useKitchenInterface()
 const collectionSurface = computed<KitchenCollectionItem[]>(() =>
-  fetched.collection.value
-    .map((kitchen) => surface({ kitchen, place: kitchen.place }))
-    .filter((kitchen): kitchen is KitchenCollectionItem => Boolean(kitchen))
+  fetched.collection.value.flatMap((kitchen) => {
+    const item = surface({ kitchen, place: kitchen.place })
+    return item ? [item] : []
+  })
 )
 const outcome = computed(() => fetched.outcome.value)
 const refreshCollection = async () => {

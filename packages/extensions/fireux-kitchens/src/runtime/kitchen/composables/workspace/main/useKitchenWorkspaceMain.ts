@@ -109,22 +109,22 @@ export function useKitchenWorkspaceMain(workspace = useKitchenWorkspace()) {
     suggestion: 'Show me what Misebox can do',
     to: '/about',
   }
-  const suggestions = computed(() =>
-    [
-      kitchenTool.value?.suggestion,
-      userTool.value?.suggestion,
-      exploreAction.suggestion,
-      ...capabilityTools.tools.value.map(({ tool }) => `Use ${tool.label}`),
-    ].filter((suggestion): suggestion is string => Boolean(suggestion))
-  )
-  const availableActions = computed(() =>
-    [
-      kitchenTool.value?.id,
-      userTool.value?.id,
-      exploreAction.id,
-      ...capabilityTools.availableActions.value,
-    ].filter((id): id is string => Boolean(id))
-  )
+  const suggestions = computed<string[]>(() => {
+    const items = [exploreAction.suggestion]
+    if (kitchenTool.value) items.unshift(kitchenTool.value.suggestion)
+    if (userTool.value) items.push(userTool.value.suggestion)
+    items.push(
+      ...capabilityTools.tools.value.map(({ tool }) => `Use ${tool.label}`)
+    )
+    return items
+  })
+  const availableActions = computed<string[]>(() => {
+    const ids: string[] = [exploreAction.id]
+    if (kitchenTool.value) ids.unshift(kitchenTool.value.id)
+    if (userTool.value) ids.push(userTool.value.id)
+    ids.push(...capabilityTools.availableActions.value)
+    return ids
+  })
   const startKitchen = () => {
     createKitchenOpen.value = true
   }

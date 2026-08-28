@@ -157,7 +157,8 @@ const kitchenCells = computed(() => {
 })
 const otherKitchenCells = computed(() =>
   kitchenCells.value.filter(
-    (item) => item.card.id !== workspace.selection.kitchenId.value
+    (item: { card: { id: string } }) =>
+      item.card.id !== workspace.selection.kitchenId.value
   )
 )
 const title = computed(() => {

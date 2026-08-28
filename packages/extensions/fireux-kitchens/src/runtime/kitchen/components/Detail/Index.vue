@@ -106,9 +106,11 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-const kitchen = computed(() => props.kitchen)
-const place = computed(() => props.place)
-const displayKitchen = computed(() => props.presentation)
+const kitchen = computed<Kitchen | null>(() => props.kitchen ?? null)
+const place = computed<Place | null>(() => props.place ?? null)
+const displayKitchen = computed<KitchenDetailPresentation | null>(
+  () => props.presentation ?? null
+)
 const { isAdmin, isDeveloper } = useUser()
 const canEditPlace = computed(() => Boolean(isAdmin.value || isDeveloper.value))
 const locator = computed(() => String(props.presentation?.slug || '').trim())

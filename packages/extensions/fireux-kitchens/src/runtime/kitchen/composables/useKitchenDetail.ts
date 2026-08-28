@@ -12,9 +12,7 @@ import {
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
-import {
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenDetailPresentation,
   KitchenDetailResponse,
@@ -103,18 +101,30 @@ export function useKitchenDetail(
   const lastGoodKitchen = shallowRef<Kitchen | null>(null)
   const lastGoodPlace = shallowRef<Place | null>(null)
   watch(
-    [loadedKitchen, liveKitchen],
-    ([loaded, live]) => {
-      if (live) lastGoodKitchen.value = live
-      else if (loaded) lastGoodKitchen.value = loaded
+    loadedKitchen,
+    (loaded: Kitchen | null) => {
+      if (loaded) lastGoodKitchen.value = loaded
     },
     { immediate: true }
   )
   watch(
-    [loadedPlace, livePlace],
-    ([loaded, live]) => {
+    liveKitchen,
+    (live: Kitchen | null) => {
+      if (live) lastGoodKitchen.value = live
+    },
+    { immediate: true }
+  )
+  watch(
+    loadedPlace,
+    (loaded: Place | null) => {
+      if (loaded) lastGoodPlace.value = loaded
+    },
+    { immediate: true }
+  )
+  watch(
+    livePlace,
+    (live: Place | null) => {
       if (live) lastGoodPlace.value = live
-      else if (loaded) lastGoodPlace.value = loaded
     },
     { immediate: true }
   )
