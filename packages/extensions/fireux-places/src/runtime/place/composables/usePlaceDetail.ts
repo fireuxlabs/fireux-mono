@@ -35,14 +35,14 @@ export function usePlaceDetail(props: { locator: string }) {
   const lastGoodPlace = shallowRef<Place | null>(null)
   watch(
     loadedPlace,
-    (value) => {
+    (value: Place | null) => {
       if (value) lastGoodPlace.value = value
     },
     { immediate: true }
   )
   watch(
     livePlace,
-    (value) => {
+    (value: Place | null) => {
       if (value) lastGoodPlace.value = value
     },
     { immediate: true }
@@ -52,16 +52,8 @@ export function usePlaceDetail(props: { locator: string }) {
   )
   const showDebug = import.meta.dev
   const detailStyle = computed(() => {
-    const accent =
-      place.value?.media_backdrop_color ||
-      'var(--ui-primary)'
-    return {
-      '--ui-primary': accent,
-      '--fx-entity-accent': accent,
-      '--fx-entity-media-bg':
-        place.value?.media_backdrop_color ||
-        'var(--ui-bg-muted)',
-    }
+    const color = place.value?.media_backdrop_color
+    return color ? { '--fx-entity-media-bg': color } : undefined
   })
   const websiteLabel = computed(() => {
     const value = String(place.value?.website || '').trim()

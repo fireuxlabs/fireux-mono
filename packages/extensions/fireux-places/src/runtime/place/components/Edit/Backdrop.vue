@@ -5,7 +5,8 @@
         Identity backdrop
       </p>
       <p class="text-sm text-dimmed">
-        Base colour behind transparent Place identity media and inherited by linked entities.
+        Base colour behind transparent Place identity media and inherited by
+        linked entities.
       </p>
     </div>
 
@@ -53,7 +54,9 @@ const props = defineProps<{
 }>()
 
 const placeId = computed(() => String(props.place?.id || '').trim())
-const storedColor = computed(() => String(props.place?.media_backdrop_color || '').trim())
+const storedColor = computed(() =>
+  String(props.place?.media_backdrop_color || '').trim()
+)
 const draft = ref('')
 const saving = ref(false)
 const toast = useToastify()
@@ -61,7 +64,13 @@ const { updateMediaBackdropColor } = usePlaceUpdate({
   authority: () => props.mutationAuthority || null,
 })
 
-watch(storedColor, value => { draft.value = value }, { immediate: true })
+watch(
+  storedColor,
+  (value: string) => {
+    draft.value = value
+  },
+  { immediate: true }
+)
 
 async function save() {
   if (!props.canWrite || !placeId.value || saving.value) return

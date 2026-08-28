@@ -181,6 +181,7 @@ export async function fetchGoogle(
           claimed_by: '',
           source: 'google',
           slug: '',
+          entity_families: [],
         }
       })
 
@@ -344,6 +345,7 @@ export function mapDetailsToGooglePlace(
     image_shade: 'none',
     claimed_by: '',
     slug: '',
+    entity_families: [],
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     google_maps_url: typeof result?.url === 'string' ? result.url : '',

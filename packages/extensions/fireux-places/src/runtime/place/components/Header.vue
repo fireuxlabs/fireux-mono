@@ -139,16 +139,17 @@ const hasBrandIdentity = computed(() =>
 const identityImageUrl = computed(() =>
   hasBrandIdentity.value ? logoUrl.value : imageUrl.value
 )
+const placeName = computed(() => String(props.place.name || '').trim())
+const shortName = computed(() => String(props.place.short_name || '').trim())
 const hasShortName = computed(
   () =>
-    Boolean(props.place.short_name) &&
-    props.place.short_name.localeCompare(props.place.name, undefined, {
+    Boolean(shortName.value) &&
+    shortName.value.localeCompare(placeName.value, undefined, {
       sensitivity: 'base',
     }) !== 0
 )
 const initials = computed(() =>
-  props.place.name
-    .trim()
+  placeName.value
     .split(/\s+/u)
     .filter(Boolean)
     .slice(0, 2)
@@ -157,10 +158,8 @@ const initials = computed(() =>
     .toUpperCase()
 )
 const identityStyle = computed(() => {
-  const background = String(
-    props.place.media_backdrop_color ||
-      ''
-  ).trim()
+  const background = String(props.place.media_backdrop_color || '').trim()
+  if (!hasBrandIdentity.value) return undefined
   return background ? { '--fx-place-media-bg': background } : undefined
 })
 const placeTypeLabel = computed(() =>

@@ -133,9 +133,7 @@ const galleryImages = computed(() => {
 })
 const detailStyle = computed(() => {
   const color = clean(displayKitchen.value?.media_backdrop_color)
-  return color
-    ? { '--fx-entity-accent': color, '--fx-entity-media-bg': color }
-    : undefined
+  return color ? { '--fx-entity-media-bg': color } : undefined
 })
 const emptyFulfilment: KitchenFulfilment = {
   delivery_zones: [],

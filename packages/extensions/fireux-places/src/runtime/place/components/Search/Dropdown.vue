@@ -93,6 +93,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     claimed_by: (card.claimedBy as string) ?? '',
     slug: String((card as any).slug || ''),
     source: (card.source as PlaceSource) ?? 'fireux',
+    entity_families: [],
   }
 }
 

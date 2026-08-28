@@ -17,13 +17,14 @@ export function useKitchenWorkspacePlace(
   identity: KitchenWorkspaceIdentityState = useKitchenWorkspaceIdentity()
 ) {
   const isLive = computed(() => identity.dataType.value === 'live')
+  const isDemo = computed(() => identity.dataType.value === 'demo')
   const livePlaceId = computed(() =>
     isLive.value ? identity.placeId.value : ''
   )
   const live = usePlaceFetch(livePlaceId)
-  const demoTargets = useKitchenWorkspaceDemoTargets(identity.isDemo)
+  const demoTargets = useKitchenWorkspaceDemoTargets(isDemo)
   const demoPlace = computed<Place | null>(() => {
-    if (!identity.isDemo.value) return null
+    if (!isDemo.value) return null
 
     const target = findKitchenWorkspaceDemoTarget(
       demoTargets.data.value,
@@ -33,12 +34,12 @@ export function useKitchenWorkspacePlace(
     return target.place
   })
   const place = computed<Place | null>(() => {
-    if (identity.isDemo.value) return demoPlace.value
+    if (isDemo.value) return demoPlace.value
     if (isLive.value) return live.place.value
     return null
   })
   const pending = computed(() =>
-    identity.isDemo.value
+    isDemo.value
       ? demoTargets.pending.value
       : isLive.value
         ? live.pending.value

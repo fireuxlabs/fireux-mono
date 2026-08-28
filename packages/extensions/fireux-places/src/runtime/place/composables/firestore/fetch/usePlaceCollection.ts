@@ -65,7 +65,7 @@ export function usePlaceCollection(): UsePlaceCollectionReturn {
       if (!current) return false
 
       const items = new Map<string, Place>(
-        current.items.map((item) => [item.id, item])
+        current.items.map((item: Place) => [item.id, item])
       )
       for (const item of page.items) items.set(item.id, item)
       state.data.value = {

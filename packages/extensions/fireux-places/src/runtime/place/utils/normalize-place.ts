@@ -119,7 +119,10 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
     logo_image: text(source.logo_image),
     wordmark_image: text(source.wordmark_image),
     gallery_images: strings(source.gallery_images),
-    media_backdrop_color: readMediaBackdropColor(source.media_backdrop_color),
+    media_backdrop_color: readMediaBackdropColor(
+      source.media_backdrop_color,
+      source.image_shade
+    ),
     phone: text(source.phone),
     email: text(source.email),
     website: text(source.website),

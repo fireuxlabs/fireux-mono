@@ -27,17 +27,16 @@ individual records.
 
 ## Place identity colour
 
-Place owns one optional validated six-digit `identity_color`. It is normally
-sampled from the approved logo and is the one colour used to reconcile
-transparent Place or Kitchen identity media with its backdrop. The editor may
-label it **Primary colour**; the reviewed stored and DTO name is
-`identity_color` so the field describes ownership rather than a generic page
-theme.
+Place owns one optional validated six-digit `media_backdrop_color`. It is
+normally sampled from the approved logo and is the one colour used behind
+transparent Place or Kitchen identity media. The field is not a page theme or
+general entity accent.
 
-Kitchen owns no identity-colour override. A bounded Place-backed Kitchen read
-keeps the owners explicit—for example, `place.identity_color` beside Kitchen
-identity/media—and consumers use the linked Place value. They do not copy the
-colour onto Kitchen or flatten it into a second authority.
+Kitchen owns no backdrop-colour override. A bounded Place-backed Kitchen read
+keeps the owners explicit—for example, `place.media_backdrop_color` beside
+Kitchen identity/media—and consumers use the linked Place value. They do not
+copy the colour onto Kitchen or flatten it into a second authority. A Kitchen
+without a same-id Place has no presentation colour.
 
 The colour may appear behind a transparent Place logo or wordmark when that
 Place is presented as a Kitchen. It never overlays or tints Place image, cover,
@@ -78,11 +77,10 @@ lane.
 
 ## Migration
 
-Current Place source still names its colour `media_backdrop_color`; its
-separate Place migration owns the rename to `identity_color`. Kitchen
-`identity`, `assets`, `brand_palette`, and `place_id` are rejected root fields.
-The guarded Entity migration removes them only after the same-id Place retains
-the required identity and media.
+The canonical Place field is `media_backdrop_color`. Kitchen `identity`,
+`assets`, `brand_palette`, and `place_id` are rejected root fields. The guarded
+Entity migration removes them only after the same-id Place retains the required
+identity and media.
 
 The pre-release `image_shade` values remain read-only compatibility input:
 `light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run

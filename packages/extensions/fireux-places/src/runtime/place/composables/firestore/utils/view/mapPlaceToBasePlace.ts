@@ -24,6 +24,12 @@ function toString(value: unknown): string {
   return typeof value === 'string' ? value : String(value ?? '')
 }
 
+function toStrings(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.map(toString).map((item) => item.trim()).filter(Boolean)
+    : []
+}
+
 export const mapPlaceToBasePlace = (): MapToBasePlace => {
   return (p: any, collectionOverride?: string): BasePlaceRecord => {
     const id = canonicalPlaceId(toString(p?.place_id ?? p?.id)) ?? ''
@@ -43,6 +49,7 @@ export const mapPlaceToBasePlace = (): MapToBasePlace => {
       image_shade: toShade(p?.image_shade),
       source,
       slug: toString(p?.slug).trim(),
+      entity_families: toStrings(p?.entity_families),
     }
 
     return {
