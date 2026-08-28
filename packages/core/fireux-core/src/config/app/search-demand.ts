@@ -9,7 +9,11 @@ export type SearchDemandMetric = {
 
 export type SearchDemandObservation = {
   query: string
-  source: 'google-search-console' | 'google-trends' | 'google-autocomplete' | 'live-search-results'
+  source:
+    | 'google-search-console'
+    | 'google-trends'
+    | 'google-autocomplete'
+    | 'live-search-results'
   geography: string
   language: string
   observed_at: string
@@ -31,11 +35,26 @@ export type SearchDemandCluster = {
   research_gap?: string
 }
 
+export type SearchDemandToolHypothesis = {
+  id: string
+  title: string
+  source_cluster_ids: string[]
+  operator_job: string
+  outcome: string
+  status: 'test-now' | 'research-next' | 'later' | 'boundary'
+}
+
 export type SearchDemandCapability = {
   id: string
   title: string
-  decision: 'establish-now' | 'establish-later' | 'context' | 'derived' | 'boundary'
+  decision:
+    | 'establish-now'
+    | 'establish-later'
+    | 'context'
+    | 'derived'
+    | 'boundary'
   source_cluster_ids: string[]
+  source_tool_ids: string[]
   rationale: string
   research_route?: string
 }
@@ -68,6 +87,11 @@ export type AppSearchDemand = {
     clusters: SearchDemandCluster[]
     next_step: string
   }
+  tools: {
+    summary: string
+    tools: SearchDemandToolHypothesis[]
+    next_step: string
+  }
   capabilities: {
     summary: string
     capabilities: SearchDemandCapability[]
@@ -92,7 +116,9 @@ export function loadAppSearchDemand(): AppSearchDemand | null {
   }
 
   if (!loaded.searchDemand) {
-    throw new Error(`[fireux] App search-demand file must export searchDemand: ${source}`)
+    throw new Error(
+      `[fireux] App search-demand file must export searchDemand: ${source}`
+    )
   }
 
   return loaded.searchDemand

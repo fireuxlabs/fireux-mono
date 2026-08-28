@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-08-28
-Ref: 066bcc1c1
+Ref: f061af90a
 Role: living context
 Scope: repository-wide
 
@@ -133,6 +133,10 @@ Firestore skill whenever Firestore is accessed or changed.
 ## Product language and presentation
 
 - Derive literature bottom-up from current fields, states, commands, and pages.
+- Keep product discovery traceable from sourced evidence through operator jobs,
+  bounded Tool hypotheses, capability decisions, and implemented pages. A Tool
+  hypothesis is not an implemented Tool, and a capability decision is not a
+  release claim.
 - Use concrete product nouns and actions; avoid slogans and explanatory filler.
 - Access vocabulary must reflect actual runtime authority and subscriptions.
 - Brand, media, design-pack, and SEO ownership remain separate from Entity data.

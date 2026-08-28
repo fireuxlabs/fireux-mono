@@ -1,0 +1,113 @@
+import type { AppSearchDemand } from 'fireux-core/config/app/search-demand'
+
+export const demandSummary = {
+  conclusion:
+    'The first FireUX opportunity is the production-launch gap between a working App prototype and a secure, controlled live SaaS App. Project Workspace should not become another generic task-management product.',
+  findings: [
+    '“App project management software” is ambiguous and is usually interpreted as an App for managing ordinary projects.',
+    'Current App-builder products present authentication, databases, deployment, domains, payments and monitoring as parts of one App lifecycle.',
+    'Operator discussions repeatedly move from fast prototyping to production security, secrets, backups, deployment, rollback, cost and portability concerns.',
+    'Current evidence is qualitative. It does not provide monthly search volume, keyword difficulty, CPC or FireUX conversion evidence.',
+  ],
+  next_step:
+    'Validate one production launch and hardening offer with qualified landing starts and operator interviews before establishing a Project Workspace capability or deriving tools.',
+} satisfies AppSearchDemand['summary']
+
+export const demandAnalysis = {
+  summary:
+    'Current product documentation and operator language support an App creation-and-operation lifecycle. The strongest first problem is taking a prototype safely into production; generic project management remains a strong boundary.',
+  clusters: [
+    {
+      id: 'generic-project-management',
+      title: 'Generic project-management software',
+      operator_job:
+        'Plan tasks, timelines and team collaboration for ordinary projects.',
+      intents: ['compare', 'choose'],
+      evidence_queries: [
+        'What is the best project management app?',
+        'What is the best app for managing projects?',
+        'Top 10 project management tools',
+        'Best project management software for small teams',
+      ],
+      confidence: 'strong',
+      interpretation:
+        'Google overwhelmingly interprets the unqualified phrase as Trello, Asana, Jira and similar work-management products.',
+      boundary:
+        'Project Workspace should not reproduce generic task, Kanban or team project-management software.',
+    },
+    {
+      id: 'production-launch-hardening',
+      title: 'Production launch and hardening',
+      operator_job:
+        'Turn a working App prototype into a secure, controlled live product.',
+      intents: ['choose', 'perform', 'troubleshoot'],
+      evidence_queries: [
+        'deploy AI-built app to production',
+        'production-ready SaaS app',
+        'secure no-code app before launch',
+        'app works in preview but not production',
+      ],
+      confidence: 'moderate',
+      interpretation:
+        'Official builder documentation and operator discussions converge on secrets, access, data security, environment differences, domains, backups, release checks and rollback as the work between prototype and production.',
+      research_gap:
+        'Measure qualified requests for a production-readiness review and determine whether buyers want software, guided setup or delivered hardening.',
+    },
+    {
+      id: 'app-building',
+      title: 'App builders and development software',
+      operator_job:
+        'Choose and use a platform to build an App with code, low-code, no-code or AI assistance.',
+      intents: ['learn', 'compare', 'choose', 'perform'],
+      evidence_queries: [
+        'App development software',
+        'no code app builder',
+        'Firebase app builder',
+        'Google app maker free',
+      ],
+      confidence: 'strong',
+      interpretation:
+        'The earlier relative comparison found more interest in App-development and no-code-builder language than in App project management, while current competitors already make prompt-to-prototype creation a baseline offer.',
+      research_gap:
+        'Test whether an opinionated, owned Firebase and Nuxt result is sufficiently different from established AI, no-code and developer platforms.',
+    },
+    {
+      id: 'identity-data-security',
+      title: 'Identity, data and security',
+      operator_job:
+        'Give an App users, protected data, files, secrets, roles and permissions that remain safe in production.',
+      intents: ['choose', 'perform', 'troubleshoot'],
+      evidence_queries: [
+        'AI app builder with authentication and database',
+        'SaaS roles and permissions',
+        'secure app database rules',
+        'exposed API keys app builder',
+      ],
+      confidence: 'moderate',
+      interpretation:
+        'Firebase Studio, Bolt and Replit all give authentication and persistent data first-class product or guidance surfaces; production guidance adds authorization, secrets and database rules.',
+      research_gap:
+        'Separate demand for a configured foundation from demand for a generic schema or database builder, which FireUX does not currently prove.',
+    },
+    {
+      id: 'saas-operation',
+      title: 'Billing and continued operation',
+      operator_job:
+        'Charge for the App and understand its releases, failures, usage and operating cost after launch.',
+      intents: ['compare', 'choose', 'perform', 'troubleshoot'],
+      evidence_queries: [
+        'build SaaS app with Stripe subscriptions',
+        'SaaS monitoring and error tracking',
+        'app builder pricing after launch',
+        'rollback failed app deployment',
+      ],
+      confidence: 'moderate',
+      interpretation:
+        'Builder products expose payments, analytics or monitoring and meter production through different credit, token, workload or infrastructure units. This establishes operator concerns but not one universal FireUX capability.',
+      research_gap:
+        'Validate Stripe subscription work, release health and cost visibility separately before grouping them as one operation product.',
+    },
+  ],
+  next_step:
+    'Test production launch and hardening first, while keeping App creation, identity and data, billing and monitoring as separate hypotheses and generic project management outside the product.',
+} satisfies AppSearchDemand['analysis']

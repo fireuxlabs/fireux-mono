@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-24
-Ref: d0caff27b
+Updated: 2026-08-28
+Ref: f061af90a
 Role: map, not canon
 
 ## Purpose
@@ -34,6 +34,32 @@ Read and write from the bottom upward:
 A parent may summarise or group its descendants. It may not introduce a noun,
 action, outcome, or promise that has no named child or source-defined release
 contract below it.
+
+## Evidence to product
+
+Product discovery follows one traceable sequence:
+
+```text
+sourced evidence
+→ operator jobs
+→ bounded Tool hypotheses
+→ capability decisions
+→ implemented capability pages
+→ Workspace and landing literature
+```
+
+App-owned `app/search-demand.ts` records the market-level evidence, analysis,
+Tool hypotheses, and capability decisions for that App domain. A domain package
+keeps deeper capability research beside the capability owner. Core renders the
+shared stages but does not decide an App's Tools or capabilities.
+
+A Tool hypothesis names a job and expected outcome to test. It is not an
+implemented Tool and does not grant authority. A capability groups related Tool
+hypotheses only when their records, authority, and operator meaning support one
+owner. Capability pages may then present a truthful Hero, demonstration, current
+Tools, and AI assistance derived from the implemented children. Higher
+literature must preserve the difference between observed evidence, a hypothesis,
+a product decision, and released behavior.
 
 ## Construction rule
 

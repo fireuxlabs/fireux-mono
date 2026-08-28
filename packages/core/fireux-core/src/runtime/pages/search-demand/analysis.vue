@@ -105,10 +105,10 @@
           <p>{{ demand.analysis.next_step }}</p>
           <div>
             <UButton
-              to="/search-demand/capabilities"
+              to="/search-demand/tools"
               trailing-icon="i-lucide-arrow-right"
             >
-              Define capabilities
+              Map operator tools
             </UButton>
           </div>
         </section>

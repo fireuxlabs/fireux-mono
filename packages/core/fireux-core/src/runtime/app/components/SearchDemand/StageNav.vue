@@ -15,12 +15,28 @@
 
 <script setup lang="ts">
 defineProps<{
-  current: 'domain' | 'analysis' | 'capabilities'
+  current: 'domain' | 'analysis' | 'tools' | 'capabilities'
 }>()
 
 const stages = [
-  { id: 'domain', order: 1, label: 'Understand the domain', to: '/search-demand' },
-  { id: 'analysis', order: 2, label: 'Map demand', to: '/search-demand/analysis' },
-  { id: 'capabilities', order: 3, label: 'Define capabilities', to: '/search-demand/capabilities' },
+  {
+    id: 'domain',
+    order: 1,
+    label: 'Understand the domain',
+    to: '/search-demand',
+  },
+  {
+    id: 'analysis',
+    order: 2,
+    label: 'Map demand',
+    to: '/search-demand/analysis',
+  },
+  { id: 'tools', order: 3, label: 'Map tools', to: '/search-demand/tools' },
+  {
+    id: 'capabilities',
+    order: 4,
+    label: 'Define capabilities',
+    to: '/search-demand/capabilities',
+  },
 ] as const
 </script>

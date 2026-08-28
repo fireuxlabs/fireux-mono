@@ -6,12 +6,12 @@
     >
       <template #links>
         <UButton
-          to="/search-demand/analysis"
+          to="/search-demand/tools"
           color="neutral"
           variant="outline"
           icon="i-lucide-arrow-left"
         >
-          Demand map
+          Tool hypotheses
         </UButton>
       </template>
     </UPageHeader>
@@ -41,7 +41,7 @@
           color="neutral"
           variant="soft"
           title="First-pass capability map"
-          description="These capability boundaries organise the Workspace before deeper capability research defines their tools and detailed content."
+          description="These capability boundaries group evidence-backed Tool hypotheses without claiming that every Tool is implemented."
         />
 
         <section class="capability-map-summary">
@@ -56,7 +56,7 @@
         >
           <header>
             <p class="capability-map-eyebrow">Proposed Workspace</p>
-            <h2>Review the Kitchen menu before migration</h2>
+            <h2>Review the proposed Workspace</h2>
             <p>{{ demand.capabilities.workspace.summary }}</p>
           </header>
 
@@ -129,6 +129,10 @@
                 </header>
 
                 <p>{{ capability.rationale }}</p>
+                <p v-if="capability.source_tool_ids.length">
+                  <strong>Tool hypotheses:</strong>
+                  {{ toolTitles(capability.source_tool_ids) }}
+                </p>
                 <p
                   v-if="capability.research_route"
                   class="capability-map-route"
@@ -187,6 +191,12 @@ const clusterTitles = computed(
         cluster.id,
         cluster.title,
       ]) ?? []
+    )
+)
+const toolTitleMap = computed(
+  () =>
+    new Map(
+      demand.value?.tools.tools.map((tool) => [tool.id, tool.title]) ?? []
     )
 )
 const decisionOrder: SearchDemandCapability['decision'][] = [
@@ -260,6 +270,10 @@ function proposalItemKey(group: string, label: string): string {
 function sourceTitles(ids: string[]): string {
   if (!ids.length) return 'App boundary decision'
   return ids.map((id) => clusterTitles.value.get(id) ?? id).join(' · ')
+}
+
+function toolTitles(ids: string[]): string {
+  return ids.map((id) => toolTitleMap.value.get(id) ?? id).join(' · ')
 }
 
 function decisionLabel(decision: SearchDemandCapability['decision']): string {
