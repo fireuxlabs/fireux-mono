@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import type { FirestoreCollectionSource } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import {
   PropertyStorage,
   type Property,
@@ -10,7 +10,7 @@ import type {
 } from '../../../../composables/fireux/firestore/collection-selection'
 export type PropertyCollectionFilterValue = TargetCollectionFilterValue
 export type PropertyCollectionFilter = TargetCollectionFilter
-export type PropertyCollectionSource = WorkspaceSource
+export type PropertyCollectionSource = FirestoreCollectionSource
 export type PropertyCollectionDoc = Partial<Property> & {
   id?: string
 }

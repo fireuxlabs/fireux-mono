@@ -117,6 +117,7 @@ function checkFireuxCoreContracts(pkgPath) {
   const source = (relativePath) =>
     readFileSync(path.join(pkgPath, relativePath), 'utf8')
   const violations = []
+  const packageManifest = JSON.parse(source('package.json'))
   const runtimeType = source('src/config/app/runtime.ts')
   const runtimeView = source(
     'src/runtime/app/composables/config/FireUXConfig.ts'
@@ -146,6 +147,18 @@ function checkFireuxCoreContracts(pkgPath) {
   const landingHero = source(
     'src/runtime/components/landing/LandingHeroSection.vue'
   )
+
+  for (const [key, expected] of [
+    ['./config/app/*', './src/config/app/*.ts'],
+    ['./config/app/runtime', './src/config/app/runtime.ts'],
+    ['./config/module/*', './src/config/module/*.ts'],
+  ]) {
+    if (packageManifest.exports?.[key]?.default !== expected) {
+      violations.push(
+        `${key} must default to authored source so clean local Nuxt commands do not depend on disposable dist output.`
+      )
+    }
+  }
 
   if (!runtimeType.includes('Omit<FireuxAppConfig, RuntimeNormalizedFields>')) {
     violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')

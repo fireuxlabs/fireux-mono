@@ -1,4 +1,4 @@
-import type { UserIdentitySummary } from '../../user/models/user-collection.model.ts'
+import type { UserIdentitySummary } from '../../user/models/user-directory.model.ts'
 import type { App } from './app.model.ts'
 import type {
   AppUserOnboardingStatus,

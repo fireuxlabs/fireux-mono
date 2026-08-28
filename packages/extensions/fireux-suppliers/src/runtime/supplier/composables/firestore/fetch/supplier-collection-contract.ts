@@ -1,4 +1,4 @@
-import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import type { FirestoreCollectionSource } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import type { Ref } from 'vue'
 import {
   SupplierStorage,
@@ -25,7 +25,7 @@ export type SupplierCollectionFilter = {
   teamId?: SupplierCollectionFilterValue
 }
 
-export type SupplierCollectionSource = WorkspaceSource
+export type SupplierCollectionSource = FirestoreCollectionSource
 
 export type UseSupplierCollectionOptions = {
   source?:

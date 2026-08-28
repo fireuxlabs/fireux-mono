@@ -12,19 +12,19 @@
       "types": "./src/config/app/*.ts",
       "development": "./src/config/app/*.ts",
       "production": "./dist/config/app/*.mjs",
-      "default": "./dist/config/app/*.mjs"
+      "default": "./src/config/app/*.ts"
     },
     "./config/app/runtime": {
       "types": "./src/config/app/runtime.ts",
       "development": "./src/config/app/runtime.ts",
       "production": "./dist/config/app/runtime.mjs",
-      "default": "./dist/config/app/runtime.mjs"
+      "default": "./src/config/app/runtime.ts"
     },
     "./config/module/*": {
       "types": "./src/config/module/*.ts",
       "development": "./src/config/module/*.ts",
       "production": "./dist/config/module/*.mjs",
-      "default": "./dist/config/module/*.mjs"
+      "default": "./src/config/module/*.ts"
     },
     "./runtime/*.vue": {
       "types": "./src/runtime/*.vue",

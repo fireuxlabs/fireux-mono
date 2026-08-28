@@ -8,7 +8,7 @@ import type {
   AppAdminMember,
   AppAdminPeopleResponse,
 } from '../../../../app/models/app-context.model.ts'
-import type { UserIdentitySummary } from '../../../models/user-collection.model.ts'
+import type { UserIdentitySummary } from '../../../models/user-directory.model.ts'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 

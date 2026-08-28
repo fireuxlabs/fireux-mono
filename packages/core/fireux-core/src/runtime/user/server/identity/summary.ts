@@ -1,4 +1,4 @@
-import type { UserIdentitySummary } from '../../models/user-collection.model.ts'
+import type { UserIdentitySummary } from '../../models/user-directory.model.ts'
 import {
   isUserDirectoryEligible,
   normalizeUser,

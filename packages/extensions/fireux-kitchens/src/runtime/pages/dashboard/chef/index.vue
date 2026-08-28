@@ -1,4 +1,4 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/index.vue -->
+<!-- FILE: packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/index.vue -->
 <!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: let UDashboardPanel own body rhythm. -->
 <template>
   <UDashboardPanel id="dashboard-chef-home">

@@ -1,4 +1,4 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/components/profiles/Chef/Edit/PreviewPanel.vue -->
+<!-- FILE: packages/extensions/fireux-kitchens/src/runtime/user/components/Chef/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <section class="space-y-4">

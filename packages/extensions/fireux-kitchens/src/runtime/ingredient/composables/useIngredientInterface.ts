@@ -1,10 +1,10 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Ingredient } from '../utils/ingredient.ts'
+import type { Ingredient } from '../models/ingredient.model.ts'
 import {
   ingredientCategoryLabel,
   ingredientKindLabel,
 } from '../models/ingredient-taxonomy'
-import type { KitchenIngredient } from '../../kitchen/utils/ingredient.ts'
+import type { KitchenIngredient } from '../../kitchen/utils/kitchen-ingredient.ts'
 
 const formatPackPrice = (costMinor?: number | null, currencyCode?: string) => {
   const amount = Number(costMinor)

@@ -1,4 +1,4 @@
-import type { WorkspaceSource } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import type { FirestoreCollectionSource } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { PortfolioStorage } from '../../../../models/portfolio.model.ts'
 
 export const ROOT_PORTFOLIO_COLLECTION_PATH = PortfolioStorage.rootCollection
@@ -9,7 +9,7 @@ const normalizePath = (value: unknown) =>
 
 export function resolvePortfolioWorkspaceCollectionPath(
   _appId: unknown,
-  _source: WorkspaceSource = 'live'
+  _source: FirestoreCollectionSource = 'live'
 ) {
   return ROOT_PORTFOLIO_COLLECTION_PATH
 }

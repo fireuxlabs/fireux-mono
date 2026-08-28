@@ -5,7 +5,7 @@ import { computed, ref, watchEffect, type ComputedRef } from 'vue'
 import type {
   AppAdminJoinRequest,
 } from '../../../models/app-context.model.ts'
-import type { UserIdentitySummary } from '../../../../user/models/user-collection.model.ts'
+import type { UserIdentitySummary } from '../../../../user/models/user-directory.model.ts'
 import type { UserCard } from '../../../../user/composables/useUserInterface'
 
 type JoinRequestItem = {

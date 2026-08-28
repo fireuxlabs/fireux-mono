@@ -12,7 +12,7 @@ import type {
 import type {
   ProfileDirectoryEntry,
   ProfileUser,
-} from '../../models/user-collection.model.ts'
+} from '../../models/user-directory.model.ts'
 import { getRuntimeIdentityFirestore } from '../../../server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../../../server/utils/ids/path'
 import { readUserIdentitySummary } from '../identity/summary'

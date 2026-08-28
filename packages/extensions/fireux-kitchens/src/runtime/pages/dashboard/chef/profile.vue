@@ -1,4 +1,4 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue -->
+<!-- FILE: packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue -->
 <template>
   <UDashboardPanel id="dashboard-chef-profile">
     <template #header>

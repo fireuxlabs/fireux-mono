@@ -180,7 +180,7 @@ watch(query, (value) => {
       const placeUpdate = usePlaceUpdate({
         authority: { appId, kitchenId: result.id },
       })
-      await placeUpdate.updateTagline(tagline.value, { id: result.id })
+      await placeUpdate.updateBrandTagline(tagline.value, { id: result.id })
     }
   }).catch(showError)
 })
@@ -192,7 +192,7 @@ watch(tagline, (value) => {
     const placeUpdate = usePlaceUpdate({
       authority: { appId, kitchenId },
     })
-    await placeUpdate.updateTagline(value, { id: kitchenId })
+    await placeUpdate.updateBrandTagline(value, { id: kitchenId })
   }).catch(showError)
 })
 
@@ -245,7 +245,7 @@ async function submit() {
       authority: { appId, kitchenId: result.id },
     })
     if (tagline.value.trim()) {
-      await placeUpdate.updateTagline(tagline.value, { id: placeId })
+      await placeUpdate.updateBrandTagline(tagline.value, { id: placeId })
     }
     if (image.value) {
       const url = await uploadImage(`places/${placeId}/avatar`, image.value)

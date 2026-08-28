@@ -10,7 +10,7 @@ import type {
 import type {
   ProfileDirectoryEntry,
   ProfileUser,
-} from '../../models/user-collection.model.ts'
+} from '../../models/user-directory.model.ts'
 
 type ProfileDirectoryOptions = {
   collection: 'agents' | 'chefs' | 'drivers' | 'professionals'

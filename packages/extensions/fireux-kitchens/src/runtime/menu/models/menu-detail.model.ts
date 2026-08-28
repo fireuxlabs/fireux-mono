@@ -13,7 +13,7 @@ import type {
   MenuChoice,
   MenuOrderingConfig,
   MenuServiceProfile,
-} from './menu.model.ts'
+} from './kitchen-menu.model.ts'
 
 export type MenuManifestPriceOption = {
   id: string

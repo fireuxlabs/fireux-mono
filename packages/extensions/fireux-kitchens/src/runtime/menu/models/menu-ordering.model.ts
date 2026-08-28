@@ -1,7 +1,7 @@
 import type {
   MenuOrderTypeConfig,
   MenuServiceHoursConfig,
-} from './menu.model.ts'
+} from './kitchen-menu.model.ts'
 import type {
   KitchenOrderCustomer,
   KitchenOrderChannel,

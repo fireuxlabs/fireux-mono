@@ -1,4 +1,4 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue -->
+<!-- FILE: packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/my-recipes.vue -->
 <!-- Concurrent edit — 2026-07-21 14:05 CEST — CSS necessity pass: let UDashboardPanel own body rhythm. -->
 <template>
   <UDashboardPanel id="dashboard-chef-my-recipes">
