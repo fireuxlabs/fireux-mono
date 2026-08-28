@@ -7,13 +7,15 @@ const bringliPricingProfile = {
   appName: 'Bringli',
   contactEmail: 'fire@fireux.app',
   workspaceName: 'Supply Workspace',
+  entityName: 'Supplier',
+  entityPluralName: 'Suppliers',
   free: [
     'Create a supplier profile',
     'Publish basic supplier information',
     'Use the Supplier Workspace',
     'Review catalogue, ingredient, and item records',
   ],
-  pro: [
+  professional: [
     'Manage complete supplier catalogues',
     'Connect ingredients and supplied items',
     'Coordinate coverage and delivery work',

@@ -27,7 +27,7 @@
                 {{ appMeta.getStarted.monthlyPrice }}
               </p>
               <p class="mt-2 text-sm text-muted">
-                CHF 20 Pro or CHF 50 Managed.
+                CHF 50/month for each Entity managed by the App.
               </p>
             </UCard>
           </section>

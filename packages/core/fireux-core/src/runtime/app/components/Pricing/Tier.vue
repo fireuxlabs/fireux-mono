@@ -158,13 +158,13 @@ const ecosystemRevenue = [
     owner: 'CHF 300',
   },
   {
-    purchase: 'Pro',
-    retail: 'CHF 20/month',
-    fireux: 'CHF 10/month',
-    owner: 'CHF 10/month',
+    purchase: 'Additional Entity setup',
+    retail: 'CHF 100',
+    fireux: 'CHF 50',
+    owner: 'CHF 50',
   },
   {
-    purchase: 'Managed',
+    purchase: 'Monthly Entity',
     retail: 'CHF 50/month',
     fireux: 'CHF 25/month',
     owner: 'CHF 25/month',

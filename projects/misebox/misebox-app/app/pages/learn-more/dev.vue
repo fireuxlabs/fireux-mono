@@ -5,11 +5,20 @@
         <UBadge color="primary" variant="soft">Misebox Dev Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More: Dev</h1>
         <p class="fx-type-description text-toned">
-          Operator reference for Misebox entities, routes, and partner implementation flow.
+          Operator reference for Misebox entities, routes, and partner
+          implementation flow.
         </p>
         <div class="flex flex-wrap gap-2">
-          <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/" color="neutral" variant="soft" icon="i-lucide-terminal">Kitchen workspace</UButton>
+          <UButton to="/learn-more" color="primary" icon="i-lucide-book-open"
+            >Public learn more</UButton
+          >
+          <UButton
+            to="/"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-terminal"
+            >Kitchen workspace</UButton
+          >
         </div>
       </UContainer>
     </section>
@@ -21,7 +30,10 @@
             <h2 class="fx-type-card-heading">Primary entities</h2>
           </template>
           <ul class="list-disc fx-list-stack text-sm">
-            <li>Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenMiseTask, KitchenTeamMember</li>
+            <li>
+              Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenMiseTask,
+              KitchenTeamMember
+            </li>
             <li>Job, Chef, Professional, Agent</li>
             <li>Supplier and Company links</li>
           </ul>
@@ -37,8 +49,10 @@
               <p class="text-dimmed">Functional Kitchen Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/premium</p>
-              <p class="text-dimmed">Complete self-managed Kitchen Workspace.</p>
+              <p class="font-mono">GET /pricing/professional</p>
+              <p class="text-dimmed">
+                Complete self-managed Kitchen Workspace.
+              </p>
             </div>
             <div class="fx-inset-panel">
               <p class="font-mono">GET /pricing/business</p>
@@ -63,6 +77,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More: Dev · Misebox',
-  description: 'Operator reference for Misebox entities, routes, and partner implementation.',
+  description:
+    'Operator reference for Misebox entities, routes, and partner implementation.',
 })
 </script>

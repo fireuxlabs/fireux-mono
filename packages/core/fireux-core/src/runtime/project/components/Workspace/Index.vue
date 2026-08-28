@@ -10,6 +10,8 @@
       @clear="clearProject"
     />
 
+    <WorkspaceProjectCreate v-if="outcome === 'empty'" />
+
     <WorkspaceProjectTargets
       :collection="projects"
       :outcome="outcome"
@@ -33,6 +35,13 @@
 <script setup lang="ts">
 import { useProjectWorkspaceIndex } from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
-const { project, projectId, projects, outcome, selectProject, clearProject, debug } =
-  useProjectWorkspaceIndex()
+const {
+  project,
+  projectId,
+  projects,
+  outcome,
+  selectProject,
+  clearProject,
+  debug,
+} = useProjectWorkspaceIndex()
 </script>

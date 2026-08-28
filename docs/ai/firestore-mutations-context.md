@@ -49,6 +49,16 @@ operations, and protected support beneath their root record. App-nested
 Workspace records and `users/{uid}/private/targets` are migration sources only;
 they are not additional target authorities or supported destinations.
 
+Workspace creation capacity is derived from canonical active owner Team
+memberships, not from a User target list or a client count. The guarded Server
+transaction supports a fixed-placement, fixed-parent collection-group equality
+read for that purpose. Kitchen and Project use it inside the same transaction
+that creates the Entity root and `team/{uid}` owner record: Free and
+Professional allow one owned Entity in their family, while Business allows
+multiple. Invited operator or member access does not consume ownership
+capacity. FireUX Project creation is a named `fireux` Server command; ordinary
+clients call its fixed endpoint and never receive a Project Firestore writer.
+
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
 `handles`, `user-handles`, `user-handle-state`, and `security-migrations`.

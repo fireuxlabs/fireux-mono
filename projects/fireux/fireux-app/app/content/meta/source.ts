@@ -253,7 +253,11 @@ export const sourceMeta = {
         { label: 'Modules', path: '/modules', kind: 'public' },
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
         { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
-        { label: 'Project Workspace', path: '/workspace/project', kind: 'workspace' },
+        {
+          label: 'Project Workspace',
+          path: '/workspace/project',
+          kind: 'workspace',
+        },
         {
           label: 'Project Ignition',
           path: '/workspace/project/ignitions',
@@ -299,7 +303,7 @@ Module package manifest
     title: 'Ignition',
     description: fireuxOffer.ignition.description,
     setupPrice: 'CHF 600',
-    monthlyPrice: 'CHF 20/month',
+    monthlyPrice: 'CHF 50/month per Entity',
     included: [
       'Your branding',
       'Web app and installable PWA',
@@ -320,7 +324,7 @@ Module package manifest
     seo: {
       title: 'FireUX App Ignition',
       description:
-        'Request a standalone FireUX App through Ignition. Setup is CHF 600, followed by Pro or Managed service.',
+        'Request a standalone FireUX App through Ignition. Setup is CHF 600 including one Entity, with CHF 100 setup per additional Entity and CHF 50/month per Entity.',
     },
   },
   roadmap: {

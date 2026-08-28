@@ -188,16 +188,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(supplierServerUpdate, /FIRESTORE_MUTATION_TARGETS\.suppliers/)
 
   for (const retiredProjectMutation of [
-    'projects/fireux/fireux-app/server/project/index/create.ts',
     'projects/fireux/fireux-app/server/project/identity/update.ts',
     'projects/fireux/fireux-app/server/project/identity/delete.ts',
   ]) {
     assert.equal(
       existsSync(path.join(repoRoot, retiredProjectMutation)),
       false,
-      `Project Workspace must stay read-only until ProjectMeta synchronization exists: ${retiredProjectMutation}`
+      `Provisioned Project identity mutation must not bypass ProjectMeta synchronization: ${retiredProjectMutation}`
     )
   }
+  const projectCreate = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/project/index/create.ts'
+  )
+  assert.match(projectCreate, /status:\s*['"]inactive['"]/)
+  assert.match(projectCreate, /runGuardedServerTransaction/)
+  assert.match(projectCreate, /fireuxProjectTeamMembersTarget/)
+  assert.doesNotMatch(
+    projectCreate,
+    /projectMeta|collection\(['"]project['"]\)/
+  )
 
   const marketplace = [
     read(

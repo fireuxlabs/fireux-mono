@@ -865,6 +865,21 @@ export async function run(ctx) {
   const fireuxEcosystems = read(repoRoot, FIREUX_ECOSYSTEMS_PATH)
   const violations = []
 
+  if (
+    !/import CoreLandingPricingStrip from ['"]\.\/PricingStrip\.vue['"]/.test(
+      productPricingStrip
+    )
+  ) {
+    violations.push(
+      `${CORE_PRODUCT_PRICING_STRIP_PATH}: Core pricing composition must import its Core primitive explicitly`
+    )
+  }
+  if (/<LandingPricingStrip\b/.test(productPricingStrip)) {
+    violations.push(
+      `${CORE_PRODUCT_PRICING_STRIP_PATH}: auto-imported LandingPricingStrip can recurse into an App adapter`
+    )
+  }
+
   for (const [filePath, source] of [
     [MISEBOX_PAGE_PATH, miseboxPage],
     [FIREUX_PAGE_PATH, fireuxPage],
@@ -1162,17 +1177,21 @@ export async function run(ctx) {
 
   for (const required of [
     "id: 'free'",
-    "id: 'pro'",
+    "id: 'professional'",
+    "id: 'business'",
     "id: 'managed'",
     "id: 'your-app'",
     "id: 'your-ecosystem'",
-    "price: 'CHF 20'",
-    "price: 'CHF 50'",
-    "price: 'CHF 600'",
-    "price: 'CHF 1,200'",
+    'professionalEntityMonthly: 20',
+    'businessMonthly: 100',
+    'managedMonthly: 100',
+    'appSetup: 600',
+    'appAdditionalEntitySetup: 100',
+    'appEntityMonthly: 50',
+    'includesManaged?: boolean',
     'includesEcosystemTier?: boolean',
     'profile.includesEcosystemTier === true',
-    '50% App revenue share',
+    '50% customer App revenue share',
   ]) {
     if (!productPricingSource.includes(required)) {
       violations.push(
@@ -1241,14 +1260,27 @@ export async function run(ctx) {
 
     if (contract.name === 'Misebox') {
       for (const required of [
-        "title: 'Premium'",
-        "title: 'Business'",
-        "tier.id === 'your-app'",
-        'return []',
+        "entityName: 'Kitchen'",
+        'professional:',
+        'return usePricing(miseboxPricingProfile)',
       ]) {
         if (!contract.composable.includes(required)) {
           violations.push(
-            `${contract.composablePath}: Misebox pricing must expose only Free, Premium, and Business subscriptions (${required})`
+            `${contract.composablePath}: Misebox pricing must use the shared pre-designed Kitchen pricing (${required})`
+          )
+        }
+      }
+    }
+
+    if (contract.name === 'FireUX') {
+      for (const required of [
+        "entityName: 'Project'",
+        'includesManaged: false',
+        'includesEcosystemTier: true',
+      ]) {
+        if (!contract.composable.includes(required)) {
+          violations.push(
+            `${contract.composablePath}: FireUX pricing must keep Project, no-Managed, and ecosystem offer policy (${required})`
           )
         }
       }

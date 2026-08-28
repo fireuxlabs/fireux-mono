@@ -1,5 +1,5 @@
 <template>
-  <LandingPricingStrip
+  <CoreLandingPricingStrip
     :ariaLabel="`${props.appName} plans`"
     :plans="props.plans"
   />
@@ -7,6 +7,7 @@
 
 <script setup lang="ts">
 import type { LandingPricingPlan } from '../../../types/landing-product'
+import CoreLandingPricingStrip from './PricingStrip.vue'
 
 const props = defineProps<{
   appName: string

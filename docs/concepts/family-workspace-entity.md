@@ -24,15 +24,15 @@ still needed to remove unexplained drift.
 The exact peer and Operation lists live once in the source-backed capability
 map in `workspace.md`. The family deltas are:
 
-| Member            | Status and reason                                                                                                                       |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Member            | Status and reason                                                                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations, but is not an ecosystem-installed product Workspace |
-| Kitchen           | `accepted`: Place-backed or name-only root, dual Live/Demo targets, root-owned Team, and a large operational domain                     |
-| Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                              |
-| Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                |
-| Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                    |
-| Project           | `accepted`: FireUX control-plane root with Team authority and no production Create flow                                                 |
-| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                 |
+| Kitchen           | `accepted`: Place-backed or name-only root, dual Live/Demo targets, root-owned Team, and a large operational domain                                                                              |
+| Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                                                                                       |
+| Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                                                                         |
+| Property          | `accepted`: root-owned Team plus Reservation and Calendar operations                                                                                                                             |
+| Project           | `accepted`: FireUX control-plane root with Team authority and trusted empty-shell Create                                                                                                         |
+| Marketplace Store | `accepted`: root Workspace ownership is declared now; its Workspace surface remains future product work                                                                                          |
 
 ## Shared spine
 
@@ -54,9 +54,10 @@ Team authority, the shared shell and navigation groups, and entity-owned
 Overview, Identity, Team, named capability, and debug adapters.
 
 Their material differences remain domain-owned. Project is a private FireUX
-control-plane Entity with Apps and Ecosystem capabilities and no production
-Create flow. Kitchen is a domain-database Entity with Live and Demo sources,
-trusted onboarding, food-service capabilities, and optional same-ID Place identity. Those
+control-plane Entity with Apps and Ecosystem capabilities and a trusted
+root-plus-owner-Team empty-shell command. Kitchen is a domain-database Entity
+with Live and Demo sources, trusted onboarding, food-service capabilities, and
+optional same-ID Place identity. Those
 differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
@@ -132,6 +133,12 @@ migration verification, and protected Workspace consumer are complete.
 - `team/{uid}` grants Workspace membership and names its roles and permissions.
   Current App admins are the explicit override only for roots managed by that
   App.
+- Subscription capacity counts only active `team/{uid}` records whose role is
+  `owner`. Free and Professional allow one owned Entity in the family;
+  Business allows multiple. Operator, member, and other invited access does
+  not consume ownership capacity. The trusted Create transaction reads that
+  canonical owner relationship before creating the root and owner Team record,
+  so a convenience User target or client-side count never becomes authority.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
   transaction for root, the caller's Team authority, and any required parent
@@ -160,7 +167,7 @@ migration verification, and protected Workspace consumer are complete.
 | Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                                            | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                        |
 | Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                       | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
 | Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                             | `projects/fireux/fireux-blank`                                                                                |
-| Project has no Create                                        | `accepted` | Project Team and Operations use private FireUX control-plane authority without a production onboarding lifecycle                                                         | Project entity declaration and internal control-plane APIs                                                    |
+| Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's owner Team authority; publication and further product composition remain separate lifecycles  | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
 | Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                          | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
 
 Accepted deltas change domain content or authority. They do not change the

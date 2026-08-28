@@ -7,13 +7,15 @@ const werkboxPricingProfile = {
   appName: 'Werkbox',
   contactEmail: 'fire@fireux.app',
   workspaceName: 'Work Workspace',
+  entityName: 'Workplace',
+  entityPluralName: 'Workplaces',
   free: [
     'Browse public work',
     'Create a professional or business profile',
     'Apply to published work directly',
     'Use the functional Work Workspace',
   ],
-  pro: [
+  professional: [
     'Publish work',
     'Review applications and hire directly',
     'Manage customer and job workspaces',

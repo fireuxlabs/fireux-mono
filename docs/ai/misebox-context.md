@@ -99,9 +99,11 @@ Firestore work.
 
 ## Access, subscription, and privacy
 
-- User-facing subscription vocabulary is Free, Premium, and Business.
+- User-facing subscription vocabulary is Free, Professional, and Business.
 - Role is separate: User, Admin, or Developer.
-- Free and Premium ordinarily allow one Kitchen; Business allows multiple.
+- Free and Professional ordinarily allow one owned Kitchen; Business allows
+  multiple. Invited access to another Kitchen does not consume ownership
+  capacity.
 - Administrative/developer previews do not create domain authority exceptions.
 - Protected operational data is absent from public Kitchen/detail projections.
 - Client Firestore access remains denied where trusted commands own mutations.

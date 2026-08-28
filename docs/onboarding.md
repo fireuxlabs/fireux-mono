@@ -10,13 +10,15 @@ This is the practical playbook for shared Core entity onboarding journeys.
 - Canonical `fireux/projects/{projectId}` owns Project identity and
   presentation. Each Firebase host keeps one bounded
   `(default)/project/{projectId}` ProjectMeta routing projection.
-- The Workspace is read-only. Canonical creation and changes are guarded
-  provisioning operations that synchronize every local ProjectMeta through the
-  explicit migration/MCP lane; no ordinary Server or browser endpoint mutates
-  only one side of that contract.
+- The Workspace may create an inactive empty Project shell and its caller-owned
+  Team record in one trusted transaction. That shell has no provisioned named
+  product database, so it has no ProjectMeta routing projection yet. Activation,
+  identity changes after provisioning, and deletion remain guarded provisioning
+  operations that synchronize every required local ProjectMeta through the
+  explicit migration/MCP lane; no browser endpoint mutates either side.
 - The minimal Workspace operations are Identity, Apps, Ecosystem, and Team. Team
-  reads the existing FireUX `AppProject` access record; it is not a duplicate
-  membership store. Do not add Project notifications until the notification
+  reads the Project-owned `projects/{projectId}/team/{uid}` access record. Do
+  not add Project notifications until the notification
   model has a real Project-scoped emitter and User-owned delivery lifecycle.
 - Audit existing Projects with
   `pnpm align:onboarding -- --all --family project --summary`. Any apply must

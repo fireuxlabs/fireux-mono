@@ -15,7 +15,9 @@ const tierId = computed(() => String(route.params.tier || ''))
 definePageMeta({
   layout: 'landing',
   validate: (route: RouteLocationNormalized) =>
-    ['free', 'pro', 'managed', 'your-app'].includes(String(route.params.tier)),
+    ['free', 'professional', 'business', 'managed', 'your-app'].includes(
+      String(route.params.tier)
+    ),
 })
 useSeoMeta({ title: () => `${tierId.value} pricing · Slap` })
 </script>

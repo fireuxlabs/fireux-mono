@@ -1,10 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: point cleaning discovery at the Werkbox category. -->
 <template>
-  <LandingCardGrid
-    :title="title"
-    :subtitle="subtitle"
-    :items="items"
-  />
+  <LandingCardGrid :title="title" :subtitle="subtitle" :items="items" />
 </template>
 
 <script setup lang="ts">
@@ -14,35 +10,40 @@ const subtitle = 'Choose an existing app or launch one for your own workflow.'
 const items = [
   {
     title: 'Your App',
-    description: 'Launch a standalone branded FireUX App for CHF 600 setup, followed by Pro or Managed.',
+    description:
+      'Launch a standalone branded FireUX App for CHF 600 setup including one Entity, then CHF 50/month per Entity.',
     to: '/pricing/your-app',
     cta: 'Compare offers',
     icon: 'i-lucide-rocket',
   },
   {
     title: 'Misebox',
-    description: 'Explore our hospitality ecosystem for kitchens, menus, teams, and daily operations.',
+    description:
+      'Explore our hospitality ecosystem for kitchens, menus, teams, and daily operations.',
     to: 'https://misebox.app',
     cta: 'Explore hospitality',
     icon: 'i-lucide-chef-hat',
   },
   {
     title: 'Werkbox',
-    description: 'Explore cleaning and other practical work through the shared Werkbox hub.',
+    description:
+      'Explore cleaning and other practical work through the shared Werkbox hub.',
     to: '/ecosystems/werkbox/cleaning',
     cta: 'Explore cleaning',
     icon: 'i-lucide-sparkles',
   },
   {
     title: 'Your own ecosystem',
-    description: 'Create a product ecosystem that can launch and support its own customer Apps.',
+    description:
+      'Create a product ecosystem that can launch and support its own customer Apps.',
     to: '/pricing/your-ecosystem',
     cta: 'See ecosystem pricing',
     icon: 'i-lucide-network',
   },
   {
     title: 'Browse the app family',
-    description: 'See the apps already connected to FireUX and find the closest starting point.',
+    description:
+      'See the apps already connected to FireUX and find the closest starting point.',
     to: '/apps',
     cta: 'Browse apps',
     icon: 'i-lucide-layout-grid',

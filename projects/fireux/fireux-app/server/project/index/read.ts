@@ -38,16 +38,34 @@ export async function readProjectIndex(event: H3Event) {
     })
   }
 
-  const targets = await db.doc(`users/${uid}/private/targets`).get()
-  const rawIds = targets.data()?.project_ids
-  const ids = Array.isArray(rawIds)
-    ? [...new Set(rawIds.map(text).filter((id) => id && !id.includes('/')))]
-    : []
+  const team = await db
+    .collectionGroup('team')
+    .where('user_id', '==', uid)
+    .limit(100)
+    .get()
+  const ids = [
+    ...new Set(
+      team.docs.flatMap((member) => {
+        const parts = member.ref.path.split('/')
+        const role = text(member.get('role'))
+        if (
+          parts.length !== 4 ||
+          parts[0] !== 'projects' ||
+          parts[2] !== 'team' ||
+          parts[3] !== uid ||
+          text(member.get('user_id')) !== uid ||
+          text(member.get('status')) !== 'active' ||
+          (role !== 'owner' && role !== 'operator' && role !== 'member')
+        ) {
+          return []
+        }
+        return [parts[1]]
+      })
+    ),
+  ]
   const documents = ids.length
     ? (
-        await db.getAll(
-          ...ids.map((id) => db.collection('projects').doc(id))
-        )
+        await db.getAll(...ids.map((id) => db.collection('projects').doc(id)))
       ).filter((document) => document.exists)
     : []
   const items: Project[] = documents

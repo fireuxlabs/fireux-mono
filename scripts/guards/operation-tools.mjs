@@ -245,17 +245,15 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/operation-agents.ts'
   )
-  const agentDefinitions = operationAgents
-    .slice(
-      operationAgents.indexOf('const definitions = {'),
-      operationAgents.indexOf('} as const satisfies Record<')
-    )
+  const agentDefinitions = operationAgents.slice(
+    operationAgents.indexOf('const definitions = {'),
+    operationAgents.indexOf('} as const satisfies Record<')
+  )
   const capabilitySlugs = [
     ...agentDefinitions.matchAll(/^  ['"]?([a-z]+(?:-[a-z]+)*)['"]?: \{$/gm),
   ].map((match) => match[1])
   for (const slug of capabilitySlugs) {
-    const landingContentFile =
-      `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${slug}/content-landing.md`
+    const landingContentFile = `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${slug}/content-landing.md`
     if (!existsSync(join(repoRoot, landingContentFile))) {
       violations.push(
         `${landingContentFile}: every registered Kitchen capability requires human-readable landing context.`

@@ -547,19 +547,32 @@ export function run({ repoRoot }) {
   )
   assert.match(marketplaceAdminWriter, /serverAppUsersTarget/)
   for (const retiredProjectMutation of [
-    'projects/fireux/fireux-app/server/project/index/create.ts',
     'projects/fireux/fireux-app/server/project/identity/update.ts',
     'projects/fireux/fireux-app/server/project/identity/delete.ts',
-    'projects/fireux/fireux-app/server/api/internal/control/projects.post.ts',
     'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId].patch.ts',
     'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId].delete.ts',
   ]) {
     assert.equal(
       existsSync(path.join(repoRoot, retiredProjectMutation)),
       false,
-      `Project mutation without ProjectMeta synchronization must not return: ${retiredProjectMutation}`
+      `Provisioned Project mutation without ProjectMeta synchronization must not return: ${retiredProjectMutation}`
     )
   }
+  const projectCreate = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/fireux/fireux-app/server/project/index/create.ts'
+    ),
+    'utf8'
+  )
+  assert.match(projectCreate, /status:\s*['"]inactive['"]/)
+  assert.match(projectCreate, /runGuardedServerTransaction/)
+  assert.match(projectCreate, /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/)
+  assert.match(projectCreate, /fireuxProjectTeamMembersTarget/)
+  assert.doesNotMatch(
+    projectCreate,
+    /projectMeta|collection\(['"]project['"]\)/
+  )
   assert.equal(
     existsSync(
       path.join(
@@ -568,7 +581,7 @@ export function run({ repoRoot }) {
       )
     ),
     false,
-    'The read-only Project Workspace must not expose canonical mutations that omit ProjectMeta synchronization.'
+    'Project Workspace must not expose broad canonical mutations that omit ProjectMeta synchronization.'
   )
   const placeMutationFiles = [
     ['index/ensure.ts', /mutations\.create\(places,\s*id,/],

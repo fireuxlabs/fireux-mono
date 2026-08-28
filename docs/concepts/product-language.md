@@ -191,26 +191,41 @@ usage surfaces backed by current routes.
 Pricing separates product access, operating capacity, human service, product
 identity, and new development:
 
-- **Free** is a functional Workspace with App-owned limits.
-- **Premium** is the fuller self-managed Workspace at CHF 20/month.
-- **Business** expands the App-owned operating capacity at CHF 50/month.
-- Managed setup and operating assistance are descriptive services, not another
-  subscription tier.
-- A branded App is a separate product identity offer at CHF 600 setup, followed
-  by Premium or Business. It is not another subscription tier.
+- **Free** is one functional Workspace Entity with App-owned capability limits.
+- **Professional** is one fully enabled self-managed Workspace Entity at CHF
+  20/month.
+- **Business** is multi-Entity operating access at CHF 100/month plus CHF
+  20/month for each Entity.
+- **Managed** is an optional service added to Professional or Business at CHF
+  100/month plus CHF 20/month for each selected managed Entity. The SaaS owner
+  supplies the manager through real Team authority; it is not another product
+  entitlement or unlimited work. FireUX App does not currently offer Managed.
+- **Your App** is a separate product identity at CHF 600 setup including one
+  Entity, CHF 100 setup for each additional Entity, and CHF 50/month for each
+  Entity. Creation, onboarding, and migration are bounded to existing
+  capabilities. The App owner manages its customers.
 - **Your Ecosystem** belongs only to FireUX. It is CHF 1,200 setup plus CHF
   50/month maintenance and gives the ecosystem owner half of each customer
   App's setup and monthly price.
 - New Operations, Tools, integrations, third-party charges, and exceptional
   usage are not silently included; new development is quoted separately.
 
-Core App access owns the `free | premium | business` subscription vocabulary.
-Each Main App owns a thin `useXPricing` wrapper containing the concrete
-Workspace capabilities and limits that explain what its Free, Premium, and
-Business tiers contain. Shared pricing components receive that result as
-presentation data. Pricing literature does not belong in `nuxt.config.ts` or
-public runtime config. Tenant Apps do not own or advertise the FireUX
-ecosystem-creation offer.
+Core App access retains the stored `free | premium | business` entitlement
+vocabulary while public pricing presents `Free | Professional | Business`.
+Core pricing owns the pre-designed amounts and formulas; each Main App owns a
+thin `useXPricing` wrapper containing its Entity noun, capabilities, Managed
+availability, and ecosystem-offer policy. Shared pricing components receive
+that result as presentation data. Pricing literature does not belong in
+`nuxt.config.ts` or public runtime config. Tenant Apps do not own or advertise
+the FireUX ecosystem-creation offer.
+
+The pre-designed prices are intentionally derived from the CHF 20 Professional
+Entity value: Business and Managed bases are five Entity units, additional
+Business and Managed Entities are one unit, App additional-Entity setup is five
+units, App monthly Entity service is two-and-a-half units, and App creation is
+thirty units. When editable pricing is introduced, changing the unit must
+produce a reviewed proposal for every dependent amount rather than silently
+changing published offers. Product owners may then accept or round each price.
 
 ## Current source
 

@@ -8,10 +8,37 @@ import type {
   FirestoreMutationTarget,
 } from '../../../types/firestore-mutations'
 import { assertFirestoreMutationVerb } from '../../../utils/firestore-mutations/targets'
+import { assertFirestoreMutationSegment } from '../../../utils/firestore-mutations/target-definition'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
 } from '../getRuntimeFirestore'
+
+export type GuardedServerCollectionGroupTarget = Readonly<{
+  key: string
+  database: FirestoreDatabasePlacement
+  parentCollection: string
+  collectionId: string
+}>
+
+export function defineGuardedServerCollectionGroupTarget(input: {
+  key: string
+  database: FirestoreDatabasePlacement
+  parentCollection: string
+  collectionId: string
+}): GuardedServerCollectionGroupTarget {
+  return Object.freeze({
+    ...input,
+    parentCollection: assertFirestoreMutationSegment(
+      input.parentCollection,
+      'parentCollection'
+    ),
+    collectionId: assertFirestoreMutationSegment(
+      input.collectionId,
+      'collectionId'
+    ),
+  })
+}
 
 export type GuardedServerTransaction = Readonly<{
   read<T extends DocumentData>(
@@ -35,6 +62,14 @@ export type GuardedServerTransaction = Readonly<{
       limit: number
     }
   ): Promise<Array<{ id: string; data: T }>>
+  queryCollectionGroup<T extends DocumentData>(
+    target: GuardedServerCollectionGroupTarget,
+    input: {
+      field: string
+      value: unknown
+      limit: number
+    }
+  ): Promise<Array<{ id: string; parentId: string; data: T }>>
   create<T extends DocumentData>(
     target: FirestoreMutationTarget<string, 'server'>,
     id: string,
@@ -153,6 +188,44 @@ export function runGuardedServerTransaction<T>(
           id: document.id,
           data: document.data() as T,
         }))
+      },
+      async queryCollectionGroup<T extends DocumentData>(
+        target: GuardedServerCollectionGroupTarget,
+        input: { field: string; value: unknown; limit: number }
+      ) {
+        if (!samePlacement(placement, target.database)) {
+          throw new Error(
+            `Transaction placement does not own collection group ${target.key}.`
+          )
+        }
+        if (!input.field.trim() || input.limit < 1 || input.limit > 100) {
+          throw new Error(
+            'Guarded Server transaction collection-group read is invalid.'
+          )
+        }
+        const snapshot = await raw.get(
+          database
+            .collectionGroup(target.collectionId)
+            .where(input.field, '==', input.value)
+            .limit(input.limit)
+        )
+        return snapshot.docs.flatMap((document) => {
+          const parts = document.ref.path.split('/')
+          if (
+            parts.length !== 4 ||
+            parts[0] !== target.parentCollection ||
+            parts[2] !== target.collectionId
+          ) {
+            return []
+          }
+          return [
+            {
+              id: document.id,
+              parentId: parts[1]!,
+              data: document.data() as T,
+            },
+          ]
+        })
       },
       create(target, id, data) {
         const payload = { ...data }

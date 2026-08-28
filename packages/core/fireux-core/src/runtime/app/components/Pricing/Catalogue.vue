@@ -8,7 +8,7 @@
       <p class="text-sm leading-6 text-toned">
         {{
           props.intro ||
-          'Free is functional. Pro gives the operation more capacity. Managed adds practical help. Your App gives the business its own identity.'
+          'Free starts one workspace. Professional completes it. Business operates several. Managed adds agreed work to selected workspaces. Your App gives the product its own identity.'
         }}
       </p>
     </template>
@@ -38,12 +38,15 @@ const plans = computed(() =>
     button: {
       label: `View ${tier.title}`,
       to: tier.to,
-      color: tier.id === 'pro' ? ('primary' as const) : ('neutral' as const),
+      color:
+        tier.id === 'professional'
+          ? ('primary' as const)
+          : ('neutral' as const),
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },
-    highlight: tier.id === 'pro',
-    scale: tier.id === 'pro',
+    highlight: tier.id === 'professional',
+    scale: tier.id === 'professional',
   }))
 )
 </script>

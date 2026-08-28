@@ -26,7 +26,8 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
   const teamRole = text(currentTeamMember.data()?.role)
   if (
     !app.exists ||
-    text(membership.data()?.role) !== 'admin' ||
+    (text(membership.data()?.role) !== 'admin' &&
+      text(membership.data()?.role) !== 'user') ||
     !currentTeamMember.exists ||
     text(currentTeamMember.data()?.user_id) !== uid ||
     text(currentTeamMember.data()?.status) !== 'active' ||

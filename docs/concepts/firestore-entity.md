@@ -88,6 +88,11 @@ The rule is intentionally simple:
 The examples name ownership, not required empty symmetry. An Entity receives
 only records and operations it genuinely owns.
 
+An inactive empty Project shell initially owns only its canonical root and
+owner Team record in the `fireux` named database. The `(default)/project`
+ProjectMeta is a routing projection added by the provisioning lane only when a
+named product database exists; empty-shell creation must not invent one.
+
 ## Workspace Entity contract
 
 Project, Kitchen, Supplier, Portfolio, Property, and Marketplace Store are root

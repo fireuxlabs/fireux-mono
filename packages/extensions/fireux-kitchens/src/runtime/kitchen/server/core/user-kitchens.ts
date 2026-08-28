@@ -1,12 +1,50 @@
 // Concurrent edit — 2026-08-23 CEST — Kitchen Workspace reset: resolve the signed-in user's active Kitchens.
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  defineGuardedServerCollectionGroupTarget,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { KITCHEN_USER_LIMIT } from '../../models/kitchen-index.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
 function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
+}
+
+const kitchenTeamGroup = defineGuardedServerCollectionGroupTarget({
+  key: 'kitchens.team.collection-group',
+  database: { kind: 'runtime' },
+  parentCollection: 'kitchens',
+  collectionId: 'team',
+})
+
+export async function readOwnedKitchenIdsInTransaction(
+  transaction: GuardedServerTransaction,
+  uid: string
+) {
+  const members = await transaction.queryCollectionGroup<{
+    role?: unknown
+    status?: unknown
+    user_id?: unknown
+  }>(kitchenTeamGroup, {
+    field: 'user_id',
+    value: uid,
+    limit: KITCHEN_USER_LIMIT + 1,
+  })
+  const ids = members.flatMap((member) =>
+    member.id === uid &&
+    text(member.data.user_id) === uid &&
+    member.data.role === 'owner' &&
+    member.data.status === 'active'
+      ? [member.parentId]
+      : []
+  )
+  if (ids.length > KITCHEN_USER_LIMIT) {
+    conflict('Owned Kitchens exceed the supported limit.')
+  }
+  return ids
 }
 
 export async function readUserKitchenIds(uid: string) {

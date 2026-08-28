@@ -38,15 +38,13 @@ export const sourceMeta = {
     ],
     seo: {
       title: 'Restaurant Menu and Kitchen Management | Misebox',
-      description:
-        'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
+      description: 'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
     },
   },
   about: {
     hero: {
       label: 'About Misebox',
-      supportingCopy:
-        'Misebox connects menus, recipes, dishes, prep tasks, orders, and service handoff so restaurant teams can work from the same Kitchen information.',
+      supportingCopy: 'Misebox connects menus, recipes, dishes, prep tasks, orders, and service handoff so restaurant teams can work from the same Kitchen information.',
       primaryAction: {
         label: 'Open kitchens',
         to: '/kitchens',
@@ -59,12 +57,7 @@ export const sourceMeta = {
     panel: {
       title: 'What this page covers',
       subtitle: '',
-      ticks: [
-        'How the core Misebox modules fit together',
-        'The key entities and how they connect',
-        'Small realistic sample objects for context',
-        'Quick links to public and workspace routes',
-      ],
+      ticks: ['How the core Misebox modules fit together', 'The key entities and how they connect', 'Small realistic sample objects for context', 'Quick links to public and workspace routes'],
     },
     sections: {
       keyConceptsTitle: 'Misebox - Key Concepts (Priority Order)',
@@ -80,8 +73,7 @@ export const sourceMeta = {
     keyConcepts: [
       {
         title: 'Ecosystem',
-        description:
-          'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
+        description: 'A family of focused hospitality products that can share trusted identity without sharing one acquisition promise.',
       },
       {
         title: 'Kitchen Operations',
@@ -97,8 +89,7 @@ export const sourceMeta = {
       },
       {
         title: 'Jobs',
-        description:
-          'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
+        description: 'A focused hospitality work doorway built on Company, Place, Agent, and Professional authority—not Kitchen identity.',
       },
       {
         title: 'Menus & Dishes',
@@ -114,8 +105,7 @@ export const sourceMeta = {
       },
       {
         title: 'Suppliers',
-        description:
-          'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
+        description: 'Supplier records support Kitchen sourcing workflows without becoming a second main-product audience.',
       },
       {
         title: 'Apps',
@@ -125,8 +115,7 @@ export const sourceMeta = {
     appSpec: {
       name: 'Misebox',
       tagline: 'Restaurant Menu and Kitchen Workflow',
-      description:
-        'Misebox connects published menus with the dishes, recipes, preparation, orders, and service handoff behind them.',
+      description: 'Misebox connects published menus with the dishes, recipes, preparation, orders, and service handoff behind them.',
       modules: [
         {
           name: 'fireux-kitchens',
@@ -274,8 +263,7 @@ User
 `,
     seo: {
       title: 'About Misebox',
-      description:
-        'Misebox connects menus, dishes, recipes, prep work, orders, and service handoff for restaurant teams.',
+      description: 'Misebox connects menus, dishes, recipes, prep work, orders, and service handoff for restaurant teams.',
     },
   },
   getStarted: {
@@ -283,7 +271,7 @@ User
       eyebrow: 'Start with one Kitchen',
       title: 'Start your Kitchen without signing up',
       description:
-        'Create one Kitchen, publish one Menu, and use its open Workspace tools. Sign in to keep the Kitchen with your account, choose Premium for more Menus, or Business for more Kitchens.',
+        'Create one Kitchen, publish one Menu, and use its open Workspace tools. Sign in to keep the Kitchen with your account, choose Professional for the complete Workspace, or Business for multiple Kitchens.',
       primaryAction: {
         label: 'Start one Kitchen',
         to: '/',
@@ -303,8 +291,7 @@ User
     stepsHeading: {
       eyebrow: 'Three steps',
       title: 'A practical rollout in three steps',
-      description:
-        'Start with Kitchen truth, connect the work behind the menu, then run a service flow your team can inspect and improve.',
+      description: 'Start with Kitchen truth, connect the work behind the menu, then run a service flow your team can inspect and improve.',
     },
     steps: [
       {
@@ -349,11 +336,7 @@ User
       card: {
         eyebrow: 'Need a faster launch?',
         title: 'Use express rollout when you need one operating model across multiple kitchens with minimal drift.',
-        bullets: [
-          'Daily implementation checkpoints.',
-          'Menu and workflow mapping in parallel.',
-          'Team enablement for prep and service.',
-        ],
+        bullets: ['Daily implementation checkpoints.', 'Menu and workflow mapping in parallel.', 'Team enablement for prep and service.'],
         action: {
           label: 'See what works today',
           to: '/operations',
@@ -362,13 +345,11 @@ User
     },
     seo: {
       title: 'Get Started · Misebox',
-      description:
-        'Create a Kitchen workspace and connect menus, dishes, recipes, prep work, orders, and service handoff.',
+      description: 'Create a Kitchen workspace and connect menus, dishes, recipes, prep work, orders, and service handoff.',
     },
   },
   roadmap: {
     title: 'Misebox Road Map',
-    summary:
-      'Misebox is evolving from public Kitchen tools into deeper menu, prep, order, service, and multi-location coordination.',
+    summary: 'Misebox is evolving from public Kitchen tools into deeper menu, prep, order, service, and multi-location coordination.',
   },
 } as const

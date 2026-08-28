@@ -23,6 +23,7 @@ function createProjectWorkspace() {
       pending: collection.pending,
       error: collection.error,
       outcome: collection.outcome,
+      refresh: collection.refresh,
     },
     selection: {
       project,

@@ -11,9 +11,7 @@
 
       <template #body>
         <section class="workspace-surface">
-          <div
-            class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6"
-          >
+          <div class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6">
             <div class="grid content-center gap-6 py-12 sm:py-16">
               <WorkspaceKitchenHero />
               <WorkspaceKitchenAI />
@@ -30,10 +28,7 @@
             />
           </div>
 
-          <div
-            id="kitchen-workspace-content"
-            class="grid scroll-mt-6 gap-6"
-          >
+          <div id="kitchen-workspace-content" class="grid scroll-mt-6 gap-6">
             <WorkspaceKitchen />
           </div>
 

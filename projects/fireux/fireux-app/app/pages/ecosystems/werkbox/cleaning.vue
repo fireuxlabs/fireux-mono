@@ -72,8 +72,8 @@
               </h2>
             </template>
             <p class="text-muted">
-              Move to a branded Werkbox App for CHF 600 setup, then choose CHF
-              20/month Pro or CHF 50/month Managed.
+              Move to a branded Werkbox App for CHF 600 setup including one
+              Entity, then CHF 50/month for each Entity.
             </p>
           </UCard>
 

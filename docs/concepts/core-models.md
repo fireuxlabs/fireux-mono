@@ -72,9 +72,10 @@ entrypoint owns them.
 
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, each Project owns its
-`team/{uid}` access records, and the local meta adds only its named
-`database_id`. Project document ID is route identity, so neither Project shape
-stores a duplicate slug.
+`team/{uid}` access records, and the local meta adds only the named
+`database_id` once that Project has a provisioned product database. An inactive
+empty Project shell therefore has no ProjectMeta yet. Project document ID is
+route identity, so neither Project shape stores a duplicate slug.
 
 The entity-facing Project stack lives under `runtime/project`.
 `useProjects` reads canonical `Project[]` from the public Server collection,
@@ -85,10 +86,10 @@ control-plane scope for the private Workspace. There is no
 presentation mapping remains in `useProjectInterface` and private selection and
 operations remain under `/workspace/project`.
 
-The read-only Project Workspace may expose capabilities backed by existing
-authority. Its Team sheet reads the selected Project's `team/{uid}` records
-through an admin-only server endpoint and resolves canonical User
-presentation. Project notifications remain undefined until a real
+The Project Workspace may expose capabilities backed by existing authority and
+one thin empty-shell Create doorway. Its Team sheet reads the selected
+Project's `team/{uid}` records through a membership- and Team-authorized server
+endpoint and resolves canonical User presentation. Project notifications remain undefined until a real
 Project-scoped emitter and User-owned delivery contract exist.
 
 The FireUX control-plane named database keeps canonical `projects/{projectId}`

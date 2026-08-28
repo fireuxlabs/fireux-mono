@@ -153,7 +153,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\n\s{2}(?:backdrop_color|logo_image|assets):/
   )
   assert.equal(existsSync(path.join(repoRoot, kitchenLogoEditorPath)), false)
-  assert.equal(existsSync(path.join(repoRoot, kitchenIdentityEditorPath)), false)
+  assert.equal(
+    existsSync(path.join(repoRoot, kitchenIdentityEditorPath)),
+    false
+  )
   assert.match(kitchenWorkspaceIdentity, /<WorkspaceKitchenIdentityPlace/)
   assert.doesNotMatch(
     kitchenWorkspaceIdentity,
@@ -188,7 +191,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(appModel, /project_id:\s*string/)
   assert.match(appModel, /ecosystem_id\?:\s*string/)
-  assert.match(appModel, /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string/)
+  assert.match(
+    appModel,
+    /created:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string[\s\S]*updated:\s*\{[\s\S]*at:\s*FirebaseTimestamp[\s\S]*by\?:\s*string/
+  )
   for (const field of [
     'tagline',
     'description',
@@ -291,10 +297,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/models/project-team-member.model.ts'
   )
-  assert.match(
-    projectTeamMemberModel,
-    /export type ProjectTeamMember\s*=\s*\{/
-  )
+  assert.match(projectTeamMemberModel, /export type ProjectTeamMember\s*=\s*\{/)
   assert.match(projectTeamMemberModel, /user_id:\s*string/)
   assert.doesNotMatch(
     projectTeamMemberModel,
@@ -618,7 +621,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(platformAppDetailPage, /app\.project_id/)
   assert.match(platformAppDetailPage, /ecosystem_id/)
   assert.match(platformAppDetailPage, /DevDebugPanel/)
-  assert.doesNotMatch(platformAppDetailPage, /AppDirectoryEntry|PlatformDirectoryResponse/)
+  assert.doesNotMatch(
+    platformAppDetailPage,
+    /AppDirectoryEntry|PlatformDirectoryResponse/
+  )
   assert.doesNotMatch(ownerAppDetailApi, /PublicApp|\/api\/public\/apps/)
 
   const appInitialization = read(
@@ -803,7 +809,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(projectDirectoryReader, /project\.status === 'active'/)
   assert.equal(
-    existsSync(path.join(repoRoot, 'packages/core/fireux-core/src/runtime/project/models/project-directory.model.ts')),
+    existsSync(
+      path.join(
+        repoRoot,
+        'packages/core/fireux-core/src/runtime/project/models/project-directory.model.ts'
+      )
+    ),
     false,
     'ProjectDirectoryEntry must not duplicate canonical Project.'
   )
@@ -844,8 +855,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
     assert.match(
       source,
-      /roles:\s*\['admin'\]/,
-      `${page} must require App admin.`
+      /requiresAuth:\s*true/,
+      `${page} must require authentication.`
+    )
+    assert.doesNotMatch(
+      source,
+      /roles:\s*\[/,
+      `${page} must defer App and Project membership authority to the Server.`
     )
   }
 
@@ -868,6 +884,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const projectTeamApi = read(
     repoRoot,
     'projects/fireux/fireux-app/server/project/team/read.ts'
+  )
+  const projectCreateApi = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/project/index/create.ts'
+  )
+  const projectCreateClient = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceCreate.ts'
   )
   assert.doesNotMatch(
     projectCollection,
@@ -895,8 +919,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectControlApi, /===\s*['"]admin['"]/)
   assert.match(projectControlApi, /===\s*['"]user['"]/)
   assert.doesNotMatch(projectControlApi, /admin_ids/)
-  assert.match(projectControlApi, /users\/\$\{uid\}\/private\/targets/)
-  assert.match(projectControlApi, /project_ids/)
+  assert.match(projectControlApi, /collectionGroup\(['"]team['"]\)/)
+  assert.match(
+    projectControlApi,
+    /where\(['"]user_id['"],\s*['"]==['"],\s*uid\)/
+  )
+  assert.match(projectControlApi, /parts\[0\]\s*!==\s*['"]projects['"]/)
+  assert.match(projectControlApi, /role\s*!==\s*['"]owner['"]/)
+  assert.doesNotMatch(projectControlApi, /private\/targets|project_ids/)
   assert.match(projectControlApi, /collection\(['"]projects['"]\)/)
   assert.doesNotMatch(
     projectControlApi,
@@ -906,6 +936,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectTeamApi, /requireFirebaseBearerUser/)
   assert.match(projectTeamApi, /appRef\.collection\(['"]users['"]\)/)
   assert.match(projectTeamApi, /membership\.data\(\)\?\.role/)
+  assert.match(projectTeamApi, /!==\s*['"]admin['"]/)
+  assert.match(projectTeamApi, /!==\s*['"]user['"]/)
   assert.match(projectTeamApi, /projectRef\.collection\(['"]team['"]\)/)
   assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.user_id/)
   assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.status/)
@@ -913,6 +945,36 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectTeamApi, /teamRole !== 'operator'/)
   assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
   assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
+
+  assert.match(projectCreateApi, /requireFirebaseBearerUser/)
+  assert.match(projectCreateApi, /runGuardedServerTransaction/)
+  assert.match(
+    projectCreateApi,
+    /kind:\s*['"]named['"],\s*databaseId:\s*['"]fireux['"]/
+  )
+  assert.match(projectCreateApi, /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/)
+  assert.match(projectCreateApi, /fireuxProjectTeamMembersTarget\(projectId\)/)
+  assert.match(projectCreateApi, /queryCollectionGroup/)
+  assert.match(projectCreateApi, /field:\s*['"]user_id['"]/)
+  assert.match(projectCreateApi, /subscription\s*!==\s*['"]business['"]/)
+  assert.match(projectCreateApi, /role:\s*['"]owner['"]/)
+  assert.match(projectCreateApi, /status:\s*['"]inactive['"]/)
+  assert.match(
+    projectCreateApi,
+    /transaction\.create\(FIRESTORE_MUTATION_TARGETS\.fireuxProjects/
+  )
+  assert.match(projectCreateApi, /transaction\.create\(teamMembers/)
+  assert.doesNotMatch(
+    projectCreateApi,
+    /\.runTransaction\(|useFirestore|setDoc|addDoc/
+  )
+  assert.match(projectCreateClient, /\/api\/internal\/control\/projects/)
+  assert.match(projectCreateClient, /workspace\.projects\.refresh\(\)/)
+  assert.match(projectCreateClient, /selectProject\(response\.project_id\)/)
+  assert.doesNotMatch(
+    projectCreateClient,
+    /useFirestore|setDoc|addDoc|updateDoc/
+  )
 
   for (const method of ['get', 'post']) {
     const registrySource = read(
@@ -1362,8 +1424,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-companies/src/runtime/place/server/company/projection.ts'
   )
-  assert.match(companyModel, /export type Company\s*=\s*\{[\s\S]*id:\s*string[\s\S]*created:\s*CompanyStamp[\s\S]*updated:\s*CompanyStamp/)
-  assert.doesNotMatch(companyModel, /CompanyStorage|defineFireuxEntity|Defaults/)
+  assert.match(
+    companyModel,
+    /export type Company\s*=\s*\{[\s\S]*id:\s*string[\s\S]*created:\s*CompanyStamp[\s\S]*updated:\s*CompanyStamp/
+  )
+  assert.doesNotMatch(
+    companyModel,
+    /CompanyStorage|defineFireuxEntity|Defaults/
+  )
   assert.match(companyEntity, /kind:\s*'record'/)
   assert.match(companyEntity, /parent:\s*'Place'/)
   assert.match(companyEntity, /root:\s*CompanyStorage\.path/)
@@ -1382,17 +1450,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     companyMaterializer,
     /canonicalCompanyRole\(id,\s*companySnapshot\.data\)/
   )
-  assert.match(
-    companyDirectoryModel,
-    /companies:\s*Company\[\]/
-  )
+  assert.match(companyDirectoryModel, /companies:\s*Company\[\]/)
   assert.match(companyDirectoryModel, /places:\s*Place\[\]/)
   assert.match(companyProjection, /canonicalCompanyRole\(id,\s*companyValue\)/)
   assert.match(
     companyProjection,
     /return \{ company: companyRecord, place: placeRecord \}/
   )
-  assert.match(companyProjection, /normalizePlace\(id, place\.data\(\) \|\| \{\}\)/)
+  assert.match(
+    companyProjection,
+    /normalizePlace\(id, place\.data\(\) \|\| \{\}\)/
+  )
   assert.doesNotMatch(
     companyProjection,
     /\.\.\.\(place\./,
@@ -1465,7 +1533,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /:derived="\{ place \}"/,
     ],
   ]
-  for (const [surfacePath, objectsContract, debugBinding] of entityDebugSurfaces) {
+  for (const [
+    surfacePath,
+    objectsContract,
+    debugBinding,
+  ] of entityDebugSurfaces) {
     const surface = read(repoRoot, surfacePath)
     assert.match(surface, /<DevDebugPanel/)
     assert.match(surface, /include-route/)

@@ -7,13 +7,15 @@ const slapPricingProfile = {
   appName: 'Slap',
   contactEmail: 'fire@fireux.app',
   workspaceName: 'Commerce Workspace',
+  entityName: 'Brand',
+  entityPluralName: 'Brands',
   free: [
     'Create one brand workspace',
     'Publish products and stories',
     'Use the Commerce Workspace',
     'Build the first public brand surface',
   ],
-  pro: [
+  professional: [
     'Manage products, collections, and drops',
     'Publish stories and gallery content',
     'Operate the branded storefront',

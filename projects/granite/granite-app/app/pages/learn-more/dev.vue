@@ -5,11 +5,20 @@
         <UBadge color="primary" variant="soft">Granite Dev Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More: Dev</h1>
         <p class="fx-type-description text-toned">
-          Operator reference for Granite portfolio entities and implementation surfaces.
+          Operator reference for Granite portfolio entities and implementation
+          surfaces.
         </p>
         <div class="flex flex-wrap gap-2">
-          <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
+          <UButton to="/learn-more" color="primary" icon="i-lucide-book-open"
+            >Public learn more</UButton
+          >
+          <UButton
+            to="/pricing"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-badge-dollar-sign"
+            >Pricing</UButton
+          >
         </div>
       </UContainer>
     </section>
@@ -41,7 +50,7 @@
               <p class="text-dimmed">Branded App setup and monthly plan.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/managed</p>
+              <p class="font-mono">GET /pricing/business</p>
               <p class="text-dimmed">Managed product and assistance.</p>
             </div>
           </div>
@@ -59,6 +68,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More: Dev · Granite',
-  description: 'Operator reference for Granite entities, routes, and partner implementation.',
+  description:
+    'Operator reference for Granite entities, routes, and partner implementation.',
 })
 </script>

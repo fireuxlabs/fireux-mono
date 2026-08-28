@@ -26,7 +26,7 @@
           section-id="werkbox-direct-hiring"
           eyebrow="For small businesses"
           title="Pay for the platform, not a percentage of your team."
-          description="Werkbox Pro is CHF 20 per month. Publish work, review applications, and hire directly while the employer and professional keep control of their relationship."
+          description="Werkbox Professional is CHF 20 per month. Publish work, review applications, and hire directly while the employer and professional keep control of their relationship."
           supporting="The named employer—not Werkbox—employs and pays the professional directly."
           :items="[
             'Jobs before signup',

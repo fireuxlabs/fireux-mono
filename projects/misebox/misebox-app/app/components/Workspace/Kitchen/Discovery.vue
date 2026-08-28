@@ -12,7 +12,7 @@
       <UPageCard
         id="workspace-access"
         title="Manage your Kitchen portfolio"
-        description="Free and Premium support one Kitchen. Business supports multiple Kitchens. Sign in to attach an anonymous Kitchen to your account."
+        description="Free and Professional support one Kitchen. Business operates multiple Kitchens. Sign in to attach an anonymous Kitchen to your account."
         icon="i-lucide-badge-check"
         to="/pricing"
         variant="subtle"
@@ -45,4 +45,3 @@ const links = [
   { label: 'About', to: '/about' },
 ] as const
 </script>
-

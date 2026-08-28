@@ -7,13 +7,15 @@ const granitePricingProfile = {
   appName: 'Granite',
   contactEmail: 'fire@fireux.app',
   workspaceName: 'Portfolio Workspace',
+  entityName: 'Portfolio',
+  entityPluralName: 'Portfolios',
   free: [
     'Use one Portfolio workspace',
     'Record properties and clients',
     'Use the Portfolio Workspace',
     'Review the current portfolio structure',
   ],
-  pro: [
+  professional: [
     'Manage portfolios, properties, and clients',
     'Track compliance, incidents, documents, and tasks',
     'Review portfolio financial signals',

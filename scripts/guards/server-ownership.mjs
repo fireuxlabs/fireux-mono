@@ -84,6 +84,11 @@ const ADAPTERS = [
   },
   {
     route:
+      'projects/fireux/fireux-app/server/api/internal/control/projects.post.ts',
+    owner: 'project/index/create',
+  },
+  {
+    route:
       'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId]/team.get.ts',
     owner: 'project/team/read',
   },

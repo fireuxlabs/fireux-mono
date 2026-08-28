@@ -3,7 +3,7 @@
     :app-name="appName"
     :description="description"
     :tiers="tiers"
-    intro="Free runs one Kitchen. Premium unlocks the complete Kitchen Workspace. Business supports multiple Kitchens. Setup, migration, content services, integrations, and custom development are quoted separately."
+    intro="Free starts one Kitchen. Professional completes one Kitchen. Business operates multiple Kitchens. Managed adds agreed work to selected Kitchens. Your App creates a separate branded Misebox product."
   />
 </template>
 
@@ -27,6 +27,6 @@ definePageMeta({
 useSeoMeta({
   title: 'Pricing · Misebox',
   description:
-    'Misebox pricing for Free, Premium, and Business Kitchen Workspaces and your own branded App.',
+    'Misebox pricing for Free, Professional, Business, Managed, and your own branded App.',
 })
 </script>

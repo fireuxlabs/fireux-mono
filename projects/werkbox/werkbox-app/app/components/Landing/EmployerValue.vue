@@ -3,7 +3,7 @@
     <header>
       <span class="werkbox-employer-value__label">
         <UIcon name="i-lucide-building-2" aria-hidden="true" />
-        Werkbox Pro
+        Werkbox Professional
       </span>
       <p class="werkbox-employer-value__price">
         <strong>CHF 20</strong>
