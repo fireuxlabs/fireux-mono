@@ -271,7 +271,7 @@ export async function run({ repoRoot }) {
   )
   assert.match(subscriptionControl, /action: 'set-self-subscription'/)
   assert.doesNotMatch(subscriptionControl, /userId:/)
-  assert.match(subscriptionControl, /const pending = ref\(false\)/)
+  assert.match(subscriptionControl, /const pending = computed\(/)
   assert.match(subscriptionControl, /@click="handleClick"/)
   assert.match(subscriptionControl, /\['free', 'premium', 'business'\]/)
   assert.match(
@@ -285,7 +285,12 @@ export async function run({ repoRoot }) {
     subscriptionControl,
     /const \{ appAccess, appAccessOutcome \} = useUser\(\)/
   )
-  assert.match(subscriptionControl, /if \(outcome !== 'ready'\) return/)
+  assert.match(subscriptionControl, /appAccessOutcome\.value !== 'ready'/)
+  assert.match(
+    subscriptionControl,
+    /presentations\[appAccess\.value\.subscription\]/
+  )
+  assert.doesNotMatch(subscriptionControl, /visibleSubscription/)
   assert.match(subscriptionControl, /appAccess\.value\.role === 'admin'/)
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)
@@ -356,7 +361,7 @@ export async function run({ repoRoot }) {
   )
   assert.match(
     subscriptionMutationClient,
-    /void refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/
+    /await refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/
   )
   assert.doesNotMatch(subscriptionMutationClient, /useNuxtData/)
 

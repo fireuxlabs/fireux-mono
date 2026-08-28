@@ -47,6 +47,6 @@ export async function mutateAppMembership(
   }
 
   const result = payload as AppMembershipMutationResult
-  void refreshNuxtData(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
+  await refreshNuxtData(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
   return result
 }

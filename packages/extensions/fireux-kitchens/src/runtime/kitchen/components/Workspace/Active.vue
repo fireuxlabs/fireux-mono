@@ -3,14 +3,8 @@
     class="mx-auto grid min-h-28 w-full max-w-3xl gap-4"
     aria-label="Active Kitchen"
   >
-    <USkeleton
-      v-if="isResolving"
-      class="h-28 rounded-xl"
-      aria-label="Loading active Kitchen"
-    />
-
     <WorkspaceKitchenActiveCard
-      v-else-if="!showEmptyState && workspace.selection.kitchen.value"
+      v-if="!showEmptyState && workspace.selection.kitchen.value"
       :kitchen="workspace.selection.kitchen.value"
       :show-kitchens-action="showKitchensAction"
       :kitchens-open="kitchensOpen"
@@ -82,7 +76,6 @@ const { workspacePending, canCreateKitchen, capacityConsumed } =
   useKitchenWorkspaceTools(workspace)
 const mounted = ref(false)
 const showEmptyState = ref(false)
-const isResolving = computed(() => !mounted.value || workspacePending.value)
 
 const canEmpty = computed(
   () => mounted.value && (isDeveloper.value || isAdmin.value)

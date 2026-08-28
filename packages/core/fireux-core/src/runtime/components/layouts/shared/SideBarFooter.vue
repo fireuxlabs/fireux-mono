@@ -8,23 +8,23 @@
     />
 
     <NuxtLink
-      v-if="compactProfile && collapsed && pillUser"
+      v-if="compactProfile && collapsed && profileUser"
       to="/dashboard/settings"
       class="mt-auto flex w-full justify-center"
       aria-label="Open account settings"
     >
       <UAvatar
-        :src="pillUser.avatarUrl || undefined"
-        :alt="pillUser.displayName || 'User'"
+        :src="profileUser.avatarUrl || undefined"
+        :alt="profileUser.displayName || 'User'"
         :text="avatarFallback"
         size="sm"
       />
     </NuxtLink>
 
     <UserCardsPill
-      v-else-if="pillUser"
-      v-bind="pillUser"
-      :link="Boolean(pillUser.to)"
+      v-else-if="profileUser"
+      v-bind="profileUser"
+      :link="Boolean(profileUser.to)"
       class="mt-auto w-full"
     />
 
@@ -98,8 +98,20 @@ const pillUser = computed((): UserCard.Card | undefined => {
   }
 })
 
+const authenticatedUser = computed(() => {
+  const user = authUser.value
+  if (!mounted.value || !user || user.isAnonymous) return undefined
+  return {
+    displayName: user.displayName?.trim() || 'Account',
+    avatarUrl: user.photoURL?.trim() || '',
+    to: '/dashboard/settings',
+  }
+})
+
+const profileUser = computed(() => pillUser.value || authenticatedUser.value)
+
 const avatarFallback = computed(() => {
-  const displayName = pillUser.value?.displayName ?? ''
+  const displayName = profileUser.value?.displayName ?? ''
   const trimmed = typeof displayName === 'string' ? displayName.trim() : ''
   if (!trimmed) return 'U'
   return trimmed

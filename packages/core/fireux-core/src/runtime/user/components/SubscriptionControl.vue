@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, ref, useToast, watch } from '#imports'
+import { computed, navigateTo, ref, useToast } from '#imports'
 import type { AppUserSubscription } from '../../app/models/app-user.model'
 import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
 import { useDeveloperAccess } from '../composables/useDeveloperAccess'
@@ -27,12 +27,12 @@ import { useUser } from '../composables/useUser'
 
 const { appAccess, appAccessOutcome } = useUser()
 const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
-const pending = ref(false)
+const saving = ref(false)
+const pending = computed(
+  () => saving.value || appAccessOutcome.value !== 'ready'
+)
 const toast = useToast()
 const subscriptions: AppUserSubscription[] = ['free', 'premium', 'business']
-const visibleSubscription = ref<AppUserSubscription>(
-  appAccess.value.subscription
-)
 const presentations = {
   free: {
     label: 'Free',
@@ -50,20 +50,14 @@ const presentations = {
     color: 'primary' as const,
   },
 }
-const presentation = computed(() => presentations[visibleSubscription.value])
+const presentation = computed(
+  () => presentations[appAccess.value.subscription]
+)
 const canToggle = computed(
   () =>
     isConfiguredDeveloper.value ||
     appAccess.value.role === 'dev' ||
     appAccess.value.role === 'admin'
-)
-
-watch(
-  [() => appAccess.value.subscription, () => appAccessOutcome.value],
-  ([subscription, outcome]) => {
-    if (outcome !== 'ready') return
-    visibleSubscription.value = subscription
-  }
 )
 
 async function handleClick() {
@@ -73,16 +67,15 @@ async function handleClick() {
     return
   }
 
-  const currentIndex = subscriptions.indexOf(visibleSubscription.value)
+  const currentIndex = subscriptions.indexOf(appAccess.value.subscription)
   const requested = subscriptions[(currentIndex + 1) % subscriptions.length]!
 
-  pending.value = true
+  saving.value = true
   try {
-    const result = await mutateAppMembership({
+    await mutateAppMembership({
       action: 'set-self-subscription',
       subscription: requested,
     })
-    if (result.subscription) visibleSubscription.value = result.subscription
   } catch (error) {
     toast.add({
       title: 'Subscription unchanged',
@@ -93,7 +86,7 @@ async function handleClick() {
       color: 'error',
     })
   } finally {
-    pending.value = false
+    saving.value = false
   }
 }
 </script>

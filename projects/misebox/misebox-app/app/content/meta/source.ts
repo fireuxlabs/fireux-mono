@@ -31,9 +31,9 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Misebox — Create and manage your Kitchen profile',
+      title: 'Restaurant Kitchen Management Workspace | Misebox',
       description:
-        'Create and manage a Kitchen profile without an account. Add its name, tagline and image, or choose Business to manage multiple Kitchens.',
+        'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
     },
   },
   about: {

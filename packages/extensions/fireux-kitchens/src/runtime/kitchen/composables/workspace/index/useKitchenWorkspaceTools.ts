@@ -10,6 +10,7 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
   const { isAuthenticated } = useAuth()
   const { appAccessOutcome, canOwnMultipleWorkspaces } = useUser()
   const activeId = workspace.selection.kitchenId
+  const hasActiveKitchen = computed(() => Boolean(activeId.value))
   const activePresentation = computed(() =>
     readKitchenPresentationIdentity(workspace.selection.kitchen.value)
   )
@@ -44,9 +45,7 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
   )
   const canCreateMultiple = canOwnMultipleWorkspaces
   const canCreateKitchen = computed(
-    () =>
-      !workspacePending.value &&
-      (!hasExistingKitchen.value || canCreateMultiple.value)
+    () => !hasExistingKitchen.value || canCreateMultiple.value
   )
   const capacityConsumed = computed(
     () =>
@@ -137,6 +136,7 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
 
   return {
     workspacePending,
+    hasActiveKitchen,
     canCreateMultiple,
     canCreateKitchen,
     capacityConsumed,
