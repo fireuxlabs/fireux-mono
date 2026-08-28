@@ -61,6 +61,8 @@ const LEGACY_ENTITY_PATHS = [
   'projects/fireux/sproochli/app/simulations',
   'projects/misebox/misebox-app/app/components/WorkspaceKitchenIndex.vue',
   'projects/misebox/misebox-app/app/components/WorkspaceKitchen',
+  'projects/misebox/misebox-app/app/components/Misebox/Workspace/Kitchen/Main.vue',
+  'projects/misebox/misebox-app/app/components/Misebox/Workspace/Kitchen/Main',
   'projects/misebox/misebox-app/app/components/Misebox/Home',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Entry',
   // Core entities. Entity-owned App components and composables use the App

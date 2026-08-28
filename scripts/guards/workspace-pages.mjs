@@ -73,8 +73,6 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
   'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Workspace',
   'projects/fireux/fireux-blank/app/components/Workspace/Blank',
 ]
-const KITCHEN_WORKSPACE_COMPONENT_ROOT =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace'
 const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
   'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
@@ -341,10 +339,7 @@ function validateWorkspaceOperationAIPlaceholder(repoRoot, violations) {
 
 function validateWorkspaceEntityComponentHierarchy(repoRoot, violations) {
   for (const root of CONSOLE_ENTITY_COMPONENT_ROOTS) {
-    const mainComponent =
-      root === KITCHEN_WORKSPACE_COMPONENT_ROOT
-        ? 'Main/Kitchens.vue'
-        : 'Index.vue'
+    const mainComponent = 'Index.vue'
     if (!existsSync(path.join(repoRoot, root, mainComponent))) {
       violations.push(
         `${root}/${mainComponent} (the Workspace Entity Main capability must use its visible product name)`

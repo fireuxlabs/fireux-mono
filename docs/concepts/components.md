@@ -49,11 +49,13 @@ Map component folder and naming conventions.
   not move into an App merely to preserve conventional Nuxt discovery.
 - Entity-owned live Workspace composition remains beneath
   `runtime/<entity>/components/Workspace`. An App that deliberately uses a
-  Workspace as its root product surface composes those entrypoints beneath the
-  matching `{App}Workspace{Entity}` App family; it owns only App-specific
-  framing, literature, and doorways there. Misebox therefore uses
-  `MiseboxWorkspaceKitchenMain` at `/` while `fireux-kitchens` owns its
-  `WorkspaceKitchenMain*` sections and reusable `WorkspaceKitchen*` parts.
+  Workspace as its root product surface composes the ecosystem entrypoint and
+  owns only App-specific framing, literature, and doorways. Misebox therefore
+  owns `MiseboxWorkspaceKitchenMain` in `fireux-misebox`, while
+  `fireux-kitchens` owns direct responsibility components such as
+  `WorkspaceKitchenHero` and `WorkspaceKitchen`. The Main App mounts that
+  ecosystem component at `/`; tenant Apps receive it at
+  `/workspace/kitchen` without depending on the Main App.
   Read-only landing previews
   remain App-owned presentation and do not become live Workspace authority.
 - Declared Entity components live beneath `runtime/<entity>/components` and
@@ -334,8 +336,8 @@ Inside `runtime/<entity>/components`:
 
 The entity-scoped destination is:
 
-- `runtime/<entity>/components/Workspace/Main` for parts specific to the
-  Workspace's Main surface
+- `runtime/<entity>/components/Workspace/Index.vue` for the Entity Workspace
+  doorway and its selection lifecycle
 - `runtime/<entity>/components/Workspace/ActiveCard.vue` for the selected Entity presentation
 - `runtime/<entity>/components/Workspace/Targets.vue` for the selectable target collection
 - `runtime/<entity>/components/Workspace/Overview`

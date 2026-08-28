@@ -11,6 +11,11 @@
 
       <template #body>
         <MiseboxWorkspaceKitchenMain />
+        <div class="workspace-surface grid gap-6">
+          <MiseboxWorkspaceKitchenOperations />
+          <MiseboxWorkspaceKitchenTools />
+          <MiseboxWorkspaceKitchenDiscovery />
+        </div>
       </template>
     </UDashboardPanel>
   </div>

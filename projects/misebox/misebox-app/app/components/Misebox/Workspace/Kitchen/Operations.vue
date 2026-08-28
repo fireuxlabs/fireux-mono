@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenOperations } from '../../../models/operations'
+import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
 
 const featuredSlugs = [
   'menus',

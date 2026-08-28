@@ -2,8 +2,8 @@
   <section class="workspace-surface">
     <div class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6">
       <div class="grid content-center gap-6 py-12 sm:py-16">
-        <WorkspaceKitchenMainHero />
-        <WorkspaceKitchenMainAI />
+        <WorkspaceKitchenHero />
+        <WorkspaceKitchenAI />
       </div>
 
       <UButton
@@ -18,10 +18,7 @@
     </div>
 
     <div id="kitchen-main-content" class="grid scroll-mt-6 gap-6">
-      <WorkspaceKitchenMainKitchens />
-      <WorkspaceKitchenMainOperations />
-      <MiseboxWorkspaceKitchenMainTools />
-      <MiseboxWorkspaceKitchenMainDiscovery />
+      <WorkspaceKitchen />
     </div>
 
     <ClientOnly>

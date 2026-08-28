@@ -43,8 +43,8 @@
 import {
   type BrandPaletteKey,
   type SparseBrandPalette,
-} from '../../../models/utils/style.model'
-import { DEFAULT_BRAND_PALETTE } from '../../../utils/brand-palette'
+} from 'fireux-core/runtime/models/utils/style.model'
+import { DEFAULT_BRAND_PALETTE } from 'fireux-core/runtime/utils/brand-palette'
 
 const props = withDefaults(defineProps<{
   modelValue: SparseBrandPalette

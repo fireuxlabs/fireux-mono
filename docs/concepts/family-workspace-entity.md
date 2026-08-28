@@ -54,13 +54,14 @@ differences prove that Workspace is a shared product surface rather than a
 field on either root or a generic owner of their records.
 
 Their Index introductions also prove the shared `WorkspaceHero` structural
-seam. Core owns its Nuxt UI page-header anatomy; each domain or App surface
-owns its copy, actions, and state beneath its actual owner. Kitchen owns
-`WorkspaceKitchenMainHero` plus the live `WorkspaceKitchenMainKitchens`
-selection, creation, and collection lifecycle. The Misebox root composes those beneath its
-App-owned `MiseboxWorkspaceKitchenMain` and adds only Misebox literature and
-doorways. The shared component does not receive Entity names, subscription
-rules, or capability configuration.
+seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
+surface owns its copy, actions, and state beneath its actual owner. Kitchen
+owns `WorkspaceKitchenHero` and the live `WorkspaceKitchen` selection,
+creation, and collection lifecycle. The Misebox ecosystem composes those in
+`MiseboxWorkspaceKitchenMain`; the Main App adds only its central literature
+and doorways at `/`, while tenant Apps receive the same Workspace composition
+at `/workspace/kitchen`. The shared component does not receive Entity names,
+subscription rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
@@ -166,9 +167,9 @@ Index outcome contract.
 
 ## Component and composable naming
 
-Shared names:
+Shared source names and their generated entry components:
 
-- `WorkspaceXIndex`
+- `Workspace/Index.vue` → `WorkspaceX`
 - `WorkspaceXIndexActive`
 - `WorkspaceXIndexTargets`
 - `WorkspaceXOverview`

@@ -4,7 +4,9 @@
     aria-label="Active Kitchen"
   >
     <WorkspaceKitchenActiveCard
-      v-if="!showEmptyState && workspace.selection.kitchen.value"
+      v-if="
+        kitchenComplete && !showEmptyState && workspace.selection.kitchen.value
+      "
       :kitchen="workspace.selection.kitchen.value"
       :show-kitchens-action="showKitchensAction"
       :kitchens-open="kitchensOpen"
@@ -12,7 +14,7 @@
     />
 
     <WorkspaceKitchenCreate
-      v-else-if="canCreateKitchen || manifestingActiveKitchen"
+      v-else-if="canCreateKitchen || !kitchenComplete"
       launcher="inline"
       @created="createdKitchen"
       @manifested="manifestedKitchen"
@@ -81,13 +83,6 @@ const {
 } = useKitchenWorkspaceMain(workspace)
 const mounted = ref(false)
 const showEmptyState = ref(false)
-const manifestingKitchenId = ref('')
-const manifestingActiveKitchen = computed(
-  () =>
-    Boolean(manifestingKitchenId.value) &&
-    manifestingKitchenId.value === workspace.selection.kitchenId.value &&
-    !kitchenComplete.value
-)
 
 const canEmpty = computed(
   () => mounted.value && (isDeveloper.value || isAdmin.value)
@@ -113,14 +108,12 @@ watch(
 )
 
 async function createdKitchen(id: string) {
-  manifestingKitchenId.value = ''
   showEmptyState.value = false
   workspace.actions.selectKitchen(id)
   await workspace.targets.refresh()
 }
 
 async function manifestedKitchen(id: string) {
-  manifestingKitchenId.value = id
   showEmptyState.value = true
   workspace.actions.selectKitchen(id)
   await workspace.targets.refresh()
