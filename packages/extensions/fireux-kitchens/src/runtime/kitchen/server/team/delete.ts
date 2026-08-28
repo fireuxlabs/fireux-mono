@@ -2,14 +2,12 @@ import { createError, type H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import {
-  serverKitchenMemberInvitationsTarget,
-  serverKitchenTeamMembersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority.ts'
+import { serverKitchenMemberInvitationsTarget } from './mutation-targets.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 

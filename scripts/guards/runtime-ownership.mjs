@@ -63,8 +63,17 @@ const LEGACY_ENTITY_PATHS = [
   'projects/misebox/misebox-app/app/components/WorkspaceKitchen',
   'projects/misebox/misebox-app/app/components/Misebox/Workspace/Kitchen/Main.vue',
   'projects/misebox/misebox-app/app/components/Misebox/Workspace/Kitchen/Main',
+  'packages/ecosystem/fireux-misebox/src/runtime/components/Misebox/Workspace/Kitchen/Main.vue',
+  'packages/ecosystem/fireux-misebox/src/runtime/components/Misebox/Workspace/Kitchen/PublicEntry.vue',
   'projects/misebox/misebox-app/app/components/Misebox/Home',
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Entry',
+  'packages/extensions/fireux-sproochli/src/runtime/info',
+  'projects/fireux/fireux-app/app/pages/workspace/project/index.vue',
+  'projects/fireux/fireux-app/app/pages/workspace/project/overview.vue',
+  'projects/fireux/fireux-app/app/pages/workspace/project/identity.vue',
+  'projects/fireux/fireux-app/app/pages/workspace/project/team.vue',
+  'projects/fireux/fireux-app/app/pages/workspace/project/apps.vue',
+  'projects/fireux/fireux-app/app/pages/workspace/project/ecosystem.vue',
   // Core entities. Entity-owned App components and composables use the App
   // scoped Nuxt spine; the old global App-labelled dumping grounds are closed.
   'packages/core/fireux-core/src/runtime/components/App',

@@ -48,7 +48,8 @@ export const appMeta = {
 
   getStarted: sourceMeta.getStarted,
 
-  seoHome: sourceMeta.landing.seo,
+  seoHome: sourceMeta.workspace.seo,
+  seoProduct: sourceMeta.landing.seo,
   seoAbout: sourceMeta.about.seo,
   seoGetStarted: sourceMeta.getStarted.seo,
 
@@ -135,9 +136,7 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
-  operations: [
-    ...kitchenOperations,
-  ],
+  operations: [...kitchenOperations],
   solutions: miseboxSolutions,
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,

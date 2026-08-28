@@ -7,7 +7,7 @@
 import { ComplianceRecordStorage } from 'fireux-compliance/runtime/portfolio/models/compliance-record.model'
 import { DocumentLinkStorage } from 'fireux-documents/runtime/portfolio/models/document-link.model'
 import { DocumentStorage } from 'fireux-documents/runtime/portfolio/models/document.model'
-import DevPortfolioSystem from 'fireux-properties/runtime/components/dev/Portfolio/System.vue'
+import DevPortfolioSystem from 'fireux-properties/runtime/portfolio/components/dev/System.vue'
 import { TaskStorage } from 'fireux-tasks/runtime/portfolio/models/task.model'
 
 defineOptions({ name: 'GraniteDevPortfolioStorage' })

@@ -1,12 +1,12 @@
 <template>
   <div class="min-h-full">
-    <BringliLandingIndex />
+    <LandingIndex />
   </div>
 </template>
 
 <script setup lang="ts">
 import { appMeta } from '../meta'
-import BringliLandingIndex from '../components/Bringli/Landing/Index.vue'
+import LandingIndex from '../components/Landing/Index.vue'
 
 definePageMeta({
   layout: 'landing',

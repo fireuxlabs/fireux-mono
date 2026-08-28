@@ -13,5 +13,4 @@ export default defineFireuxConfig({
   },
   workspaces: ['property'],
   domains: ['properties'],
-  modules: ['fireux-properties', 'fireux-reservations'],
 })

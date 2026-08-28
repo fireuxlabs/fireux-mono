@@ -9,7 +9,10 @@
       </template>
 
       <template #body>
-        <MiseboxWorkspaceKitchenMain />
+        <div class="workspace-surface grid gap-6">
+          <WorkspaceKitchenHero />
+          <WorkspaceKitchen />
+        </div>
       </template>
     </UDashboardPanel>
   </div>
@@ -20,8 +23,7 @@ definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
-  requiresAuth: false,
+  requiresAuth: true,
   requiresSelection: false,
 })
 </script>

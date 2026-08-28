@@ -170,6 +170,43 @@ export function run({ repoRoot }) {
     ),
     'utf8'
   )
+  const kitchenMemberInvitationTargetsPath =
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/mutation-targets.ts'
+  const kitchenMemberInvitationTargetsSource = readFileSync(
+    path.join(repoRoot, kitchenMemberInvitationTargetsPath),
+    'utf8'
+  )
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'packages/core/fireux-core/src/runtime/utils/firestore-mutations/kitchen-member-targets.ts'
+      )
+    ),
+    false,
+    'Kitchen member-invitation targets must remain owned by the Kitchen Team domain.'
+  )
+  assert.match(
+    kitchenMemberInvitationTargetsSource,
+    /defineFirestoreMutationTarget[\s\S]*collectionPath:\s*`kitchens\/\$\{kitchen\}\/member-invitations`/,
+    'Kitchen Team must define its member-invitation target through the generic Core target API.'
+  )
+  for (const file of ['delete.ts', 'member-invitation.ts']) {
+    const source = readFileSync(
+      path.join(
+        repoRoot,
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team',
+        file
+      ),
+      'utf8'
+    )
+    assert.match(source, /from '\.\/mutation-targets\.ts'/)
+    assert.doesNotMatch(
+      source,
+      /serverKitchenMemberInvitationsTarget[\s\S]*from 'fireux-core\//,
+      'Kitchen Team consumers must not import their invitation target from Core.'
+    )
+  }
   assert.match(
     targetsSource,
     /projectMeta:[\s\S]*lane:\s*'mcp-skill'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'project'/,

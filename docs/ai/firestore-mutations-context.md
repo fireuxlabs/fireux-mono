@@ -59,8 +59,9 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/targets.ts`
 - Target validation and dynamic Server target factories:
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
-  and the domain-named `*-targets.ts` modules in the same directory, including
-  `server-targets.ts` and `kitchen-member-targets.ts`
+  plus Core-owned targets in the adjacent target modules. Domain-specific
+  targets live with their owning domain command; Kitchen Team invitation
+  targets are the current proved example.
 - Client touchpoints:
   `packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts`
   and the remaining Update/Delete migration touchpoints in that directory
@@ -110,9 +111,11 @@ scaffolding, not an approved fourth API or precedent for new exceptions.
 
 ## Ownership boundaries and verification
 
-Core owns target types, validation, and Client/Server touchpoints. Operational
-tooling owns MCP/Skill adapters but consumes the same target objects. Domain
-packages own payload validation and lifecycle decisions, not placement.
+Core owns target types, validation, generic Client/Server touchpoints, and
+targets for Core-owned records. Operational tooling owns MCP/Skill adapters
+but consumes the same target objects. Domain packages own their domain-specific
+target definitions, payload validation, and lifecycle decisions while reusing
+Core's target-definition API.
 Security Rules remain an independent authorization boundary.
 
 Ordinary entity update adapters use one typed command object with named

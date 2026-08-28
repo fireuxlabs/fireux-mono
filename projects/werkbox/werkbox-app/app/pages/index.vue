@@ -1,9 +1,9 @@
 <template>
-  <WerkboxLandingIndex />
+  <LandingIndex />
 </template>
 
 <script setup lang="ts">
-import WerkboxLandingIndex from '../components/Werkbox/Landing/Index.vue'
+import LandingIndex from '../components/Landing/Index.vue'
 
 definePageMeta({
   layout: 'landing',

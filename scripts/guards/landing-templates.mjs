@@ -8,18 +8,18 @@ export function run(ctx) {
   const root = ctx?.repoRoot ?? process.cwd()
   const read = relative => readFileSync(path.join(root, relative), 'utf8')
   const runtime = 'packages/ecosystem/fireux-misebox/src/runtime'
-  const fixtures = read(`${runtime}/template-one-fixtures.ts`)
-  const contract = read(`${runtime}/template-one.ts`)
-  const page = read(`${runtime}/TemplateOnePage.vue`)
-  const scene = read(`${runtime}/TemplateOneSceneOne.vue`)
+  const fixtures = read(`${runtime}/content/template-one-fixtures.ts`)
+  const contract = read(`${runtime}/models/template-one.ts`)
+  const page = read(`${runtime}/components/TemplateOne/Page.vue`)
+  const scene = read(`${runtime}/components/TemplateOne/SceneOne.vue`)
   const sceneCss = read(`${runtime}/assets/styles/template-one-scene-one.css`)
   const sceneFiles = [
-    'TemplateOneSceneOne.vue',
-    'TemplateOneMenuSection.vue',
-    'TemplateOneOrderingScene.vue',
-    'TemplateOneFranchiseScene.vue',
-    'TemplateOneProviderScene.vue',
-    'TemplateOneFooterScene.vue',
+    ['TemplateOneSceneOne', 'SceneOne.vue'],
+    ['TemplateOneMenuSection', 'MenuSection.vue'],
+    ['TemplateOneOrderingScene', 'OrderingScene.vue'],
+    ['TemplateOneFranchiseScene', 'FranchiseScene.vue'],
+    ['TemplateOneProviderScene', 'ProviderScene.vue'],
+    ['TemplateOneFooterScene', 'FooterScene.vue'],
   ]
   const catalogue = read('projects/misebox/misebox-app/app/pages/templates/index.vue')
   const detail = read('projects/misebox/misebox-app/app/pages/templates/[slug].vue')
@@ -31,7 +31,7 @@ export function run(ctx) {
     'projects/misebox/friiites/app',
     'projects/misebox/misebox-app/app/pages/templates',
   ].flatMap(relative => readdirSync(path.join(root, relative), { recursive: true, withFileTypes: true })
-    .filter(entry => entry.isFile() && /\.(?:vue|ts|css)$/.test(entry.name))
+    .filter(entry => entry.isFile() && !entry.parentPath.split(path.sep).includes('.nuxt') && /\.(?:vue|ts|css)$/.test(entry.name))
     .map(entry => path.join(entry.parentPath, entry.name)))
 
   for (const [id, tier] of [
@@ -83,9 +83,21 @@ export function run(ctx) {
     violations.push('Template One must retain a typed Scene One contract')
   if (!contract.includes('TemplateOneKitchenProjection') || !contract.includes('projectTemplateOneKitchen'))
     violations.push('Template One must retain its canonical Kitchen projection')
-  for (const file of sceneFiles) {
-    if (!page.includes(file.replace('.vue', '')) || !existsSync(path.join(root, runtime, file)))
-      violations.push(`TemplateOnePage must own ${file}`)
+  for (const [component, file] of sceneFiles) {
+    if (!page.includes(component) || !existsSync(path.join(root, runtime, 'components/TemplateOne', file)))
+      violations.push(`TemplateOnePage must own ${component}`)
+  }
+  for (const retired of [
+    'TemplateOnePage.vue',
+    'TemplateOneSceneOne.vue',
+    'TemplateOneProcessScene.vue',
+    'template-one.ts',
+    'template-one-fixtures.ts',
+    'template-one-fixture-projection.ts',
+    'kitchen-basic-presentation.ts',
+  ]) {
+    if (existsSync(path.join(root, runtime, retired)))
+      violations.push(`retired Template One runtime root forbidden: ${retired}`)
   }
   if (!friiitesPage.includes('<TemplateOnePage') || !friiitesPage.includes('createTemplateOneFixtureProjection'))
     violations.push('Friiites must render the canonical TemplateOnePage projection directly')

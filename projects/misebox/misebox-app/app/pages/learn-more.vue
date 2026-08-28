@@ -5,7 +5,8 @@
         <UBadge color="primary" variant="soft">Misebox Guide</UBadge>
         <h1 class="fx-type-display-title">Learn More</h1>
         <p class="fx-type-description text-toned">
-          Misebox is the operating system for kitchens and professionals. This page maps the core routes and next actions.
+          Misebox is the operating system for kitchens and professionals. This page maps the core routes and next
+          actions.
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/about" color="primary" icon="i-lucide-info">About</UButton>
@@ -20,13 +21,11 @@
       <UContainer class="space-y-6">
         <div class="max-w-3xl space-y-3">
           <UBadge color="primary" variant="soft">Business case</UBadge>
-          <h2 class="fx-type-section-title">
-            Turn the menu into a working kitchen system.
-          </h2>
+          <h2 class="fx-type-section-title">Turn the menu into a working kitchen system.</h2>
           <p class="text-base leading-7 text-toned">
-            Hospitality teams already run complex operations across paper, WhatsApp, spreadsheets,
-            PDFs, supplier messages, staff memory, and half-used back-office tools. Misebox turns
-            that operational mess into structured, reusable kitchen knowledge.
+            Hospitality teams already run complex operations across paper, WhatsApp, spreadsheets, PDFs, supplier
+            messages, staff memory, and half-used back-office tools. Misebox turns that operational mess into
+            structured, reusable kitchen knowledge.
           </p>
         </div>
 
@@ -58,8 +57,8 @@
               <h3 class="text-base font-semibold">Best first wedge</h3>
             </template>
             <p class="text-sm leading-6 text-muted">
-              Start with QR and public menus, then grow inward into structured dishes,
-              allergens, recipes, prep, suppliers, teams, and hiring.
+              Start with QR and public menus, then grow inward into structured dishes, allergens, recipes, prep,
+              suppliers, teams, and hiring.
             </p>
           </UCard>
         </div>
@@ -69,13 +68,11 @@
             <div class="space-y-2">
               <h3 class="text-base font-semibold text-highlighted">Scope guardrail</h3>
               <p class="text-sm leading-6 text-muted">
-                Every Misebox feature should attach to a real operational object: menu, dish,
-                recipe, ingredient, prep task, supplier, team member, job, or public menu URL.
+                Every Misebox feature should attach to a real operational object: menu, dish, recipe, ingredient, prep
+                task, supplier, team member, job, or public menu URL.
               </p>
             </div>
-            <UButton to="/solutions" color="primary" variant="soft" icon="i-lucide-lightbulb">
-              View solutions
-            </UButton>
+            <UButton to="/solutions" color="primary" variant="soft" icon="i-lucide-lightbulb"> View solutions </UButton>
           </div>
         </UCard>
       </UContainer>
@@ -100,7 +97,7 @@
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton to="/" color="primary" variant="soft" icon="i-lucide-terminal">Kitchen workspace</UButton>
-            <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-app-window">Your App</UButton>
+            <UButton to="/product" color="neutral" variant="soft" icon="i-lucide-app-window">Product</UButton>
             <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
           </div>
         </UCard>

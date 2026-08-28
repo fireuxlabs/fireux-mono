@@ -445,10 +445,6 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/module.ts'
   )
-  const kitchensServerConfig = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
-  )
   const kitchensApi = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/index.get.ts'
@@ -471,9 +467,6 @@ export async function run({ repoRoot }) {
     violations.push(
       'Kitchens must not use the visibility-only generic sitemap provider.'
     )
-  }
-  if (!kitchensServerConfig.includes("route: '/sitemaps/kitchens.xml'")) {
-    violations.push('Kitchens must register its sitemap XML handler.')
   }
   if (!kitchensSitemap.includes('readKitchens')) {
     violations.push('Kitchen sitemap must use the bounded Kitchen reader.')

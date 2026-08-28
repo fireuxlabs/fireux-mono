@@ -171,12 +171,12 @@ const DOMAIN_ROOTS = [
     root: 'projects/fireux/fireux-app/server/project',
     slices: ['core', 'identity', 'index', 'team'],
     surfaces: [
-      'projects/fireux/fireux-app/app/pages/workspace/project/index.vue',
-      'projects/fireux/fireux-app/app/pages/workspace/project/overview.vue',
-      'projects/fireux/fireux-app/app/pages/workspace/project/identity.vue',
-      'projects/fireux/fireux-app/app/pages/workspace/project/team.vue',
-      'projects/fireux/fireux-app/app/pages/workspace/project/apps.vue',
-      'projects/fireux/fireux-app/app/pages/workspace/project/ecosystem.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue',
     ],
   },
   {

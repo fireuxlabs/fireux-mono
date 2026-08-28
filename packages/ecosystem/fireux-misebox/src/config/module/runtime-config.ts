@@ -22,6 +22,11 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
       : []
   )
   const hasModule = (name: string) => modules.has(name)
+  const workspaces = new Set(
+    Array.isArray(fireux.workspaces)
+      ? fireux.workspaces.map((value: unknown) => String(value || '').trim())
+      : []
+  )
 
   const currentPlaces = fireux.places
   const currentJobs = fireux.jobs
@@ -66,7 +71,7 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
     }
   }
 
-  if (hasModule('fireux-kitchens')) {
+  if (hasModule('fireux-kitchens') || workspaces.has('kitchen')) {
     fireux.designPacks = {
       ...currentDesignPacks,
       publicMenu: {

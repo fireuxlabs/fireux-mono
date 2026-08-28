@@ -42,6 +42,10 @@ select their own bounded property targets.
 - Apps that expose the Property Reservation Workspace use the shared SSR
   Functions deployment shape; static-only hosting cannot provide its trusted
   authenticated server boundary.
+- A BuenoHost App declares the Property Workspace and its App policy;
+  `fireux-buenohost` installs the Property and Reservation extensions required
+  by that Workspace. Apps do not repeat those module selections, while direct
+  App imports still require direct package dependencies.
 - Project apps do not own a competing `.firebaserc` or duplicate the ecosystem
   Firebase config.
 

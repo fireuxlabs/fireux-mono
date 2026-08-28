@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import TemplateOnePage from 'fireux-misebox/runtime/TemplateOnePage.vue'
+import TemplateOnePage from 'fireux-misebox/runtime/components/TemplateOne/Page.vue'
 import {
   createTemplateOneFixtureProjection,
   findLandingTemplateBrand,
-} from 'fireux-misebox/runtime/template-one-fixtures'
+} from 'fireux-misebox/runtime/content/template-one-fixtures'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/operations/dishes/flagship-projection'
 

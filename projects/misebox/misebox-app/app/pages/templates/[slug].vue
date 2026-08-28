@@ -18,17 +18,17 @@
 
 <script setup lang="ts">
 import { createError } from 'h3'
-import TemplateOnePage from 'fireux-misebox/runtime/TemplateOnePage.vue'
+import TemplateOnePage from 'fireux-misebox/runtime/components/TemplateOne/Page.vue'
 import {
   createTemplateOneFixtureProjection,
   findLandingTemplate,
   findLandingTemplateBrand,
   isLandingTemplateBrandId,
-} from 'fireux-misebox/runtime/template-one-fixtures'
+} from 'fireux-misebox/runtime/content/template-one-fixtures'
 import { useTemplateOneProductDemo } from '~/composables/product-demo/useTemplateOneProductDemo'
 import type { MenuDetailPayload } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/kitchen/server/operations/dishes/flagship-projection'
-import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
+import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/utils/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 

@@ -1,161 +1,155 @@
 # AGENTS.md
 
-Purpose: short operating router for AI agents working in `fireux-mono`.
+Purpose: short operating gate for AI agents working in `fireux-mono`.
 
-Effective: 2026-08-26
+Effective: 2026-08-28
 
 ## Mandatory Entry
 
-For every task in this repo:
+For every task in this repository:
 
-1. Read this file.
-2. Read `docs/ai/gpt-context.md`.
-3. If the task belongs to a durable scope with a matching context file, read that scoped file too.
-4. Then inspect current source, nearest sibling, and relevant guards before editing.
+1. Read this file completely.
+2. Read `docs/ai/gpt-context.md` completely.
+3. Read the smallest relevant scoped `docs/ai/*-context.md`.
+4. Read `docs/concepts/fireux-mono.md` for repository hierarchy.
+5. Inspect current source, package manifests, Nuxt registrations, real
+   consumers, nearest working sibling, relevant guards, and `git status`
+   before editing.
 
-`AGENTS.md` is intentionally short. It tells agents where to go; it should not become the whole repository rulebook again.
+Current source and executable guards outrank documentation. Documentation is
+the route into the system, not a substitute for inspecting it.
 
-## Context Router
+## Repository Hierarchy First
 
-Use the smallest current context that fits the task.
+Every source file must have one predictable owner. Start with the repository
+dependency law in `docs/concepts/fireux-mono.md`:
 
-- Repo-wide agent context: `docs/ai/gpt-context.md`
-- Misebox-specific work: `docs/ai/misebox-context.md`
-- Werkbox-specific work: `docs/ai/werkbox-context.md`
-- Apps That Slap-specific work: `docs/ai/apps-that-slap-context.md`
-- Cross-system identity, landing, and pricing literature: `docs/ai/identity-literature-context.md`
-- Landing-template catalogue and brand injection: `docs/ai/templates-context.md`
-- Product literature and common tongue: `docs/concepts/product-language.md`
-- Runtime filesystem ownership: `docs/concepts/runtime-filesystem.md`
-- Concept maps and family language: `docs/concepts/*.md`
-- Source shape and executable authority: `scripts/guards/*`
-- Package/app entrypoints: `src/module.ts`, `src/config/module/*`, `nuxt.config.ts`, `package.json`
+```text
+Apps may depend on Ecosystems, Extensions, and Core
+Ecosystems may depend on Extensions and Core
+Extensions may depend on lower Extensions and Core
+Core never depends on product packages
+```
 
-Create a new `docs/ai/<scope>-context.md` only for a recurring product, ecosystem, package family, or dedicated chat that needs durable guidance outside the global file.
+The owning layer keeps the implementation. An upper layer composes or adapts
+it; it does not copy or absorb it. Apps own deployment, routes, configuration,
+brand, and genuinely App-specific presentation. Ecosystems own genuine
+cross-extension product composition. Extensions own reusable domains and
+capabilities. Core owns proven product-neutral mechanics.
 
-Every scoped context must inherit this file and `docs/ai/gpt-context.md`, define its purpose/scope/ownership boundaries/authority/refresh process/verification expectations, point to current source and guards, and exclude temporary task state.
+Before adding a file or abstraction, answer:
 
-## Documentation Rule
+1. Which layer and package own this behavior?
+2. What existing family and working sibling does it belong to?
+3. Which lower capabilities does it reuse?
+4. What must match, and what product difference may remain?
+5. Can the requirement be implemented without a new system, registry,
+   compatibility layer, pass-through wrapper, or duplicate owner?
 
-Before creating or renaming a living context or concept map, read
-`docs/concepts/documentation.md` and copy the metadata shape from the nearest
-current sibling. Every `docs/concepts/*.md` map must declare exactly one
-`Updated: YYYY-MM-DD`, one reviewed ancestor `Ref: <short git ref>`, and
-`Role: map, not canon`. Every `docs/ai/*-context.md` must use its guarded living
-context role and scope. Add the required graph link in the same change, then
-verify the document through `pnpm guard`.
+If ownership cannot be answered from current source and dependency direction,
+stop and report the ambiguity. Do not make a convenient local placement and
+later describe it as architecture.
 
-## Working Rule
+## Scope Router
 
-FireUX needs a solid spine more than another local exception.
+Read the mandatory entrypoints above, then only the rows relevant to the task.
+When several rows apply, read all of them. A routed document narrows the search;
+it never replaces inspection of current source, consumers, siblings, and guards.
 
-Before treating work as a new system, always ask:
+| Working scope | Required context or map |
+| --- | --- |
+| Repository or package ownership | `docs/concepts/fireux-mono.md`, `docs/concepts/lasagne.md` |
+| Runtime file placement or Nuxt registration | `docs/concepts/runtime-filesystem.md`, `docs/concepts/runtime-package.md` |
+| Components or composition | `docs/concepts/components.md`, `docs/concepts/lasagne.md` |
+| Family, canon, spine, alignment, or extraction | `docs/concepts/spine.md`, then the named family map |
+| Workspace and Entity surfaces | `docs/concepts/family-workspace-entity.md` |
+| Misebox Apps, ecosystem, or tenants | `docs/ai/misebox-context.md` |
+| Firestore mutations | `docs/ai/firestore-mutations-context.md` |
+| Product copy or literature | `docs/concepts/product-language.md` |
+| Brand assets | `docs/concepts/brand-assets.md` |
+| Documentation roles or new durable docs | `docs/concepts/documentation.md` |
+| Apps That Slap, BuenoHost, Sharer, templates, or Werkbox | the matching `docs/ai/*-context.md` |
 
-> Can this be expressed inside an existing FireUX family using current Core,
-> Nuxt UI, domain capabilities, and named components?
+Do not create a second router document. Add a scoped context only for recurring
+scope-specific guidance that satisfies the context contract above. Add a
+nested `AGENTS.md` only when a subtree has durable operational instructions
+that apply to nearly every edit there and cannot be expressed by source,
+guards, or an existing context. Never copy repository architecture into it.
 
-For every new product surface, ecosystem capability, or proposed shared
-abstraction, answer that question before editing. Name the existing family,
-nearest working sibling, capabilities to reuse, smallest genuinely new
-domain-owned delta, and explicit non-goals. Start as an ordinary FireUX page,
-capability, or domain component. One consumer does not justify a new system,
-engine, registry, framework, or shared abstraction.
+## Smallest Useful Change
 
-FireUX discovers a new family through controlled named-sibling evolution. A
-complete baseline may be copied into a real, separately named proving sibling
-before that sibling is deliberately differentiated. That bounded initial
-duplication is construction, not drift and not proof of a spine. Reuse proven
-lower layers immediately, align fundamentals justified independently by the
-family's product job, keep domain entrypoints named, and promote only the
-contract that survives material differentiation. Follow the lifecycle and
-gates in `docs/concepts/spine.md`.
-
-Before editing an entity, console, route family, model, collection manager, public surface, module registration, server API, or reusable seam:
-
-1. Name the family.
-2. Name the nearest working sibling.
-3. Name what must match.
-4. Name what may differ.
-5. Patch the smallest useful slice.
+Patch one bounded vertical responsibility at a time. Move implementation,
+registration, consumers, docs, and guards together when they form one
+ownership cutover. Remove the retired path and empty directories in the same
+slice. Preserve unrelated and concurrent work.
 
 If a tiny behavior needs a broad diff, stop and report the missing seam.
 
-## Proof Rule
+For a pipeline proof, use only:
 
-When testing whether a pipeline works, build the smallest observable proof:
+1. one temporary value or field;
+2. one writer;
+3. one reader; and
+4. one plain visible result.
 
-1. One temporary value or field.
-2. One writer.
-3. One reader.
-4. One plain visible result.
+Do not turn a proof into a catalogue, framework, generalized API, compatibility
+layer, or presentation system. Remove temporary proof code when it has served
+its purpose.
 
-Do not add a value catalogue, multiple controls, presentation variants,
-generalized API, reusable framework, compatibility layer, or speculative
-validation to a proof. Make the direct path work first. Add product behavior
-only after the proof succeeds, and remove temporary proof code when it has
-served its purpose.
+## Evidence and Claims
 
-If the proof expands beyond those four parts, stop and explain why before
-editing further.
+`Aligned`, `canonical`, `fixed`, `complete`, and `done` are evidence claims.
+Always qualify them as local, family, or repository scope and follow the full
+contract in `docs/ai/gpt-context.md#alignment-and-completion-claims`.
 
-Package runtime ownership is entity-scoped. Root technical directories are
-the shared FireUX spine or a Nuxt entrypoint boundary; entity-owned
-implementation belongs under `src/runtime/<entity>/`. During the migration,
-do not create a parallel implementation merely to satisfy the target path:
-read `docs/concepts/runtime-filesystem.md` and move a bounded capability
-coherently when filesystem migration is part of the task.
+A green build proves compilation. A green guard proves only encoded contracts.
+Neither proves unaudited ownership or repository-wide canon. Never present a
+bounded repair as completion of its parent task.
 
-Before changing a repo-wide ownership, filesystem, Entity, Console, or product
-classification, audit the complete maintained `docs/ai` and `docs/concepts`
-graph for contradictory claims. Correct the documentation destination first;
-do not begin broad source movement while two durable maps describe different
-systems.
+A user decision, correction, requirement, or acceptance criterion is product
+authority for its scope. A request to try, preview, compare, or see how
+something feels is an experiment; keep it reversible and do not canonise it in
+living context or permanent guards before acceptance and source evidence.
 
-## Literature Rule
+## Documentation and Authority
 
-Before writing product, Console, operation, help, empty-state, or landing copy,
-read `docs/concepts/product-language.md`. Start at the smallest current source
-atoms and work upward: each parent explains its children, and the landing
-summarises the proven tree. Use the present tense for a source-defined release
-capability. Do not invent slogans, benefits, or promises that the child source
-cannot explain.
+Use this authority order:
 
-## App Brand Rule
+1. current source;
+2. executable guards and tests;
+3. `docs/ai/*-context.md`;
+4. `docs/concepts/*.md`;
+5. README placeholders and historical material.
 
-Every App uses the same runtime brand-asset contract at `public/img/app/*`.
-`defineFireuxConfig` does not declare asset ownership or approval state.
-Canonical Core and ecosystem projection scripts retain their own explicit
-source/target authority, while genuinely App-owned artwork lives in that App's
-standard asset family. Never loan, copy, invent, or ignore assets merely to
-satisfy the public-image guard.
+Follow `docs/concepts/documentation.md` before creating, renaming, or changing
+the role of durable documentation. Do not create a new context or concept map
+when an existing owner can hold the rule. Documentation records proved
+decisions; it must not convert a plausible implementation into canon.
 
-## Authority Order
+## Verification and Shared Work
 
-1. Current source code.
-2. Executable guards and tests.
-3. `docs/ai/*-context.md` living entrypoints.
-4. `docs/concepts/*.md` maps.
-5. README placeholders and old/deleted docs are not authority.
-
-When context disagrees with source or guards, follow source/guards and update the relevant context in the same change when the new rule is stable.
-
-## Performance Hygiene
-
-- Default to one agent and targeted searches.
-- Before handing off any repository edit, run `pnpm guard` against the current
-  shared checkout. Focused checks are iteration feedback; they never replace
-  the complete handoff gate.
-- `pnpm gitsave` enforces a current upstream base, Git hooks, and all repository
-  guards without bypass switches. It also refuses to save when the worktree
-  changes during verification; wait for every active task to finish before the
-  shared save.
-- Avoid repeated checks of unchanged state.
-- Reuse healthy existing dev servers; do not restart or kill them without a concrete reason.
-- Use focused checks while iterating; broaden verification only when shared seams move.
-- If context is dominated by historical output, checkpoint useful state and recommend a fresh task.
+- Run focused checks while iterating and full `pnpm guard` before handoff.
+- `pnpm gitsave` requires a stable shared tree; never run it while another task
+  is active or without the user's requested save.
+- Reuse healthy dev servers. Do not restart or kill them without a concrete
+  need.
+- Preserve all unrelated uncommitted changes. Never revert another task's
+  work to make a check pass.
+- If concurrent edits prevent a clean full guard, report the exact transient
+  failure rather than claiming a green handoff.
+- When context becomes dominated by historical output, checkpoint the useful
+  state and continue in a fresh task with explicit acceptance criteria.
 
 ## Communication
 
-When the user says `canon`, `spine`, `align`, `family`, or `drift`, state what must match, what may differ, the reference sibling, and the files you will touch before editing.
+When the user says `canon`, `spine`, `align`, `family`, or `drift`, state before
+editing:
 
-Be direct when the repo is drifting. The goal is a simpler, stronger FireUX spine.
+- the alignment scope;
+- the owner and reference sibling;
+- what must match;
+- what may differ;
+- the exact files in scope; and
+- what remains unaudited.
+
+Be direct when the repository is drifting. Do not reassure beyond the evidence.

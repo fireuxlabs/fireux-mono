@@ -10,10 +10,4 @@ export default defineFireuxConfig({
   role: 'global',
   workspaces: ['portfolio'],
   domains: ['properties', 'portfolios'],
-  modules: [
-    'fireux-properties',
-    'fireux-compliance',
-    'fireux-documents',
-    'fireux-tasks',
-  ],
 })

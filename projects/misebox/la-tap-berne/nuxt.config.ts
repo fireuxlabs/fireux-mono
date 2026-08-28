@@ -18,5 +18,5 @@ export default defineFireuxConfig({
     },
   },
   navHiddenKeys: ['kitchens', 'places'],
-  modules: ['fireux-places', 'fireux-go-qr', 'fireux-kitchens'],
+  modules: ['fireux-places', 'fireux-go-qr'],
 })

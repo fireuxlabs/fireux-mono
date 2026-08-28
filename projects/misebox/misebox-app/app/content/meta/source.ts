@@ -1,5 +1,11 @@
 export const sourceMeta = {
   name: 'Misebox',
+  workspace: {
+    seo: {
+      title: 'Restaurant Kitchen Management Workspace | Misebox',
+      description: 'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
+    },
+  },
   landing: {
     brand: {
       appName: 'misebox',
@@ -31,9 +37,9 @@ export const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Restaurant Kitchen Management Workspace | Misebox',
+      title: 'Restaurant Menu and Kitchen Management | Misebox',
       description:
-        'Create your Kitchen workspace, publish Menus, and connect dishes, recipes, preparation and orders.',
+        'Publish restaurant Menus and connect dishes, recipes, preparation, orders and service with Misebox.',
     },
   },
   about: {

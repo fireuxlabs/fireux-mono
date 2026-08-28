@@ -4,7 +4,7 @@ import {
   requirePropertyWorkspaceWrite,
   useActiveProperty,
   type ActivePropertyRuntime,
-} from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
+} from 'fireux-properties/runtime/property/composables/workspace/operations/useActiveProperty'
 import type {
   Reservation,
   ReservationCreateInput,

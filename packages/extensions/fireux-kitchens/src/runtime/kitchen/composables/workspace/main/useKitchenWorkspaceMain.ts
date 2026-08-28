@@ -40,7 +40,9 @@ export function useKitchenWorkspaceMain(workspace = useKitchenWorkspace()) {
   )
   const canCreateMultiple = canOwnMultipleWorkspaces
   const canCreateKitchen = computed(
-    () => !hasExistingKitchen.value || canCreateMultiple.value
+    () =>
+      workspace.runtime.canCreate.value &&
+      (!hasExistingKitchen.value || canCreateMultiple.value)
   )
   const capacityConsumed = computed(
     () =>

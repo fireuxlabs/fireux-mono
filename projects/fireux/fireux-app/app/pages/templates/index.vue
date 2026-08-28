@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { landingTemplates } from 'fireux-misebox/runtime/template-one-fixtures'
+import { landingTemplates } from 'fireux-misebox/runtime/content/template-one-fixtures'
 import {
   buildPublicPageJsonLd,
   useSeo,

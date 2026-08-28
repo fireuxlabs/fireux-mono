@@ -37,12 +37,16 @@
               <p class="text-dimmed">Functional Kitchen Workspace access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/your-app</p>
-              <p class="text-dimmed">Branded Misebox App setup and monthly plan.</p>
+              <p class="font-mono">GET /pricing/premium</p>
+              <p class="text-dimmed">Complete self-managed Kitchen Workspace.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/managed</p>
-              <p class="text-dimmed">Managed product and assistance.</p>
+              <p class="font-mono">GET /pricing/business</p>
+              <p class="text-dimmed">Multiple-Kitchen operating capacity.</p>
+            </div>
+            <div class="fx-inset-panel">
+              <p class="font-mono">GET /product</p>
+              <p class="text-dimmed">Misebox product landing.</p>
             </div>
           </div>
         </UCard>

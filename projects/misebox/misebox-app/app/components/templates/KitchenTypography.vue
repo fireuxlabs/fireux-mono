@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
+import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
 import FontValue from './FontValue.vue'
 
 const props = defineProps<{ kitchen: TemplateOneKitchenSpecimen }>()

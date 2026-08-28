@@ -1,7 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/useActiveProperty'
+import { useActiveProperty } from 'fireux-properties/runtime/property/composables/workspace/operations/useActiveProperty'
 import type {
   Reservation,
   ReservationListResponse,

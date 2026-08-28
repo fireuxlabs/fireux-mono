@@ -34,7 +34,6 @@ export default defineFireuxConfig({
   modules: [
     'fireux-places',
     'fireux-go-qr',
-    'fireux-kitchens',
     'fireux-sproochli',
   ],
 })

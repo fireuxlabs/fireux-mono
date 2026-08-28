@@ -67,9 +67,10 @@ Before each task:
   root, and owner Team record for the current Firebase identity, including an
   anonymous identity. Kitchen is a plain parent model, not a generic
   Entity/App/Workspace management classification.
-- Misebox `/` is one product surface referred to interchangeably as the
-  Landing, Workspace Main, or Main Page. It owns Kitchen selection and the
-  create-Kitchen doorway. Free and Premium subscriptions may own one Kitchen;
+- Misebox `/` is the Misebox Kitchen Workspace root composition.
+  `fireux-kitchens` owns Kitchen selection and the create-Kitchen doorway;
+  the App owns the route, navbar and SEO framing, and its literature and
+  presentation sections. Free and Premium subscriptions may own one Kitchen;
   Business may own and manage multiple Kitchens. The UI projects this from
   Core's `canOwnMultipleWorkspaces` permission, and trusted Kitchen onboarding
   enforces the same Business-only multi-Kitchen boundary. Role remains separate
@@ -227,8 +228,12 @@ Before each task:
   `fireux-kitchens`, and must not enter the Job model, authoring flow, or
   Directory view.
 - `defineFireuxConfig` loads `fireux-misebox` automatically from
-  `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
-  capabilities; the ecosystem package is not an umbrella dependency bundle.
+  `ecosystem: 'misebox'`. A Misebox App declares whether it exposes the Kitchen
+  Workspace; the ecosystem then installs `fireux-kitchens` and its shared
+  Workspace doorway. Kitchen-specific ecosystem routes and server handlers are
+  registered only for Apps declaring that Workspace. Other extension modules
+  remain explicit App capabilities, so the ecosystem package is not a general
+  umbrella dependency bundle.
 - The Misebox Main App explicitly opts into Core's app-wide `sci-fire` design
   pack while retaining its own semantic primary palette. Tenant Misebox Apps
   remain on Nuxt UI unless their own App config deliberately selects a pack;
@@ -248,14 +253,18 @@ Before each task:
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
 - The Misebox Main App deliberately opens the Kitchen Workspace at `/`; it is
-  not a conventional Home or a separate marketing landing. The ecosystem-owned
-  `MiseboxWorkspaceKitchenMain` composes Kitchen-owned `WorkspaceKitchenHero`
-  and `WorkspaceKitchen` with the Misebox KitchenAI surface so every
-  Misebox tenant can mount the same working Kitchen doorway at
-  `/workspace/kitchen`. The Main App's `/` route remains a thin App adapter and
-  adds only its central tools, discovery, SEO literature, and route framing.
-  Tenant Apps keep their public root and brand; they do not copy the Main App's
-  Workspace implementation or central-site links.
+  not a conventional Home or a separate marketing landing. The Main App-owned
+  `/` route directly composes Kitchen-owned `WorkspaceKitchenHero`,
+  `WorkspaceKitchenAI`, and `WorkspaceKitchen`, then adds App-owned tools,
+  operations, discovery, information, SEO literature, and route framing from
+  `app/components/Workspace/Kitchen`. The Kitchen package loads and derives
+  the current Kitchen targets used on `/`; the App presentation components own
+  no Kitchen authority or capability execution. Operational tools remain in
+  `fireux-kitchens` under `Workspace/Capability`.
+  Tenant Apps keep their public root and brand; the ecosystem-provided
+  `/workspace/kitchen` route is an authenticated thin doorway into the direct
+  Kitchen-owned Workspace, whose authority resolves the tenant's available
+  Kitchen without a configured target id.
   `Misebox/Landing/WorkspacePreview` remains a separate read-only product proof
   backed by Kitchen-owned Demo records and is not part of the live Workspace
   entry.
@@ -318,11 +327,11 @@ Before each task:
   presentation only and performs no Demo, Live, Test, Firebase, Storage, or
   order mutation. Misebox owns its content while Core continues to own the
   shared hero layout and responsive behaviour.
-  Misebox composes Core `LandingProductPricingStrip` immediately after the Hero rather
+  Misebox composes Core `LandingProductPricingStrip` on `/product` immediately after the Hero rather
   than inside its pinned grid. Section One remains the shared two-part Hero:
   product title and actions on the left, project-owned image on the right.
-  Its thin adapter presents the shared Free, Pro, Managed, and Your App tiers
-  and links to the full pricing routes; it replaces secondary
+  Its thin adapter presents the Free, Premium, and Business subscriptions and
+  links to the full pricing routes; it replaces secondary
   capability notes rather than duplicating a separate onboarding section. A
   Core `LandingOperationRail` provides the horizontally scrolling rail above
   Section One in both Main Apps. Misebox projects the current Kitchen
@@ -540,19 +549,22 @@ Before each task:
   source-agnostic. Wider
   screens place that component left of the buyer-facing Workspace text. The
   source family begins at
-  `app/components/Misebox/Landing/WorkspacePreview/Index.vue`.
+  `app/components/Landing/WorkspacePreview/Index.vue`.
   The composition is mobile-first: phone flow, touch targets, and compact
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
-- Misebox follows the shared ecosystem pricing literature. Free provides a
-  functional Kitchen Workspace, Pro is CHF 20/month self-managed, Managed is CHF
-  50/month with bounded FireUX assistance, and Your App is CHF 600 setup
-  followed by Pro or Managed. Core owns these common amounts and service
-  meanings; Misebox owns its Kitchen-specific capabilities and limits. Managed
-  service does not make FireUX a recruiter, employer, payroll provider, or
-  personnel lessor. A Misebox App configures existing product capabilities;
-  new development is quoted separately.
+- Misebox subscription literature uses only Free, Premium, and Business. Free
+  provides a functional Kitchen Workspace, Premium is CHF 20/month for the
+  complete self-managed Workspace, and Business is CHF 50/month for
+  multiple-Kitchen capacity. Managed setup, migration, content, or operating
+  assistance remain separately described services rather than a fourth tier.
+  A branded Misebox App is a separate CHF 600 setup offer followed by Premium
+  or Business; it is not presented as a subscription tier. Misebox owns its
+  Kitchen-specific capabilities and limits. Services do not make FireUX a
+  recruiter, employer, payroll provider, or personnel lessor. New development
+  is quoted separately. The Kitchen Workspace is `/`; the product landing is
+  `/product`.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the
   shared `useApps()` collection. It shows only active Apps fetched by the

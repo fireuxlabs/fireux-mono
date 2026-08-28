@@ -1,7 +1,7 @@
 # FireUX Mono concept map
 
-Updated: 2026-08-27
-Ref: e23268507
+Updated: 2026-08-28
+Ref: f35bfd57c
 Role: map, not canon
 
 ## Purpose
@@ -54,19 +54,40 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 
 ## Repository ownership spine
 
-Read the workspace in one dependency direction:
+Read composition from the product inward and dependencies toward lower owners:
 
 ```text
-Core foundations
-    ↓
-Shared domain primitives
-    ↓
-Entity and parent-domain packages
-    ↓
-Ecosystem composition
-    ↓
 Concrete Apps
+├── Ecosystem composition
+├── Entity and parent-domain extensions
+├── Shared domain primitives
+└── Core foundations
+
+Allowed dependency direction:
+
+App ───────────────→ Ecosystem / Extension / Core
+Ecosystem ─────────→ Extension / Core
+Extension ─────────→ lower Extension / Core
+Core ──────────────→ external libraries only
 ```
+
+Not every dependency passes through every row. An App may consume an Extension
+directly, and an Extension may consume a lower domain primitive. The invariant
+is that a lower owner never imports its upper composer: Core does not import a
+product package, an Extension does not import an Ecosystem or App, and an
+Ecosystem does not import an App.
+
+Implementation remains with the lowest layer that owns its complete meaning
+and authority. Upper layers compose, configure, frame, or adapt it. They do not
+copy the implementation merely because they expose the final route.
+
+For a proved Workspace family, the App declares that product surface and its
+App policy, the ecosystem installs the owning extension and owns only genuine
+cross-extension entry composition, and the extension owns the Entity runtime,
+authority, and capability routes. A thin App route or presentation may frame
+that surface without becoming its reusable owner. An ecosystem with no proved
+Workspace installs none; repository hierarchy does not require placeholder
+Workspace symmetry.
 
 This is the repository comprehension spine, not a replacement for the three
 package lanes. `packages/extensions` contains both shared domain primitives
@@ -102,7 +123,8 @@ A human or agent entering an unfamiliar scope follows this bounded path:
    `middleware`, `plugins`, or `server/api`.
 4. Follow that adapter into `runtime/<entity>/<technical-role>` when one Entity
    owns the behavior, or the root technical spine when it is genuinely shared.
-5. Follow dependencies only downward through the repository ownership spine.
+5. Follow imports toward lower owners using the allowed dependency direction
+   above; never infer ownership from the final route or visible brand.
 6. Verify the claim against the nearest working sibling and relevant guard.
 
 If that path requires searching unrelated component, composable, or server

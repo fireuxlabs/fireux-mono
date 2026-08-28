@@ -1,16 +1,12 @@
 {
   "name": "fireux-sproochli",
   "version": "0.1.0",
-  "description": "Generic multilingual info-page tooling for FireUX apps",
+  "description": "Multilingual reviewed-copy and translation runtime for FireUX apps",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-    "./runtime/info": {
-      "types": "./src/runtime/info/index.ts",
-      "default": "./src/runtime/info/index.ts"
-    },
     "./runtime/sproochli": "./src/runtime/sproochli.ts",
     "./runtime/sproochli.ts": "./src/runtime/sproochli.ts",
     "./runtime/*.vue": {

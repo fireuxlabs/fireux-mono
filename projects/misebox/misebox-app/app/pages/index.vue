@@ -4,17 +4,49 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Workspace" :show-title="false">
           <template #right>
-            <MiseboxWorkspaceKitchenMainInfo />
+            <WorkspaceKitchenInfo />
           </template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
-        <MiseboxWorkspaceKitchenMain />
+        <section class="workspace-surface">
+          <div
+            class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6"
+          >
+            <div class="grid content-center gap-6 py-12 sm:py-16">
+              <WorkspaceKitchenHero />
+              <WorkspaceKitchenAI />
+            </div>
+
+            <UButton
+              to="#kitchen-workspace-content"
+              icon="i-lucide-arrow-down"
+              color="neutral"
+              variant="ghost"
+              size="xl"
+              class="mx-auto rounded-full"
+              aria-label="Explore the Kitchen Workspace"
+            />
+          </div>
+
+          <div
+            id="kitchen-workspace-content"
+            class="grid scroll-mt-6 gap-6"
+          >
+            <WorkspaceKitchen />
+          </div>
+
+          <ClientOnly>
+            <pre v-if="isDev" class="overflow-x-auto text-xs text-muted">{{
+              state
+            }}</pre>
+          </ClientOnly>
+        </section>
         <div class="workspace-surface grid gap-6">
-          <MiseboxWorkspaceKitchenOperations />
-          <MiseboxWorkspaceKitchenTools />
-          <MiseboxWorkspaceKitchenDiscovery />
+          <WorkspaceKitchenOperations />
+          <WorkspaceKitchenTools />
+          <WorkspaceKitchenDiscovery />
         </div>
       </template>
     </UDashboardPanel>
@@ -23,7 +55,11 @@
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useKitchenWorkspaceMain } from 'fireux-kitchens/runtime/kitchen/composables/workspace/main/useKitchenWorkspaceMain'
 import { appMeta } from '../meta'
+
+const isDev = import.meta.dev
+const { state } = useKitchenWorkspaceMain()
 
 definePageMeta({
   layout: 'workspace',

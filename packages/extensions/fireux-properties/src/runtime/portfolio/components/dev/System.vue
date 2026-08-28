@@ -123,7 +123,7 @@ import {
   ROOT_PORTFOLIO_COLLECTION_PATH,
   resolvePortfolioWorkspaceCollectionPath,
   resolveRuntimePortfolioPath,
-} from '../../composables/workspace/Shared/shared'
+} from '../../composables/workspace/operations/Shared/shared'
 import { useActivePortfolio } from '../../composables/workspace/useActivePortfolio'
 import { usePortfolioCollection } from '../../composables/firestore/fetch/usePortfolioCollection'
 import type { PortfolioSurface } from '../../composables/firestore/utils/view/usePortfolioInterface'

@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { templateOneOrderingCopy } from 'fireux-misebox/runtime/template-one'
+import { templateOneOrderingCopy } from 'fireux-misebox/runtime/models/template-one'
 
 const menuItems = [
   { label: 'Menu', to: '/#menu' },

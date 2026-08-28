@@ -166,22 +166,25 @@ Pricing separates product access, operating capacity, human service, product
 identity, and new development:
 
 - **Free** is a functional Workspace with App-owned limits.
-- **Pro** is the fuller self-managed Workspace at CHF 20/month.
-- **Managed** is Pro plus bounded FireUX setup and operating assistance at CHF
-  50/month. Ecosystem membership alone does not make the product more expensive.
-- **Your App** is a branded App at CHF 600 setup, followed by Pro or Managed.
+- **Premium** is the fuller self-managed Workspace at CHF 20/month.
+- **Business** expands the App-owned operating capacity at CHF 50/month.
+- Managed setup and operating assistance are descriptive services, not another
+  subscription tier.
+- A branded App is a separate product identity offer at CHF 600 setup, followed
+  by Premium or Business. It is not another subscription tier.
 - **Your Ecosystem** belongs only to FireUX. It is CHF 1,200 setup plus CHF
   50/month maintenance and gives the ecosystem owner half of each customer
   App's setup and monthly price.
 - New Operations, Tools, integrations, third-party charges, and exceptional
   usage are not silently included; new development is quoted separately.
 
-Core `usePricing` owns these common meanings and amounts. Each Main App owns a
-thin `useXPricing` wrapper containing the concrete Workspace capabilities and
-limits that explain what its Free and Pro tiers contain. Shared pricing
-components receive that result as presentation data. Pricing literature does
-not belong in `nuxt.config.ts` or public runtime config. Tenant Apps do not own
-or advertise the FireUX ecosystem-creation offer.
+Core App access owns the `free | premium | business` subscription vocabulary.
+Each Main App owns a thin `useXPricing` wrapper containing the concrete
+Workspace capabilities and limits that explain what its Free, Premium, and
+Business tiers contain. Shared pricing components receive that result as
+presentation data. Pricing literature does not belong in `nuxt.config.ts` or
+public runtime config. Tenant Apps do not own or advertise the FireUX
+ecosystem-creation offer.
 
 ## Current source
 
@@ -191,7 +194,7 @@ or advertise the FireUX ecosystem-creation offer.
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Overview/Finance.vue`
-- `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
+- `projects/misebox/misebox-app/app/components/Landing/Index.vue`
 - `packages/core/fireux-core/src/runtime/app/composables/pricing/usePricing.ts`
 - `projects/*/*-app/app/composables/use*Pricing.ts`
 

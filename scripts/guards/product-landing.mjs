@@ -66,10 +66,10 @@ const CORE_PRODUCT_LANDING_TYPE_PATH =
   'packages/core/fireux-core/src/types/landing-product.ts'
 const PROJECTS_PATH = 'projects'
 const ALIGNED_MAIN_APP_LANDING_PATHS = [
-  'projects/bringli/bringli-app/app/components/Bringli/Landing/Index.vue',
-  'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/Index.vue',
-  'projects/granite/granite-app/app/components/Granite/Landing/Index.vue',
-  'projects/slap/slap-app/app/components/Slap/Landing/Index.vue',
+  'projects/bringli/bringli-app/app/components/Landing/Index.vue',
+  'projects/buenohost/buenohost-app/app/components/Landing/Index.vue',
+  'projects/granite/granite-app/app/components/Landing/Index.vue',
+  'projects/slap/slap-app/app/components/Landing/Index.vue',
 ]
 const STANDARD_PRODUCT_HERO_IMAGE_PATHS = [
   'projects/bringli/bringli-app/public/img/landing/supply-operations-hero-v1.png',
@@ -87,63 +87,63 @@ const STANDARD_PRODUCT_HERO_IMAGE = {
 const ECOSYSTEM_OPERATION_RAIL_CONTRACTS = [
   {
     filePath:
-      'projects/bringli/bringli-app/app/components/Bringli/Landing/landing-content.ts',
+      'projects/bringli/bringli-app/app/components/Landing/landing-content.ts',
     catalogue: 'supplierOperations',
   },
   {
     filePath:
-      'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/landing-content.ts',
+      'projects/buenohost/buenohost-app/app/components/Landing/landing-content.ts',
     catalogue: 'propertyOperations',
   },
   {
     filePath:
-      'projects/granite/granite-app/app/components/Granite/Landing/landing-content.ts',
+      'projects/granite/granite-app/app/components/Landing/landing-content.ts',
     catalogue: 'portfolioOperations',
   },
 ]
 const WERKBOX_ADAPTER_PATH =
-  'projects/werkbox/werkbox-app/app/components/Werkbox/Landing/Index.vue'
+  'projects/werkbox/werkbox-app/app/components/Landing/Index.vue'
 const WERKBOX_HERO_PATH =
-  'projects/werkbox/werkbox-app/app/components/Werkbox/Landing/HeroPreview.vue'
+  'projects/werkbox/werkbox-app/app/components/Landing/HeroPreview.vue'
 const SLAP_ADAPTER_PATH =
-  'projects/slap/slap-app/app/components/Slap/Landing/Index.vue'
+  'projects/slap/slap-app/app/components/Landing/Index.vue'
 const MISEBOX_ADAPTER_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
+  'projects/misebox/misebox-app/app/components/Landing/Index.vue'
 const MISEBOX_LANDING_CONTENT_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/landing-content.ts'
+  'projects/misebox/misebox-app/app/components/Landing/landing-content.ts'
 const MISEBOX_HERO_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/HeroImage.vue'
+  'projects/misebox/misebox-app/app/components/Landing/HeroImage.vue'
 const MISEBOX_PRICING_STRIP_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/PricingStrip.vue'
+  'projects/misebox/misebox-app/app/components/Landing/PricingStrip.vue'
 const MISEBOX_PAGE_PATH = 'projects/misebox/misebox-app/app/pages/index.vue'
 const MISEBOX_CARD_WINDOW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/ElementWindow.vue'
+  'projects/misebox/misebox-app/app/components/ElementWindow.vue'
 const MISEBOX_POWER_CARDS_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/PowerCards.vue'
+  'projects/misebox/misebox-app/app/components/PowerCards.vue'
 const MISEBOX_POWER_CARDS_DEMO_PATH =
   'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxPowerCardsProductDemo.ts'
 const MISEBOX_POWER_CARD_EIGHT_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/PowerCardEight.vue'
+  'projects/misebox/misebox-app/app/components/PowerCardEight.vue'
 const MISEBOX_HANDOFF_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/HandoffPreview.vue'
+  'projects/misebox/misebox-app/app/components/Landing/HandoffPreview.vue'
 const MISEBOX_HANDOFF_PREVIEW_STYLE_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/handoff-preview.css'
+  'projects/misebox/misebox-app/app/components/Landing/handoff-preview.css'
 const MISEBOX_HANDOFF_STAGE_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/HandoffStage.vue'
+  'projects/misebox/misebox-app/app/components/Landing/HandoffStage.vue'
 const MISEBOX_HANDOFF_STAGE_STYLE_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/handoff-stage.css'
+  'projects/misebox/misebox-app/app/components/Landing/handoff-stage.css'
 const MISEBOX_ORDERING_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingPreview.vue'
+  'projects/misebox/misebox-app/app/components/Landing/OrderingPreview.vue'
 const MISEBOX_ORDERING_SHOWCASE_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingShowcase.vue'
+  'projects/misebox/misebox-app/app/components/Landing/OrderingShowcase.vue'
 const MISEBOX_ORDERING_TOOL_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Provider/Tools/Ordering.vue'
+  'projects/misebox/misebox-app/app/components/Provider/Tools/Ordering.vue'
 const MISEBOX_ORDERING_TOOL_CONTRACT_PATH =
   'projects/misebox/misebox-app/server/utils/tools/ordering.ts'
 const MISEBOX_FINANCE_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/FinancePreview.vue'
+  'projects/misebox/misebox-app/app/components/Landing/FinancePreview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Index.vue'
+  'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Index.vue'
 const KITCHEN_MISE_BOARD_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskBoard.vue'
 const KITCHEN_MISE_COLLECTION_PATH =
@@ -154,40 +154,40 @@ const KITCHEN_MISE_PRESENTATION_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
 const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
   menus:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Menus.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Menus.vue',
   ingredients:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Ingredients.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Ingredients.vue',
   dishes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes.vue',
   dishCollection:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Collection.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Collection.vue',
   dishDetail:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Detail.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Detail.vue',
   dishDetailSections:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/DetailSections.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/DetailSections.vue',
   dishFinance:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Finance.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Finance.vue',
   dishSpec:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Spec.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Spec.vue',
   dishPrepItems:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/PrepItems.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/PrepItems.vue',
   dishRecipes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Recipes.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Recipes.vue',
   dishMise:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Dishes/Mise.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Mise.vue',
   recipes:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Recipes.vue',
-  mise: 'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Mise.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Recipes.vue',
+  mise: 'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Mise.vue',
   orders:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Orders.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Orders.vue',
   stations:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Stations.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Stations.vue',
   suppliers:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Suppliers.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Suppliers.vue',
   finance:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Finance.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Finance.vue',
   emptyCanvas:
-    'projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/EmptyCanvas.vue',
+    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/EmptyCanvas.vue',
 }
 const MISEBOX_META_PATH = 'projects/misebox/misebox-app/app/meta.ts'
 const MISEBOX_META_SOURCE_PATH =
@@ -199,28 +199,28 @@ const MISEBOX_JOBS_LAYOUT_PATH =
 const MISEBOX_SUPPLIERS_MIDDLEWARE_PATH =
   'projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts'
 const FIREUX_ADAPTER_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/Index.vue'
+  'projects/fireux/fireux-app/app/components/Landing/Index.vue'
 const FIREUX_PRICING_STRIP_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/PricingStrip.vue'
+  'projects/fireux/fireux-app/app/components/Landing/PricingStrip.vue'
 const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
 const FIREUX_META_PATH = 'projects/fireux/fireux-app/app/meta.ts'
 const FIREUX_CONSOLE_PREVIEW_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Index.vue'
+  'projects/fireux/fireux-app/app/components/Landing/WorkspacePreview/Index.vue'
 const FIREUX_SURFACE_SHOWCASE_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/SurfaceShowcase.vue'
+  'projects/fireux/fireux-app/app/components/Landing/SurfaceShowcase.vue'
 const FIREUX_PRODUCT_DEMO_PATH =
   'projects/fireux/fireux-app/app/composables/product-demo/useFireuxProductDemo.ts'
 const FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
-  apps: 'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Apps.vue',
+  apps: 'projects/fireux/fireux-app/app/components/Landing/WorkspacePreview/Apps.vue',
   ecosystems:
-    'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/Ecosystems.vue',
+    'projects/fireux/fireux-app/app/components/Landing/WorkspacePreview/Ecosystems.vue',
   privateState:
-    'projects/fireux/fireux-app/app/components/FireUX/Landing/WorkspacePreview/PrivateState.vue',
+    'projects/fireux/fireux-app/app/components/Landing/WorkspacePreview/PrivateState.vue',
 }
 const FIREUX_CARD_ORBIT_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/CardOrbit.vue'
+  'projects/fireux/fireux-app/app/components/Landing/CardOrbit.vue'
 const FIREUX_ECOSYSTEMS_PATH =
-  'projects/fireux/fireux-app/app/components/landing/Ecosystems.vue'
+  'projects/fireux/fireux-app/app/components/Landing/Ecosystems.vue'
 const MOBILE_FIRST_MARKER =
   '/* Mobile-first baseline. Width queries below may only enhance this layout. */'
 const PRICING_APP_CONTRACTS = [
@@ -263,7 +263,7 @@ const PRICING_APP_CONTRACTS = [
     indexPath: 'projects/bringli/bringli-app/app/pages/pricing/index.vue',
     tierPath: 'projects/bringli/bringli-app/app/pages/pricing/[tier].vue',
     landingPath:
-      'projects/bringli/bringli-app/app/components/Bringli/Landing/Index.vue',
+      'projects/bringli/bringli-app/app/components/Landing/Index.vue',
   },
   {
     name: 'Slap',
@@ -283,7 +283,7 @@ const PRICING_APP_CONTRACTS = [
     indexPath: 'projects/granite/granite-app/app/pages/pricing/index.vue',
     tierPath: 'projects/granite/granite-app/app/pages/pricing/[tier].vue',
     landingPath:
-      'projects/granite/granite-app/app/components/Granite/Landing/Index.vue',
+      'projects/granite/granite-app/app/components/Landing/Index.vue',
   },
   {
     name: 'BuenoHost',
@@ -294,7 +294,7 @@ const PRICING_APP_CONTRACTS = [
     indexPath: 'projects/buenohost/buenohost-app/app/pages/pricing.vue',
     tierPath: 'projects/buenohost/buenohost-app/app/pages/pricing/[tier].vue',
     landingPath:
-      'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/Index.vue',
+      'projects/buenohost/buenohost-app/app/components/Landing/Index.vue',
   },
 ]
 
@@ -1238,6 +1238,21 @@ export async function run(ctx) {
         )
       }
     }
+
+    if (contract.name === 'Misebox') {
+      for (const required of [
+        "title: 'Premium'",
+        "title: 'Business'",
+        "tier.id === 'your-app'",
+        'return []',
+      ]) {
+        if (!contract.composable.includes(required)) {
+          violations.push(
+            `${contract.composablePath}: Misebox pricing must expose only Free, Premium, and Business subscriptions (${required})`
+          )
+        }
+      }
+    }
   }
 
   for (const required of [
@@ -1366,29 +1381,29 @@ export async function run(ctx) {
     "await navigateTo('/')",
     "const selectedDishId = ref('')",
     "const selectedDishPage = ref<DishChildPage>('detail')",
-    '<MiseboxLandingWorkspacePreviewMenus',
+    '<LandingWorkspacePreviewMenus',
     ':menus="productDemo?.workspace.menus || []"',
-    '<MiseboxLandingWorkspacePreviewDishes',
+    '<LandingWorkspacePreviewDishes',
     ':dishes="previewDishes"',
     "dish.kind !== 'Drink'",
-    '<MiseboxLandingWorkspacePreviewIngredients',
+    '<LandingWorkspacePreviewIngredients',
     ':ingredients="productDemo?.workspace.ingredients || []"',
-    '<MiseboxLandingWorkspacePreviewRecipes',
+    '<LandingWorkspacePreviewRecipes',
     ':recipes="productDemo?.workspace.recipes || []"',
-    '<MiseboxLandingWorkspacePreviewMise',
+    '<LandingWorkspacePreviewMise',
     ':kitchen-name="productDemo?.workspace.kitchenName || \'\'"',
     ':tasks="workspaceMiseTasks"',
     'useKitchenMenuServiceSelection',
     'hasInServiceMenu',
-    '<MiseboxLandingWorkspacePreviewOrders',
+    '<LandingWorkspacePreviewOrders',
     ':orders="productDemo?.workspace.orders || []"',
-    '<MiseboxLandingWorkspacePreviewStations',
+    '<LandingWorkspacePreviewStations',
     ':stations="productDemo?.workspace.stations || []"',
-    '<MiseboxLandingWorkspacePreviewSuppliers',
+    '<LandingWorkspacePreviewSuppliers',
     ':suppliers="productDemo?.workspace.suppliers || []"',
-    '<MiseboxLandingWorkspacePreviewFinance',
+    '<LandingWorkspacePreviewFinance',
     ':finance="productDemo?.workspace.finance || emptyFinance"',
-    '<MiseboxLandingWorkspacePreviewEmptyCanvas',
+    '<LandingWorkspacePreviewEmptyCanvas',
   ]) {
     if (!miseboxWorkspacePreview.includes(required)) {
       violations.push(
@@ -1437,15 +1452,15 @@ export async function run(ctx) {
     ],
     dishes: [
       'aria-label="Dish preview breadcrumb"',
-      '<MiseboxLandingWorkspacePreviewDishesDetail',
-      '<MiseboxLandingWorkspacePreviewDishesDetailSections',
+      '<LandingWorkspacePreviewDishesDetail',
+      '<LandingWorkspacePreviewDishesDetailSections',
       ':selected="page"',
-      '<MiseboxLandingWorkspacePreviewDishesCollection',
-      '<MiseboxLandingWorkspacePreviewDishesFinance',
-      '<MiseboxLandingWorkspacePreviewDishesSpec',
-      '<MiseboxLandingWorkspacePreviewDishesPrepItems',
-      '<MiseboxLandingWorkspacePreviewDishesRecipes',
-      '<MiseboxLandingWorkspacePreviewDishesMise',
+      '<LandingWorkspacePreviewDishesCollection',
+      '<LandingWorkspacePreviewDishesFinance',
+      '<LandingWorkspacePreviewDishesSpec',
+      '<LandingWorkspacePreviewDishesPrepItems',
+      '<LandingWorkspacePreviewDishesRecipes',
+      '<LandingWorkspacePreviewDishesMise',
     ],
     dishCollection: [
       '<WorkspaceKitchenDishesCardsCell',
@@ -1790,9 +1805,9 @@ export async function run(ctx) {
     'open-workspace-aria-label="Open the full Project Workspace"',
     '<UAvatar',
     'v-if="projectPill"',
-    '<FireUXLandingWorkspacePreviewApps',
-    '<FireUXLandingWorkspacePreviewEcosystems',
-    '<FireUXLandingWorkspacePreviewPrivateState',
+    '<LandingWorkspacePreviewApps',
+    '<LandingWorkspacePreviewEcosystems',
+    '<LandingWorkspacePreviewPrivateState',
     'useFireuxProductDemo',
     'useProjectWorkspaceSelection',
     "type: 'demo'",
@@ -2007,7 +2022,7 @@ export async function run(ctx) {
     '<LandingProductPricingStrip',
     '<LandingProductSurfaceShowcase',
     '<LandingAppCollection',
-    '<WerkboxLandingHeroPreview',
+    '<LandingHeroPreview',
     'title="Werkbox\'s Apps"',
     ':minimum-items="2"',
   ]) {
@@ -2050,8 +2065,8 @@ export async function run(ctx) {
     }
 
     const pricingStripComponent = [
-      'MiseboxLandingPricingStrip',
-      'FireUXLandingPricingStrip',
+      'LandingPricingStrip',
+      'LandingPricingStrip',
       'LandingProductPricingStrip',
     ].find((component) => adapter.source.includes(`<${component}`))
     const usesPricingStrip = Boolean(pricingStripComponent)
@@ -2159,11 +2174,11 @@ export async function run(ctx) {
     {
       filePath: MISEBOX_ADAPTER_PATH,
       source: miseboxAdapter,
-      onboardingMarker: '<MiseboxLandingPricingStrip',
-      heroPreviewTag: 'MiseboxLandingHeroImage',
+      onboardingMarker: '<LandingPricingStrip',
+      heroPreviewTag: 'LandingHeroImage',
       proofSectionCount: 1,
       catalogueCount: 3,
-      surfaceMarker: '<MiseboxLandingOrderingShowcase',
+      surfaceMarker: '<LandingOrderingShowcase',
       required: [
         '<LandingProductIndex',
         'hero-layout="proof-wide"',
@@ -2176,13 +2191,13 @@ export async function run(ctx) {
         '#tools',
         '#solutions',
         '#operations',
-        '<MiseboxLandingHeroImage',
-        '<MiseboxLandingPricingStrip',
+        '<LandingHeroImage',
+        '<LandingPricingStrip',
         '<LandingOperationRail',
         '<LandingProductProofSection',
-        '<MiseboxLandingWorkspacePreview',
+        '<LandingWorkspacePreview',
         'copy-emphasis',
-        '<MiseboxLandingOrderingShowcase',
+        '<LandingOrderingShowcase',
         "'operations',",
         "'solutions',",
         "'tools',",
@@ -2195,10 +2210,10 @@ export async function run(ctx) {
         'wordmarkUrl:',
         'useApps',
         ':operations="operationRailItems"',
-        'MiseboxLandingPricingStrip',
+        'LandingPricingStrip',
         "operation.workspace.id === 'kitchen'",
         "title: 'Work inside the Kitchen Workspace.'",
-        "import { metaContent } from '../../../meta'",
+        "import { metaContent } from '../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
         'toolsCatalogue',
@@ -2216,10 +2231,10 @@ export async function run(ctx) {
     {
       filePath: FIREUX_ADAPTER_PATH,
       source: fireuxAdapter,
-      onboardingMarker: '<FireUXLandingPricingStrip',
+      onboardingMarker: '<LandingPricingStrip',
       proofSectionCount: 0,
       catalogueCount: 2,
-      surfaceMarker: '<FireUXLandingSurfaceShowcase',
+      surfaceMarker: '<LandingSurfaceShowcase',
       required: [
         '<LandingProductIndex',
         'hero-layout="proof-wide"',
@@ -2231,11 +2246,11 @@ export async function run(ctx) {
         '#apps',
         '#solutions',
         '#operations',
-        '<FireUXLandingPricingStrip',
+        '<LandingPricingStrip',
         '<LandingOperationRail',
         ':operations="catalogueOperations"',
-        '<FireUXLandingCardOrbit presentation="hero"',
-        '<FireUXLandingSurfaceShowcase',
+        '<LandingCardOrbit presentation="hero"',
+        '<LandingSurfaceShowcase',
         '<LandingEcosystems',
         ':copy="projectWorkspaceCopy"',
         ':operations="workspaceOperations"',
@@ -2243,7 +2258,7 @@ export async function run(ctx) {
         'title="Apps built with FireUX"',
         'eyebrow="App directory"',
         '<LandingProductCatalogue',
-        "import { fireuxOffer, metaContent } from '../../../meta'",
+        "import { fireuxOffer, metaContent } from '../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
         'solutionsCatalogue',
@@ -2340,7 +2355,7 @@ export async function run(ctx) {
   }
 
   for (const [slotName, marker] of [
-    ['surfaces', '<MiseboxLandingOrderingShowcase'],
+    ['surfaces', '<LandingOrderingShowcase'],
     ['specifics', '<LandingProductProofSection'],
     ['operations', '<LandingProductCatalogue'],
     ['solutions', '<LandingProductCatalogue'],
@@ -2353,9 +2368,7 @@ export async function run(ctx) {
     }
   }
 
-  if (
-    !slotContains(fireuxAdapter, 'surfaces', '<FireUXLandingSurfaceShowcase')
-  ) {
+  if (!slotContains(fireuxAdapter, 'surfaces', '<LandingSurfaceShowcase')) {
     violations.push(
       `${FIREUX_ADAPTER_PATH}: surfaces slot must own the FireUX Surface showcase`
     )
@@ -2378,7 +2391,7 @@ export async function run(ctx) {
 
   for (const required of [
     'class="fireux-surface-showcase"',
-    '<FireUXLandingWorkspacePreview',
+    '<LandingWorkspacePreview',
     'v-model:surface-id="selectedSurfaceId"',
     ':operations="operations"',
     '{{ copy.title }}',
@@ -2546,9 +2559,9 @@ export async function run(ctx) {
   for (const required of [
     'useMiseboxProductDemo()',
     '<MenuOrderCatalogue',
-    '<MiseboxLandingWorkspacePreviewMenus',
-    '<MiseboxLandingWorkspacePreviewMise',
-    '<MiseboxLandingWorkspacePreviewOrders',
+    '<LandingWorkspacePreviewMenus',
+    '<LandingWorkspacePreviewMise',
+    '<LandingWorkspacePreviewOrders',
     "id: 'publish'",
     "id: 'prepare'",
     "id: 'serve'",
@@ -2638,7 +2651,7 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    '<MiseboxElementWindow',
+    '<ElementWindow',
     'useMiseboxPowerCardsProductDemo()',
     'v-else-if="pending"',
     'v-else-if="error"',

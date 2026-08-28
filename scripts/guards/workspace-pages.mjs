@@ -24,6 +24,16 @@ const CONSOLE_AI_CAPABILITY_PLACEHOLDER =
   'packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/CapabilityPlaceholder.vue'
 const MISEBOX_DASHBOARD_WORKSPACE =
   'projects/misebox/misebox-app/app/pages/dashboard/workspace.vue'
+const MISEBOX_MAIN_PAGE = 'projects/misebox/misebox-app/app/pages/index.vue'
+const RETIRED_KITCHEN_WORKSPACE_TOOLS =
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Tools/Index.vue'
+const MISEBOX_TENANT_KITCHEN_PAGE =
+  'packages/ecosystem/fireux-misebox/src/runtime/pages/workspace/kitchen/index.vue'
+const MISEBOX_PAGES_CONFIG =
+  'packages/ecosystem/fireux-misebox/src/config/module/pages-config.ts'
+const MISEBOX_MODULE = 'packages/ecosystem/fireux-misebox/src/module.ts'
+const MISEBOX_COMPONENTS_CONFIG =
+  'packages/ecosystem/fireux-misebox/src/config/module/components-config.ts'
 const FIREUX_AI_MODULE = 'packages/extensions/fireux-ai/src/module.ts'
 const ROUTE_AUTH_GUARD =
   'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
@@ -36,7 +46,7 @@ const KITCHEN_RECIPES_FETCH =
 const KITCHEN_RECIPES_CONTROLLER =
   'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/Recipes/useKitchenWorkspaceRecipes.ts'
 const KITCHEN_WASTE_DEV =
-  'packages/ecosystem/fireux-misebox/src/runtime/components/Workspace/Kitchen/Waste/Dev.vue'
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Waste/Dev.vue'
 const STANDARD_SURFACES = new Set([
   'browse',
   'detail',
@@ -86,7 +96,8 @@ const CONSOLE_OPERATION_CONTRACTS = {
   project: {
     catalogue: 'projects/fireux/fireux-app/app/meta.ts',
     operations: ['apps', 'ecosystem'],
-    routeRoot: 'projects/fireux/fireux-app/app/pages/workspace/project',
+    routeRoot:
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project',
   },
   kitchen: {
     catalogue:
@@ -201,6 +212,7 @@ export async function run(ctx) {
 
   validateWorkspaceLayout(repoRoot, violations)
   validateMiseboxWorkspaceDoorway(repoRoot, violations)
+  validateMiseboxKitchenEntryOwnership(repoRoot, violations)
   validateWorkspaceNavigationLifecycle(repoRoot, violations)
   validateWorkspaceOperationAIPlaceholder(repoRoot, violations)
   validateWorkspaceEntityComponentHierarchy(repoRoot, violations)
@@ -250,7 +262,7 @@ function validateMiseboxWorkspaceDoorway(repoRoot, violations) {
   const fullPath = path.join(repoRoot, MISEBOX_DASHBOARD_WORKSPACE)
   if (!existsSync(fullPath)) {
     violations.push(
-      `${MISEBOX_DASHBOARD_WORKSPACE} (missing Misebox Workspace Main doorway)`
+      `${MISEBOX_DASHBOARD_WORKSPACE} (missing Misebox Kitchen Workspace doorway)`
     )
     return
   }
@@ -261,7 +273,73 @@ function validateMiseboxWorkspaceDoorway(repoRoot, violations) {
     !source.includes("await navigateTo('/', { replace: true })")
   ) {
     violations.push(
-      `${MISEBOX_DASHBOARD_WORKSPACE} (Dashboard Workspace must enter Misebox Workspace Main at /)`
+      `${MISEBOX_DASHBOARD_WORKSPACE} (Dashboard Workspace must enter the Misebox Kitchen Workspace at /)`
+    )
+  }
+}
+
+function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
+  const mainPage = readFileSync(path.join(repoRoot, MISEBOX_MAIN_PAGE), 'utf8')
+  const tenantPage = readFileSync(
+    path.join(repoRoot, MISEBOX_TENANT_KITCHEN_PAGE),
+    'utf8'
+  )
+  const pagesConfig = readFileSync(
+    path.join(repoRoot, MISEBOX_PAGES_CONFIG),
+    'utf8'
+  )
+  const componentsConfig = readFileSync(
+    path.join(repoRoot, MISEBOX_COMPONENTS_CONFIG),
+    'utf8'
+  )
+  const miseboxModule = readFileSync(
+    path.join(repoRoot, MISEBOX_MODULE),
+    'utf8'
+  )
+
+  if (existsSync(path.join(repoRoot, RETIRED_KITCHEN_WORKSPACE_TOOLS))) {
+    violations.push(
+      `${RETIRED_KITCHEN_WORKSPACE_TOOLS} (retired component collides with the App-owned WorkspaceKitchenTools presentation surface)`
+    )
+  }
+
+  if (
+    !mainPage.includes('<WorkspaceKitchenHero />') ||
+    !mainPage.includes('<WorkspaceKitchenAI />') ||
+    !mainPage.includes('<WorkspaceKitchen />')
+  ) {
+    violations.push(
+      `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen-owned Hero and Workspace with KitchenAI)`
+    )
+  }
+
+  if (
+    !tenantPage.includes('<WorkspaceKitchenHero />') ||
+    !tenantPage.includes('<WorkspaceKitchen />') ||
+    !tenantPage.includes('requiresAuth: true') ||
+    tenantPage.includes("workspaceAccess: 'public-entry'")
+  ) {
+    violations.push(
+      `${MISEBOX_TENANT_KITCHEN_PAGE} (tenant Kitchen route must be an authenticated direct Kitchen-owned doorway)`
+    )
+  }
+
+  if (
+    !pagesConfig.includes("workspaces.includes('kitchen')") ||
+    !miseboxModule.includes("await installModule('fireux-kitchens')") ||
+    miseboxModule.includes('configureServer') ||
+    !miseboxModule.includes(
+      'if (hasKitchenWorkspace) configurePlugins(resolver)'
+    )
+  ) {
+    violations.push(
+      `${MISEBOX_PAGES_CONFIG} (Misebox must mount the Kitchen runtime layer only from the declared Kitchen Workspace, without parallel server registration)`
+    )
+  }
+
+  if (componentsConfig.includes('#fireux-misebox-components')) {
+    violations.push(
+      `${MISEBOX_COMPONENTS_CONFIG} (unused ecosystem component aliases are forbidden)`
     )
   }
 }

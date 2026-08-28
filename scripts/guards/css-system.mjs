@@ -32,12 +32,12 @@ const CORE_AMBIENT_FIELD_PATH =
 const AMBIENT_EFFECT_CONSUMERS = [
   {
     page: 'projects/fireux/fireux-app/app/pages/index.vue',
-    visual: 'projects/fireux/fireux-app/app/components/effects/Stars.vue',
+    visual: 'projects/fireux/fireux-app/app/components/Landing/Stars.vue',
     deterministic: true,
   },
   {
     page: 'projects/misebox/misebox-app/app/pages/product.vue',
-    visual: 'projects/misebox/misebox-app/app/components/effects/Steam.vue',
+    visual: 'projects/misebox/misebox-app/app/components/Landing/Steam.vue',
     deterministic: false,
   },
 ]

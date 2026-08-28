@@ -2,10 +2,10 @@
 <template>
   <div class="landing-ambient min-h-full">
     <div class="landing-ambient__effect" aria-hidden="true">
-      <EffectsStars />
+      <LandingStars />
     </div>
     <div class="landing-ambient__content">
-      <FireUXLandingIndex />
+      <LandingIndex />
     </div>
   </div>
 </template>
@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
-import FireUXLandingIndex from '../components/FireUX/Landing/Index.vue'
+import LandingIndex from '../components/Landing/Index.vue'
 
 definePageMeta({
   layout: 'landing',

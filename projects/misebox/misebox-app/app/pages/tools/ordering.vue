@@ -3,7 +3,7 @@
     ref="toolRoot"
     class="bg-transparent text-default"
   >
-    <MiseboxProviderToolsOrdering class="w-full" />
+    <ProviderToolsOrdering class="w-full" />
   </main>
 </template>
 

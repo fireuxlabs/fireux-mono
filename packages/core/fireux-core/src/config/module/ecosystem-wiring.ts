@@ -13,7 +13,7 @@ export type ConfigureFireuxEcosystemModuleOptions = {
   ecosystem: FireuxEcosystemConfig
   configureRuntimeConfig?: EcosystemNuxtStep
   configurePages?: EcosystemResolverStep
-  configureComponents: EcosystemResolverStep
+  configureComponents?: EcosystemResolverStep
   configurePublicAssets?: EcosystemResolverStep
 }
 
@@ -90,7 +90,7 @@ export function configureFireuxEcosystemModule(
 
   options.configureRuntimeConfig?.(nuxt)
   ;(options.configurePages || configurePages)(resolver, nuxt)
-  options.configureComponents(resolver, nuxt)
+  options.configureComponents?.(resolver, nuxt)
   registerLayoutsDir(resolver)
   registerComposablesDir(resolver)
 

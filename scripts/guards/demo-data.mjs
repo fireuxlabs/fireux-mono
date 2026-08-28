@@ -1506,7 +1506,7 @@ export async function run(ctx) {
   }
 
   const miseboxPowerCardsFile =
-    'projects/misebox/misebox-app/app/components/Misebox/PowerCards.vue'
+    'projects/misebox/misebox-app/app/components/PowerCards.vue'
   const miseboxPowerCardsPath = path.join(repoRoot, miseboxPowerCardsFile)
   const miseboxPowerCardsDemoFile =
     'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxPowerCardsProductDemo.ts'
@@ -1526,14 +1526,14 @@ export async function run(ctx) {
   ]
   const miseboxPowerCardChildren = miseboxPowerCardNames.map(
     (number) =>
-      `projects/misebox/misebox-app/app/components/Misebox/PowerCard${number}.vue`
+      `projects/misebox/misebox-app/app/components/PowerCard${number}.vue`
   )
   if (
     !existsSync(miseboxPowerCardsPath) ||
     ![
       'useMiseboxPowerCardsProductDemo()',
       'data: orbit',
-      '<MiseboxElementWindow',
+      '<ElementWindow',
     ].every((marker) =>
       readFileSync(miseboxPowerCardsPath, 'utf8').includes(marker)
     )

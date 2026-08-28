@@ -47,15 +47,26 @@ Map component folder and naming conventions.
   `src/runtime/<entity>/components`, following `runtime-filesystem.md`.
 - App UI belongs under `app/components`; reusable entity implementation does
   not move into an App merely to preserve conventional Nuxt discovery.
+- Main Apps named `*-app` use responsibility-first component families directly
+  beneath `app/components`. Marketing presentation belongs beneath `Landing`,
+  genuinely App-specific Workspace framing beneath `Workspace`, and other
+  children must name real App-only capabilities. The App name is already
+  supplied by its project boundary, so wrappers such as `Misebox/Landing` or
+  `FireUX/Landing` are redundant. Lowercase `landing` and generic `effects`
+  buckets are retired; a one-off visual effect stays beside the Landing or
+  capability presentation that owns it. The `/` route may compose Landing or
+  Workspace presentation and does not determine either component's owner.
 - Entity-owned live Workspace composition remains beneath
   `runtime/<entity>/components/Workspace`. An App that deliberately uses a
-  Workspace as its root product surface composes the ecosystem entrypoint and
+  Workspace as its root product surface composes the lower-owned anatomy and
   owns only App-specific framing, literature, and doorways. Misebox therefore
-  owns `MiseboxWorkspaceKitchenMain` in `fireux-misebox`, while
-  `fireux-kitchens` owns direct responsibility components such as
-  `WorkspaceKitchenHero` and `WorkspaceKitchen`. The Main App mounts that
-  ecosystem component at `/`; tenant Apps receive it at
-  `/workspace/kitchen` without depending on the Main App.
+  owns `/` and its `Workspace/Kitchen/{Info,Operations,Tools,Discovery}.vue`
+  presentation in `misebox-app`, while `fireux-kitchens` owns direct
+  responsibility components such as `WorkspaceKitchenHero` and
+  `WorkspaceKitchen`, including target loading, selection, and creation. The
+  App route composes those lower-owned components directly; Kitchen-enabled
+  Apps also receive a thin authenticated `/workspace/kitchen` doorway into the
+  direct Kitchen-owned Workspace without depending on the Main App.
   Read-only landing previews
   remain App-owned presentation and do not become live Workspace authority.
 - Declared Entity components live beneath `runtime/<entity>/components` and
@@ -258,7 +269,7 @@ Core supplies no generic effects family or decorative one-off wrappers.
   Children consume typed read-only props and do not acquire Workspace selection,
   Demo loading, live reads, Firebase, or write authority. The project source
   begins at
-  `projects/misebox/misebox-app/app/components/Misebox/Landing/WorkspacePreview/Index.vue`.
+  `projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Index.vue`.
   FireUX consumes the same shell for its Project Operations and projects Apps
   and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
   Ignition remains App intake with a separate private app-admin delivery

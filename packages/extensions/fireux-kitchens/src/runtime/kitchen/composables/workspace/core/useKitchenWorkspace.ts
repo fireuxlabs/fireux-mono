@@ -3,6 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/Fire
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
 import { useKitchenWorkspaceKitchens } from '../index/useKitchenWorkspaceKitchens'
 
 export function useKitchenWorkspace() {
@@ -29,6 +30,13 @@ export function useKitchenWorkspace() {
   )
 
   const canWrite = computed(() => kitchen.value?.can_write === true)
+  const canCreate = computed(() =>
+    resolveWorkspaceCanCreate(
+      fireux.role,
+      fireux.workspaceConfig,
+      'kitchen'
+    )
+  )
   const rootCollection = computed(() => 'kitchens')
 
   return {
@@ -54,7 +62,7 @@ export function useKitchenWorkspace() {
       isDemo: computed(() => false),
       readOnly: computed(() => false),
       canWrite,
-      canCreate: computed(() => true),
+      canCreate,
     },
     actions: {
       selectKitchen: workspace.activate,

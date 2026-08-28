@@ -1,7 +1,7 @@
 import type {
   TemplateOneFlagshipDish,
   TemplateOneMenuContent,
-} from 'fireux-misebox/runtime/template-one'
+} from 'fireux-misebox/runtime/models/template-one'
 
 const productDemoSurface = 'template-one' as const
 const productDemoDataSource = 'demo' as const

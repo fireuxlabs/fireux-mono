@@ -14,7 +14,10 @@
     />
 
     <WorkspaceKitchenCreate
-      v-else-if="canCreateKitchen || !kitchenComplete"
+      v-else-if="
+        canCreateKitchen ||
+        (workspace.selection.kitchen.value && !kitchenComplete)
+      "
       launcher="inline"
       @created="createdKitchen"
       @manifested="manifestedKitchen"
@@ -36,6 +39,14 @@
         />
       </template>
     </UAlert>
+
+    <UAlert
+      v-else
+      color="neutral"
+      variant="subtle"
+      title="No Kitchen available"
+      description="Your App has not granted access to a Kitchen."
+    />
 
     <div
       v-if="canEmpty && workspace.selection.kitchen.value"
@@ -100,7 +111,14 @@ watch(
   ],
   ([pending, activeId, kitchens]) => {
     const existing = kitchens[0]
-    if (pending || activeId || !existing || canCreateKitchen.value) return
+    if (
+      pending ||
+      activeId ||
+      kitchens.length !== 1 ||
+      !existing ||
+      canCreateKitchen.value
+    )
+      return
     showEmptyState.value = false
     workspace.actions.selectKitchen(existing.id)
   },

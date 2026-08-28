@@ -821,7 +821,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       existsSync(
         path.join(
           repoRoot,
-          'projects/fireux/fireux-app/app/pages/workspace/project',
+          'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project',
           retiredWorkspacePage
         )
       ),
@@ -840,7 +840,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ]) {
     const source = read(
       repoRoot,
-      `projects/fireux/fireux-app/app/pages/workspace/project/${page}.vue`
+      `packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/${page}.vue`
     )
     assert.match(
       source,

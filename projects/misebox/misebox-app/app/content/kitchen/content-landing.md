@@ -1,4 +1,4 @@
-# Kitchen Workspace Main
+# Misebox Kitchen Workspace
 
 Use this page to create a Kitchen, choose the current Kitchen, and ask KitchenAI which part of the Workspace to open next.
 

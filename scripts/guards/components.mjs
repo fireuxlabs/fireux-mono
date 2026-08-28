@@ -91,8 +91,9 @@ export async function run(ctx) {
     scan(rootPath, violations, repoRoot)
   }
 
-  validateMiseboxCardSpecimen(repoRoot, violations)
+  validateCardSpecimen(repoRoot, violations)
   validateCoreSharedComponentFamilies(repoRoot, violations)
+  validateMainAppComponentSpines(repoRoot, violations)
   validateCollectionPagePresentation(repoRoot, violations)
   validateEntityDetailPresentation(repoRoot, violations)
 
@@ -117,6 +118,54 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ component naming valid')
+}
+
+function validateMainAppComponentSpines(repoRoot, violations) {
+  const projectsRoot = path.join(repoRoot, 'projects')
+  if (!existsSync(projectsRoot)) return
+
+  for (const ecosystemEntry of readdirSync(projectsRoot, {
+    withFileTypes: true,
+  })) {
+    if (!ecosystemEntry.isDirectory()) continue
+
+    const ecosystemRoot = path.join(projectsRoot, ecosystemEntry.name)
+    for (const appEntry of readdirSync(ecosystemRoot, { withFileTypes: true })) {
+      if (!appEntry.isDirectory() || !appEntry.name.endsWith('-app')) continue
+
+      const componentRoot = path.join(
+        ecosystemRoot,
+        appEntry.name,
+        'app/components'
+      )
+      if (!existsSync(componentRoot)) continue
+
+      const redundantOwner = appEntry.name.slice(0, -'-app'.length).toLowerCase()
+      for (const componentEntry of readdirSync(componentRoot, {
+        withFileTypes: true,
+      })) {
+        if (!componentEntry.isDirectory()) continue
+
+        const componentFamily = componentEntry.name
+        const relativePath = path.relative(repoRoot, componentRoot)
+        if (componentFamily === 'effects') {
+          violations.push(
+            `${relativePath}/effects/ (one-off visual effects belong beside their App presentation owner)`
+          )
+        }
+        if (componentFamily === 'landing') {
+          violations.push(
+            `${relativePath}/landing/ (Main App landing presentation uses the canonical Landing family)`
+          )
+        }
+        if (componentFamily.toLowerCase() === redundantOwner) {
+          violations.push(
+            `${relativePath}/${componentFamily}/ (redundant Main App name does not add component ownership)`
+          )
+        }
+      }
+    }
+  }
 }
 
 function validateCoreSharedComponentFamilies(repoRoot, violations) {
@@ -242,10 +291,10 @@ function validateCollectionPagePresentation(repoRoot, violations) {
   }
 }
 
-function validateMiseboxCardSpecimen(repoRoot, violations) {
+function validateCardSpecimen(repoRoot, violations) {
   const specimenPath = path.join(
     repoRoot,
-    'projects/misebox/misebox-app/app/components/Misebox/PowerCards.vue'
+    'projects/misebox/misebox-app/app/components/PowerCards.vue'
   )
   if (!existsSync(specimenPath)) return
 

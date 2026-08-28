@@ -71,8 +71,8 @@ const sourcePreviews = {
   ],
   'misebox-ordering': [
     'projects/misebox/misebox-app/app/pages/tools/ordering.vue',
-    'projects/misebox/misebox-app/app/components/Misebox/Provider/Tools/Ordering.vue',
-    'projects/misebox/misebox-app/app/components/Misebox/Provider/Frame.vue',
+    'projects/misebox/misebox-app/app/components/Provider/Tools/Ordering.vue',
+    'projects/misebox/misebox-app/app/components/Provider/Frame.vue',
     'projects/misebox/misebox-app/server/utils/tools/ordering.ts',
     'projects/misebox/misebox-app/server/api/tools/ordering/index.get.ts',
   ],

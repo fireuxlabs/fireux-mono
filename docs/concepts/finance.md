@@ -226,7 +226,6 @@ reports into one generic Finance workspace.
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/finance/gross-sales-report.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/operator-access.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/workspace/kitchen/reports/gross-sales.get.ts`
-- `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/overview/useKitchenWorkspaceFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/Orders/history.ts`

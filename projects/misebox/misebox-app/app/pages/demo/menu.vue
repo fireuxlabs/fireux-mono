@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: identify Misebox Restaurant as the default guest demonstration. -->
 <template>
   <main class="product-demo-page" data-misebox-product-demo="menu">
-    <MiseboxShowcaseHeader
+    <ShowcaseHeader
       eyebrow="Guest view"
       title="Misebox Restaurant Menu"
       description="Explore the polished default Demo Kitchen through the responsive guest-facing Menu presentation, without live or Test data."
@@ -12,7 +12,7 @@
           Try the Kiosk
         </UButton>
       </template>
-    </MiseboxShowcaseHeader>
+    </ShowcaseHeader>
 
     <UAlert
       v-if="error"
@@ -23,7 +23,7 @@
       description="No live data was touched. Return to the demo index and try again."
     />
 
-    <MiseboxShowcaseMenu
+    <ShowcaseMenu
       v-else-if="productDemo"
       :manifest="productDemo.menu.manifest"
     />

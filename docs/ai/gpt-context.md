@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-23
-Ref: 7f18d4e91
+Updated: 2026-08-28
+Ref: f35bfd57c
 Role: living context
 Scope: repo-wide
 
@@ -187,6 +187,56 @@ requirement, report the exact missing seam before broad edits.
   snapshots, and remembered implementations are not authority.
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
+
+## Alignment and completion claims
+
+Never answer `aligned`, `canonical`, `fixed`, `complete`, or `done` without
+naming the boundary actually inspected. These are evidence claims, not words
+of encouragement.
+
+Use exactly these levels:
+
+- **Locally aligned**: the edited file or component, its direct registration,
+  and its immediate consumers were inspected and verified.
+- **Family aligned**: every maintained member named in the applicable family
+  map, its owner, registrations, routes, authority, relevant guards, and
+  materially different proving sibling were inspected and compared.
+- **Repository aligned**: the complete maintained package/App ownership and
+  dependency inventory was audited, every discovered difference was
+  classified, and all applicable verification passed.
+
+A lower level never proves a higher one. `pnpm guard` proves only the contracts
+that current guards encode; a green guard does not prove that unguarded
+ownership, naming, product behavior, or the whole repository is canonical.
+Passing builds prove compilability, not correct ownership. One working App
+does not prove an ecosystem or family contract.
+
+Before making an alignment claim, report:
+
+1. the exact level and scope;
+2. the source, sibling, consumers, registrations, routes, docs, and guards
+   inspected for that level;
+3. the relevant verification that passed; and
+4. what remains unaudited, `to-confirm`, migration debt, or known drift.
+
+If a wider audit later finds a contradiction, explicitly retract or narrow
+the earlier claim before editing. Do not silently redefine the boundary and
+again say it is aligned.
+
+Distinguish product authority from exploration. A user statement framed as a
+decision, correction, requirement, or acceptance criterion is durable product
+authority for that scope. A request to try, preview, compare, or see how
+something feels is an experiment: keep it reversible and do not promote it
+into living context, a family map, or a permanent guard until the user accepts
+it and real source evidence supports the resulting boundary. When intent is
+unclear and the choice would alter ownership or canon, state the ambiguity and
+ask before making the durable architectural change.
+
+Documentation records proved decisions; it must not convert a plausible local
+implementation into repository architecture. When the requested scope is
+larger than the completed work, say `the bounded slice is complete; the larger
+audit is not` and continue or stop according to the user's request. Never
+present a partial repair as completion of the parent task.
 
 ## Dev server ownership
 
@@ -515,8 +565,9 @@ requirement, report the exact missing seam before broad edits.
   `start` and `join` choice plus an optional subordinate Tool doorway,
   including its icons, card anatomy, mobile-first layout, compact hero-strip
   variant, and reveal behavior. Main ecosystem Apps use the onboarding slot
-  for Core `LandingProductPricingStrip`: Free, Pro, Managed, and Your App are
-  the common public entry choices immediately after the Hero.
+  for Core `LandingProductPricingStrip`: Free, Premium, and Business are the
+  subscription choices immediately after the Hero. Branded App setup and
+  managed services remain separate offers rather than subscription tiers.
   `scripts/guards/product-landing.mjs` discovers every project adapter that
   consumes `LandingProductIndex` and requires exactly one approved entry
   component in that slot. `LandingProductProofSection` owns the repeated proof-and-copy
@@ -557,10 +608,12 @@ requirement, report the exact missing seam before broad edits.
   Operations remain navigation within a Workspace and do not become separate
   product surfaces. App-owned deeper feature sections follow the surface
   presentation.
-  Core `usePricing` owns the common commercial meanings and
-  CHF amounts: Free is a functional Workspace, Pro is CHF 20/month self-managed,
-  Managed is CHF 50/month with bounded FireUX assistance, and Your App is CHF
-  600 setup followed by Pro or Managed. FireUX alone adds Your Ecosystem at CHF
+  Core App access owns the `free | premium | business` subscription vocabulary
+  and Main Apps project the common CHF amounts: Free is a functional Workspace,
+  Premium is CHF 20/month self-managed, and Business is CHF 50/month with
+  App-owned operating capacity. Managed assistance is a separate service, and
+  branded App setup is a separate CHF 600 offer followed by Premium or
+  Business. FireUX alone adds Your Ecosystem at CHF
   1,200 setup plus CHF 50/month maintenance and a 50% customer-App revenue
   share. Each Main App owns one `useXPricing` wrapper with its Workspace
   capabilities, limits, name, and contact; pricing literature never enters
@@ -687,6 +740,14 @@ requirement, report the exact missing seam before broad edits.
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
+- An App declares which proved Workspace families it exposes and may narrow
+  their App policy. Its ecosystem package owns the corresponding extension
+  installation and any real cross-extension entry composition; the extension
+  continues to own domain state, authority, and capability routes. Apps do not
+  repeat the ecosystem-installed Workspace module in `modules`, though App
+  source that imports an extension directly still declares that package
+  dependency. Ecosystems with no proved Workspace install none; this contract
+  does not require empty routes or visual symmetry.
 - Authenticated dashboard surfaces consume the canonical current App plus the
   caller's separately owned membership through a server reader. They do not
   browser-read App-user authority merely to render overview state.

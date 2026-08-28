@@ -44,7 +44,7 @@ export async function answerKitchenAgentOrientation(
           business: 'multiple Kitchens',
         },
         current_product_state:
-          'The Landing, Workspace Main, and Main Page all mean this same root Kitchen Workspace surface. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
+          'Misebox / is the Kitchen Workspace root. This is where a Business subscriber can create and manage multiple Kitchens. A second Kitchen requires Business.',
       },
       workspace_agent: buildKitchenCoordinatorContext(operationAgents),
     },

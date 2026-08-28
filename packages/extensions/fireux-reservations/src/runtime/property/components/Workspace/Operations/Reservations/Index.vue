@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePropertyReservations } from '../../../../composables/workspace/Reservations/usePropertyReservations'
+import { usePropertyReservations } from '../../../../composables/workspace/operations/Reservations/usePropertyReservations'
 import {
   reservationSourceColor,
   reservationSourceLabel,

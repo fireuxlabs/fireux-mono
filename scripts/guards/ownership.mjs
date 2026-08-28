@@ -27,6 +27,18 @@ function childDirectories(dir) {
     .map((entry) => entry.name)
 }
 
+function descendantFiles(dir, relative = '') {
+  if (!existsSync(dir)) return []
+
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const childRelative = path.join(relative, entry.name)
+    if (entry.isDirectory()) {
+      return descendantFiles(path.join(dir, entry.name), childRelative)
+    }
+    return entry.isFile() ? [childRelative] : []
+  })
+}
+
 function collectPackageOwners(repoRoot, surface) {
   const owners = new Map()
 
@@ -38,8 +50,14 @@ function collectPackageOwners(repoRoot, surface) {
 
       for (const family of childDirectories(familyRoot)) {
         const key = family.toLowerCase()
-        const current = owners.get(key) ?? []
-        current.push(path.relative(repoRoot, path.join(familyRoot, family)))
+        const familyPath = path.join(familyRoot, family)
+        const current = owners.get(key) ?? new Map()
+        for (const file of descendantFiles(familyPath)) {
+          const fileKey = file.toLowerCase()
+          const fileOwners = current.get(fileKey) ?? []
+          fileOwners.push(path.relative(repoRoot, path.join(familyPath, file)))
+          current.set(fileKey, fileOwners)
+        }
         owners.set(key, current)
       }
     }
@@ -59,14 +77,20 @@ function collectProjectViolations(repoRoot, surface, owners) {
       const familyRoot = path.join(appRoot, ...surface.projectParts)
 
       for (const family of childDirectories(familyRoot)) {
-        const packageOwners = owners.get(family.toLowerCase())
-        if (!packageOwners?.length) continue
+        const packageFiles = owners.get(family.toLowerCase())
+        if (!packageFiles?.size) continue
 
-        violations.push({
-          label: surface.label,
-          projectPath: path.relative(repoRoot, path.join(familyRoot, family)),
-          packageOwners,
-        })
+        const projectFamily = path.join(familyRoot, family)
+        for (const file of descendantFiles(projectFamily)) {
+          const packageOwners = packageFiles.get(file.toLowerCase())
+          if (!packageOwners?.length) continue
+
+          violations.push({
+            label: surface.label,
+            projectPath: path.relative(repoRoot, path.join(projectFamily, file)),
+            packageOwners,
+          })
+        }
       }
     }
   }
@@ -84,7 +108,7 @@ export async function run(ctx) {
   if (violations.length) {
     throw new Error(
       [
-        '[guard] ❌ Project apps re-own package-owned workspace families:',
+        '[guard] ❌ Project apps re-own package-owned Workspace responsibilities:',
         ...violations.flatMap((violation) => [
           `  - ${violation.projectPath} (${violation.label})`,
           ...violation.packageOwners.map((owner) => `      owner: ${owner}`),
@@ -98,5 +122,7 @@ export async function run(ctx) {
     )
   }
 
-  console.log('[guard] ✅ project apps do not re-own package workspace families')
+  console.log(
+    '[guard] ✅ project apps do not re-own package Workspace responsibilities'
+  )
 }

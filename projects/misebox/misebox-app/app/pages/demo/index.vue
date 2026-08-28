@@ -124,7 +124,7 @@
       </div>
     </aside>
 
-    <MiseboxShowcaseKioskPreview
+    <ShowcaseKioskPreview
       v-if="productDemo"
       v-model:open="kioskPreviewOpen"
       v-model:kitchen-id="kioskPreviewKitchenId"

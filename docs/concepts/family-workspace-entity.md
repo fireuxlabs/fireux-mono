@@ -26,7 +26,7 @@ map in `workspace.md`. The family deltas are:
 
 | Member            | Status and reason                                                                                                                       |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Blank             | `accepted`: App-local minimal harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations |
+| Blank             | `accepted`: App-local development harness; it proves the baked-in Workspace surface with factual read-only Team authority and no Operations, but is not an ecosystem-installed product Workspace |
 | Kitchen           | `accepted`: Place-backed or name-only root, dual Live/Demo targets, root-owned Team, and a large operational domain                     |
 | Supplier          | `accepted`: root-owned Team plus Supplier-owned Catalogue, Ingredient, and Item operations                                              |
 | Portfolio         | `accepted`: root-owned Team and a private-heavy Property, document, task, compliance, and Finance domain                                |
@@ -37,6 +37,13 @@ map in `workspace.md`. The family deltas are:
 ## Shared spine
 
 Every Workspace Entity must share these rules:
+
+- Concrete Apps declare the Workspace surface and bounded App policy. The
+  owning ecosystem installs its extension dependencies and any genuine
+  cross-extension entrypoint; Apps do not repeat those module selections.
+  Domain implementation and authority remain in the owning extension or Core
+  Entity scope. Ecosystems without a proved Workspace do not gain placeholder
+  routes, and App-specific adapters may retain their own framing.
 
 ### Kitchen and Project proving siblings
 
@@ -57,11 +64,14 @@ Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
 owns `WorkspaceKitchenHero` and the live `WorkspaceKitchen` selection,
-creation, and collection lifecycle. The Misebox ecosystem composes those in
-`MiseboxWorkspaceKitchenMain`; the Main App adds only its central literature
-and doorways at `/`, while tenant Apps receive the same Workspace composition
-at `/workspace/kitchen`. The shared component does not receive Entity names,
-subscription rules, or capability configuration.
+creation, target loading, and collection lifecycle. The Main App composes
+those directly at `/` and adds only its App-owned presentation and doorways
+from `app/components/Workspace/Kitchen`. Kitchen capability execution remains
+in the extension's `Workspace/Capability` family. Kitchen-enabled Apps receive
+an authenticated `/workspace/kitchen` route that mounts the direct
+Kitchen-owned Workspace and resolves available Kitchens through runtime
+authority rather than configured target ids. The shared component does not
+receive Entity names, subscription rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns

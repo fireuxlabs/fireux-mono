@@ -72,7 +72,6 @@
         title="Projects unavailable"
         description="Projects could not be loaded. Please try again."
         icon="i-lucide-triangle-alert"
-        state="error"
       >
         <template #actions>
           <UButton

@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppPaletteLayer, WorkspacePalette, TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template-one'
+import type { AppPaletteLayer, WorkspacePalette, TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/models/template-one'
 import ColorValue from './ColorValue.vue'
 
 const props = defineProps<{ kitchen: TemplateOneKitchenSpecimen }>()

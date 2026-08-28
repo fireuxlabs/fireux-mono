@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: identify Deanos Smash Burger as the focused service demonstration. -->
 <template>
   <main class="product-demo-page" data-misebox-product-demo="service">
-    <MiseboxShowcaseHeader
+    <ShowcaseHeader
       eyebrow="Kitchen team"
       title="Run Deanos Smash Burger"
       description="Accept an incoming burger order, move preparation to the Pass and complete handoff. Every transition stays in this page and Reset service restores the Demo World."
@@ -15,7 +15,7 @@
           Kiosk
         </UButton>
       </template>
-    </MiseboxShowcaseHeader>
+    </ShowcaseHeader>
 
     <UAlert
       v-if="error"
@@ -26,7 +26,7 @@
       description="No Kitchen data or Orders were changed."
     />
 
-    <MiseboxShowcaseService
+    <ShowcaseService
       v-else-if="productDemo"
       :initial-orders="productDemo.service.orders"
       :kitchen-name="productDemo.service.kitchenName"

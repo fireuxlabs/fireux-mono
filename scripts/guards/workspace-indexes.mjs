@@ -125,6 +125,48 @@ export async function run(ctx) {
     }
   }
 
+  const kitchenWorkspace = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'
+    ),
+    'utf8'
+  )
+  const kitchenWorkspaceMain = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/main/useKitchenWorkspaceMain.ts'
+    ),
+    'utf8'
+  )
+  const kitchenWorkspaceActive = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Active.vue'
+    ),
+    'utf8'
+  )
+  if (
+    !kitchenWorkspace.includes('resolveWorkspaceCanCreate(') ||
+    !kitchenWorkspace.includes("'kitchen'") ||
+    !kitchenWorkspaceMain.includes('workspace.runtime.canCreate.value')
+  ) {
+    violations.push(
+      'Kitchen Workspace creation must follow the shared App workspace policy'
+    )
+  }
+  if (
+    !kitchenWorkspaceActive.includes('const existing = kitchens[0]') ||
+    !kitchenWorkspaceActive.includes('kitchens.length !== 1') ||
+    !kitchenWorkspaceActive.includes(
+      'workspace.actions.selectKitchen(existing.id)'
+    )
+  ) {
+    violations.push(
+      'Kitchen Workspace must automatically activate its sole available target'
+    )
+  }
+
   const activeEntity = readFileSync(
     path.join(
       repoRoot,

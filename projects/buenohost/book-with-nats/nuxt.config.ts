@@ -18,6 +18,5 @@ export default defineFireuxConfig({
     },
   },
   domains: ['properties'],
-  modules: ['fireux-properties', 'fireux-reservations'],
   navHiddenKeys: ['properties'],
 })

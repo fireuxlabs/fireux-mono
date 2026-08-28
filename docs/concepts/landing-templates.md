@@ -78,9 +78,9 @@ data into the same package-owned page without consumer scenes.
 ## Authority
 
 - Catalogue/detail routes: `projects/misebox/misebox-app/app/pages/templates/*`
-- Temporary specimens: `packages/ecosystem/fireux-misebox/src/runtime/template-one-fixtures.ts`
-- Template One contract: `packages/ecosystem/fireux-misebox/src/runtime/template-one.ts`
-- Page and scenes: `packages/ecosystem/fireux-misebox/src/runtime/TemplateOne*.vue`
+- Catalogue specimens: `packages/ecosystem/fireux-misebox/src/runtime/content/template-one-fixtures.ts`
+- Template One contract: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
+- Page and scenes: `packages/ecosystem/fireux-misebox/src/runtime/components/TemplateOne/*`
 - Guard: `scripts/guards/landing-templates.mjs`
 
 ## Verification

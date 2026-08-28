@@ -1,5 +1,5 @@
 <template>
-  <MiseboxShowcaseKiosk
+  <ShowcaseKiosk
     appearance="pizzeria"
     :kitchen-id="kitchen.id"
     :kitchens="[kitchen]"

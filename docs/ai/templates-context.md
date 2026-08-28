@@ -122,9 +122,9 @@ injected owner data.
 
 ## Authority and current source
 
-1. `packages/ecosystem/fireux-misebox/src/runtime/template-one.ts`
-2. `packages/ecosystem/fireux-misebox/src/runtime/template-one-fixtures.ts`
-3. `packages/ecosystem/fireux-misebox/src/runtime/TemplateOne*.vue`
+1. `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
+2. `packages/ecosystem/fireux-misebox/src/runtime/content/template-one-fixtures.ts`
+3. `packages/ecosystem/fireux-misebox/src/runtime/components/TemplateOne/*`
 4. `projects/misebox/misebox-app/app/pages/templates/*`
 5. `projects/fireux/fireux-app/app/pages/templates/*`
 6. `scripts/guards/landing-templates.mjs`

@@ -35,6 +35,49 @@ const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 // Ecosystem runtime contract
 const REQUIRED_RUNTIME_PUBLIC_DIR = path.join('src', 'runtime', 'public')
 
+const WORKSPACE_CONTRACTS = [
+  {
+    ecosystem: 'fireux',
+    workspace: 'project',
+    modules: [],
+    route:
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue',
+  },
+  {
+    ecosystem: 'misebox',
+    workspace: 'kitchen',
+    modules: ['fireux-kitchens'],
+    route:
+      'packages/ecosystem/fireux-misebox/src/runtime/pages/workspace/kitchen/index.vue',
+  },
+  {
+    ecosystem: 'bringli',
+    workspace: 'supplier',
+    modules: ['fireux-suppliers'],
+    route:
+      'packages/extensions/fireux-suppliers/src/runtime/pages/workspace/supplier/index.vue',
+  },
+  {
+    ecosystem: 'buenohost',
+    workspace: 'property',
+    modules: ['fireux-properties', 'fireux-reservations'],
+    route:
+      'packages/extensions/fireux-properties/src/runtime/pages/workspace/property/index.vue',
+  },
+  {
+    ecosystem: 'granite',
+    workspace: 'portfolio',
+    modules: [
+      'fireux-properties',
+      'fireux-compliance',
+      'fireux-documents',
+      'fireux-tasks',
+    ],
+    route:
+      'packages/extensions/fireux-properties/src/runtime/pages/workspace/portfolio/index.vue',
+  },
+]
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const ecoRoot = path.join(repoRoot, 'packages', 'ecosystem')
@@ -58,9 +101,102 @@ export async function run(ctx) {
     if (v) violations.push(v)
   }
 
+  checkWorkspaceContracts(repoRoot, violations)
+
   if (violations.length) throw new Error(violations.join('\n\n'))
 
   console.log('[guard] ✅ ecosystem packages valid')
+}
+
+function checkWorkspaceContracts(repoRoot, violations) {
+  const contracts = new Map(
+    WORKSPACE_CONTRACTS.map((contract) => [
+      `${contract.ecosystem}:${contract.workspace}`,
+      contract,
+    ])
+  )
+  const projectsRoot = path.join(repoRoot, 'projects')
+
+  for (const family of readdirSync(projectsRoot, { withFileTypes: true })) {
+    if (!family.isDirectory()) continue
+    const familyRoot = path.join(projectsRoot, family.name)
+    for (const app of readdirSync(familyRoot, { withFileTypes: true })) {
+      if (!app.isDirectory()) continue
+      const configPath = path.join(familyRoot, app.name, 'nuxt.config.ts')
+      if (!existsSync(configPath)) continue
+      const source = readFileSync(configPath, 'utf8')
+      const ecosystem = source.match(/\becosystem:\s*'([^']+)'/)?.[1]
+      const workspaceSource = source.match(/\bworkspaces:\s*\[([^\]]*)\]/)?.[1]
+      const workspaces = workspaceSource
+        ? [...workspaceSource.matchAll(/'([^']+)'/g)].map((match) => match[1])
+        : []
+
+      for (const workspace of workspaces) {
+        if (
+          ecosystem === 'fireux' &&
+          workspace === 'blank' &&
+          app.name === 'fireux-blank'
+        ) {
+          continue
+        }
+
+        const contract = contracts.get(`${ecosystem}:${workspace}`)
+        if (!contract) {
+          violations.push(
+            `[guard] ❌ ${path.relative(repoRoot, configPath)} declares unowned Workspace ${workspace} for ecosystem ${ecosystem || '(missing)'}`
+          )
+          continue
+        }
+
+        const ecosystemPackage = path.join(
+          repoRoot,
+          'packages',
+          'ecosystem',
+          `fireux-${ecosystem}`
+        )
+        const ecosystemModule = readFileSync(
+          path.join(ecosystemPackage, 'src', 'module.ts'),
+          'utf8'
+        )
+        const manifest = JSON.parse(
+          readFileSync(path.join(ecosystemPackage, 'package.json'), 'utf8')
+        )
+
+        if (!existsSync(path.join(repoRoot, contract.route))) {
+          violations.push(
+            `[guard] ❌ ${ecosystem}:${workspace} is missing its owned route ${contract.route}`
+          )
+        }
+
+        for (const moduleName of contract.modules) {
+          if (!manifest.dependencies?.[moduleName]) {
+            violations.push(
+              `[guard] ❌ fireux-${ecosystem} must declare Workspace dependency ${moduleName}`
+            )
+          }
+          const installsModule =
+            ecosystemModule.includes(`installModule('${moduleName}')`) ||
+            (ecosystemModule.includes('await installModule(name)') &&
+              ecosystemModule.includes(`'${moduleName}'`))
+          if (!installsModule) {
+            violations.push(
+              `[guard] ❌ fireux-${ecosystem} must install ${moduleName} for its ${workspace} Workspace`
+            )
+          }
+          if (!ecosystemModule.includes('fireux.modules')) {
+            violations.push(
+              `[guard] ❌ fireux-${ecosystem} must expose its installed Workspace modules to runtime visibility`
+            )
+          }
+          if (source.includes(`'${moduleName}'`)) {
+            violations.push(
+              `[guard] ❌ ${path.relative(repoRoot, configPath)} repeats ecosystem-owned Workspace module ${moduleName}`
+            )
+          }
+        }
+      }
+    }
+  }
 }
 
 function checkEcosystemPackage(pkgPath) {

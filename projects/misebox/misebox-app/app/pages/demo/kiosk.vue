@@ -7,7 +7,7 @@
 <!-- Concurrent edit — 2026-07-22 17:34 CEST — Portable portrait stage: only resize genuine detached windows; modal previews retain their isolated viewport. -->
 <!-- Concurrent edit — 2026-07-23 08:58 CEST — Firefox popup pass: let the opener size the window and scale the exact logical viewport inside it. -->
 <template>
-  <MiseboxShowcaseKiosk
+  <ShowcaseKiosk
     v-if="activeKiosk && productDemo"
     v-model:kitchen-id="activeKioskId"
     :appearance="activeKiosk.appearance"

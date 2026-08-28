@@ -11,10 +11,6 @@ const read = (repoRoot, relativePath) =>
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const base = 'packages/extensions/fireux-kitchens/src/runtime/'
-  const serverConfig = read(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
-  )
   const kitchenBase = `${base}kitchen/`
   const kitchenModel = read(repoRoot, `${kitchenBase}models/kitchen.model.ts`)
   const fulfilmentModel = read(
@@ -296,18 +292,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /collection\(['"](?:team|orders|sales|mise-tasks|prep-items|private)['"]\)/,
     'Kitchen Entity projection must not read protected Workspace children.'
   )
-  for (const route of [
-    '/api/kitchens/:kitchen',
-    '/api/kitchens/:kitchen/fulfilment',
-    '/api/kitchens/:kitchen/menu-presentation',
+  for (const handler of [
+    '[kitchen].get.ts',
+    '[kitchen]/fulfilment.get.ts',
+    '[kitchen]/menu-presentation.get.ts',
   ]) {
-    assert.match(serverConfig, new RegExp(`route: ['"]${route}['"]`))
+    assert.equal(
+      existsSync(file(repoRoot, `${base}server/api/kitchens/${handler}`)),
+      true
+    )
   }
-  assert.ok(
-    serverConfig.indexOf("route: '/api/kitchens/:kitchen/fulfilment'") <
-      serverConfig.indexOf("route: '/api/kitchens/:kitchen'"),
-    'Specific Kitchen routes must be registered before the generic Kitchen detail route.'
-  )
   assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
   assert.match(detail, /KitchenDetailState/)
   assert.match(detail, /:objects="\{ kitchen, place \}"/)

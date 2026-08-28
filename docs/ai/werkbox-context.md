@@ -48,7 +48,7 @@ remembered implementations are not authority.
   routes, hosting configuration, and tenant presentation.
 - The main Werkbox App follows the shared Main App product-landing spine while
   retaining its own truthful content and photography. Start at
-  `projects/werkbox/werkbox-app/app/components/Werkbox/Landing`, and verify the
+  `projects/werkbox/werkbox-app/app/components/Landing`, and verify the
   composition through `scripts/guards/product-landing.mjs`; do not restore a
   project-local landing framework or move Werkbox artwork into Core.
 - Werkbox hero photography consumes Core `LandingProductHeroImage`; Werkbox

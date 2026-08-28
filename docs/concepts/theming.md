@@ -367,10 +367,10 @@ sources exist.
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/theme.ts`
   and `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Identity/Theme.vue`
 - Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
-- Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/template-one*`
+- Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/models/template-one.ts`
   and `TemplateOne*.vue`
 - Misebox Basic resolver:
-  `packages/ecosystem/fireux-misebox/src/runtime/kitchen-basic-presentation.ts`
+  `packages/ecosystem/fireux-misebox/src/runtime/models/kitchen-basic-presentation.ts`
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`

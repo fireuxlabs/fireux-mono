@@ -161,6 +161,43 @@ export async function run(ctx) {
   )
   const appBaselineSource = readFileSync(appBaselinePath, 'utf8')
   const fireuxConfigSource = readFileSync(fireuxConfigPath, 'utf8')
+  const kitchenModulePath = path.join(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/module.ts'
+  )
+  const miseboxModulePath = path.join(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/module.ts'
+  )
+  const miseboxPagesPath = path.join(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/config/module/pages-config.ts'
+  )
+  const kitchenModuleSource = readFileSync(kitchenModulePath, 'utf8')
+  const miseboxModuleSource = readFileSync(miseboxModulePath, 'utf8')
+  const miseboxPagesSource = readFileSync(miseboxPagesPath, 'utf8')
+
+  const kitchenNitroAuthorityDrifted =
+    existsSync(path.join(repoRoot, 'packages/extensions/fireux-kitchens/src/config/module/server-config.ts')) ||
+    existsSync(path.join(repoRoot, 'packages/ecosystem/fireux-misebox/src/config/module/server-config.ts')) ||
+    /configureServer|addServerHandler|registerServerHandlers/.test(
+      `${kitchenModuleSource}\n${miseboxModuleSource}`
+    ) ||
+    !miseboxModuleSource.includes("if (hasKitchenWorkspace)") ||
+    !miseboxModuleSource.includes("await installModule('fireux-kitchens')") ||
+    !miseboxPagesSource.includes("if (!workspaces.includes('kitchen')) return") ||
+    !miseboxPagesSource.includes('configurePages(resolver, nuxt)')
+
+  if (kitchenNitroAuthorityDrifted) {
+    throw new Error(
+      [
+        '[guard] ❌ Kitchen Nitro route registration has duplicate or unconditional authority.',
+        '- fireux-kitchens and fireux-misebox handlers are discovered from their runtime layers.',
+        '- Misebox may mount those layers only for Apps declaring Kitchen Workspace.',
+        '- Do not add parallel server-config.ts/addServerHandler registration.',
+      ].join('\n')
+    )
+  }
 
   if (
     !/export function configureFireuxModuleRestartWatch/.test(appBaselineSource) ||

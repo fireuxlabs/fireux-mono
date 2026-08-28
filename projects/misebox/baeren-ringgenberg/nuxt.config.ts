@@ -25,7 +25,6 @@ export default defineFireuxConfig({
     'fireux-places',
     'fireux-companies',
     'fireux-go-qr',
-    'fireux-kitchens',
     'fireux-sproochli',
     [
       'fireux-jobs',
