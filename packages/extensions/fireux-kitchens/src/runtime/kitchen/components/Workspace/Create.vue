@@ -1,6 +1,10 @@
 <template>
   <div>
-    <Form v-if="launcher === 'inline'" @created="emit('created', $event)" />
+    <Form
+      v-if="launcher === 'inline'"
+      @created="emit('created', $event)"
+      @manifested="emit('manifested', $event)"
+    />
 
     <button
       v-else-if="launcher === 'cell'"
@@ -41,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
 import Form from './Create/Form.vue'
 
 const {
@@ -57,8 +61,9 @@ const {
 }>()
 const emit = defineEmits<{
   (event: 'created', id: string): void
+  (event: 'manifested', id: string): void
 }>()
-const { createKitchenOpen: open } = useKitchenWorkspaceTools()
+const { createKitchenOpen: open } = useKitchenWorkspaceMain()
 
 function created(id: string) {
   open.value = false

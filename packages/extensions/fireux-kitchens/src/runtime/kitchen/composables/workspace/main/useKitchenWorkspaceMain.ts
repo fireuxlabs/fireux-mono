@@ -6,11 +6,11 @@ import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presenta
 import { useKitchenCapabilityToolDirectory } from '../useKitchenCapabilityTools'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
-export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
-  const { isAuthenticated } = useAuth()
-  const { appAccessOutcome, canOwnMultipleWorkspaces } = useUser()
+export function useKitchenWorkspaceMain(workspace = useKitchenWorkspace()) {
+  const { currentUser, isAuthenticated } = useAuth()
+  const { appAccess, appAccessOutcome, canOwnMultipleWorkspaces } = useUser()
+  const capabilityTools = useKitchenCapabilityToolDirectory()
   const activeId = workspace.selection.kitchenId
-  const hasActiveKitchen = computed(() => Boolean(activeId.value))
   const activePresentation = computed(() =>
     readKitchenPresentationIdentity(workspace.selection.kitchen.value)
   )
@@ -26,16 +26,11 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
     'kitchen-workspace-create-open',
     () => false
   )
-  const capabilityTools = useKitchenCapabilityToolDirectory()
-  const accessPending = computed(
-    () =>
-      isAuthenticated.value &&
-      (appAccessOutcome.value === 'idle' ||
-        appAccessOutcome.value === 'pending')
-  )
   const workspacePending = computed(
     () =>
-      accessPending.value ||
+      (isAuthenticated.value &&
+        (appAccessOutcome.value === 'idle' ||
+          appAccessOutcome.value === 'pending')) ||
       workspace.targets.pending.value ||
       workspace.targets.outcome.value === 'idle' ||
       workspace.targets.outcome.value === 'pending'
@@ -53,19 +48,34 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
       hasExistingKitchen.value &&
       !canCreateMultiple.value
   )
-
+  const hasActiveKitchen = computed(() => Boolean(activeId.value))
   const kitchenComplete = computed(() =>
     Boolean(activeName.value && activeDescription.value && activeImage.value)
   )
+  const state = computed(() => ({
+    signedIn: Boolean(currentUser.value && !currentUser.value.isAnonymous),
+    subscription: appAccess.value.subscription,
+    activeKitchen: activeId.value
+      ? {
+          id: activeId.value,
+          name: activeName.value,
+          hasTagline: Boolean(activeDescription.value),
+          hasImage: Boolean(activeImage.value),
+        }
+      : null,
+    kitchenCount: workspace.targets.kitchens.value.length,
+    kitchenComplete: kitchenComplete.value,
+    canCreateKitchen: canCreateKitchen.value,
+  }))
   const kitchenTool = computed(() => {
     if (workspacePending.value) return null
-    if (capacityConsumed.value && !activeId.value) return null
+    if (capacityConsumed.value && !hasActiveKitchen.value) return null
     if (canCreateKitchen.value) {
       return {
         id: 'create-kitchen' as const,
         kind: 'create' as const,
         label: 'Create Kitchen',
-        suggestion: activeId.value
+        suggestion: hasActiveKitchen.value
           ? 'Help me create another Kitchen'
           : 'Tell us about your Kitchen',
       }
@@ -113,14 +123,17 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
       ...capabilityTools.availableActions.value,
     ].filter((id): id is string => Boolean(id))
   )
-
+  const startKitchen = () => {
+    createKitchenOpen.value = true
+  }
+  const completeKitchen = () => navigateTo('/workspace/kitchen/identity')
   async function performAction(id: string) {
     if (id === 'create-kitchen' && kitchenTool.value?.kind === 'create') {
-      createKitchenOpen.value = true
+      startKitchen()
       return true
     }
     if (id === 'complete-kitchen' && kitchenTool.value?.kind === 'complete') {
-      await navigateTo('/workspace/kitchen/identity')
+      await completeKitchen()
       return true
     }
     if (id === 'sign-up' && userTool.value) {
@@ -145,11 +158,14 @@ export function useKitchenWorkspaceTools(workspace = useKitchenWorkspace()) {
     activeDescription,
     activeImage,
     kitchenComplete,
+    state,
     kitchenTool,
     userTool,
     exploreAction,
     suggestions,
     availableActions,
+    startKitchen,
+    completeKitchen,
     performAction,
   }
 }

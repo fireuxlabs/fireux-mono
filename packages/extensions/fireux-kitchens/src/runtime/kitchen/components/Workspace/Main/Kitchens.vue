@@ -18,12 +18,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
+import { useKitchenWorkspaceMain } from '../../../composables/workspace/main/useKitchenWorkspaceMain'
 
 const kitchen = useKitchenWorkspace()
 const { kitchenComplete: hasKitchenPresentation } =
-  useKitchenWorkspaceTools(kitchen)
+  useKitchenWorkspaceMain(kitchen)
 const { appAccess } = useUser()
 const kitchensOpen = ref(false)
 const hasKitchenChoices = computed(

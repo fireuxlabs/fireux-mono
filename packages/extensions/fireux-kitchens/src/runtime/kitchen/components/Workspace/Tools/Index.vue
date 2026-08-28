@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 import { useKitchenWorkspace } from '../../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from '../../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from '../../../composables/workspace/main/useKitchenWorkspaceMain'
 import Create from '../Create.vue'
 
 const workspace = useKitchenWorkspace()
@@ -46,7 +46,7 @@ const {
   workspacePending,
   kitchenComplete,
   kitchenTool,
-} = useKitchenWorkspaceTools(workspace)
+} = useKitchenWorkspaceMain(workspace)
 const activate = workspace.actions.selectKitchen
 </script>
 

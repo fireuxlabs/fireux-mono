@@ -2,9 +2,11 @@
   <section
     class="kitchen-ai-welcome"
     :class="{ 'kitchen-ai-welcome--main': mainWorkspace }"
-    aria-labelledby="kitchen-ai-title"
+    :aria-labelledby="mainWorkspace ? undefined : 'kitchen-ai-title'"
+    :aria-label="mainWorkspace ? 'KitchenAI' : undefined"
   >
     <Intro
+      v-if="!mainWorkspace"
       :agent-label="workspaceAgentLabel"
       :context-icon="resolvedContextIcon"
       :has-context-icon="hasContextIcon"
@@ -32,7 +34,7 @@
       v-if="!commandMode || !commandResult"
       v-model="prompt"
       :placeholder="workspacePlaceholder"
-      :suggestions="promptSuggestions"
+      :suggestions="mainWorkspace ? [] : promptSuggestions"
       :starters="workspaceStarters"
       :ai-tools="props.aiTools"
       :allow-file="allowFile"
@@ -49,7 +51,7 @@ import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
 import Intro from './AI/Intro.vue'
@@ -96,7 +98,7 @@ const {
   suggestions: workspaceToolSuggestions,
   availableActions: availableWorkspaceActions,
   performAction: performWorkspaceAction,
-} = useKitchenWorkspaceTools(kitchenWorkspace)
+} = useKitchenWorkspaceMain(kitchenWorkspace)
 const {
   agentLabel: resolvedAgentLabel,
   hasContextIcon,

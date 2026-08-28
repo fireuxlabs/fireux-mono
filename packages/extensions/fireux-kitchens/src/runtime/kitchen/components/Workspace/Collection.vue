@@ -109,7 +109,7 @@
 import { computed, navigateTo, onMounted, ref } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
 import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import Create from './Create.vue'
 
@@ -124,7 +124,7 @@ const props = withDefaults(
 const { appAccess, appAccessOutcome } = useUser()
 const workspace = useKitchenWorkspace()
 const { workspacePending, canCreateMultiple } =
-  useKitchenWorkspaceTools(workspace)
+  useKitchenWorkspaceMain(workspace)
 const { workspaceTarget } = useKitchenInterface()
 const mounted = ref(false)
 

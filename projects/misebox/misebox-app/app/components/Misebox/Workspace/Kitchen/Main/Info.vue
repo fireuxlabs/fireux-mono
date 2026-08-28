@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { findMiseboxWorkspaceAgent } from 'fireux-misebox/runtime/ai/workspace-agents'
-import contentLanding from '../../../../content/kitchen/content-landing.md?raw'
+import contentLanding from '../../../../../content/kitchen/content-landing.md?raw'
 
 const open = ref(false)
 const blocks = contentLanding

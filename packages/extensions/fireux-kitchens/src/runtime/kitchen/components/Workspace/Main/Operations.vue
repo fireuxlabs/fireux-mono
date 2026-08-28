@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenOperations } from '../../models/operations'
+import { kitchenOperations } from '../../../models/operations'
 
 const featuredSlugs = [
   'menus',

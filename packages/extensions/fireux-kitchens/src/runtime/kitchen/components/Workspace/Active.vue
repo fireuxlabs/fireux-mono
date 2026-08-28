@@ -12,9 +12,10 @@
     />
 
     <WorkspaceKitchenCreate
-      v-else-if="canCreateKitchen"
+      v-else-if="canCreateKitchen || manifestingActiveKitchen"
       launcher="inline"
       @created="createdKitchen"
+      @manifested="manifestedKitchen"
     />
 
     <UAlert
@@ -54,7 +55,7 @@
 import { computed, onMounted, ref, watch } from '#imports'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from '../../composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
 
 withDefaults(
   defineProps<{
@@ -72,10 +73,21 @@ const emit = defineEmits<{
 
 const { isAdmin, isDeveloper } = useUser()
 const workspace = useKitchenWorkspace()
-const { workspacePending, canCreateKitchen, capacityConsumed } =
-  useKitchenWorkspaceTools(workspace)
+const {
+  workspacePending,
+  canCreateKitchen,
+  capacityConsumed,
+  kitchenComplete,
+} = useKitchenWorkspaceMain(workspace)
 const mounted = ref(false)
 const showEmptyState = ref(false)
+const manifestingKitchenId = ref('')
+const manifestingActiveKitchen = computed(
+  () =>
+    Boolean(manifestingKitchenId.value) &&
+    manifestingKitchenId.value === workspace.selection.kitchenId.value &&
+    !kitchenComplete.value
+)
 
 const canEmpty = computed(
   () => mounted.value && (isDeveloper.value || isAdmin.value)
@@ -101,7 +113,15 @@ watch(
 )
 
 async function createdKitchen(id: string) {
+  manifestingKitchenId.value = ''
   showEmptyState.value = false
+  workspace.actions.selectKitchen(id)
+  await workspace.targets.refresh()
+}
+
+async function manifestedKitchen(id: string) {
+  manifestingKitchenId.value = id
+  showEmptyState.value = true
   workspace.actions.selectKitchen(id)
   await workspace.targets.refresh()
 }

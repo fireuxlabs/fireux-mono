@@ -1,50 +1,40 @@
 <template>
   <section class="workspace-surface">
-    <pre v-if="isDev" class="overflow-x-auto text-xs text-muted">{{
-      state
-    }}</pre>
+    <div class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6">
+      <div class="grid content-center gap-6 py-12 sm:py-16">
+        <WorkspaceKitchenMainHero />
+        <WorkspaceKitchenMainAI />
+      </div>
 
-    <WorkspaceKitchenHero />
-    <WorkspaceKitchenAI />
-    <WorkspaceKitchen />
-    <WorkspaceKitchenOperations />
-    <MiseboxWorkspaceKitchenTools />
-    <MiseboxWorkspaceKitchenDiscovery />
+      <UButton
+        to="#kitchen-main-content"
+        icon="i-lucide-arrow-down"
+        color="neutral"
+        variant="ghost"
+        size="xl"
+        class="mx-auto rounded-full"
+        aria-label="Explore the Kitchen Workspace"
+      />
+    </div>
+
+    <div id="kitchen-main-content" class="grid scroll-mt-6 gap-6">
+      <WorkspaceKitchenMainKitchens />
+      <WorkspaceKitchenMainOperations />
+      <MiseboxWorkspaceKitchenMainTools />
+      <MiseboxWorkspaceKitchenMainDiscovery />
+    </div>
+
+    <ClientOnly>
+      <pre v-if="isDev" class="overflow-x-auto text-xs text-muted">{{
+        state
+      }}</pre>
+    </ClientOnly>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { useKitchenWorkspace } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceTools } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceTools'
+import { useKitchenWorkspaceMain } from 'fireux-kitchens/runtime/kitchen/composables/workspace/main/useKitchenWorkspaceMain'
 
 const isDev = import.meta.dev
-const { currentUser: authUser } = useAuth()
-const { appAccess } = useUser()
-const workspace = useKitchenWorkspace()
-const {
-  activeName,
-  activeDescription,
-  activeImage,
-  kitchenComplete,
-  canCreateKitchen,
-} = useKitchenWorkspaceTools(workspace)
-
-const state = computed(() => ({
-  signedIn: Boolean(authUser.value && !authUser.value.isAnonymous),
-  subscription: appAccess.value.subscription,
-  activeKitchen: workspace.selection.kitchenId.value
-    ? {
-        id: workspace.selection.kitchenId.value,
-        name: activeName.value,
-        hasTagline: Boolean(activeDescription.value),
-        hasImage: Boolean(activeImage.value),
-      }
-    : null,
-  kitchenCount: workspace.targets.kitchens.value.length,
-  kitchenComplete: kitchenComplete.value,
-  canCreateKitchen: canCreateKitchen.value,
-}))
+const { state } = useKitchenWorkspaceMain()
 </script>

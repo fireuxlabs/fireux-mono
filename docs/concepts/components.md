@@ -1,6 +1,6 @@
 # Components spine map
 
-Updated: 2026-08-27
+Updated: 2026-08-28
 Ref: e5a742124
 Role: map, not canon
 
@@ -52,8 +52,9 @@ Map component folder and naming conventions.
   Workspace as its root product surface composes those entrypoints beneath the
   matching `{App}Workspace{Entity}` App family; it owns only App-specific
   framing, literature, and doorways there. Misebox therefore uses
-  `MiseboxWorkspaceKitchenMain` at `/` while `fireux-kitchens` owns
-  `WorkspaceKitchen` and `WorkspaceKitchenHero`. Read-only landing previews
+  `MiseboxWorkspaceKitchenMain` at `/` while `fireux-kitchens` owns its
+  `WorkspaceKitchenMain*` sections and reusable `WorkspaceKitchen*` parts.
+  Read-only landing previews
   remain App-owned presentation and do not become live Workspace authority.
 - Declared Entity components live beneath `runtime/<entity>/components` and
   are registered with prefixes that preserve established component names.
@@ -333,7 +334,8 @@ Inside `runtime/<entity>/components`:
 
 The entity-scoped destination is:
 
-- `runtime/<entity>/components/Workspace/Index.vue` for the family entrypoint
+- `runtime/<entity>/components/Workspace/Main` for parts specific to the
+  Workspace's Main surface
 - `runtime/<entity>/components/Workspace/ActiveCard.vue` for the selected Entity presentation
 - `runtime/<entity>/components/Workspace/Targets.vue` for the selectable target collection
 - `runtime/<entity>/components/Workspace/Overview`

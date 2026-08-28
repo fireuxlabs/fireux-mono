@@ -1,7 +1,7 @@
 <template>
   <form class="grid max-w-md gap-3" @submit.prevent="submit">
     <WorkspaceKitchenActiveCard
-      v-if="manifestKitchen"
+      v-if="manifestComplete && manifestKitchen"
       :kitchen="manifestKitchen"
       draft
     />
@@ -95,9 +95,11 @@ import {
 import { useKitchenCreate } from '../../../composables/firestore/mutations/useKitchenCreate'
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../models/kitchen.model'
+import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 
 const emit = defineEmits<{
   (event: 'created', id: string): void
+  (event: 'manifested', id: string): void
 }>()
 const { createKitchen } = useKitchenCreate()
 const { currentUser } = useAuth()
@@ -126,6 +128,16 @@ const manifestKitchen = computed(() =>
     place: manifestPlace.value,
   })
 )
+const manifestComplete = computed(() => {
+  const presentation = readKitchenPresentationIdentity(manifestKitchen.value)
+  return Boolean(
+    presentation.displayName &&
+      presentation.tagline &&
+      (presentation.cardImageUrl ||
+        presentation.imageUrl ||
+        presentation.logoImageUrl)
+  )
+})
 const image = ref<File | null>(null)
 const imagePreview = ref('')
 const error = ref('')
@@ -153,6 +165,7 @@ watch(query, (value) => {
   const name = value.trim()
   if (!name) return
   void enqueue(async () => {
+    const firstManifest = !manifestId.value
     const result = await createKitchen({
       name,
       ...(manifestId.value
@@ -162,6 +175,7 @@ watch(query, (value) => {
           : {}),
     })
     manifestId.value = result.id
+    if (firstManifest) emit('manifested', result.id)
     if (tagline.value.trim()) {
       const placeUpdate = usePlaceUpdate({
         authority: { appId, kitchenId: result.id },

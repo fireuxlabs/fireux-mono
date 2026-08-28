@@ -250,10 +250,10 @@ Before each task:
 - The Misebox Main App deliberately opens the Kitchen Workspace at `/`; it is
   not a conventional Home or a separate marketing landing. Its App-owned
   `MiseboxWorkspaceKitchenMain` composes the Kitchen-owned
-  `WorkspaceKitchenHero` and
-  `WorkspaceKitchen` selection, creation, and collection state, then adds only
-  Misebox KitchenAI placement, operation doorways, free tools, discovery, and
-  product literature. The App does not duplicate Kitchen operation truth.
+  `WorkspaceKitchenMainHero`, `WorkspaceKitchenMainKitchens`,
+  `WorkspaceKitchenMainOperations`, and reusable `WorkspaceKitchenAI`, then
+  adds only Misebox tools, discovery, and product literature. The App does not
+  duplicate Kitchen operation truth.
   `Misebox/Landing/WorkspacePreview` remains a separate read-only product proof
   backed by Kitchen-owned Demo records and is not part of the live Workspace
   entry.
