@@ -20,12 +20,12 @@ export type KitchenCapabilitySearchDemandSubject = {
 
 const workspaceSubjects = [
   {
-    slug: 'today',
-    title: 'Today',
-    headline: 'Kitchen Today',
-    question: 'Do Kitchen operators seek one daily view across their current work, risks and decisions?',
+    slug: 'calendar',
+    title: 'Calendar',
+    headline: 'Kitchen Calendar',
+    question: 'Do Kitchen operators seek one date-scoped view across their current work, risks and decisions?',
     queries: ['restaurant daily operations checklist', 'restaurant manager daily checklist', 'kitchen daily task list'],
-    boundary: 'Today is an aggregation surface. Research must not turn it into an independent data owner or specialist AI without evidence.',
+    boundary: 'Calendar is a date-scoped aggregation surface. Research must not turn it into an independent data owner or specialist AI without evidence.',
   },
   {
     slug: 'overview',

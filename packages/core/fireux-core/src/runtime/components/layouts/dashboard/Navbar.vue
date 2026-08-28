@@ -14,7 +14,11 @@
       <UserSubscriptionControl v-if="showSubscription" />
       <slot name="right" />
 
-      <UTooltip :text="notificationTooltip" :shortcuts="['N']">
+      <UTooltip
+        v-if="showNotifications"
+        :text="notificationTooltip"
+        :shortcuts="['N']"
+      >
         <UButton
           color="neutral"
           variant="ghost"
@@ -45,9 +49,10 @@ withDefaults(
     title: string
     ui?: any
     showSubscription?: boolean
+    showNotifications?: boolean
     showTitle?: boolean
   }>(),
-  { showSubscription: true, showTitle: true }
+  { showSubscription: true, showNotifications: true, showTitle: true }
 )
 
 const { open: openNotifications, unreadCount } = useWorkspaceNotifications()

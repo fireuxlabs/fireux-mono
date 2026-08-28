@@ -1,13 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-today-search-demand-tools">
+    <UDashboardPanel id="workspace-kitchen-calendar-search-demand-tools">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Today coordination boundary"
+        ><LayoutsWorkspaceNavbar title="Calendar coordination boundary"
       /></template>
       <template #body>
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
           <WorkspaceKitchenResearchStageNav
-            base-path="/workspace/kitchen/today/search-demand"
+            base-path="/workspace/kitchen/calendar/search-demand"
             current="tools"
           />
           <header class="grid gap-3 border-b border-default pb-8">
@@ -17,10 +17,10 @@
               Stage 3 · Coordination
             </p>
             <h1 class="m-0 text-3xl font-semibold text-highlighted">
-              No Today Tools
+              No Calendar Tools
             </h1>
             <p class="m-0 max-w-3xl text-base text-muted">
-              Today orders, summarises and routes authorized evidence. Mutations
+              Calendar orders, summarises and routes authorized evidence. Mutations
               remain Tools of the capability that owns the record.
             </p>
           </header>
@@ -82,8 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenTodaySearchDemand } from '../../../../../kitchen/models/today-search-demand'
-const demand = kitchenTodaySearchDemand
+import { kitchenCalendarSearchDemand } from '../../../../../kitchen/models/calendar-search-demand'
+const demand = kitchenCalendarSearchDemand
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

@@ -1,8 +1,8 @@
-export const kitchenTodaySearchDemand = {
+export const kitchenCalendarSearchDemand = {
   observedAt: '2026-08-23',
   geography: 'English-language web',
   language: 'English',
-  question: 'What do Kitchen operators need to understand and act on today?',
+  question: 'What do Kitchen operators need to understand and act on for a selected date?',
   method:
     'Current search results establish demand for shift-based checklists, readiness and accountable daily work. The Kitchen capability catalogue then identifies which child capability owns each record and action.',
   seeds: [
@@ -42,7 +42,7 @@ export const kitchenTodaySearchDemand = {
         'See due Mise, expected Receiving, stock exceptions and required Food Safety checks in one time-bound view.',
       owners: ['Mise', 'Receiving', 'Inventory', 'Food Safety'],
       interpretation:
-        'Today may order and link these records, but it does not copy or complete them.',
+        'Calendar may order and link these records for the selected date, but it does not copy or complete them.',
     },
     {
       id: 'service',
@@ -60,7 +60,7 @@ export const kitchenTodaySearchDemand = {
         'See incomplete work, Waste records, Food Safety exceptions and the bounded Sales result for the completed period.',
       owners: ['Mise', 'Waste', 'Food Safety', 'Sales', 'Team'],
       interpretation:
-        'Today can expose gaps and route follow-up; it cannot infer completion, causes, cost or compliance.',
+        'Calendar can expose gaps and route follow-up; it cannot infer completion, causes, cost or compliance.',
     },
   ],
   validationSources: [
@@ -81,7 +81,7 @@ export const kitchenTodaySearchDemand = {
     },
   ],
   recordQuestions: [
-    'Which selected Kitchen, local date, service and timezone define today?',
+    'Which selected Kitchen, local date, service and timezone define the selected Calendar day?',
     'Which child capability owns each displayed record and action?',
     'Which items are due, late, blocked, exceptional or awaiting approval?',
     'Which status is current source evidence and which is an AI deduction?',
@@ -119,10 +119,10 @@ export const kitchenTodaySearchDemand = {
   boundary: {
     owns: 'Presentation order, time scope, source labels and routes into owning child capabilities.',
     doesNotOwn:
-      'Operational records, mutations, specialist Tools, a TodayAI, generic task storage or copied child state.',
+      'Operational records, mutations, specialist Tools, a CalendarAI, generic task storage or copied child state.',
     kitchenAI:
       'KitchenAI may summarise authorized child evidence, explain unknowns and propose contextual actions through the owning capability.',
   },
   conclusion:
-    'Today is the Kitchen Workspace daily coordination surface. It becomes useful incrementally as child capabilities produce time-bound evidence; it never becomes a second operational authority.',
+    'Calendar is the Kitchen Workspace date-scoped coordination surface. It opens on today and becomes useful incrementally as child capabilities produce time-bound evidence; it never becomes a second operational authority.',
 } as const

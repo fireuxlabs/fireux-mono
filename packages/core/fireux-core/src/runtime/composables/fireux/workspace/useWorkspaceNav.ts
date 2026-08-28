@@ -79,7 +79,9 @@ export const useWorkspaceNav = () => {
   const desktop = computed(() => items.value.filter((item) => item.desktop))
 
   return {
+    currentWorkspace,
     resolveItemPosition,
+    items,
     desktop,
   }
 }

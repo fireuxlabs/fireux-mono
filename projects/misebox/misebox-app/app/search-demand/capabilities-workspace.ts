@@ -8,10 +8,10 @@ export const workspaceProposal: NonNullable<AppSearchDemand['capabilities']['wor
           label: 'Workspace',
           items: [
             {
-              label: 'Today',
-              icon: 'i-lucide-calendar-check',
+              label: 'Calendar',
+              icon: 'i-lucide-calendar-range',
               brief:
-                'Open the selected Kitchen with the work, risks and decisions that need attention today.',
+                'Open the selected Kitchen on today, then move through date-scoped work, risks and decisions.',
             },
             {
               label: 'Overview',
@@ -152,4 +152,3 @@ export const workspaceProposal: NonNullable<AppSearchDemand['capabilities']['wor
         },
       ],
     }
-

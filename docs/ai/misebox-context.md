@@ -45,6 +45,17 @@ in the ecosystem package.
   `/product` is the separate product landing surface.
 - The Main App owns `/`, navbar/SEO framing, and App-specific Kitchen literature
   in `app/components/Workspace/Kitchen/{Info,Operations,Tools,Discovery}.vue`.
+- Kitchen Workspace exposes Calendar from the shared top bar rather than as a
+  sidebar destination. Calendar opens on the current date and moves through dates;
+  Calendar and Notifications appear only for a signed-in user whose selected
+  Kitchen root is active. Kitchen identity/presentation completion remains a
+  separate progression and does not redefine onboarding lifecycle completion;
+  focused current-day work belongs on `/` once onboarding prerequisites prove
+  that the Kitchen is ready for that operational landing state.
+- Kitchen's shared `useKitchenWorkspace` reader publishes the bounded
+  Workspace page JSON state used by the header copy control. It includes only
+  direct Kitchen runtime inputs and consumed derived values; capability pages
+  own any additional capability-specific page props.
 - `fireux-kitchens` owns `WorkspaceKitchenHero`, `WorkspaceKitchenAI`,
   `WorkspaceKitchen`, target loading, selection, creation, authority, and
   operational capability components.

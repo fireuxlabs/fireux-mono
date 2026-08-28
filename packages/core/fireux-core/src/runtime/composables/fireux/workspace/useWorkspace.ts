@@ -22,12 +22,14 @@ export function useWorkspace(workspace: string) {
     () => ''
   )
   const activeImage = useState<string>(`${key}-current-image`, () => '')
+  const activeStatus = useState<string>(`${key}-current-status`, () => '')
 
   const activate = (id: string, name = '', description = '', image = '') => {
     const value = normalizeString(id)
     const nextName = normalizeString(name)
     const nextDescription = normalizeString(description)
     const nextImage = normalizeString(image)
+    if (activeId.value !== value) activeStatus.value = ''
     activeId.value = value
     activeName.value = value ? nextName : ''
     activeDescription.value = value ? nextDescription : ''
@@ -40,7 +42,14 @@ export function useWorkspace(workspace: string) {
     activeName: computed(() => activeName.value),
     activeDescription: computed(() => activeDescription.value),
     activeImage: computed(() => activeImage.value),
+    activeStatus: computed(() => activeStatus.value),
     activate,
-    clearActive: () => activate(''),
+    setActiveStatus: (status: string) => {
+      activeStatus.value = activeId.value ? normalizeString(status) : ''
+    },
+    clearActive: () => {
+      activate('')
+      activeStatus.value = ''
+    },
   }
 }

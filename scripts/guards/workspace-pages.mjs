@@ -752,6 +752,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
     path.join(repoRoot, CONSOLE_SHARED_NAVBAR),
     'utf8'
   )
+  const workspaceNavbar = readFileSync(
+    path.join(repoRoot, CONSOLE_NAVBAR),
+    'utf8'
+  )
   if (
     !layout.includes('LayoutsSharedNotificationsSlideover') ||
     !layout.includes('useWorkspaceNotifications') ||
@@ -759,6 +763,28 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   ) {
     violations.push(
       'Core Workspace shell must provide the baked-in Notifications capability.'
+    )
+  }
+  if (
+    !navbar.includes('showNotifications') ||
+    !workspaceNavbar.includes(
+      ':show-notifications="showOperationalControls"'
+    ) ||
+    !workspaceNavbar.includes("workspace.activeStatus.value === 'active'") ||
+    !workspaceNavbar.includes('isSignedIn.value')
+  ) {
+    violations.push(
+      'Workspace Calendar and Notifications must require signed-in access to an active selected Entity.'
+    )
+  }
+  if (
+    !workspaceNavbar.includes('aria-label="Copy page JSON"') ||
+    !workspaceNavbar.includes('user: pageState.value.user') ||
+    !workspaceNavbar.includes('entity: pageState.value.entity') ||
+    !workspaceNavbar.includes('derived: pageState.value.derived')
+  ) {
+    violations.push(
+      'Workspace header must copy the bounded user, entity, and derived page JSON contract.'
     )
   }
 }
@@ -1052,7 +1078,7 @@ function validateKitchenResearchPageFamily(relative, template, violations) {
   if (!match) return
 
   const [, capability, stage] = match
-  if (capability === 'today' || capability === 'overview') return
+  if (capability === 'calendar' || capability === 'overview') return
   if (capability === 'team' && stage === 'tools') return
 
   const component =

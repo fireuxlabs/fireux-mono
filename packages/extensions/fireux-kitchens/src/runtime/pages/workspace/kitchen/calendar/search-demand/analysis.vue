@@ -1,13 +1,13 @@
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
-    <UDashboardPanel id="workspace-kitchen-today-search-demand-analysis">
+    <UDashboardPanel id="workspace-kitchen-calendar-search-demand-analysis">
       <template #header
-        ><LayoutsWorkspaceNavbar title="Today demand analysis"
+        ><LayoutsWorkspaceNavbar title="Calendar demand analysis"
       /></template>
       <template #body>
         <section class="mx-auto grid w-full max-w-5xl gap-8 py-2">
           <WorkspaceKitchenResearchStageNav
-            base-path="/workspace/kitchen/today/search-demand"
+            base-path="/workspace/kitchen/calendar/search-demand"
             current="analysis"
           />
           <header class="grid gap-3 border-b border-default pb-8">
@@ -66,7 +66,7 @@
             :description="demand.conclusion"
           />
           <UButton
-            to="/workspace/kitchen/today/search-demand/tools"
+            to="/workspace/kitchen/calendar/search-demand/tools"
             trailing-icon="i-lucide-arrow-right"
             class="w-fit"
             >Review coordination boundary</UButton
@@ -78,8 +78,8 @@
 </template>
 
 <script setup lang="ts">
-import { kitchenTodaySearchDemand } from '../../../../../kitchen/models/today-search-demand'
-const demand = kitchenTodaySearchDemand
+import { kitchenCalendarSearchDemand } from '../../../../../kitchen/models/calendar-search-demand'
+const demand = kitchenCalendarSearchDemand
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',
