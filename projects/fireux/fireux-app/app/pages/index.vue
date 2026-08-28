@@ -1,64 +1,37 @@
-<!-- Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: adopt the shared product-led landing family. -->
 <template>
-  <div class="landing-ambient min-h-full">
-    <div class="landing-ambient__effect" aria-hidden="true">
-      <LandingStars />
-    </div>
-    <div class="landing-ambient__content">
-      <LandingIndex />
-    </div>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="fireux-project-home">
+      <template #header>
+        <LayoutsWorkspaceNavbar title="Project Workspace" />
+      </template>
+
+      <template #body>
+        <section class="space-y-4">
+          <WorkspaceProject />
+        </section>
+      </template>
+    </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { appMeta } from '../meta'
-import LandingIndex from '../components/Landing/Index.vue'
-
 definePageMeta({
-  layout: 'landing',
+  layout: 'workspace',
+  workspace: 'project',
+  workspaceSurface: 'browse',
   nav: {
-    key: 'home',
-    label: 'Home',
-    icon: 'i-lucide-home',
+    key: 'workspace-project',
+    label: 'Current Project',
+    description: 'My Project',
+    icon: 'i-lucide-briefcase-business',
+    position: 'bottom',
+    order: 900,
+    prominent: true,
     desktop: true,
     mobile: true,
-    layouts: ['landing'],
+    layouts: ['workspace'],
   },
-})
-
-useAppLandingSeo({
-  title: appMeta.seoHome.title,
-  description: appMeta.seoHome.description,
-  path: '/',
-  image: '/img/app/cover.png',
-  logo: '/img/app/logo.png',
+  requiresAuth: true,
+  requiresSelection: false,
 })
 </script>
-
-<style scoped>
-.landing-ambient {
-  position: relative;
-  isolation: isolate;
-}
-
-.landing-ambient__effect {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  contain: strict;
-  pointer-events: none;
-}
-
-.landing-ambient__content {
-  position: relative;
-  z-index: 1;
-}
-
-@media print {
-  .landing-ambient__effect {
-    display: none;
-  }
-}
-</style>

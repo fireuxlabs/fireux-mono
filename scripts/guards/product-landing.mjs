@@ -202,7 +202,7 @@ const FIREUX_ADAPTER_PATH =
   'projects/fireux/fireux-app/app/components/Landing/Index.vue'
 const FIREUX_PRICING_STRIP_PATH =
   'projects/fireux/fireux-app/app/components/Landing/PricingStrip.vue'
-const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
+const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/product.vue'
 const FIREUX_META_PATH = 'projects/fireux/fireux-app/app/meta.ts'
 const FIREUX_CONSOLE_PREVIEW_PATH =
   'projects/fireux/fireux-app/app/components/Landing/WorkspacePreview/Index.vue'

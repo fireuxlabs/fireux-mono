@@ -31,7 +31,7 @@ const CORE_AMBIENT_FIELD_PATH =
   'packages/core/fireux-core/src/runtime/utils/ambient-field.ts'
 const AMBIENT_EFFECT_CONSUMERS = [
   {
-    page: 'projects/fireux/fireux-app/app/pages/index.vue',
+    page: 'projects/fireux/fireux-app/app/pages/product.vue',
     visual: 'projects/fireux/fireux-app/app/components/Landing/Stars.vue',
     deterministic: true,
   },

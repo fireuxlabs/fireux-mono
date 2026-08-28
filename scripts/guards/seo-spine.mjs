@@ -491,7 +491,7 @@ export async function run({ repoRoot }) {
 
   const fireuxLanding = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/pages/index.vue'
+    'projects/fireux/fireux-app/app/pages/product.vue'
   )
   const miseboxLanding = read(
     repoRoot,
