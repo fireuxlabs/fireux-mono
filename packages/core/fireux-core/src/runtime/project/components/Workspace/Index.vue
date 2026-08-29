@@ -5,7 +5,7 @@
   <WorkspaceProjectSelector
     v-if="derived.outcome === 'ready' && state.projects.length > 1"
     :projects="state.projects"
-    :selected-project-id="state.project.id"
+    :selected-entity-id="state.project.id"
   />
 </template>
 

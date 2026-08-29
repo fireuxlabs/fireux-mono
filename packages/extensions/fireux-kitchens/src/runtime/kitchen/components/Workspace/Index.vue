@@ -5,7 +5,7 @@
   <WorkspaceKitchenSelector
     v-if="derived.outcome === 'ready' && state.kitchens.length > 1"
     :kitchens="state.kitchens"
-    :selected-kitchen-id="state.kitchen.id"
+    :selected-entity-id="state.kitchen.id"
     :primary-kitchen-id="state.primaryKitchenId"
     :can-select-multiple="derived.canSelectMultiple"
   />

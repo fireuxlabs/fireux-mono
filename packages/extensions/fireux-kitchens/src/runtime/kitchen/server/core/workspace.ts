@@ -57,9 +57,6 @@ function projectKitchen(input: {
   const place = readPlacePresentation(placeData)
   const resolvedIdentity = menuKitchenIdentity(input.root, placeData)
   const displayName = text(resolvedIdentity.name)
-  if (!displayName) {
-    conflict(`Kitchen ${input.id} has no usable canonical identity.`)
-  }
 
   const visibility = readKitchenVisibility(input.root)
   const menus = readKitchenMenusConfig(input.root)

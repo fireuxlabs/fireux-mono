@@ -185,7 +185,7 @@
     </UDashboardSidebar>
 
     <main
-      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default lg:ml-0"
+      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:ml-0"
     >
       <NuxtErrorBoundary>
         <slot />

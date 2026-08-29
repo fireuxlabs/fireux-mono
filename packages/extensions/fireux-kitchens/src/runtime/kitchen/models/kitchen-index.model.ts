@@ -35,7 +35,6 @@ export type KitchenWorkspaceKitchen = {
   name: string
   tagline?: string
   short_name?: string
-  tagline?: string
   formatted_address?: string
   short_address?: string
   image_url?: string

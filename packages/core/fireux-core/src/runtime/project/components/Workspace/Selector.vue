@@ -1,7 +1,7 @@
 <template>
   <section aria-label="Project selector">
     <UTabs
-      :model-value="selectedProjectId"
+      :model-value="selectedEntityId"
       :items="items"
       :content="false"
       variant="link"
@@ -19,7 +19,7 @@ import type { ProjectWorkspaceIndexState } from '../../composables/workspace/ind
 
 const props = defineProps<{
   projects: ProjectWorkspaceIndexState['projects']
-  selectedProjectId: string
+  selectedEntityId: string
 }>()
 const workspace = useWorkspace('project')
 const items = computed(() =>

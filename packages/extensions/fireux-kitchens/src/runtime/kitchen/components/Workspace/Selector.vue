@@ -2,7 +2,7 @@
   <section aria-label="Kitchen selector">
     <UTabs
       v-if="canSelectMultiple"
-      :model-value="selectedKitchenId"
+      :model-value="selectedEntityId"
       :items="items"
       :content="false"
       variant="link"
@@ -56,7 +56,7 @@ import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/u
 
 const props = defineProps<{
   kitchens: KitchenWorkspaceIndexState['kitchens']
-  selectedKitchenId: string
+  selectedEntityId: string
   primaryKitchenId: string
   canSelectMultiple: boolean
 }>()
@@ -68,7 +68,7 @@ const requestedKitchenId = ref('')
 const requesting = ref(false)
 const items = computed(() =>
   props.kitchens.map((kitchen) => ({
-    label: kitchen.name,
+    label: kitchen.name || kitchen.id,
     value: kitchen.id,
     avatar: {
       src: kitchen.url || undefined,
@@ -81,7 +81,7 @@ const requestItems = computed(() =>
   props.kitchens
     .filter((kitchen) => kitchen.id !== props.primaryKitchenId)
     .map((kitchen) => ({
-      label: kitchen.name,
+      label: kitchen.name || kitchen.id,
       value: kitchen.id,
       avatar: {
         src: kitchen.url || undefined,
