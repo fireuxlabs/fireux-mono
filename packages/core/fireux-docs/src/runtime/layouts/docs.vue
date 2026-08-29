@@ -1,38 +1,32 @@
 <template>
-  <UContainer>
-    <UPage>
-      <template #left>
-        <UPageAside>
-          <DocsNavigation :items="navigation" />
-        </UPageAside>
-      </template>
+  <div class="fx-layout-shell">
+    <LayoutsDefaultHeader />
 
-      <UPageBody class="pagebody">
-        <div class="mb-6 space-y-3">
-          <UButton
-            to="/"
-            label="FireUX Home"
-            icon="i-lucide-house"
-            size="sm"
-            color="primary"
-            variant="soft"
-          />
+    <main class="fx-layout-main">
+      <UContainer>
+        <UPage>
+          <template #left>
+            <UPageAside>
+              <DocsNavigation :items="navigation" />
+            </UPageAside>
+          </template>
 
-          <div class="space-y-1">
-            <p class="text-sm font-medium">FireUX Docs</p>
-            <h1 class="text-2xl font-semibold">
-              Build, ship, and operate FireUX
-            </h1>
-            <p class="text-sm text-dimmed">
-              One map for apps, profiles, tenants, and the platform primitives.
-            </p>
-          </div>
-        </div>
+          <UPageBody class="pagebody">
+            <div class="mb-6 space-y-1">
+              <p class="text-sm font-medium text-primary">FireUX Docs</p>
+              <p class="text-sm text-dimmed">
+                Build, ship, and operate FireUX.
+              </p>
+            </div>
 
-        <NuxtPage />
-      </UPageBody>
-    </UPage>
-  </UContainer>
+            <NuxtPage />
+          </UPageBody>
+        </UPage>
+      </UContainer>
+    </main>
+
+    <LayoutsDefaultFooter />
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -30,6 +30,7 @@ export function useWorkspace(workspace: string) {
   )
   const activeImage = useState<string>(`${key}-current-image`, () => '')
   const activeStatus = useState<string>(`${key}-current-status`, () => '')
+  const requestedId = useState<string>(`${key}-requested-id`, () => '')
   const choices = useState<WorkspaceChoice[]>(`${key}-choices`, () => [])
 
   const activate = (id: string, name = '', description = '', image = '') => {
@@ -51,8 +52,15 @@ export function useWorkspace(workspace: string) {
     activeDescription: computed(() => activeDescription.value),
     activeImage: computed(() => activeImage.value),
     activeStatus: computed(() => activeStatus.value),
+    requestedId: computed(() => requestedId.value),
     choices: computed(() => choices.value),
     activate,
+    requestActivation: (id: string) => {
+      requestedId.value = normalizeString(id)
+    },
+    clearRequestedActivation: () => {
+      requestedId.value = ''
+    },
     setChoices: (nextChoices: WorkspaceChoice[]) => {
       choices.value = nextChoices
     },

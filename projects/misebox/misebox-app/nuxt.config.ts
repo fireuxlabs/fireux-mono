@@ -10,7 +10,6 @@ export default defineFireuxConfig({
   homePath: '/about',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
-  designPack: { preset: 'sci-fire' },
   workspaces: ['kitchen'],
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],

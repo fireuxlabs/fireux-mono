@@ -9,22 +9,33 @@
       :refresh="refresh"
     />
     <WorkspaceKitchenCreate
-      v-if="derived.canCreate"
-      compact
-      label="Create Kitchen"
+      v-if="incompleteKitchen"
+      :kitchen="state.kitchen"
+      :refresh="refresh"
     />
+    <WorkspaceKitchenCreate v-else-if="derived.canCreate" :refresh="refresh" />
   </section>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
 } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-defineProps<{
+const props = defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
   refresh: () => Promise<unknown>
 }>()
+
+const incompleteKitchen = computed(
+  () =>
+    Boolean(props.state.kitchen.id) &&
+    !props.state.kitchen.placeId &&
+    (!props.state.kitchen.name ||
+      !props.state.kitchen.tagline ||
+      !props.state.kitchen.url)
+)
 </script>

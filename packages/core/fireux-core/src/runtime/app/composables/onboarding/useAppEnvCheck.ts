@@ -4,6 +4,7 @@ import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, type ComputedRef } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useDeveloperAccess } from '../../../user/composables/useDeveloperAccess'
 import type { EnvCheckResponse } from './env-check.types'
 
 type AppEnvCheckControls = Pick<
@@ -17,7 +18,10 @@ export type UseAppEnvCheckReturn = AppEnvCheckControls & {
 
 export function useAppEnvCheck(): UseAppEnvCheckReturn {
   const { currentUser, hasAuthState } = useAuth()
-  const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
+  const { isDeveloper } = useDeveloperAccess()
+  const uid = computed(() =>
+    isDeveloper.value ? String(currentUser.value?.uid ?? '').trim() : ''
+  )
 
   const state = useAsyncData(
     'fireux-app-env-check',
@@ -28,6 +32,7 @@ export function useAppEnvCheck(): UseAppEnvCheckReturn {
         !import.meta.client ||
         !hasAuthState.value ||
         !user ||
+        !isDeveloper.value ||
         user.uid !== requestUid
       ) {
         return null

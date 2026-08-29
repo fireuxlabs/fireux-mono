@@ -340,9 +340,10 @@ Inside `runtime/<entity>/components`:
 The entity-scoped destination is:
 
 - `runtime/<entity>/components/Workspace/Index.vue` for the Entity Workspace
-  doorway and its selection lifecycle
-- `runtime/<entity>/components/Workspace/ActiveCard.vue` for the selected Entity presentation
-- `runtime/<entity>/components/Workspace/Targets.vue` for the selectable target collection
+  controls and their composition
+- `runtime/<entity>/components/Workspace/Active.vue` for the selected Entity presentation
+- `runtime/<entity>/components/Workspace/Selector.vue` for the selectable Entity collection
+- `runtime/<entity>/components/Workspace/Create.vue` for the bounded creation doorway
 - `runtime/<entity>/components/Workspace/Overview`
 - `runtime/<entity>/components/Workspace/Identity`
 - `runtime/<entity>/components/Workspace/Team`
@@ -366,8 +367,8 @@ the root Workspace folder.
   `Overview.vue` file.
 - `Index.vue` is the path-derived family entrypoint, never a namespace.
   Named children remain peers or live beneath a semantic owner so generated
-  names read as `WorkspaceKitchenActiveCard` and `WorkspaceKitchenTargets`,
-  never `WorkspaceKitchenIndexActive` or `WorkspaceKitchenIndexTargets`.
+  names read as `WorkspaceKitchenActive` and `WorkspaceKitchenSelector`,
+  never `WorkspaceKitchenIndexActive` or `WorkspaceKitchenIndexSelector`.
 - `Team` is a shared workspace access concept, not an operation.
 - `Operations` contains selected-target work such as kitchen dishes, menus, orders, recipes, or supplier catalogue items.
 - `Sundries` quarantines parked or underdeveloped workspace surfaces so they do not pretend to be confirmed operations.

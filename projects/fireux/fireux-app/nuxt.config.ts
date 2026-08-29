@@ -8,7 +8,7 @@ export default defineFireuxConfig({
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',
-  designPack: { preset: 'sci-fire' },
+  selfJoinEnabled: true,
   workspaces: ['project'],
   seo: {
     siteUrl: 'https://fireux.app',

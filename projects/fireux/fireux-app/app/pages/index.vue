@@ -43,12 +43,13 @@ const { state, derived, actions } = useProjectWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',
+  pageTransition: false,
   workspace: 'project',
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-project',
-    label: 'Current Project',
-    description: 'My Project',
+    label: 'Project',
+    description: 'Project Workspace',
     icon: 'i-lucide-briefcase-business',
     position: 'bottom',
     order: 900,
@@ -57,7 +58,7 @@ definePageMeta({
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: true,
+  requiresAuth: false,
   requiresSelection: false,
 })
 

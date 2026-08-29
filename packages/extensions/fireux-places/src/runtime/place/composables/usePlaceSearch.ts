@@ -18,6 +18,7 @@ export type {
 } from './firestore/fetch/search/types'
 
 type UsePlaceSearchOptions = {
+  allowGoogle?: boolean
   debugLabel?: string
   debounceMs?: number
   location?: Ref<PlaceSearchLocation | null>
@@ -119,7 +120,9 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       const google = await searchGoogle({
         term,
         allowGoogle:
-          Boolean(googleLocation) || term.split(/\s+/).length > 1,
+          options.allowGoogle === true ||
+          Boolean(googleLocation) ||
+          term.split(/\s+/).length > 1,
         location: googleLocation,
         mapToCard: mapToBasePlace,
         type: options.type ?? null,

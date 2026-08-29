@@ -251,10 +251,6 @@ export function useSeo(options: UseSeoOptions) {
     ogDescription: () => description.value || undefined,
     ogUrl: () => canonicalUrl.value || undefined,
     ogImage: () => image.value || undefined,
-    twitterCard: () => (image.value ? 'summary_large_image' : 'summary'),
-    twitterTitle: () => title.value || undefined,
-    twitterDescription: () => description.value || undefined,
-    twitterImage: () => image.value || undefined,
     robots: () => robots.value,
   })
 
@@ -267,7 +263,7 @@ export function useSeo(options: UseSeoOptions) {
           {
             key: 'fireux-entity-json-ld',
             type: 'application/ld+json',
-            children: serializeJsonLd(jsonLd.value),
+            innerHTML: serializeJsonLd(jsonLd.value),
           },
         ]
       : [],

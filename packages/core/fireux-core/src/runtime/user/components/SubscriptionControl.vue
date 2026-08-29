@@ -1,8 +1,8 @@
 <template>
   <UButton
-    :label="presentation.label"
-    :icon="presentation.icon"
-    :color="presentation.color"
+    :label="visibleSubscription.label"
+    :icon="visibleSubscription.icon"
+    :color="visibleSubscription.color"
     variant="soft"
     size="xs"
     :to="canToggle ? undefined : '/pricing'"
@@ -11,55 +11,44 @@
     class="rounded-full"
     :aria-label="
       canToggle
-        ? `Switch ${presentation.label} subscription view`
-        : `View pricing for ${presentation.label}`
+        ? `Switch ${visibleSubscription.label} subscription view`
+        : `View pricing for ${visibleSubscription.label}`
     "
-    @click="canToggle && toggle()"
+    @click="toggle"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useToast } from '#imports'
-import type { AppUserSubscription } from '../../app/models/app-user.model'
-import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
+import { computed, onMounted, ref, useToast } from '#imports'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useSubscriptions } from '../composables/useSubscriptions'
 import { useUser } from '../composables/useUser'
 
-const { appAccess } = useUser()
+const { currentUser } = useAuth()
+const { subscription: subscriptionId } = useUser()
+const { subscription, subscriptions, next, update } =
+  useSubscriptions(subscriptionId)
+const mounted = ref(false)
 const saving = ref(false)
 const toast = useToast()
-const canToggle = import.meta.dev
-const subscriptions: AppUserSubscription[] = ['free', 'premium', 'business']
-const presentations = {
-  free: {
-    label: 'Free',
-    icon: 'i-lucide-user-round',
-    color: 'neutral' as const,
-  },
-  premium: {
-    label: 'Premium',
-    icon: 'i-lucide-crown',
-    color: 'warning' as const,
-  },
-  business: {
-    label: 'Business',
-    icon: 'i-lucide-building-2',
-    color: 'primary' as const,
-  },
-}
-const presentation = computed(
-  () => presentations[appAccess.value.subscription]
+const visibleSubscription = computed(() =>
+  mounted.value ? subscription.value : subscriptions[0]!
 )
+const canToggle = computed(
+  () =>
+    mounted.value && import.meta.dev && currentUser.value?.isAnonymous === false
+)
+
+onMounted(() => {
+  mounted.value = true
+})
+
 async function toggle() {
-  if (saving.value) return
-  const currentIndex = subscriptions.indexOf(appAccess.value.subscription)
-  const requested = subscriptions[(currentIndex + 1) % subscriptions.length]!
+  if (!canToggle.value || saving.value) return
 
   saving.value = true
   try {
-    await mutateAppMembership({
-      action: 'set-self-subscription',
-      subscription: requested,
-    })
+    await update(next.value.id)
   } catch (error) {
     toast.add({
       title: 'Subscription unchanged',

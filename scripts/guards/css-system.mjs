@@ -46,10 +46,7 @@ const RETIRED_AMBIENT_INITIALIZER_PATHS = [
   'packages/ecosystem/fireux-fireux/src/runtime/composables/fireux/app/utils/effects/useLandingEffect.ts',
   'packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/utils/effects/useLandingEffect.ts',
 ]
-const SCI_FIRE_PROOF_APP_PATHS = [
-  'projects/fireux/fireux-app/nuxt.config.ts',
-  'projects/misebox/misebox-app/nuxt.config.ts',
-]
+const SCI_FIRE_PROOF_APP_PATHS = []
 const CORE_STYLE_CASCADE = [
   './scss/atoms/tokens',
   './scss/atoms/typography',

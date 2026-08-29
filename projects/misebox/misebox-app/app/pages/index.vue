@@ -43,12 +43,13 @@ const { state, derived, actions } = useKitchenWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',
+  pageTransition: false,
   workspace: 'kitchen',
   workspaceSurface: 'browse',
   nav: {
     key: 'workspace-kitchen',
-    label: 'Current Kitchen',
-    description: 'My Kitchen',
+    label: 'Kitchen',
+    description: 'Kitchen Workspace',
     icon: 'i-lucide-chef-hat',
     position: 'bottom',
     order: 900,

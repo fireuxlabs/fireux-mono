@@ -253,25 +253,63 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/components/SubscriptionControl.vue'
   )
-  assert.match(subscriptionControl, /action: 'set-self-subscription'/)
-  assert.doesNotMatch(subscriptionControl, /userId:/)
-  assert.match(subscriptionControl, /const canToggle = import\.meta\.dev/)
+  assert.match(subscriptionControl, /useSubscriptions/)
+  assert.match(
+    subscriptionControl,
+    /const \{ subscription, subscriptions, next, update \} =\s*useSubscriptions\(subscriptionId\)/
+  )
+  assert.match(subscriptionControl, /await update\(next\.value\.id\)/)
+  assert.doesNotMatch(
+    subscriptionControl,
+    /mutateAppMembership|set-self-subscription|APP_USER_SUBSCRIPTIONS|useUserUpdate|userId:/
+  )
+  assert.match(
+    subscriptionControl,
+    /import\.meta\.dev && currentUser\.value\?\.isAnonymous === false/
+  )
   assert.doesNotMatch(subscriptionControl, /useDeveloperAccess|role ===/)
-  assert.match(subscriptionControl, /:to="canToggle \? undefined : '\/pricing'"/)
-  assert.match(subscriptionControl, /\['free', 'premium', 'business'\]/)
   assert.match(
     subscriptionControl,
-    /\(currentIndex \+ 1\) % subscriptions\.length/
+    /:to="canToggle \? undefined : '\/pricing'"/
   )
-  assert.match(subscriptionControl, /@click="canToggle && toggle\(\)"/)
   assert.match(
     subscriptionControl,
-    /presentations\[appAccess\.value\.subscription\]/
+    /if \(!canToggle\.value \|\| saving\.value\) return/
   )
-  assert.doesNotMatch(subscriptionControl, /visibleSubscription/)
+  assert.match(subscriptionControl, /@click="toggle"/)
+  assert.match(subscriptionControl, /:label="visibleSubscription\.label"/)
+  assert.doesNotMatch(subscriptionControl, /appAccess/)
+  assert.match(
+    subscriptionControl,
+    /mounted\.value \? subscription\.value : subscriptions\[0\]!/
+  )
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)
   assert.doesNotMatch(subscriptionControl, /<UButtonGroup/)
+
+  const subscriptions = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/composables/useSubscriptions.ts'
+  )
+  assert.match(
+    subscriptions,
+    /const subscriptions\s*=\s*\[[\s\S]*id: 'free'[\s\S]*id: 'premium'[\s\S]*id: 'business'/
+  )
+  assert.match(
+    subscriptions,
+    /id: AppUserSubscription[\s\S]*color: 'neutral' \| 'warning' \| 'primary'/
+  )
+  assert.match(
+    subscriptions,
+    /const update = async[\s\S]*action: 'set-self-subscription'/
+  )
+  const accessBadge = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/AccessBadge.vue'
+  )
+  assert.match(accessBadge, /useSubscriptions/)
+  assert.match(accessBadge, /getSubscription\(props\.subscription\)/)
+  assert.doesNotMatch(accessBadge, /const badges\s*=\s*\{/)
 
   const dashboardNavbar = read(
     repoRoot,
@@ -353,9 +391,13 @@ export async function run({ repoRoot }) {
   )
   assert.match(activeUserFetch, /useCurrentAppContext/)
   assert.match(activeUserFetch, /useCurrentUserAccount/)
+  assert.match(
+    activeUserFetch,
+    /authUser\.value\?\.isAnonymous[\s\S]*useUserIdentitySummary\(identityUid\)/
+  )
   assert.doesNotMatch(
     activeUserFetch,
-    /\b(?:AppStorage|AppUserStorage|normalizeAppUser|useDocument|useFirestore)\b/,
+    /\b(?:AppStorage|AppUserStorage|normalizeAppUser|useDocument|useFirestore|useFirestoreRead|firestoreFetchDoc)\b/,
     'Active User and account state must use bounded server projections.'
   )
 

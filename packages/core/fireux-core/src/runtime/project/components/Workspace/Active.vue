@@ -1,5 +1,5 @@
 <template>
-  <section aria-label="Active Project">
+  <section aria-label="Project">
     <div
       v-if="!project.name && !project.tagline && !project.url"
       class="flex items-center gap-4"

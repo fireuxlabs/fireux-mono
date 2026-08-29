@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserSubscription } from '../composables/useUserPermissions'
+import { useSubscriptions } from '../composables/useSubscriptions'
 
 const props = withDefaults(
   defineProps<{
@@ -23,33 +24,9 @@ const props = withDefaults(
     size: 'sm',
   }
 )
-
-const badges = {
-  free: {
-    label: 'Free',
-    icon: 'i-lucide-user-round',
-    color: 'neutral',
-  },
-  premium: {
-    label: 'Premium',
-    icon: 'i-lucide-crown',
-    color: 'warning',
-  },
-  business: {
-    label: 'Business',
-    icon: 'i-lucide-building-2',
-    color: 'primary',
-  },
-} as const satisfies Record<
-  UserSubscription,
-  {
-    label: string
-    icon: string
-    color: 'neutral' | 'warning' | 'primary'
-  }
->
+const { getSubscription } = useSubscriptions()
 
 const badge = computed(() =>
-  props.subscription ? badges[props.subscription] : null
+  props.subscription ? getSubscription(props.subscription) : null
 )
 </script>

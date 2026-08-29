@@ -1,5 +1,5 @@
 <template>
-  <section aria-label="Active Kitchen">
+  <section aria-label="Kitchen">
     <div
       v-if="!kitchen.name && !kitchen.tagline && !kitchen.url"
       class="flex items-center gap-4"

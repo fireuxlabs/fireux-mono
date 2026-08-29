@@ -81,16 +81,12 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { usePlaceUpdate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceUpdate'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import {
   usePlaceSearch,
   type PlaceSearchCell,
 } from 'fireux-places/runtime/place/composables/usePlaceSearch'
 import { useKitchenCreate } from '../../../composables/firestore/mutations/useKitchenCreate'
-import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
-import type { Kitchen } from '../../../models/kitchen.model'
 
 type KitchenShell = {
   id: string
@@ -98,6 +94,10 @@ type KitchenShell = {
   tagline: string
   url: string
 }
+
+const props = defineProps<{
+  kitchen?: KitchenShell
+}>()
 
 const emit = defineEmits<{
   (event: 'created', id: string): void
@@ -108,35 +108,20 @@ const { currentUser } = useAuth()
 const { appId } = useFireUXConfig()
 const { uploadImage } = useImageStorage()
 const { query, results } = usePlaceSearch({
+  allowGoogle: true,
   debugLabel: 'kitchens',
   type: 'kitchen',
 })
+query.value = props.kitchen?.name || ''
 const selection = ref<{ placeId: string; name: string } | null>(null)
-const tagline = ref('')
-const manifestId = ref('')
-const firestoreRead = useFirestoreRead()
-const manifestRoot = firestoreRead.firestoreFetchDoc<Partial<Kitchen>>(
-  'kitchens',
-  manifestId
-)
-const manifestPlace = firestoreRead.firestoreFetchDoc<Partial<Place>>(
-  'places',
-  manifestId
-)
-const { surface: kitchenSurface } = useKitchenInterface()
-const manifestKitchen = computed(() =>
-  kitchenSurface({
-    kitchen: manifestRoot.value,
-    place: manifestPlace.value,
-  })
-)
+const tagline = ref(props.kitchen?.tagline || '')
+const manifestId = ref(props.kitchen?.id || '')
 const manifestShell = computed<KitchenShell>(() => {
-  const identity = manifestKitchen.value?.identity
   return {
     id: manifestId.value,
-    name: String(identity?.display_name || '').trim(),
-    tagline: String(identity?.tagline || '').trim(),
-    url: String(identity?.image_url || '').trim(),
+    name: searchName.value,
+    tagline: tagline.value.trim(),
+    url: imagePreview.value,
   }
 })
 const manifestComplete = computed(() => {
@@ -144,7 +129,7 @@ const manifestComplete = computed(() => {
   return Boolean(shell.id && shell.name && shell.tagline && shell.url)
 })
 const image = ref<File | null>(null)
-const imagePreview = ref('')
+const imagePreview = ref(props.kitchen?.url || '')
 const error = ref('')
 const working = ref(false)
 const searchName = computed(() => query.value.trim())
@@ -154,7 +139,7 @@ const initials = computed(() =>
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() || '')
+    .map((part: string) => part[0]?.toUpperCase() || '')
     .join('')
 )
 let writeQueue = Promise.resolve()
@@ -164,7 +149,7 @@ function enqueue(write: () => Promise<void>) {
   return writeQueue
 }
 
-watch(query, (value) => {
+watch(query, (value: string) => {
   selection.value = null
   error.value = ''
   const name = value.trim()
@@ -190,7 +175,7 @@ watch(query, (value) => {
   }).catch(showError)
 })
 
-watch(tagline, (value) => {
+watch(tagline, (value: string) => {
   const kitchenId = manifestId.value
   if (!kitchenId) return
   void enqueue(async () => {
@@ -229,7 +214,10 @@ async function selectPlace(value: PlaceSearchCell) {
     placeId: String(value.id || '').trim(),
     name: String(value.name || '').trim(),
   }
+  query.value = selection.value.name
+  if (value.imageUrl) imagePreview.value = value.imageUrl
   error.value = ''
+  await writeQueue
   await submit()
 }
 
@@ -249,12 +237,19 @@ async function submit() {
     const placeUpdate = usePlaceUpdate({
       authority: { appId, kitchenId: result.id },
     })
+    if (props.kitchen?.id || selection.value) {
+      await placeUpdate.updateName(searchName.value, { id: placeId })
+    }
     if (tagline.value.trim()) {
       await placeUpdate.updateBrandTagline(tagline.value, { id: placeId })
+    } else if (props.kitchen?.id) {
+      await placeUpdate.updateBrandTagline('', { id: placeId })
     }
     if (image.value) {
       const url = await uploadImage(`places/${placeId}/avatar`, image.value)
       await placeUpdate.updatePlaceImage(url, { id: placeId })
+    } else if (selection.value?.placeId && imagePreview.value) {
+      await placeUpdate.updatePlaceImage(imagePreview.value, { id: placeId })
     }
     emit('created', result.id)
     query.value = ''

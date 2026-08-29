@@ -996,7 +996,44 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     kitchenSelector,
-    /await \$fetch\(['"]\/api\/workspace\/kitchen\/request-primary-change['"][\s\S]*await props\.refresh\(\)[\s\S]*setKitchenWorkspaceSelection\(/
+    /await \$fetch\(['"]\/api\/workspace\/kitchen\/request-primary-change['"][\s\S]*await props\.refresh\(\)[\s\S]*workspace\.activate\(/
+  )
+
+  const kitchenCreateForm = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Create/Form.vue'
+  )
+  assert.match(kitchenCreateForm, /useKitchenCreate/)
+  assert.match(kitchenCreateForm, /usePlaceUpdate/)
+  assert.match(kitchenCreateForm, /allowGoogle:\s*true/)
+  assert.match(
+    kitchenCreateForm,
+    /id: manifestId\.value,[\s\S]*name: searchName\.value,[\s\S]*tagline: tagline\.value\.trim\(\),[\s\S]*url: imagePreview\.value/
+  )
+  assert.doesNotMatch(
+    kitchenCreateForm,
+    /useFirestoreRead|firestoreFetchDoc|useKitchenInterface/,
+    'Kitchen creation previews local form state and must not reread the new Entity through browser Firestore authority.'
+  )
+  assert.match(
+    kitchenCreateForm,
+    /watch\(query,[\s\S]*createKitchen\([\s\S]*watch\(tagline,[\s\S]*updateBrandTagline/
+  )
+  assert.doesNotMatch(kitchenCreateForm, /if \(props\.kitchen\?\.id\) return/)
+  assert.match(
+    kitchenCreateForm,
+    /query\.value = selection\.value\.name[\s\S]*imagePreview\.value = value\.imageUrl[\s\S]*updatePlaceImage\(imagePreview\.value/
+  )
+  const kitchenWorkspaceIndex = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue'
+  )
+  assert.match(kitchenWorkspaceIndex, /v-if="incompleteKitchen"/)
+  assert.match(kitchenWorkspaceIndex, /v-else-if="derived\.canCreate"/)
+  assert.match(kitchenWorkspaceIndex, /!props\.state\.kitchen\.placeId/)
+  assert.match(
+    kitchenWorkspaceIndex,
+    /!props\.state\.kitchen\.name[\s\S]*!props\.state\.kitchen\.tagline[\s\S]*!props\.state\.kitchen\.url/
   )
   assert.match(
     kitchenOnboardingCommands,

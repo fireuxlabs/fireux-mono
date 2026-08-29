@@ -1,76 +1,48 @@
 <template>
   <div>
-    <Form
-      v-if="launcher === 'inline'"
-      @created="emit('created', $event)"
-      @manifested="emit('manifested', $event)"
-    />
-
-    <button
-      v-else-if="launcher === 'cell'"
-      type="button"
-      class="card card--cell fx-action-surface min-h-28 appearance-none text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      @click="open = true"
-    >
-      <div class="card__media">
-        <UAvatar icon="i-lucide-plus" size="md" class="shrink-0" />
-        <div class="card__content card__stack">
-          <div class="card__title">{{ label }}</div>
-          <div v-if="description" class="card__subtitle">
-            {{ description }}
-          </div>
-        </div>
-      </div>
-    </button>
-
     <UButton
-      v-else-if="showLauncher"
-      :label="compact ? undefined : label"
-      icon="i-lucide-plus"
+      :icon="kitchen?.id ? 'i-lucide-ellipsis-vertical' : 'i-lucide-plus'"
       color="neutral"
       variant="ghost"
-      :aria-label="label"
+      :aria-label="kitchen?.id ? 'Edit Kitchen' : 'Create Kitchen'"
       @click="open = true"
     />
 
     <UModal
-      v-if="launcher !== 'inline'"
       v-model:open="open"
-      title="Find your Kitchen"
-      :ui="{ content: 'sm:max-w-xl' }"
+      :title="kitchen?.id ? 'Edit Kitchen' : 'Create Kitchen'"
+      description="Add a Kitchen name, tagline and image."
+      :ui="{
+        content: 'sm:max-w-xl',
+        header: 'absolute top-2 right-2 z-10',
+        title: 'sr-only',
+        description: 'sr-only',
+      }"
     >
       <template #body>
-        <Form @created="created" />
+        <WorkspaceKitchenCreateForm :kitchen="kitchen" @created="created" />
       </template>
     </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import Form from './Create/Form.vue'
+import { ref, watch } from 'vue'
+import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-const {
-  showLauncher = true,
-  compact = false,
-  launcher = 'button',
-  label = 'Add a Kitchen',
-  description = '',
-} = defineProps<{
-  showLauncher?: boolean
-  compact?: boolean
-  launcher?: 'button' | 'cell' | 'inline'
-  label?: string
-  description?: string
+const props = defineProps<{
+  kitchen?: KitchenWorkspaceIndexState['kitchen']
+  refresh?: () => Promise<unknown>
 }>()
-const emit = defineEmits<{
-  (event: 'created', id: string): void
-  (event: 'manifested', id: string): void
-}>()
+
 const open = ref(false)
 
-function created(id: string) {
+async function created() {
+  if (!props.kitchen?.id) await props.refresh?.()
   open.value = false
-  emit('created', id)
 }
+
+watch(open, async (value) => {
+  if (!value && props.kitchen?.id) await props.refresh?.()
+})
 </script>

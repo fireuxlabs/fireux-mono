@@ -1,7 +1,6 @@
 <template>
   <div>
     <UButton
-      v-if="launcher === 'button'"
       icon="i-lucide-plus"
       color="neutral"
       variant="ghost"
@@ -9,21 +8,25 @@
       @click="open = true"
     />
 
-    <UModal v-if="launcher === 'button'" v-model:open="open" title="Create Project">
+    <UModal v-model:open="open" title="Create Project">
       <template #body>
-        <WorkspaceProjectCreateForm @created="open = false" />
+        <WorkspaceProjectCreateForm @created="created" />
       </template>
     </UModal>
-
-    <WorkspaceProjectCreateForm v-else />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const { launcher = 'button' } = defineProps<{
-  launcher?: 'button' | 'inline'
+const props = defineProps<{
+  refresh?: () => Promise<unknown>
 }>()
+
 const open = ref(false)
+
+async function created() {
+  await props.refresh?.()
+  open.value = false
+}
 </script>

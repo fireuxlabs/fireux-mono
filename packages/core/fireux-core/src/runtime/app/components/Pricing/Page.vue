@@ -1,72 +1,41 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <div class="fx-page-stack fx-page-stack--responsive">
-      <section class="border-b border-default py-12 sm:py-16">
-        <UContainer class="space-y-5">
-          <UBadge color="primary" variant="soft">
-            {{ fireux.appName }} Pricing
-          </UBadge>
+  <main>
+    <UPageHero :title="props.title" :description="props.description" />
 
-          <div class="max-w-3xl space-y-4">
-            <h1 class="text-4xl font-semibold tracking-normal text-highlighted">
-              {{ props.title }}
-            </h1>
-
-            <p v-if="props.description" class="text-lg text-muted">
-              {{ props.description }}
-            </p>
-          </div>
-
-          <div v-if="$slots.intro" class="max-w-3xl">
-            <slot name="intro" />
-          </div>
-        </UContainer>
-      </section>
-
-      <section v-if="planGroups.length">
-        <UContainer class="space-y-10">
-          <div
-            v-for="group in planGroups"
-            :key="group.id || group.title || 'plans'"
-            class="space-y-5"
+    <UContainer
+      v-if="planGroups.length"
+      class="flex flex-col gap-12 pb-16 sm:pb-24"
+    >
+      <section
+        v-for="group in planGroups"
+        :key="group.id || group.title || 'plans'"
+        class="space-y-6"
+      >
+        <div v-if="group.title || group.description" class="space-y-2">
+          <h2
+            v-if="group.title"
+            class="text-2xl font-semibold text-highlighted"
           >
-            <div
-              v-if="group.title || group.description"
-              class="max-w-3xl space-y-2"
-            >
-              <h2
-                v-if="group.title"
-                class="text-2xl font-semibold text-highlighted"
-              >
-                {{ group.title }}
-              </h2>
+            {{ group.title }}
+          </h2>
+          <p v-if="group.description" class="text-muted">
+            {{ group.description }}
+          </p>
+        </div>
 
-              <p v-if="group.description" class="text-sm text-muted">
-                {{ group.description }}
-              </p>
-            </div>
-
-            <UPricingPlans :plans="[...group.plans]" />
-          </div>
-        </UContainer>
+        <UPricingPlans :plans="[...group.plans]" />
       </section>
+    </UContainer>
 
-      <section v-if="$slots.default">
-        <UContainer>
-          <div class="mx-auto max-w-3xl space-y-4">
-            <slot />
-          </div>
-        </UContainer>
-      </section>
-
-      <section v-if="$slots.actions">
-        <UContainer>
-          <div class="mx-auto flex max-w-3xl flex-wrap gap-3">
-            <slot name="actions" />
-          </div>
-        </UContainer>
-      </section>
-    </div>
+    <UPageSection v-if="$slots.intro || $slots.default || $slots.actions">
+      <div class="mx-auto max-w-3xl space-y-6">
+        <slot name="intro" />
+        <slot />
+        <div v-if="$slots.actions" class="flex flex-wrap gap-3">
+          <slot name="actions" />
+        </div>
+      </div>
+    </UPageSection>
   </main>
 </template>
 

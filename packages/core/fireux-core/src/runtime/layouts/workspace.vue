@@ -301,7 +301,7 @@ const familyRootNav = computed(() =>
         label: activeName,
         description:
           workspaceState.activeDescription.value ||
-          `Current ${workspaceLabel.value}`,
+          `${workspaceLabel.value} Workspace`,
         image: workspaceState.activeImage.value,
         choices: workspaceState.choices.value
           .filter((choice) => choice.id !== workspaceState.activeId.value)
@@ -310,13 +310,7 @@ const familyRootNav = computed(() =>
             ...(choice.image
               ? { avatar: { src: choice.image, alt: choice.name } }
               : { icon: item.icon }),
-            onSelect: () =>
-              workspaceState.activate(
-                choice.id,
-                choice.name,
-                choice.description,
-                choice.image
-              ),
+            onSelect: () => workspaceState.requestActivation(choice.id),
           })),
       }
     })

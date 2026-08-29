@@ -1,5 +1,6 @@
 import { computed, watch, watchEffect } from 'vue'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
+import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
@@ -23,6 +24,7 @@ export type ProjectWorkspaceIndexDerived = {
 
 export function useProjectWorkspaceIndex() {
   const workspace = useProjectWorkspace()
+  const selectionRequest = useWorkspace('project')
   const pageState = useWorkspacePageState('project')
   const state = computed<ProjectWorkspaceIndexState>(() => {
     const selectedProject = workspace.selection.project.value
@@ -69,12 +71,45 @@ export function useProjectWorkspaceIndex() {
   })
 
   watch(
-    workspace.targets.primaryProject,
-    (primaryProject) => {
-      if (primaryProject) workspace.actions.selectProject(primaryProject)
+    () =>
+      [workspace.targets.primaryProject.value, state.value.projects] as const,
+    ([primaryProjectId, projects]) => {
+      const primaryProject = projects.find(
+        (project) => project.id === primaryProjectId
+      )
+      if (!primaryProject) return
+      workspace.actions.selectProject(
+        primaryProject.id,
+        primaryProject.name,
+        primaryProject.tagline,
+        primaryProject.url
+      )
     },
     { immediate: true }
   )
+
+  watch(selectionRequest.requestedId, async (projectId: string) => {
+    if (!projectId) return
+    const project = state.value.projects.find((item) => item.id === projectId)
+    const user = workspace.user.currentUser.value
+    try {
+      if (!project || !user) return
+      await $fetch('/api/internal/control/projects/primary', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+        body: { projectId },
+      })
+      await workspace.targets.refresh()
+      workspace.actions.selectProject(
+        project.id,
+        project.name,
+        project.tagline,
+        project.url
+      )
+    } finally {
+      selectionRequest.clearRequestedActivation()
+    }
+  })
 
   return {
     state,

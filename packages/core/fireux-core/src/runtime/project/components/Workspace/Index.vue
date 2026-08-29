@@ -8,7 +8,7 @@
       :can-select-multiple="derived.canSelectMultiple"
       :refresh="refresh"
     />
-    <WorkspaceProjectCreate v-if="derived.canCreate" />
+    <WorkspaceProjectCreate v-if="derived.canCreate" :refresh="refresh" />
   </section>
 </template>
 

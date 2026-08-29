@@ -22,7 +22,11 @@ export type UseCurrentUserAccountReturn = {
 /** Resolve the signed-in User's owner-only account through the server boundary. */
 export function useCurrentUserAccount(): UseCurrentUserAccountReturn {
   const { currentUser, hasAuthState } = useAuth()
-  const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
+  const uid = computed(() =>
+    currentUser.value?.isAnonymous
+      ? ''
+      : String(currentUser.value?.uid ?? '').trim()
+  )
   const state = useAsyncData<CurrentUserAccountState | null>(
     CURRENT_USER_ACCOUNT_ASYNC_DATA_KEY,
     async () => {
@@ -32,6 +36,7 @@ export function useCurrentUserAccount(): UseCurrentUserAccountReturn {
         !import.meta.client ||
         !hasAuthState.value ||
         !user ||
+        user.isAnonymous ||
         user.uid !== requestUid
       ) {
         return null
@@ -54,7 +59,7 @@ export function useCurrentUserAccount(): UseCurrentUserAccountReturn {
 
   return {
     account,
-    pending: computed(() => !hasAuthState.value || state.pending.value),
+    pending: computed(() => Boolean(uid.value) && state.pending.value),
     error: computed(() => state.error.value),
     refresh: async () => {
       await state.refresh()

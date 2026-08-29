@@ -1,29 +1,14 @@
 <template>
   <AppPricingPage
-    :title="`${props.appName} pricing`"
-    :description="props.description"
-    :plans="plans"
-  >
-    <template #intro>
-      <p class="text-sm leading-6 text-toned">
-        {{
-          props.intro ||
-          'Free starts one workspace. Professional completes it. Business operates several. Managed adds agreed work to selected workspaces. Your App gives the product its own identity.'
-        }}
-      </p>
-    </template>
-
-    <template #actions>
-      <UButton to="/get-started" icon="i-lucide-arrow-right">
-        Get started
-      </UButton>
-    </template>
-  </AppPricingPage>
+    title="Choose your plan"
+    :plan-groups="planGroups"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AppPricingTier } from '../../composables/pricing/usePricing'
+import type { PricingPlanGroup } from '../../utils/pricing/page'
 
 const props = defineProps<{
   appName: string
@@ -31,8 +16,8 @@ const props = defineProps<{
   tiers: readonly AppPricingTier[]
   intro?: string
 }>()
-const plans = computed(() =>
-  props.tiers.map((tier) => ({
+function plan(tier: AppPricingTier) {
+  return {
     ...tier,
     priceCurrency: 'CHF',
     button: {
@@ -46,7 +31,26 @@ const plans = computed(() =>
       trailingIcon: 'i-lucide-arrow-right',
     },
     highlight: tier.id === 'professional',
-    scale: tier.id === 'professional',
-  }))
-)
+  }
+}
+
+const planGroups = computed<PricingPlanGroup[]>(() => {
+  const subscriptions = props.tiers.filter((tier) =>
+    ['free', 'professional', 'business'].includes(tier.id)
+  )
+  const offers = props.tiers.filter(
+    (tier) => !['free', 'professional', 'business'].includes(tier.id)
+  )
+
+  return [
+    {
+      id: 'subscriptions',
+      plans: subscriptions.map(plan),
+    },
+    ...offers.map((offer) => ({
+      id: offer.id,
+      plans: [plan(offer)],
+    })),
+  ]
+})
 </script>

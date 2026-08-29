@@ -17,8 +17,6 @@ import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
-import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
 export type UserFetchOutcome =
@@ -132,22 +130,16 @@ export function useUserFetch(
     privateScopeRequested.value ? uid.value : null
   )
 
-  const ownerCoreState = includePrivate
-      ? useFirestoreRead({
-        databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-      }).firestoreFetchDoc<User>('users', privateUid)
-    : null
-  const summaryCoreState = includePrivate ? null : useUserIdentitySummary(uid)
+  const identityUid = computed(() =>
+    authUser.value?.isAnonymous && authUser.value.uid === uid.value
+      ? null
+      : uid.value
+  )
+  const summaryCoreState = useUserIdentitySummary(identityUid)
   const privateState = includePrivate ? useCurrentUserAccount() : null
-  const coreUserRef = includePrivate
-    ? ownerCoreState!.data
-    : summaryCoreState!.user
-  const corePending = includePrivate
-    ? ownerCoreState!.pending
-    : summaryCoreState!.pending
-  const coreError = includePrivate
-    ? ownerCoreState!.error
-    : summaryCoreState!.error
+  const coreUserRef = summaryCoreState.user
+  const corePending = summaryCoreState.pending
+  const coreError = summaryCoreState.error
   const privateUserRef = computed(() => privateState?.account.value ?? null)
   const privatePending = computed(() =>
     privateScopeRequested.value ? Boolean(privateState?.pending.value) : false

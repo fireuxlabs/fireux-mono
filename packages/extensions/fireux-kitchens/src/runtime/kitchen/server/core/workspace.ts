@@ -75,6 +75,7 @@ function projectKitchen(input: {
 
   return {
     id: input.id,
+    place_id: input.place ? input.id : '',
     can_write: input.canWrite,
     slug: readRecordString(input.root, 'slug'),
     visibility,

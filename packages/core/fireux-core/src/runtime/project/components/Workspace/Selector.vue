@@ -29,7 +29,7 @@ const workspace = useWorkspace('project')
 const { currentUser } = useAuth()
 const items = computed(() =>
   props.projects.map((project) => ({
-    label: project.name,
+    label: project.name || project.id,
     value: project.id,
     avatar: {
       src: project.url || undefined,

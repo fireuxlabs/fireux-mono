@@ -15,6 +15,7 @@ export const KITCHEN_USER_LIMIT = 50
 
 export type KitchenWorkspaceKitchen = {
   id: string
+  place_id: string
   can_write: boolean
   slug: string
   visibility: boolean

@@ -24,21 +24,44 @@
       />
     </div>
 
-    <div class="grid gap-3 md:grid-cols-2">
-      <UPageCard
-        title="Apps"
-        description="Inspect the Apps composed by the selected Project."
-        icon="i-lucide-panels-top-left"
-        to="/operations/apps"
-        variant="subtle"
-      />
-      <UPageCard
-        title="Ecosystem"
-        description="Inspect the Project's upstream ecosystem relationships."
-        icon="i-lucide-orbit"
-        to="/operations/ecosystem"
-        variant="subtle"
-      />
+    <div class="grid gap-x-8 sm:grid-cols-2 xl:grid-cols-4">
+      <NuxtLink
+        v-for="operation in operations"
+        :key="operation.to"
+        :to="operation.to"
+        class="group grid grid-cols-[auto_minmax(0,1fr)_auto] gap-3 border-b border-default py-4"
+      >
+        <UIcon :name="operation.icon" class="mt-0.5 size-5 text-primary" />
+        <span class="min-w-0">
+          <strong class="block text-sm font-semibold text-highlighted">
+            {{ operation.label }}
+          </strong>
+          <span class="mt-1 block text-sm leading-5 text-muted">
+            {{ operation.description }}
+          </span>
+        </span>
+        <UIcon
+          name="i-lucide-arrow-up-right"
+          class="mt-0.5 size-4 text-dimmed transition group-hover:text-primary"
+        />
+      </NuxtLink>
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+const operations = [
+  {
+    label: 'Apps',
+    description: 'Inspect the Apps composed by the selected Project.',
+    icon: 'i-lucide-panels-top-left',
+    to: '/operations/apps',
+  },
+  {
+    label: 'Ecosystem',
+    description: "Inspect the Project's upstream ecosystem relationships.",
+    icon: 'i-lucide-orbit',
+    to: '/operations/ecosystem',
+  },
+] as const
+</script>

@@ -15,8 +15,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
-import { useKitchenWorkspaceSelection } from '../../composables/workspace/core/useKitchenWorkspaceSelection'
 
 const props = defineProps<{
   kitchens: KitchenWorkspaceIndexState['kitchens']
@@ -26,7 +26,7 @@ const props = defineProps<{
   refresh: () => Promise<unknown>
 }>()
 
-const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
+const workspace = useWorkspace('kitchen')
 const { currentUser } = useAuth()
 const items = computed(() =>
   props.kitchens.map((kitchen) => ({
@@ -57,11 +57,6 @@ async function selectKitchen(kitchenId: string | number) {
     })
     await props.refresh()
   }
-  setKitchenWorkspaceSelection({
-    kitchenId: kitchen.id,
-    name: kitchen.name,
-    tagline: kitchen.tagline,
-    url: kitchen.url,
-  })
+  workspace.activate(kitchen.id, kitchen.name, kitchen.tagline, kitchen.url)
 }
 </script>
