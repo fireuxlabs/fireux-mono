@@ -7,48 +7,58 @@
       orientation="vertical"
     />
 
-    <NuxtLink
-      v-if="compactProfile && collapsed && profileUser"
-      to="/dashboard/settings"
-      class="mt-auto flex w-full justify-center"
-      aria-label="Open account settings"
+    <UDropdownMenu
+      v-if="profileUser"
+      :items="userMenuItems"
+      :content="{ align: 'center', collisionPadding: 12 }"
+      :ui="{
+        content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)',
+      }"
     >
-      <UAvatar
-        :src="profileUser.avatarUrl || undefined"
-        :alt="profileUser.displayName || 'User'"
-        :text="avatarFallback"
+      <UButton
+        :label="collapsed ? undefined : profileUser.displayName"
+        :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+        color="neutral"
+        variant="ghost"
         size="sm"
-      />
-    </NuxtLink>
+        block
+        :square="collapsed"
+        class="data-[state=open]:bg-elevated"
+        :ui="{ trailingIcon: 'text-dimmed' }"
+        aria-label="Open user menu"
+      >
+        <template #leading>
+          <UAvatar
+            :src="profileUser.avatarUrl || undefined"
+            :alt="profileUser.displayName"
+            icon="i-lucide-user"
+            size="2xs"
+          />
+        </template>
+      </UButton>
+    </UDropdownMenu>
 
-    <UserCardsPill
-      v-else-if="profileUser"
-      v-bind="profileUser"
-      :link="Boolean(profileUser.to)"
-      class="mt-auto w-full"
-    />
-
-    <NuxtLink
+    <UButton
       v-else-if="mounted && authUser?.isAnonymous"
       :to="signInTo"
-      :class="collapsed ? 'mt-auto flex w-full justify-center' : 'pill mt-auto'"
+      :label="collapsed ? undefined : 'Guest'"
+      icon="i-lucide-user"
+      color="neutral"
+      variant="ghost"
+      size="sm"
+      :square="collapsed"
+      :class="
+        collapsed
+          ? 'mx-auto mt-auto rounded-full'
+          : 'mt-auto w-full justify-start rounded-full'
+      "
       aria-label="Guest — click here to sign up"
-    >
-      <UAvatar icon="i-lucide-user" size="sm" class="shrink-0" />
-
-      <span v-if="!collapsed" class="min-w-0 text-left">
-        <strong class="block truncate text-sm font-medium text-highlighted">
-          Guest
-        </strong>
-        <small class="block truncate text-xs text-muted">
-          Click here to sign up
-        </small>
-      </span>
-    </NuxtLink>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
@@ -59,17 +69,15 @@ import type { UserCard } from '../../../user/composables/useUserInterface'
 const props = withDefaults(
   defineProps<{
     collapsed: boolean
-    compactProfile?: boolean
     showHome?: boolean
   }>(),
   {
-    compactProfile: false,
     showHome: true,
   }
 )
 
 const fireux = useFireUXConfig()
-const { currentUser: authUser } = useAuth()
+const { currentUser: authUser, signOutUser } = useAuth()
 const route = useRoute()
 const { currentUser, pill: userInterface, coreOutcome } = useUser()
 
@@ -110,17 +118,38 @@ const authenticatedUser = computed(() => {
 
 const profileUser = computed(() => pillUser.value || authenticatedUser.value)
 
-const avatarFallback = computed(() => {
-  const displayName = profileUser.value?.displayName ?? ''
-  const trimmed = typeof displayName === 'string' ? displayName.trim() : ''
-  if (!trimmed) return 'U'
-  return trimmed
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-})
+const userMenuItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: profileUser.value?.displayName || 'Account',
+      avatar: {
+        src: profileUser.value?.avatarUrl || undefined,
+        alt: profileUser.value?.displayName || 'Account',
+        icon: 'i-lucide-user',
+      },
+      type: 'label',
+    },
+  ],
+  [
+    { label: 'Profile', icon: 'i-lucide-user', to: '/dashboard/user-profile' },
+    { label: 'Billing', icon: 'i-lucide-credit-card', to: '/pricing' },
+    { label: 'Settings', icon: 'i-lucide-settings', to: '/dashboard/settings' },
+  ],
+  [
+    {
+      label: fireux.appShortName || fireux.appName,
+      icon: 'i-lucide-arrow-up-right',
+      to: '/about',
+    },
+  ],
+  [
+    {
+      label: 'Log out',
+      icon: 'i-lucide-log-out',
+      onSelect: () => signOutUser('/'),
+    },
+  ],
+])
 
 const actionItems = computed(() => {
   const items: any[] = []
@@ -135,6 +164,4 @@ const actionItems = computed(() => {
 
   return items
 })
-
-const compactProfile = computed(() => props.compactProfile)
 </script>

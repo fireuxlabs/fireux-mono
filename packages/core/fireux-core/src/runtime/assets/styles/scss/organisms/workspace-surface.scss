@@ -1,38 +1,9 @@
-/* Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: own the recurring multi-component workspace surface composition. */
+/* Shared shell and content arrangements used by Workspace pages. */
 .workspace-shell {
-  background: var(--ui-bg);
-}
-
-.workspace-shell__sidebar {
-  width: fit-content;
-  min-width: 12rem;
-  max-width: 15rem;
-  border-right-color: color-mix(
-    in srgb,
-    var(--ui-primary) 10%,
-    var(--ui-border)
+  background: light-dark(
+    var(--ui-color-neutral-50),
+    var(--ui-color-neutral-950)
   );
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--ui-bg-elevated) 97%, var(--ui-primary)),
-    var(--ui-bg-elevated)
-  );
-  box-shadow: 1rem 0 3rem
-    color-mix(in srgb, var(--ui-bg-inverted) 4%, transparent);
-}
-
-.workspace-shell__sidebar[data-collapsed='true'] {
-  width: 4rem;
-  min-width: 4rem;
-}
-
-.workspace-shell__canvas {
-  position: relative;
-  isolation: isolate;
-  height: 100vh;
-  width: 100%;
-  overflow-y: auto;
-  background: var(--ui-bg);
 }
 
 .workspace-surface {

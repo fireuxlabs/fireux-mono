@@ -4,28 +4,27 @@
       id="core-workspace"
       v-model:open="open"
       collapsible
-      class="workspace-shell__sidebar"
+      class="border-r-0"
+      :ui="{ body: '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden' }"
     >
       <template #header="{ collapsed }">
-        <div class="px-2 py-2">
-          <div class="flex min-h-11 items-center px-1">
-            <NuxtLink
-              v-if="collapsed"
-              to="/about"
-              class="mx-auto inline-flex"
-              aria-label="Home"
-            >
-              <AppBrandLogo size="small" alt="FireUX" />
-            </NuxtLink>
-            <NuxtLink v-else to="/about" class="inline-flex" aria-label="Home">
-              <AppBrandWordmark size="card" alt="FireUX" />
-            </NuxtLink>
-          </div>
+        <div class="flex min-h-11 items-center gap-2 px-3 py-2">
+          <NuxtLink
+            v-if="!collapsed"
+            to="/about"
+            class="inline-flex min-w-0"
+            aria-label="Home"
+          >
+            <AppBrandWordmark size="card" alt="FireUX" />
+          </NuxtLink>
+          <UDashboardSidebarCollapse
+            :class="collapsed ? 'mx-auto' : 'ml-auto'"
+          />
         </div>
       </template>
 
       <template #default="{ collapsed }">
-        <div class="flex h-full min-h-0 flex-col gap-3 overflow-y-auto">
+        <div class="flex h-full min-h-0 flex-col gap-3">
           <UNavigationMenu
             v-if="topNavItems.length"
             :collapsed="collapsed ?? false"
@@ -47,34 +46,65 @@
               v-if="topNav.length || middleNav.length || familyRootNav.length"
             />
 
-            <UNavigationMenu
-              v-if="regularFamilyRootNav.length"
-              :collapsed="collapsed ?? false"
-              :items="regularFamilyRootNav"
-              orientation="vertical"
-            />
-
             <div class="space-y-2">
-              <div v-if="prominentFamilyRootNav.length" class="space-y-2">
-                <NuxtLink
-                  v-for="item in prominentFamilyRootNav"
+              <div v-if="familyRootNav.length" class="space-y-2">
+                <template
+                  v-for="item in familyRootNav"
                   :key="item.key || item.to"
-                  :to="item.to"
-                  :class="collapsed ? 'flex w-full justify-center' : 'pill'"
-                  :aria-label="item.description || item.label"
                 >
-                  <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
-                  <span v-if="!collapsed" class="min-w-0 text-left">
-                    <strong
-                      class="block truncate text-sm font-medium text-highlighted"
+                  <UDropdownMenu
+                    v-if="item.choices.length"
+                    :items="[item.choices]"
+                    :content="{ align: 'center', collisionPadding: 12 }"
+                    :ui="{
+                      content: collapsed
+                        ? 'w-48'
+                        : 'w-(--reka-dropdown-menu-trigger-width)',
+                    }"
+                  >
+                    <UButton
+                      :label="collapsed ? undefined : item.label"
+                      :icon="item.image ? undefined : item.icon"
+                      :trailing-icon="
+                        collapsed ? undefined : 'i-lucide-chevrons-up-down'
+                      "
+                      color="neutral"
+                      variant="ghost"
+                      size="sm"
+                      block
+                      :square="collapsed"
+                      class="data-[state=open]:bg-elevated"
+                      :ui="{ trailingIcon: 'text-dimmed' }"
+                      :aria-label="item.description || item.label"
                     >
-                      {{ item.label }}
-                    </strong>
-                    <small class="block truncate text-xs text-muted">
-                      {{ item.description || `Open ${item.label}` }}
-                    </small>
-                  </span>
-                </NuxtLink>
+                      <template v-if="item.image" #leading>
+                        <UAvatar
+                          :src="item.image"
+                          :alt="item.label"
+                          size="2xs"
+                        />
+                      </template>
+                    </UButton>
+                  </UDropdownMenu>
+                  <UButton
+                    v-else
+                    :to="item.to"
+                    :label="collapsed ? undefined : item.label"
+                    :icon="item.image ? undefined : item.icon"
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    block
+                    :square="collapsed"
+                    class="data-[state=open]:bg-elevated"
+                    :ui="{ trailingIcon: 'text-dimmed' }"
+                    :aria-label="item.description || item.label"
+                  >
+                    <template v-if="item.image" #leading>
+                      <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+                    </template>
+                  </UButton>
+                </template>
               </div>
 
               <LayoutsSharedSideBarFooter
@@ -88,39 +118,65 @@
 
       <template #footer="{ collapsed }">
         <div class="hidden flex-col gap-3 lg:flex">
-          <UNavigationMenu
-            v-if="regularFamilyRootNav.length"
-            :collapsed="collapsed ?? false"
-            :items="regularFamilyRootNav"
-            orientation="vertical"
-          />
-
           <div class="space-y-2">
-            <div v-if="prominentFamilyRootNav.length" class="space-y-2">
-              <NuxtLink
-                v-for="item in prominentFamilyRootNav"
+            <div v-if="familyRootNav.length" class="space-y-2">
+              <template
+                v-for="item in familyRootNav"
                 :key="item.key || item.to"
-                :to="item.to"
-                :class="collapsed ? 'flex w-full justify-center' : 'pill'"
-                :aria-label="item.description || item.label"
               >
-                <UAvatar :icon="item.icon" size="sm" class="shrink-0" />
-                <span v-if="!collapsed" class="min-w-0 text-left">
-                  <strong
-                    class="block truncate text-sm font-medium text-highlighted"
+                <UDropdownMenu
+                  v-if="item.choices.length"
+                  :items="[item.choices]"
+                  :content="{ align: 'center', collisionPadding: 12 }"
+                  :ui="{
+                    content: collapsed
+                      ? 'w-48'
+                      : 'w-(--reka-dropdown-menu-trigger-width)',
+                  }"
+                >
+                  <UButton
+                    :label="collapsed ? undefined : item.label"
+                    :icon="item.image ? undefined : item.icon"
+                    :trailing-icon="
+                      collapsed ? undefined : 'i-lucide-chevrons-up-down'
+                    "
+                    color="neutral"
+                    variant="ghost"
+                    size="sm"
+                    block
+                    :square="collapsed"
+                    class="data-[state=open]:bg-elevated"
+                    :ui="{ trailingIcon: 'text-dimmed' }"
+                    :aria-label="item.description || item.label"
                   >
-                    {{ item.label }}
-                  </strong>
-                  <small class="block truncate text-xs text-muted">
-                    {{ item.description || `Open ${item.label}` }}
-                  </small>
-                </span>
-              </NuxtLink>
+                    <template v-if="item.image" #leading>
+                      <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+                    </template>
+                  </UButton>
+                </UDropdownMenu>
+                <UButton
+                  v-else
+                  :to="item.to"
+                  :label="collapsed ? undefined : item.label"
+                  :icon="item.image ? undefined : item.icon"
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  block
+                  :square="collapsed"
+                  class="data-[state=open]:bg-elevated"
+                  :ui="{ trailingIcon: 'text-dimmed' }"
+                  :aria-label="item.description || item.label"
+                >
+                  <template v-if="item.image" #leading>
+                    <UAvatar :src="item.image" :alt="item.label" size="2xs" />
+                  </template>
+                </UButton>
+              </template>
             </div>
 
             <LayoutsSharedSideBarFooter
               :collapsed="collapsed ?? false"
-              compact-profile
               :show-home="false"
             />
           </div>
@@ -128,7 +184,9 @@
       </template>
     </UDashboardSidebar>
 
-    <main class="workspace-shell__canvas">
+    <main
+      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default lg:ml-0"
+    >
       <NuxtErrorBoundary>
         <slot />
 
@@ -233,25 +291,33 @@ const middleNav = computed(() =>
   )
 )
 const familyRootNav = computed(() =>
-  workspaceNav.desktop.value.filter(
-    (item) => workspaceNav.resolveItemPosition(item) === 'bottom'
-  )
-)
-const regularFamilyRootNav = computed(() =>
-  familyRootNav.value.filter((item) => !item.prominent)
-)
-const prominentFamilyRootNav = computed(() =>
-  familyRootNav.value
-    .filter((item) => item.prominent)
+  workspaceNav.desktop.value
+    .filter((item) => workspaceNav.resolveItemPosition(item) === 'bottom')
     .map((item) => {
       const activeName = workspaceState.activeName.value
-      if (!activeName) return item
+      if (!activeName) return { ...item, image: '', choices: [] }
       return {
         ...item,
         label: activeName,
         description:
           workspaceState.activeDescription.value ||
           `Current ${workspaceLabel.value}`,
+        image: workspaceState.activeImage.value,
+        choices: workspaceState.choices.value
+          .filter((choice) => choice.id !== workspaceState.activeId.value)
+          .map((choice) => ({
+            label: choice.name,
+            ...(choice.image
+              ? { avatar: { src: choice.image, alt: choice.name } }
+              : { icon: item.icon }),
+            onSelect: () =>
+              workspaceState.activate(
+                choice.id,
+                choice.name,
+                choice.description,
+                choice.image
+              ),
+          })),
       }
     })
 )

@@ -3,11 +3,11 @@
 <template>
   <UDashboardNavbar :title="title" :ui="ui ?? { right: 'gap-3' }">
     <template v-if="!showTitle" #left>
-      <UDashboardSidebarCollapse />
+      <UDashboardSidebarCollapse class="lg:hidden" />
     </template>
 
     <template #leading>
-      <UDashboardSidebarCollapse />
+      <UDashboardSidebarCollapse class="lg:hidden" />
     </template>
 
     <template #right>

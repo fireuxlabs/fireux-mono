@@ -1,5 +1,6 @@
 /* stripped */@import 'tailwindcss';
 @import '@nuxt/ui';
+@source '../../layouts';
 
 @layer base {
 	html,

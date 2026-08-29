@@ -2,7 +2,10 @@ import { computed, reactive, ref } from 'vue'
 import { useToast } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { KitchenWorkspaceIndexState } from './useKitchenWorkspaceIndex'
+import type {
+  KitchenWorkspaceIndexDerived,
+  KitchenWorkspaceIndexState,
+} from './useKitchenWorkspaceIndex'
 import type {
   KitchenAICreatedObject,
   KitchenAIResultAction,
@@ -10,14 +13,18 @@ import type {
 } from '../../../components/Workspace/AI/types'
 
 export function useKitchenAIIndex(
-  getKitchen: () => Readonly<KitchenWorkspaceIndexState['kitchen']>
+  getWorkspace: () => {
+    state: Readonly<KitchenWorkspaceIndexState>
+    derived: Readonly<KitchenWorkspaceIndexDerived>
+  }
 ) {
   const { appId } = useFireUXConfig()
   const toast = useToast()
   const prompt = ref('')
   const messages = ref<KitchenAIWelcomeMessage[]>([])
   const submitting = ref(false)
-  const kitchen = computed(getKitchen)
+  const workspace = computed(getWorkspace)
+  const kitchen = computed(() => workspace.value.state.kitchen)
   let messageId = 0
 
   const state = reactive({ prompt, messages })
@@ -26,6 +33,48 @@ export function useKitchenAIIndex(
       kitchen.value.name ? 'Ask Kitchen AI…' : 'Tell us about your Kitchen…'
     ),
     submitting,
+    suggestions: computed(() => {
+      const { state, derived: workspaceDerived } = workspace.value
+      const onboarding =
+        state.user.anonymous ||
+        !workspaceDerived.hasSelection ||
+        !state.kitchen.name ||
+        !state.kitchen.tagline ||
+        !state.kitchen.url
+
+      if (onboarding) {
+        return [
+          {
+            label: 'Help me build my Kitchen Workspace',
+            icon: 'i-lucide-sparkles',
+          },
+          { label: 'What should I set up first?', icon: 'i-lucide-compass' },
+          {
+            label: 'Help me describe my Kitchen',
+            icon: 'i-lucide-message-square-text',
+          },
+        ]
+      }
+
+      return [
+        {
+          label: 'What needs attention today?',
+          icon: 'i-lucide-sun',
+        },
+        {
+          label: 'Help me organise my Menus',
+          icon: 'i-lucide-book-open',
+        },
+        {
+          label: 'Help me organise my Dishes',
+          icon: 'i-lucide-utensils',
+        },
+        {
+          label: 'How can Misebox improve my Kitchen?',
+          icon: 'i-lucide-chef-hat',
+        },
+      ]
+    }),
   })
 
   function addMessage(

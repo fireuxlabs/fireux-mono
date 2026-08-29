@@ -307,11 +307,11 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
 
   if (
     !mainPage.includes('<WorkspaceKitchenHero />') ||
-    !mainPage.includes('<WorkspaceKitchenAI') ||
+    !mainPage.includes('<WorkspaceKitchenIndexAI') ||
     !mainPage.includes('<WorkspaceKitchen ')
   ) {
     violations.push(
-      `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen-owned Hero and Workspace with KitchenAI)`
+      `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen Hero, index AI, and Workspace)`
     )
   }
 
@@ -803,16 +803,12 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
 function validateWorkspaceAIContracts(repoRoot, violations) {
   const presentationContracts = [
     {
-      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI.vue',
-      expected: ['<WorkspaceAI', 'useKitchenAIIndex'],
-    },
-    {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Assistant.vue',
       expected: ['<WorkspaceAI', '<WorkspaceAIIntro'],
     },
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Composer.vue',
-      expected: ['<WorkspaceAIComposer'],
+      expected: ['<UChatPrompt'],
     },
     {
       file: 'projects/fireux/fireux-app/app/components/Workspace/Project/AI.vue',

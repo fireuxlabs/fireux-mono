@@ -314,7 +314,8 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/components/layouts/shared/SideBarFooter.vue'
   )
   assert.match(sidebarFooter, /to: '\/dashboard\/settings'/)
-  assert.doesNotMatch(sidebarFooter, /Sign out|signOutUser|handleSignOut/)
+  assert.match(sidebarFooter, /label: 'Log out'/)
+  assert.match(sidebarFooter, /signOutUser\('\/'\)/)
   assert.match(sidebarFooter, /coreOutcome/)
   assert.doesNotMatch(sidebarFooter, /\bisLoading\b/)
 
@@ -322,9 +323,9 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/layouts/dashboard.vue'
   )
-  assert.match(dashboardLayout, /class="workspace-shell"/)
-  assert.match(dashboardLayout, /class="workspace-shell__sidebar"/)
-  assert.match(dashboardLayout, /<main class="workspace-shell__canvas">/)
+  assert.match(dashboardLayout, /<UDashboardGroup/)
+  assert.match(dashboardLayout, /<UDashboardSidebar/)
+  assert.match(dashboardLayout, /bg-default\/75/)
   assert.match(dashboardLayout, /<LayoutsSharedRoleBadge/)
 
   const landingLayout = read(

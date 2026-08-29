@@ -11,23 +11,17 @@
       </div>
     </div>
 
-    <UCard v-else variant="subtle">
-      <div class="flex items-center gap-3">
-        <UAvatar
-          :src="kitchen.url || undefined"
-          :alt="kitchen.name"
-          size="lg"
-        />
-        <div class="min-w-0">
-          <p class="m-0 truncate font-medium text-highlighted">
-            {{ kitchen.name }}
-          </p>
-          <p class="m-0 truncate text-sm text-muted">
-            {{ kitchen.tagline }}
-          </p>
-        </div>
-      </div>
-    </UCard>
+    <UUser
+      v-else
+      :name="kitchen.name"
+      :description="kitchen.tagline"
+      :avatar="{
+        src: kitchen.url || undefined,
+        alt: kitchen.name,
+        icon: 'i-lucide-chef-hat',
+      }"
+      size="lg"
+    />
   </section>
 </template>
 

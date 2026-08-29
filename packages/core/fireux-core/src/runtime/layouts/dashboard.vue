@@ -6,10 +6,20 @@
       v-model:open="open"
       collapsible
       resizable
-      class="workspace-shell__sidebar"
+      class="border-r-0"
+      :ui="{ body: '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden' }"
     >
       <template #header="{ collapsed }">
-        <LayoutsDashboardProfilesMenu :collapsed="collapsed ?? false" />
+        <div class="flex min-h-11 items-center gap-2 px-3 py-2">
+          <LayoutsDashboardProfilesMenu
+            v-if="!collapsed"
+            :collapsed="false"
+            class="min-w-0 flex-1"
+          />
+          <UDashboardSidebarCollapse
+            :class="collapsed ? 'mx-auto' : 'ml-auto'"
+          />
+        </div>
       </template>
 
       <template #default="{ collapsed }">
@@ -55,15 +65,14 @@
 
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
-          <LayoutsSharedSideBarFooter
-            :collapsed="collapsed ?? false"
-            compact-profile
-          />
+          <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
         </div>
       </template>
     </UDashboardSidebar>
 
-    <main class="workspace-shell__canvas">
+    <main
+      class="m-4 flex min-w-0 flex-1 overflow-y-auto rounded-lg bg-default/75 shadow-sm ring ring-default lg:ml-0"
+    >
       <NuxtPage />
     </main>
   </UDashboardGroup>

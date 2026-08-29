@@ -7,6 +7,13 @@ export function normalizeWorkspace(value: unknown) {
   return normalizeString(value).toLowerCase()
 }
 
+export type WorkspaceChoice = {
+  id: string
+  name: string
+  description?: string
+  image?: string
+}
+
 export function useWorkspace(workspace: string) {
   const appId = normalizeWorkspace(useFireUXConfig().appId) || 'app'
   const workspaceId = normalizeWorkspace(workspace)
@@ -23,6 +30,7 @@ export function useWorkspace(workspace: string) {
   )
   const activeImage = useState<string>(`${key}-current-image`, () => '')
   const activeStatus = useState<string>(`${key}-current-status`, () => '')
+  const choices = useState<WorkspaceChoice[]>(`${key}-choices`, () => [])
 
   const activate = (id: string, name = '', description = '', image = '') => {
     const value = normalizeString(id)
@@ -43,7 +51,11 @@ export function useWorkspace(workspace: string) {
     activeDescription: computed(() => activeDescription.value),
     activeImage: computed(() => activeImage.value),
     activeStatus: computed(() => activeStatus.value),
+    choices: computed(() => choices.value),
     activate,
+    setChoices: (nextChoices: WorkspaceChoice[]) => {
+      choices.value = nextChoices
+    },
     setActiveStatus: (status: string) => {
       activeStatus.value = activeId.value ? normalizeString(status) : ''
     },

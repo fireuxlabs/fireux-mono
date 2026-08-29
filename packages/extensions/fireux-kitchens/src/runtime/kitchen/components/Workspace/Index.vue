@@ -9,7 +9,14 @@
     v-if="derived.outcome === 'empty' && derived.canCreate"
   />
   <!-- Show the available Kitchens when Kitchen data is ready. -->
-  <WorkspaceKitchenSelector v-if="derived.outcome === 'ready'" />
+  <WorkspaceKitchenSelector
+    v-if="
+      derived.outcome === 'ready' &&
+      (!derived.hasSelection || derived.canSelectMultiple)
+    "
+    :kitchens="state.kitchens"
+    :selected-kitchen-id="state.kitchen.id"
+  />
 </template>
 
 <script setup lang="ts">

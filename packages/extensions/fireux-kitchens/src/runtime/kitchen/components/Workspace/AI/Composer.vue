@@ -31,40 +31,47 @@
       @change="selectFile"
     />
 
-    <WorkspaceAIComposer
+    <UChatPrompt
       :model-value="modelValue"
       :placeholder="placeholder"
-      :submitting="submitting"
+      :loading="submitting"
       :aria-label="ariaLabel"
-      connected
       @update:model-value="emit('update:modelValue', $event)"
-      @submit="emit('submit')"
+      @submit.prevent="emit('submit')"
     >
-      <template #leading>
-        <UButton
-          v-if="allowFile"
-          type="button"
-          icon="i-lucide-paperclip"
-          color="neutral"
-          variant="ghost"
-          aria-label="Upload your existing menu"
-          @click="fileInput?.click()"
-        />
-        <UButton
-          v-if="mounted && voice.supported.value"
-          type="button"
-          :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
-          :color="voice.recording.value ? 'error' : 'neutral'"
-          :variant="voice.recording.value ? 'soft' : 'ghost'"
-          :loading="transcribing"
-          :disabled="submitting || transcribing"
-          :aria-label="
-            voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
-          "
-          @click="toggleVoice"
-        />
+      <template #footer>
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-1">
+            <UButton
+              v-if="allowFile"
+              type="button"
+              icon="i-lucide-paperclip"
+              color="neutral"
+              variant="ghost"
+              aria-label="Upload your existing menu"
+              @click="fileInput?.click()"
+            />
+            <UButton
+              v-if="mounted && voice.supported.value"
+              type="button"
+              :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
+              :color="voice.recording.value ? 'error' : 'neutral'"
+              :variant="voice.recording.value ? 'soft' : 'ghost'"
+              :loading="transcribing"
+              :disabled="submitting || transcribing"
+              :aria-label="
+                voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
+              "
+              @click="toggleVoice"
+            />
+          </div>
+          <UChatPromptSubmit
+            :status="submitting ? 'submitted' : 'ready'"
+            label="Send"
+          />
+        </div>
       </template>
-    </WorkspaceAIComposer>
+    </UChatPrompt>
 
     <div
       v-if="contextualActions.length"
@@ -200,3 +207,5 @@ onBeforeUnmount(() => {
   if (recordingTimeout) clearTimeout(recordingTimeout)
 })
 </script>
+
+<style src="./welcome.css"></style>

@@ -1,4 +1,4 @@
-import { computed, watch } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -46,6 +46,19 @@ export function useKitchenWorkspace() {
     resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'kitchen')
   )
   const rootCollection = computed(() => 'kitchens')
+
+  watchEffect(() => {
+    workspace.setChoices(
+      canOwnMultipleWorkspaces.value
+        ? kitchens.kitchens.value.map((item) => ({
+            id: normalizeString(item.id),
+            name: normalizeString(item.identity?.display_name),
+            description: normalizeString(item.identity?.tagline),
+            image: normalizeString(item.identity?.image_url),
+          }))
+        : []
+    )
+  })
 
   return {
     user: {

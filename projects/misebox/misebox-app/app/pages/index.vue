@@ -7,7 +7,10 @@
     <!-- 01 Hero — define the Kitchen page promise, audience and intended outcome. -->
     <WorkspaceKitchenHero />
     <!-- 02 AI — provide the page-scoped KitchenAI entry with only the context and actions this page proves. -->
-    <WorkspaceKitchenAI :kitchen="state.kitchen" />
+    <WorkspaceKitchenIndexAI
+      :workspace-state="state"
+      :workspace-derived="derived"
+    />
     <!-- 03 Workspace — prove Kitchen state, selection, empty state and primary actions. -->
     <WorkspaceKitchen :state="state" :derived="derived" />
     <!-- 04 Operations — curate only the main Kitchen index Operations; capability pages own WorkspaceKitchenXOperations. -->
