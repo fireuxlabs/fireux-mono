@@ -1,10 +1,6 @@
 <template>
   <form class="grid max-w-md gap-3" @submit.prevent="submit">
-    <WorkspaceKitchenActiveCard
-      v-if="manifestComplete && manifestKitchen"
-      :kitchen="manifestKitchen"
-      draft
-    />
+    <WorkspaceKitchenActive v-if="manifestComplete" :kitchen="manifestShell" />
 
     <div
       class="kitchen-identity-widget grid items-center gap-3 rounded-xl border border-default bg-elevated/40 p-3"

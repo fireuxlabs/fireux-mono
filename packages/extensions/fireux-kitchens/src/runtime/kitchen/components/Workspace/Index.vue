@@ -1,45 +1,20 @@
 <template>
-  <section class="grid gap-4">
-    <WorkspaceKitchenActive
-      :show-kitchens-action="hasKitchenChoices"
-      :kitchens-open="kitchensOpen"
-      @toggle-kitchens="kitchensOpen = !kitchensOpen"
-    />
-
-    <div id="kitchen-workspace" class="scroll-mt-4">
-      <WorkspaceKitchenCollection
-        :expanded="!hasKitchenPresentation || kitchensOpen"
-        :active-complete="hasKitchenPresentation"
-      />
-    </div>
-  </section>
+  <!-- Show the selected Kitchen when its Workspace presentation is complete. -->
+  <WorkspaceKitchenActive :kitchen="state.kitchen" />
+  <!-- Show the onboarding entry when no complete Kitchen is active. -->
+  <WorkspaceKitchenOnboarding />
+  <!-- Show the Kitchens this user can select and the doorway for adding another when allowed. -->
+  <WorkspaceKitchenSelector />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
+import type {
+  KitchenWorkspaceIndexDerived,
+  KitchenWorkspaceIndexState,
+} from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-const kitchen = useKitchenWorkspace()
-const { kitchenComplete: hasKitchenPresentation } =
-  useKitchenWorkspaceMain(kitchen)
-const { appAccess } = useUser()
-const kitchensOpen = ref(false)
-const hasKitchenChoices = computed(
-  () =>
-    hasKitchenPresentation.value &&
-    (kitchen.targets.kitchens.value.length > 1 ||
-      appAccess.value.hasBusinessSubscription)
-)
-
-watch(hasKitchenPresentation, (complete: boolean, wasComplete?: boolean) => {
-  if (complete && !wasComplete) kitchensOpen.value = false
-})
-watch(
-  () => kitchen.selection.kitchenId.value,
-  (activeId: string | null, previousId: string | null) => {
-    if (activeId && activeId !== previousId) kitchensOpen.value = false
-  }
-)
+defineProps<{
+  state: KitchenWorkspaceIndexState
+  derived: KitchenWorkspaceIndexDerived
+}>()
 </script>

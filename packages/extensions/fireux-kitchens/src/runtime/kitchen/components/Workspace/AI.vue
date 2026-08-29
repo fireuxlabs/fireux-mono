@@ -43,8 +43,10 @@
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchenWorkspace'
-import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
+import type {
+  KitchenWorkspaceIndexDerived,
+  KitchenWorkspaceIndexState,
+} from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
 import Messages from './AI/Messages.vue'
@@ -63,6 +65,8 @@ import type {
 const props = withDefaults(
   defineProps<
     KitchenAIPresentationOptions & {
+      workspaceState?: KitchenWorkspaceIndexState
+      workspaceDerived?: KitchenWorkspaceIndexDerived
       aiTools?: readonly KitchenAIToolNugget[]
       availableActions?: readonly string[]
       actionTargets?: readonly KitchenCapabilityActionTarget[]
@@ -75,6 +79,15 @@ const props = withDefaults(
   {
     starters: undefined,
     operation: '',
+    workspaceState: () => ({
+      user: { id: '', anonymous: true },
+      kitchen: { id: '', name: '', tagline: '', url: '' },
+    }),
+    workspaceDerived: () => ({
+      outcome: 'idle',
+      hasSelection: false,
+      canCreate: false,
+    }),
     aiTools: () => [],
     availableActions: () => [],
     actionTargets: () => [],
@@ -83,14 +96,15 @@ const props = withDefaults(
 )
 
 const { appId: configuredAppId, appName } = useFireUXConfig()
-const kitchenWorkspace = useKitchenWorkspace()
-const {
-  workspacePending,
-  activeName: selectedKitchenName,
-  suggestions: workspaceToolSuggestions,
-  availableActions: availableWorkspaceActions,
-  performAction: performWorkspaceAction,
-} = useKitchenWorkspaceMain(kitchenWorkspace)
+const workspacePending = computed(
+  () =>
+    props.workspaceDerived.outcome === 'idle' ||
+    props.workspaceDerived.outcome === 'pending'
+)
+const selectedKitchenName = computed(() => props.workspaceState.kitchen.name)
+const workspaceToolSuggestions = computed<string[]>(() => [])
+const availableWorkspaceActions = computed<string[]>(() => [])
+const performWorkspaceAction = (_id: string) => false
 const {
   agentLabel: resolvedAgentLabel,
   title: resolvedTitle,
@@ -167,7 +181,7 @@ const workspaceDescription = computed(() => {
     return `Build ${selectedName} with menus, dishes, recipes, prep, and the tools available now.`
   }
 
-  const outcome = kitchenWorkspace.targets.outcome.value
+  const outcome = props.workspaceDerived.outcome
   if (outcome === 'pending' || outcome === 'idle') {
     return 'I am checking which Kitchens are available to you.'
   }
@@ -179,10 +193,8 @@ const workspaceDescription = computed(() => {
 })
 
 const selectedLiveScope = computed(() => ({
-  appId: String(kitchenWorkspace.runtime.appId.value || '').trim(),
-  kitchenId: String(
-    kitchenWorkspace.runtime.storageKitchenId.value || ''
-  ).trim(),
+  appId: String(configuredAppId || '').trim(),
+  kitchenId: String(props.workspaceState.kitchen.id || '').trim(),
 }))
 
 function pushMessage(

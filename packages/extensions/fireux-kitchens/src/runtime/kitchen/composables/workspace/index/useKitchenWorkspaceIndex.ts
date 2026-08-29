@@ -1,128 +1,62 @@
-import { computed, onScopeDispose, ref, watch } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
-import type {
-  KitchenWorkspaceCurrentResponse,
-  KitchenWorkspaceKitchen,
-} from '../../../models/kitchen-index.model.ts'
-import {
-  useKitchenInterface,
-  type KitchenSurface,
-} from '../../firestore/utils/view/useKitchenInterface'
+import { computed, watchEffect } from 'vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
+import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+
+export type KitchenWorkspaceIndexState = {
+  user: { id: string; anonymous: boolean }
+  kitchen: { id: string; name: string; tagline: string; url: string }
+}
+
+export type KitchenWorkspaceIndexDerived = {
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  hasSelection: boolean
+  canCreate: boolean
+}
 
 export function useKitchenWorkspaceIndex() {
-  const workspace = useWorkspace('kitchen')
-  const { currentUser, hasAuthState } = useAuth()
-  const { surface } = useKitchenInterface()
-  const status = ref<'idle' | 'pending' | 'ready' | 'error'>('idle')
-  const kitchenRecord = ref<KitchenWorkspaceKitchen | null>(null)
-  let requestSequence = 0
+  const workspace = useKitchenWorkspace()
+  const pageState = useWorkspacePageState('kitchen')
 
-  const kitchen = computed<KitchenSurface | null>(() =>
-    kitchenRecord.value
-      ? surface({ kitchen: kitchenRecord.value, routeScope: 'live' })
-      : null
-  )
-  const id = computed(() => String(kitchenRecord.value?.id || '').trim())
-  const presentation = computed(() =>
-    readKitchenPresentationIdentity(kitchen.value)
-  )
-  const name = computed(
-    () =>
-      String(kitchen.value?.short_name || '').trim() ||
-      presentation.value.displayName
-  )
-  const description = computed(() => presentation.value.tagline || 'My Kitchen')
-  const image = computed(
-    () =>
-      presentation.value.cardImageUrl ||
-      presentation.value.imageUrl ||
-      presentation.value.logoImageUrl
-  )
-  const outcome = computed<'idle' | 'pending' | 'error' | 'empty' | 'ready'>(
-    () => {
-      if (!hasAuthState.value || status.value === 'pending') return 'pending'
-      if (!currentUser.value || status.value === 'idle') return 'idle'
-      if (status.value === 'error') return 'error'
-      return kitchenRecord.value ? 'ready' : 'empty'
+  const state = computed<KitchenWorkspaceIndexState>(() => {
+    const selectedKitchen = workspace.selection.kitchen.value
+    const presentation = readKitchenPresentationIdentity(selectedKitchen)
+    return {
+      user: {
+        id: workspace.user.currentUser.value?.uid || '',
+        anonymous: Boolean(workspace.user.currentUser.value?.isAnonymous),
+      },
+      kitchen: {
+        id: normalizeString(selectedKitchen?.id),
+        name: presentation.displayName,
+        tagline: presentation.tagline,
+        url:
+          presentation.cardImageUrl ||
+          presentation.imageUrl ||
+          presentation.logoImageUrl,
+      },
     }
-  )
-
-  const activate = (kitchenId: string) => {
-    workspace.activate(kitchenId)
-  }
-
-  const load = async (force = false) => {
-    const user = currentUser.value
-    if (!import.meta.client || !hasAuthState.value || !user) {
-      status.value = 'idle'
-      kitchenRecord.value = null
-      return
-    }
-
-    const preferredId = workspace.activeId.value
-    if (
-      !force &&
-      status.value === 'ready' &&
-      String(kitchenRecord.value?.id || '').trim() === preferredId
-    ) {
-      return
-    }
-
-    const sequence = ++requestSequence
-    status.value = 'pending'
-    try {
-      const token = await user.getIdToken()
-      const response = await $fetch<KitchenWorkspaceCurrentResponse>(
-        '/api/workspace/kitchen/current',
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          query: preferredId ? { kitchen_id: preferredId } : undefined,
-        }
-      )
-      if (sequence !== requestSequence) return
-      if (response.family !== 'kitchen') {
-        throw new Error('Kitchen Workspace response scope mismatch.')
-      }
-      kitchenRecord.value = response.current
-      status.value = 'ready'
-      const currentId = String(response.current?.id || '').trim()
-      if (currentId) {
-        workspace.activate(
-          currentId,
-          name.value,
-          description.value,
-          image.value
-        )
-      }
-    } catch {
-      if (sequence !== requestSequence) return
-      kitchenRecord.value = null
-      status.value = 'error'
-    }
-  }
-
-  watch([hasAuthState, currentUser, workspace.activeId], () => void load(), {
-    immediate: true,
-  })
-  onScopeDispose(() => {
-    requestSequence += 1
   })
 
-  return {
-    active: computed(() => ({
-      kitchen: kitchen.value,
-      id: id.value,
-      outcome: outcome.value,
-    })),
-    access: computed(() => ({
-      canCreate: true,
-      canWrite: kitchen.value?.can_write === true,
-    })),
-    actions: {
-      activate,
-      refresh: () => load(true),
-    },
-  }
+  const derived = computed<KitchenWorkspaceIndexDerived>(() => ({
+    outcome: workspace.targets.outcome.value,
+    hasSelection: workspace.selection.hasSelection.value,
+    canCreate:
+      (workspace.targets.outcome.value === 'ready' ||
+        workspace.targets.outcome.value === 'empty') &&
+      workspace.runtime.canCreate.value &&
+      (workspace.targets.count.value === 0 ||
+        workspace.user.canOwnMultipleWorkspaces.value),
+  }))
+
+  watchEffect(() => {
+    pageState.publish({
+      user: state.value.user,
+      kitchen: state.value.kitchen,
+      derived: derived.value,
+    })
+  })
+
+  return { state, derived }
 }

@@ -7,9 +7,9 @@
     <!-- 01 Hero — define the Kitchen page promise, audience and intended outcome. -->
     <WorkspaceKitchenHero />
     <!-- 02 AI — provide the page-scoped KitchenAI entry with only the context and actions this page proves. -->
-    <WorkspaceKitchenAI />
+    <WorkspaceKitchenAI :workspace-state="state" :workspace-derived="derived" />
     <!-- 03 Workspace — prove Kitchen state, selection, empty state and primary actions. -->
-    <WorkspaceKitchen />
+    <WorkspaceKitchen :state="state" :derived="derived" />
     <!-- 04 Operations — curate only the main Kitchen index Operations; capability pages own WorkspaceKitchenXOperations. -->
     <WorkspaceKitchenOperations />
     <!-- 05 Tools — expose only bounded Tools beneath the featured capabilities; capability pages own WorkspaceKitchenXTools. -->
@@ -21,7 +21,10 @@
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
 import { appMeta } from '../meta'
+
+const { state, derived } = useKitchenWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',

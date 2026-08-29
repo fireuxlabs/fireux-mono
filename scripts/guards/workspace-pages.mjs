@@ -309,8 +309,8 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
 
   if (
     !mainPage.includes('<WorkspaceKitchenHero />') ||
-    !mainPage.includes('<WorkspaceKitchenAI />') ||
-    !mainPage.includes('<WorkspaceKitchen />')
+    !mainPage.includes('<WorkspaceKitchenAI') ||
+    !mainPage.includes('<WorkspaceKitchen ')
   ) {
     violations.push(
       `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen-owned Hero and Workspace with KitchenAI)`
@@ -762,13 +762,7 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   )
   for (const relative of [PROJECT_WORKSPACE, KITCHEN_WORKSPACE]) {
     const workspaceSource = readFileSync(path.join(repoRoot, relative), 'utf8')
-    const requiredBranches = [
-      'targets:',
-      'selection:',
-      'runtime:',
-      'actions:',
-      'state:',
-    ]
+    const requiredBranches = ['targets:', 'selection:', 'runtime:', 'actions:']
     for (const branch of requiredBranches) {
       if (!workspaceSource.includes(branch)) {
         violations.push(
@@ -800,12 +794,10 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
   }
   if (
     !workspaceNavbar.includes('aria-label="Copy page JSON"') ||
-    !workspaceNavbar.includes('user: pageState.value.user') ||
-    !workspaceNavbar.includes('entity: pageState.value.entity') ||
-    !workspaceNavbar.includes('derived: pageState.value.derived')
+    !workspaceNavbar.includes('state: pageState.value')
   ) {
     violations.push(
-      'Workspace header must copy the bounded user, entity, and derived page JSON contract.'
+      'Workspace header must copy the bounded page state JSON contract.'
     )
   }
 }

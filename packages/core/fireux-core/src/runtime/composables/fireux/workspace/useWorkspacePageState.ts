@@ -2,9 +2,8 @@ import { useState } from '#imports'
 import { computed, type ComputedRef } from 'vue'
 import { normalizeWorkspace } from './useWorkspace'
 
-export type WorkspacePageState = {
+export type WorkspacePageState = Record<string, unknown> & {
   user: Record<string, unknown>
-  entity: Record<string, unknown> | null
   derived: Record<string, unknown>
 }
 

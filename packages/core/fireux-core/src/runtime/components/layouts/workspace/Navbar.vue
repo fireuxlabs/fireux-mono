@@ -99,11 +99,7 @@ async function copyPageJson() {
             path: route.path,
             workspace: workspaceNav.currentWorkspace.value,
           },
-          state: {
-            user: pageState.value.user,
-            entity: pageState.value.entity,
-            derived: pageState.value.derived,
-          },
+          state: pageState.value,
         },
         null,
         2

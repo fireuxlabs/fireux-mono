@@ -132,10 +132,10 @@ export async function run(ctx) {
     ),
     'utf8'
   )
-  const kitchenWorkspaceMain = readFileSync(
+  const kitchenWorkspaceIndex = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/main/useKitchenWorkspaceMain.ts'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts'
     ),
     'utf8'
   )
@@ -149,22 +149,18 @@ export async function run(ctx) {
   if (
     !kitchenWorkspace.includes('resolveWorkspaceCanCreate(') ||
     !kitchenWorkspace.includes("'kitchen'") ||
-    !kitchenWorkspaceMain.includes('workspace.runtime.canCreate.value')
+    !kitchenWorkspaceIndex.includes('workspace.runtime.canCreate.value')
   ) {
     violations.push(
       'Kitchen Workspace creation must follow the shared App workspace policy'
     )
   }
   if (
-    !kitchenWorkspaceActive.includes('function selectOnlyKitchen()') ||
-    !kitchenWorkspaceActive.includes('const existing = kitchens[0]') ||
-    !kitchenWorkspaceActive.includes('kitchens.length !== 1') ||
-    !kitchenWorkspaceActive.includes(
-      'workspace.actions.selectKitchen(existingId)'
-    )
+    !kitchenWorkspaceIndex.includes('return { state, derived }') ||
+    !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(
-      'Kitchen Workspace must automatically activate its sole available target'
+      'Kitchen Workspace index must expose state and derived while Active receives only Kitchen presentation state'
     )
   }
 
@@ -175,13 +171,6 @@ export async function run(ctx) {
     ),
     'utf8'
   )
-  const kitchenActive = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/ActiveCard.vue'
-    ),
-    'utf8'
-  )
   const projectActive = readFileSync(
     path.join(
       repoRoot,
@@ -189,13 +178,8 @@ export async function run(ctx) {
     ),
     'utf8'
   )
-  for (const [label, source] of [
-    ['Kitchen', kitchenActive],
-    ['Project', projectActive],
-  ]) {
-    if (!source.includes('<WorkspaceActiveEntity')) {
-      violations.push(`${label} must use the shared active-entity anatomy`)
-    }
+  if (!projectActive.includes('<WorkspaceActiveEntity')) {
+    violations.push('Project must use the shared active-entity anatomy')
   }
   if (activeEntity.includes('workspace-selected-entity__')) {
     violations.push(

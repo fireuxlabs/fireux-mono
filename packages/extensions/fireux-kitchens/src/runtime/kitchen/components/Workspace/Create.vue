@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
+import { ref } from 'vue'
 import Form from './Create/Form.vue'
 
 const {
@@ -63,7 +63,7 @@ const emit = defineEmits<{
   (event: 'created', id: string): void
   (event: 'manifested', id: string): void
 }>()
-const { createKitchenOpen: open } = useKitchenWorkspaceMain()
+const open = ref(false)
 
 function created(id: string) {
   open.value = false
