@@ -5,19 +5,25 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Supplier Workspace" />
       </template>
-
       <template #body>
-        <section class="space-y-4">
-          <WorkspaceSupplierIndex />
-        </section>
+        <WorkspaceHero
+          title="Build your Supplier Workspace"
+          description="Manage catalogues, ingredients and supply operations."
+        />
+        <WorkspaceSupplier :state="state" :derived="derived" />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useSupplierWorkspaceIndex } from '../../../supplier/composables/workspace/index/useSupplierWorkspaceIndex'
+
+const { state, derived } = useSupplierWorkspaceIndex()
+
 definePageMeta({
   layout: 'workspace',
+  workspace: 'supplier',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-suppliers'] },
   nav: {

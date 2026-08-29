@@ -1,42 +1,34 @@
-<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Portfolio target outcome contract. -->
 <template>
-  <section class="workspace-surface workspace-surface--compact">
-    <WorkspacePortfolioActiveCard
-      :portfolio="portfolio"
-      :portfolio-id="portfolioId"
-      @clear="clearPortfolio"
-    />
-
-    <WorkspacePortfolioTargets
-      :collection="portfolios"
-      :outcome="outcome"
-      @select="selectPortfolio"
-    />
-
-    <DevDebugPanel
-      title="Portfolio workspace debug"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{
-        selectedPortfolio: portfolio,
-        portfolios,
+  <section aria-label="Current Portfolio">
+    <div v-if="derived.outcome === 'pending'" class="flex items-center gap-4">
+      <USkeleton class="size-12 rounded-full" />
+      <div class="grid gap-2">
+        <USkeleton class="h-4 w-64" />
+        <USkeleton class="h-4 w-48" />
+      </div>
+    </div>
+    <UUser
+      v-else-if="derived.hasSelection"
+      :name="state.portfolio.name"
+      :description="state.portfolio.tagline"
+      :avatar="{
+        src: state.portfolio.url || undefined,
+        alt: state.portfolio.name,
+        icon: 'i-lucide-layout-dashboard',
       }"
-      :derived="debug"
-      :default-open="false"
+      size="lg"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { usePortfolioWorkspaceIndex } from '../../composables/workspace/index/usePortfolioWorkspaceIndex'
+import type {
+  PortfolioWorkspaceIndexDerived,
+  PortfolioWorkspaceIndexState,
+} from '../../composables/workspace/index/usePortfolioWorkspaceIndex'
 
-const {
-  portfolio,
-  portfolioId,
-  portfolios,
-  outcome,
-  selectPortfolio,
-  clearPortfolio,
-  debug,
-} = usePortfolioWorkspaceIndex()
+defineProps<{
+  state: PortfolioWorkspaceIndexState
+  derived: PortfolioWorkspaceIndexDerived
+}>()
 </script>

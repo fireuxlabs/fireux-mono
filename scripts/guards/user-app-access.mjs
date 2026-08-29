@@ -161,6 +161,17 @@ export async function run({ repoRoot }) {
   assert.match(userAppModel, /subscription:\s*AppUserSubscription/)
   assert.match(userAppModel, /'user', 'admin', 'dev'/)
   assert.match(userAppModel, /'free', 'premium', 'business'/)
+  for (const [family, collection] of [
+    ['blank', 'blanks'],
+    ['kitchen', 'kitchens'],
+    ['portfolio', 'portfolios'],
+    ['project', 'projects'],
+    ['property', 'properties'],
+    ['supplier', 'suppliers'],
+  ]) {
+    assert.match(userAppModel, new RegExp(`${collection}: string\\[\\]`))
+    assert.match(userAppModel, new RegExp(`primary_${family}: string`))
+  }
   assert.doesNotMatch(
     userAppModel,
     /\b(?:access_?tier|tier|is_premium):/,
@@ -190,6 +201,17 @@ export async function run({ repoRoot }) {
   const initialMembership = mutation.slice(initialStart, initialEnd)
   assert.match(initialMembership, /onboarding_status: 'pending'/)
   assert.match(initialMembership, /subscription: 'free'/)
+  for (const [family, collection] of [
+    ['blank', 'blanks'],
+    ['kitchen', 'kitchens'],
+    ['portfolio', 'portfolios'],
+    ['project', 'projects'],
+    ['property', 'properties'],
+    ['supplier', 'suppliers'],
+  ]) {
+    assert.match(initialMembership, new RegExp(`${collection}: \\[\\]`))
+    assert.match(initialMembership, new RegExp(`primary_${family}: ''`))
+  }
   assert.doesNotMatch(
     initialMembership,
     /\bprofiles:/,

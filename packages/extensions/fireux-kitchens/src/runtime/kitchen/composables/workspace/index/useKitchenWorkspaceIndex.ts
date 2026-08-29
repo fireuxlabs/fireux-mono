@@ -1,8 +1,12 @@
-import { computed, watch, watchEffect } from 'vue'
-import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
+import { resolveWorkspaceCanCreate } from 'fireux-core/runtime/utils/workspace-policy'
+import { useKitchenWorkspaceCurrent } from './useKitchenWorkspaceCurrent'
 
 export type KitchenWorkspaceIndexState = {
   user: {
@@ -18,7 +22,6 @@ export type KitchenWorkspaceIndexState = {
     tagline: string
     url: string
   }
-  kitchens: { id: string; name: string; tagline: string; url: string }[]
 }
 
 export type KitchenWorkspaceIndexDerived = {
@@ -29,49 +32,75 @@ export type KitchenWorkspaceIndexDerived = {
 }
 
 export function useKitchenWorkspaceIndex() {
-  const workspace = useKitchenWorkspace()
-  const selectionRequest = useWorkspace('kitchen')
+  const { currentUser, hasAuthState } = useAuth()
+  const appContext = useCurrentAppContext()
+  const fireux = useFireUXConfig()
+  const workspace = useWorkspace('kitchen')
   const pageState = useWorkspacePageState('kitchen')
+  const mounted = ref(false)
+  const primaryKitchenId = computed(
+    () => appContext.membership.value?.primary_kitchen || ''
+  )
+  const current = useKitchenWorkspaceCurrent(primaryKitchenId)
 
   const state = computed<KitchenWorkspaceIndexState>(() => {
-    const selectedKitchen = workspace.selection.kitchen.value
-    const identity = selectedKitchen?.identity
+    const membership = appContext.membership.value
+    const kitchen = current.kitchen.value
+    const identity = kitchen?.identity
     return {
       user: {
-        id: workspace.user.currentUser.value?.uid || '',
-        anonymous: Boolean(workspace.user.currentUser.value?.isAnonymous),
-        kitchens: workspace.targets.kitchens.value.map((item) =>
-          normalizeString(item.id)
-        ),
-        primaryKitchen: workspace.targets.primaryKitchenId.value,
+        id: currentUser.value?.uid || '',
+        anonymous: Boolean(currentUser.value?.isAnonymous),
+        kitchens: membership?.kitchens || [],
+        primaryKitchen: primaryKitchenId.value,
       },
       kitchen: {
-        id: normalizeString(selectedKitchen?.id),
-        placeId: normalizeString(selectedKitchen?.place_id),
+        id: normalizeString(kitchen?.id),
+        placeId: normalizeString(kitchen?.place_id),
         name: normalizeString(identity?.display_name),
         tagline: normalizeString(identity?.tagline),
         url: normalizeString(identity?.image_url),
       },
-      kitchens: workspace.targets.kitchens.value.map((item) => ({
-        id: normalizeString(item.id),
-        name: normalizeString(item.identity?.display_name),
-        tagline: normalizeString(item.identity?.tagline),
-        url: normalizeString(item.identity?.image_url),
-      })),
     }
   })
 
-  const derived = computed<KitchenWorkspaceIndexDerived>(() => ({
-    outcome: workspace.targets.outcome.value,
-    hasSelection: workspace.selection.hasSelection.value,
-    canSelectMultiple: workspace.user.canOwnMultipleWorkspaces.value,
-    canCreate:
-      (workspace.targets.outcome.value === 'ready' ||
-        workspace.targets.outcome.value === 'empty') &&
-      workspace.runtime.canCreate.value &&
-      (workspace.targets.count.value === 0 ||
-        workspace.user.canOwnMultipleWorkspaces.value),
-  }))
+  const derived = computed<KitchenWorkspaceIndexDerived>(() => {
+    const membership = appContext.membership.value
+    const kitchens = membership?.kitchens || []
+    const canSelectMultiple = membership?.subscription === 'business'
+    let outcome: KitchenWorkspaceIndexDerived['outcome'] = 'idle'
+    if (!mounted.value || !hasAuthState.value || appContext.pending.value)
+      outcome = 'pending'
+    else if (appContext.error.value || current.error.value) outcome = 'error'
+    else if (!currentUser.value) outcome = 'idle'
+    else if (!primaryKitchenId.value) outcome = 'empty'
+    else if (current.pending.value) outcome = 'pending'
+    else outcome = current.kitchen.value ? 'ready' : 'error'
+
+    return {
+      outcome,
+      hasSelection: Boolean(current.kitchen.value),
+      canSelectMultiple,
+      canCreate:
+        Boolean(membership) &&
+        resolveWorkspaceCanCreate(
+          fireux.role,
+          fireux.workspaceConfig,
+          'kitchen'
+        ) &&
+        (kitchens.length === 0 || canSelectMultiple),
+    }
+  })
+
+  async function refresh() {
+    await appContext.refresh()
+    await nextTick()
+    await current.refresh()
+  }
+
+  onMounted(() => {
+    mounted.value = true
+  })
 
   watchEffect(() => {
     pageState.publish({
@@ -82,49 +111,35 @@ export function useKitchenWorkspaceIndex() {
   })
 
   watch(
-    () =>
-      [workspace.targets.primaryKitchenId.value, state.value.kitchens] as const,
-    ([primaryKitchenId, kitchens]) => {
-      const primaryKitchen = kitchens.find(
-        (kitchen) => kitchen.id === primaryKitchenId
-      )
-      if (!primaryKitchen) return
-      workspace.actions.selectKitchen(
-        primaryKitchen.id,
-        primaryKitchen.name,
-        primaryKitchen.tagline,
-        primaryKitchen.url
-      )
+    () => [primaryKitchenId.value, state.value.kitchen] as const,
+    ([primaryId, kitchen]: readonly [
+      string,
+      KitchenWorkspaceIndexState['kitchen'],
+    ]) => {
+      if (!primaryId || kitchen.id !== primaryId) {
+        if (!primaryId) workspace.clearActive()
+        return
+      }
+      workspace.activate(kitchen.id, kitchen.name, kitchen.tagline, kitchen.url)
     },
     { immediate: true }
   )
 
-  watch(selectionRequest.requestedId, async (kitchenId: string) => {
+  watch(workspace.requestedId, async (kitchenId: string) => {
     if (!kitchenId) return
-    const kitchen = state.value.kitchens.find((item) => item.id === kitchenId)
-    const user = workspace.user.currentUser.value
+    const user = currentUser.value
     try {
-      if (!kitchen || !user) return
+      if (!user) return
       await $fetch('/api/workspace/kitchen/request-primary-change', {
         method: 'POST',
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
         body: { kitchenId },
       })
-      await workspace.targets.refresh()
-      workspace.actions.selectKitchen(
-        kitchen.id,
-        kitchen.name,
-        kitchen.tagline,
-        kitchen.url
-      )
+      await refresh()
     } finally {
-      selectionRequest.clearRequestedActivation()
+      workspace.clearRequestedActivation()
     }
   })
 
-  return {
-    state,
-    derived,
-    actions: { refresh: workspace.targets.refresh },
-  }
+  return { state, derived, actions: { refresh } }
 }

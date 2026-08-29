@@ -1,14 +1,9 @@
 <template>
-  <AppPricingCatalogue
-    :app-name="appName"
-    :description="description"
-    :tiers="tiers"
-    intro="Free starts one Project. Professional completes one Project. Business operates multiple Projects. Your App launches a separate managed App, while Your Ecosystem creates a SaaS system whose owner manages its customers."
-  />
+  <AppPricingCatalogue :tiers="tiers" />
 </template>
 
 <script setup lang="ts">
-const { appName, description, tiers } = useFireuxPricing()
+const { tiers } = useFireuxPricing()
 
 definePageMeta({
   layout: 'landing',

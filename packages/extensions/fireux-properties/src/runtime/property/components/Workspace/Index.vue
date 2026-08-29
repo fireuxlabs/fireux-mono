@@ -1,42 +1,34 @@
-<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Property target outcome contract. -->
 <template>
-  <section class="workspace-surface workspace-surface--compact">
-    <WorkspacePropertyActiveCard
-      :property="property"
-      :property-id="propertyId"
-      @clear="clearProperty"
-    />
-
-    <WorkspacePropertyTargets
-      :collection="properties"
-      :outcome="outcome"
-      @select="selectProperty"
-    />
-
-    <DevDebugPanel
-      title="Property workspace debug"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{
-        selectedProperty: property,
-        properties,
+  <section aria-label="Current Property">
+    <div v-if="derived.outcome === 'pending'" class="flex items-center gap-4">
+      <USkeleton class="size-12 rounded-full" />
+      <div class="grid gap-2">
+        <USkeleton class="h-4 w-64" />
+        <USkeleton class="h-4 w-48" />
+      </div>
+    </div>
+    <UUser
+      v-else-if="derived.hasSelection"
+      :name="state.property.name"
+      :description="state.property.tagline"
+      :avatar="{
+        src: state.property.url || undefined,
+        alt: state.property.name,
+        icon: 'i-lucide-house',
       }"
-      :derived="debug"
-      :default-open="false"
+      size="lg"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { usePropertyWorkspaceIndex } from '../../composables/workspace/index/usePropertyWorkspaceIndex'
+import type {
+  PropertyWorkspaceIndexDerived,
+  PropertyWorkspaceIndexState,
+} from '../../composables/workspace/index/usePropertyWorkspaceIndex'
 
-const {
-  property,
-  propertyId,
-  properties,
-  outcome,
-  selectProperty,
-  clearProperty,
-  debug,
-} = usePropertyWorkspaceIndex()
+defineProps<{
+  state: PropertyWorkspaceIndexState
+  derived: PropertyWorkspaceIndexDerived
+}>()
 </script>

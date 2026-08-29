@@ -1,10 +1,8 @@
 <template>
   <section class="flex items-center gap-2" aria-label="Project controls">
     <WorkspaceProjectSelector
-      v-if="state.projects.length"
-      :projects="state.projects"
-      :selected-entity-id="state.project.id"
-      :primary-project-id="state.user.primaryProject"
+      v-if="state.project.id || derived.canSelectMultiple"
+      :project="state.project"
       :can-select-multiple="derived.canSelectMultiple"
       :refresh="refresh"
     />

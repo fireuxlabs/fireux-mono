@@ -899,6 +899,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceCreate.ts'
   )
+  const projectCreateComponent = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Create.vue'
+  )
   const projectSelector = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
@@ -984,8 +988,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\.runTransaction\(|useFirestore|setDoc|addDoc/
   )
   assert.match(projectCreateClient, /\/api\/internal\/control\/projects/)
-  assert.match(projectCreateClient, /workspace\.targets\.refresh\(\)/)
-  assert.match(projectCreateClient, /selectProject\(response\.project_id\)/)
+  assert.match(projectCreateClient, /useWorkspace\(['"]project['"]\)/)
+  assert.match(projectCreateClient, /workspace\.activate\(response\.project_id\)/)
+  assert.doesNotMatch(projectCreateClient, /useProjectWorkspace\(/)
+  assert.match(projectCreateComponent, /await props\.refresh\?\.\(\)/)
   assert.doesNotMatch(
     projectCreateClient,
     /useFirestore|setDoc|addDoc|updateDoc/

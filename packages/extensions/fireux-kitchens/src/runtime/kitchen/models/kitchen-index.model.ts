@@ -63,3 +63,25 @@ export type KitchenWorkspaceCurrentResponse = {
   family: 'kitchen'
   current: KitchenWorkspaceKitchen | null
 }
+
+export type KitchenWorkspaceIndexKitchen = {
+  id: string
+  place_id: string
+  identity: {
+    display_name: string
+    tagline: string
+    image_url: string
+  }
+}
+
+export type KitchenWorkspaceIndexResponse = {
+  ok: true
+  family: 'kitchen'
+  current: KitchenWorkspaceIndexKitchen | null
+}
+
+export type KitchenWorkspaceChoicesResponse = {
+  ok: true
+  family: 'kitchen'
+  items: KitchenWorkspaceIndexKitchen[]
+}

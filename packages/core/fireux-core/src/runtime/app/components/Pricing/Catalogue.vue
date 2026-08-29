@@ -11,10 +11,7 @@ import type { AppPricingTier } from '../../composables/pricing/usePricing'
 import type { PricingPlanGroup } from '../../utils/pricing/page'
 
 const props = defineProps<{
-  appName: string
-  description: string
   tiers: readonly AppPricingTier[]
-  intro?: string
 }>()
 function plan(tier: AppPricingTier) {
   return {

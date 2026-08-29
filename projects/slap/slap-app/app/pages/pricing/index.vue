@@ -1,13 +1,9 @@
 <template>
-  <AppPricingCatalogue
-    :app-name="appName"
-    :description="description"
-    :tiers="tiers"
-  />
+  <AppPricingCatalogue :tiers="tiers" />
 </template>
 
 <script setup lang="ts">
-const { appName, description, tiers } = useSlapPricing()
+const { tiers } = useSlapPricing()
 
 definePageMeta({
   layout: 'landing',

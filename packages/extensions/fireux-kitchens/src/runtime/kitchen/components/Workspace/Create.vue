@@ -42,7 +42,7 @@ async function created() {
   open.value = false
 }
 
-watch(open, async (value) => {
+watch(open, async (value: boolean) => {
   if (!value && props.kitchen?.id) await props.refresh?.()
 })
 </script>

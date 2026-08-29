@@ -1,8 +1,8 @@
 <template>
-  <section aria-label="Kitchen selector">
+  <section v-if="items.length" aria-label="Kitchen selector">
     <UTabs
-      :model-value="selectedEntityId"
-      :items="visibleItems"
+      :model-value="kitchen.id"
+      :items="items"
       :content="false"
       variant="link"
       size="sm"
@@ -13,50 +13,67 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenWorkspaceChoices } from '../../composables/workspace/index/useKitchenWorkspaceChoices'
 
 const props = defineProps<{
-  kitchens: KitchenWorkspaceIndexState['kitchens']
-  selectedEntityId: string
-  primaryKitchenId: string
+  kitchen: KitchenWorkspaceIndexState['kitchen']
   canSelectMultiple: boolean
   refresh: () => Promise<unknown>
 }>()
-
 const workspace = useWorkspace('kitchen')
 const { currentUser } = useAuth()
+const targets = useKitchenWorkspaceChoices(() => props.canSelectMultiple)
+const kitchens = computed(() =>
+  props.canSelectMultiple
+    ? targets.kitchens.value.map((item) => ({
+        id: item.id,
+        name: item.identity.display_name,
+        tagline: item.identity.tagline,
+        url: item.identity.image_url,
+      }))
+    : props.kitchen.id
+      ? [props.kitchen]
+      : []
+)
 const items = computed(() =>
-  props.kitchens.map((kitchen) => ({
-    label: kitchen.name || kitchen.id,
-    value: kitchen.id,
+  kitchens.value.map((item) => ({
+    label: item.name || item.id,
+    value: item.id,
     avatar: {
-      src: kitchen.url || undefined,
-      alt: kitchen.name,
+      src: item.url || undefined,
+      alt: item.name,
       icon: 'i-lucide-chef-hat',
     },
   }))
 )
-const visibleItems = computed(() => {
-  if (props.canSelectMultiple) return items.value
-  const primaryId = props.primaryKitchenId || props.selectedEntityId
-  return items.value.filter((item) => item.value === primaryId)
+
+watchEffect(() => {
+  workspace.setChoices(
+    kitchens.value.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.tagline,
+      image: item.url,
+    }))
+  )
 })
 
 async function selectKitchen(kitchenId: string | number) {
-  const kitchen = props.kitchens.find((item) => item.id === kitchenId)
-  if (!kitchen) return
+  const selected = kitchens.value.find((item) => item.id === kitchenId)
+  if (!selected) return
   const user = currentUser.value
   if (props.canSelectMultiple && user) {
     await $fetch('/api/workspace/kitchen/request-primary-change', {
       method: 'POST',
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-      body: { kitchenId: kitchen.id },
+      body: { kitchenId: selected.id },
     })
     await props.refresh()
   }
-  workspace.activate(kitchen.id, kitchen.name, kitchen.tagline, kitchen.url)
+  workspace.activate(selected.id, selected.name, selected.tagline, selected.url)
 }
 </script>

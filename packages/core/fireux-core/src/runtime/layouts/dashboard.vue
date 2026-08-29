@@ -6,8 +6,10 @@
       v-model:open="open"
       collapsible
       resizable
-      class="border-r-0"
-      :ui="{ body: '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden' }"
+      class="h-svh max-h-svh border-r-0"
+      :ui="{
+        body: 'min-h-0 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+      }"
     >
       <template #header="{ collapsed }">
         <div class="flex min-h-11 items-center gap-2 px-3 py-2">

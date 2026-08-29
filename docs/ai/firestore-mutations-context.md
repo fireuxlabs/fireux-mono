@@ -50,17 +50,21 @@ Workspace records and `users/{uid}/private/targets` are migration sources only;
 they are not additional target authorities or supported destinations.
 
 Workspace creation capacity is derived from the current AppUser's explicit
-Entity-id array, never from Team discovery or a client count. Kitchen uses
-`kitchens` and `primary_kitchen`; Project uses `projects` and
-`primary_project`. The trusted creation transaction updates those User fields
-atomically with the Entity root. It may also create the initial Team record for
-the separate Team surface, but Team is not the Workspace index authority. Free
-and Professional allow one Entity in their family, while Business allows
-multiple. FireUX Project creation is a named `fireux` Server command; ordinary
+Entity-id array, never from Team discovery or a client count. The AppUser model
+reserves a named plural id array and singular primary field for Kitchen,
+Project, Property, Portfolio, Supplier, and Blank. Kitchen and Project currently
+prove the trusted runtime pattern. Property, Portfolio, Supplier, and Blank must
+not claim the cutover until their Server readers, primary-selection mutations,
+creation transactions, and legacy App-support migrations are complete. A
+trusted creation transaction updates the relevant User fields atomically with
+the Entity root. It may also create the initial Team record for the separate
+Team surface, but Team is not the Workspace index authority. Free and
+Professional allow one Entity in their family, while Business allows multiple.
+FireUX Project creation is a named `fireux` Server command; ordinary
 clients call its fixed endpoint and never receive a Project Firestore writer.
 The protected `scripts/migrate-app-user-workspace-index.mjs` command performs
-the one-time, preimage-backed Team-to-AppUser index migration; runtime readers
-must not retain Team discovery as a fallback after that cutover.
+the one-time, preimage-backed legacy-source-to-AppUser index migration; runtime
+readers must not retain the retired source as a fallback after that cutover.
 
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,

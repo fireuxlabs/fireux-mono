@@ -22,11 +22,42 @@ const databaseId = String(args.database || '').trim()
 const appId = String(args.app || '').trim()
 const family = String(args.family || '').trim()
 const requestedUser = String(args.user || '').trim()
-const collection =
-  family === 'kitchen' ? 'kitchens' : family === 'project' ? 'projects' : ''
+const families = {
+  blank: {
+    collection: 'blanks',
+    primaryField: 'primary_blank',
+    source: 'app-support',
+  },
+  kitchen: {
+    collection: 'kitchens',
+    primaryField: 'primary_kitchen',
+    source: 'entity-team',
+  },
+  portfolio: {
+    collection: 'portfolios',
+    primaryField: 'primary_portfolio',
+    source: 'app-support',
+  },
+  project: {
+    collection: 'projects',
+    primaryField: 'primary_project',
+    source: 'entity-team',
+  },
+  property: {
+    collection: 'properties',
+    primaryField: 'primary_property',
+    source: 'app-support',
+  },
+  supplier: {
+    collection: 'suppliers',
+    primaryField: 'primary_supplier',
+    source: 'app-support',
+  },
+}
+const familyConfig = families[family]
+const collection = familyConfig?.collection || ''
 const idsField = collection
-const primaryField =
-  family === 'kitchen' ? 'primary_kitchen' : 'primary_project'
+const primaryField = familyConfig?.primaryField || ''
 const apply = args.apply === true
 const text = (value) => String(value ?? '').trim()
 const strings = (value) =>
@@ -51,7 +82,7 @@ const sha256 = (value) =>
 
 if (!ecosystem || !databaseId || !appId || !collection) {
   throw new Error(
-    'Usage: node scripts/migrate-app-user-workspace-index.mjs --ecosystem <key> --database <id> --app <app-id> --family kitchen|project [--apply --confirm <hash> --backup /private/tmp/<file>.json]'
+    `Usage: node scripts/migrate-app-user-workspace-index.mjs --ecosystem <key> --database <id> --app <app-id> --family ${Object.keys(families).join('|')} [--apply --confirm <hash> --backup /private/tmp/<file>.json]`
   )
 }
 
@@ -71,17 +102,38 @@ const app = initializeApp(
 
 try {
   const db = getFirestore(app, databaseId)
-  const entityDocuments = await db.collection(collection).get()
   const idsByUser = new Map()
-  for (const entity of entityDocuments.docs) {
-    const team = await entity.ref.collection('team').get()
-    for (const member of team.docs) {
-      const uid = text(member.get('user_id'))
-      if (!uid || member.id !== uid || text(member.get('status')) !== 'active')
-        continue
-      const ids = idsByUser.get(uid) || []
-      ids.push(entity.id)
-      idsByUser.set(uid, ids)
+
+  if (familyConfig.source === 'app-support') {
+    const supportDocuments = await db
+      .collection(`apps/${appId}/${collection}`)
+      .get()
+    for (const support of supportDocuments.docs) {
+      for (const uid of strings([
+        ...strings(support.get('operator_ids')),
+        ...strings(support.get('team_ids')),
+      ])) {
+        const ids = idsByUser.get(uid) || []
+        ids.push(support.id)
+        idsByUser.set(uid, ids)
+      }
+    }
+  } else {
+    const entityDocuments = await db.collection(collection).get()
+    for (const entity of entityDocuments.docs) {
+      const team = await entity.ref.collection('team').get()
+      for (const member of team.docs) {
+        const uid = text(member.get('user_id'))
+        if (
+          !uid ||
+          member.id !== uid ||
+          text(member.get('status')) !== 'active'
+        )
+          continue
+        const ids = idsByUser.get(uid) || []
+        ids.push(entity.id)
+        idsByUser.set(uid, ids)
+      }
     }
   }
 

@@ -1,32 +1,146 @@
-// Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
-// Concurrent edit — 2026-07-20 16:27 CEST — Workspace Spine pass: compose Property membership outcome before selection validation and bind real target ids.
-// Concurrent edit — 2026-07-21 22:31 CEST — Workspace family alignment: consume Property core-owned target authority.
-import { computed } from 'vue'
-import { usePropertyWorkspace } from '../core/usePropertyWorkspace'
-export function usePropertyWorkspaceIndex() {
-  const {
-    properties,
-    selection: workspaceSelection,
-    runtime: workspaceRuntime,
-    actions: workspaceActions,
-  } = usePropertyWorkspace()
-  const debug = computed(() => ({
-    propertyId: workspaceSelection.propertyId.value,
-    activePropertyAppId: workspaceRuntime.appId.value,
-    rootCollection: workspaceRuntime.rootCollection.value,
-    readOnly: workspaceRuntime.readOnly.value,
-    canWrite: workspaceRuntime.canWrite.value,
-    selectedProperty: workspaceSelection.property.value,
-    targetCount: properties.count.value,
-  }))
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 
-  return {
-    property: workspaceSelection.property,
-    propertyId: workspaceSelection.propertyId,
-    properties: properties.targets,
-    outcome: properties.outcome,
-    selectProperty: workspaceActions.selectProperty,
-    clearProperty: workspaceActions.clearSelectedProperty,
-    debug,
+export type PropertyWorkspaceIndexState = {
+  user: {
+    id: string
+    anonymous: boolean
+    properties: string[]
+    primaryProperty: string
   }
+  property: { id: string; name: string; tagline: string; url: string }
+}
+
+export type PropertyWorkspaceIndexDerived = {
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
+  hasSelection: boolean
+  canCreate: boolean
+  canSelectMultiple: boolean
+}
+
+type PrimaryResponse = {
+  current: PropertyWorkspaceIndexState['property'] | null
+}
+
+export function usePropertyWorkspaceIndex() {
+  const { currentUser, hasAuthState } = useAuth()
+  const appContext = useCurrentAppContext()
+  const workspace = useWorkspace('property')
+  const pageState = useWorkspacePageState('property')
+  const mounted = ref(false)
+  const current = ref<PropertyWorkspaceIndexState['property'] | null>(null)
+  const pending = ref(false)
+  const error = ref<unknown>()
+  const primaryPropertyId = computed(
+    () => appContext.membership.value?.primary_property || ''
+  )
+  let requestSequence = 0
+
+  async function loadPrimary() {
+    const user = currentUser.value
+    if (
+      !import.meta.client ||
+      !hasAuthState.value ||
+      !user ||
+      !primaryPropertyId.value
+    ) {
+      current.value = null
+      pending.value = false
+      error.value = undefined
+      return
+    }
+
+    const sequence = ++requestSequence
+    pending.value = true
+    error.value = undefined
+    try {
+      const response = await $fetch<PrimaryResponse>(
+        '/api/workspace/property/primary',
+        { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
+      )
+      if (sequence === requestSequence) current.value = response.current
+    } catch (cause) {
+      if (sequence === requestSequence) {
+        current.value = null
+        error.value = cause
+      }
+    } finally {
+      if (sequence === requestSequence) pending.value = false
+    }
+  }
+
+  const state = computed<PropertyWorkspaceIndexState>(() => {
+    const membership = appContext.membership.value
+    return {
+      user: {
+        id: currentUser.value?.uid || '',
+        anonymous: Boolean(currentUser.value?.isAnonymous),
+        properties: membership?.properties || [],
+        primaryProperty: primaryPropertyId.value,
+      },
+      property: current.value || { id: '', name: '', tagline: '', url: '' },
+    }
+  })
+
+  const derived = computed<PropertyWorkspaceIndexDerived>(() => {
+    const membership = appContext.membership.value
+    let outcome: PropertyWorkspaceIndexDerived['outcome'] = 'idle'
+    if (!mounted.value || !hasAuthState.value || appContext.pending.value)
+      outcome = 'pending'
+    else if (appContext.error.value || error.value) outcome = 'error'
+    else if (!currentUser.value) outcome = 'idle'
+    else if (!primaryPropertyId.value) outcome = 'empty'
+    else if (pending.value) outcome = 'pending'
+    else outcome = current.value ? 'ready' : 'error'
+
+    return {
+      outcome,
+      hasSelection: Boolean(current.value),
+      canCreate: false,
+      canSelectMultiple: membership?.subscription === 'business',
+    }
+  })
+
+  async function refresh() {
+    await appContext.refresh()
+    await loadPrimary()
+  }
+
+  onMounted(() => {
+    mounted.value = true
+  })
+
+  watch(
+    [currentUser, hasAuthState, primaryPropertyId],
+    () => void loadPrimary(),
+    { immediate: true }
+  )
+  watchEffect(() =>
+    pageState.publish({
+      user: state.value.user,
+      property: state.value.property,
+      derived: derived.value,
+    })
+  )
+  watch(
+    () => state.value.property,
+    (property: PropertyWorkspaceIndexState['property']) => {
+      if (property.id) {
+        workspace.activate(
+          property.id,
+          property.name,
+          property.tagline,
+          property.url
+        )
+      } else {
+        workspace.clearActive()
+      }
+    },
+    { immediate: true }
+  )
+
+  return { state, derived, actions: { refresh } }
 }

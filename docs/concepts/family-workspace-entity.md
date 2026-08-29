@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 Ref: 6a9f64e67
 Role: map, not canon
 
@@ -125,12 +125,16 @@ migration verification, and protected Workspace consumer are complete.
   activate/clear actions. It owns no directory, authority query, source mode,
   storage routing, runtime anatomy, or debug projection.
 - Each domain's `useXWorkspaceIndex` proves access through its authoritative
-  relationship, reads at most the active Entity, and exposes `active`,
-  `access`, and bounded `actions`. Outcomes are `idle`, `pending`, `error`,
-  `empty`, or `ready`; read failure never becomes an empty authority result.
+  AppUser relationship, reuses the current App context for the explicit Entity
+  id array and `primary_<family>` id, and reads at most that primary Entity.
+  It exposes only the page's bounded state, derived values, and actions.
+  Outcomes are `idle`, `pending`, `error`, `empty`, or `ready`; read failure
+  never becomes an empty authority result.
 - No available Entity produces the Create state. One accessible Entity may
   become current automatically. Choosing among several is a User relationship
-  action outside the baseline Workspace index.
+  action outside the baseline Workspace index. A Business selector may load
+  the bounded Entity choice projection when it renders; Free and Professional
+  do not load the full collection merely to show their primary Entity.
 - Capability runtimes receive the established active Entity id and load only
   their own records. They do not reconstruct an Entity directory or another
   active-Entity authority.
@@ -138,9 +142,14 @@ migration verification, and protected Workspace consumer are complete.
   directly. Core does not own a generic directory-index adapter.
 - `team/{uid}` belongs to the Entity's Team surface and names its roles and
   permissions. It is not the user's Workspace Entity index.
-- The AppUser stores the Entity ids and primary Entity id used by that App's
-  Workspace index. Kitchen uses `kitchens` and `primary_kitchen`; Project uses
-  `projects` and `primary_project`.
+- The AppUser model reserves the explicit plural Entity-id array and singular
+  `primary_<family>` field used by each implemented family; no generic
+  Workspace target field owns those relationships. Kitchen, Project, Portfolio,
+  Property, and Supplier now prove the primary-only Index read contract.
+  Portfolio, Property, and Supplier still require separate trusted Create and
+  primary-change cutovers before their legacy mutation paths can be retired.
+  Blank remains on legacy App-support access until its complete Server-authority
+  cutover and migration land.
 - Subscription capacity counts the AppUser Entity-id array inside the trusted
   Create transaction. The same transaction creates the Entity root, updates
   the User array and primary id, and may create the initial Team record for the

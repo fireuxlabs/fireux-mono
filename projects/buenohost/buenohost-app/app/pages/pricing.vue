@@ -1,15 +1,11 @@
 <template>
-  <AppPricingCatalogue
-    :app-name="appName"
-    :description="description"
-    :tiers="tiers"
-  />
+  <AppPricingCatalogue :tiers="tiers" />
 </template>
 
 <script setup lang="ts">
 import { useBuenoHostPricing } from '../composables/useBuenoHostPricing'
 
-const { appName, description, tiers } = useBuenoHostPricing()
+const { tiers } = useBuenoHostPricing()
 
 definePageMeta({
   layout: 'landing',

@@ -32,6 +32,18 @@ export type CurrentAppMembership = {
   subscription: AppUserSubscription
   onboarding_status: AppUserOnboardingStatus
   profiles: string[]
+  kitchens: string[]
+  primary_kitchen: string
+  projects: string[]
+  primary_project: string
+  properties: string[]
+  primary_property: string
+  portfolios: string[]
+  primary_portfolio: string
+  suppliers: string[]
+  primary_supplier: string
+  blanks: string[]
+  primary_blank: string
 }
 
 export type CurrentAppContextResponse = {

@@ -146,6 +146,48 @@ export async function run(ctx) {
     ),
     'utf8'
   )
+  const projectWorkspaceIndex = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts'
+    ),
+    'utf8'
+  )
+  const portfolioWorkspaceIndex = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/index/usePortfolioWorkspaceIndex.ts'
+    ),
+    'utf8'
+  )
+  const propertyWorkspaceIndex = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/index/usePropertyWorkspaceIndex.ts'
+    ),
+    'utf8'
+  )
+  const supplierWorkspaceIndex = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/index/useSupplierWorkspaceIndex.ts'
+    ),
+    'utf8'
+  )
+  const projectWorkspaceSelector = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
+    ),
+    'utf8'
+  )
+  const kitchenWorkspaceSelector = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
+    ),
+    'utf8'
+  )
   if (
     !kitchenWorkspaceIndex.includes('identity?.image_url') ||
     kitchenWorkspaceIndex.includes('readKitchenPresentationIdentity')
@@ -155,20 +197,54 @@ export async function run(ctx) {
     )
   }
   if (
-    !kitchenWorkspace.includes('resolveWorkspaceCanCreate(') ||
-    !kitchenWorkspace.includes("'kitchen'") ||
-    !kitchenWorkspaceIndex.includes('workspace.runtime.canCreate.value')
+    !kitchenWorkspaceIndex.includes('resolveWorkspaceCanCreate(') ||
+    !kitchenWorkspaceIndex.includes("'kitchen'")
   ) {
     violations.push(
       'Kitchen Workspace creation must follow the shared App workspace policy'
     )
   }
   if (
-    !kitchenWorkspaceIndex.includes('actions: { refresh: workspace.targets.refresh }') ||
+    !kitchenWorkspaceIndex.includes('actions: { refresh }') ||
     !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(
       'Kitchen Workspace index must expose state and derived while Active receives only Kitchen presentation state'
+    )
+  }
+  for (const [label, source, currentReader] of [
+    ['Project', projectWorkspaceIndex, 'useProjectDetail(primaryProjectId)'],
+    [
+      'Kitchen',
+      kitchenWorkspaceIndex,
+      'useKitchenWorkspaceCurrent(primaryKitchenId)',
+    ],
+    [
+      'Portfolio',
+      portfolioWorkspaceIndex,
+      "'/api/workspace/portfolio/primary'",
+    ],
+    ['Property', propertyWorkspaceIndex, "'/api/workspace/property/primary'"],
+    ['Supplier', supplierWorkspaceIndex, "'/api/workspace/supplier/primary'"],
+  ]) {
+    if (
+      !source.includes('useCurrentAppContext()') ||
+      !source.includes(currentReader) ||
+      source.includes(`use${label}Workspace()`)
+    ) {
+      violations.push(
+        `${label} Workspace index must reuse AppUser context and read only its primary Entity`
+      )
+    }
+  }
+  if (
+    !projectWorkspaceSelector.includes('useProjectCollection({') ||
+    !projectWorkspaceSelector.includes('props.canSelectMultiple') ||
+    !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
+    !kitchenWorkspaceSelector.includes('props.canSelectMultiple')
+  ) {
+    violations.push(
+      'Project and Kitchen full Entity choices must remain deferred to their Business selectors'
     )
   }
 

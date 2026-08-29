@@ -29,6 +29,9 @@
 import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
 defineProps<{
-  kitchen: KitchenWorkspaceIndexState['kitchen']
+  kitchen: Pick<
+    KitchenWorkspaceIndexState['kitchen'],
+    'name' | 'tagline' | 'url'
+  >
 }>()
 </script>

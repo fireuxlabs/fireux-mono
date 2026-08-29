@@ -1,14 +1,9 @@
 <template>
-  <AppPricingCatalogue
-    :app-name="appName"
-    :description="description"
-    :tiers="tiers"
-    intro="Free starts one Kitchen. Professional completes one Kitchen. Business operates multiple Kitchens. Managed adds agreed work to selected Kitchens. Your App creates a separate branded Misebox product."
-  />
+  <AppPricingCatalogue :tiers="tiers" />
 </template>
 
 <script setup lang="ts">
-const { appName, description, tiers } = useMiseboxPricing()
+const { tiers } = useMiseboxPricing()
 
 definePageMeta({
   layout: 'landing',

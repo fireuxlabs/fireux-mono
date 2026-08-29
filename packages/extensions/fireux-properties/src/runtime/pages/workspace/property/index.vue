@@ -5,19 +5,25 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Property Workspace" />
       </template>
-
       <template #body>
-        <section class="space-y-4">
-          <WorkspacePropertyIndex />
-        </section>
+        <WorkspaceHero
+          title="Build your Property Workspace"
+          description="Manage reservations, guest information and property operations."
+        />
+        <WorkspaceProperty :state="state" :derived="derived" />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import { usePropertyWorkspaceIndex } from '../../../property/composables/workspace/index/usePropertyWorkspaceIndex'
+
+const { state, derived } = usePropertyWorkspaceIndex()
+
 definePageMeta({
   layout: 'workspace',
+  workspace: 'property',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {

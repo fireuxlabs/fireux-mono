@@ -1,10 +1,8 @@
 <template>
   <section class="flex items-center gap-2" aria-label="Kitchen controls">
     <WorkspaceKitchenSelector
-      v-if="state.kitchens.length"
-      :kitchens="state.kitchens"
-      :selected-entity-id="state.kitchen.id"
-      :primary-kitchen-id="state.user.primaryKitchen"
+      v-if="state.kitchen.id || derived.canSelectMultiple"
+      :kitchen="state.kitchen"
       :can-select-multiple="derived.canSelectMultiple"
       :refresh="refresh"
     />

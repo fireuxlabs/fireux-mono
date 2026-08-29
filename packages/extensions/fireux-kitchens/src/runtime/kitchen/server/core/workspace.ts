@@ -9,6 +9,9 @@ import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/serv
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
   type KitchenWorkspaceCurrentResponse,
+  type KitchenWorkspaceChoicesResponse,
+  type KitchenWorkspaceIndexKitchen,
+  type KitchenWorkspaceIndexResponse,
   type KitchenWorkspaceKitchen,
   type KitchenWorkspaceKitchensResponse,
 } from '../../models/kitchen-index.model.ts'
@@ -154,6 +157,35 @@ async function readKitchen(id: string): Promise<KitchenWorkspaceKitchen> {
   })
 }
 
+async function readKitchenIndexKitchen(
+  id: string
+): Promise<KitchenWorkspaceIndexKitchen> {
+  if (!isFirestoreDocumentId(id)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid Kitchen ID.' })
+  }
+  const db = getRuntimeFirestore()
+  const [rootSnapshot, placeSnapshot] = await db.getAll(
+    db.doc(`kitchens/${id}`),
+    db.doc(`places/${id}`)
+  )
+  if (!rootSnapshot.exists) {
+    conflict(`Kitchen ${id} is missing its canonical root.`)
+  }
+  const root = rootSnapshot.data() || {}
+  const placeData = placeSnapshot.exists ? placeSnapshot.data() || {} : {}
+  const identity = menuKitchenIdentity(root, placeData)
+  const place = readPlacePresentation(placeData)
+  return {
+    id,
+    place_id: placeSnapshot.exists ? id : '',
+    identity: {
+      display_name: text(identity.name),
+      tagline: place.tagline,
+      image_url: text(identity.imageUrl),
+    },
+  }
+}
+
 async function readKitchenUserState(uid: string, appId: string) {
   const snapshot = await getRuntimeFirestore()
     .doc(`apps/${appId}/users/${uid}`)
@@ -209,5 +241,41 @@ export async function readKitchenWorkspaceCurrent(
     ok: true,
     family: 'kitchen',
     current: kitchenId ? await readKitchen(kitchenId) : null,
+  }
+}
+
+export async function readKitchenWorkspaceIndex(
+  event: H3Event
+): Promise<KitchenWorkspaceIndexResponse> {
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'A Firebase identity is required to view a Kitchen.',
+    { allowAnonymous: true }
+  )
+  const appId = resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen').appId
+  const { primaryKitchenId } = await readKitchenUserState(uid, appId)
+  return {
+    ok: true,
+    family: 'kitchen',
+    current: primaryKitchenId
+      ? await readKitchenIndexKitchen(primaryKitchenId)
+      : null,
+  }
+}
+
+export async function readKitchenWorkspaceChoices(
+  event: H3Event
+): Promise<KitchenWorkspaceChoicesResponse> {
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'A Firebase identity is required to view Kitchens.',
+    { allowAnonymous: true }
+  )
+  const appId = resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen').appId
+  const { kitchenIds } = await readKitchenUserState(uid, appId)
+  return {
+    ok: true,
+    family: 'kitchen',
+    items: await Promise.all(kitchenIds.map(readKitchenIndexKitchen)),
   }
 }

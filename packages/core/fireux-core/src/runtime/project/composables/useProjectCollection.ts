@@ -61,8 +61,14 @@ export function useProjectCollection(
         )
       : null
   )
+  const requestScope = computed(() =>
+    filterIds.value
+      ? [...filterIds.value].sort().join(',') || 'none'
+      : 'all'
+  )
   const requestKey = computed(
-    () => `project-control-${currentUser.value?.uid || 'anonymous'}`
+    () =>
+      `project-control-${currentUser.value?.uid || 'anonymous'}-${requestScope.value}`
   )
   const {
     data,
@@ -78,14 +84,19 @@ export function useProjectCollection(
       const user = currentUser.value
       if (!user)
         return { ok: true, project_ids: [], primary_project: '', items: [] }
+      if (filterIds.value?.size === 0)
+        return { ok: true, project_ids: [], primary_project: '', items: [] }
+      const requestedId =
+        filterIds.value?.size === 1 ? [...filterIds.value][0] : ''
       return $fetch<ProjectControlResponse>('/api/internal/control/projects', {
         headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        query: requestedId ? { project_id: requestedId } : undefined,
       })
     },
     {
       server: false,
       lazy: false,
-      watch: [currentUser, hasAuthState, sourceMode],
+      watch: [currentUser, hasAuthState, sourceMode, filter],
     }
   )
   const projects = computed<Project[]>(() =>

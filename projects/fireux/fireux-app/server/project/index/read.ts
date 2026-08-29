@@ -8,7 +8,7 @@ import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/uti
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 const text = (value: unknown) => String(value ?? '').trim()
-export async function readProjectIndex(event: H3Event) {
+export async function readProjectIndex(event: H3Event, requestedId = '') {
   const { uid } = await requireFirebaseBearerUser(event)
   const runtime = useRuntimeConfig()
   const appId = text(runtime.public?.fireux?.id)
@@ -49,9 +49,24 @@ export async function readProjectIndex(event: H3Event) {
     ),
   ]
   const storedPrimary = text(membership.primary_project)
-  const documents = ids.length
+  if (requestedId && !ids.includes(requestedId)) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Project membership is required.',
+    })
+  }
+  const resolvedPrimary =
+    ids.includes(storedPrimary) || !ids.length
+      ? storedPrimary
+      : ids.length === 1
+        ? ids[0]!
+        : ''
+  const requestedIds = requestedId ? [requestedId] : ids
+  const documents = requestedIds.length
     ? (
-        await db.getAll(...ids.map((id) => db.collection('projects').doc(id)))
+        await db.getAll(
+          ...requestedIds.map((id) => db.collection('projects').doc(id))
+        )
       ).filter((document) => document.exists)
     : []
   const items: Project[] = documents
@@ -70,12 +85,7 @@ export async function readProjectIndex(event: H3Event) {
   return {
     ok: true as const,
     project_ids: ids,
-    primary_project:
-      ids.includes(storedPrimary) || !ids.length
-        ? storedPrimary
-        : ids.length === 1
-          ? ids[0]
-          : '',
+    primary_project: resolvedPrimary,
     items,
   }
 }

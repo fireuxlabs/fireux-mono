@@ -1,6 +1,6 @@
 # BuenoHost GPT Context
 
-Updated: 2026-08-20
+Updated: 2026-08-30
 Ref: d1a7d5eec
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
@@ -34,6 +34,9 @@ select their own bounded property targets.
   transaction as Reservation creation or lifecycle changes.
 - The BuenoHost global app owns ecosystem-level product-collection and management
   composition.
+- The BuenoHost global App opens its Property Workspace at `/`; its product
+  landing remains intact at `/about`. The index reads only the current AppUser
+  `primary_property` through the Property-owned authenticated projection.
 - Tenant apps own their property-specific presentation, copy, and
   contact/booking-channel configuration. Each root Property owns
   `team/{uid}`, Team requests, Reservations, Calendar records, and protected

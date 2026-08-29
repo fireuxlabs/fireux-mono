@@ -5,19 +5,22 @@
       <template #header>
         <LayoutsWorkspaceNavbar title="Portfolio Workspace" />
       </template>
-
       <template #body>
-        <section class="space-y-4">
-          <WorkspacePortfolioIndex />
-        </section>
+        <WorkspacePortfolioHero />
+        <WorkspacePortfolio :state="state" :derived="derived" />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
+import { usePortfolioWorkspaceIndex } from '../../../portfolio/composables/workspace/index/usePortfolioWorkspaceIndex'
+
+const { state, derived } = usePortfolioWorkspaceIndex()
+
 definePageMeta({
   layout: 'workspace',
+  workspace: 'portfolio',
   workspaceSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {

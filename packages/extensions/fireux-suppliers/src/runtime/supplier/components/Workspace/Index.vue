@@ -1,42 +1,34 @@
-<!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Supplier target outcome contract. -->
 <template>
-  <section class="workspace-surface workspace-surface--compact">
-    <WorkspaceSupplierActiveCard
-      :supplier="supplier"
-      :supplier-id="supplierId"
-      @clear="clearSupplier"
-    />
-
-    <WorkspaceSupplierTargets
-      :collection="suppliers"
-      :outcome="outcome"
-      @select="selectSupplier"
-    />
-
-    <DevDebugPanel
-      title="Supplier workspace debug"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{
-        selectedSupplier: supplier,
-        suppliers,
+  <section aria-label="Current Supplier">
+    <div v-if="derived.outcome === 'pending'" class="flex items-center gap-4">
+      <USkeleton class="size-12 rounded-full" />
+      <div class="grid gap-2">
+        <USkeleton class="h-4 w-64" />
+        <USkeleton class="h-4 w-48" />
+      </div>
+    </div>
+    <UUser
+      v-else-if="derived.hasSelection"
+      :name="state.supplier.name"
+      :description="state.supplier.tagline"
+      :avatar="{
+        src: state.supplier.url || undefined,
+        alt: state.supplier.name,
+        icon: 'i-lucide-truck',
       }"
-      :derived="debug"
-      :default-open="false"
+      size="lg"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import { useSupplierWorkspaceIndex } from '../../composables/workspace/index/useSupplierWorkspaceIndex'
+import type {
+  SupplierWorkspaceIndexDerived,
+  SupplierWorkspaceIndexState,
+} from '../../composables/workspace/index/useSupplierWorkspaceIndex'
 
-const {
-  supplier,
-  supplierId,
-  suppliers,
-  outcome,
-  selectSupplier,
-  clearSupplier,
-  debug,
-} = useSupplierWorkspaceIndex()
+defineProps<{
+  state: SupplierWorkspaceIndexState
+  derived: SupplierWorkspaceIndexDerived
+}>()
 </script>

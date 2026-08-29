@@ -16,6 +16,15 @@ function conflict(message: string): never {
   throw createError({ statusCode: 409, statusMessage: message })
 }
 
+const text = (value: unknown) => String(value ?? '').trim()
+const ids = (value: unknown) =>
+  Array.isArray(value) ? [...new Set(value.map(text).filter(Boolean))] : []
+const primary = (value: unknown, available: string[]) => {
+  const stored = text(value)
+  if (available.includes(stored)) return stored
+  return available.length === 1 ? available[0]! : ''
+}
+
 function membershipDto(
   id: string,
   value: Record<string, unknown>,
@@ -37,12 +46,30 @@ function membershipDto(
   const role = value.role
   const subscription = value.subscription
   const onboardingStatus = value.onboarding_status
+  const kitchens = ids(value.kitchens)
+  const projects = ids(value.projects)
+  const properties = ids(value.properties)
+  const portfolios = ids(value.portfolios)
+  const suppliers = ids(value.suppliers)
+  const blanks = ids(value.blanks)
   return {
     id,
     role,
     subscription,
     onboarding_status: onboardingStatus,
     profiles,
+    kitchens,
+    primary_kitchen: primary(value.primary_kitchen, kitchens),
+    projects,
+    primary_project: primary(value.primary_project, projects),
+    properties,
+    primary_property: primary(value.primary_property, properties),
+    portfolios,
+    primary_portfolio: primary(value.primary_portfolio, portfolios),
+    suppliers,
+    primary_supplier: primary(value.primary_supplier, suppliers),
+    blanks,
+    primary_blank: primary(value.primary_blank, blanks),
   }
 }
 
