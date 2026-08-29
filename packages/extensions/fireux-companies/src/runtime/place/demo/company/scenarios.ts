@@ -18,7 +18,7 @@ export type CompanyDemoTarget = {
 type CompanyDemoSeed = {
   id: string
   name: string
-  brandTagline: string
+  tagline: string
   city: string
   region: string
   postalCode: string
@@ -31,7 +31,7 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     id: seed.id,
     name: seed.name,
     short_name: seed.name,
-    brand_tagline: seed.brandTagline,
+    tagline: seed.tagline,
     place_type: 'physical',
     source: 'manual',
     formatted_address: `${seed.postalCode} ${seed.city}, Switzerland`,
@@ -72,7 +72,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
   target({
     id: 'alpine-foodservice-hq',
     name: 'Alpine Foodservice Depot',
-    brandTagline: 'Cold-chain foodservice distribution',
+    tagline: 'Cold-chain foodservice distribution',
     city: 'Interlaken',
     region: 'Bern',
     postalCode: '3800',
@@ -82,7 +82,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
   target({
     id: 'pantry-house-hq',
     name: 'Pantry House Warehouse',
-    brandTagline: 'Dry goods and pantry distribution',
+    tagline: 'Dry goods and pantry distribution',
     city: 'Bern',
     region: 'Bern',
     postalCode: '3000',
@@ -92,7 +92,7 @@ export const companyDemoTargets: CompanyDemoTarget[] = [
   target({
     id: 'bern-market-garden-hq',
     name: 'Bern Market Garden',
-    brandTagline: 'Market garden and fresh-produce packing',
+    tagline: 'Market garden and fresh-produce packing',
     city: 'Bern',
     region: 'Bern',
     postalCode: '3013',

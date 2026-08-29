@@ -16,10 +16,7 @@ import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
 type UpdateCtx = { id: string | null | undefined }
 type PlaceBrowserPatch = Partial<
-  Record<
-    Exclude<keyof Place, 'claimed_by' | 'id'>,
-    unknown
-  >
+  Record<Exclude<keyof Place, 'claimed_by' | 'id'>, unknown>
 > & { search_term?: unknown; brand_palette?: unknown }
 
 export type PlaceMutationAuthority = {
@@ -184,7 +181,7 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updateBrandTagline(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { brand_tagline: optionalString(value) })
+    await update(reqId(ctx), { tagline: optionalString(value) })
   }
 
   async function updateAbout(value: string, ctx: UpdateCtx) {

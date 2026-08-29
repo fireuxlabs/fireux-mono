@@ -16,7 +16,7 @@ export type KitchenDemoSupplierScenarioLike = {
       short_address?: string | null
       image_url?: string | null
       logo_image?: string | null
-      brand_tagline?: string | null
+      tagline?: string | null
     } | null
   }
   ingredients: readonly {
@@ -155,7 +155,7 @@ export function buildKitchenDemoSuppliersOperation(
     return {
       id: supplierId,
       name,
-      headline: clean(scenario.supplier.company_place?.brand_tagline),
+      headline: clean(scenario.supplier.company_place?.tagline),
       imageUrl: placeImageUrl || logoImageUrl,
       logoImageUrl,
       placeImageUrl,

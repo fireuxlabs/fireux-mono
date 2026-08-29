@@ -182,12 +182,17 @@ export async function run(ctx) {
   const projectActive = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/ActiveCard.vue'
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Active.vue'
     ),
     'utf8'
   )
-  if (!projectActive.includes('<WorkspaceActiveEntity')) {
-    violations.push('Project must use the shared active-entity anatomy')
+  if (
+    !projectActive.includes('<UUser') ||
+    !projectActive.includes("ProjectWorkspaceIndexState['project']")
+  ) {
+    violations.push(
+      'Project Workspace Active must receive only Project index presentation state'
+    )
   }
   if (activeEntity.includes('workspace-selected-entity__')) {
     violations.push(

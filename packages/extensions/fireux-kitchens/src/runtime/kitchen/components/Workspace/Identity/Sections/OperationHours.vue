@@ -221,7 +221,7 @@ const hours = computed(() => {
     windows: [],
   }
 })
-const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
+const placeId = computed(() => String(props.kitchen?.id ?? '').trim())
 const inheritedHourLines = computed(() => {
   const configured = readPlaceBusinessHours(place.value)
   return configured

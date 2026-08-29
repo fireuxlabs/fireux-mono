@@ -9,7 +9,7 @@ const interlakenPizza = {
 
 type PlaceIdentityAssets = {
   place: {
-    brand_tagline?: string
+    tagline?: string
     cover_image?: string
     logo_image?: string
     wordmark_image?: string
@@ -61,7 +61,7 @@ export async function useDefaultKioskSkinPreview() {
     kitchen: {
       id: manifest.source.kitchenId,
       label: manifest.presentation.kitchenName,
-      tagline: String(place.place.brand_tagline || '').trim(),
+      tagline: String(place.place.tagline || '').trim(),
     },
   }
 }

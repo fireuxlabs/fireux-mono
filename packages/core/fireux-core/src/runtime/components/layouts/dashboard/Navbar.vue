@@ -2,6 +2,10 @@
 <!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: label the notification control for assistive technology. -->
 <template>
   <UDashboardNavbar :title="title" :ui="ui ?? { right: 'gap-3' }">
+    <template #title>
+      <slot name="title">{{ title }}</slot>
+    </template>
+
     <template v-if="!showTitle" #left>
       <UDashboardSidebarCollapse class="lg:hidden" />
     </template>

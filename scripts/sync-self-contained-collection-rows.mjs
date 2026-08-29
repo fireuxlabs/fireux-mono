@@ -231,7 +231,7 @@ async function loadCollection(db, name) {
 const kitchenPlaceCardSnapshot = (place) =>
   compactObject({
     name: text(place.name),
-    brand_tagline: text(place.brand_tagline),
+    tagline: text(place.tagline),
     short_address: text(place.short_address),
     formatted_address: text(place.formatted_address),
     image_url: text(place.image_url || place.cover_image),

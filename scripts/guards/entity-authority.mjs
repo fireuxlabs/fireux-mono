@@ -113,7 +113,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'about',
     'address',
     'brand_palette',
-    'brand_tagline',
     'business_hours',
     'claimed_by',
     'cover_image',
@@ -140,6 +139,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'slug',
     'social_links',
     'source',
+    'tagline',
     'tags',
     'timezone',
     'types',
@@ -152,6 +152,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     kitchenModel,
     /\n\s{2}(?:backdrop_color|logo_image|assets):/
   )
+  assert.deepEqual(typeFields(kitchenModel, 'Kitchen'), [
+    'id',
+    'slug',
+    'status',
+    'visibility',
+  ])
   assert.equal(existsSync(path.join(repoRoot, kitchenLogoEditorPath)), false)
   assert.equal(
     existsSync(path.join(repoRoot, kitchenIdentityEditorPath)),
@@ -1060,6 +1066,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(
     placeMediaMutation,
     /kitchenAuthority\.appId\s*!==\s*runtimeAppId/
+  )
+  assert.match(
+    placeMediaMutation,
+    /localDeveloper\s*=\s*import\.meta\.dev\s*&&\s*uid\s*===\s*configuredDeveloperId/
+  )
+  assert.match(
+    placeMediaMutation,
+    /!runtimeAdmin\s*&&\s*!localDeveloper\s*&&\s*!kitchenAccess/
   )
   assert.doesNotMatch(
     placeMutationAuthority,

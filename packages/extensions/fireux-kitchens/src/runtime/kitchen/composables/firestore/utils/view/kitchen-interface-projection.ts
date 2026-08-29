@@ -31,7 +31,7 @@ export const meaningfulSurfaceDelta = (value: unknown) => {
 export const placeBaselineKeys = [
   'name',
   'short_name',
-  'brand_tagline',
+  'tagline',
   'about',
   'formatted_address',
   'short_address',

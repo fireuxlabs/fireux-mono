@@ -16,6 +16,10 @@ import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import { readKitchenFulfilment } from './fulfilment.ts'
 import { readKitchenSproochliAttachment } from './sproochli-attachment.ts'
 import { readUserKitchenIds } from './user-kitchens.ts'
+import {
+  PRIMARY_KITCHEN_DOCUMENT,
+  type PrimaryKitchenPreference,
+} from './primary-kitchen.ts'
 import { menuKitchenIdentity } from '../../../menu/server/ownership/kitchen-scope.ts'
 import {
   readKitchenMenusConfig,
@@ -60,11 +64,10 @@ function projectKitchen(input: {
   const visibility = readKitchenVisibility(input.root)
   const menus = readKitchenMenusConfig(input.root)
   const gallery = place.gallery
-  const tagline = place.brandTagline
+  const tagline = place.tagline
   const themePalette = readKitchenThemePalette(input.root)
   const orders = record(input.root.orders)
   const shortName = place.shortName
-  const brandTagline = place.brandTagline
   const formattedAddress = place.formattedAddress
   const shortAddress = place.shortAddress
   const claimedBy = readRecordString(input.root, 'claimed_by')
@@ -79,7 +82,6 @@ function projectKitchen(input: {
   return {
     id: input.id,
     can_write: input.canWrite,
-    ...(input.place ? { place_id: input.id } : {}),
     slug: readRecordString(input.root, 'slug'),
     visibility,
     identity: {
@@ -115,7 +117,6 @@ function projectKitchen(input: {
     name: displayName,
     ...(tagline ? { tagline } : {}),
     ...(shortName ? { short_name: shortName } : {}),
-    ...(brandTagline ? { brand_tagline: brandTagline } : {}),
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
     ...(shortAddress ? { short_address: shortAddress } : {}),
     ...(cardImageUrl ? { image_url: cardImageUrl } : {}),
@@ -182,23 +183,32 @@ async function readKitchen(
   })
 }
 
-async function readUserKitchens(event: H3Event) {
+async function readPrimaryKitchenId(uid: string, kitchenIds: string[]) {
+  const snapshot = await getRuntimeFirestore()
+    .doc(`users/${uid}/private/${PRIMARY_KITCHEN_DOCUMENT}`)
+    .get()
+  const stored = text(
+    (snapshot.data() as PrimaryKitchenPreference | undefined)
+      ?.primary_kitchen_id
+  )
+  if (kitchenIds.includes(stored)) return stored
+  return kitchenIds.length === 1 ? kitchenIds[0]! : ''
+}
+
+export async function readKitchenWorkspaceKitchens(
+  event: H3Event
+): Promise<KitchenWorkspaceKitchensResponse> {
   const { uid } = await requireFirebaseBearerUser(
     event,
     'A Firebase identity is required to view Kitchens.',
     { allowAnonymous: true }
   )
   const kitchenIds = await readUserKitchenIds(uid)
-  return Promise.all(kitchenIds.map((id) => readKitchen(uid, id)))
-}
-
-export async function readKitchenWorkspaceKitchens(
-  event: H3Event
-): Promise<KitchenWorkspaceKitchensResponse> {
   return {
     ok: true,
     family: 'kitchen',
-    items: await readUserKitchens(event),
+    primary_kitchen_id: await readPrimaryKitchenId(uid, kitchenIds),
+    items: await Promise.all(kitchenIds.map((id) => readKitchen(uid, id))),
   }
 }
 

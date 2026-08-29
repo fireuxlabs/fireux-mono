@@ -2,16 +2,14 @@
   <UCard>
     <template #header>
       <div>
-        <div class="text-base font-semibold text-highlighted">
-          Public story
-        </div>
+        <div class="text-base font-semibold text-highlighted">Public story</div>
       </div>
     </template>
 
     <div class="grid gap-5">
       <MoleculesFormsEditableSimpleField
         label="Brand tagline"
-        :value="place?.brand_tagline"
+        :value="place?.tagline"
         placeholder="Warm cocktails, tapas, and mountain hospitality"
         :maxlength="140"
         :update="handleBrandTagline"
@@ -28,7 +26,9 @@
       />
 
       <section class="rounded-xl border border-default p-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <h3 class="text-sm font-medium text-highlighted">Cover image</h3>
             <p class="mt-1 text-xs text-muted">
@@ -62,7 +62,7 @@
               accept="image/*"
               class="sr-only"
               @change="uploadCover"
-            >
+            />
           </div>
         </div>
         <div class="mt-4 aspect-video overflow-hidden rounded-xl bg-elevated">
@@ -71,7 +71,7 @@
             :src="coverImage"
             :alt="`${place?.name || 'Place'} cover`"
             class="size-full object-cover"
-          >
+          />
           <div
             v-else
             class="flex size-full items-center justify-center text-sm text-muted"
@@ -82,12 +82,14 @@
       </section>
 
       <section class="rounded-xl border border-default p-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div>
             <h3 class="text-sm font-medium text-highlighted">Gallery</h3>
             <p class="mt-1 text-xs text-muted">
-              Current Place gallery. Up to 24 images; recommended:
-              1200 × 1200 px.
+              Current Place gallery. Up to 24 images; recommended: 1200 × 1200
+              px.
             </p>
           </div>
           <UButton
@@ -107,7 +109,7 @@
             multiple
             class="sr-only"
             @change="uploadGallery"
-          >
+          />
         </div>
 
         <div
@@ -123,7 +125,7 @@
               :src="image"
               :alt="`${place?.name || 'Place'} gallery image ${index + 1}`"
               class="size-full object-cover"
-            >
+            />
             <UButton
               icon="i-lucide-x"
               aria-label="Remove gallery image"
@@ -166,7 +168,9 @@ const placeId = computed(() => String(props.place?.id || '').trim())
 const coverImage = computed(() => String(props.place?.cover_image || '').trim())
 const galleryImages = computed(() =>
   Array.isArray(props.place?.gallery_images)
-    ? props.place.gallery_images.map(image => String(image || '').trim()).filter(Boolean)
+    ? props.place.gallery_images
+        .map((image) => String(image || '').trim())
+        .filter(Boolean)
     : []
 )
 const toast = useToastify()
@@ -187,10 +191,10 @@ function selectedFiles(event: Event) {
   const input = event.target as HTMLInputElement | null
   const files = Array.from(input?.files || [])
   if (input) input.value = ''
-  if (files.some(file => !file.type.startsWith('image/'))) {
+  if (files.some((file) => !file.type.startsWith('image/'))) {
     throw new Error('Choose image files only.')
   }
-  if (files.some(file => file.size > 10 * 1024 * 1024)) {
+  if (files.some((file) => file.size > 10 * 1024 * 1024)) {
     throw new Error('Each image must be 10 MB or smaller.')
   }
   return files
@@ -270,15 +274,13 @@ async function uploadGallery(event: Event) {
         typeof crypto !== 'undefined' && 'randomUUID' in crypto
           ? crypto.randomUUID()
           : `${Date.now()}-${index}`
-      additions.push(await uploadImage(
-        `places/${placeId.value}/gallery/${objectId}`,
-        file
-      ))
+      additions.push(
+        await uploadImage(`places/${placeId.value}/gallery/${objectId}`, file)
+      )
     }
-    await updateGalleryImages(
-      [...galleryImages.value, ...additions],
-      { id: placeId.value }
-    )
+    await updateGalleryImages([...galleryImages.value, ...additions], {
+      id: placeId.value,
+    })
     toast.success('Gallery updated')
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -292,10 +294,11 @@ async function uploadGallery(event: Event) {
 async function removeGalleryImage(image: string) {
   if (!placeId.value || mediaBusy.value) return
   await updatePlace(
-    () => updateGalleryImages(
-      galleryImages.value.filter(candidate => candidate !== image),
-      { id: placeId.value }
-    ),
+    () =>
+      updateGalleryImages(
+        galleryImages.value.filter((candidate) => candidate !== image),
+        { id: placeId.value }
+      ),
     'Gallery updated',
     'Failed to update gallery'
   )

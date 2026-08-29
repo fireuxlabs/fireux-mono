@@ -811,7 +811,7 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
       expected: ['<UChatPrompt'],
     },
     {
-      file: 'projects/fireux/fireux-app/app/components/Workspace/Project/AI.vue',
+      file: 'projects/fireux/fireux-app/app/components/Workspace/Project/IndexAI.vue',
       expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
   ]

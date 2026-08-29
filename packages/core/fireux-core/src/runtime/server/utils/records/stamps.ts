@@ -5,9 +5,11 @@ export type ServerAuditStampOptions = {
   appId?: string
 }
 
+export const serverTimestamp = () => FieldValue.serverTimestamp()
+
 export function serverAuditStamp(options: ServerAuditStampOptions) {
   return {
-    at: FieldValue.serverTimestamp(),
+    at: serverTimestamp(),
     by: options.by,
     ...(options.appId ? { app_id: options.appId } : {}),
   }

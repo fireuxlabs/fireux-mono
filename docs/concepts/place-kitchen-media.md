@@ -1,6 +1,6 @@
 # Place and Kitchen media
 
-Updated: 2026-08-21
+Updated: 2026-08-29
 Ref: f3c707663
 Role: map, not canon
 
@@ -11,6 +11,9 @@ Place is the physical venue and owns its complete shared venue identity:
 `logo_image`, `wordmark_image`, and its identity colour. Kitchen is the food
 operation at that Place. Its document id equals the Place id, so Kitchen owns
 no second identity or media object and stores no redundant `place_id`.
+The canonical Kitchen root is the domain-only `id`, `slug`, `status`, and
+`visibility` shape. Place owns the shared name; Kitchen readers join it from
+`places/{kitchenId}` and new Kitchen writers do not persist a duplicate name.
 
 Kitchen cards and detail pages join the canonical Kitchen with that same-id
 Place. They present Place identity without copying or overriding it on
@@ -62,6 +65,13 @@ canonical sparse Place fields is owned by
 `scripts/migrate-misebox-place-assets.mjs`. It verifies every referenced
 Storage object, preserves complete protected pre-images, and promotes exact
 Place logo and wordmark references into their canonical sparse Place fields.
+The completed `scripts/migrate-misebox-place-taglines.mjs` cutover renamed the
+Place presentation field from `brand_tagline` to `tagline` without inventing
+missing Place copy.
+`scripts/reconcile-misebox-place-provider-fields.mjs` is the protected,
+hash-confirmed named-database lane for additive Google provider reconciliation.
+It requests no photos, preserves all non-empty values, records provider
+conflicts as drift, and verifies the exact post-write document shape.
 The one-time guarded recovery at
 `scripts/restore-misebox-place-identity.mjs` restores exact approved identity
 references from that protected pre-image when an earlier migration plan

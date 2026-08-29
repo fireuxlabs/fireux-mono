@@ -54,10 +54,10 @@
           >Also known as {{ place.short_name }}</UBadge
         >
         <p
-          v-if="place.brand_tagline"
+          v-if="place.tagline"
           class="place-header__description fx-type-description"
         >
-          {{ place.brand_tagline }}
+          {{ place.tagline }}
         </p>
         <div class="place-header__metadata">
           <span v-if="place.short_address"

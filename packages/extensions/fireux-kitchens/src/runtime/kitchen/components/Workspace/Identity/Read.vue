@@ -197,7 +197,7 @@ const name = computed(() =>
   )
 )
 const tagline = computed(() =>
-  String(kitchenTagline.value || place.value?.brand_tagline || '')
+  String(kitchenTagline.value || place.value?.tagline || '')
 )
 const imageUrl = computed(() =>
   String(

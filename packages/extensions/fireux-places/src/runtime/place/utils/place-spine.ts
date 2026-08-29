@@ -56,12 +56,10 @@ const currencyByCountry: Readonly<Record<string, string>> = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const stringArray = (value: unknown) =>
-  Array.isArray(value)
-    ? value.map(text).filter(Boolean)
-    : []
+  Array.isArray(value) ? value.map(text).filter(Boolean) : []
 
 export const readMediaBackdropColor = (
   value: unknown,
@@ -83,8 +81,12 @@ const time = (value: unknown) => {
   const hour = Number(compact?.[1] ?? separated?.[1])
   const minute = Number(compact?.[2] ?? separated?.[2])
 
-  return Number.isInteger(hour) && hour >= 0 && hour <= 23 &&
-    Number.isInteger(minute) && minute >= 0 && minute <= 59
+  return Number.isInteger(hour) &&
+    hour >= 0 &&
+    hour <= 23 &&
+    Number.isInteger(minute) &&
+    minute >= 0 &&
+    minute <= 59
     ? `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
     : ''
 }
@@ -97,7 +99,9 @@ const day = (value: unknown): PlaceBusinessHoursDay | null => {
 const window = (value: unknown): PlaceBusinessHoursWindow | null => {
   const source = record(value)
   const windowDays = Array.isArray(source.days)
-    ? Array.from(new Set(source.days.map(day).filter(Boolean))) as PlaceBusinessHoursDay[]
+    ? (Array.from(
+        new Set(source.days.map(day).filter(Boolean))
+      ) as PlaceBusinessHoursDay[])
     : []
   const open = time(source.open)
   const close = time(source.close)
@@ -113,8 +117,8 @@ export const normalizePlaceBusinessHours = (
   const source = record(value)
   const windows = Array.isArray(source.windows)
     ? source.windows
-      .map(window)
-      .filter((item): item is PlaceBusinessHoursWindow => Boolean(item))
+        .map(window)
+        .filter((item): item is PlaceBusinessHoursWindow => Boolean(item))
     : []
 
   return windows.length ? { windows } : null
@@ -162,7 +166,7 @@ export const readPlacePresentation = (value: unknown) => {
   return {
     name: text(source.name),
     shortName: text(source.short_name),
-    brandTagline: text(source.brand_tagline),
+    tagline: text(source.tagline),
     about: text(source.about),
     formattedAddress: text(source.formatted_address),
     shortAddress: text(source.short_address),
@@ -176,11 +180,12 @@ export const readPlacePresentation = (value: unknown) => {
       source.image_shade
     ),
     /** @deprecated Compatibility projection only. */
-    imageShade: text(source.image_shade).toLowerCase() === 'light'
-      ? 'light'
-      : text(source.image_shade).toLowerCase() === 'dark'
-        ? 'dark'
-        : 'none',
+    imageShade:
+      text(source.image_shade).toLowerCase() === 'light'
+        ? 'light'
+        : text(source.image_shade).toLowerCase() === 'dark'
+          ? 'dark'
+          : 'none',
     phone: text(source.phone),
     website: text(source.website),
     googleMapsUrl: text(source.google_maps_url),
@@ -201,7 +206,11 @@ export const placeBusinessHoursFromGooglePeriods = (
       const openTime = time(open.time)
 
       if (!openDay || !openTime) return null
-      if (!Object.keys(close).length && openDay === 'sunday' && openTime === '00:00') {
+      if (
+        !Object.keys(close).length &&
+        openDay === 'sunday' &&
+        openTime === '00:00'
+      ) {
         return { days: [...days], open: '00:00', close: '00:00' }
       }
 

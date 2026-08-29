@@ -64,7 +64,6 @@ export type KitchenSurface = {
   visibility?: boolean
   visible?: boolean
   route_scope?: 'live' | 'demo' | 'test'
-  place_id?: string
   identity?: KitchenWorkspaceKitchen['identity']
   created?: unknown
   updated?: unknown
@@ -95,7 +94,7 @@ export type KitchenSurface = {
   image_kind?: 'photograph' | 'brand'
   media_backdrop_color?: string
   claimed_by?: string
-  brand_tagline?: string
+  tagline?: string
   price_level?: string
   website?: string
   phone?: string
@@ -118,7 +117,7 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
           Place,
           | 'name'
           | 'short_name'
-          | 'brand_tagline'
+          | 'tagline'
           | 'about'
           | 'short_address'
           | 'formatted_address'

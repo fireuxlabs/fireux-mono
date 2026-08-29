@@ -6,6 +6,10 @@
     :show-subscription="false"
     :show-notifications="showOperationalControls"
   >
+    <template #title>
+      <slot name="title">{{ title }}</slot>
+    </template>
+
     <template #right>
       <div class="flex items-center gap-2">
         <UserSubscriptionControl />

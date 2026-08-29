@@ -17,6 +17,7 @@ import { useKitchenInterface } from '../../firestore/utils/view/useKitchenInterf
 
 export type UseKitchenWorkspaceKitchensResult = {
   kitchens: ComputedRef<KitchenSurface[]>
+  primaryKitchenId: ComputedRef<string>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -29,6 +30,7 @@ export function useKitchenWorkspaceKitchens(
 ): UseKitchenWorkspaceKitchensResult {
   const { currentUser, hasAuthState } = useAuth()
   const records = ref<KitchenWorkspaceKitchen[]>([])
+  const primaryKitchenId = ref('')
   const status = ref<'idle' | 'pending' | 'ready' | 'error'>('idle')
   const requestError = ref<unknown>()
   let requestSequence = 0
@@ -40,6 +42,7 @@ export function useKitchenWorkspaceKitchens(
     const user = currentUser.value
     if (!import.meta.client || !enabled.value || !hasAuthState.value || !user) {
       records.value = []
+      primaryKitchenId.value = ''
       status.value = 'idle'
       return
     }
@@ -54,10 +57,12 @@ export function useKitchenWorkspaceKitchens(
       )
       if (sequence !== requestSequence) return
       records.value = response.items
+      primaryKitchenId.value = response.primary_kitchen_id
       status.value = 'ready'
     } catch (error) {
       if (sequence !== requestSequence) return
       records.value = []
+      primaryKitchenId.value = ''
       requestError.value = error
       status.value = 'error'
     }
@@ -74,6 +79,7 @@ export function useKitchenWorkspaceKitchens(
 
   return {
     kitchens,
+    primaryKitchenId: computed(() => primaryKitchenId.value),
     count: computed(() => kitchens.value.length),
     pending: computed(() => status.value === 'pending'),
     error: requestError,

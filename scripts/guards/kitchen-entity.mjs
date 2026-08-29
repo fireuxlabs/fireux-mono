@@ -129,7 +129,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(
     kitchenModel.replace(/\s+/g, ' ').trim(),
-    "export type Kitchen = { id: string name: string slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
+    "export type Kitchen = { id: string slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
     'Kitchen must retain only its minimal shell identity; Place and capability data belong to their own models.'
   )
   assert.match(

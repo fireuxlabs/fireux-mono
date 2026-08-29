@@ -3,16 +3,25 @@
     aria-labelledby="project-workspace-operations"
     class="grid gap-5 border-t border-default pt-6"
   >
-    <div class="grid max-w-2xl gap-1">
-      <h2
-        id="project-workspace-operations"
-        class="m-0 text-2xl font-semibold text-highlighted"
-      >
-        What you can do
-      </h2>
-      <p class="m-0 text-sm leading-6 text-muted">
-        Work with the Apps and Ecosystem relationships owned by this Project.
-      </p>
+    <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+      <div class="grid max-w-2xl gap-1">
+        <h2
+          id="project-workspace-operations"
+          class="m-0 text-2xl font-semibold text-highlighted"
+        >
+          What you can do
+        </h2>
+        <p class="m-0 text-sm leading-6 text-muted">
+          Work with the Apps and Ecosystem relationships owned by this Project.
+        </p>
+      </div>
+      <UButton
+        to="/operations"
+        label="All Project operations"
+        color="neutral"
+        variant="link"
+        trailing-icon="i-lucide-arrow-right"
+      />
     </div>
 
     <div class="grid gap-3 md:grid-cols-2">

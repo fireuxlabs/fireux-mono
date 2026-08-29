@@ -92,7 +92,7 @@ export function useKitchenInterface() {
     const identity = Object.keys(place).length
       ? {
           display_name: safeString(place.name),
-          tagline: safeString(place.brand_tagline),
+          tagline: safeString(place.tagline),
           image_url: safeString(place.image_url),
           gallery: Array.isArray(place.gallery_images)
             ? (place.gallery_images as string[])
@@ -287,7 +287,7 @@ export function useKitchenInterface() {
       imageShade: base.imageShade,
       imageKind: base.imageKind,
       mediaBackdropColor: safeString(target.media_backdrop_color),
-      prop: safeString(target.tagline || target.brand_tagline),
+      prop: safeString(target.tagline),
     }
   }
 
@@ -324,14 +324,14 @@ export function useKitchenInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress,
       shortAddress: base.shortAddress,
-      prop: target.tagline || (target as any)?.brand_tagline,
+      prop: target.tagline,
       website: safeString(target.website),
       phone: safeString(target.phone),
       currencyCode: safeString(target.currency_code),
       menuAvailable: target.menu_available !== false,
       badges: [
         publicPath || (slug ? `/kitchens/${slug}` : ''),
-        safeString(target.place_id) ? 'Place linked' : '',
+        safeString(target.id) ? 'Place linked' : '',
         safeString(target.claimed_by) ? 'Claimed' : '',
         target.visibility === false ? 'Hidden' : '',
       ].filter(Boolean),

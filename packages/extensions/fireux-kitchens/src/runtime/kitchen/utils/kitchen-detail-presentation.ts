@@ -10,7 +10,7 @@ export function resolveKitchenDetailPresentation(
   place: Place
 ): KitchenDetailPresentation {
   const name = place.name
-  const tagline = text(place.brand_tagline)
+  const tagline = text(place.tagline)
   const image = text(place.image_url)
   const logo = text(place.logo_image)
   const backdrop = place.media_backdrop_color
@@ -23,7 +23,7 @@ export function resolveKitchenDetailPresentation(
     name,
     display_name: name,
     ...(text(place.short_name) ? { short_name: text(place.short_name) } : {}),
-    ...(tagline ? { tagline, brand_tagline: tagline } : {}),
+    ...(tagline ? { tagline } : {}),
     ...(text(place.formatted_address)
       ? { formatted_address: text(place.formatted_address) }
       : {}),

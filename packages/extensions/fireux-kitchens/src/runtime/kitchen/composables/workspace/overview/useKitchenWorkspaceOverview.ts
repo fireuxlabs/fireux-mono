@@ -66,7 +66,7 @@ export function useKitchenWorkspaceOverview() {
       normalizeString(
         kitchenSource.value.identity?.tagline || kitchenSource.value.tagline
       ) ||
-      normalizeString(place.value?.brand_tagline) ||
+      normalizeString(place.value?.tagline) ||
       normalizeString(place.value?.short_address) ||
       normalizeString(place.value?.formatted_address) ||
       normalizeString(kitchenSource.value.short_address) ||
@@ -95,7 +95,7 @@ export function useKitchenWorkspaceOverview() {
       normalizeString(place.value?.website) ||
       normalizeString(kitchenSource.value.website)
   )
-  const placeId = computed(() => normalizeString(kitchenSource.value.place_id))
+  const placeId = computed(() => normalizeString(kitchenSource.value.id))
   const visibilityBadgeLabel = computed(() =>
     kitchenSource.value.visibility === true ? 'Visible' : 'Hidden'
   )

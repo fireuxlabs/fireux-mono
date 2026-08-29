@@ -12,10 +12,10 @@ export function useSupplierWorkspaceIdentity() {
     )
   )
   const tagline = computed(() =>
-    normalizeString(selection.supplier.value?.company_place?.brand_tagline)
+    normalizeString(selection.supplier.value?.company_place?.tagline)
   )
   const headline = computed(() =>
-    normalizeString(selection.supplier.value?.company_place?.brand_tagline)
+    normalizeString(selection.supplier.value?.company_place?.tagline)
   )
   const summary = computed(() =>
     normalizeString(selection.supplier.value?.company_place?.about)
@@ -26,9 +26,7 @@ export function useSupplierWorkspaceIdentity() {
         selection.supplier.value?.company_place?.image_url
     )
   )
-  const categories = computed(() =>
-    []
-  )
+  const categories = computed(() => [])
   const deliveryAreas = computed(() =>
     Array.isArray(selection.supplier.value?.delivery_areas)
       ? selection.supplier.value?.delivery_areas

@@ -38,37 +38,133 @@
         />
 
         <div v-else class="space-y-6">
-          <UPageCard variant="subtle">
+          <div
+            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          >
             <div
-              class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+              v-if="placeId"
+              class="flex flex-wrap items-center gap-2 text-xs text-muted"
             >
-              <div class="space-y-2">
-                <p
-                  class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                >
-                  Editing place
-                </p>
-                <PlaceCardsPill
-                  v-if="placePill"
-                  v-bind="placePill"
-                  :show-badges="false"
-                  :link="false"
-                />
-              </div>
-
+              <span>Canonical ID</span>
+              <code class="font-mono text-highlighted">{{ placeId }}</code>
               <UButton
                 size="xs"
-                variant="soft"
+                variant="ghost"
                 color="neutral"
-                icon="i-lucide-eye"
-                :to="backTo"
+                icon="i-lucide-copy"
+                label="Copy ID"
+                @click="onCopyPlaceId"
+              />
+            </div>
+            <UButton
+              size="xs"
+              variant="ghost"
+              color="neutral"
+              icon="i-lucide-eye"
+              :to="backTo"
+            >
+              View details
+            </UButton>
+          </div>
+
+          <section v-if="canEdit" class="space-y-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h2 class="text-base font-semibold text-highlighted">
+                  Place setup
+                </h2>
+                <p class="mt-1 text-sm text-muted">
+                  {{
+                    setupComplete
+                      ? 'This Place has its required presentation.'
+                      : 'Complete the missing details below.'
+                  }}
+                </p>
+              </div>
+              <UBadge
+                :color="setupComplete ? 'success' : 'warning'"
+                variant="subtle"
+                :label="setupComplete ? 'Ready' : `${setupCount}/3 ready`"
+              />
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div
+                v-for="item in setupItems"
+                :key="item.label"
+                class="flex items-center gap-2"
               >
-                View details
+                <UIcon
+                  :name="
+                    item.complete
+                      ? 'i-lucide-circle-check'
+                      : 'i-lucide-circle-dashed'
+                  "
+                  :class="item.complete ? 'text-success' : 'text-warning'"
+                />
+                <span class="text-sm text-highlighted">{{ item.label }}</span>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <UButton
+                size="sm"
+                :variant="reOnboarding ? 'ghost' : 'solid'"
+                :color="reOnboarding ? 'neutral' : 'primary'"
+                :icon="reOnboarding ? 'i-lucide-x' : 'i-lucide-list-restart'"
+                @click="onToggleReOnboarding"
+              >
+                {{ reOnboarding ? 'Exit re-onboarding' : 'Re-onboard Place' }}
               </UButton>
             </div>
-          </UPageCard>
+          </section>
 
-          <PlaceEdit v-if="canEdit" :place="place" />
+          <section
+            v-if="canEdit && reOnboarding"
+            ref="reOnboardingSection"
+            class="space-y-6 scroll-mt-24"
+          >
+            <UAlert
+              color="primary"
+              variant="soft"
+              icon="i-lucide-list-restart"
+              title="Re-onboarding this Place"
+              description="Review the canonical name, tagline, and image below. Changes update this existing Place; they do not create another record."
+            />
+            <PlaceEditSummary :place="place" />
+            <PlaceEditStory :place="place" />
+            <div class="grid gap-6 lg:grid-cols-2">
+              <section class="space-y-2">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="text-sm font-semibold text-highlighted">Before</h3>
+                  <UBadge color="neutral" variant="outline" label="Snapshot" />
+                </div>
+                <pre
+                  class="overflow-x-auto rounded-lg border border-default p-4 text-xs text-muted"
+                ><code>{{ reOnboardingBeforeJson }}</code></pre>
+              </section>
+              <section class="space-y-2">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="text-sm font-semibold text-highlighted">After</h3>
+                  <UBadge color="primary" variant="outline" label="Live object" />
+                </div>
+                <pre
+                  class="overflow-x-auto rounded-lg border border-default p-4 text-xs text-muted"
+                ><code>{{ reOnboardingAfterJson }}</code></pre>
+              </section>
+            </div>
+            <div class="flex justify-end">
+              <UButton
+                color="primary"
+                icon="i-lucide-check"
+                @click="reOnboarding = false"
+              >
+                Finish re-onboarding
+              </UButton>
+            </div>
+          </section>
+
+          <PlaceEdit v-else-if="canEdit" :place="place" />
           <UAlert
             v-else
             color="warning"
@@ -103,11 +199,9 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
-import { computed } from 'vue'
-import {
-  usePlaceFetch,
-  usePlaceInterface,
-} from '../composables/firestore/usePlace'
+import { useDeveloperAccess } from 'fireux-core/runtime/user/composables/useDeveloperAccess'
+import { computed, nextTick, ref } from 'vue'
+import { usePlaceFetch } from '../composables/firestore/usePlace'
 
 const props = defineProps<{
   locator: string
@@ -124,17 +218,67 @@ const backTo = computed(() =>
   locator.value ? `/places/${encodeURIComponent(locator.value)}` : '/places'
 )
 const showDebug = import.meta.dev
-const { currentUser, isAdmin } = useUser()
+const { currentUser, appUser, isAdmin, isDeveloper } = useUser()
+const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
 const claimedBy = computed(() => place.value?.claimed_by ?? '')
+const hasStoredEditRole = computed(
+  () => appUser.value?.role === 'admin' || appUser.value?.role === 'dev'
+)
+const hasLocalDeveloperAccess = computed(
+  () => import.meta.dev && isConfiguredDeveloper.value
+)
 const canEdit = computed(() =>
   Boolean(
     isAdmin.value ||
+      isDeveloper.value ||
+      hasStoredEditRole.value ||
+      hasLocalDeveloperAccess.value ||
       (claimedBy.value && currentUser.value?.id === claimedBy.value)
   )
 )
 
-const { pill } = usePlaceInterface()
-const placePill = computed(() => pill(place.value))
+const reOnboarding = ref(false)
+const reOnboardingSection = ref<HTMLElement | null>(null)
+const reOnboardingBefore = ref<Record<string, string> | null>(null)
+const reOnboardingObject = () => ({
+  id: String(place.value?.id || ''),
+  name: String(place.value?.name || ''),
+  tagline: String(place.value?.tagline || ''),
+  image_url: String(place.value?.image_url || ''),
+})
+const reOnboardingAfter = computed(() => reOnboardingObject())
+const reOnboardingBeforeJson = computed(() =>
+  JSON.stringify(reOnboardingBefore.value || reOnboardingObject(), null, 2)
+)
+const reOnboardingAfterJson = computed(() =>
+  JSON.stringify(reOnboardingAfter.value, null, 2)
+)
+
+async function onToggleReOnboarding() {
+  if (reOnboarding.value) {
+    reOnboarding.value = false
+    return
+  }
+  reOnboardingBefore.value = { ...reOnboardingObject() }
+  reOnboarding.value = true
+  await nextTick()
+  reOnboardingSection.value?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+  })
+}
+
+const setupItems = computed(() => [
+  { label: 'Name', complete: Boolean(place.value?.name.trim()) },
+  { label: 'Tagline', complete: Boolean(place.value?.tagline.trim()) },
+  { label: 'Image', complete: Boolean(place.value?.image_url.trim()) },
+])
+const setupCount = computed(
+  () => setupItems.value.filter((item) => item.complete).length
+)
+const setupComplete = computed(
+  () => setupCount.value === setupItems.value.length
+)
 
 const toast = useToastify()
 
@@ -184,7 +328,7 @@ const editableFields = computed(() => {
     id: v.id,
     image_url: v.image_url,
     short_name: v.short_name,
-    brand_tagline: v.brand_tagline,
+    tagline: v.tagline,
     about: v.about,
     cover_image: v.cover_image,
     gallery_images: v.gallery_images,

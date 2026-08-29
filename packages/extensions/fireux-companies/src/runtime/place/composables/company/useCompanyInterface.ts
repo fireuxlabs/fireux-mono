@@ -113,9 +113,7 @@ export function useCompanyInterface() {
 
   const toInterface = buildInterface
 
-  function pill(
-    target?: Place | null | undefined
-  ): CompanyPill | null {
+  function pill(target?: Place | null | undefined): CompanyPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -125,9 +123,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function cell(
-    target?: Place | null | undefined
-  ): CompanyCell | null {
+  function cell(target?: Place | null | undefined): CompanyCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -137,13 +133,11 @@ export function useCompanyInterface() {
       formattedAddress: base.formattedAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      prop: target.brand_tagline,
+      prop: target.tagline,
     }
   }
 
-  function preview(
-    target?: Place | null | undefined
-  ): CompanyPreview | null {
+  function preview(target?: Place | null | undefined): CompanyPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -151,13 +145,11 @@ export function useCompanyInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
-      prop: target.brand_tagline,
+      prop: target.tagline,
     }
   }
 
-  function profile(
-    target?: Place | null | undefined
-  ): CompanyProfile | null {
+  function profile(target?: Place | null | undefined): CompanyProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     const address = base.shortAddress || base.formattedAddress
@@ -167,7 +159,7 @@ export function useCompanyInterface() {
       subtitle: base.subtitle,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      prop: target.brand_tagline,
+      prop: target.tagline,
       website: target.website,
       address,
       coverImage: target.cover_image,

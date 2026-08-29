@@ -211,7 +211,6 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
-        name: placeName,
         slug,
         status: 'active',
         visibility: false,
@@ -294,9 +293,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       ) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
-      mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
-        name,
-      })
       mutations.update(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
         name,
       })
@@ -328,7 +324,6 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       updated: serverAuditStamp({ by: current.uid }),
     })
     mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
-      name,
       slug,
       status: 'active',
       visibility: false,

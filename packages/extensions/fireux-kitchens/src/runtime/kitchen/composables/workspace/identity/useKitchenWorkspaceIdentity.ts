@@ -29,7 +29,7 @@ export function useKitchenWorkspaceIdentity(
   const name = computed(() => normalizeString(identity.value?.display_name))
   const tagline = computed(() => normalizeString(identity.value?.tagline))
   const slug = computed(() => normalizeString(kitchenRecord.value?.slug))
-  const placeId = computed(() => normalizeString(kitchenRecord.value?.place_id))
+  const placeId = computed(() => normalizeString(kitchenId.value))
   const address = computed(() => {
     const kitchen = kitchenRecord.value
     return normalizeString(kitchen?.short_address || kitchen?.formatted_address)

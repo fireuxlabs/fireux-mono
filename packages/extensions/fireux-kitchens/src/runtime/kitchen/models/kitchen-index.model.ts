@@ -16,7 +16,6 @@ export const KITCHEN_USER_LIMIT = 50
 export type KitchenWorkspaceKitchen = {
   id: string
   can_write: boolean
-  place_id?: string
   slug: string
   visibility: boolean
   identity: {
@@ -36,7 +35,7 @@ export type KitchenWorkspaceKitchen = {
   name: string
   tagline?: string
   short_name?: string
-  brand_tagline?: string
+  tagline?: string
   formatted_address?: string
   short_address?: string
   image_url?: string
@@ -55,6 +54,7 @@ export type KitchenWorkspaceKitchen = {
 export type KitchenWorkspaceKitchensResponse = {
   ok: true
   family: 'kitchen'
+  primary_kitchen_id: string
   items: KitchenWorkspaceKitchen[]
 }
 

@@ -1,6 +1,6 @@
 export const optionalPlaceTextFields = new Map<string, number>([
   ['short_name', 120],
-  ['brand_tagline', 240],
+  ['tagline', 240],
   ['about', 10_000],
   ['formatted_address', 500],
   ['short_address', 240],

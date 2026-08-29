@@ -7,6 +7,7 @@ export type KitchenWorkspaceIndexState = {
   user: { id: string; anonymous: boolean }
   kitchen: { id: string; name: string; tagline: string; url: string }
   kitchens: { id: string; name: string; tagline: string; url: string }[]
+  primaryKitchenId: string
 }
 
 export type KitchenWorkspaceIndexDerived = {
@@ -40,6 +41,7 @@ export function useKitchenWorkspaceIndex() {
         tagline: normalizeString(item.identity?.tagline),
         url: normalizeString(item.identity?.image_url),
       })),
+      primaryKitchenId: workspace.targets.primaryKitchenId.value,
     }
   })
 
@@ -61,6 +63,18 @@ export function useKitchenWorkspaceIndex() {
       kitchen: state.value.kitchen,
       derived: derived.value,
     })
+  })
+
+  watchEffect(() => {
+    const primaryKitchenId = workspace.targets.primaryKitchenId.value
+    if (
+      primaryKitchenId &&
+      workspace.selection.kitchenId.value !== primaryKitchenId &&
+      (!workspace.selection.kitchenId.value ||
+        !workspace.user.canOwnMultipleWorkspaces.value)
+    ) {
+      workspace.actions.selectKitchen(primaryKitchenId)
+    }
   })
 
   return { state, derived }

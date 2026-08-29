@@ -126,7 +126,7 @@ const headerPresentation = computed<Place | null>(() => {
   return {
     ...place,
     name: name.value,
-    brand_tagline: clean(place.brand_tagline),
+    tagline: clean(place.tagline),
     about: place.about,
     logo_image: place.logo_image,
   }

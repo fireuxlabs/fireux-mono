@@ -80,9 +80,7 @@ export function formatPlaceTypeLabel(value: unknown) {
 }
 
 const formatPlaceTypeList = (values?: string[]) =>
-  (values ?? [])
-    .map((value) => formatPlaceTypeLabel(value))
-    .filter(Boolean)
+  (values ?? []).map((value) => formatPlaceTypeLabel(value)).filter(Boolean)
 
 export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
@@ -96,13 +94,11 @@ export function usePlaceInterface() {
 
     return {
       id,
-      to: id
-        ? `/${'places'}/${encodeURIComponent(id)}`
-        : '',
+      to: id ? `/${'places'}/${encodeURIComponent(id)}` : '',
       title: name,
       subtitle: shortAddress || address,
-      badges: entityFamilies.map((entry: string) =>
-        entry.charAt(0).toUpperCase() + entry.slice(1)
+      badges: entityFamilies.map(
+        (entry: string) => entry.charAt(0).toUpperCase() + entry.slice(1)
       ),
       name,
       shortName,
@@ -148,7 +144,7 @@ export function usePlaceInterface() {
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
       source: target.source,
-      prop: target.brand_tagline,
+      prop: target.tagline,
     }
   }
 
@@ -163,7 +159,7 @@ export function usePlaceInterface() {
       name: base.name,
       formattedAddress: base.formattedAddress || base.shortAddress,
       source: target.source,
-      prop: target.brand_tagline,
+      prop: target.tagline,
     }
   }
 
@@ -185,13 +181,14 @@ export function usePlaceInterface() {
       Number.isFinite(lat) && Number.isFinite(lng)
         ? `https://maps.google.com/?q=${lat},${lng}`
         : ''
-    const socialLinks: Partial<PlaceSocialLinks> | undefined = target.social_links
+    const socialLinks: Partial<PlaceSocialLinks> | undefined =
+      target.social_links
     return {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
       imageUrl: target.image_url,
-      prop: target.brand_tagline,
+      prop: target.tagline,
       coverImage: target.cover_image,
       galleryImages: target.gallery_images?.slice(0, 3),
       about: target.about,

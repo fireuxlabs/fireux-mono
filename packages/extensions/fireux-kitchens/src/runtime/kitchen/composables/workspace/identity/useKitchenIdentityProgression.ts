@@ -40,7 +40,7 @@ export function useKitchenIdentityProgression() {
   const resolvedTagline = computed(
     () =>
       normalizeString(identity.value?.tagline) ||
-      normalizeString(place.value?.brand_tagline)
+      normalizeString(place.value?.tagline)
   )
   const placeRequirements = computed<KitchenIdentityRequirement[]>(() =>
     identityState.placeId.value

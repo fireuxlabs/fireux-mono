@@ -257,6 +257,10 @@ export async function mutatePlace(
       : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
   const ecosystem = text(useRuntimeConfig(event).public?.fireux?.ecosystem)
+  const configuredDeveloperId = text(
+    useRuntimeConfig(event).public?.fireux?.developerId
+  )
+  const localDeveloper = import.meta.dev && uid === configuredDeveloperId
   const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
@@ -326,11 +330,11 @@ export async function mutatePlace(
         text(kitchenTeamMember.status) === 'active' &&
         (kitchenTeamRole === 'owner' || kitchenTeamRole === 'operator')
     )
-    if (!runtimeAdmin && !kitchenAccess) {
+    if (!runtimeAdmin && !localDeveloper && !kitchenAccess) {
       throw createError({
         statusCode: 403,
         statusMessage:
-          'App admin or linked Kitchen operator access is required.',
+          'App admin, local configured developer, or linked Kitchen operator access is required.',
       })
     }
 

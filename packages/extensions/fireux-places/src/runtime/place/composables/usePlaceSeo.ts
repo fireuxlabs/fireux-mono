@@ -16,7 +16,7 @@ export function buildPlaceJsonLd(place: Place | null | undefined) {
     '@type': 'Place',
     name,
     description: excerpt(
-      place?.about || place?.brand_tagline || place?.short_address
+      place?.about || place?.tagline || place?.short_address
     ),
     image: clean(place?.cover_image || place?.image_url) || undefined,
     address: clean(place?.short_address) || undefined,
@@ -36,7 +36,7 @@ export function usePlaceSeo(place: MaybeRefOrGetter<Place | null | undefined>) {
     description: computed(() =>
       excerpt(
         entry.value?.about ||
-          entry.value?.brand_tagline ||
+          entry.value?.tagline ||
           entry.value?.short_address ||
           'Place details.'
       )
@@ -45,9 +45,7 @@ export function usePlaceSeo(place: MaybeRefOrGetter<Place | null | undefined>) {
       clean(entry.value?.cover_image || entry.value?.image_url)
     ),
     path: computed(() =>
-      id.value
-        ? `/${'places'}/${encodeURIComponent(id.value)}`
-        : ''
+      id.value ? `/${'places'}/${encodeURIComponent(id.value)}` : ''
     ),
     robots: computed(() =>
       isPublic.value ? 'index, follow' : 'noindex, nofollow'

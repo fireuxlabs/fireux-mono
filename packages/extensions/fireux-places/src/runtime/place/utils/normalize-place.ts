@@ -1,11 +1,7 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
-import type {
-  Place,
-  PlaceSource,
-  PlaceStamp,
-} from '../models/place.model.ts'
+import type { Place, PlaceSource, PlaceStamp } from '../models/place.model.ts'
 import {
   normalizePlaceBusinessHours,
   readMediaBackdropColor,
@@ -16,9 +12,15 @@ export const PlaceDefaults: Place = {
   slug: '',
   name: '',
   short_name: '',
-  brand_tagline: '',
+  tagline: '',
   about: '',
-  address: { street: '', city: '', region: '', postal_code: '', country_code: '' },
+  address: {
+    street: '',
+    city: '',
+    region: '',
+    postal_code: '',
+    country_code: '',
+  },
   formatted_address: '',
   short_address: '',
   lat: 0,
@@ -34,7 +36,13 @@ export const PlaceDefaults: Place = {
   email: '',
   website: '',
   google_maps_url: '',
-  social_links: { instagram: '', facebook: '', tiktok: '', linkedin: '', youtube: '' },
+  social_links: {
+    instagram: '',
+    facebook: '',
+    tiktok: '',
+    linkedin: '',
+    youtube: '',
+  },
   brand_palette: {},
   place_type: 'physical',
   types: [],
@@ -100,7 +108,7 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
     slug: text(source.slug),
     name,
     short_name: text(source.short_name),
-    brand_tagline: text(source.brand_tagline),
+    tagline: text(source.tagline),
     about: text(source.about),
     address: {
       street: text(record(source.address).street),

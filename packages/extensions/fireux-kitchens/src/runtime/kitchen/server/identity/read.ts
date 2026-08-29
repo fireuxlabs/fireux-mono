@@ -130,7 +130,7 @@ export function projectKitchenDetail(
   const googleMapsUrl = parts.place.googleMapsUrl
   const latitude = number(place.lat)
   const longitude = number(place.lng)
-  const tagline = kitchen.place.brand_tagline || ''
+  const tagline = kitchen.place.tagline || ''
   const imageUrl = kitchen.place.image_url
   const placeImageUrl = text(parts.place.imageUrl)
   const presentation: KitchenDetailPresentation = {
@@ -143,9 +143,7 @@ export function projectKitchenDetail(
     ...(kitchen.place.short_name
       ? { short_name: kitchen.place.short_name }
       : {}),
-    ...(kitchen.place.brand_tagline
-      ? { brand_tagline: kitchen.place.brand_tagline }
-      : {}),
+    ...(kitchen.place.tagline ? { tagline: kitchen.place.tagline } : {}),
     ...(kitchen.place.formatted_address
       ? { formatted_address: kitchen.place.formatted_address }
       : {}),

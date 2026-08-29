@@ -21,7 +21,7 @@ export function buildSupplierJsonLd(
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    description: excerpt(place?.about || place?.brand_tagline),
+    description: excerpt(place?.about || place?.tagline),
     image: clean(place?.logo_image || place?.image_url) || undefined,
   }
 }
@@ -46,16 +46,17 @@ export function useSupplierSeo(
 
   return useSeo({
     title: computed(
-      () => clean(location.value?.short_name || location.value?.name) || 'Supplier'
+      () =>
+        clean(location.value?.short_name || location.value?.name) || 'Supplier'
     ),
     description: computed(() =>
       excerpt(
-        location.value?.about ||
-          location.value?.brand_tagline ||
-          'Supplier details.'
+        location.value?.about || location.value?.tagline || 'Supplier details.'
       )
     ),
-    image: computed(() => clean(location.value?.logo_image || location.value?.image_url)),
+    image: computed(() =>
+      clean(location.value?.logo_image || location.value?.image_url)
+    ),
     path: computed(() =>
       routeId.value
         ? `/${SupplierStorage.collection}/${encodeURIComponent(routeId.value)}`

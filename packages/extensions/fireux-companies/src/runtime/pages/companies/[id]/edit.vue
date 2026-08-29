@@ -6,7 +6,11 @@
           size="xs"
           variant="ghost"
           icon="i-lucide-arrow-left"
-          :to="companyId ? `/companies/${encodeURIComponent(companyId)}` : '/companies'"
+          :to="
+            companyId
+              ? `/companies/${encodeURIComponent(companyId)}`
+              : '/companies'
+          "
         >
           Back to details
         </UButton>
@@ -58,7 +62,11 @@
                 size="xs"
                 variant="soft"
                 color="primary"
-                :to="companyId ? `/companies/${encodeURIComponent(companyId)}` : '/companies'"
+                :to="
+                  companyId
+                    ? `/companies/${encodeURIComponent(companyId)}`
+                    : '/companies'
+                "
               >
                 Go to details
               </UButton>
@@ -107,8 +115,14 @@ const route = useRoute()
 const raw = route.params.id
 const companyId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { place, ready, pending: loading, missing, failed, statusCode } =
-  useCompanyDetail(companyId)
+const {
+  place,
+  ready,
+  pending: loading,
+  missing,
+  failed,
+  statusCode,
+} = useCompanyDetail(companyId)
 
 await ready
 if (import.meta.server && missing.value) {
@@ -128,7 +142,7 @@ const companyPreviewDetails = computed(() => {
   const details = [
     { label: 'Short name', value: v.short_name ?? '' },
     { label: 'Short address', value: v.short_address ?? '' },
-    { label: 'Brand tagline', value: (v as any).brand_tagline ?? '' },
+    { label: 'Brand tagline', value: (v as any).tagline ?? '' },
     { label: 'About', value: (v as any).about ?? '' },
     { label: 'Phone', value: v.phone ?? '' },
     { label: 'Website', value: v.website ?? '' },

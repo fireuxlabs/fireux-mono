@@ -26,7 +26,7 @@ const placePresentation = computed<Partial<Place> | null>(() => {
     name: name.value,
     place_type: 'physical',
     short_name: clean(raw.value.short_name),
-    brand_tagline: clean(raw.value.tagline || raw.value.brand_tagline),
+    tagline: clean(raw.value.tagline),
     short_address: clean(
       raw.value.short_address || raw.value.formatted_address
     ),

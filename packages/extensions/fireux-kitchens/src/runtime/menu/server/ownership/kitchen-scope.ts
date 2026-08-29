@@ -129,8 +129,8 @@ export function menuKitchenIdentity(
   )
 
   return {
-    name: place.name || readRecordString(kitchenData, 'name'),
-    tagline: place.brandTagline,
+    name: place.name,
+    tagline: place.tagline,
     imageUrl: place.imageUrl,
     imageShade: place.imageShade,
     logoImageUrl: place.logoImage,

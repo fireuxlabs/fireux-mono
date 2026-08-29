@@ -96,7 +96,7 @@ export function useSupplierInterface() {
       safeString(target.company_place?.name)
     const deliveryAreas = safeStringArray(target.delivery_areas)
     const badges = deliveryAreas
-    const headline = safeString(target.company_place?.brand_tagline)
+    const headline = safeString(target.company_place?.tagline)
     const summary = safeString(target.company_place?.about)
     const logoImageUrl = safeString(target.company_place?.logo_image)
     const placeImageUrl = safeString(target.company_place?.image_url)

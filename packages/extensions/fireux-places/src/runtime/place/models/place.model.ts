@@ -50,7 +50,7 @@ export type Place = {
   slug: string
   name: string
   short_name: string
-  brand_tagline: string
+  tagline: string
   about: string
   address: PlaceAddress
   formatted_address: string

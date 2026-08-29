@@ -55,6 +55,7 @@
     "gitsave": "bash scripts/gitsave.sh",
     "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
+    "reconcile:misebox-place-provider": "node scripts/reconcile-misebox-place-provider-fields.mjs",
     "publish:fireux-blog": "node scripts/publish-fireux-blog.mjs",
     "align:onboarding": "node scripts/align-user-app-onboarding.mjs",
     "migrate:workspace-entity-management": "node scripts/migrate-workspace-entity-management.mjs",

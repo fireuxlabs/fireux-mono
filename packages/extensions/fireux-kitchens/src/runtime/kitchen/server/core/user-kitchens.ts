@@ -47,6 +47,31 @@ export async function readOwnedKitchenIdsInTransaction(
   return ids
 }
 
+export async function readUserKitchenIdsInTransaction(
+  transaction: GuardedServerTransaction,
+  uid: string
+) {
+  const members = await transaction.queryCollectionGroup<{
+    status?: unknown
+    user_id?: unknown
+  }>(kitchenTeamGroup, {
+    field: 'user_id',
+    value: uid,
+    limit: KITCHEN_USER_LIMIT + 1,
+  })
+  const ids = members.flatMap((member) =>
+    member.id === uid &&
+    text(member.data.user_id) === uid &&
+    member.data.status === 'active'
+      ? [member.parentId]
+      : []
+  )
+  if (ids.length > KITCHEN_USER_LIMIT) {
+    conflict('User Kitchens exceed the supported limit.')
+  }
+  return ids
+}
+
 export async function readUserKitchenIds(uid: string) {
   const snapshot = await getRuntimeFirestore()
     .collectionGroup('team')

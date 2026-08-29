@@ -105,12 +105,8 @@ const title = computed(
     normalizeString(props.supplier?.id) ||
     'Untitled supplier'
 )
-const headline = computed(() =>
-  normalizeString(companyPlace.value?.brand_tagline)
-)
-const summary = computed(() =>
-  normalizeString(companyPlace.value?.about)
-)
+const headline = computed(() => normalizeString(companyPlace.value?.tagline))
+const summary = computed(() => normalizeString(companyPlace.value?.about))
 const companyPlace = computed(() => {
   const value = props.supplier?.company_place
   return value && typeof value === 'object'
@@ -130,9 +126,7 @@ const headquartersLabel = computed(
 const status = computed(() =>
   normalizeString((props.supplier as { status?: unknown } | null)?.status)
 )
-const categories = computed(() =>
-  []
-)
+const categories = computed(() => [])
 const deliveryAreas = computed(() =>
   normalizeStringArray(props.supplier?.delivery_areas)
 )

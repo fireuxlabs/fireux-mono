@@ -11,18 +11,16 @@
 
     <UModal
       v-model:open="open"
-      :title="content.title"
+      title="Kitchen Workspace"
       description="How this page and KitchenAI work together."
       :ui="{ content: 'sm:max-w-2xl' }"
     >
       <template #body>
         <div class="grid gap-5">
-          <p
-            v-for="paragraph in content.paragraphs"
-            :key="paragraph"
-            class="m-0 text-sm text-toned"
-          >
-            {{ paragraph }}
+          <p class="m-0 text-sm text-toned">
+            Build and operate a Kitchen through its Menus, preparation, service
+            and supporting records. This Workspace operates the Kitchen; it does
+            not operate the Misebox SaaS Project.
           </p>
 
           <section class="grid gap-2" aria-labelledby="kitchen-ai-capabilities">
@@ -30,20 +28,10 @@
               KitchenAI capabilities
             </h3>
             <p class="m-0 text-sm text-muted">
-              KitchenAI coordinates these registered specialists in the same
-              conversation. Each page shows its own information, tools, and
-              current limits.
+              KitchenAI works from this page's Kitchen context. Available
+              information and actions follow the selected Kitchen and the
+              capability being used.
             </p>
-            <div class="flex flex-wrap gap-2">
-              <UBadge
-                v-for="agent in workspaceAgent.operationAgents"
-                :key="agent.id"
-                color="neutral"
-                variant="soft"
-              >
-                {{ agent.name }}
-              </UBadge>
-            </div>
           </section>
         </div>
       </template>
@@ -53,19 +41,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { findMiseboxWorkspaceAgent } from 'fireux-misebox/runtime/ai/workspace-agents'
-import contentLanding from '../../../content/kitchen/content-landing.md?raw'
 
 const open = ref(false)
-const blocks = contentLanding
-  .trim()
-  .split(/\n\s*\n/)
-  .map((block) => block.trim())
-  .filter(Boolean)
-const content = {
-  title: (blocks.shift() || '# Misebox Kitchen Workspace').replace(/^#\s+/, ''),
-  paragraphs: blocks,
-}
-const workspaceAgent = findMiseboxWorkspaceAgent('kitchen')
-if (!workspaceAgent) throw new Error('KitchenAI Workspace context is missing.')
 </script>

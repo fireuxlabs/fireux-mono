@@ -1,8 +1,17 @@
 <template>
   <UDashboardPanel id="misebox-kitchen-home">
     <LayoutsWorkspaceNavbar title="Kitchen Workspace">
-      <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
-      <WorkspaceKitchenInfo />
+      <template #title>
+        <WorkspaceKitchenActive
+          v-if="derived.outcome === 'pending' || derived.hasSelection"
+          :kitchen="state.kitchen"
+        />
+        <span v-else>Kitchen Workspace</span>
+      </template>
+      <template #right>
+        <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
+        <WorkspaceKitchenInfo />
+      </template>
     </LayoutsWorkspaceNavbar>
     <!-- 01 Hero — define the Kitchen page promise, audience and intended outcome. -->
     <WorkspaceKitchenHero />

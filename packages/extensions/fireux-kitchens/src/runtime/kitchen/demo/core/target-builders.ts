@@ -83,7 +83,7 @@ export const place = (input: DemoPlaceInput): Place => ({
   id: input.identity.placeId,
   name: input.name,
   short_name: input.shortName,
-  brand_tagline: input.tagline,
+  tagline: input.tagline,
   about:
     'A deterministic read-only venue used to explore Misebox without changing Live or Test data.',
   formatted_address: `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
