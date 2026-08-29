@@ -86,11 +86,5 @@ const sectionItems = computed(() => [
     label: 'Recipes',
     summary: `${props.dish.recipes.length} recipes`,
   },
-  {
-    id: 'mise' as const,
-    icon: 'i-lucide-chef-hat',
-    label: 'Mise en place',
-    summary: `${props.dish.mise.length} requirements`,
-  },
 ])
 </script>

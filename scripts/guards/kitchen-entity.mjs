@@ -324,10 +324,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(identityReader, /normalizePlace/)
   assert.match(identityReader, /resolveKitchenDetailPresentation/)
   assert.match(identityReader, /requested_languages/)
-  assert.match(
-    identityReader,
-    /const imageUrl = kitchen\.place\.cover_image \|\| kitchen\.place\.image_url/
-  )
+  assert.match(identityReader, /const imageUrl = kitchen\.place\.image_url/)
   assert.match(identityReader, /image_kind:\s*'photograph'/)
   assert.match(identityReader, /const placeId = document\.id/)
   assert.doesNotMatch(

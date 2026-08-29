@@ -147,6 +147,14 @@ export async function run(ctx) {
     'utf8'
   )
   if (
+    !kitchenWorkspaceIndex.includes('identity?.image_url') ||
+    kitchenWorkspaceIndex.includes('readKitchenPresentationIdentity')
+  ) {
+    violations.push(
+      'Kitchen Workspace index must read canonical identity.image_url directly'
+    )
+  }
+  if (
     !kitchenWorkspace.includes('resolveWorkspaceCanCreate(') ||
     !kitchenWorkspace.includes("'kitchen'") ||
     !kitchenWorkspaceIndex.includes('workspace.runtime.canCreate.value')

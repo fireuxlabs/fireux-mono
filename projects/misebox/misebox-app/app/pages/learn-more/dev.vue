@@ -31,8 +31,7 @@
           </template>
           <ul class="list-disc fx-list-stack text-sm">
             <li>
-              Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenMiseTask,
-              KitchenTeamMember
+              Kitchen, Menu, Dish, Ingredient, KitchenRecipe, KitchenTeamMember
             </li>
             <li>Job, Chef, Professional, Agent</li>
             <li>Supplier and Company links</li>

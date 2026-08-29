@@ -41,9 +41,11 @@ const demoTheme = (scenario: KitchenDemoScenario): WorkspaceTheme => {
 const resolvedOrdering = (scenario: KitchenDemoScenario) => ({
   ...scenario.kitchenMenu.ordering,
   order_types: scenario.kitchenMenu.ordering.order_types.map((config) => {
-    const paymentMethods = scenario.configuration.fulfilment?.payment_methods || []
-      .filter((policy) => policy.order_types.includes(config.type))
-      .map((policy) => policy.method)
+    const paymentMethods =
+      scenario.configuration.fulfilment?.payment_methods ||
+      []
+        .filter((policy) => policy.order_types.includes(config.type))
+        .map((policy) => policy.method)
 
     return {
       ...config,
@@ -146,9 +148,7 @@ export function kitchenDemoManifest(
       currencyFormat: scenario.configuration.menus?.currency_format || 'dash',
       showCurrency: scenario.configuration.menus?.show_currency !== false,
       kitchenImageShade: imageShade(scenario.place.image_shade),
-      kitchenImageUrl: clean(
-        scenario.place.cover_image || scenario.place.image_url
-      ),
+      kitchenImageUrl: clean(scenario.place.image_url),
       kitchenLogoImageUrl: clean(scenario.place.logo_image),
       kitchenName: scenario.place.name,
       kitchenWordmarkImageUrl: clean(scenario.place.wordmark_image),

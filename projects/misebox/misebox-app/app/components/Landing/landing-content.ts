@@ -41,14 +41,8 @@ export const workspaceSurfaceCopy = {
     eyebrow: 'Kitchen Workspace · Dishes',
     title: 'Develop your dishes.',
     description:
-      'Set each dish’s specification and selling price, connect its recipes and prep items, organise mise en place, and track sales and costs.',
-    items: [
-      'Specification',
-      'Prep items',
-      'Recipes',
-      'Mise en place',
-      'Sales and costs',
-    ],
+      'Set each dish’s specification and selling price, connect its recipes and prep items, and track sales and costs.',
+    items: ['Specification', 'Prep items', 'Recipes', 'Sales and costs'],
     action: 'Open Dishes',
     to: '/workspace/kitchen/dishes',
   },
@@ -74,15 +68,6 @@ export const workspaceSurfaceCopy = {
     items: ['Ordering sections', 'Dishes', 'Ordering formats', 'QR codes'],
     action: 'Open Menus',
     to: '/workspace/kitchen/menus',
-  },
-  'kitchen.mise': {
-    eyebrow: 'Kitchen Workspace · Mise',
-    title: 'Prepare for service.',
-    description:
-      'Create prep tasks from dishes and recipes, assign them to stations, set quantities, and track completion before service.',
-    items: ['Prep tasks', 'Quantities', 'Stations', 'Completion'],
-    action: 'Open Mise',
-    to: '/workspace/kitchen/mise',
   },
   'kitchen.orders': {
     eyebrow: 'Kitchen Workspace · Orders',
@@ -174,7 +159,7 @@ export const content = {
     title: 'The Control Centre For',
     accent: ['Kitchen', 'Operations'],
     description:
-      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Workspace. Publish menus, manage recipes and mise en place, process orders, and track food costs and sales.',
+      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Workspace. Publish menus, process orders, and track food costs and sales.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',

@@ -73,13 +73,7 @@ export function useKitchenWorkspaceOverview() {
       normalizeString(kitchenSource.value.formatted_address)
   )
   const identityImage = computed(() =>
-    normalizeString(
-      place.value?.image_url ||
-        place.value?.cover_image ||
-        kitchenSource.value.display_image_url ||
-        kitchenSource.value.image_url ||
-        kitchenSource.value.identity?.image_url
-    )
+    normalizeString(kitchenSource.value.identity?.image_url)
   )
   const coverImage = computed(() =>
     normalizeString(kitchenSource.value.cover_image)

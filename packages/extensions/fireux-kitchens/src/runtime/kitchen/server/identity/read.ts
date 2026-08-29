@@ -131,7 +131,7 @@ export function projectKitchenDetail(
   const latitude = number(place.lat)
   const longitude = number(place.lng)
   const tagline = kitchen.place.brand_tagline || ''
-  const imageUrl = kitchen.place.cover_image || kitchen.place.image_url || ''
+  const imageUrl = kitchen.place.image_url
   const placeImageUrl = text(parts.place.imageUrl)
   const presentation: KitchenDetailPresentation = {
     id: kitchen.id,

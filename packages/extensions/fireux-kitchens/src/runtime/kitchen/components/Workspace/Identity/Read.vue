@@ -201,11 +201,8 @@ const tagline = computed(() =>
 )
 const imageUrl = computed(() =>
   String(
-    place.value?.image_url ||
-      place.value?.cover_image ||
-      kitchen.value?.display_image_url ||
-      kitchen.value?.image_url ||
-      ''
+    (kitchen.value?.identity as Record<string, unknown> | undefined)
+      ?.image_url || ''
   )
 )
 const shortAddress = computed(() =>

@@ -1,4 +1,3 @@
-import { KITCHEN_MISE_WORKFLOW_STAGES } from '../../utils/mise.ts'
 import { deanosKitchenDemoOrderNumber } from '../operations/Orders/history'
 import type {
   KitchenDemoScenarioAssembly,
@@ -10,17 +9,8 @@ export function validateKitchenDemoOperations(
   input: KitchenDemoScenarioInput,
   assembly: KitchenDemoScenarioAssembly
 ): string[] {
-  const {
-    menus,
-    services,
-    miseRequirements,
-    dishes,
-    ingredientIds,
-    prepItemIds,
-    recipeIds,
-    menuIds,
-    stationIds,
-  } = createKitchenDemoValidationContext(input, assembly)
+  const { menus, services, dishes, menuIds, stationIds } =
+    createKitchenDemoValidationContext(input, assembly)
 
   const hasInvalidStation =
     stationIds.size !== input.stations.length ||
@@ -146,48 +136,9 @@ export function validateKitchenDemoOperations(
     )
   })()
 
-  const miseTaskIds = new Set(input.miseTasks.map((task) => task.id))
-
-  const hasInvalidMiseTask =
-    miseTaskIds.size !== input.miseTasks.length ||
-    input.miseTasks.some((task) => {
-      const checklistIds = task.checklist.map((item) => item.id)
-      return (
-        task.kitchen_id !== input.identity.kitchenId ||
-        !task.id ||
-        !menuIds.has(task.menu_id) ||
-        !stationIds.has(task.station) ||
-        Boolean(
-          task.workflow_stage &&
-            !KITCHEN_MISE_WORKFLOW_STAGES.includes(task.workflow_stage)
-        ) ||
-        task.ingredient_ids.some((id) => !ingredientIds.has(id)) ||
-        task.prep_item_ids.some((id) => !prepItemIds.has(id)) ||
-        Boolean(task.recipe_id && !recipeIds.has(task.recipe_id)) ||
-        Boolean(
-          task.recipe_id &&
-            miseRequirements.some(
-              (requirement) =>
-                requirement.source.kind === 'recipe' &&
-                requirement.source.recipeId === task.recipe_id &&
-                requirement.station !== task.station
-            )
-        ) ||
-        Boolean(
-          task.menu_id === input.identity.menuId &&
-            services.length > 0 &&
-            (task.status !== 'done' ||
-              task.checklist.some((item) => !item.done))
-        ) ||
-        new Set(checklistIds).size !== checklistIds.length ||
-        task.checklist.some((item) => !item.id || !item.label)
-      )
-    })
-
   return [
     hasInvalidStation && 'stations',
     hasInvalidTeam && 'team',
     hasInvalidOrder && 'orders',
-    hasInvalidMiseTask && 'mise tasks',
   ].filter((item): item is string => Boolean(item))
 }

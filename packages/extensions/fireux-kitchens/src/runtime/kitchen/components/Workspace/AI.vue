@@ -1,32 +1,33 @@
 <template>
-  <WorkspaceKitchenAIAssistant
-    :kitchen-id="workspaceState.kitchen.id"
-    :show-intro="false"
-    :placeholder="placeholder"
-    :starters="[]"
-  />
+  <WorkspaceAI aria-label="KitchenAI">
+    <Messages
+      v-if="state.messages.length"
+      :messages="state.messages"
+      @copy="actions.copyResult"
+    />
+    <Composer
+      v-model="state.prompt"
+      :placeholder="derived.placeholder"
+      :submitting="derived.submitting"
+      allow-file
+      aria-label="Ask KitchenAI"
+      @submit="actions.sendPrompt"
+      @file="actions.stageFile"
+    />
+  </WorkspaceAI>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type {
-  KitchenWorkspaceIndexDerived,
-  KitchenWorkspaceIndexState,
-} from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
+import { useKitchenAIIndex } from '../../composables/workspace/index/useKitchenAIIndex'
+import Composer from './AI/Composer.vue'
+import Messages from './AI/Messages.vue'
 
 const props = defineProps<{
-  workspaceState: KitchenWorkspaceIndexState
-  workspaceDerived: KitchenWorkspaceIndexDerived
+  kitchen: KitchenWorkspaceIndexState['kitchen']
 }>()
 
-const placeholder = computed(() => {
-  if (
-    props.workspaceDerived.outcome === 'idle' ||
-    props.workspaceDerived.outcome === 'pending' ||
-    props.workspaceState.kitchen.name
-  ) {
-    return 'Ask Kitchen AI…'
-  }
-  return 'Tell us about your Kitchen…'
-})
+const { state, derived, actions } = useKitchenAIIndex(() => props.kitchen)
 </script>
+
+<style src="./AI/welcome.css"></style>

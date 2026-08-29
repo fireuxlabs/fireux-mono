@@ -1,18 +1,9 @@
 import { useAsyncData } from '#imports'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/kitchen/composables/firestore/utils/view/useKitchenInterface'
-import {
-  kitchenMisePriorityLabel,
-} from 'fireux-kitchens/runtime/kitchen/utils/mise'
-import type {
-  MenuManifestItem,
-} from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
-import type {
-  MenuDirectoryEntry,
-} from 'fireux-kitchens/runtime/menu/models/menu-collection.model'
+import type { MenuManifestItem } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
+import type { MenuDirectoryEntry } from 'fireux-kitchens/runtime/menu/models/menu-collection.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/place/utils/place-spine'
-import {
-  projectSupplierDemoWorld,
-} from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
+import { projectSupplierDemoWorld } from 'fireux-suppliers/runtime/supplier/utils/supplier-demo-world'
 
 const productDemoSurface = 'power-cards' as const
 const productDemoDataSource = 'demo' as const
@@ -37,15 +28,6 @@ export type MiseboxPowerCardsProductDemo = {
       imageUrl: string
       meta: string
       priceLabel: string
-    }
-    mise: {
-      imageUrl: string
-      name: string
-      subtitle: string
-      status: string
-      prop: string
-      badges: string[]
-      details: { label: string; value: string }[]
     }
     recipe: {
       to: string
@@ -84,12 +66,11 @@ export type MiseboxPowerCardsProductDemo = {
   }
 }
 
-const formatProductionAmount = (
-  amount: { quantity: number; unit: string }
-) => {
-  const unit = amount.unit === 'portion' && amount.quantity !== 1
-    ? 'portions'
-    : amount.unit
+const formatProductionAmount = (amount: { quantity: number; unit: string }) => {
+  const unit =
+    amount.unit === 'portion' && amount.quantity !== 1
+      ? 'portions'
+      : amount.unit
   return `${amount.quantity} ${unit}`
 }
 
@@ -97,9 +78,7 @@ const formatStatus = (value: string) =>
   value
     .split('_')
     .map((word, index) =>
-      index === 0
-        ? `${word[0]?.toUpperCase() ?? ''}${word.slice(1)}`
-        : word
+      index === 0 ? `${word[0]?.toUpperCase() ?? ''}${word.slice(1)}` : word
     )
     .join(' ')
 
@@ -128,18 +107,18 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     scenarioModule.pizzaTheActionKitchenDemoScenario,
     scenarioModule.miseboxRestaurantKitchenDemoScenario,
   ]
-  const {
-    cell: projectKitchenCell,
-    surface: projectKitchenSurface,
-  } = useKitchenInterface()
+  const { cell: projectKitchenCell, surface: projectKitchenSurface } =
+    useKitchenInterface()
   const kitchens: MiseboxPowerCardsProductDemo['cards']['kitchens'] =
     kitchenScenarios.map((scenario) => {
-      const kitchenCell = projectKitchenCell(projectKitchenSurface({
-        kitchen: scenario.kitchen,
-        place: scenario.place,
-        scope: scenario.appSupport,
-        routeScope: 'demo',
-      }))
+      const kitchenCell = projectKitchenCell(
+        projectKitchenSurface({
+          kitchen: scenario.kitchen,
+          place: scenario.place,
+          scope: scenario.appSupport,
+          routeScope: 'demo',
+        })
+      )
       if (!kitchenCell) {
         throw new Error(
           `PowerCards Demo Kitchen Cell is incomplete: ${scenario.kitchen.id}`
@@ -152,50 +131,40 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
       }
     })
 
-  const menu = workspaceScenario.menus.find(item =>
-    item.kitchenMenu.id === workspaceScenario.kitchenMenu.id
+  const menu = workspaceScenario.menus.find(
+    (item) => item.kitchenMenu.id === workspaceScenario.kitchenMenu.id
   )
   const manifest = presentationModule.kitchenDemoManifest(workspaceScenario)
   const orderItem = manifest.content.sections
-    .flatMap(section => section.items)
-    .find(item => item.id === 'deanos-classic-item')
-  const miseTask = workspaceScenario.miseTasks.find(
-    task => task.id === 'shape-main-patties'
-  )
+    .flatMap((section) => section.items)
+    .find((item) => item.id === 'deanos-classic-item')
   const recipe = workspaceScenario.recipes.find(
-    item => item.id === 'deanos-burger-sauce'
+    (item) => item.id === 'deanos-burger-sauce'
   )
   const supplierScenario = supplierDemoWorld.find(
-    scenario => scenario.supplier.id === 'alpine-foodservice'
+    (scenario) => scenario.supplier.id === 'alpine-foodservice'
   )
-  const supplierOperation =
-    suppliersModule.buildKitchenDemoSuppliersOperation({
-      links: workspaceScenario.supplierIngredientLinks,
-      supplierScenarios: supplierDemoWorld,
-    })
+  const supplierOperation = suppliersModule.buildKitchenDemoSuppliersOperation({
+    links: workspaceScenario.supplierIngredientLinks,
+    supplierScenarios: supplierDemoWorld,
+  })
   const supplier = supplierOperation.items.find(
-    item => item.id === 'alpine-foodservice'
+    (item) => item.id === 'alpine-foodservice'
   )
   const supplierItem = supplierScenario?.items.find(
-    item => item.ingredient_id === 'beef-mince'
+    (item) => item.ingredient_id === 'beef-mince'
   )
-  const stationName = workspaceScenario.stations.find(
-    station => station.id === miseTask?.station
-  )?.name
-
   if (
-    !menu
-    || menu.rootMenu.status !== 'published'
-    || !orderItem
-    || !miseTask
-    || !recipe
-    || !supplier
-    || !supplierItem
-    || !stationName
-    || !Number.isSafeInteger(supplierItem.pack_cost_minor)
-    || Number(supplierItem.pack_cost_minor) <= 0
-    || !Number.isFinite(supplierItem.quantity_per_pack)
-    || Number(supplierItem.quantity_per_pack) <= 0
+    !menu ||
+    menu.rootMenu.status !== 'published' ||
+    !orderItem ||
+    !recipe ||
+    !supplier ||
+    !supplierItem ||
+    !Number.isSafeInteger(supplierItem.pack_cost_minor) ||
+    Number(supplierItem.pack_cost_minor) <= 0 ||
+    !Number.isFinite(supplierItem.quantity_per_pack) ||
+    Number(supplierItem.quantity_per_pack) <= 0
   ) {
     throw new Error('PowerCards Demo projection is incomplete.')
   }
@@ -207,10 +176,10 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
     maximumFractionDigits: 2,
   })
   const kitchenName =
-    workspaceScenario.kitchen.identity.display_name
-    || workspaceScenario.place.name
+    workspaceScenario.kitchen.identity.display_name ||
+    workspaceScenario.place.name
   const workspaceKitchenCard = kitchens.find(
-    kitchen => kitchen.id === workspaceScenario.kitchen.id
+    (kitchen) => kitchen.id === workspaceScenario.kitchen.id
   )
   if (!workspaceKitchenCard) {
     throw new Error('PowerCards Demo Kitchen identity is unresolved.')
@@ -247,20 +216,6 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         meta: menu.kitchenMenu.name,
         priceLabel: orderItem.priceLabel,
       },
-      mise: {
-        imageUrl: '',
-        name: miseTask.title,
-        subtitle: stationName,
-        status: formatStatus(miseTask.status),
-        prop:
-          miseTask.description
-          || miseTask.checklist.map(item => item.label).join(' · '),
-        badges: [`${kitchenMisePriorityLabel(miseTask.priority)} priority`],
-        details: [{
-          label: 'Estimate',
-          value: `${miseTask.estimated_minutes} min`,
-        }],
-      },
       recipe: {
         to: '',
         title: recipe.name,
@@ -279,9 +234,9 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
           Number(supplierItem.pack_cost_minor) / 100
         ),
         unitPriceLabel: money.format(
-          Number(supplierItem.pack_cost_minor)
-          / Number(supplierItem.quantity_per_pack)
-          / 100
+          Number(supplierItem.pack_cost_minor) /
+            Number(supplierItem.quantity_per_pack) /
+            100
         ),
         unit: String(supplierItem.unit || '').trim(),
         packLabel: String(supplierItem.pack_size_label || '').trim(),
@@ -297,8 +252,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         to: '',
         title: supplier.name,
         subtitle:
-          supplier.headquartersLabel
-          || supplier.deliveryAreas.join(', '),
+          supplier.headquartersLabel || supplier.deliveryAreas.join(', '),
         avatarUrl: supplier.logoImageUrl || supplier.imageUrl,
         badges: supplier.categories.slice(0, 2),
         summary: supplier.headline,
@@ -313,8 +267,7 @@ export async function useMiseboxPowerCardsProductDemo() {
     async () => {
       try {
         return await loadMiseboxPowerCardsProductDemo()
-      }
-      catch (error) {
+      } catch (error) {
         console.error(
           '[misebox-power-cards-demo] Failed to load Demo data.',
           error instanceof Error ? error.message : String(error)

@@ -19,7 +19,6 @@ export function buildKitchenDemoScenario(
     finance,
     services,
     completedOrders,
-    miseRequirements,
     menuItemComponentDeltas,
     prepItems,
     recipes,
@@ -63,11 +62,9 @@ export function buildKitchenDemoScenario(
     completedOrders,
     menuItemComponentDeltas,
     menuSections: input.menu.menuSections,
-    miseRequirements,
     orders: input.orders,
     prepItems,
     recipes,
     stations: input.stations,
-    miseTasks: input.miseTasks,
   }
 }

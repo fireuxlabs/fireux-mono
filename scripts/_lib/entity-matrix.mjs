@@ -275,24 +275,6 @@ export const entityMatrix = [
     },
   },
   {
-    id: 'kitchen/mise-task',
-    state: 'declared',
-    owner: 'fireux-kitchens',
-    source:
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.entity.ts',
-    export: 'KitchenMiseTaskRecord',
-    classification: {
-      kind: 'record',
-      name: 'KitchenMiseTask',
-      family: ['kitchen', 'support'],
-      identity: 'parent-scoped',
-      authority: 'parent',
-      appSupport: 'none',
-      workspace: false,
-      parent: 'Kitchen',
-    },
-  },
-  {
     id: 'identity/customer-order-link',
     state: 'declared',
     owner: 'fireux-kitchens',

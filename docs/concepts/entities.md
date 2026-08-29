@@ -245,14 +245,6 @@ KitchenStation is a confirmed Kitchen-owned operational Record at
 `scripts/audit-misebox-kitchen-stations.mjs` to verify its Kitchen parent,
 scope, required fields, ordering, and Station references without writing data.
 
-KitchenMiseTask is a confirmed Kitchen-owned operational Record at
-`kitchens/{kitchenId}/mise-tasks/{taskId}`. It owns preparation workflow,
-scheduling, checklist and assignment state. `prep_item_ids` links canonical
-KitchenPrepItem entities explicitly; other links remain inside the owning
-Kitchen or point to canonical Ingredient ids. Run
-`scripts/audit-misebox-kitchen-mise.mjs` to verify its stored contract and
-relationships without writing data.
-
 KitchenPrepItem is stored at
 `kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
 legacy `mise` migration is complete; new code must not restore those duplicate

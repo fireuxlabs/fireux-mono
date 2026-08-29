@@ -1,25 +1,23 @@
 import { computed, type Ref } from 'vue'
 import type { Kitchen } from '../../../../models/kitchen.model.ts'
-import {
-  readKitchenVisibility,
-} from '../../../../utils/kitchen-readers'
-import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
+import type { KitchenWorkspaceKitchen } from '../../../../models/kitchen-index.model.ts'
+import { readKitchenVisibility } from '../../../../utils/kitchen-readers'
+
+type KitchenComputedView = Partial<Kitchen> & {
+  identity?: Partial<KitchenWorkspaceKitchen['identity']>
+}
 
 export function useKitchenComputed(
   kitchen?: Ref<Partial<Kitchen> | null | undefined>
 ) {
   const view = computed(
-    () =>
-      kitchen?.value as
-        | (Partial<Kitchen> & Record<string, unknown>)
-        | null
-        | undefined
+    () => kitchen?.value as KitchenComputedView | null | undefined
   )
   const hasKitchen = computed(() => Boolean(kitchen?.value?.id))
-  const identity = computed(() => readKitchenPresentationIdentity(view.value))
+  const identity = computed(() => view.value?.identity)
   const visibility = computed(() => readKitchenVisibility(view.value))
   const hasMissingName = computed(
-    () => !String(identity.value.displayName || view.value?.name || '').trim()
+    () => !String(identity.value?.display_name || '').trim()
   )
   const hasMissingSlug = computed(
     () => !String(kitchen?.value?.slug || '').trim()
@@ -28,18 +26,10 @@ export function useKitchenComputed(
   const isHidden = computed(() => !visibility.value)
   const displayStatus = computed(() => (isVisible.value ? 'Visible' : 'Hidden'))
   const displayName = computed(() =>
-    String(
-      identity.value.displayName ||
-        view.value?.display_name ||
-        view.value?.name ||
-        view.value?.short_name ||
-        kitchen?.value?.slug ||
-        kitchen?.value?.id ||
-        ''
-    ).trim()
+    String(identity.value?.display_name || '').trim()
   )
   const displayImageUrl = computed(() =>
-    String(identity.value.imageUrl || view.value?.image_url || '').trim()
+    String(identity.value?.image_url || '').trim()
   )
   const hasAddress = computed(() =>
     Boolean(

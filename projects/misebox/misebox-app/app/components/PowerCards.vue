@@ -10,9 +10,6 @@
       <template #dish>
         <MiseboxPowerCardFour :dish="orbit.cards.dish" />
       </template>
-      <template #mise>
-        <MiseboxPowerCardFive :mise="orbit.cards.mise" />
-      </template>
       <template #recipe>
         <MiseboxPowerCardSix :recipe="orbit.cards.recipe" />
       </template>
@@ -74,7 +71,6 @@ import MiseboxPowerCardOne from './PowerCardOne.vue'
 import ElementWindow from './ElementWindow.vue'
 import MiseboxPowerCardThree from './PowerCardThree.vue'
 import MiseboxPowerCardFour from './PowerCardFour.vue'
-import MiseboxPowerCardFive from './PowerCardFive.vue'
 import MiseboxPowerCardSix from './PowerCardSix.vue'
 import MiseboxPowerCardSeven from './PowerCardSeven.vue'
 import MiseboxPowerCardEight from './PowerCardEight.vue'

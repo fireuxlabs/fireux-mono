@@ -3,7 +3,6 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
-import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 
 type KitchenWorkspaceState = ReturnType<typeof useKitchenWorkspace>
 
@@ -25,12 +24,10 @@ export function useKitchenWorkspaceIdentity(
   const kitchenRecord = computed(
     () => selectedKitchen.value as Record<string, unknown> | null
   )
-  const identity = computed(() =>
-    readKitchenPresentationIdentity(kitchenRecord.value)
-  )
+  const identity = computed(() => selectedKitchen.value?.identity)
 
-  const name = computed(() => normalizeString(identity.value.displayName))
-  const tagline = computed(() => normalizeString(identity.value.tagline))
+  const name = computed(() => normalizeString(identity.value?.display_name))
+  const tagline = computed(() => normalizeString(identity.value?.tagline))
   const slug = computed(() => normalizeString(kitchenRecord.value?.slug))
   const placeId = computed(() => normalizeString(kitchenRecord.value?.place_id))
   const address = computed(() => {

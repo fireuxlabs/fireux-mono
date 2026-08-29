@@ -11,7 +11,7 @@ export function resolveKitchenDetailPresentation(
 ): KitchenDetailPresentation {
   const name = place.name
   const tagline = text(place.brand_tagline)
-  const image = text(place.cover_image || place.image_url)
+  const image = text(place.image_url)
   const logo = text(place.logo_image)
   const backdrop = place.media_backdrop_color
 

@@ -23,18 +23,14 @@ import {
   pizzaTheActionKitchenDemoSupplierIngredientLinks,
 } from './operations/Ingredients'
 import {
-  deanosKitchenDemoMiseTasks,
   deanosKitchenDemoOrders,
   deanosKitchenDemoStations,
-  miseboxRestaurantKitchenDemoMiseTasks,
   miseboxRestaurantKitchenDemoOrders,
   miseboxRestaurantKitchenDemoStations,
-  pizzaTheActionKitchenDemoMiseTasks,
   pizzaTheActionKitchenDemoOrders,
   pizzaTheActionKitchenDemoStations,
 } from './operations'
 import {
-  deanosKitchenDemoMise,
   deanosKitchenDemoMenuItemComponentDeltas,
   deanosKitchenDemoPrepItems,
   deanosKitchenDemoRecipes,
@@ -73,13 +69,11 @@ export const deanosKitchenDemoScenario = buildKitchenDemoScenario({
   completedOrders: deanosKitchenDemoCompletedOrders,
   kitchenIngredients: deanosKitchenDemoIngredientLinks,
   menuItemComponentDeltas: deanosKitchenDemoMenuItemComponentDeltas,
-  miseRequirements: deanosKitchenDemoMise,
   orders: deanosKitchenDemoOrders,
   prepItems: deanosKitchenDemoPrepItems,
   recipes: deanosKitchenDemoRecipes,
   stations: deanosKitchenDemoStations,
   supplierIngredientLinks: deanosKitchenDemoSupplierIngredientLinks,
-  miseTasks: deanosKitchenDemoMiseTasks,
 })
 
 export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
@@ -93,7 +87,6 @@ export const pizzaTheActionKitchenDemoScenario = buildKitchenDemoScenario({
   orders: pizzaTheActionKitchenDemoOrders,
   stations: pizzaTheActionKitchenDemoStations,
   supplierIngredientLinks: pizzaTheActionKitchenDemoSupplierIngredientLinks,
-  miseTasks: pizzaTheActionKitchenDemoMiseTasks,
 })
 
 export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
@@ -107,7 +100,6 @@ export const miseboxRestaurantKitchenDemoScenario = buildKitchenDemoScenario({
   orders: miseboxRestaurantKitchenDemoOrders,
   stations: miseboxRestaurantKitchenDemoStations,
   supplierIngredientLinks: miseboxRestaurantKitchenDemoSupplierIngredientLinks,
-  miseTasks: miseboxRestaurantKitchenDemoMiseTasks,
 })
 
 export const defaultKitchenDemoScenario = miseboxRestaurantKitchenDemoScenario
@@ -132,7 +124,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'mise',
       'orders',
       'stations',
       'suppliers',
@@ -147,7 +138,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'mise',
       'orders',
       'recipes',
       'stations',
@@ -163,7 +153,6 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
       'dishes',
       'ingredients',
       'menus',
-      'mise',
       'orders',
       'stations',
       'suppliers',
@@ -210,7 +199,6 @@ if (
       !scenario.supplierIngredientLinks.length ||
       !scenario.orders.length ||
       !scenario.stations.length ||
-      !scenario.miseTasks.length ||
       !sameStringSet(
         scenario.supplierIngredientLinks.map((link) => link.supplier_id),
         miseboxDemoSupplierIds

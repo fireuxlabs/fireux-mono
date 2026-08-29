@@ -133,13 +133,7 @@ const kitchenSubtitle = computed(
   () => clean(source.value.tagline) || clean(source.value.short_address)
 )
 const coverImage = computed(() => clean(source.value.cover_image))
-const identityImage = computed(() =>
-  clean(
-    source.value.display_image_url ||
-      source.value.image_url ||
-      source.value.identity?.image_url
-  )
-)
+const identityImage = computed(() => clean(source.value.identity?.image_url))
 const address = computed(
   () =>
     clean(source.value.formatted_address) || clean(source.value.short_address)

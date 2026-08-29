@@ -249,45 +249,6 @@
         </div>
       </MoleculesDisclosurePanel>
 
-      <MoleculesDisclosurePanel
-        v-if="miseRequirements.length"
-        title="Mise en place"
-        :description="`${miseRequirements.length} ${miseRequirements.length === 1 ? 'requirement' : 'requirements'}`"
-        icon="i-lucide-chef-hat"
-      >
-        <UCard class="mt-3">
-          <template #header>
-            <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-wide text-primary"
-              >
-                Mise en place
-              </p>
-            </div>
-          </template>
-
-          <div class="grid gap-3">
-            <div
-              v-for="requirement in miseRequirements"
-              :key="requirement.id"
-              class="flex items-start justify-between gap-3 rounded-lg border border-default bg-elevated/30 p-3"
-            >
-              <div>
-                <p class="text-sm font-semibold text-highlighted">
-                  {{ requirement.title }}
-                </p>
-                <p class="mt-1 text-xs text-muted">
-                  {{ getStationName(requirement.station) }}
-                </p>
-              </div>
-              <UBadge color="neutral" variant="soft">
-                {{ formatProductionAmount(requirement.amount) }}
-              </UBadge>
-            </div>
-          </div>
-        </UCard>
-      </MoleculesDisclosurePanel>
-
       <template v-if="canWrite">
         <WorkspaceKitchenDishesEdit />
         <WorkspaceKitchenDishesDelete />
@@ -304,7 +265,6 @@
         componentViews,
         prepItems,
         recipes,
-        miseRequirements,
         menuUsage,
         finance,
       }"
@@ -329,8 +289,6 @@ const {
   recipes,
   formatProductionAmount,
   getIngredientName,
-  getStationName,
-  miseRequirements,
   menuUsage,
   finance,
   financePending,

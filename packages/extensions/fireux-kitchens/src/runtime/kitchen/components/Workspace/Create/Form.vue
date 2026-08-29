@@ -91,7 +91,6 @@ import {
 import { useKitchenCreate } from '../../../composables/firestore/mutations/useKitchenCreate'
 import { useKitchenInterface } from '../../../composables/firestore/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../models/kitchen.model'
-import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 
 type KitchenShell = {
   id: string
@@ -132,15 +131,12 @@ const manifestKitchen = computed(() =>
   })
 )
 const manifestShell = computed<KitchenShell>(() => {
-  const presentation = readKitchenPresentationIdentity(manifestKitchen.value)
+  const identity = manifestKitchen.value?.identity
   return {
     id: manifestId.value,
-    name: presentation.displayName,
-    tagline: presentation.tagline,
-    url:
-      presentation.cardImageUrl ||
-      presentation.imageUrl ||
-      presentation.logoImageUrl,
+    name: String(identity?.display_name || '').trim(),
+    tagline: String(identity?.tagline || '').trim(),
+    url: String(identity?.image_url || '').trim(),
   }
 })
 const manifestComplete = computed(() => {

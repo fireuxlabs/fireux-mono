@@ -127,14 +127,13 @@ Current Dish children include:
 - Spec: station, portion, components, assembly.
 - Prep items.
 - Recipes.
-- Mise en place requirements.
 - Finance: selling price, estimated cost, margin, and sales projection where
   the bounded presentation supplies them.
 
 Therefore the Dish operation may say:
 
 `Manage your dishes. Set each dish's specification and selling price, connect
-its prep items and recipes, organise mise en place, and review sales and costs.`
+its prep items and recipes, and review sales and costs.`
 
 Kitchen Finance is a report over KitchenSales. Its current children are period
 selection, gross sales, completed sales, and average sale. Therefore its

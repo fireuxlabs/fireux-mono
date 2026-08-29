@@ -144,14 +144,6 @@ const MISEBOX_FINANCE_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Landing/FinancePreview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Index.vue'
-const KITCHEN_MISE_BOARD_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskBoard.vue'
-const KITCHEN_MISE_COLLECTION_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Mise/TaskCollection.vue'
-const KITCHEN_MISE_CONSOLE_READ_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Mise/Read.vue'
-const KITCHEN_MISE_PRESENTATION_PATH =
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
 const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
   menus:
     'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Menus.vue',
@@ -173,11 +165,8 @@ const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
     'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/PrepItems.vue',
   dishRecipes:
     'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Recipes.vue',
-  dishMise:
-    'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Dishes/Mise.vue',
   recipes:
     'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Recipes.vue',
-  mise: 'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Mise.vue',
   orders:
     'projects/misebox/misebox-app/app/components/Landing/WorkspacePreview/Orders.vue',
   stations:
@@ -828,13 +817,6 @@ export async function run(ctx) {
   )
   const miseboxFinancePreview = read(repoRoot, MISEBOX_FINANCE_PREVIEW_PATH)
   const miseboxWorkspacePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
-  const kitchenMiseBoard = read(repoRoot, KITCHEN_MISE_BOARD_PATH)
-  const kitchenMiseCollection = read(repoRoot, KITCHEN_MISE_COLLECTION_PATH)
-  const kitchenMiseWorkspaceRead = read(
-    repoRoot,
-    KITCHEN_MISE_CONSOLE_READ_PATH
-  )
-  const kitchenMisePresentation = read(repoRoot, KITCHEN_MISE_PRESENTATION_PATH)
   const miseboxWorkspacePreviewComponents = Object.fromEntries(
     Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
       ([key, filePath]) => [key, read(repoRoot, filePath)]
@@ -1426,11 +1408,6 @@ export async function run(ctx) {
     ':ingredients="productDemo?.workspace.ingredients || []"',
     '<LandingWorkspacePreviewRecipes',
     ':recipes="productDemo?.workspace.recipes || []"',
-    '<LandingWorkspacePreviewMise',
-    ':kitchen-name="productDemo?.workspace.kitchenName || \'\'"',
-    ':tasks="workspaceMiseTasks"',
-    'useKitchenMenuServiceSelection',
-    'hasInServiceMenu',
     '<LandingWorkspacePreviewOrders',
     ':orders="productDemo?.workspace.orders || []"',
     '<LandingWorkspacePreviewStations',
@@ -1496,7 +1473,6 @@ export async function run(ctx) {
       '<LandingWorkspacePreviewDishesSpec',
       '<LandingWorkspacePreviewDishesPrepItems',
       '<LandingWorkspacePreviewDishesRecipes',
-      '<LandingWorkspacePreviewDishesMise',
     ],
     dishCollection: [
       '<WorkspaceKitchenDishesCardsCell',
@@ -1518,7 +1494,6 @@ export async function run(ctx) {
       "id: 'spec' as const",
       "id: 'prep' as const",
       "id: 'recipes' as const",
-      "id: 'mise' as const",
     ],
     dishFinance: [
       'aria-label="Dish Finance preview"',
@@ -1533,18 +1508,9 @@ export async function run(ctx) {
     dishSpec: ['aria-label="Dish Spec preview"', 'dish.spec.assembly'],
     dishPrepItems: ['aria-label="Dish Prep items preview"', 'dish.prepItems'],
     dishRecipes: ['aria-label="Dish Recipes preview"', 'dish.recipes'],
-    dishMise: ['aria-label="Dish Mise en place preview"', 'dish.mise'],
     recipes: [
       'aria-label="Recipes preview"',
       "MiseboxProductDemo['workspace']['recipes'][number]",
-    ],
-    mise: [
-      'aria-label="Mise en place preview"',
-      '<KitchenMiseTaskCollection',
-      ':tasks="tasks"',
-      ':kitchen-name="kitchenName"',
-      'ProductDemoMiseTask',
-      "MiseboxProductDemo['workspace']['miseTasks'][number]",
     ],
     orders: [
       'aria-label="Orders preview"',
@@ -1662,24 +1628,6 @@ export async function run(ctx) {
     }
   }
 
-  if (
-    miseboxWorkspacePreviewComponents.mise.includes(
-      'KITCHEN_MISE_STATUS_OPTIONS'
-    )
-  ) {
-    violations.push(
-      `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: must consume the Kitchen-owned Mise task board instead of rebuilding status presentation`
-    )
-  }
-
-  for (const forbidden of ['<KitchenMiseTaskBoard', 'compact']) {
-    if (miseboxWorkspacePreviewComponents.mise.includes(forbidden)) {
-      violations.push(
-        `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.mise}: bypasses the shared Workspace Mise collection presentation (${forbidden})`
-      )
-    }
-  }
-
   for (const forbidden of [
     '@touch-status',
     'updateStatus(',
@@ -1689,59 +1637,6 @@ export async function run(ctx) {
       violations.push(
         `${MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS.orders}: read-only Workspace preview acquired Order mutation behavior (${forbidden})`
       )
-    }
-  }
-
-  for (const [filePath, source, requiredMarkers] of [
-    [
-      KITCHEN_MISE_COLLECTION_PATH,
-      kitchenMiseCollection,
-      [
-        '<KitchenMiseTaskBoard',
-        'activeTaskCount',
-        'organised in the order a chef works.',
-      ],
-    ],
-    [
-      KITCHEN_MISE_BOARD_PATH,
-      kitchenMiseBoard,
-      [
-        'groupKitchenMiseTaskSummariesByWorkflow',
-        ':data-mise-workflow-stage="group.value"',
-        ':data-mise-status="task.status"',
-        ':data-mise-task-id="task.id"',
-        'task.checklist',
-        '<MoleculesActionSurface',
-      ],
-    ],
-    [
-      KITCHEN_MISE_CONSOLE_READ_PATH,
-      kitchenMiseWorkspaceRead,
-      [
-        '<KitchenMiseTaskCollection',
-        'projectKitchenMiseTasks',
-        'useKitchenMiseWorkspace',
-      ],
-    ],
-    [
-      KITCHEN_MISE_PRESENTATION_PATH,
-      kitchenMisePresentation,
-      [
-        'KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS',
-        'projectKitchenMiseTask',
-        'groupKitchenMiseTaskSummariesByWorkflow',
-        'workflowStage',
-        'checklistDoneCount',
-        'stationNames',
-      ],
-    ],
-  ]) {
-    for (const marker of requiredMarkers) {
-      if (!source.includes(marker)) {
-        violations.push(
-          `${filePath}: missing shared Kitchen Mise presentation contract (${marker})`
-        )
-      }
     }
   }
 
@@ -2596,7 +2491,6 @@ export async function run(ctx) {
     'useMiseboxProductDemo()',
     '<MenuOrderCatalogue',
     '<LandingWorkspacePreviewMenus',
-    '<LandingWorkspacePreviewMise',
     '<LandingWorkspacePreviewOrders',
     "id: 'publish'",
     "id: 'prepare'",
@@ -2737,7 +2631,8 @@ export async function run(ctx) {
 
   for (const required of [
     'cell: projectKitchenCell',
-    'projectKitchenCell(projectKitchenSurface({',
+    'projectKitchenCell(',
+    'projectKitchenSurface({',
     '...kitchenCell',
     'kitchens,',
   ]) {

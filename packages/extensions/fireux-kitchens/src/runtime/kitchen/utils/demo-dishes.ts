@@ -152,10 +152,6 @@ export function buildKitchenDemoDishesOperation(input: {
         .filter((component) => component.source === 'recipe')
         .map((component) => clean(component.recipeId)) ?? []
     )
-    const componentSourceKeys = new Set([
-      ...[...prepItemIds].map((id) => `prep_item:${id}`),
-      ...[...recipeIds].map((id) => `recipe:${id}`),
-    ])
     const componentViews =
       spec?.components.map((component) => {
         if (component.source === 'ingredient') {
@@ -190,13 +186,6 @@ export function buildKitchenDemoDishesOperation(input: {
     const recipes = scenario.recipes.filter((recipe) =>
       recipeIds.has(clean(recipe.id))
     )
-    const miseRequirements = scenario.miseRequirements.filter((requirement) => {
-      const sourceKey =
-        requirement.source.kind === 'prep_item'
-          ? `prep_item:${clean(requirement.source.prepItemId)}`
-          : `recipe:${clean(requirement.source.recipeId)}`
-      return componentSourceKeys.has(sourceKey)
-    })
     const finance = spec
       ? estimateKitchenDishFinance({
           dishSpec: spec,
@@ -290,7 +279,6 @@ export function buildKitchenDemoDishesOperation(input: {
       menuUsage,
       prepItems,
       recipes,
-      miseRequirements,
       finance,
       quantitySold,
       totalSalesMinor,

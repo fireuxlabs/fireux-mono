@@ -6,7 +6,9 @@
       aria-label="Scroll through Misebox product cards from left to right"
     >
       <div class="misebox-element-window__grid">
-        <div class="misebox-element-window__item misebox-element-window__item--kitchens">
+        <div
+          class="misebox-element-window__item misebox-element-window__item--kitchens"
+        >
           <slot name="kitchens" />
         </div>
         <div class="misebox-element-window__item">
@@ -14,9 +16,6 @@
         </div>
         <div class="misebox-element-window__item">
           <slot name="dish" />
-        </div>
-        <div class="misebox-element-window__item">
-          <slot name="mise" />
         </div>
         <div class="misebox-element-window__item">
           <slot name="recipe" />

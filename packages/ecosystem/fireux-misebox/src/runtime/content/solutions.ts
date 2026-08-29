@@ -147,28 +147,6 @@ export const miseboxSolutions = [
     cta: { label: 'Open recipes', to: '/workspace/kitchen/recipes' },
   },
   {
-    slug: 'kitchen-prep-planner',
-    title: 'Kitchen prep planner',
-    description:
-      'Plan prep work by station, recipe, menu, assignment, and service readiness.',
-    icon: 'i-lucide-clipboard-list',
-    status: 'live',
-    keywords: ['kitchen prep planner', 'restaurant prep planner'],
-    operationSlugs: ['mise'],
-    cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
-  },
-  {
-    slug: 'restaurant-prep-list',
-    title: 'Restaurant prep list',
-    description:
-      'Give the team a daily prep list tied to tasks, status, stations, and service.',
-    icon: 'i-lucide-list-checks',
-    status: 'live',
-    keywords: ['restaurant prep list', 'kitchen prep list'],
-    operationSlugs: ['mise'],
-    cta: { label: 'Open mise', to: '/workspace/kitchen/mise' },
-  },
-  {
     slug: 'kitchen-team-management',
     title: 'Kitchen team management',
     description:

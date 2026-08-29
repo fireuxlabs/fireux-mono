@@ -16,10 +16,6 @@ import {
   type Recipe,
 } from 'fireux-kitchens/runtime/kitchen/utils/recipe'
 import {
-  normalizeKitchenMiseTask,
-  type KitchenMiseTask,
-} from 'fireux-kitchens/runtime/kitchen/utils/mise'
-import {
   normalizeKitchenStation,
   type KitchenStation,
 } from 'fireux-kitchens/runtime/kitchen/utils/station'
@@ -28,7 +24,6 @@ import type { KitchenAgentAccess, KitchenAgentRequest } from './types'
 const MAX_MENUS = 12
 const MAX_DISHES = 100
 const MAX_RECIPES = 100
-const MAX_MISE_TASKS = 100
 const MAX_STATIONS = 50
 const MAX_ORDERS = 40
 const MAX_ORDER_ITEMS = 40
@@ -189,22 +184,6 @@ async function readIngredients(
   }
 }
 
-async function readMiseTasks(
-  access: KitchenAgentAccess,
-  request: KitchenAgentRequest
-): Promise<KitchenMiseTask[]> {
-  if (request.operation !== 'mise') return []
-
-  const snapshot = await access.db
-    .collection(`kitchens/${request.kitchenId}/mise-tasks`)
-    .limit(MAX_MISE_TASKS)
-    .get()
-
-  return snapshot.docs.map((document) =>
-    normalizeKitchenMiseTask({ id: document.id, ...(document.data() || {}) })
-  )
-}
-
 async function readStations(
   access: KitchenAgentAccess,
   request: KitchenAgentRequest
@@ -281,7 +260,6 @@ export async function readKitchenAgentContext(
     dishes,
     recipes,
     ingredientContext,
-    miseTasks,
     stations,
     orders,
   ] = await Promise.all([
@@ -290,7 +268,6 @@ export async function readKitchenAgentContext(
     readDishes(access, request),
     readRecipes(access, request),
     readIngredients(access, request),
-    readMiseTasks(access, request),
     readStations(access, request),
     readOrders(access, request),
   ])
@@ -312,7 +289,6 @@ export async function readKitchenAgentContext(
     recipes,
     ingredients: ingredientContext.ingredients,
     missingIngredientIds: ingredientContext.missingIngredientIds,
-    miseTasks,
     stations,
     orders,
   }

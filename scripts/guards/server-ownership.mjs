@@ -150,7 +150,6 @@ const DOMAIN_ROOTS = [
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/drinks/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/ingredients/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/index.vue',
-      'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/mise/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/recipes/index.vue',
       'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/stations/index.vue',

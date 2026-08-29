@@ -21,11 +21,13 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   },
   'kitchen.dishes.update-dish': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.dishes.delete-dish': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/dishes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.create-drink': {
     kind: 'route',
@@ -33,11 +35,13 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   },
   'kitchen.drinks.update-drink': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
   },
   'kitchen.drinks.delete-drink': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/drinks/${encodeURIComponent(targetId)}`,
   },
   'kitchen.ingredients.add-ingredient': {
     kind: 'route',
@@ -46,34 +50,25 @@ const toolHandlers: Record<string, CapabilityToolHandler> = {
   'kitchen.recipes.create-recipe': { kind: 'modal' },
   'kitchen.recipes.update-recipe': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.recipes.delete-recipe': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/recipes/${encodeURIComponent(targetId)}`,
   },
   'kitchen.menus.update-menu': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
   },
   'kitchen.menus.delete-menu': {
     kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
+    to: (targetId) =>
+      `/workspace/kitchen/menus/${encodeURIComponent(targetId)}`,
   },
   'kitchen.stations.create-station': { kind: 'modal' },
-  'kitchen.mise.create-prep-task': { kind: 'modal' },
-  'kitchen.mise.update-prep-task': {
-    kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/mise/${encodeURIComponent(targetId)}`,
-  },
-  'kitchen.mise.change-prep-status': {
-    kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/mise/${encodeURIComponent(targetId)}`,
-  },
-  'kitchen.mise.delete-prep-task': {
-    kind: 'target-route',
-    to: (targetId) => `/workspace/kitchen/mise/${encodeURIComponent(targetId)}`,
-  },
   'kitchen.waste.record-event': { kind: 'modal' },
   'kitchen.team.create-member': { kind: 'modal' },
 }

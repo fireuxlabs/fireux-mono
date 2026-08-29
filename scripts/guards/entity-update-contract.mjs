@@ -27,11 +27,6 @@ const contracts = [
     ['jobId'],
   ],
   [
-    'fireux-kitchens/src/runtime/kitchen/composables/workspace/Mise/mutations/useKitchenMiseUpdate.ts',
-    'updateKitchenMise',
-    ['kitchenId', 'taskId'],
-  ],
-  [
     'fireux-kitchens/src/runtime/kitchen/composables/workspace/Stations/mutations/useKitchenStationUpdate.ts',
     'updateKitchenStation',
     ['kitchenId', 'stationId'],

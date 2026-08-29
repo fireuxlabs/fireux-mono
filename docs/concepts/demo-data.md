@@ -122,20 +122,15 @@ remain real data even when a Demo record links to them.
 - Demo Menu publication and operational service availability are separate.
   The Kitchen-owned pure cascade at
   `runtime/kitchen/utils/demo-menu-cascade.ts` projects Menu provenance through
-  Dish Specs, Menu-item deltas, Prep items, Recipes, root Ingredient links, and
-  Mise candidates without mutating any record. Shared dependencies remain
+  Dish Specs, Menu-item deltas, Prep items, Recipes, and root Ingredient links
+  without mutating any record. Shared dependencies remain
   required while at least one in-service Menu uses them. Deanos' owner-local
   summer defaults are Main `on`, Party `order_led`, and Xmas `off`.
 - Workspace Demo and Product Demo may share local route-stable Menu service
   selection through the Kitchen-owned Demo composable. That selection is a
-  read-only demonstration control: it filters operational Mise and marks
-  inactive-only Dishes, Recipes, and Ingredients for presentation, but it
+  read-only demonstration control: it marks inactive-only Dishes, Recipes, and
+  Ingredients for presentation, but it
   never becomes fixture truth, publication state, Firestore, or local storage.
-- `KitchenMiseTask.workflow_stage` is the chef-facing work order: Wash & clean,
-  Cut & portion, Make, Cook & chill, Set stations, then Final checks. Status,
-  priority, station, Menu provenance, and checklist completion remain separate.
-  Missing legacy stages stay visible as Unsorted rather than receiving an
-  invented default.
 - This Demo production graph remains an explicit working seam, not storage
   canon. Promote it only after the model, collection, Rules, adapter, and guard
   contract have been agreed together.
@@ -185,16 +180,9 @@ remain real data even when a Demo record links to them.
   file-backed collection provider and pass through the same `normalizeDish`
   and collection-state contract as Live Firestore records. The provider swap
   does not create a second Dish model or downstream Workspace collection shape.
-  The still-unpromoted Spec, Prep, Recipe, Mise-requirement, and Finance graph
+  The still-unpromoted Spec, Prep, Recipe, and Finance graph
   remains isolated behind the existing derived adapter until those record
-  models are explicitly agreed; it is not canonical Dish storage. Product
-  Demo operation-level Mise instead projects the owner-local
-  `KitchenMiseTask` records used by the real Workspace through the Kitchen-owned
-  summary projector and exposes them as `workspace.miseTasks`; it does not
-  present that derived requirement graph as a task collection. Menu service
-  provenance may be derived from each task's linked Prep item, Recipe, or
-  Ingredient and included in the presentation DTO so the consumer can filter
-  tasks without rebuilding the production graph.
+  models are explicitly agreed; it is not canonical Dish storage.
   Product Demo operation-level Orders projects the selected Workspace scenario's
   canonical `KitchenOrder` fixtures as `workspace.orders`, derives board rails
   from the shared lifecycle helper, and remains read-only.

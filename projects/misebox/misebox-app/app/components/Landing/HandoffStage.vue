@@ -40,7 +40,9 @@
       <UIcon name="i-lucide-arrow-right" />
     </div>
 
-    <article class="misebox-handoff__surface misebox-handoff__surface--workspace">
+    <article
+      class="misebox-handoff__surface misebox-handoff__surface--workspace"
+    >
       <header class="misebox-handoff__surface-header">
         <span>
           <UIcon name="i-lucide-layout-dashboard" aria-hidden="true" />
@@ -59,11 +61,6 @@
           v-if="selectedChapter === 'publish'"
           :menus="productDemo.workspace.menus"
           :error="false"
-        />
-        <LandingWorkspacePreviewMise
-          v-else-if="selectedChapter === 'prepare'"
-          :kitchen-name="productDemo.workspace.kitchenName"
-          :tasks="previewMiseTasks"
         />
         <LandingWorkspacePreviewOrders
           v-else
@@ -95,7 +92,6 @@ import type {
 } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import { useMiseboxProductDemo } from '../../composables/product-demo/useMiseboxProductDemo'
 import LandingWorkspacePreviewMenus from './WorkspacePreview/Menus.vue'
-import LandingWorkspacePreviewMise from './WorkspacePreview/Mise.vue'
 import LandingWorkspacePreviewOrders from './WorkspacePreview/Orders.vue'
 import LandingHandoffState from './HandoffState.vue'
 
@@ -112,9 +108,9 @@ const chapterCopy = {
     workspaceLabel: 'Menus',
   },
   prepare: {
-    icon: 'i-lucide-list-checks',
-    signal: 'Prep connected',
-    workspaceLabel: 'Mise en place',
+    icon: 'i-lucide-receipt-text',
+    signal: 'Order received',
+    workspaceLabel: 'Orders',
   },
   serve: {
     icon: 'i-lucide-bell-ring',
@@ -133,9 +129,6 @@ const menuSections = computed<MenuManifestSection[]>(() =>
     ...section,
     items: section.items.slice(0, 1),
   }))
-)
-const previewMiseTasks = computed(
-  () => productDemo.value?.workspace.miseTasks.slice(0, 6) || []
 )
 const { className: menuThemeClassName, styleVars: menuThemeStyleVars } =
   useMenuThemeSurface({

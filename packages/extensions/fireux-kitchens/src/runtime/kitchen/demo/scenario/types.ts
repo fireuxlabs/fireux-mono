@@ -3,7 +3,6 @@ import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
 import type {
   KitchenDemoDishSpec,
   KitchenDemoMenuItemComponentDelta,
-  KitchenDemoMiseRequirement,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
 } from '../production'
@@ -36,13 +35,11 @@ export type KitchenDemoScenarioInput = {
   completedOrders?: readonly KitchenDemoCompletedOrder[]
   kitchenIngredients?: KitchenDemoScenario['kitchenIngredients']
   menuItemComponentDeltas?: KitchenDemoMenuItemComponentDelta[]
-  miseRequirements?: KitchenDemoMiseRequirement[]
   orders: KitchenDemoScenario['orders']
   prepItems?: KitchenDemoPrepItem[]
   recipes?: KitchenDemoProductionRecipe[]
   stations: KitchenDemoScenario['stations']
   supplierIngredientLinks?: KitchenDemoScenario['supplierIngredientLinks']
-  miseTasks: KitchenDemoScenario['miseTasks']
 }
 
 export type KitchenDemoScenarioAssembly = ReturnType<

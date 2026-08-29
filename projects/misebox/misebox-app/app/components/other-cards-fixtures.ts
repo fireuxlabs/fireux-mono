@@ -102,7 +102,7 @@ export const chefCard = {
   displayName: 'Ana Müller',
   handle: '@ana-muller',
   title: 'Chef de Partie',
-  badges: ['Grill', 'Mise en place'],
+  badges: ['Grill'],
   summary: 'Hot-station chef focused on service and prep.',
 }
 export const customerCard = {
@@ -122,20 +122,6 @@ export const driverCard = {
   title: 'Delivery driver',
   badges: ['Interlaken'],
   summary: 'Local delivery coverage around Interlaken.',
-}
-export const miseCell = {
-  to: '/',
-  name: 'Burger patties',
-  subtitle: '80 g beef balls',
-  description: 'Portion ground beef into loose balls and hold chilled.',
-}
-export const misePill = {
-  to: '/',
-  title: 'Burger patties',
-  subtitle: 'Portion before service',
-  imageUrl: '',
-  icon: 'i-lucide-list-checks',
-  hasMissingTitle: false,
 }
 export const kitchenSupplierCell = {
   id: 'alpine-foods',

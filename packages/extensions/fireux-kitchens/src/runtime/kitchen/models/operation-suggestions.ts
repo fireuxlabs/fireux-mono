@@ -1,6 +1,5 @@
 import type { Dish } from './dish.model.ts'
 import type { Recipe } from './recipe.model.ts'
-import type { KitchenMiseTask } from './mise.model.ts'
 import type { KitchenStation } from './station.model.ts'
 
 export type KitchenOperationSuggestion = {
@@ -122,37 +121,6 @@ export function buildMissingRecipeDescriptionSuggestions(
       evidence: `${missing.length} Recipe.description ${missing.length === 1 ? 'field is' : 'fields are'} empty`,
       toolId: 'kitchen.recipes.update-recipe',
       affectedCount: missing.length,
-    },
-  ]
-}
-
-export function buildMiseAttentionSuggestions(
-  tasks: readonly KitchenMiseTask[],
-  limit = 5
-): KitchenOperationSuggestion[] {
-  const boundedLimit = Math.max(0, Math.min(5, Math.floor(limit)))
-  const blocked = tasks.filter((task) => task.status === 'blocked')
-  if (!blocked.length || !boundedLimit) return []
-
-  const names = blocked
-    .slice(0, Math.min(3, boundedLimit))
-    .map((task) => clean(task.title) || 'an untitled Prep Task')
-  const remainingCount = blocked.length - names.length
-  const affectedLabel = [
-    names.join(', '),
-    remainingCount > 0 ? `and ${remainingCount} more` : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-
-  return [
-    {
-      id: 'mise-blocked-tasks',
-      title: `Review blocked Prep ${blocked.length === 1 ? 'Task' : 'Tasks'}: ${affectedLabel}`,
-      description: `${blocked.length} ${blocked.length === 1 ? 'Prep Task is' : 'Prep Tasks are'} explicitly marked blocked. Review the stored task before changing its details or status.`,
-      evidence: `${blocked.length} KitchenMiseTask.status ${blocked.length === 1 ? 'value is' : 'values are'} blocked`,
-      toolId: 'kitchen.mise.update-prep-task',
-      affectedCount: blocked.length,
     },
   ]
 }

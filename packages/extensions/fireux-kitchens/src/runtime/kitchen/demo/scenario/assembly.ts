@@ -25,8 +25,6 @@ export function assembleKitchenDemoScenario(input: KitchenDemoScenarioInput) {
 
   const completedOrders = [...(input.completedOrders ?? [])]
 
-  const miseRequirements = [...(input.miseRequirements ?? [])]
-
   const menuItemComponentDeltas = [...(input.menuItemComponentDeltas ?? [])]
 
   const prepItems = [...(input.prepItems ?? [])]
@@ -47,7 +45,6 @@ export function assembleKitchenDemoScenario(input: KitchenDemoScenarioInput) {
     finance,
     services,
     completedOrders,
-    miseRequirements,
     menuItemComponentDeltas,
     prepItems,
     recipes,

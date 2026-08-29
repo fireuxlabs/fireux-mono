@@ -1,7 +1,6 @@
 import { computed, watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export type KitchenWorkspaceIndexState = {
@@ -21,7 +20,7 @@ export function useKitchenWorkspaceIndex() {
 
   const state = computed<KitchenWorkspaceIndexState>(() => {
     const selectedKitchen = workspace.selection.kitchen.value
-    const presentation = readKitchenPresentationIdentity(selectedKitchen)
+    const identity = selectedKitchen?.identity
     return {
       user: {
         id: workspace.user.currentUser.value?.uid || '',
@@ -29,12 +28,9 @@ export function useKitchenWorkspaceIndex() {
       },
       kitchen: {
         id: normalizeString(selectedKitchen?.id),
-        name: presentation.displayName,
-        tagline: presentation.tagline,
-        url:
-          presentation.cardImageUrl ||
-          presentation.imageUrl ||
-          presentation.logoImageUrl,
+        name: normalizeString(identity?.display_name),
+        tagline: normalizeString(identity?.tagline),
+        url: normalizeString(identity?.image_url),
       },
     }
   })

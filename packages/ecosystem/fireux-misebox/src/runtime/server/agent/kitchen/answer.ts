@@ -77,34 +77,6 @@ export async function answerKitchenAgent(
       instruction:
         'Inspect only the supplied canonical Recipe identity records. An empty description is direct evidence that the current Recipe description is missing. Do not infer Ingredients, quantities, method, yield, portions, cost, scaling, allergens or production readiness because those records are not supplied. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
     }
-  } else if (operation === 'mise') {
-    operationContext = {
-      operation: 'Mise',
-      authority: 'advisory',
-      prep_tasks: context.miseTasks.map((task) => ({
-        id: task.id,
-        title: task.title,
-        description: task.description,
-        status: task.status,
-        priority: task.priority,
-        station: task.station,
-        workflow_stage: task.workflow_stage,
-        service_date: task.service_date,
-        estimated_minutes: task.estimated_minutes,
-        assignee_ids: task.assignee_ids,
-        ingredient_ids: task.ingredient_ids,
-        prep_item_ids: task.prep_item_ids,
-        menu_id: task.menu_id,
-        recipe_id: task.recipe_id,
-        checklist: task.checklist,
-        due_at: task.due_at,
-        completed_at: task.completed_at,
-        notes: task.notes,
-      })),
-      tool_catalogue: toolCatalogue,
-      instruction:
-        'Inspect only the supplied canonical Prep Task records. Status, priority, Station text, workflow stage, service date, estimates, assignments, references, checklist and timestamps are direct stored evidence. Do not invent quantities, Station or Team identity, demand, Recipe requirements, deadlines, completion, shortages or Waste. Use the Tool catalogue as capability language, preserve every status, and never present a requested Tool as executable.',
-    }
   } else if (operation === 'food-safety') {
     operationContext = {
       operation: 'Food Safety',

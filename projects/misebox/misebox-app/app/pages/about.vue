@@ -294,13 +294,6 @@ const audiences = [
     icon: 'i-lucide-store',
   },
   {
-    title: 'Prep and production teams',
-    copy: 'Move from dishes and recipes into visible preparation organised around stations and service.',
-    action: 'Explore Kitchen prep',
-    to: '/operations/mise',
-    icon: 'i-lucide-list-checks',
-  },
-  {
     title: 'Service teams',
     copy: 'See guest choices enter a clear Kitchen queue and move toward a ready handoff.',
     action: 'Try the service demo',

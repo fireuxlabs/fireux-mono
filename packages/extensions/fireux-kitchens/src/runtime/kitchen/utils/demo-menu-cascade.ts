@@ -1,8 +1,4 @@
-import type { KitchenMiseTask } from '../utils/mise.ts'
-import type {
-  KitchenDemoMiseRequirement,
-  KitchenDemoDishComponent,
-} from '../demo/production'
+import type { KitchenDemoDishComponent } from '../demo/production'
 import type { KitchenDemoScenario } from '../demo/core/types'
 
 export const KITCHEN_DEMO_MENU_MODES = ['on', 'order_led', 'off'] as const
@@ -16,7 +12,6 @@ type KitchenDemoMenuCascadeScenario = Pick<
   | 'menuItemComponentDeltas'
   | 'prepItems'
   | 'recipes'
-  | 'miseRequirements'
   | 'kitchenIngredients'
 >
 
@@ -41,21 +36,12 @@ export type KitchenDemoMenuCascadeEntity = {
   neededForService: boolean
 }
 
-export type KitchenDemoMenuCascadeMiseCandidate = {
-  inServiceMenuIds: string[]
-  menuIds: string[]
-  neededForService: boolean
-  requirement: KitchenDemoMiseRequirement
-  sourceKey: string
-}
-
 export type KitchenDemoMenuCascade = {
   menus: KitchenDemoMenuCascadeMenu[]
   dishes: KitchenDemoMenuCascadeEntity[]
   prepItems: KitchenDemoMenuCascadeEntity[]
   recipes: KitchenDemoMenuCascadeEntity[]
   ingredients: KitchenDemoMenuCascadeEntity[]
-  miseCandidates: KitchenDemoMenuCascadeMiseCandidate[]
 }
 
 const menuModeValues = new Set<string>(KITCHEN_DEMO_MENU_MODES)
@@ -98,11 +84,6 @@ const projectEntity = (
     neededForService: activeMenuIds.length > 0,
   }
 }
-
-const requirementSourceKey = (requirement: KitchenDemoMiseRequirement) =>
-  requirement.source.kind === 'prep_item'
-    ? `prep_item:${requirement.source.prepItemId}`
-    : `recipe:${requirement.source.recipeId}`
 
 /**
  * Projects operational Menu availability through the read-only Demo
@@ -243,82 +224,11 @@ export function projectKitchenDemoMenuCascade(
     ),
     ingredientUsage
   )
-  const prepItemByCascadeId = new Map(
-    prepItems.map((prepItem) => [prepItem.id, prepItem])
-  )
-  const recipeByCascadeId = new Map(
-    recipes.map((recipe) => [recipe.id, recipe])
-  )
-  const miseCandidates = input.scenario.miseRequirements.map(
-    (requirement): KitchenDemoMenuCascadeMiseCandidate => {
-      const entity =
-        requirement.source.kind === 'prep_item'
-          ? prepItemByCascadeId.get(cleanId(requirement.source.prepItemId))
-          : recipeByCascadeId.get(cleanId(requirement.source.recipeId))
-      return {
-        requirement,
-        sourceKey: requirementSourceKey(requirement),
-        menuIds: [...(entity?.menuIds ?? [])],
-        inServiceMenuIds: [...(entity?.inServiceMenuIds ?? [])],
-        neededForService: entity?.neededForService === true,
-      }
-    }
-  )
-
   return {
     menus,
     dishes,
     prepItems,
     recipes,
     ingredients,
-    miseCandidates,
   }
-}
-
-export function projectKitchenDemoMiseTaskMenuIds(
-  task: KitchenMiseTask,
-  cascade: Pick<
-    KitchenDemoMenuCascade,
-    'menus' | 'prepItems' | 'recipes' | 'ingredients'
-  >
-) {
-  const menuOrder = new Map(
-    cascade.menus.map((menu, index) => [menu.id, index])
-  )
-  const menuIds = new Set<string>()
-  const addEntityMenus = (
-    entities: readonly KitchenDemoMenuCascadeEntity[],
-    id: unknown
-  ) => {
-    const entityId = cleanId(id)
-    const entity = entities.find((candidate) => candidate.id === entityId)
-    for (const menuId of entity?.menuIds ?? []) menuIds.add(menuId)
-    return Boolean(entity?.menuIds.length)
-  }
-
-  let hasProductionSource = false
-  for (const prepItemId of task.prep_item_ids) {
-    hasProductionSource =
-      addEntityMenus(cascade.prepItems, prepItemId) || hasProductionSource
-  }
-  if (task.recipe_id) {
-    hasProductionSource =
-      addEntityMenus(cascade.recipes, task.recipe_id) || hasProductionSource
-  }
-  if (!hasProductionSource) {
-    for (const ingredientId of task.ingredient_ids) {
-      addEntityMenus(cascade.ingredients, ingredientId)
-    }
-  }
-
-  if (!menuIds.size && cleanId(task.menu_id)) {
-    menuIds.add(cleanId(task.menu_id))
-  }
-
-  return [...menuIds].sort(
-    (left, right) =>
-      (menuOrder.get(left) ?? Number.MAX_SAFE_INTEGER) -
-        (menuOrder.get(right) ?? Number.MAX_SAFE_INTEGER) ||
-      left.localeCompare(right)
-  )
 }

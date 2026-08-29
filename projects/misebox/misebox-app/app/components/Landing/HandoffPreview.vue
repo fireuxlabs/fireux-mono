@@ -44,9 +44,9 @@ const chapters = [
   {
     id: 'prepare',
     label: 'Prepare',
-    icon: 'i-lucide-list-checks',
-    signal: 'Prep connected',
-    workspaceLabel: 'Mise en place',
+    icon: 'i-lucide-receipt-text',
+    signal: 'Order received',
+    workspaceLabel: 'Orders',
   },
   {
     id: 'serve',

@@ -1,11 +1,9 @@
-import type { KitchenMiseTask } from '../../utils/mise.ts'
 import type { KitchenOrder } from '../../utils/order.ts'
 import {
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
 } from '../core/fixtures'
 import { makeOrder } from './order-builders'
-import { miseTask } from './mise/builders'
 
 export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = [
   makeOrder({
@@ -68,29 +66,6 @@ export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = [
   }),
 ]
 
-export const miseboxRestaurantKitchenDemoMiseTasks: KitchenMiseTask[] = [
-  miseTask(
-    miseboxRestaurantKitchenDemoIdentity,
-    'prep-hearth-chicken',
-    'Brine hearth chicken',
-    'hearth',
-    'in_progress',
-    'high',
-    30,
-    { ingredientIds: ['chicken-breast', 'lemon'] }
-  ),
-  miseTask(
-    miseboxRestaurantKitchenDemoIdentity,
-    'press-cucumber-cooler',
-    'Press cucumber and mint cooler base',
-    'garden-pass',
-    'todo',
-    'normal',
-    20,
-    { ingredientIds: ['cucumber', 'mint', 'lime'] }
-  ),
-]
-
 export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = [
   makeOrder({
     identity: pizzaTheActionKitchenDemoIdentity,
@@ -148,27 +123,4 @@ export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = [
       },
     ],
   }),
-]
-
-export const pizzaTheActionKitchenDemoMiseTasks: KitchenMiseTask[] = [
-  miseTask(
-    pizzaTheActionKitchenDemoIdentity,
-    'mix-pizza-dough',
-    'Mix and portion pizza dough',
-    'pizza-oven',
-    'done',
-    'high',
-    45,
-    { ingredientIds: ['flour', 'sea-salt'] }
-  ),
-  miseTask(
-    pizzaTheActionKitchenDemoIdentity,
-    'prep-pizza-garnishes',
-    'Prep tomato, basil and rocket',
-    'pizza-pass',
-    'in_progress',
-    'normal',
-    25,
-    { ingredientIds: ['tomato', 'basil', 'rocket'] }
-  ),
 ]

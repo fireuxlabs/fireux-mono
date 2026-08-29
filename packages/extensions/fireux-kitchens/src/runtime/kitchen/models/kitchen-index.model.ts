@@ -23,10 +23,7 @@ export type KitchenWorkspaceKitchen = {
     display_name: string
     tagline: string
     image_url: string
-    card_image_url?: string
-    logo_image_url?: string
     media_backdrop_color?: MediaBackdropColor
-    wordmark_no_logo_image_url?: string
     wordmark_image_url?: string
     gallery: string[]
   }

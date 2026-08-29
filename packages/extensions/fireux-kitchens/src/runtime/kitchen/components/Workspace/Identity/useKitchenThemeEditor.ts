@@ -1,18 +1,25 @@
-// Concurrent edit — 2026-07-22 12:44 CEST — Canonical Kitchen theme write: retain lossless target-bound drafts while writes refresh authority.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { readFireuxEntityManagement, resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import { useKitchenWorkspaceIdentity } from '../../../composables/workspace/identity/useKitchenWorkspaceIdentity'
 import { useKitchenWorkspaceMenus } from '../../../composables/workspace/Menus/useKitchenWorkspaceMenus'
 import { useMenu } from '../../../../menu/composables/useMenu'
 import type { Menu } from '../../../../menu/utils/menu.ts'
 import { readKitchenMenuPageStyle } from '../../../utils/kitchen-readers'
-import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
-import { normalizePageStyle, normalizeString, pageStyleEquals, themeWriteStyle, type ThemeSaveRequest } from './kitchen-theme-style'
+import {
+  normalizePageStyle,
+  normalizeString,
+  pageStyleEquals,
+  themeWriteStyle,
+  type ThemeSaveRequest,
+} from './kitchen-theme-style'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
@@ -23,13 +30,9 @@ import {
 export function useKitchenThemeEditor() {
   const { selectedKitchen, kitchenId, dataType, canWrite, refreshTargets } =
     useKitchenWorkspaceIdentity()
-
   const { requireWritableData } = useWorkspaceWriteGuard('kitchen')
-
   const { menus } = useKitchenWorkspaceMenus()
-
   const toast = useToastify()
-
   const fireux = useFireUXConfig()
 
   const kitchen = computed(
@@ -44,13 +47,14 @@ export function useKitchenThemeEditor() {
   })
 
   const kitchenName = computed(
-    () => readKitchenPresentationIdentity(kitchen.value).displayName || 'Kitchen'
+    () =>
+      normalizeString(selectedKitchen.value?.identity?.display_name) ||
+      'Kitchen'
   )
 
   const kitchenSlug = computed(() => normalizeString(kitchen.value?.slug))
 
   const selectedPreviewMenuId = ref('')
-
   const previewMenus = computed(() =>
     menus.value.filter((menu) => menu.status === 'published')
   )
@@ -72,9 +76,7 @@ export function useKitchenThemeEditor() {
   const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
 
   const isLiveData = computed(() => dataType.value === 'live')
-
   const canWriteTheme = computed(() => canWrite.value && isLiveData.value)
-
   const livePreviewMenuId = computed(() =>
     isLiveData.value ? previewMenuId.value : ''
   )
@@ -129,8 +131,6 @@ export function useKitchenThemeEditor() {
   const saving = ref(false)
 
   const saveState = ref('')
-
-  
 
   const activeThemeTarget = computed(() => {
     const appId = kitchenAppId.value

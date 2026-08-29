@@ -90,19 +90,6 @@ export const kitchenOperations = [
     },
   }),
   defineKitchenOperation({
-    id: 'kitchen.mise', slug: 'mise', title: 'Mise',
-    headline: 'Kitchen Prep Management',
-    description: 'Plan and track Kitchen preparation work.',
-    to: '/workspace/kitchen/mise', group: 'Operations',
-    landingQuestion: 'What preparation work needs attention before service?',
-    icon: 'i-lucide-list-checks',
-    keywords: ['restaurant prep list app', 'kitchen prep management software', 'digital kitchen prep list', 'restaurant task management software', 'mise en place checklist'],
-    guidingLiterature: {
-      summary: 'Prep demand asks what to prepare, how much, when it is due, which Station owns it, and whether it is complete.',
-      needs: ['Create, update, complete, and remove Prep tasks.', 'Generate required work from Menus, Recipes, expected demand, and Orders.', 'Calculate quantities and group work by Station and assignee.'],
-    },
-  }),
-  defineKitchenOperation({
     id: 'kitchen.orders', slug: 'orders', title: 'Orders & Service',
     headline: 'Kitchen Order and Service Management',
     description: 'Run the live Kitchen order board and service queue.',

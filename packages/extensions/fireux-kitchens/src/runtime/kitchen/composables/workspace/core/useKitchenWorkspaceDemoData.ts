@@ -108,12 +108,6 @@ export function useKitchenWorkspaceDemoData(active: MaybeRefOrGetter<boolean>) {
             section: section.section,
             items: [...section.items],
           })),
-          miseRequirements: scenario.miseRequirements.map((requirement) => ({
-            ...requirement,
-            amount: { ...requirement.amount },
-            source: { ...requirement.source },
-          })),
-          miseTasks: [...scenario.miseTasks],
           orders: [...scenario.orders],
           prepItems: scenario.prepItems.map((prepItem) => ({
             ...prepItem,

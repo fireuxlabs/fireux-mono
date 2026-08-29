@@ -235,25 +235,17 @@ Core supplies no generic effects family or decorative one-off wrappers.
   Workspace proof pairs that shell with a read-only canonical Kitchen Operations
   launcher and project-owned Workspace copy. Its thin root owns local operation
   and page state plus one Product Demo load. Named Menus, Dishes, Ingredients,
-  Recipes, Mise, and empty-canvas children own their projected bodies; Dishes
+  Recipes and empty-canvas children own their projected bodies; Dishes
   further separates Collection, Overview, and named
-  Finance/Spec/Prep/Recipes/Mise child pages beneath one persistent
+  Finance/Spec/Prep/Recipes child pages beneath one persistent
   image-backed Dish context. Ingredients
   receives the selected Demo Kitchen's usage links already resolved through
   canonical root Ingredients; it does not copy name or image truth. Its compact
   collapsible groups use the same ordered food-group resolver as the real
   Kitchen Workspace.
-  Mise uses the real `KitchenMiseTask` collection and a Kitchen-owned summary
-  projector, prop-only collection presentation, and task board shared with the
-  Workspace. The landing disables task navigation and owns only its outer scroll
-  boundary; it does not maintain a compact Mise variant. Product Demo exposes
-  those records as `workspace.miseTasks`; production requirements remain confined
-  to their derived Dish graph. The shared board groups collapsible cards by
-  chef workflow stage rather than status; status remains a badge/action state,
-  checklist progress stays inside the task card, and missing stages appear in
-  Unsorted. Menu availability controls belong to the real Workspace; the landing
-  Menu child stays presentation-only. The Workspace and landing roots consume
-  the Kitchen-owned Demo service state and pass filtered Mise. Inactive-card
+  Menu availability controls belong to the real Workspace; the landing Menu
+  child stays presentation-only. The Workspace and landing roots consume the
+  Kitchen-owned Demo service state. Inactive-card
   styling remains a real Workspace concern; landing Dish, Recipe, Ingredient,
   and Menu cards stay visually neutral. The persistent `Open full Workspace`
   header doorway selects the Deanos Demo target before entering

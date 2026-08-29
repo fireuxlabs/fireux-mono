@@ -49,12 +49,6 @@
       :recipes="productDemo?.workspace.recipes || []"
       :error="Boolean(productDemoError)"
     />
-    <LandingWorkspacePreviewMise
-      v-else-if="selectedSurface?.id === 'kitchen.mise'"
-      :key="selectedSurface.id"
-      :kitchen-name="productDemo?.workspace.kitchenName || ''"
-      :tasks="workspaceMiseTasks"
-    />
     <LandingWorkspacePreviewOrders
       v-else-if="selectedSurface?.id === 'kitchen.orders'"
       :key="selectedSurface.id"
@@ -93,7 +87,6 @@ import { navigateTo } from '#imports'
 import { computed, ref } from 'vue'
 import { kitchenOperations } from 'fireux-kitchens/runtime/kitchen/models/operations'
 import { useKitchenWorkspaceSelection } from 'fireux-kitchens/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceSelection'
-import { useKitchenMenuServiceSelection } from 'fireux-kitchens/runtime/kitchen/composables/useKitchenMenuServiceSelection'
 import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
 import type { DishChildPage } from './Dishes/types'
 import LandingWorkspacePreviewFinance from './Finance.vue'
@@ -107,7 +100,6 @@ const emptyFinance: MiseboxProductDemo['workspace']['finance'] = {
 }
 type ProductDemoMenu = MiseboxProductDemo['workspace']['menus'][number]
 type ProductDemoDish = MiseboxProductDemo['workspace']['dishes'][number]
-type ProductDemoMiseTask = MiseboxProductDemo['workspace']['miseTasks'][number]
 const selectedSurfaceId = defineModel<string>('surfaceId', {
   default: 'kitchen.dishes',
 })
@@ -125,20 +117,6 @@ const workspaceKitchenId = computed(
   () => productDemo.value?.workspace.kitchenId || 'deanos'
 )
 const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
-const { hasInServiceMenu } = useKitchenMenuServiceSelection(
-  workspaceKitchenId,
-  () =>
-    (productDemo.value?.workspace.menus ?? []).map((menu: ProductDemoMenu) => ({
-      id: menu.id,
-      defaultInService: menu.defaultInService,
-    }))
-)
-const workspaceMiseTasks = computed(() =>
-  (productDemo.value?.workspace.miseTasks ?? []).filter(
-    (task: ProductDemoMiseTask) =>
-      !task.menuIds.length || hasInServiceMenu(task.menuIds)
-  )
-)
 const previewDishes = computed(() =>
   (productDemo.value?.workspace.dishes ?? []).filter(
     (dish: ProductDemoDish) => dish.kind !== 'Drink'

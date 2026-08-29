@@ -176,7 +176,6 @@
 
 <script setup lang="ts">
 import { kitchenTeamDossierWorkflow } from '../../kitchen/models/team-dossier.model'
-import { kitchenMiseHumanTools } from '../../kitchen/tools/mise'
 import { kitchenTeamTools } from '../../kitchen/tools/team'
 import {
   kitchenMenuCompoundTools,
@@ -200,13 +199,6 @@ const operationalTools = [
     family:
       'primitive' in tool && tool.primitive ? tool.primitive : 'workspace.team',
     to: '/workspace/kitchen/team',
-  })),
-  ...kitchenMiseHumanTools.map((tool) => ({
-    id: tool.id,
-    label: tool.surfaces.human.label,
-    description: tool.surfaces.human.description,
-    family: 'kitchen.mise',
-    to: '/workspace/kitchen/mise',
   })),
 ]
 

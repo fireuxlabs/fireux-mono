@@ -156,7 +156,7 @@ const surfaces = [
     goodFor: [
       'Developing dishes and menus',
       'Recipes and ingredients',
-      'Mise en place and stations',
+      'Stations',
       'Orders and service',
       'Teams and suppliers',
       'Finance',

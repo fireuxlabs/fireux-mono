@@ -9,17 +9,8 @@ export function validateKitchenDemoServiceAndFinance(
   input: KitchenDemoScenarioInput,
   assembly: KitchenDemoScenarioAssembly
 ): string[] {
-  const {
-    menus,
-    finance,
-    services,
-    completedOrders,
-    miseRequirements,
-    dishes,
-    stationIds,
-    prepItemIds,
-    recipeIds,
-  } = createKitchenDemoValidationContext(input, assembly)
+  const { menus, finance, services, completedOrders, dishes } =
+    createKitchenDemoValidationContext(input, assembly)
 
   const hasInvalidService = (() => {
     if (!services.length && !completedOrders.length) return false
@@ -257,22 +248,8 @@ export function validateKitchenDemoServiceAndFinance(
     }
   })()
 
-  const hasInvalidMiseRequirement = miseRequirements.some((requirement) => {
-    if (
-      !stationIds.has(requirement.station) ||
-      !Number.isFinite(requirement.amount.quantity) ||
-      requirement.amount.quantity <= 0
-    ) {
-      return true
-    }
-    return requirement.source.kind === 'prep_item'
-      ? !prepItemIds.has(requirement.source.prepItemId)
-      : !recipeIds.has(requirement.source.recipeId)
-  })
-
   return [
     hasInvalidService && 'service',
     hasInvalidFinance && 'finance',
-    hasInvalidMiseRequirement && 'mise requirements',
   ].filter((item): item is string => Boolean(item))
 }

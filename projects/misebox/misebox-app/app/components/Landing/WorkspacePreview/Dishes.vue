@@ -31,7 +31,9 @@
 
       <template v-if="dish && page !== 'detail'">
         <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0" />
-        <span class="truncate font-semibold text-highlighted">{{ pageLabel }}</span>
+        <span class="truncate font-semibold text-highlighted">{{
+          pageLabel
+        }}</span>
       </template>
     </nav>
 
@@ -67,10 +69,7 @@
       v-else-if="dish && page === 'recipes'"
       :dish="dish"
     />
-    <LandingWorkspacePreviewDishesMise
-      v-else-if="dish"
-      :dish="dish"
-    />
+    <LandingWorkspacePreviewDishesMise v-else-if="dish" :dish="dish" />
   </div>
 </template>
 
@@ -98,7 +97,6 @@ const pageLabels: Record<DishChildPage, string> = {
   spec: 'Spec',
   prep: 'Prep items',
   recipes: 'Recipes',
-  mise: 'Mise en place',
 }
 const pageLabel = computed(() => pageLabels[props.page])
 </script>

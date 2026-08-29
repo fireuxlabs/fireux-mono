@@ -1,6 +1,5 @@
 import type { IngredientFoodGroup } from 'fireux-kitchens/runtime/ingredient/models/ingredient-food-group'
 import type { KitchenFinanceReportPeriod } from 'fireux-kitchens/runtime/kitchen/models/finance-report.model'
-import type { KitchenMiseTaskSummary } from 'fireux-kitchens/runtime/kitchen/models/mise-presentation'
 import type { MenuManifest } from 'fireux-kitchens/runtime/menu/models/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/kitchen/utils/order'
 import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/kitchen/utils/demo-menu-cascade'
@@ -74,12 +73,6 @@ export type MiseboxProductDemoModel = {
         name: string
         yield: string
       }[]
-      mise: {
-        id: string
-        quantity: string
-        station: string
-        title: string
-      }[]
       spec: {
         assembly: string[]
         id: string
@@ -106,9 +99,6 @@ export type MiseboxProductDemoModel = {
         averageSaleMinor: number
       }[]
     }
-    miseTasks: (KitchenMiseTaskSummary & {
-      menuIds: string[]
-    })[]
     orders: KitchenOrder[]
     recipes: {
       id: string

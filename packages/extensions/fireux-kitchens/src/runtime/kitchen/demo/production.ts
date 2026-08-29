@@ -7,7 +7,6 @@
 import { validateDeanosKitchenDemoProduction } from './production/validation'
 
 export * from './production/deltas'
-export * from './production/mise'
 export * from './production/prep-items'
 export * from './production/recipes'
 export * from './production/specs'

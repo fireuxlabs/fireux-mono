@@ -91,24 +91,6 @@ export type KitchenDemoPrepItem = {
   method: string[]
 }
 
-type KitchenDemoMiseRequirementSource =
-  | {
-      kind: 'prep_item'
-      prepItemId: string
-    }
-  | {
-      kind: 'recipe'
-      recipeId: string
-    }
-
-export type KitchenDemoMiseRequirement = {
-  id: string
-  title: string
-  station: KitchenDemoStationId
-  amount: KitchenDemoProductionAmount
-  source: KitchenDemoMiseRequirementSource
-}
-
 export const formatKitchenDemoProductionAmount = (
   amount: KitchenDemoProductionAmount
 ) => `${amount.quantity} ${amount.unit}`

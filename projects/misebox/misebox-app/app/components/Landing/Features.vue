@@ -1,8 +1,12 @@
 <template>
   <section class="landing-index-section">
     <div class="section-header">
-      <h2 class="fx-type-section-title">Why Culinary Professionals Choose Misebox?</h2>
-      <p class="fx-type-description">Built by chefs, for chefs who demand precision and efficiency</p>
+      <h2 class="fx-type-section-title">
+        Why Culinary Professionals Choose Misebox?
+      </h2>
+      <p class="fx-type-description">
+        Built by chefs, for chefs who demand precision and efficiency
+      </p>
     </div>
     <div class="grid">
       <div
@@ -25,7 +29,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   first: Boolean,
-  second: Boolean
+  second: Boolean,
 })
 
 const allFeatures = [
@@ -33,74 +37,78 @@ const allFeatures = [
     key: 'recipes',
     icon: 'i-lucide-book-open',
     title: 'Digital Recipe Cards',
-    description: 'Organize recipes with detailed ingredients, steps, photos, and nutritional information.'
+    description:
+      'Organize recipes with detailed ingredients, steps, photos, and nutritional information.',
   },
   {
     key: 'scaling',
     icon: 'i-lucide-scaling',
     title: 'Recipe Scaling',
-    description: 'Automatically adjust ingredient quantities for different serving sizes and batch production.'
+    description:
+      'Automatically adjust ingredient quantities for different serving sizes and batch production.',
   },
   {
     key: 'costing',
     icon: 'i-lucide-dollar-sign',
     title: 'Food Cost Analysis',
-    description: 'Calculate exact food costs per portion and track profitability in real-time.'
+    description:
+      'Calculate exact food costs per portion and track profitability in real-time.',
   },
   {
     key: 'inventory',
     icon: 'i-lucide-package-check',
     title: 'Smart Inventory',
-    description: 'Track ingredients with automatic reorder alerts and supplier price comparison.'
-  },
-  {
-    key: 'prep',
-    icon: 'i-lucide-clock',
-    title: 'Prep Scheduling',
-    description: 'Plan mise en place with time estimates and dependency tracking.'
+    description:
+      'Track ingredients with automatic reorder alerts and supplier price comparison.',
   },
   {
     key: 'nutrition',
     icon: 'i-lucide-heart',
     title: 'Nutrition Tracking',
-    description: 'Calculate nutritional values and allergen information automatically.'
+    description:
+      'Calculate nutritional values and allergen information automatically.',
   },
   {
     key: 'suppliers',
     icon: 'i-lucide-truck',
     title: 'Supplier Management',
-    description: 'Manage vendor relationships, compare prices, and streamline ordering.'
+    description:
+      'Manage vendor relationships, compare prices, and streamline ordering.',
   },
   {
     key: 'waste',
     icon: 'i-lucide-trash-2',
     title: 'Waste Tracking',
-    description: 'Monitor food waste patterns and identify cost-saving opportunities.'
+    description:
+      'Monitor food waste patterns and identify cost-saving opportunities.',
   },
   {
     key: 'allergens',
     icon: 'i-lucide-alert-triangle',
     title: 'Allergen Control',
-    description: 'Track allergens and dietary restrictions across all recipes and ingredients.'
+    description:
+      'Track allergens and dietary restrictions across all recipes and ingredients.',
   },
   {
     key: 'mobile',
     icon: 'i-lucide-smartphone',
     title: 'Kitchen Tablets',
-    description: 'Access recipes and checklists on kitchen-friendly mobile devices.'
+    description:
+      'Access recipes and checklists on kitchen-friendly mobile devices.',
   },
   {
     key: 'reports',
     icon: 'i-lucide-bar-chart',
     title: 'Kitchen Analytics',
-    description: 'Track kitchen performance, costs, and efficiency metrics.'
+    description: 'Track kitchen performance, costs, and efficiency metrics.',
   },
   {
     key: 'compliance',
     icon: 'i-lucide-shield-check',
     title: 'Food Safety',
-    description: 'Maintain HACCP compliance with automated temperature logs and checklists.'
-  }
+    description:
+      'Maintain HACCP compliance with automated temperature logs and checklists.',
+  },
 ]
 
 const filteredFeatures = computed(() => {

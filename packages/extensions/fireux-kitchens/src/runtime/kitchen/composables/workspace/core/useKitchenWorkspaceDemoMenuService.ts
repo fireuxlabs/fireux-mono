@@ -1,8 +1,6 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { KitchenMiseTask } from '../../../utils/mise.ts'
 import {
   projectKitchenDemoMenuCascade,
-  projectKitchenDemoMiseTaskMenuIds,
   type KitchenDemoMenuCascadeInput,
   type KitchenDemoMenuCascadeEntity,
 } from '../../../utils/demo-menu-cascade'
@@ -59,13 +57,6 @@ export function useKitchenWorkspaceDemoMenuService(
     family: KitchenDemoServiceEntityFamily,
     entityId: string
   ) => service.hasInServiceMenu(entityMenuIds(family, entityId))
-  const isTaskInService = (task: KitchenMiseTask) => {
-    const value = cascade.value
-    if (!value) return true
-
-    const menuIds = projectKitchenDemoMiseTaskMenuIds(task, value)
-    return !menuIds.length || service.hasInServiceMenu(menuIds)
-  }
   const menuMode = (menuId: string) =>
     cascade.value?.menus.find((menu) => menu.id === clean(menuId))?.mode ??
     'off'
@@ -75,7 +66,6 @@ export function useKitchenWorkspaceDemoMenuService(
     cascade,
     entityMenuIds,
     isEntityInService,
-    isTaskInService,
     menuMode,
   }
 }

@@ -66,9 +66,6 @@ export function useKitchenWorkspaceDish() {
   )
   const prepItems = computed(() => demoDishItem.value?.prepItems ?? [])
   const recipes = computed(() => demoDishItem.value?.recipes ?? [])
-  const miseRequirements = computed(
-    () => demoDishItem.value?.miseRequirements ?? []
-  )
   const finance = computed(() => demoDishItem.value?.finance ?? null)
   const financeError = computed(() => null)
 
@@ -84,7 +81,6 @@ export function useKitchenWorkspaceDish() {
     componentCount: componentViews.value.length,
     prepItemCount: prepItems.value.length,
     recipeCount: recipes.value.length,
-    miseRequirementCount: miseRequirements.value.length,
     hasFinanceEstimate: Boolean(finance.value),
     pending: pending.value,
     readOnly: readOnly.value,
@@ -110,7 +106,6 @@ export function useKitchenWorkspaceDish() {
     formatProductionAmount,
     getIngredientName,
     getStationName,
-    miseRequirements,
     menuUsage,
     finance,
     financePending: pending,

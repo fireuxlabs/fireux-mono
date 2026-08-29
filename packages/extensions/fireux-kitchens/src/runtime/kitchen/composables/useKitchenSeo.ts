@@ -20,10 +20,7 @@ export function buildKitchenJsonLd(
     '@type': 'Restaurant',
     name,
     description: excerpt(entry?.tagline || entry?.formatted_address),
-    image:
-      clean(
-        entry?.cover_image || entry?.display_image_url || entry?.image_url
-      ) || undefined,
+    image: clean(entry?.image_url) || undefined,
     address: clean(entry?.formatted_address) || undefined,
   }
 }
@@ -60,13 +57,7 @@ export function useKitchenSeo(
           ''
       )
     ),
-    image: computed(() => {
-      return clean(
-        view.value?.cover_image ||
-          view.value?.display_image_url ||
-          view.value?.image_url
-      )
-    }),
+    image: computed(() => clean(view.value?.image_url)),
     path: computed(() =>
       slug.value ? `/kitchens/${encodeURIComponent(slug.value)}` : ''
     ),

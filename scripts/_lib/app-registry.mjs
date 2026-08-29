@@ -258,7 +258,6 @@ export const APP_REGISTRY = {
     componentSmokeRoutes: [
       '/',
       '/workspace/kitchen/identity',
-      '/workspace/kitchen/mise',
       '/workspace/kitchen/ingredients',
       '/workspace/kitchen/suppliers',
       '/workspace/kitchen/menus',

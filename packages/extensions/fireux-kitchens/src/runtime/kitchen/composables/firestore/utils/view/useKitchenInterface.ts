@@ -8,7 +8,6 @@ import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../../../utils/kitchen-readers'
-import { readKitchenPresentationIdentity } from '../../../../utils/kitchen-presentation'
 import {
   meaningfulSurfaceDelta,
   placeBaselineKeys,
@@ -89,19 +88,24 @@ export function useKitchenInterface() {
         ;(merged as Record<string, unknown>)[key] = place[key]
       }
     }
-    const identityDelta = {
-      ...meaningfulSurfaceDelta(kitchenDelta.identity),
-    }
-    if (Object.hasOwn(place, 'image_url')) {
-      delete merged.display_image_url
-      delete identityDelta.image_url
-    }
+    const identityDelta = meaningfulSurfaceDelta(kitchenDelta.identity)
+    const identity = Object.keys(place).length
+      ? {
+          display_name: safeString(place.name),
+          tagline: safeString(place.brand_tagline),
+          image_url: safeString(place.image_url),
+          gallery: Array.isArray(place.gallery_images)
+            ? (place.gallery_images as string[])
+            : [],
+        }
+      : identityDelta
+    delete merged.display_image_url
     if (Object.hasOwn(place, 'gallery_images')) {
       delete merged.food_gallery
-      delete identityDelta.gallery
+      delete identity.gallery
     }
-    if (Object.keys(identityDelta).length) {
-      ;(merged as Record<string, unknown>).identity = identityDelta
+    if (Object.keys(identity).length) {
+      ;(merged as Record<string, unknown>).identity = identity
     } else {
       delete (merged as Record<string, unknown>).identity
     }
@@ -113,7 +117,7 @@ export function useKitchenInterface() {
     if (placeCurrencyCode) merged.currency_code = placeCurrencyCode
     const id = safeString(merged.id).trim()
     if (!id) return null
-    const identity = readKitchenPresentationIdentity(merged)
+    const presentation = merged.identity
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -122,13 +126,10 @@ export function useKitchenInterface() {
       ...merged,
       id,
       visibility,
-      display_name: identity.displayName || safeString(place.name),
-      tagline:
-        identity.tagline ||
-        safeString(place.tagline) ||
-        safeString(place.brand_tagline),
+      display_name: safeString(presentation?.display_name),
+      tagline: safeString(presentation?.tagline),
       display_image_url: safeString(place.image_url),
-      image_shade: identity.imageShade || merged.image_shade,
+      image_shade: merged.image_shade,
       food_gallery: Array.isArray(place.gallery_images)
         ? (place.gallery_images as string[])
         : [],
@@ -144,23 +145,14 @@ export function useKitchenInterface() {
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString(kitchen.slug).trim()
-    const identity = readKitchenPresentationIdentity(kitchen)
-    const name = safeString(identity.displayName || kitchen.name)
+    const identity = kitchen.identity
+    const name = safeString(identity?.display_name)
     const shortName = safeString(kitchen.short_name)
     const formattedAddress = safeString(kitchen.formatted_address)
     const shortAddress = toShortAddress(
       safeString(kitchen.short_address) || formattedAddress
     )
-    const placeImageUrl = safeString(
-      kitchen.display_image_url || kitchen.image_url
-    )
-    const cardImageUrl = safeString(identity.cardImageUrl)
-    const imageUrl = safeString(
-      cardImageUrl ||
-        placeImageUrl ||
-        identity.logoImageUrl ||
-        kitchen.logo_image_url
-    )
+    const imageUrl = safeString(identity?.image_url)
 
     const visible = kitchen.visible !== false
     const badges = visible ? [] : ['Hidden']
@@ -178,9 +170,7 @@ export function useKitchenInterface() {
       shortName,
       formattedAddress,
       shortAddress,
-      tagline: safeString(
-        kitchen.tagline || kitchen.brand_tagline
-      ),
+      tagline: safeString(identity?.tagline),
       about: safeString(kitchen.about),
       priceLevel: safeString(kitchen.price_level),
       fulfilmentModes: Array.isArray(kitchen.fulfilment?.modes)
@@ -193,19 +183,14 @@ export function useKitchenInterface() {
       imageUrl,
       logoImageUrl: safeString(kitchen.logo_image || kitchen.logo_image_url),
       categoryLabels: [...(kitchen.tags || []), ...(kitchen.types || [])]
-        .filter((label) => !['establishment', 'food', 'point_of_interest'].includes(label))
+        .filter(
+          (label) =>
+            !['establishment', 'food', 'point_of_interest'].includes(label)
+        )
         .slice(0, 3),
 
-      imageShade: cardImageUrl
-        ? identity.imageShade
-        : placeImageUrl
-          ? kitchen.image_shade
-          : identity.imageShade || kitchen.image_shade,
-      imageKind:
-        kitchen.image_kind ||
-        (cardImageUrl || (!placeImageUrl && identity.logoImageUrl)
-          ? 'brand'
-          : 'photograph'),
+      imageShade: kitchen.image_shade,
+      imageKind: kitchen.image_kind || (imageUrl ? 'photograph' : 'brand'),
 
       claimedBy: safeString(kitchen.claimed_by),
     }
@@ -234,19 +219,10 @@ export function useKitchenInterface() {
 
     const id = safeString(target.id).trim()
     const slug = safeString(target.slug).trim()
-    const identity = readKitchenPresentationIdentity(target)
-    const displayName = safeString(identity.displayName || target.name).trim()
-    const tagline = safeString(identity.tagline).trim()
-    const placeImageUrl = safeString(
-      target.display_image_url || target.image_url
-    ).trim()
-    const cardImageUrl = safeString(identity.cardImageUrl).trim()
-    const imageUrl = safeString(
-      cardImageUrl ||
-        placeImageUrl ||
-        identity.logoImageUrl ||
-        target.logo_image_url
-    ).trim()
+    const identity = target.identity
+    const displayName = safeString(identity?.display_name).trim()
+    const tagline = safeString(identity?.tagline).trim()
+    const imageUrl = safeString(identity?.image_url).trim()
     const foodGallery = Array.isArray(target.food_gallery)
       ? target.food_gallery
       : []
@@ -273,11 +249,7 @@ export function useKitchenInterface() {
       imageUrl,
       logoImageUrl: safeString(target.logo_image || target.logo_image_url),
       categoryLabels: [],
-      imageShade: cardImageUrl
-        ? identity.imageShade
-        : placeImageUrl
-          ? target.image_shade
-          : identity.imageShade || target.image_shade,
+      imageShade: target.image_shade,
       claimedBy: '',
     }
 
@@ -324,20 +296,18 @@ export function useKitchenInterface() {
   ): KitchenCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
-    const kitchenIdentity = readKitchenPresentationIdentity(target)
+    const kitchenIdentity = target.identity
 
     return {
       id: base.id,
       to: base.to,
       name: base.name,
       shortAddress: base.shortAddress,
-      imageUrl: safeString(
-        kitchenIdentity.logoImageUrl || target.logo_image_url || base.imageUrl
-      ).trim(),
-      imageShade: kitchenIdentity.imageShade,
+      imageUrl: safeString(kitchenIdentity?.image_url).trim(),
+      imageShade: target.image_shade,
       imageKind: 'brand',
-      mediaBackdropColor: kitchenIdentity.mediaBackdropColor,
-      prop: safeString(target.tagline || target.brand_tagline),
+      mediaBackdropColor: kitchenIdentity?.media_backdrop_color,
+      prop: safeString(kitchenIdentity?.tagline),
     }
   }
 

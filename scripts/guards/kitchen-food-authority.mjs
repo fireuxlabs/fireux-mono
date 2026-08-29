@@ -15,32 +15,37 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.model.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/recipe.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/recipe.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
+  ]
+    .map((file) => read(repoRoot, file))
+    .join('\n')
   const dishModel = [
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.model.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/dish.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/dish.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
+  ]
+    .map((file) => read(repoRoot, file))
+    .join('\n')
   const menuItemModel = [
     'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.model.ts',
     'packages/extensions/fireux-kitchens/src/runtime/menu/utils/menu-item.ts',
     'packages/extensions/fireux-kitchens/src/runtime/menu/models/menu-item.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
+  ]
+    .map((file) => read(repoRoot, file))
+    .join('\n')
   const stationModel = [
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.model.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/station.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/station.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
-  const miseModel = [
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.model.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/mise.ts',
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
+  ]
+    .map((file) => read(repoRoot, file))
+    .join('\n')
   const prepItemModel = [
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.model.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/prep-item.ts',
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/prep-item.entity.ts',
-  ].map(file => read(repoRoot, file)).join('\n')
+  ]
+    .map((file) => read(repoRoot, file))
+    .join('\n')
   const menuItemWriter = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/menu/composables/firestore/mutations/useMenuItemMutations.ts'
@@ -53,9 +58,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/identity-validation.rules',
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-workflow.rules',
-  ].map(relativePath => read(repoRoot, relativePath)).join('\n')
+  ]
+    .map((relativePath) => read(repoRoot, relativePath))
+    .join('\n')
 
-  assert.match(recipeModel, /export const RecipeEntity\s*=\s*defineFireuxEntity/)
+  assert.match(
+    recipeModel,
+    /export const RecipeEntity\s*=\s*defineFireuxEntity/
+  )
   assert.match(recipeModel, /identity:\s*'parent-scoped'/)
   assert.match(recipeModel, /parent:\s*'Kitchen'/)
   assert.match(recipeModel, /export const RecipeDefaults\b/)
@@ -71,7 +81,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(flagshipCommand, /is_flagship:\s*false/)
   assert.match(menuItemModel, /export const MenuItemDefaults\b/)
   assert.match(menuItemModel, /parent:\s*'MenuSection'/)
-  assert.match(stationModel, /export const KitchenStationRecord\s*=\s*defineFireuxEntity/)
+  assert.match(
+    stationModel,
+    /export const KitchenStationRecord\s*=\s*defineFireuxEntity/
+  )
   assert.match(stationModel, /kind:\s*'record'/)
   assert.match(stationModel, /parent:\s*'Kitchen'/)
   assert.match(stationModel, /export const KitchenStationDefaults\b/)
@@ -79,15 +92,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     stationModel,
     /path:\s*'kitchens\/\{kitchenId\}\/stations\/\{stationId\}'/
   )
-  assert.match(miseModel, /export const KitchenMiseTaskRecord\s*=\s*defineFireuxEntity/)
-  assert.match(miseModel, /kind:\s*'record'/)
-  assert.match(miseModel, /parent:\s*'Kitchen'/)
-  assert.match(miseModel, /export const KitchenMiseTaskDefaults\b/)
   assert.match(
-    miseModel,
-    /path:\s*'kitchens\/\{kitchenId\}\/mise-tasks\/\{taskId\}'/
+    prepItemModel,
+    /export const KitchenPrepItemEntity\s*=\s*defineFireuxEntity/
   )
-  assert.match(prepItemModel, /export const KitchenPrepItemEntity\s*=\s*defineFireuxEntity/)
   assert.match(prepItemModel, /kind:\s*'entity'/)
   assert.match(prepItemModel, /parent:\s*'Kitchen'/)
   assert.match(prepItemModel, /export const KitchenPrepItemDefaults\b/)
@@ -96,13 +104,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /path:\s*'kitchens\/\{kitchenId\}\/prep-items\/\{prepItemId\}'/
   )
   assert.match(menuItemWriter, /Select a Dish from this Kitchen/)
-  assert.match(menuItemWriter, /Menu Item identity and relationships cannot be changed/)
+  assert.match(
+    menuItemWriter,
+    /Menu Item identity and relationships cannot be changed/
+  )
   assert.match(rules, /match \/dishes\/\{dishId\}/)
   assert.match(rules, /match \/recipes\/\{recipeId\}/)
   assert.match(rules, /match \/stations\/\{stationId\}/)
   assert.match(rules, /function isValidKitchenStation\(data, kitchenId\)/)
-  assert.match(rules, /match \/mise-tasks\/\{taskId\}/)
-  assert.match(rules, /function isValidKitchenMiseTask\(data\)/)
   assert.match(rules, /match \/prep-items\/\{prepItemId\}/)
   assert.match(rules, /function isValidKitchenPrepItem\(data\)/)
   assert.match(

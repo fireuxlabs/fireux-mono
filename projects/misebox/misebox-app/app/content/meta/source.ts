@@ -115,12 +115,12 @@ export const sourceMeta = {
     appSpec: {
       name: 'Misebox',
       tagline: 'Restaurant Menu and Kitchen Workflow',
-      description: 'Misebox connects published menus with the dishes, recipes, preparation, orders, and service handoff behind them.',
+      description: 'Misebox connects published menus with the dishes, orders, and service handoff behind them.',
       modules: [
         {
           name: 'fireux-kitchens',
           summary: 'Kitchen operations module for day-to-day execution.',
-          entities: ['Kitchen', 'Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember'],
+          entities: ['Kitchen', 'Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenTeamMember'],
         },
         {
           name: 'fireux-jobs',
@@ -154,7 +154,7 @@ export const sourceMeta = {
           name: 'Kitchen',
           purpose: 'Operational kitchen identity and runtime context.',
           keyFields: ['id', 'name', 'short_address', 'image_url', 'is_test_kitchen'],
-          linksTo: ['Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember', 'Order'],
+          linksTo: ['Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenTeamMember', 'Order'],
         },
         {
           name: 'Menu',
@@ -181,16 +181,10 @@ export const sourceMeta = {
           linksTo: ['Dish', 'Ingredient'],
         },
         {
-          name: 'KitchenMiseTask',
-          purpose: 'Prep and service task tracking for kitchen operations.',
-          keyFields: ['id', 'kitchen_id', 'title', 'station', 'status'],
-          linksTo: ['KitchenTeamMember', 'Menu', 'KitchenRecipe'],
-        },
-        {
           name: 'KitchenTeamMember',
           purpose: 'Team assignment record for stations, roles, and capability tags.',
           keyFields: ['id', 'kitchen_id', 'name', 'role', 'station'],
-          linksTo: ['KitchenMiseTask'],
+          linksTo: [],
         },
         {
           name: 'Order',
@@ -250,7 +244,7 @@ Place
   -> Kitchen
        -> Menu -> Dish -> Ingredient
        -> KitchenRecipe
-       -> KitchenMiseTask -> KitchenTeamMember
+       -> KitchenTeamMember
        -> Order
 Company
   -> Place

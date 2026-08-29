@@ -1,6 +1,5 @@
 <template>
-  <WorkspaceKitchenMiseTools v-if="operation === 'mise'" />
-  <WorkspaceKitchenRecipesTools v-else-if="operation === 'recipes'" />
+  <WorkspaceKitchenRecipesTools v-if="operation === 'recipes'" />
   <WorkspaceKitchenStationsTools v-else-if="operation === 'stations'" />
 
   <section

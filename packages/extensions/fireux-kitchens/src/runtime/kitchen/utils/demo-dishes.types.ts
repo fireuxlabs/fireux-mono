@@ -6,7 +6,6 @@ import type { Dish } from '../utils/dish.ts'
 import type { KitchenDemoScenario } from '../demo/core/types'
 import type {
   KitchenDemoDishSpec,
-  KitchenDemoMiseRequirement,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
 } from '../demo/production'
@@ -45,7 +44,6 @@ export type KitchenDemoDishOperationItem = {
   menuUsage: KitchenDemoDishMenuUsage[]
   prepItems: KitchenDemoPrepItem[]
   recipes: KitchenDemoProductionRecipe[]
-  miseRequirements: KitchenDemoMiseRequirement[]
   finance: KitchenDishFinanceEstimate | null
   quantitySold: number | null
   totalSalesMinor: number | null
@@ -78,7 +76,6 @@ export type KitchenDemoDishesScenario = Pick<
   | 'dishSpecs'
   | 'kitchenIngredients'
   | 'menus'
-  | 'miseRequirements'
   | 'place'
   | 'prepItems'
   | 'recipes'

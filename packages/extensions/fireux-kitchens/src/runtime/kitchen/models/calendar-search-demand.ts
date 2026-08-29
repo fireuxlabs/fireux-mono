@@ -2,7 +2,8 @@ export const kitchenCalendarSearchDemand = {
   observedAt: '2026-08-23',
   geography: 'English-language web',
   language: 'English',
-  question: 'What do Kitchen operators need to understand and act on for a selected date?',
+  question:
+    'What do Kitchen operators need to understand and act on for a selected date?',
   method:
     'Current search results establish demand for shift-based checklists, readiness and accountable daily work. The Kitchen capability catalogue then identifies which child capability owns each record and action.',
   seeds: [
@@ -93,26 +94,61 @@ export const kitchenCalendarSearchDemand = {
     {
       title: 'Prepare',
       items: [
-        { label: 'Mise', to: '/workspace/kitchen/mise', question: 'What preparation is due or blocked?' },
-        { label: 'Receiving', to: '/workspace/kitchen/receiving', question: 'What is expected to arrive?' },
-        { label: 'Inventory', to: '/workspace/kitchen/inventory', question: 'Which stock needs attention?' },
-        { label: 'Food Safety', to: '/workspace/kitchen/food-safety', question: 'Which checks are required?' },
+        {
+          label: 'Receiving',
+          to: '/workspace/kitchen/receiving',
+          question: 'What is expected to arrive?',
+        },
+        {
+          label: 'Inventory',
+          to: '/workspace/kitchen/inventory',
+          question: 'Which stock needs attention?',
+        },
+        {
+          label: 'Food Safety',
+          to: '/workspace/kitchen/food-safety',
+          question: 'Which checks are required?',
+        },
       ],
     },
     {
       title: 'Service',
       items: [
-        { label: 'Orders', to: '/workspace/kitchen/orders', question: 'What is active in service?' },
-        { label: 'Stations', to: '/workspace/kitchen/stations', question: 'Where is work routed?' },
-        { label: 'Menus', to: '/workspace/kitchen/menus', question: 'What is available to sell?' },
+        {
+          label: 'Orders',
+          to: '/workspace/kitchen/orders',
+          question: 'What is active in service?',
+        },
+        {
+          label: 'Stations',
+          to: '/workspace/kitchen/stations',
+          question: 'Where is work routed?',
+        },
+        {
+          label: 'Menus',
+          to: '/workspace/kitchen/menus',
+          question: 'What is available to sell?',
+        },
       ],
     },
     {
       title: 'Review',
       items: [
-        { label: 'Waste', to: '/workspace/kitchen/waste', question: 'What loss must be recorded?' },
-        { label: 'Sales', to: '/workspace/kitchen/finance', question: 'What bounded Sales evidence exists?' },
-        { label: 'Team', to: '/workspace/kitchen/team', question: 'What needs handing over?' },
+        {
+          label: 'Waste',
+          to: '/workspace/kitchen/waste',
+          question: 'What loss must be recorded?',
+        },
+        {
+          label: 'Sales',
+          to: '/workspace/kitchen/finance',
+          question: 'What bounded Sales evidence exists?',
+        },
+        {
+          label: 'Team',
+          to: '/workspace/kitchen/team',
+          question: 'What needs handing over?',
+        },
       ],
     },
   ],

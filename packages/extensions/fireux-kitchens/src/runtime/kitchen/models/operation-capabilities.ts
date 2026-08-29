@@ -6,7 +6,6 @@ import { kitchenIdentitySearchDemand } from './identity-search-demand'
 import { kitchenIngredientsSearchDemand } from './ingredients-search-demand'
 import { kitchenInventorySearchDemand } from './inventory-search-demand'
 import { kitchenMenusSearchDemand } from './menus-search-demand'
-import { kitchenMiseSearchDemand } from './mise-search-demand'
 import { kitchenOrdersSearchDemand } from './orders-search-demand'
 import { kitchenPerformanceSearchDemand } from './performance-search-demand'
 import { kitchenPurchasingSearchDemand } from './purchasing-search-demand'
@@ -130,10 +129,6 @@ export const kitchenOperationToolCapabilities = {
   menus: researchTools(
     kitchenMenusSearchDemand.toolHypotheses,
     kitchenMenusSearchDemand.records
-  ),
-  mise: researchTools(
-    kitchenMiseSearchDemand.toolHypotheses,
-    kitchenMiseSearchDemand.records
   ),
   orders: researchTools(
     kitchenOrdersSearchDemand.toolHypotheses,

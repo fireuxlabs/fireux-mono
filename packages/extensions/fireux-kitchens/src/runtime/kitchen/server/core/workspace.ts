@@ -73,7 +73,6 @@ function projectKitchen(input: {
   const phone = place.phone
   const latitude = optionalNumber(placeData.lat)
   const longitude = optionalNumber(placeData.lng)
-  const logoImageUrl = place.logoImage
   const cardImageUrl = resolvedIdentity.imageUrl
   const mediaBackdropColor = place.mediaBackdropColor
 
@@ -87,7 +86,6 @@ function projectKitchen(input: {
       display_name: displayName,
       tagline,
       image_url: cardImageUrl,
-      ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
       ...(mediaBackdropColor
         ? { media_backdrop_color: mediaBackdropColor }
         : {}),

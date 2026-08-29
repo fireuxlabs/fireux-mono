@@ -1,5 +1,4 @@
 import { deanosKitchenDemoMenuItemComponentDeltas } from './deltas'
-import { deanosKitchenDemoMise } from './mise'
 import { deanosKitchenDemoPrepItems } from './prep-items'
 import { deanosKitchenDemoRecipes } from './recipes'
 import { deanosKitchenDemoSpecs } from './specs'
@@ -74,7 +73,6 @@ export const validateDeanosKitchenDemoProduction = () => {
   assertUniqueIds(deanosKitchenDemoRecipes, 'Recipe')
   assertUniqueIds(deanosKitchenDemoSpecs, 'Dish Spec')
   assertUniqueIds(deanosKitchenDemoMenuItemComponentDeltas, 'Menu item delta')
-  assertUniqueIds(deanosKitchenDemoMise, 'Mise requirement')
 
   const expectedDishIds = new Set<string>(deanosKitchenDemoDishIds)
   const specDishIds = deanosKitchenDemoSpecs.map((spec) => spec.dishId)
@@ -106,16 +104,5 @@ export const validateDeanosKitchenDemoProduction = () => {
       recipeIds,
       `Menu item delta ${delta.id}`
     )
-  }
-  for (const requirement of deanosKitchenDemoMise) {
-    const sourceExists =
-      requirement.source.kind === 'prep_item'
-        ? prepItemIds.has(requirement.source.prepItemId)
-        : recipeIds.has(requirement.source.recipeId)
-    if (!sourceExists) {
-      throw new Error(
-        `Deanos Demo Mise requirement ${requirement.id} has no production source.`
-      )
-    }
   }
 }

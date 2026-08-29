@@ -102,36 +102,6 @@ export async function run({ repoRoot }) {
     .sort()
   const ids = []
 
-  const miseDefinitionRoot =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/mise'
-  const miseDefinitionFiles = [
-    'create-prep-task.ts',
-    'update-prep-task.ts',
-    'change-prep-status.ts',
-    'delete-prep-task.ts',
-  ]
-  const miseDefinitions = await Promise.all(
-    miseDefinitionFiles.map((file) =>
-      source(repoRoot, `${miseDefinitionRoot}/${file}`)
-    )
-  )
-  const miseRegistry = await source(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/mise/index.ts'
-  )
-  const miseSurface = await source(
-    repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Capability/Tools.vue'
-  )
-  const miseRecordSurfaces = await Promise.all(
-    ['Edit.vue', 'Write.vue', 'Delete.vue'].map((file) =>
-      source(
-        repoRoot,
-        `packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Mise/${file}`
-      )
-    )
-  )
-
   const wasteDefinition = await source(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/tools/waste/record-event.ts'
@@ -151,33 +121,6 @@ export async function run({ repoRoot }) {
       'Kitchen Waste must project Record Waste from its domain-owned human Tool definition.'
     )
   }
-  if (
-    ![
-      'kitchen.mise.create-prep-task',
-      'kitchen.mise.update-prep-task',
-      'kitchen.mise.change-prep-status',
-      'kitchen.mise.delete-prep-task',
-    ].every((id) =>
-      miseDefinitions.some((definition) => definition.includes(`id: '${id}'`))
-    ) ||
-    miseDefinitions.some(
-      (definition) => !definition.includes('agent: { callable: false }')
-    ) ||
-    !miseRegistry.includes('kitchenMiseHumanTools') ||
-    !miseSurface.includes('WorkspaceKitchenMiseTools') ||
-    ![
-      'kitchenMisePrepTaskUpdateTool',
-      'kitchenMisePrepStatusChangeTool',
-      'kitchenMisePrepTaskDeleteTool',
-    ].every((tool) =>
-      miseRecordSurfaces.some((surface) => surface.includes(tool))
-    )
-  ) {
-    violations.push(
-      'Kitchen Mise must project Add prep task from its domain-owned human tool registry.'
-    )
-  }
-
   for (const file of definitionFiles) {
     const definition = await source(repoRoot, `${definitionRoot}/${file}`)
     const id = definition.match(/\bid:\s*'([^']+)'/)?.[1]
@@ -330,7 +273,7 @@ export async function run({ repoRoot }) {
       "findMiseboxOperationAgent('kitchen', operation)"
     ) ||
     !kitchenAgentAnswer.includes("requestedAgent?.name || 'KitchenAI'") ||
-    /agentName = '(?:Dishes|Recipes|Mise|FoodSafety|Stations|Orders)AI'/.test(
+    /agentName = '(?:Dishes|Recipes|FoodSafety|Stations|Orders)AI'/.test(
       kitchenAgentAnswer
     )
   ) {
@@ -360,16 +303,6 @@ export async function run({ repoRoot }) {
   ) {
     violations.push(
       'RecipesAI must remain connected to authorized canonical Recipe identity records through the shared KitchenAI inference path.'
-    )
-  }
-  if (
-    !/mise:\s*\{[\s\S]{0,400}?maturity:\s*'connected'/.test(operationAgents) ||
-    !kitchenAgentContext.includes("request.operation !== 'mise'") ||
-    !kitchenAgentContext.includes('normalizeKitchenMiseTask') ||
-    !kitchenAgentAnswer.includes("operation === 'mise'")
-  ) {
-    violations.push(
-      'MiseAI must remain connected to authorized canonical Prep Task records through the shared KitchenAI inference path.'
     )
   }
   if (
@@ -427,11 +360,6 @@ export async function run({ repoRoot }) {
     ['drinks', 'drinkActionTargets', ['update-drink', 'delete-drink']],
     ['recipes', 'recipeActionTargets', ['update-recipe', 'delete-recipe']],
     ['menus', 'menuActionTargets', ['update-menu', 'delete-menu']],
-    [
-      'mise',
-      'miseActionTargets',
-      ['update-prep-task', 'change-prep-status', 'delete-prep-task'],
-    ],
   ]
   for (const [capability, targets, actions] of targetAwareCapabilities) {
     const page = await source(

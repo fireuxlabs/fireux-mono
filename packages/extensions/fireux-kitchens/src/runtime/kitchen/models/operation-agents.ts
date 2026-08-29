@@ -70,11 +70,6 @@ const definitions = {
       context('menus.context', 'Kitchen'),
     ],
   },
-  mise: {
-    name: 'MiseAI',
-    maturity: 'connected',
-    contextProviders: [context('kitchen.mise', 'Kitchen')],
-  },
   orders: {
     name: 'OrdersAI',
     maturity: 'connected',

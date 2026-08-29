@@ -1,8 +1,6 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import {
-  type Place,
-} from 'fireux-places/runtime/place/models/place.model'
+import { type Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed, ref, watch } from 'vue'
 import { useDevKitchenCollection } from '../../composables/firestore/fetch/useDevKitchenCollection'
 import { useKitchenChildCollection } from '../../composables/firestore/utils/paths/useKitchenChildCollection'
@@ -15,12 +13,8 @@ import type { Kitchen } from '../../models/kitchen.model.ts'
 
 export function useKitchenDevSystem() {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const kitchensCollection = firestoreFetchCollection<Kitchen>(
-    'kitchens'
-  )
-  const placesCollection = firestoreFetchCollection<Place>(
-    'places'
-  )
+  const kitchensCollection = firestoreFetchCollection<Kitchen>('kitchens')
+  const placesCollection = firestoreFetchCollection<Place>('places')
   const { kitchens: hydratedKitchens } = useDevKitchenCollection()
   const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
   const placesCollectionValue = computed(() => placesCollection.value ?? [])
@@ -79,8 +73,7 @@ export function useKitchenDevSystem() {
   const filteredKitchensDriftPayload = buildKitchensDriftPayload({
     map: ({ id, drift }) => ({
       id,
-      display_name:
-        hydratedById.value.get(id)?.display_name ?? '',
+      display_name: hydratedById.value.get(id)?.display_name ?? '',
       drift,
     }),
   })
@@ -121,7 +114,6 @@ export function useKitchenDevSystem() {
     dishes: child(DishStorage.collection),
     recipes: child(RecipeStorage.collection),
     ingredients: child(IngredientStorage.collection),
-    mise: child('mise'),
     orders: child('orders'),
     suppliers: child('suppliers'),
     team: child('team'),

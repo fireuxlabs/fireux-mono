@@ -4,7 +4,6 @@
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { Dish } from '../../utils/dish.ts'
 import type { KitchenIngredient } from '../../utils/kitchen-ingredient.ts'
-import type { KitchenMiseTask } from '../../utils/mise.ts'
 import type { KitchenOrder } from '../../utils/order.ts'
 import type { KitchenStation } from '../../utils/station.ts'
 import type { KitchenSupplierIngredient } from '../../utils/kitchen-supplier-ingredient.ts'
@@ -24,7 +23,6 @@ import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
 import type {
   KitchenDemoDishSpec,
   KitchenDemoMenuItemComponentDelta,
-  KitchenDemoMiseRequirement,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
 } from '../production'
@@ -85,12 +83,10 @@ export type KitchenDemoScenario = {
   completedOrders: readonly KitchenDemoCompletedOrder[]
   menuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[]
   menuSections: KitchenDemoMenuSection[]
-  miseRequirements: KitchenDemoMiseRequirement[]
   orders: KitchenOrder[]
   prepItems: KitchenDemoPrepItem[]
   recipes: KitchenDemoProductionRecipe[]
   stations: KitchenStation[]
-  miseTasks: KitchenMiseTask[]
 }
 
 export type KitchenDemoScenarioMaturity = 'operational' | 'presentation'
@@ -99,7 +95,6 @@ export type KitchenDemoOperation =
   | 'dishes'
   | 'ingredients'
   | 'menus'
-  | 'mise'
   | 'orders'
   | 'recipes'
   | 'stations'

@@ -113,7 +113,6 @@ const CONSOLE_OPERATION_CONTRACTS = {
       'recipes',
       'ingredients',
       'food-safety',
-      'mise',
       'orders',
       'inventory',
       'purchasing',
@@ -163,7 +162,6 @@ const KITCHEN_TOOL_BACKED_CAPABILITIES = new Set([
   'drinks',
   'ingredients',
   'menus',
-  'mise',
   'orders',
   'recipes',
   'stations',
@@ -548,7 +546,7 @@ function validateWorkspaceNavigationLifecycle(repoRoot, violations) {
     )
   }
   if (
-    /useKitchenWorkspace(?:Menus|Ingredients|Dishes|Recipes|Suppliers|Stations|Mise|Orders|Tables)/.test(
+    /useKitchenWorkspace(?:Menus|Ingredients|Dishes|Recipes|Suppliers|Stations|Orders|Tables)/.test(
       overview
     )
   ) {
@@ -806,7 +804,7 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
   const presentationContracts = [
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI.vue',
-      expected: ['<WorkspaceKitchenAIAssistant', 'workspaceState.kitchen.id'],
+      expected: ['<WorkspaceAI', 'useKitchenAIIndex'],
     },
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Assistant.vue',

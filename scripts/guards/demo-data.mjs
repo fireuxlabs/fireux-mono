@@ -572,7 +572,7 @@ export async function run(ctx) {
         code: 'kitchen-operation-vocabulary',
         file: relativeFile,
         message:
-          'Kitchen Demo fixtures must follow Menu, Dish, Recipe, and Mise operation vocabulary; Catalogue belongs to the Supplier family.',
+          'Kitchen Demo fixtures must follow Kitchen operation vocabulary; Catalogue belongs to the Supplier family.',
       })
     }
 
@@ -1443,10 +1443,6 @@ export async function run(ctx) {
       'finance: {',
       'periods: workspaceFinancePeriods',
       'kitchenName:',
-      'workspaceScenario.miseTasks',
-      'projectKitchenMiseTasks',
-      'miseTasks: projectKitchenMiseTasks(',
-      'workspaceScenario.miseTasks,',
       'workspaceScenario.stations',
       'workspaceScenario.orders',
       'orders: workspaceScenario.orders.map',
@@ -1455,7 +1451,6 @@ export async function run(ctx) {
       'suppliers: workspaceSupplierOperation.items',
       'configuredCount: workspaceTableCount',
       'projectKitchenDemoMenuCascade',
-      'projectKitchenDemoMiseTaskMenuIds',
       'modeByMenuId: workspaceScenario.menuModes',
       'defaultInService:',
       'menuIds:',
@@ -1471,19 +1466,6 @@ export async function run(ctx) {
         })
         break
       }
-    }
-    if (
-      source.includes('mise: workspaceScenario.miseRequirements') ||
-      source.includes(
-        'miseTasks: projectKitchenMiseTasks(workspaceScenario.miseRequirements'
-      )
-    ) {
-      violations.push({
-        code: 'demo-world-mise-projection',
-        file: miseboxProductDemoFile,
-        message:
-          'The landing Mise operation must project real KitchenMiseTask records; production requirements remain a derived Dish graph.',
-      })
     }
     for (const forbidden of [
       'workspaceSupplyLineByIngredientId',
@@ -1518,7 +1500,6 @@ export async function run(ctx) {
     'One',
     'Three',
     'Four',
-    'Five',
     'Six',
     'Seven',
     'Eight',
@@ -1556,7 +1537,8 @@ export async function run(ctx) {
       "import('fireux-suppliers/runtime/supplier/demo/scenarios')",
       'projectSupplierDemoWorld({',
       'companyTargets: companyModule.companyDemoTargets',
-      'projectKitchenCell(projectKitchenSurface({',
+      'projectKitchenCell(',
+      'projectKitchenSurface({',
       'manifest.presentation.currencyCode',
     ].every((marker) => miseboxPowerCardsDemoSource.includes(marker)) ||
     ['useRequestFetch(', 'useFetch(', '$fetch(', '/api/', 'firebase'].some(
@@ -1605,14 +1587,13 @@ export async function run(ctx) {
       'prepItem.input.ingredientId',
       'recipe?.ingredients',
       'neededForService',
-      'projectKitchenDemoMiseTaskMenuIds',
     ]) {
       if (!source.includes(required)) {
         violations.push({
           code: 'kitchen-demo-menu-cascade',
           file: kitchenDemoMenuCascadeFile,
           message:
-            'Kitchen must own one non-destructive Demo Menu service cascade across Dishes, Recipes, Ingredients, Prep and Mise.',
+            'Kitchen must own one non-destructive Demo Menu service cascade across Dishes, Recipes, Ingredients, and Prep.',
         })
         break
       }
@@ -1652,8 +1633,6 @@ export async function run(ctx) {
 
   const kitchenDemoMenuServiceFile =
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/useKitchenMenuServiceSelection.ts'
-  const kitchenWorkspaceDemoMenuServiceFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspaceDemoMenuService.ts'
   for (const [file, markers] of [
     [
       kitchenDemoMenuServiceFile,
@@ -1665,15 +1644,6 @@ export async function run(ctx) {
         'does not write Firestore',
       ],
     ],
-    [
-      kitchenWorkspaceDemoMenuServiceFile,
-      [
-        'useKitchenMenuServiceSelection',
-        'projectKitchenDemoMenuCascade',
-        'isEntityInService',
-        'isTaskInService',
-      ],
-    ],
   ]) {
     const filePath = path.join(repoRoot, file)
     const source = existsSync(filePath) ? readFileSync(filePath, 'utf8') : ''
@@ -1683,63 +1653,6 @@ export async function run(ctx) {
         file,
         message:
           'Workspace and landing must share route-stable local Demo Menu service state without persistence.',
-      })
-    }
-  }
-
-  const kitchenMiseModelFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/utils/mise.ts'
-  const kitchenMisePresentationFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/models/mise-presentation.ts'
-  const kitchenDemoOperationsFile =
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations.ts'
-  for (const [file, markers] of [
-    [
-      kitchenMiseModelFile,
-      [
-        'KITCHEN_MISE_WORKFLOW_STAGES',
-        "'wash'",
-        "'cut_portion'",
-        "'make'",
-        "'cook_chill'",
-        "'set_stations'",
-        "'final_checks'",
-      ],
-    ],
-    [
-      kitchenMisePresentationFile,
-      [
-        'groupKitchenMiseTaskSummariesByWorkflow',
-        'checklistDoneCount',
-        "'unsorted'",
-      ],
-    ],
-    [
-      kitchenDemoOperationsFile,
-      [
-        'wash-main-service-produce',
-        'shape-main-patties',
-        'set-grill-station',
-        'final-allergen-check',
-        'deanosPartyMenuDemoIdentity',
-        'deanosXmasMenuDemoIdentity',
-      ],
-    ],
-  ]) {
-    const source =
-      file === kitchenDemoOperationsFile
-        ? readSourceFamily(repoRoot, [
-            file,
-            'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/mise/deanos-preparation.ts',
-            'packages/extensions/fireux-kitchens/src/runtime/kitchen/demo/operations/mise/deanos-service.ts',
-          ])
-        : readFileSync(path.join(repoRoot, file), 'utf8')
-    if (!markers.every((marker) => source.includes(marker))) {
-      violations.push({
-        code: 'kitchen-mise-workflow',
-        file,
-        message:
-          'Kitchen Mise must remain process-first, checklist-capable, and visibly season-scoped in Demo.',
       })
     }
   }

@@ -26,8 +26,7 @@ export type {
  *
  * A Prep Item is an authored intermediate product such as a washed garnish,
  * portioned patty, or prepared sauce. It has its own lifecycle inside one
- * Kitchen and may be referenced by Dishes and Mise tasks. Scheduling,
- * assignment, checklist, and completion state belong to KitchenMiseTask.
+ * Kitchen and may be referenced by Dishes.
  */
 export const KitchenPrepItemStorage = {
   shape: 'scoped',

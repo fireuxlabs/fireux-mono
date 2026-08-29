@@ -32,7 +32,7 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
   loadIngredientRoots: (ids: string[]) => Promise<Ingredient[]>
 }) {
   const workspaceIngredientCascadeById = new Map(
-    workspaceMenuCascade.ingredients.map(ingredient => [
+    workspaceMenuCascade.ingredients.map((ingredient) => [
       ingredient.id,
       ingredient,
     ])
@@ -82,42 +82,40 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
           : Number.MAX_SAFE_INTEGER,
       }
     })
-    .sort((left, right) =>
-      left.sortOrder - right.sortOrder
-      || left.name.localeCompare(right.name, undefined, {
-        sensitivity: 'base',
-      })
+    .sort(
+      (left, right) =>
+        left.sortOrder - right.sortOrder ||
+        left.name.localeCompare(right.name, undefined, {
+          sensitivity: 'base',
+        })
     )
   const workspaceStationNames = Object.fromEntries(
-    workspaceScenario.stations.map(station => [station.id, station.name])
+    workspaceScenario.stations.map((station) => [station.id, station.name])
   )
   const workspaceStationName = (stationId: string) =>
     workspaceStationNames[stationId] || stationId
-  const workspaceMiseTaskById = new Map(
-    workspaceScenario.miseTasks.map(task => [task.id, task])
-  )
   const workspaceIngredientIds = [
     ...new Set(
       workspaceScenario.kitchenIngredients
-        .map(ingredient => String(ingredient.ingredient_id || '').trim())
+        .map((ingredient) => String(ingredient.ingredient_id || '').trim())
         .filter(Boolean)
     ),
   ].sort()
-  const workspaceIngredientRoots = await loadIngredientRoots(workspaceIngredientIds)
+  const workspaceIngredientRoots = await loadIngredientRoots(
+    workspaceIngredientIds
+  )
   if (workspaceIngredientRoots.length !== workspaceIngredientIds.length) {
     const resolvedIds = new Set(
-      workspaceIngredientRoots.map(ingredient => ingredient.id)
+      workspaceIngredientRoots.map((ingredient) => ingredient.id)
     )
     throw new Error(
-      `Product Demo canonical Ingredients are unresolved: ${
-        workspaceIngredientIds
-          .filter(ingredientId => !resolvedIds.has(ingredientId))
-          .join(', ')
-      }`
+      `Product Demo canonical Ingredients are unresolved: ${workspaceIngredientIds
+        .filter((ingredientId) => !resolvedIds.has(ingredientId))
+        .join(', ')}`
     )
   }
   const workspaceIngredientRootById = new Map(
-    workspaceIngredientRoots.map(ingredient => [ingredient.id, ingredient])
+    workspaceIngredientRoots.map((ingredient) => [ingredient.id, ingredient])
   )
   const workspaceIngredients = workspaceIngredientIds
     .map((ingredientId) => {
@@ -159,7 +157,6 @@ export async function projectMiseboxProductDemoWorkspaceFoundations({
     workspaceFinancePeriods,
     workspaceIngredientRoots,
     workspaceIngredients,
-    workspaceMiseTaskById,
     workspaceStationName,
     workspaceStationNames,
     workspaceStations,

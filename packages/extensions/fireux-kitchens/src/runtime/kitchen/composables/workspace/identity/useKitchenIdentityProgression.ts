@@ -1,8 +1,6 @@
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
-import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 import { readWorkspacePalette } from 'fireux-core/runtime/utils/brand-palette'
-import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspaceIdentity } from './useKitchenWorkspaceIdentity'
 import { useKitchenWorkspacePlace } from './useKitchenWorkspacePlace'
 
@@ -31,20 +29,17 @@ export function useKitchenIdentityProgression() {
   const kitchen = computed(
     () => identityState.selectedKitchen.value as Record<string, unknown> | null
   )
-  const identity = computed(() =>
-    readKitchenPresentationIdentity(kitchen.value)
-  )
+  const identity = computed(() => identityState.selectedKitchen.value?.identity)
   const place = placeState.place
-  const placePresentation = computed(() => readPlacePresentation(place.value))
   const resolvedName = computed(
     () =>
-      normalizeString(identity.value.displayName) ||
+      normalizeString(identity.value?.display_name) ||
       normalizeString(place.value?.name) ||
       normalizeString(place.value?.short_name)
   )
   const resolvedTagline = computed(
     () =>
-      normalizeString(identity.value.tagline) ||
+      normalizeString(identity.value?.tagline) ||
       normalizeString(place.value?.brand_tagline)
   )
   const placeRequirements = computed<KitchenIdentityRequirement[]>(() =>
@@ -83,13 +78,7 @@ export function useKitchenIdentityProgression() {
       key: 'image',
       label: 'Image',
       detail: 'A Kitchen or inherited Place image can present the Kitchen.',
-      complete: Boolean(
-        identity.value.cardImageUrl ||
-          identity.value.imageUrl ||
-          identity.value.logoImageUrl ||
-          placePresentation.value.imageUrl ||
-          placePresentation.value.logoImage
-      ),
+      complete: Boolean(identity.value?.image_url),
     },
   ])
   const rootPercent = computed(() => completionPercent(rootRequirements.value))
