@@ -286,8 +286,7 @@ Core supplies no generic effects family or decorative one-off wrappers.
   orbit source discriminant is closed to `demo | live`; an orbit cannot mix,
   join, or fall back across those sources. The Misebox window preserves its
   single `demo` envelope without adopting orbit geometry or motion. The orbit
-  is a landing compositor, not a fourth Card variant and not a Sci-Fire-only
-  component. Each Main App owns the fixed viewport, isolation, content-stack,
+  is a landing compositor, not a fourth Card variant. Each Main App owns the fixed viewport, isolation, content-stack,
   and print contract for its landing art. FireUX Stars and Misebox Steam are
   sibling App visuals with the same required reduced-motion behavior while
   retaining distinct app-owned character. FireUX Stars uses the

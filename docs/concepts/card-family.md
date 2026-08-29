@@ -37,11 +37,6 @@ Core owns the shared visual foundation for those variants:
 - Pills are touch-safe inline selectors or tokens, not miniature detail cards.
 - Previews carry the strongest elevation and enough bounded context to stand
   alone in a product proof.
-- `app.designPack.preset = 'sci-fire'` explicitly opts a main App into the
-  Core-owned Sci-Fire presentation layer. That pack may add a restrained
-  app-primary edge, ambient depth, and fast interaction, but it cannot replace
-  Nuxt UI typography, spacing, radius, semantics, or Card anatomy. Ambient
-  styling derives from `--ui-primary`; information colour remains state-only.
 - Elevation must not derive shadow colour from theme-inverted surfaces, which
   become pale halos in dark mode.
 - Domain personality may set the shared `--fx-card-accent` bridge for a narrow
@@ -131,6 +126,5 @@ must consume Core's matching `.card--cell`, `.pill`, or `.preview` anatomy;
 profile adapters may delegate that contract to `PublicProfileDirectoryCard`.
 Core's `molecules/card-surfaces.scss` is the single shared surface authority;
 the three variant molecules own only their distinct geometry, state, and
-content anatomy. Optional ecosystem atmosphere belongs only in the Core
-`design-packs/sci-fire.css` bundle and is never imported by the universal
-`main.scss` cascade.
+content anatomy. App chrome uses the Nuxt UI baseline rather than an App-wide
+presentation pack.

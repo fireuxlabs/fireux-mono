@@ -47,13 +47,9 @@ Explain the UI library context for agents.
   meta instead of copying transition CSS or adding a project override layer. A
   one-component layout delta stays with that component; other global CSS needs
   repeated cross-tree evidence or a narrow browser/accessibility behavior.
-- Nuxt UI is the universal visual baseline. A main App may explicitly opt into
-  the Core-owned `sci-fire` design pack through `app.designPack`; tenant and
-  white-label Apps inherit no ecosystem aesthetic automatically. The pack is
-  conditionally bundled at config time, uses semantic Nuxt UI variables and
-  component variants, and does not enter Core `main.scss`, change the radius or
-  type scale, or override solid/status semantics. Sci-Fire derives its ambient
-  accent from the App's `--ui-primary`; `--ui-info` remains a status colour.
+- Nuxt UI is the universal visual baseline. Apps use its components, semantic
+  variables, and component defaults directly; FireUX does not install an
+  App-wide presentation theme above it.
 - Nuxt UI owns the ordinary `--ui-radius` default. FireUX may calculate from
   that live variable but must not copy its installed value into a second token
   declaration.

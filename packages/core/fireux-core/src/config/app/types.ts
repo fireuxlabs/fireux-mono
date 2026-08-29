@@ -1,5 +1,4 @@
 import type { NuxtConfig } from '@nuxt/schema'
-import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from './meta-content'
 import type { AppTheme } from '../../types/theme'
@@ -44,8 +43,6 @@ export type FireuxAppConfig = {
   databaseId?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
-  /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
-  designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
   role: FireuxAppRole

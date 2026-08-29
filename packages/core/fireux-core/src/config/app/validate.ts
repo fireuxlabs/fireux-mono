@@ -1,11 +1,8 @@
 import type { FireuxAppConfig } from './types'
 import { moduleName } from './modules'
-import { validateAppDesignPack } from './design-packs'
 import { APP_PALETTE_KEYS } from '../../types/theme'
 
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
-  validateAppDesignPack(app.designPack)
-
   if (
     app.homePath &&
     (!app.homePath.startsWith('/') || app.homePath.startsWith('//'))
@@ -21,7 +18,7 @@ export function validateFireuxAppConfig(app: FireuxAppConfig): void {
     const expected = [...APP_PALETTE_KEYS].sort()
     if (
       JSON.stringify(keys) !== JSON.stringify(expected) ||
-      APP_PALETTE_KEYS.some(key => !/^#[0-9a-f]{6}$/i.test(palette[key]))
+      APP_PALETTE_KEYS.some((key) => !/^#[0-9a-f]{6}$/i.test(palette[key]))
     ) {
       throw new Error(
         '[fireux] app.theme.palette must provide exactly eight 6-digit semantic hex colours.'
