@@ -54,9 +54,18 @@ export function configureProjectPublicAssets(nuxt: NuxtConfig) {
 }
 
 export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
+  nuxt.future = {
+    ...(nuxt.future || {}),
+    compatibilityVersion: 5,
+  }
+
   nuxt.experimental = {
     ...(nuxt.experimental || {}),
     appManifest: process.env.NODE_ENV === 'production',
+    // Nuxt 5 compatibility disables Nitro auto-imports by default, but the
+    // current server runtimes (including @nuxt/icon) still consume #imports.
+    // Keep this bridge centralized until every registered module is ready.
+    nitroAutoImports: true,
     scanPageMeta: true,
   }
 

@@ -24,13 +24,15 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
 
-patchedDependencies:
-  'httpxy@0.5.2': scripts/patches/httpxy@0.5.2.patch
-
 overrides:
-  nuxt: 4.4.6
-  '@nuxt/kit': 4.4.6
-  '@nuxt/schema': 4.4.6
+  nuxt: 4.5.2
+  '@nuxt/kit': 4.5.2
+  '@nuxt/schema': 4.5.2
+  # 3.4.2 was published without its matching devtools-kit package.
+  '@nuxt/devtools': 3.3.1
+  # Newer cssnano 8 patches currently request unpublished PostCSS packages.
+  cssnano: 8.0.4
+  cssnano-preset-default: 8.0.4
   '@nuxt/content': 3.6.3
   c12: 3.3.4
   h3: 1.15.11

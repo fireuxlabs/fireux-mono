@@ -1,6 +1,7 @@
 import { createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
+import { registerComposablesDirs } from 'fireux-core/config/module/module-helpers'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureModulePages } from './config/module/pages-config'
@@ -44,6 +45,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
       configurePages: configureModulePages,
       configureComponents,
     })
+    registerComposablesDirs(resolver, ['./runtime/project/composables'])
   },
 })
 

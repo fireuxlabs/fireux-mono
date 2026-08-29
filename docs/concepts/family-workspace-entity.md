@@ -1,7 +1,7 @@
 # Workspace entity family
 
-Updated: 2026-08-28
-Ref: 74e1e9eef
+Updated: 2026-08-29
+Ref: 6a9f64e67
 Role: map, not canon
 
 ## Purpose
@@ -64,10 +64,10 @@ field on either root or a generic owner of their records.
 Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
-and Project also share Core-owned `WorkspaceAI`, `WorkspaceAIIntro`, and
-`WorkspaceAIComposer` presentation seams. Domains supply context, connected
-controls, messages, commands, and authority; the neutral frame and composer
-anatomy must not fork merely because one family has more mature execution.
+and Project also share the Core-owned `WorkspaceAI` frame and Nuxt UI
+`UChatPrompt` interaction seam. Domains supply context, connected controls,
+messages, commands, and authority; the neutral frame and prompt anatomy must
+not fork merely because one family has more mature execution.
 An unavailable command remains visibly unavailable rather than being imitated.
 Kitchen
 owns `WorkspaceKitchenHero` and the live `WorkspaceKitchen` selection,
@@ -184,7 +184,7 @@ migration verification, and protected Workspace consumer are complete.
   `state.user` contains only user inputs read directly by the page,
   `state.entity` contains only selected Entity inputs read directly, and
   `state.derived` contains values the page computes and consumes from those
-  inputs. Family `useXWorkspace` readers publish the common Workspace state;
+  inputs. Family `useXWorkspaceIndex` readers publish the common Workspace state;
   capability pages must explicitly extend or replace it when they require
   narrower capability props. Tokens, Firestore internals, unused root fields,
   and broad debug objects are never part of this contract.
@@ -225,11 +225,15 @@ Shared source names and their generated entry components:
 - `useXWorkspaceIndex`
 - `useXWorkspaceOverview`
 
-Every `useXWorkspace` public return begins with the same five responsibilities:
-`targets`, `selection`, `runtime`, `actions`, and `state`. Entity-specific names
-belong inside those branches. `runtime` begins with the shared App, source,
-data type, root collection, demo, read-only, and write facts; a family may append
-proved storage, tenant, or creation facts without renaming the shared contract.
+Each `useXWorkspace` exposes its domain-owned targets, selection, runtime and
+actions directly, plus only supporting branches proved by its consumers, such
+as current-user subscription capability. Entity-specific names belong inside
+those branches. Index-page presentation and derived values belong to
+`useXWorkspaceIndex`, which returns `{ state, derived }`; the lower Workspace
+runtime does not retain a second page-state or debug bag. `runtime` begins with
+the shared App, source, data type, root collection, demo, read-only, and write
+facts; a family may append proved storage, tenant, or creation facts without
+renaming the shared contract.
 Declaration-build-only types may live beside the composable so they do not
 obscure this runtime spine.
 

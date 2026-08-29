@@ -54,6 +54,10 @@ Map how FireUX project apps declare identity, modules, domains, workspaces, and 
   registration is not a project Nuxt override.
 - Core supplies the native Nuxt `app.pageTransition` default. It is presentation
   config, not a `FireuxAppConfig` or runtime field.
+- Core opts every App into Nuxt's version-5 compatibility defaults through the
+  shared Nuxt baseline. Apps do not repeat or override
+  `future.compatibilityVersion`; compatibility repairs belong to the lowest
+  Core, ecosystem, or extension owner that implements the affected behavior.
 - Blog is the one universal default extension and is loaded even when an App
   omits it from `modules`. The App still declares `fireux-blogs` directly in
   its manifest. `modules` lists every additional extension capability and may
@@ -193,6 +197,7 @@ initialized App awaiting media publication is not an uninitialized App.
 | An app disables or replaces the Core page transition globally       | `drift`    | Apps inherit the shared default; route-specific exceptions belong in page meta                                     |
 | A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                            |
 | Repeating a shared default in many project `nuxt.config.ts` files   | `drift`    | Move the stable value to the Core config spine and leave only genuine app values locally                           |
+| An App overrides Nuxt's shared compatibility version               | `drift`    | Keep the repository-wide framework target in Core's Nuxt baseline and repair incompatibilities at their owner      |
 | Repeating an extension integration URL in project runtime config    | `drift`    | Let the consuming extension own its default and environment resolution; Apps retain only genuine endpoint deltas   |
 | A standalone App uses the FireUX ecosystem database                 | `drift`    | Provision its dedicated named database or classify the project explicitly as a non-production harness              |
 | A client PIN appears to protect App initialization                  | `drift`    | Remove the cosmetic gate; authenticated server UID authorization is the write boundary                             |

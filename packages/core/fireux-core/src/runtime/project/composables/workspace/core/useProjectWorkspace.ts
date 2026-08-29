@@ -1,9 +1,10 @@
 import { computed, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
-import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
+import { useUser } from '../../../../user/composables/useUser'
 import { normalizeString } from '../../../../utils/string'
+import { resolveWorkspaceCanCreate } from '../../../../utils/workspace-policy'
 import { useProjectCollection } from '../../useProjectCollection'
 import type { ProjectSurface } from '../../useProjectInterface'
 import type { ProjectWorkspace } from './project-workspace.types'
@@ -12,8 +13,8 @@ export type { ProjectWorkspace } from './project-workspace.types'
 
 function createProjectWorkspace(): ProjectWorkspace {
   const workspace = useWorkspace('project')
-  const pageState = useWorkspacePageState('project')
-  const { isAuthenticated } = useAuth()
+  const { currentUser } = useAuth()
+  const { canOwnMultipleWorkspaces } = useUser()
   const fireux = useFireUXConfig()
   const collection = useProjectCollection()
   const project = computed<ProjectSurface | null>(
@@ -29,30 +30,40 @@ function createProjectWorkspace(): ProjectWorkspace {
       workspace.setActiveStatus(selectedProject?.status || ''),
     { immediate: true }
   )
+
+  watch(
+    [workspace.activeId, project, collection.outcome],
+    (values: [string, unknown, string]) => {
+      const [id, activeEntity, outcome] = values
+      if (!id || activeEntity || (outcome !== 'ready' && outcome !== 'empty'))
+        return
+      workspace.clearActive()
+    },
+    { immediate: true }
+  )
+
+  const canCreate = computed(() =>
+    resolveWorkspaceCanCreate(fireux.role, fireux.workspaceConfig, 'project')
+  )
+
   watchEffect(() => {
-    const selectedProject = project.value
-    pageState.publish({
-      user: { signedIn: isAuthenticated.value },
-      entity: selectedProject
-        ? {
-            id: selectedProject.id,
-            status: selectedProject.status,
-            name: selectedProject.name,
-            description: selectedProject.description,
-            image_url: selectedProject.image_url,
-          }
-        : null,
-      derived: {
-        hasSelection: Boolean(selectedProject),
-        operationalReady: selectedProject?.status === 'active',
-        outcome: collection.outcome.value,
-        readOnly: true,
-        canWrite: false,
-      },
-    })
+    workspace.setChoices(
+      canOwnMultipleWorkspaces.value
+        ? collection.projects.value.map((item) => ({
+            id: normalizeString(item.id),
+            name: normalizeString(item.name),
+            description: normalizeString(item.description),
+            image: normalizeString(item.image_url),
+          }))
+        : []
+    )
   })
 
   return {
+    user: {
+      currentUser,
+      canOwnMultipleWorkspaces,
+    },
     targets: collection,
     selection: {
       project,
@@ -69,12 +80,12 @@ function createProjectWorkspace(): ProjectWorkspace {
       isDemo: computed(() => false),
       readOnly: computed(() => true),
       canWrite: computed(() => false),
+      canCreate,
     },
     actions: {
       selectProject: workspace.activate,
       clearSelectedProject: workspace.clearActive,
     },
-    state: pageState.state,
   }
 }
 

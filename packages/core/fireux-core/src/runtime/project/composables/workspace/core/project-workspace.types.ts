@@ -1,9 +1,13 @@
-import type { ComputedRef } from 'vue'
-import type { WorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
+import type { ComputedRef, Ref } from 'vue'
+import type { User } from 'firebase/auth'
 import type { UseProjectCollectionReturn } from '../../useProjectCollection'
 import type { ProjectSurface } from '../../useProjectInterface'
 
 export type ProjectWorkspace = {
+  user: {
+    currentUser: Ref<User | null>
+    canOwnMultipleWorkspaces: ComputedRef<boolean>
+  }
   targets: UseProjectCollectionReturn
   selection: {
     project: ComputedRef<ProjectSurface | null>
@@ -20,6 +24,7 @@ export type ProjectWorkspace = {
     isDemo: ComputedRef<boolean>
     readOnly: ComputedRef<boolean>
     canWrite: ComputedRef<boolean>
+    canCreate: ComputedRef<boolean>
   }
   actions: {
     selectProject: (
@@ -30,5 +35,4 @@ export type ProjectWorkspace = {
     ) => void
     clearSelectedProject: () => void
   }
-  state: ComputedRef<WorkspacePageState | null>
 }

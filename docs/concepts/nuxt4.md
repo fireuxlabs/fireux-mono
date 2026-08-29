@@ -27,6 +27,13 @@ Explain the app framework context for agents.
 ## Framework
 
 - FireUX apps are Nuxt 4 apps.
+- FireUX apps run Nuxt 4 with `future.compatibilityVersion: 5` supplied by the
+  Core App-config baseline so Nuxt 5 defaults are exercised before the major
+  upgrade.
+- Core temporarily keeps `experimental.nitroAutoImports` enabled because
+  registered server runtimes, including `@nuxt/icon`, still import Nitro's
+  virtual `#imports` module. Remove this bridge only after every registered
+  module and FireUX server runtime builds without it.
 - Runtime UI is Vue 3.
 - Server routes use Nitro/h3 conventions.
 - Nuxt modules register package runtime surfaces.

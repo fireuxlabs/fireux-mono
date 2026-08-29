@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
 // Concurrent edit — 2026-07-21 23:22 CEST — Workspace family alignment: keep Blank access exclusively in same-id App support.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 
@@ -52,7 +51,19 @@ export type Blank = Omit<WidenLiteral<typeof BlankModel>, 'management'> & {
 }
 
 export const AppBlankModel = {
-  ...FireuxAppAccessRecordModel,
+  id: '',
+  operator_ids: [] as string[],
+  team_ids: [] as string[],
+  join_requests: [] as string[],
+  created: {
+    at: {} as FireuxStamped['created']['at'],
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FireuxStamped['updated']['at'],
+    by: undefined as FireuxStamped['updated']['by'],
+  },
   blank_id: '',
 } as const
 

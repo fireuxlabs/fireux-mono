@@ -1,12 +1,11 @@
 <template>
   <UDashboardPanel id="misebox-kitchen-home">
     <LayoutsWorkspaceNavbar title="Kitchen Workspace">
-      <template #title>
-        <WorkspaceKitchenActive
-          v-if="derived.outcome === 'pending' || derived.hasSelection"
-          :kitchen="state.kitchen"
-        />
-        <span v-else>Kitchen Workspace</span>
+      <template
+        v-if="derived.outcome === 'pending' || derived.hasSelection"
+        #title
+      >
+        <WorkspaceKitchenActive :kitchen="state.kitchen" />
       </template>
       <template #right>
         <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
@@ -42,7 +41,6 @@ definePageMeta({
   layout: 'workspace',
   workspace: 'kitchen',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
   nav: {
     key: 'workspace-kitchen',
     label: 'Current Kitchen',

@@ -72,6 +72,13 @@ missing Place copy.
 hash-confirmed named-database lane for additive Google provider reconciliation.
 It requests no photos, preserves all non-empty values, records provider
 conflicts as drift, and verifies the exact post-write document shape.
+The completed Misebox hard cutover at
+`scripts/migrate-misebox-kitchen-place-identity-cutover.mjs` first promotes
+missing legacy Kitchen identity, media, palette, and same-id Place evidence,
+then removes Kitchen `name`, `place_id`, `identity`, `assets`, and
+`brand_palette`. It requires the retained managed export, a hash-confirmed
+plan, a protected local preimage, and exact post-write verification; it never
+deletes Storage objects.
 The one-time guarded recovery at
 `scripts/restore-misebox-place-identity.mjs` restores exact approved identity
 references from that protected pre-image when an earlier migration plan
@@ -87,10 +94,10 @@ lane.
 
 ## Migration
 
-The canonical Place field is `media_backdrop_color`. Kitchen `identity`,
-`assets`, `brand_palette`, and `place_id` are rejected root fields. The guarded
-Entity migration removes them only after the same-id Place retains the required
-identity and media.
+The canonical Place field is `media_backdrop_color`. Kitchen `name`, `identity`,
+`assets`, `brand_palette`, and `place_id` are rejected root fields. Misebox live
+storage has completed their guarded removal after every Kitchen received a
+same-id Place retaining the required identity and media.
 
 The pre-release `image_shade` values remain read-only compatibility input:
 `light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. Run
