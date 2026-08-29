@@ -1,10 +1,15 @@
 <template>
-  <!-- Show the selected Kitchen when its Workspace presentation is complete. -->
-  <WorkspaceKitchenActive :kitchen="state.kitchen" />
-  <!-- Show the onboarding entry when no complete Kitchen is active. -->
-  <WorkspaceKitchenOnboarding />
-  <!-- Show the Kitchens this user can select and the doorway for adding another when allowed. -->
-  <WorkspaceKitchenSelector />
+  <!-- Show loading or the selected Kitchen. -->
+  <WorkspaceKitchenActive
+    v-if="derived.outcome === 'pending' || derived.hasSelection"
+    :kitchen="state.kitchen"
+  />
+  <!-- Start onboarding when there are no Kitchens and creation is allowed. -->
+  <WorkspaceKitchenOnboarding
+    v-if="derived.outcome === 'empty' && derived.canCreate"
+  />
+  <!-- Show the available Kitchens when Kitchen data is ready. -->
+  <WorkspaceKitchenSelector v-if="derived.outcome === 'ready'" />
 </template>
 
 <script setup lang="ts">

@@ -806,6 +806,10 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
   const presentationContracts = [
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI.vue',
+      expected: ['<WorkspaceKitchenAIAssistant', 'workspaceState.kitchen.id'],
+    },
+    {
+      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Assistant.vue',
       expected: ['<WorkspaceAI', '<WorkspaceAIIntro'],
     },
     {
