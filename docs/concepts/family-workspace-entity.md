@@ -64,6 +64,12 @@ field on either root or a generic owner of their records.
 Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
+and Project also share Core-owned `WorkspaceAI`, `WorkspaceAIIntro`, and
+`WorkspaceAIComposer` presentation seams. Domains supply context, connected
+controls, messages, commands, and authority; the neutral frame and composer
+anatomy must not fork merely because one family has more mature execution.
+An unavailable command remains visibly unavailable rather than being imitated.
+Kitchen
 owns `WorkspaceKitchenHero` and the live `WorkspaceKitchen` selection,
 creation, target loading, and collection lifecycle. The Main App composes
 those directly at `/` and adds only its App-owned presentation and doorways
@@ -218,6 +224,14 @@ Shared source names and their generated entry components:
 - `useXWorkspace`
 - `useXWorkspaceIndex`
 - `useXWorkspaceOverview`
+
+Every `useXWorkspace` public return begins with the same five responsibilities:
+`targets`, `selection`, `runtime`, `actions`, and `state`. Entity-specific names
+belong inside those branches. `runtime` begins with the shared App, source,
+data type, root collection, demo, read-only, and write facts; a family may append
+proved storage, tenant, or creation facts without renaming the shared contract.
+Declaration-build-only types may live beside the composable so they do not
+obscure this runtime spine.
 
 Conditional names:
 

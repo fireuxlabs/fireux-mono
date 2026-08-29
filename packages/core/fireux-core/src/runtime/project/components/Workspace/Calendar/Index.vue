@@ -56,7 +56,7 @@
     />
   </section>
   <UAlert
-    v-else-if="!workspace.projects.pending.value"
+    v-else-if="!workspace.targets.pending.value"
     color="neutral"
     variant="soft"
     icon="i-lucide-lock-keyhole"

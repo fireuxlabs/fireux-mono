@@ -1,5 +1,5 @@
 <template>
-  <UPageHero class="pageheader" :title="title" :description="description">
+  <UPageHero :title="title" :description="description">
     <template v-if="$slots.links" #links>
       <slot name="links" />
     </template>

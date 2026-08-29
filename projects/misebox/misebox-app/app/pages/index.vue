@@ -1,60 +1,27 @@
 <template>
-  <div>
-    <UDashboardPanel id="misebox-kitchen-home">
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Kitchen Workspace" :show-title="false">
-          <template #right>
-            <WorkspaceKitchenInfo />
-          </template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <section class="workspace-surface">
-          <div class="grid min-h-[calc(100dvh-8rem)] grid-rows-[1fr_auto] py-6">
-            <div class="grid content-center gap-6 py-12 sm:py-16">
-              <WorkspaceKitchenHero />
-              <WorkspaceKitchenAI />
-            </div>
-
-            <UButton
-              to="#kitchen-workspace-content"
-              icon="i-lucide-arrow-down"
-              color="neutral"
-              variant="ghost"
-              size="xl"
-              class="mx-auto rounded-full"
-              aria-label="Explore the Kitchen Workspace"
-            />
-          </div>
-
-          <div id="kitchen-workspace-content" class="grid scroll-mt-6 gap-6">
-            <WorkspaceKitchen />
-          </div>
-
-          <ClientOnly>
-            <pre v-if="isDev" class="overflow-x-auto text-xs text-muted">{{
-              state
-            }}</pre>
-          </ClientOnly>
-        </section>
-        <div class="workspace-surface grid gap-6">
-          <WorkspaceKitchenOperations />
-          <WorkspaceKitchenTools />
-          <WorkspaceKitchenDiscovery />
-        </div>
-      </template>
-    </UDashboardPanel>
-  </div>
+  <UDashboardPanel id="misebox-kitchen-home">
+    <LayoutsWorkspaceNavbar title="Kitchen Workspace">
+      <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
+      <WorkspaceKitchenInfo />
+    </LayoutsWorkspaceNavbar>
+    <!-- 01 Hero — define the Kitchen page promise, audience and intended outcome. -->
+    <WorkspaceKitchenHero />
+    <!-- 02 AI — provide the page-scoped KitchenAI entry with only the context and actions this page proves. -->
+    <WorkspaceKitchenAI />
+    <!-- 03 Workspace — prove Kitchen state, selection, empty state and primary actions. -->
+    <WorkspaceKitchen />
+    <!-- 04 Operations — curate only the main Kitchen index Operations; capability pages own WorkspaceKitchenXOperations. -->
+    <WorkspaceKitchenOperations />
+    <!-- 05 Tools — expose only bounded Tools beneath the featured capabilities; capability pages own WorkspaceKitchenXTools. -->
+    <WorkspaceKitchenTools />
+    <!-- 06 Discovery — publish demand-led literature and SEO for this exact index; capability pages own WorkspaceKitchenXDiscovery. -->
+    <WorkspaceKitchenDiscovery />
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useKitchenWorkspaceMain } from 'fireux-kitchens/runtime/kitchen/composables/workspace/main/useKitchenWorkspaceMain'
 import { appMeta } from '../meta'
-
-const isDev = import.meta.dev
-const { state } = useKitchenWorkspaceMain()
 
 definePageMeta({
   layout: 'workspace',

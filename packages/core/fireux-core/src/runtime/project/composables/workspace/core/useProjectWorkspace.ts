@@ -1,48 +1,14 @@
-import { computed, watch, watchEffect, type ComputedRef } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { normalizeString } from '../../../../utils/string'
-import {
-  useProjectCollection,
-  type UseProjectCollectionReturn,
-} from '../../useProjectCollection'
+import { useProjectCollection } from '../../useProjectCollection'
 import type { ProjectSurface } from '../../useProjectInterface'
+import type { ProjectWorkspace } from './project-workspace.types'
 
-export type ProjectWorkspace = {
-  projects: {
-    targets: UseProjectCollectionReturn['projects']
-    count: UseProjectCollectionReturn['count']
-    pending: UseProjectCollectionReturn['pending']
-    error: UseProjectCollectionReturn['error']
-    outcome: UseProjectCollectionReturn['outcome']
-    refresh: UseProjectCollectionReturn['refresh']
-  }
-  selection: {
-    project: ComputedRef<ProjectSurface | null>
-    projectId: ComputedRef<string>
-    hasSelection: ComputedRef<boolean>
-  }
-  runtime: {
-    appId: ComputedRef<string>
-    ecosystem: ComputedRef<string>
-    rootCollection: ComputedRef<string>
-    dataType: ComputedRef<'live'>
-    isDemo: ComputedRef<boolean>
-    readOnly: ComputedRef<boolean>
-    canWrite: ComputedRef<boolean>
-  }
-  actions: {
-    selectProject: (
-      id: string,
-      name?: string,
-      description?: string,
-      image?: string
-    ) => void
-    clearSelectedProject: () => void
-  }
-}
+export type { ProjectWorkspace } from './project-workspace.types'
 
 function createProjectWorkspace(): ProjectWorkspace {
   const workspace = useWorkspace('project')
@@ -87,24 +53,19 @@ function createProjectWorkspace(): ProjectWorkspace {
   })
 
   return {
-    projects: {
-      targets: collection.projects,
-      count: collection.count,
-      pending: collection.pending,
-      error: collection.error,
-      outcome: collection.outcome,
-      refresh: collection.refresh,
-    },
+    targets: collection,
     selection: {
       project,
       projectId: workspace.activeId,
+      projectSource: computed(() => 'live' as const),
       hasSelection: computed(() => Boolean(project.value)),
     },
     runtime: {
       appId: computed(() => fireux.appId),
       ecosystem: computed(() => fireux.ecosystem),
-      rootCollection: computed(() => 'projects'),
+      source: computed(() => 'live' as const),
       dataType: computed(() => 'live' as const),
+      rootCollection: computed(() => 'projects'),
       isDemo: computed(() => false),
       readOnly: computed(() => true),
       canWrite: computed(() => false),
@@ -113,6 +74,7 @@ function createProjectWorkspace(): ProjectWorkspace {
       selectProject: workspace.activate,
       clearSelectedProject: workspace.clearActive,
     },
+    state: pageState.state,
   }
 }
 

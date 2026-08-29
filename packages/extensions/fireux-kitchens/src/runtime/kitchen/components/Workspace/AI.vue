@@ -1,15 +1,8 @@
 <template>
-  <section
-    class="kitchen-ai-welcome"
-    :class="{ 'kitchen-ai-welcome--main': mainWorkspace }"
-    :aria-labelledby="mainWorkspace ? undefined : 'kitchen-ai-title'"
-    :aria-label="mainWorkspace ? 'KitchenAI' : undefined"
-  >
-    <Intro
+  <WorkspaceAI :aria-label="mainWorkspace ? 'KitchenAI' : undefined">
+    <WorkspaceAIIntro
       v-if="!mainWorkspace"
       :agent-label="workspaceAgentLabel"
-      :context-icon="resolvedContextIcon"
-      :has-context-icon="hasContextIcon"
       :title="workspaceTitle"
       :description="workspaceDescription"
     />
@@ -43,7 +36,7 @@
       @submit="sendPrompt"
       @file="stageFile"
     />
-  </section>
+  </WorkspaceAI>
 </template>
 
 <script setup lang="ts">
@@ -54,7 +47,6 @@ import { useKitchenWorkspace } from '../../composables/workspace/core/useKitchen
 import { useKitchenWorkspaceMain } from '../../composables/workspace/main/useKitchenWorkspaceMain'
 import CommandResult from './AI/CommandResult.vue'
 import Composer from './AI/Composer.vue'
-import Intro from './AI/Intro.vue'
 import Messages from './AI/Messages.vue'
 import {
   useKitchenAIPresentation,
@@ -101,8 +93,6 @@ const {
 } = useKitchenWorkspaceMain(kitchenWorkspace)
 const {
   agentLabel: resolvedAgentLabel,
-  hasContextIcon,
-  contextIcon: resolvedContextIcon,
   title: resolvedTitle,
   description: resolvedDescription,
   placeholder: resolvedPlaceholder,

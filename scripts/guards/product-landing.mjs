@@ -884,7 +884,11 @@ export async function run(ctx) {
     [MISEBOX_PAGE_PATH, miseboxPage],
     [FIREUX_PAGE_PATH, fireuxPage],
   ]) {
-    if (!/^<template\b[^>]*>\s*<(?:div|main|section|article)\b/m.test(source)) {
+    if (
+      !/^<template\b[^>]*>\s*<(?:div|main|section|article|UDashboardPanel)\b/m.test(
+        source
+      )
+    ) {
       violations.push(
         `${filePath}: shared page transition requires one real root DOM element`
       )

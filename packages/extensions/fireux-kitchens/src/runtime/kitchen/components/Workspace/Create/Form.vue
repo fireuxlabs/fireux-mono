@@ -97,6 +97,13 @@ import { useKitchenInterface } from '../../../composables/firestore/utils/view/u
 import type { Kitchen } from '../../../models/kitchen.model'
 import { readKitchenPresentationIdentity } from '../../../utils/kitchen-presentation'
 
+type KitchenShell = {
+  id: string
+  name: string
+  tagline: string
+  url: string
+}
+
 const emit = defineEmits<{
   (event: 'created', id: string): void
   (event: 'manifested', id: string): void
@@ -128,15 +135,21 @@ const manifestKitchen = computed(() =>
     place: manifestPlace.value,
   })
 )
-const manifestComplete = computed(() => {
+const manifestShell = computed<KitchenShell>(() => {
   const presentation = readKitchenPresentationIdentity(manifestKitchen.value)
-  return Boolean(
-    presentation.displayName &&
-      presentation.tagline &&
-      (presentation.cardImageUrl ||
-        presentation.imageUrl ||
-        presentation.logoImageUrl)
-  )
+  return {
+    id: manifestId.value,
+    name: presentation.displayName,
+    tagline: presentation.tagline,
+    url:
+      presentation.cardImageUrl ||
+      presentation.imageUrl ||
+      presentation.logoImageUrl,
+  }
+})
+const manifestComplete = computed(() => {
+  const shell = manifestShell.value
+  return Boolean(shell.id && shell.name && shell.tagline && shell.url)
 })
 const image = ref<File | null>(null)
 const imagePreview = ref('')

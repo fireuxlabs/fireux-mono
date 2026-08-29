@@ -4,19 +4,19 @@ import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export function useProjectWorkspaceOverview() {
-  const { projects, selection, runtime, actions } = useProjectWorkspace()
+  const { targets, selection, runtime, actions } = useProjectWorkspace()
 
   const focus = computed(() => ({
     entity: selection.project.value,
     id: normalizeString(selection.project.value?.id),
     hasSelection: Boolean(selection.project.value),
-    outcome: projects.outcome.value,
+    outcome: targets.outcome.value,
   }))
   const multiple = computed(() => ({
-    items: projects.targets.value,
-    count: projects.count.value,
-    hasItems: projects.count.value > 0,
-    outcome: projects.outcome.value,
+    items: targets.projects.value,
+    count: targets.count.value,
+    hasItems: targets.count.value > 0,
+    outcome: targets.outcome.value,
   }))
   const debug = computed(() => ({
     projectId: selection.projectId.value,
@@ -26,16 +26,14 @@ export function useProjectWorkspaceOverview() {
     focus: focus.value,
     multiple: {
       count: multiple.value.count,
-      ids: multiple.value.items.map((item) =>
-        normalizeString(item?.id)
-      ),
+      ids: multiple.value.items.map((item) => normalizeString(item?.id)),
     },
   }))
 
   return {
     focus,
     multiple,
-    outcome: projects.outcome,
+    outcome: targets.outcome,
     selectedProject: selection.project,
     projectId: selection.projectId,
     rootCollection: runtime.rootCollection,

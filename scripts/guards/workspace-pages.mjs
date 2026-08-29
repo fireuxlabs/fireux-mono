@@ -20,6 +20,10 @@ const CONSOLE_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/workspace/Navbar.vue'
 const CONSOLE_SHARED_NAVBAR =
   'packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue'
+const PROJECT_WORKSPACE =
+  'packages/core/fireux-core/src/runtime/project/composables/workspace/core/useProjectWorkspace.ts'
+const KITCHEN_WORKSPACE =
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/core/useKitchenWorkspace.ts'
 const CONSOLE_AI_CAPABILITY_PLACEHOLDER =
   'packages/extensions/fireux-ai/src/runtime/components/Workspace/AI/CapabilityPlaceholder.vue'
 const MISEBOX_DASHBOARD_WORKSPACE =
@@ -756,6 +760,23 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
     path.join(repoRoot, CONSOLE_NAVBAR),
     'utf8'
   )
+  for (const relative of [PROJECT_WORKSPACE, KITCHEN_WORKSPACE]) {
+    const workspaceSource = readFileSync(path.join(repoRoot, relative), 'utf8')
+    const requiredBranches = [
+      'targets:',
+      'selection:',
+      'runtime:',
+      'actions:',
+      'state:',
+    ]
+    for (const branch of requiredBranches) {
+      if (!workspaceSource.includes(branch)) {
+        violations.push(
+          `${relative} (useXWorkspace must return the shared ${branch.slice(0, -1)} branch)`
+        )
+      }
+    }
+  }
   if (
     !layout.includes('LayoutsSharedNotificationsSlideover') ||
     !layout.includes('useWorkspaceNotifications') ||
@@ -790,6 +811,30 @@ function validateWorkspaceOperationContracts(repoRoot, violations) {
 }
 
 function validateWorkspaceAIContracts(repoRoot, violations) {
+  const presentationContracts = [
+    {
+      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI.vue',
+      expected: ['<WorkspaceAI', '<WorkspaceAIIntro'],
+    },
+    {
+      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Composer.vue',
+      expected: ['<WorkspaceAIComposer'],
+    },
+    {
+      file: 'projects/fireux/fireux-app/app/components/Workspace/Project/AI.vue',
+      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
+    },
+  ]
+
+  for (const contract of presentationContracts) {
+    const source = readFileSync(path.join(repoRoot, contract.file), 'utf8')
+    if (contract.expected.some((expected) => !source.includes(expected))) {
+      violations.push(
+        `${contract.file} (Workspace AI families must compose the Core-owned presentation anatomy)`
+      )
+    }
+  }
+
   for (const contract of CONSOLE_AI_CONTRACTS) {
     const definitionPath = path.join(repoRoot, contract.definition)
     const registrationPath = path.join(repoRoot, contract.registration)

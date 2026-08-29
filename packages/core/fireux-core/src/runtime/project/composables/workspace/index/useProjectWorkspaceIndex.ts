@@ -5,7 +5,7 @@ import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export function useProjectWorkspaceIndex() {
   const {
-    projects,
+    targets,
     selection: workspaceSelection,
     runtime: workspaceRuntime,
     actions: workspaceActions,
@@ -16,7 +16,7 @@ export function useProjectWorkspaceIndex() {
     readOnly: workspaceRuntime.readOnly.value,
     canWrite: workspaceRuntime.canWrite.value,
     selectedProject: workspaceSelection.project.value,
-    targetCount: projects.count.value,
+    targetCount: targets.count.value,
     authority: 'fireux-app-admin',
     dataType: workspaceRuntime.dataType.value,
   }))
@@ -24,8 +24,8 @@ export function useProjectWorkspaceIndex() {
   return {
     project: workspaceSelection.project,
     projectId: workspaceSelection.projectId,
-    projects: projects.targets,
-    outcome: projects.outcome,
+    projects: targets.projects,
+    outcome: targets.outcome,
     selectProject: workspaceActions.selectProject,
     clearProject: workspaceActions.clearSelectedProject,
     debug,

@@ -969,7 +969,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /\.runTransaction\(|useFirestore|setDoc|addDoc/
   )
   assert.match(projectCreateClient, /\/api\/internal\/control\/projects/)
-  assert.match(projectCreateClient, /workspace\.projects\.refresh\(\)/)
+  assert.match(projectCreateClient, /workspace\.targets\.refresh\(\)/)
   assert.match(projectCreateClient, /selectProject\(response\.project_id\)/)
   assert.doesNotMatch(
     projectCreateClient,

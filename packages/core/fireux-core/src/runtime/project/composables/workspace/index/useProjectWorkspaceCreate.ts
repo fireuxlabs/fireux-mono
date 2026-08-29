@@ -35,7 +35,7 @@ export function useProjectWorkspaceCreate() {
           body: { name },
         }
       )
-      await workspace.projects.refresh()
+      await workspace.targets.refresh()
       workspace.actions.selectProject(response.project_id)
       return response
     } catch (cause) {
