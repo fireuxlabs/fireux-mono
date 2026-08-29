@@ -899,6 +899,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceCreate.ts'
   )
+  const projectSelector = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
+  )
+  const kitchenSelector = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
+  )
+  const kitchenOnboardingCommands = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/commands.ts'
+  )
   assert.doesNotMatch(
     projectCollection,
     /useFirestoreRead|firestoreFetchCollection/
@@ -922,17 +934,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectControlApi, /appRef\.collection\(['"]users['"]\)/)
   assert.match(projectControlApi, /membershipSnapshot/)
   assert.match(projectControlApi, /membership\.role/)
-  assert.match(projectControlApi, /===\s*['"]admin['"]/)
-  assert.match(projectControlApi, /===\s*['"]user['"]/)
+  assert.match(projectControlApi, /requireWorkspaceEntityMemberRole/)
   assert.doesNotMatch(projectControlApi, /admin_ids/)
-  assert.match(projectControlApi, /collectionGroup\(['"]team['"]\)/)
-  assert.match(
-    projectControlApi,
-    /where\(['"]user_id['"],\s*['"]==['"],\s*uid\)/
-  )
-  assert.match(projectControlApi, /parts\[0\]\s*!==\s*['"]projects['"]/)
-  assert.match(projectControlApi, /role\s*!==\s*['"]owner['"]/)
-  assert.doesNotMatch(projectControlApi, /private\/targets|project_ids/)
+  assert.match(projectControlApi, /membership\.projects/)
+  assert.match(projectControlApi, /membership\.primary_project/)
+  assert.doesNotMatch(projectControlApi, /collectionGroup\(['"]team['"]\)/)
   assert.match(projectControlApi, /collection\(['"]projects['"]\)/)
   assert.doesNotMatch(
     projectControlApi,
@@ -953,6 +959,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
 
   assert.match(projectCreateApi, /requireFirebaseBearerUser/)
+  assert.match(projectCreateApi, /requireWorkspaceEntityMemberRole/)
   assert.match(projectCreateApi, /runGuardedServerTransaction/)
   assert.match(
     projectCreateApi,
@@ -960,8 +967,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(projectCreateApi, /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/)
   assert.match(projectCreateApi, /fireuxProjectTeamMembersTarget\(projectId\)/)
-  assert.match(projectCreateApi, /queryCollectionGroup/)
-  assert.match(projectCreateApi, /field:\s*['"]user_id['"]/)
+  assert.match(projectCreateApi, /membership\.data\?\.projects/)
+  assert.match(projectCreateApi, /primary_project:\s*projectId/)
+  assert.match(projectCreateApi, /transaction\.update\(memberships/)
+  assert.doesNotMatch(projectCreateApi, /queryCollectionGroup/)
   assert.match(projectCreateApi, /subscription\s*!==\s*['"]business['"]/)
   assert.match(projectCreateApi, /role:\s*['"]owner['"]/)
   assert.match(projectCreateApi, /status:\s*['"]inactive['"]/)
@@ -981,6 +990,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     projectCreateClient,
     /useFirestore|setDoc|addDoc|updateDoc/
   )
+  assert.match(
+    projectSelector,
+    /await \$fetch\(['"]\/api\/internal\/control\/projects\/primary['"][\s\S]*await props\.refresh\(\)[\s\S]*workspace\.activate\(/
+  )
+  assert.match(
+    kitchenSelector,
+    /await \$fetch\(['"]\/api\/workspace\/kitchen\/request-primary-change['"][\s\S]*await props\.refresh\(\)[\s\S]*setKitchenWorkspaceSelection\(/
+  )
+  assert.match(
+    kitchenOnboardingCommands,
+    /primary_kitchen:\s*locator\.kitchenId/
+  )
+  assert.match(kitchenOnboardingCommands, /primary_kitchen:\s*kitchenId/)
 
   for (const method of ['get', 'post']) {
     const registrySource = read(

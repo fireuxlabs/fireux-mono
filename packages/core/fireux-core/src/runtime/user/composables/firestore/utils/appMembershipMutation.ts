@@ -1,10 +1,11 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: send membership and privilege mutations through the authenticated server boundary.
 
-import { refreshNuxtData } from '#imports'
+import { refreshNuxtData, useNuxtData } from '#imports'
 import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
 } from '../../../../app/models/app-membership'
+import type { CurrentAppContextResponse } from '../../../../app/models/app-context.model'
 import { CURRENT_APP_CONTEXT_ASYNC_DATA_KEY } from '../../../../app/composables/currentAppContext'
 import { useRequireUser } from '../../../../composables/fireux/firebase/useRequireUser'
 
@@ -47,6 +48,31 @@ export async function mutateAppMembership(
   }
 
   const result = payload as AppMembershipMutationResult
+  if (
+    (result.action === 'set-subscription' ||
+      result.action === 'set-self-subscription') &&
+    result.subscription
+  ) {
+    const context = useNuxtData<{
+      requestUid: string
+      response: CurrentAppContextResponse
+    } | null>(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
+    const current = context.data.value
+    const membership = current?.response.membership
+    if (current && membership?.id === result.userId) {
+      context.data.value = {
+        ...current,
+        response: {
+          ...current.response,
+          membership: {
+            ...membership,
+            subscription: result.subscription,
+          },
+        },
+      }
+    }
+    return result
+  }
   await refreshNuxtData(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY)
   return result
 }

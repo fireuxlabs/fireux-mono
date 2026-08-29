@@ -1,13 +1,17 @@
-import { computed, watchEffect } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 
 export type KitchenWorkspaceIndexState = {
-  user: { id: string; anonymous: boolean }
+  user: {
+    id: string
+    anonymous: boolean
+    kitchens: string[]
+    primaryKitchen: string
+  }
   kitchen: { id: string; name: string; tagline: string; url: string }
   kitchens: { id: string; name: string; tagline: string; url: string }[]
-  primaryKitchenId: string
 }
 
 export type KitchenWorkspaceIndexDerived = {
@@ -28,6 +32,10 @@ export function useKitchenWorkspaceIndex() {
       user: {
         id: workspace.user.currentUser.value?.uid || '',
         anonymous: Boolean(workspace.user.currentUser.value?.isAnonymous),
+        kitchens: workspace.targets.kitchens.value.map((item) =>
+          normalizeString(item.id)
+        ),
+        primaryKitchen: workspace.targets.primaryKitchenId.value,
       },
       kitchen: {
         id: normalizeString(selectedKitchen?.id),
@@ -41,7 +49,6 @@ export function useKitchenWorkspaceIndex() {
         tagline: normalizeString(item.identity?.tagline),
         url: normalizeString(item.identity?.image_url),
       })),
-      primaryKitchenId: workspace.targets.primaryKitchenId.value,
     }
   })
 
@@ -65,17 +72,17 @@ export function useKitchenWorkspaceIndex() {
     })
   })
 
-  watchEffect(() => {
-    const primaryKitchenId = workspace.targets.primaryKitchenId.value
-    if (
-      primaryKitchenId &&
-      workspace.selection.kitchenId.value !== primaryKitchenId &&
-      (!workspace.selection.kitchenId.value ||
-        !workspace.user.canOwnMultipleWorkspaces.value)
-    ) {
-      workspace.actions.selectKitchen(primaryKitchenId)
-    }
-  })
+  watch(
+    workspace.targets.primaryKitchenId,
+    (primaryKitchenId) => {
+      if (primaryKitchenId) workspace.actions.selectKitchen(primaryKitchenId)
+    },
+    { immediate: true }
+  )
 
-  return { state, derived }
+  return {
+    state,
+    derived,
+    actions: { refresh: workspace.targets.refresh },
+  }
 }

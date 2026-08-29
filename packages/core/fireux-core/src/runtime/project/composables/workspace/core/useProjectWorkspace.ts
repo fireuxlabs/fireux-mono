@@ -26,8 +26,16 @@ function createProjectWorkspace(): ProjectWorkspace {
 
   watch(
     project,
-    (selectedProject) =>
-      workspace.setActiveStatus(selectedProject?.status || ''),
+    (selectedProject) => {
+      workspace.setActiveStatus(selectedProject?.status || '')
+      if (!selectedProject) return
+      workspace.activate(
+        normalizeString(selectedProject.id),
+        normalizeString(selectedProject.name),
+        normalizeString(selectedProject.description),
+        normalizeString(selectedProject.image_url)
+      )
+    },
     { immediate: true }
   )
 

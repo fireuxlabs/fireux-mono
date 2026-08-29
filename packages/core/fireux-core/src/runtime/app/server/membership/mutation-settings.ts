@@ -56,8 +56,6 @@ export async function handleMembershipSettings(
       action: input.action,
       actorUid,
       actorRole,
-      actorIsConfiguredDeveloper:
-        Boolean(context.developerUid) && actorUid === context.developerUid,
       ...(!selfDeveloperChange ? { userId: input.userId } : {}),
     })
     if (!authority.ok) forbidden(authority.statusCode, authority.message)

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-08-29
 // usage_note: reusable app/user identity inspection; update when run.
 
 import { initializeApp } from 'firebase-admin/app'

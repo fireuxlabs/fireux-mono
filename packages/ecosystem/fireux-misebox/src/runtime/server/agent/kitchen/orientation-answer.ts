@@ -1,7 +1,10 @@
 import { createError, type H3Event } from 'h3'
 import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { useFireuxAi } from 'fireux-ai/runtime/server/utils/fireux-ai.server'
-import { findMiseboxOperationAgent, findMiseboxWorkspaceAgent } from '../../../ai/workspace-agents'
+import {
+  findMiseboxOperationAgent,
+  findMiseboxWorkspaceAgent,
+} from '../../../ai/workspace-agents'
 import { readKitchenAgentOrientation } from './orientation'
 import { buildKitchenCoordinatorContext } from './operations/coordinator'
 import type { KitchenAgentRequest } from './types'
@@ -21,7 +24,7 @@ export async function answerKitchenAgentOrientation(
     ? [requestedAgent]
     : workspaceAgent?.operationAgents || []
   const kitchens = identity?.uid
-    ? await readKitchenAgentOrientation(identity.uid)
+    ? await readKitchenAgentOrientation(identity.uid, request.appId)
     : []
   const createKitchenAvailable =
     request.availableActions.includes('create-kitchen')

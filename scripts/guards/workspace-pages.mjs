@@ -308,7 +308,7 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   if (
     !mainPage.includes('<WorkspaceKitchenHero />') ||
     !mainPage.includes('<WorkspaceKitchenIndexAI') ||
-    !mainPage.includes('<WorkspaceKitchen ')
+    !/<WorkspaceKitchen\b/.test(mainPage)
   ) {
     violations.push(
       `${MISEBOX_MAIN_PAGE} (Misebox / must directly compose the Kitchen Hero, index AI, and Workspace)`

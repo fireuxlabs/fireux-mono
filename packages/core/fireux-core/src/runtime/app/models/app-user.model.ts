@@ -24,6 +24,10 @@ export type AppUser = {
   role: AppUserRole
   subscription: AppUserSubscription
   onboarding_status: AppUserOnboardingStatus
+  kitchens: string[]
+  primary_kitchen: string
+  projects: string[]
+  primary_project: string
   created: {
     at: FirebaseTimestamp
     by?: string

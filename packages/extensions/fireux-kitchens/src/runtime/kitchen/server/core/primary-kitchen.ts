@@ -7,29 +7,8 @@ import {
   serverAppUsersTarget,
   serverUserNotificationsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
-import {
-  ALL_FIRESTORE_MUTATION_VERBS,
-  assertFirestoreMutationSegment,
-  defineFirestoreMutationTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
-import { readUserKitchenIdsInTransaction } from './user-kitchens.ts'
-
-export const PRIMARY_KITCHEN_DOCUMENT = 'kitchen'
-
-export type PrimaryKitchenPreference = {
-  primary_kitchen_id: string
-}
-
-export function serverUserKitchenPreferenceTarget(userId: string) {
-  const uid = assertFirestoreMutationSegment(userId, 'userId')
-  return defineFirestoreMutationTarget({
-    key: 'users.private.kitchen',
-    lane: 'server',
-    verbs: ALL_FIRESTORE_MUTATION_VERBS,
-    database: { kind: 'runtime' },
-    collectionPath: `users/${uid}/private`,
-  })
-}
+import { assertFirestoreMutationSegment } from 'fireux-core/runtime/utils/firestore-mutations/target-definition'
+import { readAppUserKitchenIds } from './user-kitchens.ts'
 
 export async function requestPrimaryKitchenChange(input: {
   appId: string
@@ -41,24 +20,17 @@ export async function requestPrimaryKitchenChange(input: {
     'requestedKitchenId'
   )
   const appUsers = serverAppUsersTarget(input.appId)
-  const preference = serverUserKitchenPreferenceTarget(input.uid)
 
   return runGuardedServerTransaction(appUsers.database, async (transaction) => {
-    const [membership, currentPreference, kitchenIds, admins] =
-      await Promise.all([
-        transaction.read<AppUser>(appUsers, input.uid),
-        transaction.read<PrimaryKitchenPreference>(
-          preference,
-          PRIMARY_KITCHEN_DOCUMENT
-        ),
-        readUserKitchenIdsInTransaction(transaction, input.uid),
-        transaction.query<AppUser>(appUsers, {
-          field: 'role',
-          op: '==',
-          value: 'admin',
-          limit: 32,
-        }),
-      ])
+    const [membership, admins] = await Promise.all([
+      transaction.read<AppUser>(appUsers, input.uid),
+      transaction.query<AppUser>(appUsers, {
+        field: 'role',
+        op: '==',
+        value: 'admin',
+        limit: 32,
+      }),
+    ])
 
     if (!membership.exists) {
       throw createError({
@@ -67,11 +39,24 @@ export async function requestPrimaryKitchenChange(input: {
       })
     }
     if (membership.data?.subscription === 'business') {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'Business users can switch Kitchens directly.',
+      const kitchenIds = readAppUserKitchenIds(membership.data)
+      if (!kitchenIds.includes(requestedKitchenId)) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'The requested Kitchen is not available to this user.',
+        })
+      }
+      transaction.update(appUsers, input.uid, {
+        primary_kitchen: requestedKitchenId,
       })
+      return {
+        ok: true as const,
+        requestedKitchenId,
+        updated: true as const,
+        notified: 0,
+      }
     }
+    const kitchenIds = readAppUserKitchenIds(membership.data)
     if (!kitchenIds.includes(requestedKitchenId)) {
       throw createError({
         statusCode: 403,
@@ -79,9 +64,7 @@ export async function requestPrimaryKitchenChange(input: {
       })
     }
 
-    const storedPrimary = String(
-      currentPreference.data?.primary_kitchen_id || ''
-    ).trim()
+    const storedPrimary = String(membership.data?.primary_kitchen || '').trim()
     const currentPrimary = kitchenIds.includes(storedPrimary)
       ? storedPrimary
       : kitchenIds.length === 1

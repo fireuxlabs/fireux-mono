@@ -4,7 +4,6 @@ type SubscriptionAuthorityInput = {
   action: 'set-subscription' | 'set-self-subscription'
   actorUid: string
   actorRole: AppUserRole | null
-  actorIsConfiguredDeveloper?: boolean
   userId?: string
 }
 
@@ -16,14 +15,12 @@ export function resolveSubscriptionMutationAuthority(
   input: SubscriptionAuthorityInput
 ): SubscriptionAuthorityResult {
   if (input.action === 'set-self-subscription') {
-    return input.actorRole === 'dev' ||
-      input.actorRole === 'admin' ||
-      input.actorIsConfiguredDeveloper === true
+    return import.meta.dev
       ? { ok: true, userId: input.actorUid }
       : {
           ok: false,
           statusCode: 403,
-          message: 'Developer or admin access is required.',
+          message: 'Self subscription changes are development-only.',
         }
   }
   if (input.actorRole !== 'admin' && input.actorRole !== 'dev') {

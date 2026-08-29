@@ -25,8 +25,16 @@ export function useKitchenWorkspace() {
 
   watch(
     kitchen,
-    (selectedKitchen: KitchenSurface | null) =>
-      workspace.setActiveStatus(selectedKitchen?.status || ''),
+    (selectedKitchen: KitchenSurface | null) => {
+      workspace.setActiveStatus(selectedKitchen?.status || '')
+      if (!selectedKitchen) return
+      workspace.activate(
+        normalizeString(selectedKitchen.id),
+        normalizeString(selectedKitchen.identity?.display_name),
+        normalizeString(selectedKitchen.identity?.tagline),
+        normalizeString(selectedKitchen.identity?.image_url)
+      )
+    },
     { immediate: true }
   )
 

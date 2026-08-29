@@ -11,6 +11,8 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 type ProjectControlResponse = {
   ok: true
+  project_ids: string[]
+  primary_project: string
   items: Project[]
 }
 
@@ -29,6 +31,8 @@ type UseProjectCollectionOptions = {
 
 export type UseProjectCollectionReturn = {
   projects: ComputedRef<Project[]>
+  projectIds: ComputedRef<string[]>
+  primaryProject: ComputedRef<string>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -69,10 +73,11 @@ export function useProjectCollection(
     requestKey,
     async () => {
       if (sourceMode.value !== 'live' || import.meta.server) {
-        return { ok: true, items: [] }
+        return { ok: true, project_ids: [], primary_project: '', items: [] }
       }
       const user = currentUser.value
-      if (!user) return { ok: true, items: [] }
+      if (!user)
+        return { ok: true, project_ids: [], primary_project: '', items: [] }
       return $fetch<ProjectControlResponse>('/api/internal/control/projects', {
         headers: { authorization: `Bearer ${await user.getIdToken()}` },
       })
@@ -90,6 +95,8 @@ export function useProjectCollection(
     )
   )
   const count = computed(() => projects.value.length)
+  const projectIds = computed(() => data.value?.project_ids ?? [])
+  const primaryProject = computed(() => data.value?.primary_project ?? '')
   const pending = computed(() =>
     sourceMode.value === 'live'
       ? !hasAuthState.value || requestPending.value
@@ -100,5 +107,14 @@ export function useProjectCollection(
   )
   const { outcome } = useFirestoreCollectionState({ count, error, pending })
 
-  return { projects, count, pending, error, outcome, refresh }
+  return {
+    projects,
+    projectIds,
+    primaryProject,
+    count,
+    pending,
+    error,
+    outcome,
+    refresh,
+  }
 }

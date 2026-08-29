@@ -123,29 +123,13 @@ export async function run({ repoRoot }) {
   assert.deepEqual(
     resolveSubscriptionMutationAuthority({
       action: 'set-self-subscription',
-      actorUid: 'developer',
-      actorRole: 'dev',
-    }),
-    { ok: true, userId: 'developer' }
-  )
-  assert.deepEqual(
-    resolveSubscriptionMutationAuthority({
-      action: 'set-self-subscription',
-      actorUid: 'admin',
-      actorRole: 'admin',
-    }),
-    { ok: true, userId: 'admin' }
-  )
-  assert.deepEqual(
-    resolveSubscriptionMutationAuthority({
-      action: 'set-self-subscription',
       actorUid: 'user',
       actorRole: 'user',
     }),
     {
       ok: false,
       statusCode: 403,
-      message: 'Developer or admin access is required.',
+      message: 'Self subscription changes are development-only.',
     }
   )
   assert.deepEqual(
@@ -271,27 +255,20 @@ export async function run({ repoRoot }) {
   )
   assert.match(subscriptionControl, /action: 'set-self-subscription'/)
   assert.doesNotMatch(subscriptionControl, /userId:/)
-  assert.match(subscriptionControl, /const pending = computed\(/)
-  assert.match(subscriptionControl, /@click="handleClick"/)
+  assert.match(subscriptionControl, /const canToggle = import\.meta\.dev/)
+  assert.doesNotMatch(subscriptionControl, /useDeveloperAccess|role ===/)
+  assert.match(subscriptionControl, /:to="canToggle \? undefined : '\/pricing'"/)
   assert.match(subscriptionControl, /\['free', 'premium', 'business'\]/)
   assert.match(
     subscriptionControl,
     /\(currentIndex \+ 1\) % subscriptions\.length/
   )
-  assert.match(subscriptionControl, /if \(!canToggle\.value\)/)
-  assert.match(subscriptionControl, /navigateTo\('\/pricing'\)/)
-  assert.match(subscriptionControl, /useDeveloperAccess/)
-  assert.match(
-    subscriptionControl,
-    /const \{ appAccess, appAccessOutcome \} = useUser\(\)/
-  )
-  assert.match(subscriptionControl, /appAccessOutcome\.value !== 'ready'/)
+  assert.match(subscriptionControl, /@click="canToggle && toggle\(\)"/)
   assert.match(
     subscriptionControl,
     /presentations\[appAccess\.value\.subscription\]/
   )
   assert.doesNotMatch(subscriptionControl, /visibleSubscription/)
-  assert.match(subscriptionControl, /appAccess\.value\.role === 'admin'/)
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)
   assert.doesNotMatch(subscriptionControl, /<UButtonGroup/)
@@ -364,7 +341,11 @@ export async function run({ repoRoot }) {
     subscriptionMutationClient,
     /await refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/
   )
-  assert.doesNotMatch(subscriptionMutationClient, /useNuxtData/)
+  assert.match(subscriptionMutationClient, /useNuxtData/)
+  assert.match(
+    subscriptionMutationClient,
+    /membership\?\.id === result\.userId[\s\S]*subscription: result\.subscription/
+  )
 
   const activeUserFetch = read(
     repoRoot,

@@ -1,12 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import {
-  defineGuardedServerCollectionGroupTarget,
-  runGuardedServerTransaction,
-} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -14,13 +12,6 @@ import {
   fireuxProjectTeamMembersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { getFirestoreDb } from '../../utils/firebase-admin'
-
-const projectTeamGroup = defineGuardedServerCollectionGroupTarget({
-  key: 'fireux.projects.team.collection-group',
-  database: { kind: 'named', databaseId: 'fireux' },
-  parentCollection: 'projects',
-  collectionId: 'team',
-})
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -62,40 +53,31 @@ export async function createProject(event: H3Event, input: unknown) {
         transaction.read(FIRESTORE_MUTATION_TARGETS.fireuxApps, appId),
         transaction.read(memberships, uid),
       ])
-      const role = membership.data?.role
       const subscription = membership.data?.subscription
-      if (
-        !app.exists ||
-        !membership.exists ||
-        (role !== 'admin' && role !== 'user')
-      ) {
+      if (!app.exists) {
         fail(403, 'FireUX App membership is required to create a Project.')
       }
+      requireWorkspaceEntityMemberRole({
+        exists: membership.exists,
+        role: membership.data?.role,
+        entityLabel: 'Project',
+      })
       if (!isAppUserSubscription(subscription)) {
         fail(409, 'The FireUX App subscription has an invalid stored shape.')
       }
 
-      if (subscription !== 'business') {
-        const owned = await transaction.queryCollectionGroup<{
-          role?: unknown
-          status?: unknown
-          user_id?: unknown
-        }>(projectTeamGroup, {
-          field: 'user_id',
-          value: uid,
-          limit: 2,
-        })
-        if (
-          owned.some(
-            (member) =>
-              member.id === uid &&
-              member.data.user_id === uid &&
-              member.data.role === 'owner' &&
-              member.data.status === 'active'
+      const projects = [
+        ...new Set(
+          (Array.isArray(membership.data?.projects)
+            ? membership.data.projects
+            : []
           )
-        ) {
-          fail(403, 'Your current subscription supports one Project.')
-        }
+            .map((value) => String(value ?? '').trim())
+            .filter(Boolean)
+        ),
+      ]
+      if (subscription !== 'business' && projects.length) {
+        fail(403, 'Your current subscription supports one Project.')
       }
 
       const created = serverAuditStamp({ by: uid, appId })
@@ -112,6 +94,10 @@ export async function createProject(event: H3Event, input: unknown) {
         role: 'owner',
         permissions: [],
         status: 'active',
+      })
+      transaction.update(memberships, uid, {
+        projects: [...projects, projectId],
+        primary_project: projectId,
       })
 
       return {

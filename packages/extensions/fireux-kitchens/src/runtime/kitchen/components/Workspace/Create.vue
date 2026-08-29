@@ -25,9 +25,11 @@
 
     <UButton
       v-else-if="showLauncher"
-      :label="label"
+      :label="compact ? undefined : label"
       icon="i-lucide-plus"
-      color="primary"
+      color="neutral"
+      variant="ghost"
+      :aria-label="label"
       @click="open = true"
     />
 
@@ -50,11 +52,13 @@ import Form from './Create/Form.vue'
 
 const {
   showLauncher = true,
+  compact = false,
   launcher = 'button',
   label = 'Add a Kitchen',
   description = '',
 } = defineProps<{
   showLauncher?: boolean
+  compact?: boolean
   launcher?: 'button' | 'cell' | 'inline'
   label?: string
   description?: string

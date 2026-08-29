@@ -5,33 +5,29 @@
     :color="presentation.color"
     variant="soft"
     size="xs"
-    type="button"
-    :disabled="pending"
-    :loading="pending"
+    :to="canToggle ? undefined : '/pricing'"
+    :disabled="saving"
+    :loading="saving"
     class="rounded-full"
     :aria-label="
       canToggle
         ? `Switch ${presentation.label} subscription view`
         : `View pricing for ${presentation.label}`
     "
-    @click="handleClick"
+    @click="canToggle && toggle()"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, ref, useToast } from '#imports'
+import { computed, ref, useToast } from '#imports'
 import type { AppUserSubscription } from '../../app/models/app-user.model'
 import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
-import { useDeveloperAccess } from '../composables/useDeveloperAccess'
 import { useUser } from '../composables/useUser'
 
-const { appAccess, appAccessOutcome } = useUser()
-const { isDeveloper: isConfiguredDeveloper } = useDeveloperAccess()
+const { appAccess } = useUser()
 const saving = ref(false)
-const pending = computed(
-  () => saving.value || appAccessOutcome.value !== 'ready'
-)
 const toast = useToast()
+const canToggle = import.meta.dev
 const subscriptions: AppUserSubscription[] = ['free', 'premium', 'business']
 const presentations = {
   free: {
@@ -53,20 +49,8 @@ const presentations = {
 const presentation = computed(
   () => presentations[appAccess.value.subscription]
 )
-const canToggle = computed(
-  () =>
-    isConfiguredDeveloper.value ||
-    appAccess.value.role === 'dev' ||
-    appAccess.value.role === 'admin'
-)
-
-async function handleClick() {
-  if (pending.value) return
-  if (!canToggle.value) {
-    await navigateTo('/pricing')
-    return
-  }
-
+async function toggle() {
+  if (saving.value) return
   const currentIndex = subscriptions.indexOf(appAccess.value.subscription)
   const requested = subscriptions[(currentIndex + 1) % subscriptions.length]!
 

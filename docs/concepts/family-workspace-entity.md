@@ -136,15 +136,16 @@ migration verification, and protected Workspace consumer are complete.
   active-Entity authority.
 - Domain Index composables expose named Entity collections and actions
   directly. Core does not own a generic directory-index adapter.
-- `team/{uid}` grants Workspace membership and names its roles and permissions.
-  Current App admins are the explicit override only for roots managed by that
-  App.
-- Subscription capacity counts only active `team/{uid}` records whose role is
-  `owner`. Free and Professional allow one owned Entity in the family;
-  Business allows multiple. Operator, member, and other invited access does
-  not consume ownership capacity. The trusted Create transaction reads that
-  canonical owner relationship before creating the root and owner Team record,
-  so a convenience User target or client-side count never becomes authority.
+- `team/{uid}` belongs to the Entity's Team surface and names its roles and
+  permissions. It is not the user's Workspace Entity index.
+- The AppUser stores the Entity ids and primary Entity id used by that App's
+  Workspace index. Kitchen uses `kitchens` and `primary_kitchen`; Project uses
+  `projects` and `primary_project`.
+- Subscription capacity counts the AppUser Entity-id array inside the trusted
+  Create transaction. The same transaction creates the Entity root, updates
+  the User array and primary id, and may create the initial Team record for the
+  separate Team surface. Free and Professional allow one Entity in the family;
+  Business allows multiple.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
   transaction for root, the caller's Team authority, and any required parent

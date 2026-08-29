@@ -164,7 +164,7 @@ export async function run(ctx) {
     )
   }
   if (
-    !kitchenWorkspaceIndex.includes('return { state, derived }') ||
+    !kitchenWorkspaceIndex.includes('actions: { refresh: workspace.targets.refresh }') ||
     !kitchenWorkspaceActive.includes("KitchenWorkspaceIndexState['kitchen']")
   ) {
     violations.push(

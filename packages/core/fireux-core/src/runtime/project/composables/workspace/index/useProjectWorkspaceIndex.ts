@@ -1,10 +1,15 @@
-import { computed, watchEffect } from 'vue'
+import { computed, watch, watchEffect } from 'vue'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
 import { normalizeString } from '../../../../utils/string'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
 
 export type ProjectWorkspaceIndexState = {
-  user: { id: string; anonymous: boolean }
+  user: {
+    id: string
+    anonymous: boolean
+    projects: string[]
+    primaryProject: string
+  }
   project: { id: string; name: string; tagline: string; url: string }
   projects: { id: string; name: string; tagline: string; url: string }[]
 }
@@ -25,6 +30,8 @@ export function useProjectWorkspaceIndex() {
       user: {
         id: workspace.user.currentUser.value?.uid || '',
         anonymous: Boolean(workspace.user.currentUser.value?.isAnonymous),
+        projects: workspace.targets.projectIds.value,
+        primaryProject: workspace.targets.primaryProject.value,
       },
       project: {
         id: normalizeString(selectedProject?.id),
@@ -61,16 +68,17 @@ export function useProjectWorkspaceIndex() {
     })
   })
 
-  watchEffect(() => {
-    if (
-      !workspace.selection.projectId.value &&
-      workspace.targets.projects.value.length === 1
-    ) {
-      workspace.actions.selectProject(
-        normalizeString(workspace.targets.projects.value[0]?.id)
-      )
-    }
-  })
+  watch(
+    workspace.targets.primaryProject,
+    (primaryProject) => {
+      if (primaryProject) workspace.actions.selectProject(primaryProject)
+    },
+    { immediate: true }
+  )
 
-  return { state, derived }
+  return {
+    state,
+    derived,
+    actions: { refresh: workspace.targets.refresh },
+  }
 }

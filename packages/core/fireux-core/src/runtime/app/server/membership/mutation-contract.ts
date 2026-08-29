@@ -52,6 +52,10 @@ export function initialMembership(actorUid: string, role: AppUserRole) {
     role,
     subscription: 'free',
     onboarding_status: 'pending',
+    kitchens: [],
+    primary_kitchen: '',
+    projects: [],
+    primary_project: '',
     created: stamp(actorUid),
     updated: stamp(actorUid),
   }

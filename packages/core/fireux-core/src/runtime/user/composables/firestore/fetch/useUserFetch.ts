@@ -19,6 +19,7 @@ import { useUserIdentitySummary } from '../../useUserIdentitySummary'
 import { useCurrentUserAccount } from '../../useCurrentUserAccount'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 
 export type UserFetchOutcome =
   | 'idle'
@@ -123,14 +124,18 @@ export function useUserFetch(
     }
   }
 
+  const { currentUser: authUser } = useAuth()
   const privateScopeRequested = computed(() =>
-    Boolean(uid.value && includePrivate)
+    Boolean(uid.value && includePrivate && !authUser.value?.isAnonymous)
+  )
+  const privateUid = computed(() =>
+    privateScopeRequested.value ? uid.value : null
   )
 
   const ownerCoreState = includePrivate
-    ? useFirestoreRead({
+      ? useFirestoreRead({
         databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-      }).firestoreFetchDoc<User>('users', uid)
+      }).firestoreFetchDoc<User>('users', privateUid)
     : null
   const summaryCoreState = includePrivate ? null : useUserIdentitySummary(uid)
   const privateState = includePrivate ? useCurrentUserAccount() : null

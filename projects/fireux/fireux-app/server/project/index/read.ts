@@ -4,6 +4,7 @@ import { createError, type H3Event } from 'h3'
 import { type Project } from 'fireux-core/runtime/project/models/project.model'
 import { readProjectDocument } from 'fireux-core/runtime/project/utils/readProject'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -28,41 +29,26 @@ export async function readProjectIndex(event: H3Event) {
     string,
     unknown
   >
-  const hasMembership =
-    text(membership.role) === 'admin' || text(membership.role) === 'user'
-
-  if (!appSnapshot.exists || !hasMembership) {
+  if (!appSnapshot.exists) {
     throw createError({
       statusCode: 403,
       statusMessage: 'FireUX App membership is required.',
     })
   }
+  requireWorkspaceEntityMemberRole({
+    exists: membershipSnapshot.exists,
+    role: membership.role,
+    entityLabel: 'Project',
+  })
 
-  const team = await db
-    .collectionGroup('team')
-    .where('user_id', '==', uid)
-    .limit(100)
-    .get()
   const ids = [
     ...new Set(
-      team.docs.flatMap((member) => {
-        const parts = member.ref.path.split('/')
-        const role = text(member.get('role'))
-        if (
-          parts.length !== 4 ||
-          parts[0] !== 'projects' ||
-          parts[2] !== 'team' ||
-          parts[3] !== uid ||
-          text(member.get('user_id')) !== uid ||
-          text(member.get('status')) !== 'active' ||
-          (role !== 'owner' && role !== 'operator' && role !== 'member')
-        ) {
-          return []
-        }
-        return [parts[1]]
-      })
+      (Array.isArray(membership.projects) ? membership.projects : [])
+        .map(text)
+        .filter(Boolean)
     ),
   ]
+  const storedPrimary = text(membership.primary_project)
   const documents = ids.length
     ? (
         await db.getAll(...ids.map((id) => db.collection('projects').doc(id)))
@@ -83,6 +69,13 @@ export async function readProjectIndex(event: H3Event) {
 
   return {
     ok: true as const,
+    project_ids: ids,
+    primary_project:
+      ids.includes(storedPrimary) || !ids.length
+        ? storedPrimary
+        : ids.length === 1
+          ? ids[0]
+          : '',
     items,
   }
 }

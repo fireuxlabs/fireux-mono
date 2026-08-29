@@ -1,11 +1,9 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 import { createError, type H3Event } from 'h3'
-import {
-  runGuardedServerTransaction,
-  type GuardedServerTransaction,
-} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { initialMembership } from 'fireux-core/runtime/app/server/membership/mutation-contract'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -29,10 +27,7 @@ import {
   type KitchenOnboardingFirestore as Firestore,
 } from './onboarding-actor'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
-import {
-  readOwnedKitchenIdsInTransaction,
-  readUserKitchenIds,
-} from '../../core/user-kitchens.ts'
+import { readAppUserKitchenIds } from '../../core/user-kitchens.ts'
 
 type Locator = {
   placeId: string
@@ -45,13 +40,11 @@ function fail(statusCode: number, statusMessage: string): never {
 }
 
 async function assertKitchenCreationAllowance(
-  transaction: GuardedServerTransaction,
-  uid: string,
   membership: Record<string, unknown> | undefined
 ) {
   const access = resolveAppUserAccess(membership)
   if (access.hasBusinessSubscription) return
-  const kitchenIds = await readOwnedKitchenIdsInTransaction(transaction, uid)
+  const kitchenIds = readAppUserKitchenIds(membership)
   if (kitchenIds.length) {
     fail(403, 'Your current subscription supports one Kitchen.')
   }
@@ -181,11 +174,7 @@ export async function completeKitchenOnboarding(
       fail(409, 'Kitchen Team membership exists without its Kitchen.')
     }
     if (!rootData) {
-      await assertKitchenCreationAllowance(
-        mutations,
-        current.uid,
-        membership.data
-      )
+      await assertKitchenCreationAllowance(membership.data)
     }
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
@@ -236,6 +225,25 @@ export async function completeKitchenOnboarding(
       )
     }
 
+    const kitchens = [
+      ...new Set([
+        ...readAppUserKitchenIds(membership.data),
+        locator.kitchenId,
+      ]),
+    ]
+    const workspaceState = {
+      kitchens,
+      primary_kitchen: locator.kitchenId,
+    }
+    if (membership.exists) {
+      mutations.update(memberships, current.uid, workspaceState)
+    } else {
+      mutations.create(memberships, current.uid, {
+        ...initialMembership(current.uid, 'user'),
+        ...workspaceState,
+      })
+    }
+
     return {
       ok: true,
       kitchen_id: locator.kitchenId,
@@ -262,7 +270,8 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
   if (!current.canCreate)
     fail(403, 'Kitchen creation is disabled for this App.')
   const requestedKitchenId = text(body.kitchen_id)
-  const existingKitchenIds = await readUserKitchenIds(current.uid)
+  const currentMembership = await current.membershipRef.get()
+  const existingKitchenIds = readAppUserKitchenIds(currentMembership.data())
   const requestedRoot = requestedKitchenId
     ? await current.db.collection('kitchens').doc(requestedKitchenId).get()
     : null
@@ -306,11 +315,7 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
       }
     }
 
-    await assertKitchenCreationAllowance(
-      mutations,
-      current.uid,
-      membership.data
-    )
+    await assertKitchenCreationAllowance(membership.data)
 
     const slug = normalizeSlug(name) || kitchenId.toLowerCase()
     const created = serverAuditStamp({ by: current.uid, appId: current.appId })
@@ -344,6 +349,21 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         userId: current.uid,
       })
     )
+    const kitchens = [
+      ...new Set([...readAppUserKitchenIds(membership.data), kitchenId]),
+    ]
+    const workspaceState = {
+      kitchens,
+      primary_kitchen: kitchenId,
+    }
+    if (membership.exists) {
+      mutations.update(memberships, current.uid, workspaceState)
+    } else {
+      mutations.create(memberships, current.uid, {
+        ...initialMembership(current.uid, 'user'),
+        ...workspaceState,
+      })
+    }
 
     return {
       ok: true as const,

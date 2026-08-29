@@ -12,6 +12,12 @@
         <WorkspaceProjectInfo />
       </template>
     </LayoutsWorkspaceNavbar>
+    <!-- 03 Workspace — select the active Project or create one when the subscription permits. -->
+    <WorkspaceProject
+      :state="state"
+      :derived="derived"
+      :refresh="actions.refresh"
+    />
     <!-- 01 Hero — define the Project page promise, audience and intended outcome. -->
     <WorkspaceProjectHero />
     <!-- 02 AI — provide the page-scoped ProjectAI entry with only the context and actions this page proves. -->
@@ -19,8 +25,6 @@
       :workspace-state="state"
       :workspace-derived="derived"
     />
-    <!-- 03 Workspace — prove Project state, selection, empty state and primary actions. -->
-    <WorkspaceProject :state="state" :derived="derived" />
     <!-- 04 Operations — curate only the main Project index Operations; capability pages own WorkspaceProjectXOperations. -->
     <WorkspaceProjectOperations />
     <!-- 05 Tools — expose only bounded Tools beneath the featured capabilities; capability pages own WorkspaceProjectXTools. -->
@@ -35,7 +39,7 @@ import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/use
 import { useProjectWorkspaceIndex } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
 import { appMeta } from '../meta'
 
-const { state, derived } = useProjectWorkspaceIndex()
+const { state, derived, actions } = useProjectWorkspaceIndex()
 
 definePageMeta({
   layout: 'workspace',
