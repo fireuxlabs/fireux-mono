@@ -240,11 +240,13 @@ export async function run(ctx) {
   if (
     !projectWorkspaceSelector.includes('useProjectCollection({') ||
     !projectWorkspaceSelector.includes('props.canSelectMultiple') ||
+    !projectWorkspaceSelector.includes('props.projectIds.length > 1') ||
     !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
-    !kitchenWorkspaceSelector.includes('props.canSelectMultiple')
+    !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
+    !kitchenWorkspaceSelector.includes('props.hasMultipleKitchens')
   ) {
     violations.push(
-      'Project and Kitchen full Entity choices must remain deferred to their Business selectors'
+      'Project and Kitchen choices must stay deferred until Business selection or a non-Business primary-change request needs them'
     )
   }
 

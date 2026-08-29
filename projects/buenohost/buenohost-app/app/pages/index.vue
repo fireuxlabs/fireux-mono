@@ -6,6 +6,7 @@
       description="Manage reservations, guest information and property operations."
     />
     <WorkspaceProperty :state="state" :derived="derived" />
+    <WorkspacePropertyTools :state="state" :derived="derived" />
   </UDashboardPanel>
 </template>
 

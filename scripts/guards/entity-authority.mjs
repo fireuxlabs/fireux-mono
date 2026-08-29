@@ -895,6 +895,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/server/project/index/create.ts'
   )
+  const projectPrimaryApi = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/project/index/primary.ts'
+  )
   const projectCreateClient = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceCreate.ts'
@@ -987,9 +991,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     projectCreateApi,
     /\.runTransaction\(|useFirestore|setDoc|addDoc/
   )
+  assert.match(projectPrimaryApi, /subscription === ['"]business['"]/)
+  assert.match(projectPrimaryApi, /primary_project:\s*projectId/)
+  assert.match(projectPrimaryApi, /fireuxUserNotificationsTarget\(admin\.id\)/)
+  assert.match(projectPrimaryApi, /Primary Project change requested/)
+  assert.match(projectPrimaryApi, /updated:\s*true/)
   assert.match(projectCreateClient, /\/api\/internal\/control\/projects/)
   assert.match(projectCreateClient, /useWorkspace\(['"]project['"]\)/)
-  assert.match(projectCreateClient, /workspace\.activate\(response\.project_id\)/)
+  assert.match(
+    projectCreateClient,
+    /workspace\.activate\(response\.project_id\)/
+  )
   assert.doesNotMatch(projectCreateClient, /useProjectWorkspace\(/)
   assert.match(projectCreateComponent, /await props\.refresh\?\.\(\)/)
   assert.doesNotMatch(
@@ -998,12 +1010,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     projectSelector,
-    /await \$fetch\(['"]\/api\/internal\/control\/projects\/primary['"][\s\S]*await props\.refresh\(\)[\s\S]*workspace\.activate\(/
+    /\/api\/internal\/control\/projects\/primary[\s\S]*response\.updated[\s\S]*await props\.refresh\(\)/
   )
   assert.match(
     kitchenSelector,
-    /await \$fetch\(['"]\/api\/workspace\/kitchen\/request-primary-change['"][\s\S]*await props\.refresh\(\)[\s\S]*workspace\.activate\(/
+    /\/api\/workspace\/kitchen\/request-primary-change[\s\S]*response\.updated[\s\S]*await props\.refresh\(\)/
   )
+  assert.doesNotMatch(projectSelector, /workspace\.activate\(selected/)
+  assert.doesNotMatch(kitchenSelector, /workspace\.activate\(selected/)
 
   const kitchenCreateForm = read(
     repoRoot,

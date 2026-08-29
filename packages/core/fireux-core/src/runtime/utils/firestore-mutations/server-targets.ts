@@ -220,6 +220,16 @@ function fireuxAppChildTarget(appId: string, key: string, collection: string) {
 
 export const fireuxAppUsersTarget = (appId: string) =>
   fireuxAppChildTarget(appId, 'fireux.apps.users', 'users')
+export const fireuxUserNotificationsTarget = (userId: string) => {
+  const user = segment(userId, 'userId')
+  return defineFirestoreMutationTarget({
+    key: 'fireux.users.notifications',
+    lane: 'server',
+    verbs,
+    database: { kind: 'named', databaseId: 'fireux' },
+    collectionPath: `users/${user}/notifications`,
+  })
+}
 export const fireuxProjectTeamMembersTarget = (projectId: string) => {
   const project = segment(projectId, 'projectId')
   return defineFirestoreMutationTarget({

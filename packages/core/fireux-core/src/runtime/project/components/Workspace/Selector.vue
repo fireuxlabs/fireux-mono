@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
+import { useToast } from '#imports'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useWorkspace } from '../../../composables/fireux/workspace/useWorkspace'
 import { useProjectCollection } from '../../composables/useProjectCollection'
@@ -22,15 +23,22 @@ import type { ProjectWorkspaceIndexState } from '../../composables/workspace/ind
 const props = defineProps<{
   project: ProjectWorkspaceIndexState['project']
   canSelectMultiple: boolean
+  projectIds: string[]
   refresh: () => Promise<unknown>
 }>()
 const workspace = useWorkspace('project')
 const { currentUser } = useAuth()
+const toast = useToast()
+const showChoices = computed(
+  () => props.canSelectMultiple || props.projectIds.length > 1
+)
 const targets = useProjectCollection({
-  filter: computed(() => (props.canSelectMultiple ? undefined : { ids: [] })),
+  filter: computed(() =>
+    showChoices.value ? { ids: props.projectIds } : { ids: [] }
+  ),
 })
 const projects = computed(() =>
-  props.canSelectMultiple
+  showChoices.value
     ? targets.projects.value.map((item) => ({
         id: item.id,
         name: item.name,
@@ -66,16 +74,24 @@ watchEffect(() => {
 
 async function selectProject(projectId: string | number) {
   const selected = projects.value.find((item) => item.id === projectId)
-  if (!selected) return
+  if (!selected || selected.id === props.project.id) return
   const user = currentUser.value
-  if (props.canSelectMultiple && user) {
-    await $fetch('/api/internal/control/projects/primary', {
+  if (!user) return
+  const response = await $fetch<{ updated?: true; notified: number }>(
+    '/api/internal/control/projects/primary',
+    {
       method: 'POST',
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       body: { projectId: selected.id },
-    })
+    }
+  )
+  if (response.updated) {
     await props.refresh()
+    return
   }
-  workspace.activate(selected.id, selected.name, selected.tagline, selected.url)
+  toast.add({
+    title: 'Primary Project change requested',
+    description: 'An App administrator has been notified.',
+  })
 }
 </script>

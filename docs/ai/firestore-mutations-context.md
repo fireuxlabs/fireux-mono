@@ -62,6 +62,10 @@ Team surface, but Team is not the Workspace index authority. Free and
 Professional allow one Entity in their family, while Business allows multiple.
 FireUX Project creation is a named `fireux` Server command; ordinary
 clients call its fixed endpoint and never receive a Project Firestore writer.
+Kitchen and Project primary selection updates the AppUser field directly for
+Business. Free and Professional users with several retained ids submit a
+trusted administrator-notified request instead; client-only selection is never
+presented as a persisted primary change.
 The protected `scripts/migrate-app-user-workspace-index.mjs` command performs
 the one-time, preimage-backed legacy-source-to-AppUser index migration; runtime
 readers must not retain the retired source as a fallback after that cutover.

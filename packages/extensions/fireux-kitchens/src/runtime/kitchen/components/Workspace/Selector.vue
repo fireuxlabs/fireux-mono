@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
+import { useToast } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import type { KitchenWorkspaceIndexState } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
@@ -22,13 +23,18 @@ import { useKitchenWorkspaceChoices } from '../../composables/workspace/index/us
 const props = defineProps<{
   kitchen: KitchenWorkspaceIndexState['kitchen']
   canSelectMultiple: boolean
+  hasMultipleKitchens: boolean
   refresh: () => Promise<unknown>
 }>()
 const workspace = useWorkspace('kitchen')
 const { currentUser } = useAuth()
-const targets = useKitchenWorkspaceChoices(() => props.canSelectMultiple)
+const toast = useToast()
+const showChoices = computed(
+  () => props.canSelectMultiple || props.hasMultipleKitchens
+)
+const targets = useKitchenWorkspaceChoices(showChoices)
 const kitchens = computed(() =>
-  props.canSelectMultiple
+  showChoices.value
     ? targets.kitchens.value.map((item) => ({
         id: item.id,
         name: item.identity.display_name,
@@ -64,16 +70,24 @@ watchEffect(() => {
 
 async function selectKitchen(kitchenId: string | number) {
   const selected = kitchens.value.find((item) => item.id === kitchenId)
-  if (!selected) return
+  if (!selected || selected.id === props.kitchen.id) return
   const user = currentUser.value
-  if (props.canSelectMultiple && user) {
-    await $fetch('/api/workspace/kitchen/request-primary-change', {
+  if (!user) return
+  const response = await $fetch<{ updated?: true; notified: number }>(
+    '/api/workspace/kitchen/request-primary-change',
+    {
       method: 'POST',
       headers: { Authorization: `Bearer ${await user.getIdToken()}` },
       body: { kitchenId: selected.id },
-    })
+    }
+  )
+  if (response.updated) {
     await props.refresh()
+    return
   }
-  workspace.activate(selected.id, selected.name, selected.tagline, selected.url)
+  toast.add({
+    title: 'Primary Kitchen change requested',
+    description: 'An App administrator has been notified.',
+  })
 }
 </script>

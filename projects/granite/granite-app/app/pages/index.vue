@@ -15,7 +15,7 @@
     <!-- 04 Operations — curate only the main Portfolio index Operations. -->
     <WorkspacePortfolioOperations />
     <!-- 05 Tools — state the bounded Tool release surface truthfully. -->
-    <WorkspacePortfolioTools />
+    <WorkspacePortfolioTools :state="state" :derived="derived" />
     <!-- 06 Discovery — publish Portfolio literature and routes for this exact index. -->
     <WorkspacePortfolioDiscovery />
   </UDashboardPanel>

@@ -6,6 +6,7 @@
       description="Manage catalogues, ingredients and supply operations."
     />
     <WorkspaceSupplier :state="state" :derived="derived" />
+    <WorkspaceSupplierTools :state="state" :derived="derived" />
   </UDashboardPanel>
 </template>
 

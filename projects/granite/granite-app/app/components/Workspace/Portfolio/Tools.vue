@@ -1,13 +1,30 @@
 <template>
-  <section aria-labelledby="portfolio-tools" class="grid gap-1">
-    <h2
-      id="portfolio-tools"
-      class="m-0 text-2xl font-semibold text-highlighted"
-    >
-      Portfolio tools
-    </h2>
-    <p class="m-0 text-sm leading-6 text-muted">
-      No bounded Portfolio Tools are published on this index yet.
-    </p>
-  </section>
+  <WorkspaceEntityTools :tools="tools" />
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import type {
+  PortfolioWorkspaceIndexDerived,
+  PortfolioWorkspaceIndexState,
+} from 'fireux-properties/runtime/portfolio/composables/workspace/index/usePortfolioWorkspaceIndex'
+
+const props = defineProps<{
+  state: PortfolioWorkspaceIndexState
+  derived: PortfolioWorkspaceIndexDerived
+}>()
+
+const tools = computed(() =>
+  props.derived.hasSelection
+    ? [
+        {
+          id: 'portfolio.view',
+          label: 'View Portfolio',
+          description: 'Open the primary Portfolio.',
+          icon: 'i-lucide-eye',
+          to: '#workspace-entity-controls',
+        },
+      ]
+    : []
+)
+</script>

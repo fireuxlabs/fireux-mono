@@ -28,7 +28,7 @@
     <!-- 04 Operations — curate only the main Kitchen index Operations; capability pages own WorkspaceKitchenXOperations. -->
     <WorkspaceKitchenOperations />
     <!-- 05 Tools — expose only bounded Tools beneath the featured capabilities; capability pages own WorkspaceKitchenXTools. -->
-    <WorkspaceKitchenTools />
+    <WorkspaceKitchenTools :state="state" :derived="derived" />
     <!-- 06 Discovery — publish demand-led literature and SEO for this exact index; capability pages own WorkspaceKitchenXDiscovery. -->
     <WorkspaceKitchenDiscovery />
   </UDashboardPanel>

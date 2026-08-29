@@ -1,5 +1,5 @@
 <template>
-  <section aria-label="Current Portfolio">
+  <section id="workspace-entity-controls" aria-label="Current Portfolio">
     <div v-if="derived.outcome === 'pending'" class="flex items-center gap-4">
       <USkeleton class="size-12 rounded-full" />
       <div class="grid gap-2">

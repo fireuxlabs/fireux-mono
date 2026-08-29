@@ -133,8 +133,10 @@ migration verification, and protected Workspace consumer are complete.
 - No available Entity produces the Create state. One accessible Entity may
   become current automatically. Choosing among several is a User relationship
   action outside the baseline Workspace index. A Business selector may load
-  the bounded Entity choice projection when it renders; Free and Professional
-  do not load the full collection merely to show their primary Entity.
+  the bounded Entity choice projection when it renders. Free and Professional
+  load choices only for the exceptional case where their AppUser relationship
+  already contains several Entity ids, so they can request an administrator to
+  change the primary Entity without changing browser selection state.
 - Capability runtimes receive the established active Entity id and load only
   their own records. They do not reconstruct an Entity directory or another
   active-Entity authority.
@@ -155,6 +157,10 @@ migration verification, and protected Workspace consumer are complete.
   the User array and primary id, and may create the initial Team record for the
   separate Team surface. Free and Professional allow one Entity in the family;
   Business allows multiple.
+- Primary selection is persistent AppUser state. Business users may change it
+  directly among their available Entity ids. Free and Professional users with
+  several legacy ids submit an administrator-notified change request; the
+  Workspace does not pretend the requested Entity became primary.
 - Visible `canWrite` state never replaces server or Rules enforcement.
 - Workspace onboarding uses a fixed-runtime family endpoint and one trusted
   transaction for root, the caller's Team authority, and any required parent
