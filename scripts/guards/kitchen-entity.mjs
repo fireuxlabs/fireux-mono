@@ -134,6 +134,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}components/Onboarding/ShellCreate.vue`
   )
+  const kitchenOnboarding = read(
+    repoRoot,
+    `${kitchenBase}components/Onboarding.vue`
+  )
   const kitchenCreate = read(
     repoRoot,
     `${kitchenBase}composables/firestore/mutations/useKitchenCreate.ts`
@@ -157,6 +161,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen must retain only its minimal shell identity; Place and capability data belong to their own models.'
   )
   assert.match(workspaceCreate, /to="\/workspace\/kitchen\/create"/)
+  const workspaceCreatePage = read(
+    repoRoot,
+    `${base}pages/workspace/kitchen/create.vue`
+  )
+  assert.match(
+    workspaceCreatePage,
+    /const returnTo = '\/'/,
+    'Workspace Kitchen onboarding must return to the Kitchen Workspace index.'
+  )
   assert.equal(
     existsSync(
       file(repoRoot, `${kitchenBase}components/Workspace/Create/Form.vue`)
@@ -177,6 +190,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(shellCreate, /@submit\.prevent="submit"/)
   assert.match(shellCreate, /intent:\s*'create_shell'/)
   assert.doesNotMatch(shellCreate, /watch\(|usePlaceSearch|currentUser\.uid/)
+  assert.match(
+    kitchenOnboarding,
+    /await appContext\.refresh\(\)[\s\S]*setKitchenWorkspaceSelection\(\{ kitchenId: result\.kitchen_id \}\)[\s\S]*await router\.push\(resolvedReturnTo\.value\)/,
+    'Completed Kitchen onboarding must refresh canonical AppUser state before selecting and returning.'
+  )
   assert.match(onboardingCommands, /body\.intent !== 'create_shell'/)
   assert.match(
     onboardingCommands,
@@ -195,8 +213,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     false,
     'Workspace Entity creation identity belongs to Core, not Kitchen.'
   )
-  assert.match(onboardingCommands, /primary_kitchen:\s*kitchenId/)
-  assert.match(onboardingCommands, /primary_kitchen:\s*locator\.kitchenId/)
+  assert.equal(
+    onboardingCommands.match(/resolveAppUserKitchenState\(/g)?.length,
+    2,
+    'Place and shell Kitchen onboarding must share the tested AppUser state projection.'
+  )
   assert.doesNotMatch(
     onboardingCommands,
     /collection\(['"]kitchens['"]\)\.doc\(\)\.id/
@@ -428,10 +449,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detailPage, /<KitchenDetail v-if="kitchen" :kitchen="kitchen"/)
   assert.doesNotMatch(detailPage, /useKitchenFetch|firebase\/firestore/)
   assert.doesNotMatch(detailPage, /:place=|:presentation=|:fulfilment=/)
-  assert.match(detailReader, /firestoreFetchDoc<Kitchen>/)
-  assert.match(detailReader, /firestoreFetchDoc<Place>/)
-  assert.match(detailReader, /lastGoodKitchen/)
-  assert.match(detailReader, /lastGoodPlace/)
+  assert.doesNotMatch(detailReader, /firestoreFetchDoc<Kitchen>/)
+  assert.doesNotMatch(detailReader, /firestoreFetchDoc<Place>/)
   assert.doesNotMatch(detailModel, /PublicKitchenDetail/)
   assert.match(operatorPanel, /\buseKitchenWorkspaceKitchens\s*\(/)
   assert.doesNotMatch(operatorPanel, /useKitchenFetch|firebase\/firestore/)

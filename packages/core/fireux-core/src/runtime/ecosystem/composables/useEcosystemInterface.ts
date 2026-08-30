@@ -77,7 +77,7 @@ function buildCard(
     imageUrl: text(target.src) || text(target.image_url),
     avatarText: text(target.text) || name || id,
     title: name || id,
-    subtitle: id,
+    subtitle: text(target.description),
     meta: `${apps} app${apps === 1 ? '' : 's'}`,
     badges: [
       labelize(text(target.status)),

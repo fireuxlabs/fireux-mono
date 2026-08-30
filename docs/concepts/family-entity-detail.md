@@ -72,12 +72,11 @@ Every Entity Detail route should:
   gallery, and hours while Kitchen retains menus and operational children and
   Supplier retains catalogue and supply capabilities. Place detail stays
   ignorant of Kitchen and Supplier capabilities.
-- Place, Kitchen, and Supplier now prove the live detail contract. Their server
-  endpoint owns the initial read and truthful route status; the browser then
-  exact-subscribes to the already-resolved canonical root records and retains
-  the last good values through transient listener failures. Kitchen returns
-  canonical `kitchen` and `place` objects plus a named joined `presentation`;
-  Supplier returns canonical `supplier` and `place` objects.
+- Place and Supplier retain their established live detail behavior. Kitchen's
+  public Detail uses its authorized server endpoint only: the response returns
+  canonical `kitchen` and `place` objects plus a named joined `presentation`,
+  and the public browser does not open a second direct listener against the
+  protected Kitchen root.
 
 ## Emerging page composition
 

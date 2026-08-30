@@ -630,7 +630,7 @@ function validateEntityDetailPresentation(repoRoot, violations) {
       'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
       [
         '<EcosystemDetail v-if="ecosystem" :ecosystem="ecosystem"',
-        'useEcosystemDetail',
+        'usePlatformEcosystemDetail',
       ],
     ],
     [

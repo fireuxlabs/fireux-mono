@@ -19,6 +19,8 @@ export type UseSeoOptions = {
   description?: MaybeRefOrGetter<string | null | undefined>
   path: MaybeRefOrGetter<string | null | undefined>
   image?: MaybeRefOrGetter<string | null | undefined>
+  imageHeight?: MaybeRefOrGetter<number | null | undefined>
+  imageWidth?: MaybeRefOrGetter<number | null | undefined>
   robots?: MaybeRefOrGetter<string | null | undefined>
   jsonLd?: MaybeRefOrGetter<FireuxSeoJsonLd | null | undefined>
   jsonLdBuilder?: (
@@ -251,6 +253,8 @@ export function useSeo(options: UseSeoOptions) {
     ogDescription: () => description.value || undefined,
     ogUrl: () => canonicalUrl.value || undefined,
     ogImage: () => image.value || undefined,
+    ogImageHeight: () => toValue(options.imageHeight) || undefined,
+    ogImageWidth: () => toValue(options.imageWidth) || undefined,
     robots: () => robots.value,
   })
 

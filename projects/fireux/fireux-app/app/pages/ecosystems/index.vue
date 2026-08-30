@@ -39,6 +39,8 @@ useSeo({
   description: 'Browse published FireUX Ecosystems and their connected Apps.',
   path: '/ecosystems',
   image: '/img/app/cover.png',
+  imageHeight: 720,
+  imageWidth: 1280,
   jsonLdBuilder: (context) =>
     buildPublicPageJsonLd({
       canonicalUrl: context.canonicalUrl,

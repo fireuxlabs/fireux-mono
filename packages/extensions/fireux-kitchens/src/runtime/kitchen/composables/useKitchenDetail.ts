@@ -1,17 +1,8 @@
 // Concurrent edit — 2026-07-24 18:04 CEST — Kitchen public family: resolve exact detail through the server projection.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
-import {
-  computed,
-  shallowRef,
-  unref,
-  watch,
-  type ComputedRef,
-  type MaybeRef,
-} from 'vue'
+import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { normalizePlace } from 'fireux-places/runtime/place/utils/normalize-place'
 import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type {
   KitchenDetailPresentation,
@@ -19,7 +10,6 @@ import type {
 } from '../models/kitchen-detail.model.ts'
 import type { Kitchen } from '../models/kitchen.model.ts'
 import { resolveKitchenDetailPresentation } from '../utils/kitchen-detail-presentation.ts'
-import { normalizeKitchen } from '../utils/normalize-kitchen.ts'
 
 export type KitchenDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
 
@@ -77,63 +67,8 @@ export function useKitchenDetail(
   const loadedPlace = computed<Place | null>(() =>
     loadedKitchen.value ? state.data.value?.place || null : null
   )
-  const liveKitchenId = computed(() =>
-    import.meta.client ? loadedKitchen.value?.id || '' : ''
-  )
-  const livePlaceId = computed(() =>
-    import.meta.client ? loadedPlace.value?.id || '' : ''
-  )
-  const { firestoreFetchDoc } = useFirestoreRead()
-  const liveKitchenRead = firestoreFetchDoc<Kitchen>(
-    'kitchens',
-    liveKitchenId
-  )
-  const livePlaceRead = firestoreFetchDoc<Place>(
-    'places',
-    livePlaceId
-  )
-  const livePlace = computed(() =>
-    normalizePlace(livePlaceId.value, livePlaceRead.value)
-  )
-  const liveKitchen = computed(() =>
-    normalizeKitchen(liveKitchenId.value, liveKitchenRead.value, livePlace.value)
-  )
-  const lastGoodKitchen = shallowRef<Kitchen | null>(null)
-  const lastGoodPlace = shallowRef<Place | null>(null)
-  watch(
-    loadedKitchen,
-    (loaded: Kitchen | null) => {
-      if (loaded) lastGoodKitchen.value = loaded
-    },
-    { immediate: true }
-  )
-  watch(
-    liveKitchen,
-    (live: Kitchen | null) => {
-      if (live) lastGoodKitchen.value = live
-    },
-    { immediate: true }
-  )
-  watch(
-    loadedPlace,
-    (loaded: Place | null) => {
-      if (loaded) lastGoodPlace.value = loaded
-    },
-    { immediate: true }
-  )
-  watch(
-    livePlace,
-    (live: Place | null) => {
-      if (live) lastGoodPlace.value = live
-    },
-    { immediate: true }
-  )
-  const kitchen = computed(
-    () => lastGoodKitchen.value || loadedKitchen.value || liveKitchen.value
-  )
-  const place = computed(
-    () => lastGoodPlace.value || loadedPlace.value || livePlace.value
-  )
+  const kitchen = loadedKitchen
+  const place = loadedPlace
   const presentation = computed<KitchenDetailPresentation | null>(() => {
     const base = state.data.value?.presentation
     return base && kitchen.value && place.value

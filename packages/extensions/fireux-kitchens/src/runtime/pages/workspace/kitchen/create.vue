@@ -43,11 +43,7 @@ const existingRootId = computed(() =>
 const canEnterCreate = computed(
   () => canCreate.value || Boolean(existingRootId.value)
 )
-const returnTo = computed(() =>
-  existingRootId.value
-    ? '/workspace/kitchen/overview'
-    : '/workspace/kitchen/identity'
-)
+const returnTo = '/'
 
 definePageMeta({
   layout: 'workspace',

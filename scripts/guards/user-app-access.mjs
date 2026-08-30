@@ -281,7 +281,15 @@ export async function run({ repoRoot }) {
     /const \{ subscription, next, update \} = useSubscriptions\(subscriptionId\)/
   )
   assert.match(subscriptionControl, /useCurrentAppContext\(\)/)
-  assert.match(subscriptionControl, /v-if="membership"/)
+  assert.match(subscriptionControl, /v-if="showSubscription"/)
+  assert.match(
+    subscriptionControl,
+    /mounted\.value && \(Boolean\(membership\.value\) \|\| guest\.value\)/
+  )
+  assert.match(
+    subscriptionControl,
+    /membership\.value\?\.subscription \|\| \(guest\.value \? 'free' : undefined\)/
+  )
   assert.match(subscriptionControl, /await update\(next\.value\.id\)/)
   assert.doesNotMatch(
     subscriptionControl,
@@ -303,10 +311,7 @@ export async function run({ repoRoot }) {
   assert.match(subscriptionControl, /@click="toggle"/)
   assert.match(subscriptionControl, /:label="subscription\.label"/)
   assert.doesNotMatch(subscriptionControl, /appAccess/)
-  assert.doesNotMatch(
-    subscriptionControl,
-    /subscriptions\[0\]|onMounted|mounted/
-  )
+  assert.doesNotMatch(subscriptionControl, /subscriptions\[0\]/)
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)
   assert.doesNotMatch(subscriptionControl, /<UButtonGroup/)

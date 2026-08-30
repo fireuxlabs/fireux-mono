@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useEcosystemDetail } from 'fireux-core/runtime/ecosystem/composables/useEcosystemDetail'
+import { usePlatformEcosystemDetail } from '../../composables/usePlatformEcosystemDetail'
 
 definePageMeta({
   layout: 'default',
@@ -17,6 +17,6 @@ definePageMeta({
 })
 
 const routeId = useRouteParam('id')
-const { ecosystem, ready } = useEcosystemDetail(routeId)
+const { ecosystem, ready } = usePlatformEcosystemDetail(routeId)
 await ready
 </script>

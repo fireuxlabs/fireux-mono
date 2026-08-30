@@ -4,6 +4,7 @@
       <CollectionCell
         :title="card.name"
         :description="card.shortAddress"
+        :image="card.imageUrl"
         :to="card.to"
       />
     </li>

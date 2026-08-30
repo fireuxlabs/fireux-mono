@@ -3,7 +3,8 @@
     <li v-for="card in cards" :key="card.to || card.id">
       <CollectionCell
         :title="card.title"
-        :description="card.subtitle || card.meta"
+        :description="[card.subtitle, card.meta].filter(Boolean).join(' · ')"
+        :image="card.imageUrl"
         :to="card.to"
       />
     </li>

@@ -615,6 +615,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue'
   )
+  const fireuxEcosystemDetailReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/composables/usePlatformEcosystemDetail.ts'
+  )
   const fireuxEcosystemDetail = read(
     repoRoot,
     'projects/fireux/fireux-app/app/components/Ecosystem/Detail.vue'
@@ -626,7 +630,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(coreAppsPage, /useApps\(\)/)
   assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(fireuxEcosystemsPage, /usePublishedPlatformEcosystemDirectory/)
-  assert.match(fireuxEcosystemDetailPage, /\buseEcosystemDetail\s*\(/)
+  assert.match(fireuxEcosystemDetailPage, /\busePlatformEcosystemDetail\s*\(/)
+  assert.match(fireuxEcosystemDetailReader, /usePlatformDirectory\(\)/)
+  assert.match(fireuxEcosystemDetailReader, /computed<Ecosystem \| null>/)
   assert.match(fireuxEcosystemDetailPage, /<EcosystemDetail/)
   assert.match(fireuxEcosystemDetailPage, /:ecosystem="ecosystem"/)
   assert.doesNotMatch(
@@ -634,10 +640,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /EcosystemDirectoryEntry|PlatformDirectoryResponse|:apps=|:project=/
   )
   assert.match(fireuxEcosystemDetail, /ecosystem:\s*Ecosystem/)
-  assert.match(
-    fireuxEcosystemDetailApps,
-    /useApps\('\/api\/platform\/apps'\)/
-  )
+  assert.match(fireuxEcosystemDetailApps, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(
     fireuxEcosystemDetailApps,
     /allApps\.value\.filter\(\(app\) => app\.ecosystem_id === props\.ecosystem\.id\)/
@@ -1109,15 +1112,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(kitchenWorkspaceIndex, /v-if="derived\.canCreate"/)
   assert.doesNotMatch(kitchenWorkspaceIndex, /incompleteKitchen|placeId/)
-  assert.match(
-    kitchenOnboardingCommands,
-    /primary_kitchen:\s*locator\.kitchenId/
+  assert.equal(
+    kitchenOnboardingCommands.match(/resolveAppUserKitchenState\(/g)?.length,
+    2
   )
   assert.match(kitchenOnboardingCommands, /createKitchenShell/)
   assert.match(kitchenOnboardingCommands, /body\.intent !== 'create_shell'/)
   assert.match(kitchenOnboardingCommands, /intent:\s*'use_source'/)
   assert.match(kitchenOnboardingCommands, /resolveWorkspaceEntityCreationId/)
-  assert.match(kitchenOnboardingCommands, /primary_kitchen:\s*kitchenId/)
+  assert.match(
+    kitchenOnboardingCommands,
+    /const workspaceState = resolveAppUserKitchenState\([\s\S]*?if \(createdRoot\)/,
+    'Place-backed onboarding must resolve AppUser capacity before scheduling Kitchen creation.'
+  )
+  assert.match(
+    kitchenOnboardingCommands,
+    /const workspaceState = resolveAppUserKitchenState\([\s\S]*?if \(anyShellRecord\)/,
+    'Shell onboarding must resolve AppUser capacity before scheduling shell writes.'
+  )
   assert.doesNotMatch(
     kitchenOnboardingCommands,
     /collection\(['"]kitchens['"]\)\.doc\(\)\.id/
