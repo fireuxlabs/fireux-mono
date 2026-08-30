@@ -27,7 +27,6 @@
             variant="soft"
           />
           <UButton
-            v-if="editTo"
             :to="editTo"
             label="Open editor"
             icon="i-lucide-pencil"
@@ -69,16 +68,16 @@
         </dl>
 
         <UserAppMembershipEdit
-          v-if="canManage && onSetSubscription"
-          :display-name="displayName"
+          v-if="canManage"
+          :display-name="user.display_name"
           :membership="membership"
           :pending="subscriptionActionPending"
-          :on-set-subscription="onSetSubscription"
+          :on-set-subscription="setSubscription"
         />
       </template>
 
       <p v-else class="text-sm text-muted">
-        No {{ appName }} membership record exists for {{ displayName }}. This is
+        No {{ appName }} membership record exists for {{ user.display_name }}. This is
         not the same as a Free subscription.
       </p>
     </div>
@@ -86,21 +85,58 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
+import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
+import { useToastify } from '../../composables/ui/useToastify'
 import type { UserAppMembershipRecord } from '../composables/useUserAppMembership'
+import { mutateAppMembership } from '../composables/firestore/utils/appMembershipMutation'
+import { useUser } from '../composables/useUser'
+import type { User } from '../models/user.model.ts'
 
 defineOptions({ name: 'UserAppMembership' })
 
 const props = defineProps<{
-  appName: string
-  displayName: string
+  user: User
   membership: UserAppMembershipRecord | null
-  canManage?: boolean
-  editTo?: string
-  subscriptionActionPending?: boolean
-  onSetSubscription?: (subscription: AppUserSubscription) => Promise<unknown>
 }>()
+
+const { appName } = useFireUXConfig()
+const { isAdmin, isDeveloper } = useUser()
+const canManage = computed(() => isAdmin.value || isDeveloper.value)
+const editTo = computed(
+  () => `/users/${encodeURIComponent(props.user.handle)}/edit`
+)
+const subscriptionActionPending = ref(false)
+const toast = useToastify()
+
+async function setSubscription(subscription: AppUserSubscription) {
+  const membership = props.membership
+  if (
+    !canManage.value ||
+    !membership ||
+    membership.subscription === subscription ||
+    subscriptionActionPending.value
+  ) {
+    return
+  }
+
+  subscriptionActionPending.value = true
+  try {
+    await mutateAppMembership({
+      action: 'set-subscription',
+      userId: membership.id,
+      subscription,
+    })
+    membership.subscription = subscription
+    toast.success(`${props.user.display_name} is now ${subscription}.`)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Subscription update failed: ${message}`)
+  } finally {
+    subscriptionActionPending.value = false
+  }
+}
 
 const roleLabel = computed(() => {
   if (!props.membership) return ''

@@ -100,12 +100,29 @@ import { computed } from 'vue'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
+import { useProjects } from 'fireux-core/runtime/project/composables/useProjects'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
+import { isDirectoryAppIndexable } from '../../../utils/directorySearchPolicy'
 
-const props = defineProps<{
-  app: App
-  project?: Project | null
-  ecosystem?: EcosystemDirectoryEntry | null
-}>()
+const props = defineProps<{ app: App }>()
+const { projects } = useProjects()
+const { data: directoryData } = usePlatformDirectory()
+const project = computed<Project | null>(
+  () =>
+    projects.value.find((entry) => entry.id === props.app.project_id) ?? null
+)
+const ecosystem = computed<EcosystemDirectoryEntry | null>(() => {
+  const id = props.app.ecosystem_id
+  return id
+    ? (directoryData.value?.ecosystems.find(
+        (entry: EcosystemDirectoryEntry) => entry.id === id
+      ) ?? null)
+    : null
+})
 
 const roleLabel = computed(() =>
   props.app.role === 'global'
@@ -127,6 +144,44 @@ const appHeroStyle = computed(() => ({
 const ignitionTo = computed(
   () => `/get-started?example=${encodeURIComponent(props.app.id)}`
 )
+const isIndexable = computed(() => isDirectoryAppIndexable(props.app.id))
+
+useSeo({
+  title: computed(() => `${props.app.name} · FireUX App`),
+  description: pageDescription,
+  path: computed(() => `/apps/${encodeURIComponent(props.app.id)}`),
+  image: computed(
+    () => props.app.media?.cover_url || props.app.media?.thumbnail_url
+  ),
+  robots: computed(() =>
+    isIndexable.value ? 'index, follow' : 'noindex, nofollow'
+  ),
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+      items: [
+        ...(project.value
+          ? [
+              {
+                name: project.value.name,
+                url: context.absoluteUrl(`/projects/${project.value.id}`),
+              },
+            ]
+          : []),
+        ...(ecosystem.value
+          ? [
+              {
+                name: ecosystem.value.name,
+                url: context.absoluteUrl(ecosystem.value.detail_url),
+              },
+            ]
+          : []),
+      ],
+    }),
+})
 </script>
 
 <style scoped src="../../../pages/apps/app-detail.css"></style>

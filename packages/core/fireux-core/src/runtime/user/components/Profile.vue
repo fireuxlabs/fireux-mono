@@ -74,22 +74,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserSubscription } from '../composables/useUserPermissions'
 import type { User } from '../models/user.model.ts'
+import { useUser } from '../composables/useUser'
 
-const props = withDefaults(
-  defineProps<{
-    user: User
-    isOwnProfile?: boolean
-    canEdit?: boolean
-    subscription?: UserSubscription | null
-  }>(),
-  {
-    isOwnProfile: false,
-    canEdit: false,
-    subscription: null,
-  }
-)
+const props = defineProps<{
+  user: User
+}>()
+
+const { user: viewer, subscription } = useUser()
+const isOwnProfile = computed(() => viewer.value?.id === props.user.id)
+const canEdit = isOwnProfile
 
 const bio = computed(() => props.user.bio.trim())
 const hasBio = computed(() => Boolean(bio.value))

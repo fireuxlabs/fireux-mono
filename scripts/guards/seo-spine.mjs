@@ -185,9 +185,7 @@ export async function run({ repoRoot }) {
 
   const fireuxPublicOverrides = [
     'projects/fireux/fireux-app/app/pages/apps/index.vue',
-    'projects/fireux/fireux-app/app/pages/apps/[id].vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
-    'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/misebox/explore.vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/werkbox/explore.vue',
     'projects/fireux/fireux-app/app/pages/solutions/index.vue',
@@ -233,8 +231,20 @@ export async function run({ repoRoot }) {
   )
   const fireuxAppDetail = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/pages/apps/[id].vue'
+    'projects/fireux/fireux-app/app/components/Directory/App/Detail.vue'
   )
+  const fireuxEcosystemDetail = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Directory/Ecosystem/Detail.vue'
+  )
+  for (const [name, source] of [
+    ['FireUX App Detail', fireuxAppDetail],
+    ['FireUX Ecosystem Detail', fireuxEcosystemDetail],
+  ]) {
+    if (!source.includes('useSeo({')) {
+      violations.push(`${name} must consume the shared SEO seam.`)
+    }
+  }
   for (const source of [fireuxDirectoryApi, fireuxDirectorySitemap]) {
     if (!source.includes('readPlatformDirectory')) {
       violations.push(
@@ -478,9 +488,7 @@ export async function run({ repoRoot }) {
   }
   for (const gate of ['readKitchenRelatedRecords', 'resolveKitchen']) {
     if (!kitchensIndex.includes(gate)) {
-      violations.push(
-        `Kitchen reader must retain the ${gate} read gate.`
-      )
+      violations.push(`Kitchen reader must retain the ${gate} read gate.`)
     }
   }
   if (kitchensSitemap.includes("collection('kitchens')")) {

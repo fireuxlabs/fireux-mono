@@ -63,21 +63,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFetch } from '#imports'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
+import { useKitchenDetail } from '../../composables/useKitchenDetail'
+import { useKitchenSeo } from '../../composables/useKitchenSeo'
 
-const props = defineProps<{
-  kitchen: Kitchen
-  place: Place
-  presentation: KitchenDetailPresentation
-  fulfilment: KitchenFulfilment
-  canEditPlace?: boolean
-}>()
+const props = defineProps<{ kitchen: Kitchen }>()
+const { presentation } = useKitchenDetail(computed(() => props.kitchen.slug))
 const displayKitchen = computed<KitchenDetailPresentation | null>(
-  () => props.presentation
+  () => presentation.value
 )
+const { isAdmin, isDeveloper } = useUser()
+const canEditPlace = computed(() => isAdmin.value || isDeveloper.value)
 const kitchenName = computed(() =>
   String(
     displayKitchen.value?.display_name ||
@@ -99,7 +99,24 @@ const detailStyle = computed(() => {
   const color = clean(displayKitchen.value?.media_backdrop_color)
   return color ? { '--fx-entity-media-bg': color } : undefined
 })
-const resolvedFulfilment = computed(() => props.fulfilment)
+const emptyFulfilment: KitchenFulfilment = {
+  delivery_zones: [],
+  payment_methods: [],
+}
+const fulfilmentPath = computed(() =>
+  displayKitchen.value?.slug
+    ? `/api/kitchens/${encodeURIComponent(displayKitchen.value.slug)}/fulfilment`
+    : ''
+)
+const { data: fulfilmentData } = useFetch<KitchenFulfilment>(fulfilmentPath, {
+  immediate: Boolean(fulfilmentPath.value),
+  watch: [fulfilmentPath],
+})
+const resolvedFulfilment = computed(
+  () => fulfilmentData.value || emptyFulfilment
+)
+
+useKitchenSeo(displayKitchen)
 </script>
 
 <style scoped src="./detail.css"></style>

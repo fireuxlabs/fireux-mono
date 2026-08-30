@@ -1,7 +1,8 @@
 <template>
   <UPageCard
+    v-if="canProvision"
     as="section"
-    :title="`Add a Kitchen for ${ownerDisplayName}`"
+    :title="`Add a Kitchen for ${user.display_name}`"
     description="Find the Place first, then create or connect its Kitchen for this App member."
     icon="i-lucide-chef-hat"
     variant="subtle"
@@ -11,14 +12,14 @@
         color="neutral"
         variant="soft"
         icon="i-lucide-shield-check"
-        :title="`Creating for ${ownerDisplayName}`"
+        :title="`Creating for ${user.display_name}`"
         description="You remain signed in as the administrator. The selected member receives the Kitchen relationship and Team access."
       />
 
       <KitchenOnboarding
         :key="sessionKey"
         mode="root"
-        :owner-user-id="ownerUserId"
+        :owner-user-id="user.id"
         :select-workspace-on-complete="false"
         :return-to="returnTo"
         :cancel-to="cancelTo"
@@ -29,23 +30,23 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
+import type { User } from 'fireux-core/runtime/user/models/user.model'
 import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model.ts'
 
 defineOptions({ name: 'KitchenAdminProvision' })
 
 const props = withDefaults(
   defineProps<{
-    ownerUserId: string
-    ownerDisplayName?: string
+    user: Pick<User, 'id' | 'handle' | 'display_name'>
     returnTo?: string
     cancelTo?: string
   }>(),
   {
-    ownerDisplayName: 'App member',
-    returnTo: '/dashboard/admin/kitchens',
-    cancelTo: '/dashboard/admin/kitchens',
+    returnTo: '',
+    cancelTo: '',
   }
 )
 
@@ -55,9 +56,16 @@ const emit = defineEmits<{
 
 const toast = useToastify()
 const sessionKey = ref(0)
+const { isAdmin, isDeveloper } = useUser()
+const canProvision = computed(() => isAdmin.value || isDeveloper.value)
+const userPath = computed(
+  () => `/users/${encodeURIComponent(props.user.handle)}`
+)
+const returnTo = computed(() => props.returnTo || userPath.value)
+const cancelTo = computed(() => props.cancelTo || userPath.value)
 
 async function onCreated(result: KitchenOnboardingCompleteResult) {
-  toast.success(`Kitchen provisioned for ${props.ownerDisplayName}`)
+  toast.success(`Kitchen provisioned for ${props.user.display_name}`)
   emit('created', result)
   await nextTick()
   sessionKey.value += 1

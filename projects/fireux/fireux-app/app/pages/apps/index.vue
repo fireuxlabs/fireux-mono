@@ -53,7 +53,7 @@ useSeo({
         .filter((app) => isDirectoryAppIndexable(app.id))
         .map((app) => ({
           name: app.name,
-          url: context.absoluteUrl(app.detail_url),
+          url: context.absoluteUrl(`/apps/${encodeURIComponent(app.id)}`),
         })),
     }),
 })

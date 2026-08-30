@@ -315,15 +315,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
   assert.match(detail, /kitchen:\s*Kitchen/)
-  assert.match(detail, /place:\s*Place/)
-  assert.match(detail, /presentation:\s*KitchenDetailPresentation/)
-  assert.match(detail, /fulfilment:\s*KitchenFulfilment/)
+  assert.doesNotMatch(detail, /place:\s*Place/)
+  assert.doesNotMatch(detail, /presentation:\s*KitchenDetailPresentation/)
+  assert.doesNotMatch(detail, /fulfilment:\s*KitchenFulfilment/)
+  assert.match(detail, /\buseKitchenDetail\s*\(/)
+  assert.match(detail, /\buseKitchenSeo\s*\(/)
   assert.match(
     detail,
     /\/places\/\$\{encodeURIComponent\(kitchen\.id\)\}\/edit/
   )
   assert.match(detail, /KitchenDetailSproochli/)
-  assert.match(detailPage, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
+  assert.match(detail, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
   assert.doesNotMatch(identityReader, /readKitchenSproochliConfig/)
   assert.match(detailApi, /readKitchenSproochliAttachment/)
   assert.match(identityReader, /normalizeKitchen/)
@@ -353,12 +355,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     false
   )
   assert.match(detailPage, /\buseKitchenDetail\s*\(/)
-  assert.match(detailPage, /class="kitchen-detail-route"/)
+  assert.match(detailPage, /<KitchenDetail v-if="kitchen" :kitchen="kitchen"/)
   assert.doesNotMatch(detailPage, /useKitchenFetch|firebase\/firestore/)
-  assert.match(detailPage, /:kitchen="kitchen"/)
-  assert.match(detailPage, /:place="place"/)
-  assert.match(detailPage, /:presentation="presentation"/)
-  assert.match(detailPage, /:fulfilment="fulfilment"/)
+  assert.doesNotMatch(detailPage, /:place=|:presentation=|:fulfilment=/)
   assert.match(detailReader, /firestoreFetchDoc<Kitchen>/)
   assert.match(detailReader, /firestoreFetchDoc<Place>/)
   assert.match(detailReader, /lastGoodKitchen/)

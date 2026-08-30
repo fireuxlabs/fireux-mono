@@ -19,10 +19,10 @@ entity-level reasons that route identity and page composition differ.
 
 Every Entity Detail route should:
 
-- Return the canonical Entity under its real name, plus explicitly named
-  related Entities or Records required by the page.
-- Acquire the canonical Entity once, then pass that whole record and any
-  separately named relationships into an Entity-owned detail component.
+- Acquire the canonical Entity once and pass that whole record into one
+  Entity-owned detail component.
+- Let Detail acquire and compose its bounded related capabilities when they
+  are not part of resolving the canonical route Entity.
 - Use the same canonical root type as its sibling Entity Collection Page. Do not
   create `PublicX`, `PublicXDetail`, or `projectPublicX` copies of root Entities.
 - Keep secrets, private account material, App access, Finance, Team internals,
@@ -41,13 +41,17 @@ Every Entity Detail route should:
   `PublicProfileSection` presentation. Their named `X/Cards/Profile` roots own
   domain content, icons, and section presence; profile tone is presentation
   only and never changes identity, transport, publication, or authority.
-- Canonical User detail is visibly composed in its route: the route acquires
-  the canonical User and the separately authorized AppUser membership, then
-  passes them to `UserProfile` and `UserAppMembership`. Missing membership is
-  not a Free subscription. The inline admin panel and `/users/:handle/edit`
-  reuse `UserAppMembershipEdit`; both routes retain the same trusted AppUser
-  mutation authority. Specialist profile pages remain with their owning domains
-  and are not inferred or registered through the User page.
+- Canonical User detail proves the one-object boundary: the route acquires the
+  canonical User and renders `<UserDetail v-if="user" :user="user" />`.
+  `UserDetail` owns the separately authorized AppUser membership read and
+  composes `UserProfile` and `UserAppMembership`. Profile, membership, and
+  App-owned capability components derive their own
+  viewer decisions, labels, links, pending state, and commands from the object
+  plus runtime context; the route does not spray those decisions through scalar
+  props. Missing membership is not a Free subscription. The inline admin panel
+  and `/users/:handle/edit` reuse `UserAppMembershipEdit`; both retain the same
+  trusted AppUser mutation authority. Specialist profile pages remain with
+  their owning domains and are not inferred or registered through the User page.
 - Place owns the reference venue identity presentation. Kitchen and Supplier
   may compose that named Place presentation after their server reader has
   resolved the canonical Place relationship; they do not copy Place fields or
@@ -64,6 +68,26 @@ Every Entity Detail route should:
 
 ## Emerging page composition
 
+The proving FL Detail boundary is one object-driven component:
+
+```text
+route acquires canonical Entity
+└── UPage
+    └── UPageBody
+        └── EntityDetail v-if="entity" :entity="entity"
+```
+
+The route owns identity resolution, the canonical Entity read, and the single
+Detail composition. Detail owns SEO, section order, presentation, navigation,
+viewer-context decisions, related capability reads, and bounded capability
+behavior. Derived labels, URLs, relationship records, visibility flags, pending
+flags, callbacks, and presentation configuration are not page-to-child props
+when Detail can derive or acquire them from the canonical Entity and runtime
+context. An upper App may own a same-purpose Detail
+component that composes the lower Detail and appends its genuine capability;
+the App route still renders one Detail component and Core remains unaware of
+the upper capability.
+
 The preferred order is:
 
 1. Header.
@@ -72,9 +96,9 @@ The preferred order is:
 4. Operator/actions surface when relevant.
 5. Further named Entity sections when the domain requires them.
 
-This order is a recommendation, not yet a guard-backed contract. Align detail
-pages opportunistically when they are touched; do not perform a blind
-repository-wide template rewrite.
+The one-object route boundary is guarded for the maintained App, User,
+Ecosystem, Project, Place, Kitchen, Job, Supplier, and Portfolio detail routes.
+Their internal section order remains Entity-owned.
 
 ## Current route identity
 
@@ -115,6 +139,7 @@ review.
 | Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                           |
 | Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
+| Menu route retains its projection adapter                              | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root, tenant, or Kitchen scope; `MenuRoute` resolves that grammar before the projection-owned Menu read                                    |
 
 ## Drift and decisions
 

@@ -64,6 +64,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type {
   Place,
   PlaceBusinessHoursDay,
@@ -71,7 +72,9 @@ import type {
 } from '../models/place.model.ts'
 
 defineOptions({ name: 'PlaceDetail' })
-const props = defineProps<{ place: Place; canEdit?: boolean }>()
+const props = defineProps<{ place: Place }>()
+const { isAdmin, isDeveloper } = useUser()
+const canEdit = computed(() => isAdmin.value || isDeveloper.value)
 
 const detailStyle = computed(() =>
   props.place.media_backdrop_color

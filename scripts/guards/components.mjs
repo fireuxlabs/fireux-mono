@@ -525,6 +525,59 @@ function validateCardSpecimen(repoRoot, violations) {
 }
 
 function validateEntityDetailPresentation(repoRoot, violations) {
+  const detailRoutes = new Map([
+    [
+      'packages/core/fireux-core/src/runtime/pages/apps/[id].vue',
+      '<AppDetail v-if="app" :app="app"',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/pages/users/[handle]/index.vue',
+      '<UserDetail v-if="user" :user="user"',
+    ],
+    [
+      'projects/misebox/misebox-app/app/pages/users/[handle]/index.vue',
+      '<UserDetail v-if="user" :user="user"',
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/apps/[id].vue',
+      '<DirectoryAppDetail v-if="app" :app="app"',
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
+      '<DirectoryEcosystemDetail v-if="ecosystem" :ecosystem="ecosystem"',
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/projects/[id].vue',
+      '<DirectoryProjectDetail v-if="project" :project="project"',
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/pages/places/[id]/index.vue',
+      '<PlaceDetail v-if="place" :place="place"',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/index.vue',
+      '<KitchenDetail v-if="kitchen" :kitchen="kitchen"',
+    ],
+    [
+      'packages/extensions/fireux-jobs/src/runtime/pages/jobs/[id].vue',
+      '<JobDetail v-if="job" :job="job"',
+    ],
+    [
+      'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue',
+      '<SupplierDetail v-if="supplier" :supplier="supplier"',
+    ],
+    [
+      'packages/extensions/fireux-properties/src/runtime/pages/portfolios/[id].vue',
+      '<PortfolioDetail v-if="portfolio" :portfolio="portfolio"',
+    ],
+  ])
+  for (const [routePath, contract] of detailRoutes) {
+    const source = readFileSync(path.join(repoRoot, routePath), 'utf8')
+    if (!source.includes(contract)) {
+      violations.push(`${routePath} (missing FL one-object Detail boundary)`)
+    }
+  }
+
   const consumers = new Map([
     [
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Cards/Cell.vue',
@@ -577,7 +630,8 @@ function validateEntityDetailPresentation(repoRoot, violations) {
   )
   if (
     supplierDetailSource.includes('useAsyncData') ||
-    !supplierDetailSource.includes('const place = props.place') ||
+    !supplierDetailSource.includes('useSupplierDetail(') ||
+    !supplierDetailSource.includes('supplier: Supplier') ||
     !supplierDetailSource.includes('SupplierDetailState')
   ) {
     violations.push(
@@ -613,8 +667,7 @@ function validateEntityDetailPresentation(repoRoot, violations) {
   for (const contract of [
     'useSupplierDetail',
     'await ready',
-    'setResponseStatus(404)',
-    'setResponseStatus(statusCode.value || 503)',
+    '<SupplierDetail v-if="supplier" :supplier="supplier"',
   ]) {
     if (!supplierRouteSource.includes(contract)) {
       violations.push(

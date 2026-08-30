@@ -29,10 +29,11 @@
       </UCard>
 
       <KitchenAdminProvision
-        v-if="ownerUserId"
+        v-if="selectedOwner"
         :key="ownerUserId"
-        :owner-user-id="ownerUserId"
-        :owner-display-name="selectedOwnerName"
+        :user="selectedOwner"
+        return-to="/dashboard/admin/kitchens"
+        cancel-to="/dashboard/admin/kitchens"
         @created="onProvisioned"
       />
 
@@ -62,9 +63,15 @@ const memberOptions = computed(() =>
     }
   })
 )
-const selectedOwnerName = computed(() => {
+const selectedOwner = computed(() => {
   const member = memberships.value.find((item) => item.id === ownerUserId.value)
-  return member?.user?.display_name || member?.user?.handle || 'App member'
+  if (!member) return null
+  return {
+    id: member.id,
+    handle: member.user?.handle || '',
+    display_name:
+      member.user?.display_name || member.user?.handle || 'App member',
+  }
 })
 
 async function onProvisioned() {

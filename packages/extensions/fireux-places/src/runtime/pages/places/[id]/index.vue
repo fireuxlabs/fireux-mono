@@ -1,8 +1,7 @@
 <template>
   <UPage>
     <UPageBody>
-      <!-- 01 Detail — the route resolves the Place and passes the canonical record. -->
-      <PlaceDetail v-if="place" :place="place" :can-edit="isAdmin" />
+      <PlaceDetail v-if="place" :place="place" />
     </UPageBody>
   </UPage>
 </template>
@@ -19,7 +18,7 @@ definePageMeta({
 })
 
 const routeLocator = useRouteParam('id')
-const { place, ready, isAdmin } = usePlaceDetail({
+const { place, ready } = usePlaceDetail({
   locator: routeLocator.value,
 })
 await ready

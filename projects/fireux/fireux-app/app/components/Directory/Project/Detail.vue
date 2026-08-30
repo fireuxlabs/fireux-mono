@@ -90,12 +90,27 @@
 import { computed } from 'vue'
 import type { App } from 'fireux-core/runtime/app/models/app.model'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
+import { useApps } from 'fireux-core/runtime/app/composables/useApps'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
-const props = defineProps<{ project: Project; apps: App[] }>()
+const props = defineProps<{ project: Project }>()
+const { apps: allApps } = useApps('/api/platform/apps')
+const apps = computed<App[]>(() =>
+  allApps.value.filter((app) => app.project_id === props.project.id)
+)
 const appSectionDescription = computed(
   () =>
-    `${props.apps.length} ${props.apps.length === 1 ? 'App is' : 'Apps are'} connected through App.project_id.`
+    `${apps.value.length} ${apps.value.length === 1 ? 'App is' : 'Apps are'} connected through App.project_id.`
 )
+
+useSeo({
+  title: computed(() => `${props.project.name} · FireUX Project`),
+  description: computed(
+    () => props.project.description || 'View a FireUX Project.'
+  ),
+  path: computed(() => `/projects/${encodeURIComponent(props.project.id)}`),
+  image: computed(() => props.project.image_url || undefined),
+})
 </script>
 
 <style scoped src="../../../pages/projects/project-detail.css"></style>

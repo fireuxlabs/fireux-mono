@@ -615,17 +615,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue'
   )
+  const fireuxEcosystemDetail = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Directory/Ecosystem/Detail.vue'
+  )
   assert.match(coreAppsPage, /useApps\(\)/)
   assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(fireuxEcosystemsPage, /usePublishedPlatformEcosystemDirectory/)
-  assert.match(fireuxEcosystemDetailPage, /useApps\('\/api\/platform\/apps'\)/)
+  assert.match(fireuxEcosystemDetailPage, /<DirectoryEcosystemDetail/)
+  assert.match(fireuxEcosystemDetailPage, /:ecosystem="ecosystem"/)
+  assert.doesNotMatch(fireuxEcosystemDetailPage, /:apps=|:project=/)
+  assert.match(fireuxEcosystemDetail, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(
-    fireuxEcosystemDetailPage,
-    /apps\.value\.filter\(\(app\) => app\.ecosystem_id === ecosystem\.value\?\.id\)/
-  )
-  assert.match(
-    fireuxEcosystemDetailPage,
-    /<DirectoryEcosystemDetail[\s\S]*:apps="ecosystemApps"/
+    fireuxEcosystemDetail,
+    /allApps\.value\.filter\(\(app\) => app\.ecosystem_id === props\.ecosystem\.id\)/
   )
 
   const ownerAppDetailApi = read(
@@ -644,15 +647,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(ownerAppDetailApi, /ecosystem_id/)
   assert.match(platformAppDetailPage, /DetailResponse<App>/)
   assert.match(platformAppDetailPage, /\/api\/platform\/apps\//)
-  assert.match(platformAppDetailPage, /app\.value\?\.project_id/)
-  assert.match(platformAppDetailPage, /ecosystem_id/)
   assert.match(platformAppDetailPage, /<DirectoryAppDetail/)
+  assert.match(platformAppDetailPage, /:app="app"/)
+  assert.doesNotMatch(platformAppDetailPage, /:project=|:ecosystem=/)
   assert.match(platformAppDetailComponent, /app:\s*App/)
-  assert.match(platformAppDetailComponent, /project\?:\s*Project/)
-  assert.match(
-    platformAppDetailComponent,
-    /ecosystem\?:\s*EcosystemDirectoryEntry/
-  )
+  assert.match(platformAppDetailComponent, /useProjects\(\)/)
+  assert.match(platformAppDetailComponent, /usePlatformDirectory\(\)/)
   assert.doesNotMatch(
     platformAppDetailPage,
     /AppDirectoryEntry|PlatformDirectoryResponse/
@@ -814,9 +814,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/projects/[id].vue'
   )
+  const projectDirectoryDetailComponent = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Directory/Project/Detail.vue'
+  )
   assert.match(projectDirectoryDetail, /DetailResponse<Project>/)
   assert.match(projectDirectoryDetail, /\/api\/projects\//)
-  assert.match(projectDirectoryDetail, /app\.project_id/)
+  assert.match(projectDirectoryDetail, /<DirectoryProjectDetail/)
+  assert.match(projectDirectoryDetail, /:project="project"/)
+  assert.doesNotMatch(projectDirectoryDetail, /:apps=/)
+  assert.match(projectDirectoryDetailComponent, /app\.project_id/)
   assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
   assert.match(projectDirectory, /useProjects\(\)/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
@@ -1610,6 +1617,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/components/AppMembership.vue'
   )
+  const userDetail = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/Detail.vue'
+  )
+  const miseboxUserDetail = read(
+    repoRoot,
+    'projects/misebox/misebox-app/app/components/User/Detail.vue'
+  )
   const userAppMembershipEdit = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/components/AppMembership/Edit.vue'
@@ -1635,9 +1650,28 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userCollection, /users:\s*User\[\]/)
   assert.doesNotMatch(userCollection, /\buseFetch\s*\(|<DevDebugPanel/)
   assert.match(userDetailPage, /\buseUserDetail\s*\(/)
-  assert.match(userDetailPage, /<UserProfile/)
-  assert.match(userDetailPage, /<UserAppMembership/)
-  assert.doesNotMatch(userDetailPage, /<UserDetail|<DevDebugPanel/)
+  assert.match(userDetailPage, /<UserDetail v-if="user" :user="user"/)
+  assert.doesNotMatch(
+    userDetailPage,
+    /\buseUserAppMembership\s*\(|:membership=/
+  )
+  assert.doesNotMatch(
+    userDetailPage,
+    /:can-edit|:can-manage|:edit-to|:on-set-subscription/
+  )
+  assert.doesNotMatch(
+    userDetailPage,
+    /<UserProfile|<UserAppMembership|<DevDebugPanel/
+  )
+  assert.match(userDetail, /<UserProfile :user="user"/)
+  assert.match(userDetail, /<UserAppMembership/)
+  assert.match(userDetail, /user:\s*User/)
+  assert.match(userDetail, /\buseUserAppMembership\s*\(/)
+  assert.match(userDetail, /\buseSeo\s*\(/)
+  assert.doesNotMatch(
+    userDetail,
+    /membership:\s*UserAppMembershipRecord \| null/
+  )
   assert.match(userEditPage, /<UserAppMembershipEdit/)
   assert.match(userEditPage, /roles:\s*\['admin'\]/)
   assert.match(userAppMembership, /<UserAppMembershipEdit/)
@@ -1650,12 +1684,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userAppMembershipEdit, /isAppUserSubscription/)
   assert.match(appUserCollection, /enabled\?:\s*ComputedRef<boolean>/)
   assert.match(miseboxUserDetailPage, /\buseUserDetail\s*\(/)
-  assert.match(miseboxUserDetailPage, /<UserProfile/)
-  assert.match(miseboxUserDetailPage, /<UserAppMembership/)
-  assert.match(miseboxUserDetailPage, /<KitchenAdminProvision/)
-  assert.match(miseboxUserDetailPage, /:owner-user-id="user\.id"/)
+  assert.match(miseboxUserDetailPage, /<UserDetail v-if="user" :user="user"/)
+  assert.doesNotMatch(
+    miseboxUserDetailPage,
+    /\buseUserAppMembership\s*\(|:membership=/
+  )
+  assert.doesNotMatch(
+    miseboxUserDetailPage,
+    /:owner-user-id|:owner-display-name|:return-to|:cancel-to/
+  )
+  assert.match(miseboxUserDetail, /<CoreUserDetail/)
+  assert.match(miseboxUserDetail, /<KitchenAdminProvision/)
+  assert.match(miseboxUserDetail, /:user="user"/)
   assert.match(kitchenAdminProvision, /<KitchenOnboarding/)
-  assert.match(kitchenAdminProvision, /:owner-user-id="ownerUserId"/)
+  assert.match(kitchenAdminProvision, /user:\s*Pick<User/)
+  assert.match(kitchenAdminProvision, /:owner-user-id="user\.id"/)
   assert.match(kitchenAdminProvision, /:select-workspace-on-complete="false"/)
   assert.match(kitchenAdminPage, /<KitchenAdminProvision/)
   assert.doesNotMatch(kitchenAdminPage, /<KitchenOnboarding/)
