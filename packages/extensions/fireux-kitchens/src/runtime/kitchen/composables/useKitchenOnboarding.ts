@@ -76,6 +76,9 @@ export function useKitchenOnboarding() {
     try {
       const result = await completeKitchenOnboarding({
         place_id: currentPreview.place_id,
+        ...(currentPreview.owner_user_id
+          ? { owner_user_id: currentPreview.owner_user_id }
+          : {}),
         ...(currentPreview.existing
           ? { kitchen_id: currentPreview.kitchen_id }
           : {}),
@@ -103,6 +106,7 @@ export function useKitchenOnboarding() {
   async function loadSelection(input: {
     place_id?: string
     kitchen_id?: string
+    owner_user_id?: string
   }) {
     const sequence = ++selectionSequence
     onboarding.reset()
@@ -140,16 +144,22 @@ export function useKitchenOnboarding() {
     }
   }
 
-  const selectPlace = (placeId: string) => {
+  const selectPlace = (placeId: string, ownerUserId = '') => {
     const id = text(placeId)
     if (!id) return Promise.resolve(false)
-    return loadSelection({ place_id: id })
+    return loadSelection({
+      place_id: id,
+      ...(text(ownerUserId) ? { owner_user_id: text(ownerUserId) } : {}),
+    })
   }
 
-  const selectKitchen = (kitchenId: string) => {
+  const selectKitchen = (kitchenId: string, ownerUserId = '') => {
     const id = text(kitchenId)
     if (!id) return Promise.resolve(false)
-    return loadSelection({ kitchen_id: id })
+    return loadSelection({
+      kitchen_id: id,
+      ...(text(ownerUserId) ? { owner_user_id: text(ownerUserId) } : {}),
+    })
   }
 
   function clearSelection() {

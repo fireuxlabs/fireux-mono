@@ -151,14 +151,18 @@ try {
     const data = membership.data() || {}
     const ids = strings([...strings(data[idsField]), ...discovered])
     const storedPrimary = text(data[primaryField])
-    const legacyPrimary =
-      family === 'kitchen'
-        ? text(
-            (await db.doc(`users/${uid}/private/kitchen`).get()).get(
-              'primary_kitchen_id'
-            )
-          )
-        : ''
+    let legacyPrimary = ''
+    if (family === 'kitchen') {
+      const [legacyKitchen, legacyTargets] = await Promise.all([
+        db.doc(`users/${uid}/private/kitchen`).get(),
+        db.doc(`users/${uid}/private/targets`).get(),
+      ])
+      const storedLegacyPrimary = text(legacyKitchen.get('primary_kitchen_id'))
+      const retainedTargetIds = strings(legacyTargets.get('kitchen_ids'))
+      legacyPrimary =
+        storedLegacyPrimary ||
+        (retainedTargetIds.length === 1 ? retainedTargetIds[0] : '')
+    }
     const primary = ids.includes(storedPrimary)
       ? storedPrimary
       : ids.includes(legacyPrimary)

@@ -24,14 +24,28 @@
             class="min-w-0"
           />
 
-          <UBadge
-            size="xs"
-            :color="member.role === 'admin' || member.role === 'dev' ? 'primary' : 'neutral'"
-            variant="soft"
-            class="shrink-0"
-          >
-            {{ member.role }}
-          </UBadge>
+          <div class="flex shrink-0 items-center gap-2">
+            <UBadge
+              size="xs"
+              :color="member.role === 'admin' || member.role === 'dev' ? 'primary' : 'neutral'"
+              variant="soft"
+            >
+              {{ member.role }}
+            </UBadge>
+
+            <USelect
+              :model-value="member.subscription"
+              :items="subscriptionOptions"
+              value-key="value"
+              label-key="label"
+              size="sm"
+              class="w-32"
+              :loading="subscriptionActionUid === member.id"
+              :disabled="subscriptionActionUid !== null"
+              :aria-label="`Subscription for ${member.display_name}`"
+              @update:model-value="onSubscriptionChange(member, $event)"
+            />
+          </div>
         </li>
       </ul>
     </div>
@@ -41,15 +55,39 @@
 
 <script setup lang="ts">
 import type { UserCard } from '../../../../user/composables/useUserInterface'
+import type { AppUserSubscription } from '../../../models/app-user.model.ts'
 
 type MemberRow = {
   id: string
   role: 'admin' | 'user' | 'dev'
+  subscription: AppUserSubscription
   display_name: string
 }
 
-defineProps<{
+const props = defineProps<{
   rows: MemberRow[]
+  subscriptionActionUid: string | null
   pillFor: (row: MemberRow) => UserCard.Card
+  onSetSubscription: (value: {
+    uid: string
+    subscription: AppUserSubscription
+  }) => Promise<unknown>
 }>()
+
+const subscriptionOptions: Array<{
+  label: string
+  value: AppUserSubscription
+}> = [
+  { label: 'Free', value: 'free' },
+  { label: 'Premium', value: 'premium' },
+  { label: 'Business', value: 'business' },
+]
+
+async function onSubscriptionChange(
+  member: MemberRow,
+  subscription: AppUserSubscription
+) {
+  if (subscription === member.subscription) return
+  await props.onSetSubscription({ uid: member.id, subscription })
+}
 </script>

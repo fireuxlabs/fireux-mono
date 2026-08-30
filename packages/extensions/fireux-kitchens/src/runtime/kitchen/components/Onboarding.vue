@@ -144,6 +144,8 @@ const props = withDefaults(
     placeId?: string
     returnTo?: string
     cancelTo?: string
+    ownerUserId?: string
+    selectWorkspaceOnComplete?: boolean
   }>(),
   {
     mode: 'workspace',
@@ -151,6 +153,8 @@ const props = withDefaults(
     placeId: '',
     returnTo: '',
     cancelTo: '',
+    ownerUserId: '',
+    selectWorkspaceOnComplete: true,
   }
 )
 
@@ -249,7 +253,7 @@ const backLabel = computed(() => {
 })
 
 async function onPlaceReady(result: PlaceOnboardingResult) {
-  await selectPlace(result.id)
+  await selectPlace(result.id, props.ownerUserId)
 }
 
 async function onBack() {
@@ -267,7 +271,9 @@ async function onBack() {
 async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
-  setKitchenWorkspaceSelection({ kitchenId: completion.value.kitchen_id })
+  if (props.selectWorkspaceOnComplete) {
+    setKitchenWorkspaceSelection({ kitchenId: completion.value.kitchen_id })
+  }
   emit('created', completion.value)
   if (route.path !== resolvedReturnTo.value) {
     await router.push(resolvedReturnTo.value)
@@ -276,9 +282,9 @@ async function onContinue() {
 
 async function loadRouteSelection() {
   if (existingRootId.value) {
-    await selectKitchen(existingRootId.value)
+    await selectKitchen(existingRootId.value, props.ownerUserId)
   } else if (initialPlaceId.value) {
-    await selectPlace(initialPlaceId.value)
+    await selectPlace(initialPlaceId.value, props.ownerUserId)
   } else {
     clearSelection()
   }

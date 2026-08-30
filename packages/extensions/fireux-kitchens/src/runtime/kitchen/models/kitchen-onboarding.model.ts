@@ -9,6 +9,7 @@ export type KitchenOnboardingAction =
 export type KitchenOnboardingPreview = {
   kitchen_id: string
   place_id: string
+  owner_user_id?: string
   existing: boolean
   connected: boolean
   can_complete: boolean
@@ -22,6 +23,7 @@ export type KitchenOnboardingPreview = {
 export type KitchenOnboardingCompleteInput = {
   place_id: string
   kitchen_id?: string
+  owner_user_id?: string
 }
 
 export type KitchenOnboardingCompleteResult = {

@@ -36,6 +36,7 @@ export function useKitchenCreate() {
   async function previewKitchenOnboarding(input: {
     place_id?: string
     kitchen_id?: string
+    owner_user_id?: string
   }) {
     const result = await $fetch<KitchenOnboardingPreview>(
       '/api/kitchens/onboarding/preview',

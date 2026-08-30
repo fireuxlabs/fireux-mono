@@ -24,6 +24,7 @@ import {
 } from './onboarding-policy'
 import {
   readKitchenOnboardingActor as actor,
+  resolveKitchenOnboardingBeneficiaryUserId,
   type KitchenOnboardingFirestore as Firestore,
 } from './onboarding-actor'
 import { buildKitchenTeamMemberRecord } from '../../team/member-record.ts'
@@ -105,13 +106,22 @@ export async function previewKitchenOnboarding(
   event: H3Event,
   input: unknown
 ): Promise<KitchenOnboardingPreview> {
-  const body = request(input, ['place_id', 'kitchen_id'])
+  const body = request(input, ['place_id', 'kitchen_id', 'owner_user_id'])
   const current = await actor(event)
+  const ownerUserId = resolveKitchenOnboardingBeneficiaryUserId(
+    current,
+    body.owner_user_id
+  )
   const locator = await resolveLocator(current.db, body)
-  const [place, teamMember] = await Promise.all([
+  const [place, ownerMembership, teamMember] = await Promise.all([
     current.db.collection('places').doc(locator.placeId).get(),
-    current.db.doc(`kitchens/${locator.kitchenId}/team/${current.uid}`).get(),
+    current.db.doc(`apps/${current.appId}/users/${ownerUserId}`).get(),
+    current.db.doc(`kitchens/${locator.kitchenId}/team/${ownerUserId}`).get(),
   ])
+  const ownerRole = requireOnboardingMemberRole(
+    ownerMembership.exists,
+    ownerMembership.get('role')
+  )
   if (!place.exists) fail(409, 'The linked Place does not exist.')
   assertKitchenOnboardingPlaceDefaults(place.data() || {})
   if (!locator.kitchen && teamMember.exists) {
@@ -121,8 +131,8 @@ export async function previewKitchenOnboarding(
   const decision = kitchenOnboardingAccessDecision({
     kitchen: locator.kitchen,
     teamMember: teamMember.exists ? teamMember.data() || {} : null,
-    uid: current.uid,
-    role: current.role,
+    uid: ownerUserId,
+    role: ownerUserId === current.uid ? ownerRole : current.role,
     canCreate: current.canCreate,
   })
   const slug = text(locator.kitchen?.slug)
@@ -131,6 +141,7 @@ export async function previewKitchenOnboarding(
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
+    ...(ownerUserId !== current.uid ? { owner_user_id: ownerUserId } : {}),
     existing: Boolean(locator.kitchen),
     connected: teamMember.exists,
     ...decision,
@@ -144,19 +155,23 @@ export async function completeKitchenOnboarding(
   event: H3Event,
   input: unknown
 ): Promise<KitchenOnboardingCompleteResult> {
-  const body = request(input, ['place_id', 'kitchen_id'])
+  const body = request(input, ['place_id', 'kitchen_id', 'owner_user_id'])
   const current = await actor(event)
+  const ownerUserId = resolveKitchenOnboardingBeneficiaryUserId(
+    current,
+    body.owner_user_id
+  )
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
   const teamMembers = serverKitchenTeamMembersTarget(locator.kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [membership, user, place, root, teamMember] = await Promise.all([
-      mutations.read(memberships, current.uid),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, current.uid),
+      mutations.read(memberships, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
-      mutations.read(teamMembers, current.uid),
+      mutations.read(teamMembers, ownerUserId),
     ])
     const role = requireOnboardingMemberRole(
       membership.exists,
@@ -179,8 +194,8 @@ export async function completeKitchenOnboarding(
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
       teamMember: teamMember.exists ? teamMember.data || {} : null,
-      uid: current.uid,
-      role,
+      uid: ownerUserId,
+      role: ownerUserId === current.uid ? role : current.role,
       canCreate: current.canCreate,
     })
     if (!decision.can_complete || decision.action === 'request_access') {
@@ -192,9 +207,9 @@ export async function completeKitchenOnboarding(
     const placeName = text(place.data?.name)
     const slug =
       text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
-    const creatorName = text(user.data?.display_name) || current.authDisplayName
-    if (createdRoot && !creatorName) {
-      fail(409, 'Finish your User name before creating a Kitchen.')
+    const ownerName = text(user.data?.display_name)
+    if (createdTeamMember && !ownerName) {
+      fail(409, 'The Kitchen owner must finish their User name first.')
     }
 
     if (createdRoot) {
@@ -211,16 +226,16 @@ export async function completeKitchenOnboarding(
     if (createdTeamMember) {
       mutations.create(
         teamMembers,
-        current.uid,
+        ownerUserId,
         buildKitchenTeamMemberRecord({
           appId: current.appId,
           createdBy: current.uid,
           kitchenId: locator.kitchenId,
-          memberId: current.uid,
-          name: creatorName,
+          memberId: ownerUserId,
+          name: ownerName,
           role: createdRoot ? 'owner' : 'operator',
-          slug: normalizeSlug(creatorName) || 'team-member',
-          userId: current.uid,
+          slug: normalizeSlug(ownerName) || 'team-member',
+          userId: ownerUserId,
         })
       )
     }
@@ -236,10 +251,10 @@ export async function completeKitchenOnboarding(
       primary_kitchen: locator.kitchenId,
     }
     if (membership.exists) {
-      mutations.update(memberships, current.uid, workspaceState)
+      mutations.update(memberships, ownerUserId, workspaceState)
     } else {
-      mutations.create(memberships, current.uid, {
-        ...initialMembership(current.uid, 'user'),
+      mutations.create(memberships, ownerUserId, {
+        ...initialMembership(ownerUserId, 'user'),
         ...workspaceState,
       })
     }

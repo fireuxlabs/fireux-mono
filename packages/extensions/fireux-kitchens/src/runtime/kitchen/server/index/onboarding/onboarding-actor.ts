@@ -1,6 +1,7 @@
-import type { H3Event } from 'h3'
+import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import {
@@ -23,6 +24,26 @@ export type KitchenOnboardingActor = RuntimePolicy & {
   membershipRef: ReturnType<KitchenOnboardingFirestore['doc']>
   role: MemberRole
   canOwnMultipleWorkspaces: boolean
+}
+
+export function resolveKitchenOnboardingBeneficiaryUserId(
+  current: KitchenOnboardingActor,
+  value: unknown
+) {
+  const requested = text(value)
+  if (!requested) return current.uid
+  const userId = requireFirestoreDocumentId(requested, 'Owner User id')
+  if (
+    userId !== current.uid &&
+    current.role !== 'admin' &&
+    current.role !== 'dev'
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'App admin access is required to provision for another User.',
+    })
+  }
+  return userId
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {

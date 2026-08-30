@@ -46,7 +46,7 @@ import type { UserCard } from '../../../../user/composables/useUserInterface'
 
 type AdminRow = {
   id: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'dev'
   display_name: string
 }
 

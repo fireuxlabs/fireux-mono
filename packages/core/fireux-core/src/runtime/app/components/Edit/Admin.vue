@@ -81,7 +81,9 @@
 
         <AppEditSectionsMembers
           :rows="teamRows"
+          :subscription-action-uid="subscriptionActionUid"
           :pill-for="adminPillFor"
+          :on-set-subscription="setMemberSubscription"
           class="lg:col-span-2"
         />
       </div>
@@ -117,6 +119,7 @@ const {
   updateSocialLinks,
   handleJoinRequests,
   setAppUserAdmin,
+  setAppUserSubscription,
 } = useAppUpdate(appRef)
 const {
   memberships: users,
@@ -174,6 +177,7 @@ const handleUpdateSocialLinks = withToast(
 )
 
 const adminActionUid = ref<string | null>(null)
+const subscriptionActionUid = ref<string | null>(null)
 
 const teamRows = computed(() => {
   const byId = new Map(hydratedUsers.value.map((u) => [u.id, u]))
@@ -188,6 +192,7 @@ const teamRows = computed(() => {
           appUser?.role === 'admin' || appUser?.role === 'dev'
             ? appUser.role
             : 'user',
+        subscription: appUser?.subscription ?? 'free',
         display_name: hydrated?.display_name ?? id,
       }
     })
@@ -197,6 +202,7 @@ const teamRows = computed(() => {
       ): row is {
         id: string
         role: 'admin' | 'user' | 'dev'
+        subscription: 'free' | 'premium' | 'business'
         display_name: string
       } => Boolean(row)
     )
@@ -263,7 +269,7 @@ const cardForUser = (
 
 const adminPillFor = (row: {
   id: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'dev'
   display_name: string
 }) => {
   const hydrated = hydratedUsers.value.find((u) => u.id === row.id)
@@ -287,6 +293,23 @@ const removeAdmin = withToast(
   },
   'Removed admin',
   'Failed to remove admin'
+)
+
+const setMemberSubscription = withToast(
+  async (value: {
+    uid: string
+    subscription: 'free' | 'premium' | 'business'
+  }) => {
+    subscriptionActionUid.value = value.uid
+    try {
+      await setAppUserSubscription(value.uid, value.subscription)
+      await refreshPeople()
+    } finally {
+      subscriptionActionUid.value = null
+    }
+  },
+  'Subscription updated',
+  'Failed to update subscription'
 )
 
 const cardRef = computed(() => cardForUser)
