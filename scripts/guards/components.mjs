@@ -682,7 +682,7 @@ function validateEntityDetailPresentation(repoRoot, violations) {
       'MoleculesActionSurface',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Detail/Index.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Detail/Header.vue',
       'KitchenHeader',
     ],
     [
@@ -723,7 +723,8 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     supplierDetailSource.includes('useSupplierDetail(') ||
     !supplierDetailSource.includes('supplier: Supplier') ||
     !supplierDetailSource.includes('SupplierDetailHeader') ||
-    !supplierDetailSource.includes('SupplierDetailContent') ||
+    !supplierDetailSource.includes('SupplierDetailCatalogue') ||
+    !supplierDetailSource.includes('SupplierDetailDeliveryAreas') ||
     !supplierDetailSource.includes('SupplierDetailCompany') ||
     !supplierDetailSource.includes('SupplierDetailAdmin')
   ) {

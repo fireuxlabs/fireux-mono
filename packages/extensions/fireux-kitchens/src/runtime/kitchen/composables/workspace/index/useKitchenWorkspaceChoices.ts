@@ -13,7 +13,8 @@ import type {
 } from '../../../models/kitchen-index.model.ts'
 
 export function useKitchenWorkspaceChoices(
-  enabled: MaybeRefOrGetter<boolean>
+  enabled: MaybeRefOrGetter<boolean>,
+  kitchenIds: MaybeRefOrGetter<readonly string[]>
 ): {
   kitchens: ComputedRef<KitchenWorkspaceIndexKitchen[]>
   refresh: () => Promise<void>
@@ -38,11 +39,20 @@ export function useKitchenWorkspaceChoices(
       '/api/workspace/kitchen/choices',
       { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
     )
-    if (sequence === requestSequence) kitchens.value = response.items
+    if (sequence === requestSequence) {
+      kitchens.value = [
+        ...new Map(response.items.map((item) => [item.id, item])).values(),
+      ]
+    }
   }
 
   watch(
-    [currentUser, hasAuthState, () => toValue(enabled)],
+    [
+      currentUser,
+      hasAuthState,
+      () => toValue(enabled),
+      () => toValue(kitchenIds).join('\u0000'),
+    ],
     () => void load(),
     {
       immediate: true,

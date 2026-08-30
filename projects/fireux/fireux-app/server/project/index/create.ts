@@ -4,6 +4,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import {
@@ -40,11 +41,9 @@ export async function createProject(event: H3Event, input: unknown) {
     useRuntimeConfig().public?.fireux?.id,
     'FireUX App id'
   )
-  const projectId = (await getFirestoreDb('fireux'))
-    .collection('projects')
-    .doc().id
+  const db = await getFirestoreDb('fireux')
+  const generatedProjectId = db.collection('projects').doc().id
   const memberships = fireuxAppUsersTarget(appId)
-  const teamMembers = fireuxProjectTeamMembersTarget(projectId)
 
   return runGuardedServerTransaction(
     { kind: 'named', databaseId: 'fireux' },
@@ -79,6 +78,17 @@ export async function createProject(event: H3Event, input: unknown) {
       if (subscription !== 'business' && projects.length) {
         fail(403, 'Your current subscription supports one Project.')
       }
+
+      const projectId = requireFirestoreDocumentId(
+        projects.length === 0
+          ? resolveWorkspaceEntityCreationId({
+              intent: 'create_shell',
+              ownerUserId: uid,
+            })
+          : generatedProjectId,
+        'Project id'
+      )
+      const teamMembers = fireuxProjectTeamMembersTarget(projectId)
 
       const created = serverAuditStamp({ by: uid, appId })
       transaction.create(FIRESTORE_MUTATION_TARGETS.fireuxProjects, projectId, {

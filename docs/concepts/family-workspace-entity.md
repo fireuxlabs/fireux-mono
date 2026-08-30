@@ -157,6 +157,15 @@ migration verification, and protected Workspace consumer are complete.
   the User array and primary id, and may create the initial Team record for the
   separate Team surface. Free and Professional allow one Entity in the family;
   Business allows multiple.
+- Workspace Entity creation has one Core-owned identity decision in
+  `runtime/server/utils/workspace-entity/creation-identity.ts`. An explicit
+  first shell uses the beneficiary User UID; an explicit existing-source path
+  preserves that source id. The Entity family still owns what its authoritative
+  source is: Kitchen currently proves same-id Place onboarding, while Project
+  proves a source-free first shell. Additional Business shells may use generated
+  ids according to the family command's capacity policy. This shared decision
+  does not create mutation authority for Property, Supplier, Portfolio, or
+  other families whose trusted creation command is not yet proved.
 - Primary selection is persistent AppUser state. Business users may change it
   directly among their available Entity ids. Free and Professional users with
   several legacy ids submit an administrator-notified change request; the

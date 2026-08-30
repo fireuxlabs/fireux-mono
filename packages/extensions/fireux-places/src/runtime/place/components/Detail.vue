@@ -1,7 +1,13 @@
 <template>
   <article class="space-y-8">
     <PlaceHeader :place="place" />
-    <PlaceDetailContent :place="place" />
+    <PlaceDetailAbout :place="place" />
+    <PlaceDetailGallery
+      v-if="place.gallery_images.length"
+      :name="place.name"
+      :images="place.gallery_images"
+    />
+    <PlaceDetailVisitInfo :place="place" />
     <PlaceDetailAdmin :place="place" />
   </article>
 </template>

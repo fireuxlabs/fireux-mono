@@ -7,38 +7,24 @@
     <WorkspaceKitchenSelector
       v-if="state.kitchen.id || derived.canSelectMultiple"
       :kitchen="state.kitchen"
+      :kitchen-ids="state.user.kitchens"
       :can-select-multiple="derived.canSelectMultiple"
       :has-multiple-kitchens="state.user.kitchens.length > 1"
       :refresh="refresh"
     />
-    <WorkspaceKitchenCreate
-      v-if="incompleteKitchen"
-      :kitchen="state.kitchen"
-      :refresh="refresh"
-    />
-    <WorkspaceKitchenCreate v-else-if="derived.canCreate" :refresh="refresh" />
+    <WorkspaceKitchenCreate v-if="derived.canCreate" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
 } from '../../composables/workspace/index/useKitchenWorkspaceIndex'
 
-const props = defineProps<{
+defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
   refresh: () => Promise<unknown>
 }>()
-
-const incompleteKitchen = computed(
-  () =>
-    Boolean(props.state.kitchen.id) &&
-    !props.state.kitchen.placeId &&
-    (!props.state.kitchen.name ||
-      !props.state.kitchen.tagline ||
-      !props.state.kitchen.url)
-)
 </script>

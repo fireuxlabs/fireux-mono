@@ -22,6 +22,7 @@ import { useKitchenWorkspaceChoices } from '../../composables/workspace/index/us
 
 const props = defineProps<{
   kitchen: KitchenWorkspaceIndexState['kitchen']
+  kitchenIds: string[]
   canSelectMultiple: boolean
   hasMultipleKitchens: boolean
   refresh: () => Promise<unknown>
@@ -32,7 +33,7 @@ const toast = useToast()
 const showChoices = computed(
   () => props.canSelectMultiple || props.hasMultipleKitchens
 )
-const targets = useKitchenWorkspaceChoices(showChoices)
+const targets = useKitchenWorkspaceChoices(showChoices, () => props.kitchenIds)
 const kitchens = computed(() =>
   showChoices.value
     ? targets.kitchens.value.map((item) => ({
@@ -83,6 +84,7 @@ async function selectKitchen(kitchenId: string | number) {
   )
   if (response.updated) {
     await props.refresh()
+    await targets.refresh()
     return
   }
   toast.add({

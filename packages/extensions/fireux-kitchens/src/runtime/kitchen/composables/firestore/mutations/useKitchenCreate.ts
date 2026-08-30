@@ -6,11 +6,15 @@ import type { FireuxEntityCreateResult } from 'fireux-core/runtime/models/utils/
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { usePlaceCreate } from 'fireux-places/runtime/place/composables/firestore/mutations/usePlaceCreate'
-import type { KitchenCreateInput } from '../../../models/kitchen-input.model.ts'
+import type {
+  KitchenCreateInput,
+  KitchenShellCreateInput,
+} from '../../../models/kitchen-input.model.ts'
 import type {
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
+  KitchenShellCreateResult,
 } from '../../../models/kitchen-onboarding.model.ts'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -73,29 +77,8 @@ export function useKitchenCreate() {
     input: KitchenCreateDraft
   ): Promise<KitchenCreateResult> {
     const placeId = normalizeString(input.place_id)
-    const kitchenId = normalizeString(input.kitchen_id)
-    const name = normalizeString(input.name)
-    if (!placeId && name) {
-      const result = await $fetch<KitchenOnboardingCompleteResult>(
-        '/api/kitchens/onboarding/shell',
-        {
-          method: 'POST',
-          headers: await authHeaders(),
-          body: { name, ...(kitchenId ? { kitchen_id: kitchenId } : {}) },
-        }
-      )
-      if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
-        throw new Error('Kitchen shell creation was invalid.')
-      }
-      return {
-        id: result.kitchen_id,
-        createdRoot: result.created_root,
-        createdTeamMember: result.created_team_member,
-        ...(result.slug ? { slug: result.slug } : {}),
-      }
-    }
     if (!placeId) {
-      throw new Error('Choose a Kitchen or enter a Kitchen name.')
+      throw new Error('Choose the Place this Kitchen belongs to.')
     }
 
     const placeReady = await ensurePlaceExists({ id: placeId })
@@ -116,10 +99,38 @@ export function useKitchenCreate() {
     }
   }
 
+  async function createKitchenShell(input: KitchenShellCreateInput) {
+    if (input.intent !== 'create_shell') {
+      throw new Error('Explicit Kitchen shell creation intent is required.')
+    }
+    const name = normalizeString(input.name)
+    if (!name) throw new Error('Kitchen name is required.')
+
+    const result = await $fetch<KitchenShellCreateResult>(
+      '/api/kitchens/onboarding/shell',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: {
+          intent: 'create_shell',
+          name,
+          ...(input.owner_user_id
+            ? { owner_user_id: input.owner_user_id }
+            : {}),
+        },
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
+      throw new Error('Kitchen shell creation was invalid.')
+    }
+    return result
+  }
+
   return {
     completeKitchenOnboarding,
     createPlan: KitchenCreatePlan,
     createKitchen,
+    createKitchenShell,
     previewKitchenOnboarding,
   }
 }

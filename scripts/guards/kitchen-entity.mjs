@@ -102,7 +102,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     `${kitchenBase}components/Collection.vue`
   )
   const collection = read(repoRoot, canonicalCollectionPath)
-  const detail = read(repoRoot, `${kitchenBase}components/Detail/Index.vue`)
+  const detail = read(repoRoot, `${kitchenBase}components/Detail.vue`)
+  const detailHeader = read(
+    repoRoot,
+    `${kitchenBase}components/Detail/Header.vue`
+  )
   const detailPage = read(repoRoot, `${base}pages/kitchens/[slug]/index.vue`)
   const detailReader = read(
     repoRoot,
@@ -122,6 +126,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}components/Detail/OperatorPanel.vue`
   )
+  const workspaceCreate = read(
+    repoRoot,
+    `${kitchenBase}components/Workspace/Create.vue`
+  )
+  const shellCreate = read(
+    repoRoot,
+    `${kitchenBase}components/Onboarding/ShellCreate.vue`
+  )
+  const kitchenCreate = read(
+    repoRoot,
+    `${kitchenBase}composables/firestore/mutations/useKitchenCreate.ts`
+  )
+  const onboardingCommands = read(
+    repoRoot,
+    `${kitchenBase}server/index/onboarding/commands.ts`
+  )
+  const creationIdentity = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/server/utils/workspace-entity/creation-identity.ts'
+  )
   const identityReader = read(repoRoot, `${kitchenBase}server/identity/read.ts`)
   const sproochli = read(
     repoRoot,
@@ -131,6 +155,51 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     kitchenModel.replace(/\s+/g, ' ').trim(),
     "export type Kitchen = { id: string slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
     'Kitchen must retain only its minimal shell identity; Place and capability data belong to their own models.'
+  )
+  assert.match(workspaceCreate, /to="\/workspace\/kitchen\/create"/)
+  assert.equal(
+    existsSync(
+      file(repoRoot, `${kitchenBase}components/Workspace/Create/Form.vue`)
+    ),
+    false,
+    'Workspace Kitchen creation must use the explicit onboarding route.'
+  )
+  assert.equal(
+    existsSync(
+      file(repoRoot, `${base}server/api/kitchens/onboarding/shell.post.ts`)
+    ),
+    true,
+    'Explicit UID-backed Kitchen shell creation must retain its server endpoint.'
+  )
+  assert.match(kitchenCreate, /createKitchenShell/)
+  assert.match(kitchenCreate, /intent:\s*'create_shell'/)
+  assert.match(kitchenCreate, /onboarding\/shell/)
+  assert.match(shellCreate, /@submit\.prevent="submit"/)
+  assert.match(shellCreate, /intent:\s*'create_shell'/)
+  assert.doesNotMatch(shellCreate, /watch\(|usePlaceSearch|currentUser\.uid/)
+  assert.match(onboardingCommands, /body\.intent !== 'create_shell'/)
+  assert.match(
+    onboardingCommands,
+    /resolveWorkspaceEntityCreationId\(\{ intent: 'create_shell', ownerUserId \}\)/
+  )
+  assert.match(onboardingCommands, /intent:\s*'use_source'/)
+  assert.match(creationIdentity, /intent:\s*'create_shell'/)
+  assert.match(creationIdentity, /intent:\s*'use_source'/)
+  assert.equal(
+    existsSync(
+      file(
+        repoRoot,
+        `${kitchenBase}server/index/onboarding/creation-identity.ts`
+      )
+    ),
+    false,
+    'Workspace Entity creation identity belongs to Core, not Kitchen.'
+  )
+  assert.match(onboardingCommands, /primary_kitchen:\s*kitchenId/)
+  assert.match(onboardingCommands, /primary_kitchen:\s*locator\.kitchenId/)
+  assert.doesNotMatch(
+    onboardingCommands,
+    /collection\(['"]kitchens['"]\)\.doc\(\)\.id/
   )
   assert.match(
     fulfilmentModel,
@@ -322,11 +391,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detail, /props\.kitchen/)
   assert.match(detail, /\buseKitchenSeo\s*\(/)
   assert.match(
-    detail,
+    detailHeader,
     /\/places\/\$\{encodeURIComponent\(kitchen\.id\)\}\/edit/
   )
-  assert.match(detail, /KitchenDetailSproochli/)
-  assert.match(detail, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
+  assert.match(detailHeader, /KitchenDetailSproochli/)
+  assert.match(detailHeader, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
   assert.doesNotMatch(identityReader, /readKitchenSproochliConfig/)
   assert.match(detailApi, /readKitchenSproochliAttachment/)
   assert.match(identityReader, /normalizeKitchen/)

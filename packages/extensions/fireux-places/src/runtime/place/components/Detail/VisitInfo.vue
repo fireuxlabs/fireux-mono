@@ -77,14 +77,55 @@ defineOptions({ name: 'PlaceDetailVisitInfo' })
 
 const props = defineProps<{
   place: Place
-  websiteLabel: string
-  hasVisitDetails: boolean
-  facts: Array<{ label: string; value: string }>
-  hours: Array<{ days: string; time: string }>
 }>()
 
+const websiteLabel = computed(() => {
+  const value = String(props.place.website || '').trim()
+  if (!value) return ''
+  try {
+    return new URL(value).hostname.replace(/^www\./, '')
+  } catch {
+    return value
+  }
+})
+const hasVisitDetails = computed(() =>
+  Boolean(props.place.short_address || props.place.website)
+)
+const facts = computed(
+  () =>
+    [
+      props.place.short_name && props.place.short_name !== props.place.name
+        ? { label: 'Also known as', value: props.place.short_name }
+        : null,
+      props.place.default_currency_code
+        ? { label: 'Currency', value: props.place.default_currency_code }
+        : null,
+      props.place.timezone
+        ? { label: 'Time zone', value: props.place.timezone }
+        : null,
+    ].filter(Boolean) as Array<{ label: string; value: string }>
+)
+const dayLabels = {
+  monday: 'Monday',
+  tuesday: 'Tuesday',
+  wednesday: 'Wednesday',
+  thursday: 'Thursday',
+  friday: 'Friday',
+  saturday: 'Saturday',
+  sunday: 'Sunday',
+} as const
+const hours = computed(() =>
+  props.place.business_hours.windows.map((window) => ({
+    days: window.days.map((day) => dayLabels[day]).join(', '),
+    time:
+      window.open === '00:00' && window.close === '00:00'
+        ? 'Open 24 hours'
+        : `${window.open}–${window.close}`,
+  }))
+)
+
 const hasContent = computed(
-  () => props.hasVisitDetails || props.hours.length || props.facts.length
+  () => hasVisitDetails.value || hours.value.length || facts.value.length
 )
 const mapUrl = computed(() => {
   if (props.place.google_maps_url) return props.place.google_maps_url

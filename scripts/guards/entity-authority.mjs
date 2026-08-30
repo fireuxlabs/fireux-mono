@@ -619,9 +619,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/components/Ecosystem/Detail.vue'
   )
-  const fireuxEcosystemDetailContent = read(
+  const fireuxEcosystemDetailApps = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Ecosystem/Detail/Content.vue'
+    'projects/fireux/fireux-app/app/components/Ecosystem/Detail/Apps.vue'
   )
   assert.match(coreAppsPage, /useApps\(\)/)
   assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
@@ -634,9 +634,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /EcosystemDirectoryEntry|PlatformDirectoryResponse|:apps=|:project=/
   )
   assert.match(fireuxEcosystemDetail, /ecosystem:\s*Ecosystem/)
-  assert.match(fireuxEcosystemDetailContent, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(
-    fireuxEcosystemDetailContent,
+    fireuxEcosystemDetailApps,
+    /useApps\('\/api\/platform\/apps'\)/
+  )
+  assert.match(
+    fireuxEcosystemDetailApps,
     /allApps\.value\.filter\(\(app\) => app\.ecosystem_id === props\.ecosystem\.id\)/
   )
 
@@ -840,9 +843,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/components/Project/Detail.vue'
   )
-  const projectDirectoryDetailContent = read(
+  const projectDirectoryDetailApps = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Project/Detail/Content.vue'
+    'projects/fireux/fireux-app/app/components/Project/Detail/Apps.vue'
   )
   const projectDirectoryDetailReader = read(
     repoRoot,
@@ -854,7 +857,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectDirectoryDetail, /<ProjectDetail/)
   assert.match(projectDirectoryDetail, /:project="project"/)
   assert.doesNotMatch(projectDirectoryDetail, /:apps=/)
-  assert.match(projectDirectoryDetailContent, /app\.project_id/)
+  assert.match(projectDirectoryDetailApps, /app\.project_id/)
   assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
   assert.match(projectDirectory, /useProjects\(\)/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)
@@ -983,6 +986,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/commands.ts'
   )
+  const workspaceEntityCreationIdentity = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/server/utils/workspace-entity/creation-identity.ts'
+  )
   assert.doesNotMatch(
     projectCollection,
     /useFirestoreRead|firestoreFetchCollection/
@@ -1040,6 +1047,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectCreateApi, /FIRESTORE_MUTATION_TARGETS\.fireuxProjects/)
   assert.match(projectCreateApi, /fireuxProjectTeamMembersTarget\(projectId\)/)
   assert.match(projectCreateApi, /membership\.data\?\.projects/)
+  assert.match(projectCreateApi, /projects\.length === 0/)
+  assert.match(
+    projectCreateApi,
+    /resolveWorkspaceEntityCreationId\(\{[\s\S]*intent:\s*['"]create_shell['"][\s\S]*ownerUserId:\s*uid/
+  )
   assert.match(projectCreateApi, /primary_project:\s*projectId/)
   assert.match(projectCreateApi, /transaction\.update\(memberships/)
   assert.doesNotMatch(projectCreateApi, /queryCollectionGroup/)
@@ -1061,10 +1073,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectPrimaryApi, /Primary Project change requested/)
   assert.match(projectPrimaryApi, /updated:\s*true/)
   assert.match(projectCreateClient, /\/api\/internal\/control\/projects/)
-  assert.match(projectCreateClient, /useWorkspace\(['"]project['"]\)/)
-  assert.match(
+  assert.doesNotMatch(
     projectCreateClient,
-    /workspace\.activate\(response\.project_id\)/
+    /useWorkspace\(|workspace\.activate\(/
   )
   assert.doesNotMatch(projectCreateClient, /useProjectWorkspace\(/)
   assert.match(projectCreateComponent, /await props\.refresh\?\.\(\)/)
@@ -1083,47 +1094,40 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(projectSelector, /workspace\.activate\(selected/)
   assert.doesNotMatch(kitchenSelector, /workspace\.activate\(selected/)
 
-  const kitchenCreateForm = read(
+  const kitchenWorkspaceCreate = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Create/Form.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Create.vue'
   )
-  assert.match(kitchenCreateForm, /useKitchenCreate/)
-  assert.match(kitchenCreateForm, /usePlaceUpdate/)
-  assert.match(kitchenCreateForm, /allowGoogle:\s*true/)
-  assert.match(
-    kitchenCreateForm,
-    /id: manifestId\.value,[\s\S]*name: searchName\.value,[\s\S]*tagline: tagline\.value\.trim\(\),[\s\S]*url: imagePreview\.value/
-  )
+  assert.match(kitchenWorkspaceCreate, /to="\/workspace\/kitchen\/create"/)
   assert.doesNotMatch(
-    kitchenCreateForm,
-    /useFirestoreRead|firestoreFetchDoc|useKitchenInterface/,
-    'Kitchen creation previews local form state and must not reread the new Entity through browser Firestore authority.'
-  )
-  assert.match(
-    kitchenCreateForm,
-    /watch\(query,[\s\S]*createKitchen\([\s\S]*watch\(tagline,[\s\S]*updateBrandTagline/
-  )
-  assert.doesNotMatch(kitchenCreateForm, /if \(props\.kitchen\?\.id\) return/)
-  assert.match(
-    kitchenCreateForm,
-    /query\.value = selection\.value\.name[\s\S]*imagePreview\.value = value\.imageUrl[\s\S]*updatePlaceImage\(imagePreview\.value/
+    kitchenWorkspaceCreate,
+    /useKitchenCreate|usePlaceUpdate|useFirestore|watch\(/
   )
   const kitchenWorkspaceIndex = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue'
   )
-  assert.match(kitchenWorkspaceIndex, /v-if="incompleteKitchen"/)
-  assert.match(kitchenWorkspaceIndex, /v-else-if="derived\.canCreate"/)
-  assert.match(kitchenWorkspaceIndex, /!props\.state\.kitchen\.placeId/)
-  assert.match(
-    kitchenWorkspaceIndex,
-    /!props\.state\.kitchen\.name[\s\S]*!props\.state\.kitchen\.tagline[\s\S]*!props\.state\.kitchen\.url/
-  )
+  assert.match(kitchenWorkspaceIndex, /v-if="derived\.canCreate"/)
+  assert.doesNotMatch(kitchenWorkspaceIndex, /incompleteKitchen|placeId/)
   assert.match(
     kitchenOnboardingCommands,
     /primary_kitchen:\s*locator\.kitchenId/
   )
+  assert.match(kitchenOnboardingCommands, /createKitchenShell/)
+  assert.match(kitchenOnboardingCommands, /body\.intent !== 'create_shell'/)
+  assert.match(kitchenOnboardingCommands, /intent:\s*'use_source'/)
+  assert.match(kitchenOnboardingCommands, /resolveWorkspaceEntityCreationId/)
   assert.match(kitchenOnboardingCommands, /primary_kitchen:\s*kitchenId/)
+  assert.doesNotMatch(
+    kitchenOnboardingCommands,
+    /collection\(['"]kitchens['"]\)\.doc\(\)\.id/
+  )
+  assert.match(workspaceEntityCreationIdentity, /intent:\s*'create_shell'/)
+  assert.match(workspaceEntityCreationIdentity, /intent:\s*'use_source'/)
+  assert.match(
+    workspaceEntityCreationIdentity,
+    /input\.ownerUserId[\s\S]*input\.sourceId/
+  )
 
   for (const method of ['get', 'post']) {
     const registrySource = read(

@@ -188,6 +188,13 @@ export async function run(ctx) {
     ),
     'utf8'
   )
+  const kitchenWorkspaceChoices = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceChoices.ts'
+    ),
+    'utf8'
+  )
   if (
     !kitchenWorkspaceIndex.includes('identity?.image_url') ||
     kitchenWorkspaceIndex.includes('readKitchenPresentationIdentity')
@@ -242,6 +249,10 @@ export async function run(ctx) {
     !projectWorkspaceSelector.includes('props.canSelectMultiple') ||
     !projectWorkspaceSelector.includes('props.projectIds.length > 1') ||
     !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
+    !kitchenWorkspaceSelector.includes('() => props.kitchenIds') ||
+    !kitchenWorkspaceSelector.includes('await targets.refresh()') ||
+    !kitchenWorkspaceChoices.includes('toValue(kitchenIds)') ||
+    !kitchenWorkspaceChoices.includes('new Map(response.items.map') ||
     !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
     !kitchenWorkspaceSelector.includes('props.hasMultipleKitchens')
   ) {

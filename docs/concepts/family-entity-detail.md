@@ -39,6 +39,9 @@ Every Entity Detail route should:
 - Name relationship children after the related Entity (`AppDetailProject`,
   `JobDetailPlace`, `SupplierDetailCompany`) rather than hiding distinct jobs
   behind a generic `Relations` component.
+- Name content and action children after their actual capability
+  (`ProjectDetailApps`, `JobDetailFacts`, `JobDetailApply`) rather than generic
+  `Content` or misleading `Admin` buckets.
 - Keep operator/private actions separate from entity identity and content.
 - Do not introduce a generic Entity detail shell or configuration object. The
   route should remain a readable ordered composition, and named components own

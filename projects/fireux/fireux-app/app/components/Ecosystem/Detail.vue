@@ -1,7 +1,7 @@
 <template>
   <article class="space-y-8">
     <EcosystemDetailHeader :ecosystem="ecosystem" />
-    <EcosystemDetailContent :ecosystem="ecosystem" />
+    <EcosystemDetailApps :ecosystem="ecosystem" />
     <EcosystemDetailProject :ecosystem="ecosystem" />
   </article>
 </template>

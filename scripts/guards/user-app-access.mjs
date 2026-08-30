@@ -278,8 +278,10 @@ export async function run({ repoRoot }) {
   assert.match(subscriptionControl, /useSubscriptions/)
   assert.match(
     subscriptionControl,
-    /const \{ subscription, subscriptions, next, update \} =\s*useSubscriptions\(subscriptionId\)/
+    /const \{ subscription, next, update \} = useSubscriptions\(subscriptionId\)/
   )
+  assert.match(subscriptionControl, /useCurrentAppContext\(\)/)
+  assert.match(subscriptionControl, /v-if="membership"/)
   assert.match(subscriptionControl, /await update\(next\.value\.id\)/)
   assert.doesNotMatch(
     subscriptionControl,
@@ -299,11 +301,11 @@ export async function run({ repoRoot }) {
     /if \(!canToggle\.value \|\| saving\.value\) return/
   )
   assert.match(subscriptionControl, /@click="toggle"/)
-  assert.match(subscriptionControl, /:label="visibleSubscription\.label"/)
+  assert.match(subscriptionControl, /:label="subscription\.label"/)
   assert.doesNotMatch(subscriptionControl, /appAccess/)
-  assert.match(
+  assert.doesNotMatch(
     subscriptionControl,
-    /mounted\.value \? subscription\.value : subscriptions\[0\]!/
+    /subscriptions\[0\]|onMounted|mounted/
   )
   assert.doesNotMatch(subscriptionControl, /controlMode|Loading App access/)
   assert.doesNotMatch(subscriptionControl, /<select/)

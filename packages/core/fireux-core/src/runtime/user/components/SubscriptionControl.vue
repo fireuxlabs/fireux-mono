@@ -1,8 +1,9 @@
 <template>
   <UButton
-    :label="visibleSubscription.label"
-    :icon="visibleSubscription.icon"
-    :color="visibleSubscription.color"
+    v-if="membership"
+    :label="subscription.label"
+    :icon="subscription.icon"
+    :color="subscription.color"
     variant="soft"
     size="xs"
     :to="canToggle ? undefined : '/pricing'"
@@ -11,37 +12,28 @@
     class="rounded-full"
     :aria-label="
       canToggle
-        ? `Switch ${visibleSubscription.label} subscription view`
-        : `View pricing for ${visibleSubscription.label}`
+        ? `Switch ${subscription.label} subscription view`
+        : `View pricing for ${subscription.label}`
     "
     @click="toggle"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, useToast } from '#imports'
+import { computed, ref, useToast } from '#imports'
+import { useCurrentAppContext } from '../../app/composables/useCurrentAppContext'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useSubscriptions } from '../composables/useSubscriptions'
-import { useUser } from '../composables/useUser'
 
 const { currentUser } = useAuth()
-const { subscription: subscriptionId } = useUser()
-const { subscription, subscriptions, next, update } =
-  useSubscriptions(subscriptionId)
-const mounted = ref(false)
+const { membership } = useCurrentAppContext()
+const subscriptionId = computed(() => membership.value?.subscription)
+const { subscription, next, update } = useSubscriptions(subscriptionId)
 const saving = ref(false)
 const toast = useToast()
-const visibleSubscription = computed(() =>
-  mounted.value ? subscription.value : subscriptions[0]!
-)
 const canToggle = computed(
-  () =>
-    mounted.value && import.meta.dev && currentUser.value?.isAnonymous === false
+  () => import.meta.dev && currentUser.value?.isAnonymous === false
 )
-
-onMounted(() => {
-  mounted.value = true
-})
 
 async function toggle() {
   if (!canToggle.value || saving.value) return

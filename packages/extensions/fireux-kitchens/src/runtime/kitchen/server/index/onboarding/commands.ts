@@ -6,6 +6,7 @@ import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-acc
 import { initialMembership } from 'fireux-core/runtime/app/server/membership/mutation-contract'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -84,7 +85,10 @@ async function resolveLocator(
   const requestedKitchenId = text(value.kitchen_id)
   if (requestedKitchenId) {
     const kitchenId = requireFirestoreDocumentId(
-      requestedKitchenId,
+      resolveWorkspaceEntityCreationId({
+        intent: 'use_source',
+        sourceId: requestedKitchenId,
+      }),
       'Kitchen id'
     )
     const snapshot = await db.collection('kitchens').doc(kitchenId).get()
@@ -98,7 +102,13 @@ async function resolveLocator(
     return { placeId, kitchenId, kitchen }
   }
 
-  const placeId = requireFirestoreDocumentId(value.place_id, 'Place id')
+  const placeId = requireFirestoreDocumentId(
+    resolveWorkspaceEntityCreationId({
+      intent: 'use_source',
+      sourceId: text(value.place_id),
+    }),
+    'Place id'
+  )
   return kitchenForPlace(db, placeId)
 }
 
@@ -272,121 +282,116 @@ export async function completeKitchenOnboarding(
 }
 
 export async function createKitchenShell(event: H3Event, input: unknown) {
-  const body = request(input, ['name', 'kitchen_id'])
+  const body = request(input, ['intent', 'name', 'owner_user_id'])
+  if (body.intent !== 'create_shell') {
+    fail(400, 'Explicit Kitchen shell creation intent is required.')
+  }
   const name = text(body.name)
   if (!name || name.length > 120) {
     fail(400, 'Kitchen name is required and must be 120 characters or fewer.')
   }
 
-  const current = await actor(event, {
-    allowAnonymous: true,
-    allowMissingMembership: true,
-  })
-  if (!current.canCreate)
+  const current = await actor(event)
+  if (!current.canCreate) {
     fail(403, 'Kitchen creation is disabled for this App.')
-  const requestedKitchenId = text(body.kitchen_id)
-  const currentMembership = await current.membershipRef.get()
-  const existingKitchenIds = readAppUserKitchenIds(currentMembership.data())
-  const requestedRoot = requestedKitchenId
-    ? await current.db.collection('kitchens').doc(requestedKitchenId).get()
-    : null
-  const kitchenId = requestedKitchenId
-    ? requireFirestoreDocumentId(requestedKitchenId, 'Kitchen id')
-    : existingKitchenIds.length
-      ? current.db.collection('kitchens').doc().id
-      : current.uid
-  const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
+  }
+  const ownerUserId = resolveKitchenOnboardingBeneficiaryUserId(
+    current,
+    body.owner_user_id
+  )
+  const kitchenId = requireFirestoreDocumentId(
+    resolveWorkspaceEntityCreationId({ intent: 'create_shell', ownerUserId }),
+    'Kitchen id'
+  )
   const memberships = serverAppUsersTarget(current.appId)
-  const creatorName =
-    current.authDisplayName || `Guest ${current.uid.slice(0, 6)}`
+  const teamMembers = serverKitchenTeamMembersTarget(kitchenId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, place, root, teamMember] = await Promise.all([
-      mutations.read(memberships, current.uid),
+    const [membership, user, place, root, teamMember] = await Promise.all([
+      mutations.read(memberships, ownerUserId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, ownerUserId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
-      mutations.read(teamMembers, current.uid),
+      mutations.read(teamMembers, ownerUserId),
     ])
-    if (root.exists || place.exists || teamMember.exists) {
+    const ownerName = text(user.data?.display_name)
+    if (!ownerName) {
+      fail(409, 'The Kitchen owner must finish their User name first.')
+    }
+
+    const anyShellRecord = place.exists || root.exists || teamMember.exists
+    if (anyShellRecord) {
       if (
-        !root.exists ||
         !place.exists ||
+        !root.exists ||
         !teamMember.exists ||
-        text(teamMember.data?.user_id) !== current.uid ||
+        text(teamMember.data?.user_id) !== ownerUserId ||
         teamMember.data?.status !== 'active'
       ) {
         fail(409, 'Kitchen shell identity is incomplete.')
       }
-      mutations.update(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
-        name,
+      mutations.update(FIRESTORE_MUTATION_TARGETS.places, kitchenId, { name })
+    } else {
+      await assertKitchenCreationAllowance(membership.data)
+      const slug = normalizeSlug(name) || kitchenId.toLowerCase()
+      const created = serverAuditStamp({
+        by: current.uid,
+        appId: current.appId,
       })
-      return {
-        ok: true as const,
-        kitchen_id: kitchenId,
-        action: 'update' as const,
-        created_root: false,
-        created_team_member: false,
-        slug: text(root.data?.slug),
-      }
+      mutations.create(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
+        name,
+        slug,
+        place_type: 'non_physical',
+        source: 'manual',
+        entity_families: ['kitchen'],
+        created,
+        updated: serverAuditStamp({ by: current.uid }),
+      })
+      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+        slug,
+        status: 'active',
+        visibility: false,
+        created,
+        updated: serverAuditStamp({ by: current.uid }),
+      })
+      mutations.create(
+        teamMembers,
+        ownerUserId,
+        buildKitchenTeamMemberRecord({
+          appId: current.appId,
+          createdBy: current.uid,
+          kitchenId,
+          memberId: ownerUserId,
+          name: ownerName,
+          role: 'owner',
+          slug: normalizeSlug(ownerName) || 'team-member',
+          userId: ownerUserId,
+        })
+      )
     }
 
-    await assertKitchenCreationAllowance(membership.data)
-
-    const slug = normalizeSlug(name) || kitchenId.toLowerCase()
-    const created = serverAuditStamp({ by: current.uid, appId: current.appId })
-    mutations.create(FIRESTORE_MUTATION_TARGETS.places, kitchenId, {
-      name,
-      slug,
-      place_type: 'non_physical',
-      source: 'manual',
-      entity_families: ['kitchen'],
-      created,
-      updated: serverAuditStamp({ by: current.uid }),
-    })
-    mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
-      slug,
-      status: 'active',
-      visibility: false,
-      created,
-      updated: serverAuditStamp({ by: current.uid }),
-    })
-    mutations.create(
-      teamMembers,
-      current.uid,
-      buildKitchenTeamMemberRecord({
-        appId: current.appId,
-        createdBy: current.uid,
-        kitchenId,
-        memberId: current.uid,
-        name: creatorName,
-        role: 'owner',
-        slug: normalizeSlug(creatorName) || 'guest',
-        userId: current.uid,
-      })
-    )
     const kitchens = [
       ...new Set([...readAppUserKitchenIds(membership.data), kitchenId]),
     ]
-    const workspaceState = {
-      kitchens,
-      primary_kitchen: kitchenId,
-    }
+    const workspaceState = { kitchens, primary_kitchen: kitchenId }
     if (membership.exists) {
-      mutations.update(memberships, current.uid, workspaceState)
+      mutations.update(memberships, ownerUserId, workspaceState)
     } else {
-      mutations.create(memberships, current.uid, {
-        ...initialMembership(current.uid, 'user'),
+      mutations.create(memberships, ownerUserId, {
+        ...initialMembership(ownerUserId, 'user'),
         ...workspaceState,
       })
     }
 
+    const slug = text(root.data?.slug) || normalizeSlug(name)
     return {
       ok: true as const,
       kitchen_id: kitchenId,
-      action: 'create' as const,
-      created_root: true,
-      created_team_member: true,
-      slug,
+      place_id: kitchenId,
+      action: anyShellRecord ? ('open' as const) : ('create' as const),
+      created_root: !anyShellRecord,
+      created_team_member: !anyShellRecord,
+      ...(slug ? { slug } : {}),
     }
   })
 }

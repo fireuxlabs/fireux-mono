@@ -35,3 +35,13 @@ export type KitchenOnboardingCompleteResult = {
   created_team_member: boolean
   slug?: string
 }
+
+export type KitchenShellCreateResult = {
+  ok: true
+  kitchen_id: string
+  place_id: string
+  action: 'create' | 'open'
+  created_root: boolean
+  created_team_member: boolean
+  slug?: string
+}

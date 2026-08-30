@@ -1,6 +1,5 @@
 import { ref } from 'vue'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
-import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 
 type ProjectCreateResponse = {
   ok: true
@@ -10,7 +9,6 @@ type ProjectCreateResponse = {
 
 export function useProjectWorkspaceCreate() {
   const { currentUser } = useAuth()
-  const workspace = useWorkspace('project')
   const pending = ref(false)
   const error = ref('')
 
@@ -35,7 +33,6 @@ export function useProjectWorkspaceCreate() {
           body: { name },
         }
       )
-      workspace.activate(response.project_id)
       return response
     } catch (cause) {
       error.value =

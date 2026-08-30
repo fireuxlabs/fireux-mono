@@ -31,6 +31,13 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
+      <KitchenOnboardingShellCreate
+        :owner-user-id="ownerUserId"
+        @created="finishSelection"
+      />
+
+      <USeparator label="Or use a real Place" />
+
       <PlaceOnboarding @created="onPlaceReady" />
 
       <UButton
@@ -273,11 +280,15 @@ async function onBack() {
 async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
+  await finishSelection(completion.value)
+}
+
+async function finishSelection(result: KitchenOnboardingCompleteResult) {
   if (props.selectWorkspaceOnComplete) {
     await appContext.refresh()
-    setKitchenWorkspaceSelection({ kitchenId: completion.value.kitchen_id })
+    setKitchenWorkspaceSelection({ kitchenId: result.kitchen_id })
   }
-  emit('created', completion.value)
+  emit('created', result)
   if (route.path !== resolvedReturnTo.value) {
     await router.push(resolvedReturnTo.value)
   }

@@ -1,7 +1,7 @@
 <template>
   <article class="space-y-8">
     <ProjectDetailHeader :project="project" />
-    <ProjectDetailContent :project="project" />
+    <ProjectDetailApps :project="project" />
   </article>
 </template>
 

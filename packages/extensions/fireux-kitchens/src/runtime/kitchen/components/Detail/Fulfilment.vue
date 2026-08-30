@@ -20,18 +20,28 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFetch } from '#imports'
 import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import { readKitchenFulfilmentConfig } from '../../utils/kitchen-readers'
 
 const props = defineProps<{
   kitchen: KitchenSurface | null
-  fulfilment?: KitchenFulfilment | null
 }>()
+
+const fulfilmentPath = computed(() =>
+  props.kitchen?.slug
+    ? `/api/kitchens/${encodeURIComponent(props.kitchen.slug)}/fulfilment`
+    : ''
+)
+const { data: fulfilment } = useFetch<KitchenFulfilment>(fulfilmentPath, {
+  immediate: Boolean(fulfilmentPath.value),
+  watch: [fulfilmentPath],
+})
 
 const deliveryZones = computed(
   () =>
-    props.fulfilment?.delivery_zones ||
+    fulfilment.value?.delivery_zones ||
     readKitchenFulfilmentConfig(props.kitchen).delivery_zones
 )
 const currencyCode = computed(() =>
