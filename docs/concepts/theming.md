@@ -374,7 +374,7 @@ sources exist.
 - FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
 - Kitchen capability projection and collection grouping:
   `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/identity/read.ts`
-  and `runtime/kitchen/components/Collection/Manager.vue`
+  and `runtime/kitchen/components/Collection.vue`
 - Guard: `scripts/guards/landing-templates.mjs`
 
 ## Delta register

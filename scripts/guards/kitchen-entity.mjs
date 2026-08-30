@@ -97,9 +97,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const retiredCollectionPath = `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
   const retiredIdentityReadPath = `${kitchenBase}server/identity/public-projection.ts`
   const retiredDirectoryReadPath = `${kitchenBase}server/index/public-index.ts`
-  const manager = read(
+  const collectionView = read(
     repoRoot,
-    `${kitchenBase}components/Collection/Manager.vue`
+    `${kitchenBase}components/Collection.vue`
   )
   const collection = read(repoRoot, canonicalCollectionPath)
   const detail = read(repoRoot, `${kitchenBase}components/Detail/Index.vue`)
@@ -243,10 +243,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(existsSync(file(repoRoot, retiredIdentityReadPath)), false)
   assert.equal(existsSync(file(repoRoot, retiredDirectoryReadPath)), false)
-  assert.match(manager, /\buseKitchenCollection\s*\(/)
-  assert.match(manager, /<KitchenCollectionList :cards="cardsFiltered"/)
-  assert.doesNotMatch(manager, /management_mode|Root kitchens|App kitchens/)
-  assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
+  assert.match(collectionView, /kitchens:\s*KitchenCollectionRecord\[\]/)
+  assert.doesNotMatch(collectionView, /\buseKitchenCollection\s*\(/)
+  assert.match(collectionView, /<KitchenCollectionList :cards="cardsFiltered"/)
+  assert.doesNotMatch(
+    collectionView,
+    /management_mode|Root kitchens|App kitchens/
+  )
+  assert.doesNotMatch(collectionView, /useKitchenFetch|firebase\/firestore/)
   assert.match(
     collection,
     /KitchenCollectionRecord = Kitchen & \{ place: Place \}/
@@ -310,14 +314,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
   assert.doesNotMatch(detail, /useKitchenFetch|firebase\/firestore|ClientOnly/)
-  assert.match(detail, /KitchenDetailState/)
-  assert.match(detail, /:objects="\{ kitchen, place \}"/)
+  assert.match(detail, /kitchen:\s*Kitchen/)
+  assert.match(detail, /place:\s*Place/)
+  assert.match(detail, /presentation:\s*KitchenDetailPresentation/)
+  assert.match(detail, /fulfilment:\s*KitchenFulfilment/)
   assert.match(
     detail,
     /\/places\/\$\{encodeURIComponent\(kitchen\.id\)\}\/edit/
   )
   assert.match(detail, /KitchenDetailSproochli/)
-  assert.match(detail, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
+  assert.match(detailPage, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
   assert.doesNotMatch(identityReader, /readKitchenSproochliConfig/)
   assert.match(detailApi, /readKitchenSproochliAttachment/)
   assert.match(identityReader, /normalizeKitchen/)
@@ -348,10 +354,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(detailPage, /\buseKitchenDetail\s*\(/)
   assert.match(detailPage, /class="kitchen-detail-route"/)
-  assert.match(detailPage, /setResponseStatus\(404\)/)
   assert.doesNotMatch(detailPage, /useKitchenFetch|firebase\/firestore/)
+  assert.match(detailPage, /:kitchen="kitchen"/)
   assert.match(detailPage, /:place="place"/)
   assert.match(detailPage, /:presentation="presentation"/)
+  assert.match(detailPage, /:fulfilment="fulfilment"/)
   assert.match(detailReader, /firestoreFetchDoc<Kitchen>/)
   assert.match(detailReader, /firestoreFetchDoc<Place>/)
   assert.match(detailReader, /lastGoodKitchen/)

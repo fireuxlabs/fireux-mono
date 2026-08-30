@@ -49,7 +49,7 @@
         description="Manage all your menus, customer ordering, and more."
         provider="Misebox"
       >
-        <KitchenCTA />
+        <KitchenCreate />
       </AppToolFoldaway>
     </div>
   </UPageCard>

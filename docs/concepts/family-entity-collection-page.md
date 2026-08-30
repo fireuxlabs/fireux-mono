@@ -1,6 +1,6 @@
 # Entity Collection Page family
 
-Updated: 2026-08-27
+Updated: 2026-08-30
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -17,42 +17,42 @@ domain capability, and intentionally App-owned branded presentation.
 - Horizontal: `collection-manager.md`, `components.md`, `composables.md`,
   `entities.md`, `runtime-filesystem.md`
 
-## Ordinary Collection Page spine
+## FireUX composed lasagne
 
-An ordinary Entity Collection Page uses this composition:
+The accepted flat index-page arrangement is **fireux-composed-lasagne**:
 
 ```text
-CollectionPage
-├── Entity collection manager
-│   ├── CollectionHeader
-│   ├── MoleculesStateCard surface="collection"
-│   ├── Entity Collection/List
-│   └── Entity Cards/*
-└── optional entity doorway
+route
+├── acquire canonical Entity collection
+├── EntityHero
+├── EntityCurrent      # only when a real current Entity exists
+├── EntityCreate       # only when creation is a real action
+└── EntityCollection   # receives the named plural Entity prop
 ```
 
-The route owns metadata, route policy, and major named composition. The Entity
-owns its reader/controller, outcome mapping, filters, interface projection,
-cards, and doorway. Core owns the shell, semantic tokens, responsive rhythm,
-header/state primitives, and collection layout mechanics.
+The route owns metadata, route policy, acquisition, and visible composition.
+Each layer is a flat Entity-owned component at
+`runtime/<entity>/components/{Hero,Current,Create,Collection}.vue`. The
+Collection receives canonical records through a named prop such as `apps`,
+`users`, `ecosystems`, `projects`, `places`, or `kitchens`; it may own filters,
+interface projection, lists, and cards, but it does not fetch that primary
+collection again.
+
+Hero introduces the index. Current presents the singular Entity relevant to the
+current session. Create owns the concrete creation doorway. Collection presents
+the acquired records. Omit a layer when its responsibility is not real; do not
+replace an omission with a placeholder component.
+
+This arrangement has no generic Entity shell, `CollectionPage`, page slots,
+configuration object, `CollectionManager`, outcome framework, debug contract,
+or HTTP-status contract. Deeper `Collection/List` and `Cards/*` components may
+remain because they are implementation owned by the Collection layer, not page
+composition layers.
 
 Place is the visual proving reference. Job and Menu are differentiated
 siblings: Job adds an editorial promise and author actions; Menu adds route
 scope, bounded redirect policy, and a preview variant. Those differences do
 not create new page engines.
-
-## Required outcomes
-
-Every ordinary Collection Page keeps these states truthful and visibly distinct:
-
-- loading;
-- unavailable, with retry when its reader supports refresh;
-- empty;
-- ready;
-- incremental-read failure when pagination is supported.
-
-An unavailable read never becomes an empty Collection Page. Existing results remain
-visible when only an incremental read fails.
 
 ## Data authority
 
@@ -67,11 +67,12 @@ An Entity chooses the smallest honest read boundary:
   is a Collection Page view rather than a second Entity or privacy filter.
 - A controller is required when the same Entity has multiple real scopes, such
   as Ecosystem Apps versus platform Apps.
-- Scoped children use named scoped surfaces; they do not masquerade as a root
-  collection manager.
+- Scoped children use named scoped surfaces; they do not masquerade as the root
+  Entity Collection.
 
-The visual family does not dictate transport. Server and live Firestore
-collection members still share the same outcome anatomy.
+The visual family does not dictate transport. Loading, unavailable, missing,
+refreshing, debug, and HTTP-status presentation are deliberately outside this
+composition contract.
 
 ## Current members
 
@@ -112,18 +113,16 @@ not drift.
 
 ## Component ownership
 
-- `CollectionPage` is shared Core composition, not an Entity engine.
-- `MoleculesStateCard` owns shared loading, unavailable, missing, and empty
-  semantics. Ordinary managers select its `collection` presentation surface;
-  they do not maintain a second Collection-only state component.
-- `XCollectionManager` is the default root doorway and owns its default source.
+- `XHero`, optional `XCurrent`, optional `XCreate`, and `XCollection` are owned
+  by the Entity package.
+- The App owns the route and visibly composes the available layers in that order.
+- `XCollection` receives its canonical collection from the route.
 - `XCollectionList` and `XCards/*` remain Entity-owned.
-- `XCTA` is present only when an operator, onboarding, authoring, or management
-  doorway is real.
+- `XCreate` is present only when creation is real. Generic `XCTA` does not name
+  an index-page responsibility.
 - Pages do not accept generic configuration objects for cards, states, or CTA
   behavior.
-- Dev JSON stays inside the Entity collection surface unless the route owns
-  genuinely route-level derived state.
+- Debug presentation is outside the current composition pass.
 
 ## Naming
 
@@ -139,14 +138,18 @@ defined meaning; they do not name FireUX Entities or surfaces.
 When this family changes:
 
 1. inspect Place plus the nearest differentiated sibling;
-2. verify the affected entity route, manager, reader, cards, and outcome states;
+2. verify the affected entity route, named layers, reader, and cards;
 3. confirm App-owned branded routes retain their own presentation;
 4. run focused package checks; and
 5. run `pnpm guard` before handoff.
 
 ## Current decisions
 
-- Ordinary Entity Collection Pages share `CollectionPage`.
+- App, User, Ecosystem, Project, Place, and Kitchen prove
+  fireux-composed-lasagne in current source and the executable family guard.
+- These six Entity index families use visible flat composition rather than a
+  shared `CollectionPage` shell. Other index families remain unaudited by this
+  pass and are not silently claimed as aligned.
 - Entity filters, actions, card facts, read authority, and route policy remain
   legitimate domain deltas.
 - Yellow Velo and Interlaken aesthetic families remain App-owned.
@@ -160,6 +163,8 @@ When this family changes:
 - Kitchen index transport returns canonical `Kitchen[]` values enriched with
   each same-ID canonical Place. It does not introduce a directory-entry model;
   management surfaces authorize against root-owned Team separately.
+- App, User, Ecosystem, Project, Place, and Kitchen routes acquire their
+  collections once and pass named Entity props into their collection components.
 - Supplier Collection Page reads canonical `Supplier[]` through its live root
   collection. Its different transport does not change the shared outcome
   anatomy.

@@ -1,18 +1,21 @@
 <template>
-  <CollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-users-round"
-  >
-    <!-- Directory family: use bounded canonical Users, not raw identity docs. -->
-    <UserCollectionManager />
-  </CollectionPage>
+  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
+    <UserHero :title="pageTitle" :description="pageDescription" />
+    <UserCurrent
+      v-if="currentUser"
+      :current-user="currentUser"
+      :current-profiles="appUser?.profiles || []"
+    />
+    <UserCreate v-else />
+    <UserCollection :users="users" />
+  </main>
 </template>
 
 <script setup lang="ts">
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
+import { useUser } from '../../user/composables/useUser'
+import { useUsers } from '../../user/composables/useUsers'
 
 definePageMeta({
   nav: {
@@ -31,6 +34,8 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
+const { users } = useUsers()
+const { currentUser, appUser } = useUser()
 
 const pageTitle = 'Users'
 const pageDescription = `Discover users and the profiles connected across ${appName}.`

@@ -539,13 +539,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'website_url',
   ])
 
-  const appManager = read(
+  const appCollection = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/app/components/Collection/Manager.vue'
+    'packages/core/fireux-core/src/runtime/app/components/Collection.vue'
   )
-  const ecosystemManager = read(
+  const ecosystemCollectionView = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/ecosystem/components/Collection/Manager.vue'
+    'packages/core/fireux-core/src/runtime/ecosystem/components/Collection.vue'
   )
   const ecosystemInterface = read(
     repoRoot,
@@ -561,10 +561,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(ecosystemFetch, /\/api\/ecosystems\//)
   assert.doesNotMatch(ecosystemFetch, /\buseFirestore\s*\(|\bfirestoreFetch\b/)
-  assert.match(appManager, /controller:\s*AppCollectionController/)
-  assert.doesNotMatch(appManager, /useAppCollection/)
-  assert.match(ecosystemManager, /controller:\s*EcosystemDirectoryController/)
-  assert.doesNotMatch(ecosystemManager, /useEcosystemCollection/)
+  assert.match(appCollection, /apps:\s*App\[\]/)
+  assert.doesNotMatch(appCollection, /useAppCollection/)
+  assert.match(
+    ecosystemCollectionView,
+    /ecosystems:\s*EcosystemDirectoryEntry\[\]/
+  )
+  assert.doesNotMatch(ecosystemCollectionView, /useEcosystemCollection/)
   assert.doesNotMatch(ecosystemInterface, /\b(team|apps)\?:/)
   assert.doesNotMatch(ecosystemInterface, /target\.(team|apps)/)
   assert.doesNotMatch(ecosystemInterface, /\bslug\b|source_url/)
@@ -620,13 +623,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/apps/[id].vue'
   )
+  const platformAppDetailComponent = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Directory/App/Detail.vue'
+  )
   assert.match(ownerAppDetailApi, /belongsToOwner/)
   assert.match(ownerAppDetailApi, /ecosystem_id/)
   assert.match(platformAppDetailPage, /DetailResponse<App>/)
   assert.match(platformAppDetailPage, /\/api\/platform\/apps\//)
-  assert.match(platformAppDetailPage, /app\.project_id/)
+  assert.match(platformAppDetailPage, /app\.value\?\.project_id/)
   assert.match(platformAppDetailPage, /ecosystem_id/)
-  assert.match(platformAppDetailPage, /DevDebugPanel/)
+  assert.match(platformAppDetailPage, /<DirectoryAppDetail/)
+  assert.match(platformAppDetailComponent, /app:\s*App/)
+  assert.match(platformAppDetailComponent, /project\?:\s*Project/)
+  assert.match(
+    platformAppDetailComponent,
+    /ecosystem\?:\s*EcosystemDirectoryEntry/
+  )
   assert.doesNotMatch(
     platformAppDetailPage,
     /AppDirectoryEntry|PlatformDirectoryResponse/
@@ -1564,57 +1577,42 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /PublicCompany|public-projection/
   )
 
+  const userIndexPage = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/pages/users/index.vue'
+  )
+  const userCollection = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/Collection.vue'
+  )
+  const userDetailPage = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/pages/users/[handle].vue'
+  )
+  const userAppMembership = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/AppMembership.vue'
+  )
+  const appUserCollection = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/composables/firestore/fetch/useAppUserCollection.ts'
+  )
+  assert.match(userIndexPage, /\buseUsers\s*\(/)
+  assert.match(userIndexPage, /<UserCollection :users="users"/)
+  assert.match(userCollection, /users:\s*User\[\]/)
+  assert.doesNotMatch(userCollection, /\buseFetch\s*\(|<DevDebugPanel/)
+  assert.match(userDetailPage, /\buseUserDetail\s*\(/)
+  assert.match(userDetailPage, /<UserProfile/)
+  assert.match(userDetailPage, /<UserAppMembership/)
+  assert.doesNotMatch(userDetailPage, /<UserDetail|<DevDebugPanel/)
+  assert.match(
+    userAppMembership,
+    /membership:\s*UserAppMembershipRecord \| null/
+  )
+  assert.match(userAppMembership, /subscription === 'business'/)
+  assert.match(appUserCollection, /enabled\?:\s*ComputedRef<boolean>/)
+
   const entityDebugSurfaces = [
-    [
-      'packages/core/fireux-core/src/runtime/app/components/Collection/Manager.vue',
-      /useDevCollectionJson\(collection\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/projects/index.vue',
-      /useDevCollectionJson\(projects\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
-      /useDevCollectionJson\(ecosystems\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'packages/core/fireux-core/src/runtime/user/components/Collection/Manager.vue',
-      /devJsonData = computed\(\(\) => directoryUsers\.value\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/apps/[id].vue',
-      /:objects="\[app\]"/,
-      /:derived="\{ project, ecosystem \}"/,
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/projects/[id].vue',
-      /:objects="\[project\]"/,
-      /:derived="\{ apps: projectApps \}"/,
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
-      /:objects="\[ecosystem\]"/,
-      /:derived="\{ project, apps: ecosystemApps \}"/,
-    ],
-    [
-      'packages/core/fireux-core/src/runtime/pages/users/[handle].vue',
-      /devJsonData = computed\(\(\) => \(user\.value \? \[user\.value\] : \[\]\)\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'packages/extensions/fireux-places/src/runtime/place/components/Collection/Manager.vue',
-      /useDevCollectionJson\(collection\)/,
-      /:objects="devJsonData"/,
-    ],
-    [
-      'packages/extensions/fireux-places/src/runtime/place/components/Detail.vue',
-      /:objects="\[place\]"/,
-      /:derived="\{\}"/,
-    ],
     [
       'packages/extensions/fireux-companies/src/runtime/place/components/Company/Collection/Manager.vue',
       /useDevCollectionJson\(companies\)/,

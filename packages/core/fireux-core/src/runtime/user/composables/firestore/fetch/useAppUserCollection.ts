@@ -33,9 +33,7 @@ export type UseAppUserCollectionReturn = AppUserCollectionControls & {
   users: ComputedRef<EnrichedAppUser[]>
   fulfilled: ComputedRef<EnrichedAppUser[]>
   usersById: ComputedRef<Map<string, UserIdentitySummary>>
-  userById: (id: string | null | undefined) =>
-    | UserIdentitySummary
-    | undefined
+  userById: (id: string | null | undefined) => UserIdentitySummary | undefined
   joinRequests: ComputedRef<AppAdminJoinRequest[]>
   count: ComputedRef<number>
   outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
@@ -48,9 +46,12 @@ export type UseAppUserCollectionReturn = AppUserCollectionControls & {
  * authenticated App-admin projection. The server fixes both App and database
  * scope; callers cannot select another App or read raw User documents.
  */
-export function useAppUserCollection(): UseAppUserCollectionReturn {
+export function useAppUserCollection(
+  options: { enabled?: ComputedRef<boolean> } = {}
+): UseAppUserCollectionReturn {
   const { appId: configuredAppId } = useFireUXConfig()
   const appId = computed(() => configuredAppId)
+  const enabled = computed(() => options.enabled?.value ?? true)
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
 
@@ -60,6 +61,7 @@ export function useAppUserCollection(): UseAppUserCollectionReturn {
       const user = currentUser.value
       const requestUid = uid.value
       if (
+        !enabled.value ||
         !import.meta.client ||
         !hasAuthState.value ||
         !user ||
@@ -78,7 +80,7 @@ export function useAppUserCollection(): UseAppUserCollectionReturn {
     {
       server: false,
       lazy: true,
-      watch: [hasAuthState, uid],
+      watch: [enabled, hasAuthState, uid],
     }
   )
 
@@ -114,10 +116,14 @@ export function useAppUserCollection(): UseAppUserCollectionReturn {
   const userById = (id: string | null | undefined) =>
     id ? usersById.value.get(id) : undefined
   const count = computed(() => memberships.value.length)
-  const pending = computed(() => !hasAuthState.value || state.pending.value)
+  const pending = computed(
+    () => enabled.value && (!hasAuthState.value || state.pending.value)
+  )
   const error = state.error
   const outcome = computed(() => {
-    if (!uid.value) return hasAuthState.value ? ('idle' as const) : ('pending' as const)
+    if (!enabled.value) return 'idle' as const
+    if (!uid.value)
+      return hasAuthState.value ? ('idle' as const) : ('pending' as const)
     if (pending.value) return 'pending' as const
     if (error.value) return 'error' as const
     return count.value ? ('ready' as const) : ('empty' as const)

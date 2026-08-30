@@ -1,22 +1,14 @@
 <template>
-  <CollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-app-window"
-    secondary-label="Your Apps"
-  >
-    <AppCollectionManager
-      :controller="appsController"
+  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
+    <AppHero :title="pageTitle" :description="pageDescription" />
+    <AppCurrent :apps="appsController.apps.value" />
+    <AppCreate :apps="appsController.apps.value" />
+    <AppCollection
+      :apps="appsController.apps.value"
       title="Ecosystem Apps"
       description="Browse Apps available through this Ecosystem."
     />
-
-    <template #secondary>
-      <AppCollectionMine :controller="appsController" />
-      <AppCTA :controller="appsController" />
-    </template>
-  </CollectionPage>
+  </main>
 </template>
 
 <script setup lang="ts">

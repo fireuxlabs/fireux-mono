@@ -25,42 +25,14 @@
           @click="toggleVariant"
         />
 
-        <span v-if="showCount && isSettled" class="entity-collection__count">
+        <span v-if="showCount" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
     </CollectionHeader>
 
-    <MoleculesStateCard
-      surface="collection"
-      v-if="outcome === 'pending'"
-      title="Loading Ecosystems"
-      description="Finding Ecosystems…"
-      icon="i-lucide-loader-circle"
-      loading
-    />
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else-if="outcome === 'error'"
-      title="Ecosystems unavailable"
-      description="Ecosystems could not be loaded. Please try again."
-      icon="i-lucide-triangle-alert"
-      state="error"
-    >
-      <template #actions>
-        <UButton
-          label="Try again"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          @click="refresh"
-        />
-      </template>
-    </MoleculesStateCard>
-
     <EcosystemCollectionList
-      v-else-if="cardsFiltered.length"
+      v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
@@ -71,51 +43,23 @@
         <EcosystemCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </EcosystemCollectionList>
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else
-      icon="i-lucide-orbit"
-      :title="query ? 'No ecosystems match your search' : 'No ecosystems yet'"
-      :description="
-        query
-          ? 'Try a different search term.'
-          : 'Once ecosystem records are added, they will display here.'
-      "
-    />
-
-    <div>
-      <DevDebugPanel
-        object-origin="fetched"
-        launcher
-        include-route
-        title="Ecosystems (JSON)"
-        context="collection manager · ecosystems · directory projection"
-        :objects="devJsonData"
-        :derived="{}"
-        :default-open="false"
-        @opened="loadDevJson"
-        @closed="unloadDevJson"
-      />
-    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-import { useDevCollectionJson } from '../../../composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
-import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
-import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
+import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
+import { useCollectionVariantCards } from '../../composables/shared/useCollectionVariantCards'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
-} from '../../composables/useEcosystemInterface'
-import type { EcosystemDirectoryController } from '../../../types/directory-controller.types.ts'
+} from '../composables/useEcosystemInterface'
+import type { EcosystemDirectoryEntry } from '../../models/utils/directory.ts'
 
 const props = withDefaults(
   defineProps<{
-    controller: EcosystemDirectoryController
+    ecosystems: EcosystemDirectoryEntry[]
     title?: string
     description?: string
     link?: boolean
@@ -138,19 +82,12 @@ const props = withDefaults(
 )
 
 const rawCollection = computed<EcosystemInterfaceInput[]>(() =>
-  props.controller.ecosystems.value.map((entry) => ({
+  props.ecosystems.map((entry) => ({
     ...entry,
     href: entry.detail_url,
     appCount: entry.app_count,
   }))
 )
-const outcome = computed(() => props.controller.outcome.value)
-const refresh = () => props.controller.refresh?.()
-const isSettled = computed(
-  () => outcome.value === 'ready' || outcome.value === 'empty'
-)
-const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Ecosystems'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)

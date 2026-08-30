@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-08-18
-Ref: e23268507
+Updated: 2026-08-30
+Ref: 2166b112d
 Role: map, not canon
 
 ## Purpose
@@ -81,6 +81,36 @@ authority. It verifies:
 
 The guard validates shape and reachability only. It does not infer whether a
 claim is true, require cosmetic sections, or turn a mention into canon.
+
+## Reviewing the rules themselves
+
+Consistency is not correctness. A rule repeated across living context, concept
+maps, source shape, and guards may still be obsolete, over-broad, or more
+expensive than the problem it prevents. The documentation system must leave
+established rules open to evidence-based review rather than treating successful
+enforcement as architectural proof.
+
+For a rule review, identify the concrete problem, current source evidence, real
+consumers, failure history, enforcement mechanism, and ongoing complexity cost.
+Use the repository-wide result vocabulary in
+`../ai/gpt-context.md#rule-review`: keep, simplify, narrow, replace, remove, or
+unproved. Preserve safety and authority boundaries until a proposed change is
+accepted and independently verified.
+
+Source is behavioral authority, not automatic evidence of architectural merit.
+Do not reopen established rules during ordinary work without a concrete trigger:
+contradictory source, repeated consumer workarounds, accumulating exceptions or
+duplication, recurring enforcement failures, or an explicit architecture audit.
+Age and inconvenience alone are not review evidence.
+
+A recommendation to simplify, narrow, replace, or remove must state its exact
+scope, evidence, affected consumers, safety and authority consequences,
+transition path, and verification. This keeps rule review falsifiable and
+prevents preference from being presented as architectural correction.
+
+This assessment belongs in the smallest relevant living context or concept map
+only when it is a durable conclusion. Temporary investigation notes and
+speculative alternatives do not belong in living documentation.
 
 ## Viewer
 

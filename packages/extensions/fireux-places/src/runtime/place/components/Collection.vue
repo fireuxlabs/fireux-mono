@@ -44,44 +44,13 @@
           @click="toggleVariant"
         />
 
-        <span
-          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-          class="entity-collection__count"
-        >
+        <span v-if="showCount" class="entity-collection__count">
           {{ countLabel }}
         </span>
       </template>
     </CollectionHeader>
 
-    <MoleculesStateCard
-      surface="collection"
-      v-if="outcome === 'pending'"
-      title="Loading places"
-      description="Finding places…"
-      icon="i-lucide-loader-circle"
-      loading
-    />
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else-if="outcome === 'error'"
-      title="Places unavailable"
-      description="Places could not be loaded. Please try again."
-      icon="i-lucide-triangle-alert"
-      state="error"
-    >
-      <template #actions>
-        <UButton
-          label="Try again"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          @click="fetched.refresh"
-        />
-      </template>
-    </MoleculesStateCard>
-
-    <div v-else-if="cardsFiltered.length" class="place-collection__results">
+    <div v-if="cardsFiltered.length" class="place-collection__results">
       <PlaceCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <PlaceCardsPill v-bind="card" :link="linkEnabled" />
@@ -90,15 +59,6 @@
           <PlaceCardsCell v-bind="card" :link="linkEnabled" directory />
         </template>
       </PlaceCollectionList>
-
-      <UAlert
-        v-if="loadMoreError"
-        color="error"
-        variant="soft"
-        icon="i-lucide-circle-alert"
-        title="More places could not be loaded"
-        description="The places already shown are still available."
-      />
 
       <div v-if="hasMore" class="place-collection__more">
         <UButton
@@ -111,54 +71,23 @@
         />
       </div>
     </div>
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else
-      icon="i-lucide-map-pin"
-      :title="
-        query || activeEntityFamily !== 'all'
-          ? 'No places match your filters'
-          : 'No places yet'
-      "
-      :description="
-        query || activeEntityFamily !== 'all'
-          ? 'Try changing the search or entity-family filter.'
-          : 'Published places will appear here when they are ready.'
-      "
-    />
-
-    <div>
-      <DevDebugPanel
-        object-origin="fetched"
-        launcher
-        include-route
-        :title="'Places (JSON)'"
-        context="collection manager · places"
-        :objects="devJsonData"
-        :derived="devJsonDerived"
-        :default-open="false"
-        @opened="loadDevJson"
-        @closed="unloadDevJson"
-      />
-    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed, ref, watch } from 'vue'
-import {
-  usePlaceCollection,
-  usePlaceInterface,
-} from '../../composables/firestore/usePlace'
-import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import { usePlaceInterface } from '../composables/firestore/usePlace'
+import type { BasePlace } from '../composables/firestore/fetch/search/types'
 
 const props = withDefaults(
   defineProps<{
+    places: BasePlace[]
+    hasMore?: boolean
+    loadingMore?: boolean
+    loadMore?: () => Promise<boolean>
     title?: string
     description?: string
     link?: boolean
@@ -183,17 +112,10 @@ const props = withDefaults(
   }
 )
 
-const fetched = usePlaceCollection()
-const collection = computed(() => fetched.collection.value)
-const outcome = computed(() => fetched.outcome.value)
-const hasMore = computed(() => fetched.hasMore.value)
-const loadingMore = computed(() => fetched.loadingMore.value)
-const loadMoreError = computed(() => fetched.loadMoreError.value)
+const collection = computed(() => props.places)
 async function handleLoadMore(): Promise<void> {
-  await fetched.loadMore()
+  await props.loadMore?.()
 }
-const { devJsonData, loadDevJson, unloadDevJson } =
-  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Place directory'))
 const description = computed(() =>
   String(
@@ -296,17 +218,6 @@ watch(
   },
   { immediate: true }
 )
-
-const devJsonDerived = computed(() => ({
-  source: '/api/places',
-  count: collection.value.length,
-  visibleCount: cardsFiltered.value.length,
-  filter: activeEntityFamily.value,
-  query: query.value,
-  hasMore: hasMore.value,
-  pending: outcome.value === 'pending',
-  hasError: outcome.value === 'error',
-}))
 
 const filterButtonLabel = (label: string, count?: number) => {
   const suffix = typeof count === 'number' ? ` (${count})` : ''

@@ -5,22 +5,24 @@
       :kitchen-slug="routeLocator"
     />
     <KitchenDetail
-      v-else
+      v-else-if="kitchen && place && presentation"
       :kitchen="kitchen"
       :place="place"
       :presentation="presentation"
-      :outcome="outcome"
-      @refresh="refresh"
+      :fulfilment="fulfilment"
+      :can-edit-place="canEditPlace"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { setResponseStatus, useSeoMeta } from '#imports'
+import { useFetch, useSeoMeta } from '#imports'
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
+import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
 import { useKitchenSeo } from '../../../kitchen/composables/useKitchenSeo'
+import type { KitchenFulfilment } from '../../../kitchen/models/fulfilment.model'
 
 definePageMeta({
   layout: false,
@@ -44,30 +46,30 @@ const routeLocator = computed(() =>
 )
 const recoveryDescription =
   'This kitchen is not accepting collection orders here right now.'
-const {
-  kitchen,
-  place,
-  presentation,
-  ready,
-  refresh,
-  outcome,
-  missing,
-  failed,
-  statusCode,
-} = useKitchenDetail(
+const { kitchen, place, presentation, ready } = useKitchenDetail(
   computed(() => (isCollectionRecovery.value ? '' : routeLocator.value))
 )
 
-if (isCollectionRecovery.value) {
-  if (import.meta.server) setResponseStatus(404)
-} else {
+if (!isCollectionRecovery.value) {
   await ready
-  if (import.meta.server && missing.value) {
-    setResponseStatus(404)
-  } else if (import.meta.server && failed.value) {
-    setResponseStatus(statusCode.value || 503)
-  }
 }
+
+const emptyFulfilment: KitchenFulfilment = {
+  delivery_zones: [],
+  payment_methods: [],
+}
+const fulfilmentPath = computed(() =>
+  presentation.value?.slug
+    ? `/api/kitchens/${encodeURIComponent(presentation.value.slug)}/fulfilment`
+    : ''
+)
+const { data: fulfilmentData } = useFetch<KitchenFulfilment>(fulfilmentPath, {
+  immediate: Boolean(fulfilmentPath.value),
+  watch: [fulfilmentPath],
+})
+const fulfilment = computed(() => fulfilmentData.value || emptyFulfilment)
+const { isAdmin, isDeveloper } = useUser()
+const canEditPlace = computed(() => Boolean(isAdmin.value || isDeveloper.value))
 
 useKitchenSeo(presentation)
 useSeoMeta({

@@ -10,42 +10,12 @@
         class="kitchen-collection__search"
       />
 
-      <span v-if="showCount && isSettled" class="kitchen-collection__count">
+      <span v-if="showCount" class="kitchen-collection__count">
         {{ countLabel }}
       </span>
     </div>
 
-    <MoleculesStateCard
-      surface="collection"
-      v-if="outcome === 'pending'"
-      title="Loading kitchens"
-      loading
-      icon="i-lucide-loader-circle"
-      description="Finding kitchens…"
-      aria-atomic="true"
-    />
-
-    <MoleculesStateCard
-      surface="collection"
-      v-else-if="outcome === 'error'"
-      title="Kitchens unavailable"
-      description="Kitchens could not be loaded. Please try again."
-      icon="i-lucide-triangle-alert"
-      state="error"
-      aria-atomic="true"
-    >
-      <template #actions>
-        <UButton
-          label="Try again"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-refresh-cw"
-          @click="refreshCollection"
-        />
-      </template>
-    </MoleculesStateCard>
-
-    <div v-else-if="cardsFiltered.length" class="kitchen-collection__results">
+    <div v-if="cardsFiltered.length" class="kitchen-collection__results">
       <KitchenCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <KitchenCardsPill
@@ -64,51 +34,24 @@
         </template>
       </KitchenCollectionList>
     </div>
-
-    <div v-else>
-      <MoleculesStateCard
-        surface="collection"
-        icon="i-lucide-utensils"
-        :title="query ? 'No matching kitchens' : 'No kitchens yet'"
-        :description="
-          query
-            ? 'Try a different kitchen name or location.'
-            : 'Kitchens will appear here when they are added.'
-        "
-      />
-    </div>
-
-    <div>
-      <DevDebugPanel
-        object-origin="fetched"
-        launcher
-        include-route
-        :title="devJsonTitle"
-        :context="devJsonContext"
-        :objects="devJsonData"
-        :derived="{}"
-        :default-open="false"
-        @opened="loadDevJson"
-        @closed="unloadDevJson"
-      />
-    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed } from 'vue'
-import { useKitchenCollection } from '../../composables/firestore/fetch/useKitchenCollection'
-import { useKitchenInterface } from '../../composables/firestore/utils/view/useKitchenInterface'
-import type { KitchenSurface } from '../../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenCollectionRecord } from '../composables/firestore/fetch/useKitchenCollection'
+import { useKitchenInterface } from '../composables/firestore/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../composables/firestore/utils/view/useKitchenInterface'
 
 type KitchenCollectionItem = KitchenSurface
 
 const props = withDefaults(
   defineProps<{
+    kitchens: KitchenCollectionRecord[]
+    canViewHidden?: boolean
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -118,8 +61,6 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
     link?: boolean
     showBadges?: boolean
-    devJsonTitle?: string
-    devJsonContext?: string
   }>(),
   {
     title: 'Kitchen collection',
@@ -131,12 +72,9 @@ const props = withDefaults(
     initialVariant: 'cell',
     link: true,
     showBadges: false,
-    devJsonTitle: 'Kitchens (JSON)',
-    devJsonContext: 'collection manager · server-resolved Kitchen[]',
   }
 )
 
-const fetched = useKitchenCollection()
 const {
   interface: makeCard,
   pill: makePill,
@@ -144,20 +82,10 @@ const {
   surface,
 } = useKitchenInterface()
 const collectionSurface = computed<KitchenCollectionItem[]>(() =>
-  fetched.collection.value.flatMap((kitchen) => {
+  props.kitchens.flatMap((kitchen) => {
     const item = surface({ kitchen, place: kitchen.place })
     return item ? [item] : []
   })
-)
-const outcome = computed(() => fetched.outcome.value)
-const refreshCollection = async () => {
-  await fetched.refresh()
-}
-const isSettled = computed(
-  () => outcome.value === 'ready' || outcome.value === 'empty'
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(
-  fetched.collection
 )
 const title = computed(() => String(props.title || 'Kitchen collection'))
 const description = computed(() =>
@@ -172,15 +100,7 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const showBadges = computed(
-  () => props.showBadges !== false || fetched.canViewHidden.value
-)
-const devJsonTitle = computed(() =>
-  String(props.devJsonTitle || 'Kitchens (JSON)').trim()
-)
-const devJsonContext = computed(() =>
-  String(
-    props.devJsonContext || 'collection manager · server-resolved Kitchen[]'
-  ).trim()
+  () => props.showBadges !== false || props.canViewHidden
 )
 const collection = computed<KitchenCollectionItem[]>(() =>
   collectionSurface.value.filter((row): row is KitchenCollectionItem =>

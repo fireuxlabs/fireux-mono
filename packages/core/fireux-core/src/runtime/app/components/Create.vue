@@ -31,13 +31,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMyApps } from '../composables/firestore/utils/useMyApps'
-import type { AppCollectionController } from '../composables/useApps'
+import type { App } from '../models/app.model'
 
 const props = defineProps<{
-  controller: AppCollectionController
+  apps: App[]
 }>()
 
-const { hasApps } = useMyApps(props.controller.apps)
+const apps = computed(() => props.apps)
+const { hasApps } = useMyApps(apps)
 const title = computed(() => (hasApps.value ? 'My apps' : 'Apps'))
 const description = computed(() =>
   hasApps.value

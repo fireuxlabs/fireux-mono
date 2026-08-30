@@ -8,11 +8,7 @@
     variant="naked"
   >
     <template #links>
-      <UButton
-        to="/places/create"
-        icon="i-lucide-map-pin-plus"
-        color="primary"
-      >
+      <UButton to="/places/create" icon="i-lucide-map-pin-plus" color="primary">
         Start Place onboarding
       </UButton>
     </template>

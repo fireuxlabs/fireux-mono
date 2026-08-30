@@ -43,7 +43,7 @@
         </template>
       </UCard>
 
-      <AppCollectionManager :controller="publicAppsController" />
+      <AppCollection :apps="publicAppsController.apps.value" />
     </UPageBody>
   </UPage>
 </template>

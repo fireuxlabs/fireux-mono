@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-28
-Ref: f061af90a
+Updated: 2026-08-30
+Ref: 2166b112d
 Role: living context
 Scope: repository-wide
 
@@ -199,6 +199,39 @@ Use this order:
 
 User decisions are product authority for their stated scope. Experiments remain
 reversible and do not become durable context or guards until accepted and proved.
+
+## Rule review
+
+A documented or guarded rule is evidence of deliberate enforcement, not proof
+that the rule is still useful or correctly scoped. Review established rules
+against current source, real consumers, recurring failures, and the cost of the
+constraint. Ask what problem the rule prevents, whether that problem still
+exists, whether an experienced reader could infer the boundary from the system,
+and whether the rule introduces ceremony, duplication, or avoidable indirection.
+Current source proves how the repository behaves; it does not by itself prove
+that the behavior or architecture is desirable.
+
+Ordinary work follows established rules. Reopen a rule when current source
+contradicts it, real consumers repeatedly work around it, exceptions or
+duplication accumulate, enforcement causes recurring failures, or the user asks
+for an architectural review. Age and inconvenience alone are not evidence that
+a rule is stale or wrong.
+
+Classify the result explicitly:
+
+- **Keep**: current evidence supports the rule and its scope.
+- **Simplify**: the intent is sound but the mechanism is needlessly elaborate.
+- **Narrow**: the rule is useful only within a smaller proved scope.
+- **Replace**: the problem is real but the present rule solves it poorly.
+- **Remove**: no current evidence justifies the constraint.
+- **Unproved**: the rule is plausible but needs comparison or an experiment.
+
+Do not weaken a safety or authority boundary merely because it is inconvenient.
+Do not preserve a hierarchy merely because documentation and guards agree. Keep
+changes reversible until the replacement is accepted and independently proved.
+Any proposal to simplify, narrow, replace, or remove a rule must name the exact
+scope, current evidence, affected consumers, safety and authority consequences,
+replacement or removal path, and verification that would prove the outcome.
 
 ## Living-context maintenance
 

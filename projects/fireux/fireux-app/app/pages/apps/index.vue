@@ -1,22 +1,14 @@
 <template>
-  <CollectionPage
-    eyebrow="Discover"
-    title="Apps"
-    description="Browse every App across the FireUX platform."
-    icon="i-lucide-app-window"
-    secondary-label="Your Apps"
-  >
-    <AppCollectionManager
-      :controller="appsController"
+  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
+    <AppHero description="Browse every App across the FireUX platform." />
+    <AppCurrent :apps="appsController.apps.value" />
+    <AppCreate :apps="appsController.apps.value" />
+    <AppCollection
+      :apps="appsController.apps.value"
       title="Platform Apps"
       description="All Apps from their canonical ecosystem collections."
     />
-
-    <template #secondary>
-      <AppCollectionMine :controller="appsController" />
-      <AppCTA :controller="appsController" />
-    </template>
-  </CollectionPage>
+  </main>
 </template>
 
 <script setup lang="ts">

@@ -42,15 +42,15 @@
             </div>
           </div>
 
-<DevDebugPanel
-  object-origin="fetched"
+          <DevDebugPanel
+            object-origin="fetched"
             launcher
             include-route
             v-if="signedInUserJson"
             :title="'Current user (JSON)'"
             :context="'dev users · signed-in user · resolved user payload'"
             :objects="signedInUserJson"
-  :derived="{}"
+            :derived="{}"
             :default-open="false"
           />
         </div>
@@ -87,7 +87,7 @@
         </template>
       </UCard>
 
-      <UserCollectionManager />
+      <UserCollection :users="users" />
     </UPageBody>
   </UPage>
 </template>

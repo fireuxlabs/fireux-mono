@@ -25,15 +25,16 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useMyApps } from '../../composables/firestore/utils/useMyApps'
-import { useAppInterface } from '../../composables/useAppInterface'
-import type { AppCollectionController } from '../../composables/useApps'
+import { useMyApps } from '../composables/firestore/utils/useMyApps'
+import { useAppInterface } from '../composables/useAppInterface'
+import type { App } from '../models/app.model'
 
 const props = defineProps<{
-  controller: AppCollectionController
+  apps: App[]
 }>()
 
-const { myApps } = useMyApps(props.controller.apps)
+const apps = computed(() => props.apps)
+const { myApps } = useMyApps(apps)
 const { cell: appToCell } = useAppInterface()
 
 const appCards = computed(() =>
