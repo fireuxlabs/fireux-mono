@@ -8,6 +8,7 @@ import type { PlaceUpsertInput } from '../../../models/place-onboarding.model.ts
 import type {
   PlaceOnboardingCompleteInput,
   PlaceOnboardingCompleteResult,
+  PlaceOnboardingEnrichment,
   PlaceOnboardingPreview,
 } from '../../../models/place-onboarding.model.ts'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
@@ -75,9 +76,7 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     return result
   }
 
-  async function completePlaceOnboarding(
-    input: PlaceOnboardingCompleteInput
-  ) {
+  async function completePlaceOnboarding(input: PlaceOnboardingCompleteInput) {
     const id = canonicalPlaceId(input.id)
     if (!id) throw new Error('Choose a Place before continuing.')
     const result = await $fetch<PlaceOnboardingCompleteResult>(
@@ -89,15 +88,28 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       }
     )
     if (result?.ok !== true || result.id !== id) {
-      throw new Error('[usePlaceCreate] Place onboarding completion was invalid.')
+      throw new Error(
+        '[usePlaceCreate] Place onboarding completion was invalid.'
+      )
     }
     return result
+  }
+
+  async function enrichPlaceOnboarding(idValue: string) {
+    const id = canonicalPlaceId(idValue)
+    if (!id) throw new Error('Choose a Place before continuing.')
+    return $fetch<PlaceOnboardingEnrichment>('/api/places/onboarding/enrich', {
+      method: 'POST',
+      headers: await authHeaders(),
+      body: { id },
+    })
   }
 
   return {
     completePlaceOnboarding,
     createPlan: PlaceCreatePlan,
     ensurePlaceExists,
+    enrichPlaceOnboarding,
     createPlace: ensurePlaceExists,
     previewPlaceOnboarding,
   }

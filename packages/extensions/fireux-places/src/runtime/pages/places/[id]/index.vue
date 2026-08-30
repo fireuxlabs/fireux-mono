@@ -13,13 +13,10 @@ import { usePlaceDetail } from '../../../place/composables/usePlaceDetail'
 definePageMeta({
   layout: 'default',
   title: 'Place',
-  description: 'View a saved place.',
-  head: { title: 'Place' },
+  description: 'View Place details.',
 })
 
 const routeLocator = useRouteParam('id')
-const { place, ready } = usePlaceDetail({
-  locator: routeLocator.value,
-})
+const { place, ready } = usePlaceDetail(routeLocator)
 await ready
 </script>

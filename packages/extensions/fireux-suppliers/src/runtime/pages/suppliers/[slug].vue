@@ -11,10 +11,9 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { useSupplierDetail } from '../../supplier/composables/useSupplierDetail'
 
 definePageMeta({
-  layout: false,
+  layout: 'default',
   title: 'Supplier',
-  description: 'View a supplier.',
-  name: 'SupplierDetailPage',
+  description: 'View Supplier details.',
 })
 
 const routeKey = useRouteParam('slug')

@@ -130,6 +130,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
+import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -164,6 +165,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
+const appContext = useCurrentAppContext()
 const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 const {
   activeStepId,
@@ -272,6 +274,7 @@ async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
   if (props.selectWorkspaceOnComplete) {
+    await appContext.refresh()
     setKitchenWorkspaceSelection({ kitchenId: completion.value.kitchen_id })
   }
   emit('created', completion.value)

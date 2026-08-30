@@ -9,9 +9,7 @@
 <script setup lang="ts">
 import { usePlaceDetail } from 'fireux-places/runtime/place/composables/usePlaceDetail'
 
-const { place, ready } = usePlaceDetail({
-  locator: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
-})
+const { place, ready } = usePlaceDetail('ChIJE-GP3-Kjj0cRzAv0WviwcsY')
 await ready
 
 definePageMeta({

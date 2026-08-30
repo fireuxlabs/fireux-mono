@@ -88,6 +88,24 @@ export function storedHttpsImage(value: unknown) {
   }
 }
 
+export function publicHttpsImage(value: unknown) {
+  const candidate = text(value)
+  if (!candidate || candidate.length > 2_048) return ''
+  try {
+    const url = new URL(candidate)
+    return url.protocol === 'https:' && !url.username && !url.password
+      ? url.toString()
+      : ''
+  } catch {
+    return ''
+  }
+}
+
+function boundedIdentityText(value: unknown, maxLength: number) {
+  const candidate = text(value).replace(/\s+/g, ' ')
+  return candidate && candidate.length <= maxLength ? candidate : ''
+}
+
 export function storedBrandPalette(value: Record<string, unknown>) {
   const result = parseBrandPalette(value.brand_palette)
   if (!result.ok) {
@@ -106,6 +124,9 @@ export function completeInput(value: unknown) {
     'default_currency_code',
     'timezone',
     'image_url',
+    'logo_image',
+    'short_name',
+    'tagline',
     'brand_palette',
   ])
   const unsupported = Object.keys(source).find((key) => !allowed.has(key))
@@ -124,6 +145,9 @@ export function completeInput(value: unknown) {
     badRequest('Confirm a valid IANA timezone, such as Europe/Zurich.')
   }
   const imageUrl = httpsImage(source.image_url, id)
+  const logoImage = publicHttpsImage(source.logo_image)
+  const shortName = boundedIdentityText(source.short_name, 80)
+  const tagline = boundedIdentityText(source.tagline, 180)
   const brandPaletteResult = parseBrandPalette(source.brand_palette)
   if (!brandPaletteResult.ok) badRequest(brandPaletteResult.error)
   const brandPalette = brandPaletteResult.value
@@ -134,6 +158,9 @@ export function completeInput(value: unknown) {
       timezone,
     },
     ...(imageUrl ? { imageUrl } : {}),
+    ...(logoImage ? { logoImage } : {}),
+    ...(shortName ? { shortName } : {}),
+    ...(tagline ? { tagline } : {}),
     ...(Object.keys(brandPalette).length ? { brandPalette } : {}),
   }
 }

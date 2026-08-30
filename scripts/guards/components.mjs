@@ -525,56 +525,150 @@ function validateCardSpecimen(repoRoot, violations) {
 }
 
 function validateEntityDetailPresentation(repoRoot, violations) {
-  const detailRoutes = new Map([
+  const parkedPropertyDetail =
+    'packages/extensions/fireux-properties/src/runtime/pages/properties/[slug].vue'
+  if (existsSync(path.join(repoRoot, parkedPropertyDetail))) {
+    violations.push(
+      `${parkedPropertyDetail} (Property has no public Detail contract)`
+    )
+  }
+
+  const detailPageMeta = [
     [
       'packages/core/fireux-core/src/runtime/pages/apps/[id].vue',
-      '<AppDetail v-if="app" :app="app"',
+      'App',
+      "'default'",
     ],
+    ['projects/fireux/fireux-app/app/pages/apps/[id].vue', 'App', "'default'"],
     [
       'packages/core/fireux-core/src/runtime/pages/users/[handle]/index.vue',
-      '<UserDetail v-if="user" :user="user"',
+      'User',
+      "'default'",
     ],
     [
       'projects/misebox/misebox-app/app/pages/users/[handle]/index.vue',
-      '<UserDetail v-if="user" :user="user"',
-    ],
-    [
-      'projects/fireux/fireux-app/app/pages/apps/[id].vue',
-      '<DirectoryAppDetail v-if="app" :app="app"',
+      'User',
+      "'default'",
     ],
     [
       'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
-      '<DirectoryEcosystemDetail v-if="ecosystem" :ecosystem="ecosystem"',
+      'Ecosystem',
+      "'default'",
     ],
     [
       'projects/fireux/fireux-app/app/pages/projects/[id].vue',
-      '<DirectoryProjectDetail v-if="project" :project="project"',
+      'Project',
+      "'default'",
     ],
     [
       'packages/extensions/fireux-places/src/runtime/pages/places/[id]/index.vue',
-      '<PlaceDetail v-if="place" :place="place"',
+      'Place',
+      "'default'",
     ],
     [
       'packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/index.vue',
-      '<KitchenDetail v-if="kitchen" :kitchen="kitchen"',
+      'Kitchen',
+      "'default'",
     ],
     [
       'packages/extensions/fireux-jobs/src/runtime/pages/jobs/[id].vue',
-      '<JobDetail v-if="job" :job="job"',
+      'Job',
+      "'default'",
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/menus/[menuId]/index.vue',
+      'Menu',
+      'false',
     ],
     [
       'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue',
-      '<SupplierDetail v-if="supplier" :supplier="supplier"',
+      'Supplier',
+      "'default'",
     ],
     [
       'packages/extensions/fireux-properties/src/runtime/pages/portfolios/[id].vue',
-      '<PortfolioDetail v-if="portfolio" :portfolio="portfolio"',
+      'Portfolio',
+      "'default'",
+    ],
+  ]
+  for (const [routePath, title, layout] of detailPageMeta) {
+    const source = readFileSync(path.join(repoRoot, routePath), 'utf8')
+    for (const contract of [
+      `layout: ${layout}`,
+      `title: '${title}'`,
+      `description: 'View ${title} details.'`,
+    ]) {
+      if (!source.includes(contract)) {
+        violations.push(
+          `${routePath} (missing FL Detail metadata: ${contract})`
+        )
+      }
+    }
+    if (/\n\s*name:\s*['"]/.test(source)) {
+      violations.push(`${routePath} (must use Nuxt's generated route name)`)
+    }
+  }
+
+  const detailRoutes = new Map([
+    [
+      'packages/core/fireux-core/src/runtime/pages/apps/[id].vue',
+      ['<AppDetail v-if="app" :app="app"', 'useAppDetail'],
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/pages/users/[handle]/index.vue',
+      ['<UserDetail v-if="user" :user="user"', 'useUserDetail'],
+    ],
+    [
+      'projects/misebox/misebox-app/app/pages/users/[handle]/index.vue',
+      ['<UserDetail v-if="user" :user="user"', 'useUserDetail'],
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/apps/[id].vue',
+      ['<AppDetail v-if="app" :app="app"', 'usePlatformAppDetail'],
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
+      [
+        '<EcosystemDetail v-if="ecosystem" :ecosystem="ecosystem"',
+        'useEcosystemDetail',
+      ],
+    ],
+    [
+      'projects/fireux/fireux-app/app/pages/projects/[id].vue',
+      ['<ProjectDetail v-if="project" :project="project"', 'usePlatformProjectDetail'],
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/pages/places/[id]/index.vue',
+      ['<PlaceDetail v-if="place" :place="place"', 'usePlaceDetail'],
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/index.vue',
+      ['<KitchenDetail v-if="kitchen" :kitchen="kitchen"', 'useKitchenDetail'],
+    ],
+    [
+      'packages/extensions/fireux-jobs/src/runtime/pages/jobs/[id].vue',
+      ['<JobDetail v-if="job" :job="job"', 'useJobDetail'],
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/menus/[menuId]/index.vue',
+      ['<MenuDetail v-if="menu" :menu="menu"', 'useMenuDetail'],
+    ],
+    [
+      'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue',
+      ['<SupplierDetail v-if="supplier" :supplier="supplier"', 'useSupplierDetail'],
+    ],
+    [
+      'packages/extensions/fireux-properties/src/runtime/pages/portfolios/[id].vue',
+      ['<PortfolioDetail v-if="portfolio" :portfolio="portfolio"', 'usePortfolioDetail'],
     ],
   ])
-  for (const [routePath, contract] of detailRoutes) {
+  for (const [routePath, [componentContract, readerContract]] of detailRoutes) {
     const source = readFileSync(path.join(repoRoot, routePath), 'utf8')
-    if (!source.includes(contract)) {
+    if (!source.includes(componentContract)) {
       violations.push(`${routePath} (missing FL one-object Detail boundary)`)
+    }
+    if (!source.includes(readerContract) || !source.includes('await ready')) {
+      violations.push(`${routePath} (missing FL route-owned Detail acquisition)`)
     }
   }
 
@@ -593,10 +687,6 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     ],
     [
       'packages/extensions/fireux-places/src/runtime/place/components/Detail.vue',
-      'PlaceHeader',
-    ],
-    [
-      'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Detail.vue',
       'PlaceHeader',
     ],
   ])
@@ -630,12 +720,15 @@ function validateEntityDetailPresentation(repoRoot, violations) {
   )
   if (
     supplierDetailSource.includes('useAsyncData') ||
-    !supplierDetailSource.includes('useSupplierDetail(') ||
+    supplierDetailSource.includes('useSupplierDetail(') ||
     !supplierDetailSource.includes('supplier: Supplier') ||
-    !supplierDetailSource.includes('SupplierDetailState')
+    !supplierDetailSource.includes('SupplierDetailHeader') ||
+    !supplierDetailSource.includes('SupplierDetailContent') ||
+    !supplierDetailSource.includes('SupplierDetailCompany') ||
+    !supplierDetailSource.includes('SupplierDetailAdmin')
   ) {
     violations.push(
-      `${supplierDetailPath} (must render the server-resolved canonical Place beside the canonical Supplier)`
+      `${supplierDetailPath} (must compose the canonical Supplier without reacquiring its root)`
     )
   }
 

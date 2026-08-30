@@ -11,11 +11,9 @@ import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRoutePa
 import { useKitchenDetail } from '../../../kitchen/composables/useKitchenDetail'
 
 definePageMeta({
-  layout: false,
-  middleware: 'menu-projection-layout',
+  layout: 'default',
   title: 'Kitchen',
-  description: 'View a saved kitchen.',
-  name: 'KitchensDetailPage',
+  description: 'View Kitchen details.',
 })
 
 const routeLocator = useRouteParam('slug')

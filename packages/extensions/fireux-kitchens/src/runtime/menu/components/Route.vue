@@ -2,7 +2,7 @@
   <MenuBrowse
     v-if="isBrowse"
     :menu-id="menuTarget.menuId"
-    :menu-route-scope="props.menuRouteScope"
+    :menu-route-scope="menuRouteScope"
     page-canvas
     propagate-response-status
   />
@@ -11,7 +11,7 @@
     v-else-if="isOrder"
     :menu-id="menuTarget.menuId"
     :menu-context="orderContext"
-    :menu-route-scope="props.menuRouteScope"
+    :menu-route-scope="menuRouteScope"
     page-canvas
     propagate-response-status
   />
@@ -21,17 +21,26 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   menuRouteProjection,
   parseMenuRouteTarget,
+  rootMenuRouteScope,
+  tenantMenuRouteScope,
   type MenuRouteScope,
 } from '../../kitchen/utils/kitchen-menu-route'
 
 const props = defineProps<{
-  menuRouteScope: MenuRouteScope
+  menuRouteScope?: MenuRouteScope
   routeMenuId: unknown
 }>()
 
+const fireux = useFireUXConfig()
+const menuRouteScope = computed(
+  () =>
+    props.menuRouteScope ??
+    (fireux.isTenant ? tenantMenuRouteScope() : rootMenuRouteScope())
+)
 const menuTarget = computed(() => parseMenuRouteTarget(props.routeMenuId))
 const projection = computed(() => menuRouteProjection(menuTarget.value.context))
 const isBrowse = computed(() => projection.value === 'browse')
@@ -50,8 +59,8 @@ const endpoint = computed(
 )
 const query = computed(() => {
   const value = {
-    ...(props.menuRouteScope.kind === 'directory'
-      ? { kitchenSlug: props.menuRouteScope.kitchenSlug }
+    ...(menuRouteScope.value.kind === 'directory'
+      ? { kitchenSlug: menuRouteScope.value.kitchenSlug }
       : {}),
     ...(projection.value === 'diagnostic'
       ? { context: menuTarget.value.context }

@@ -1,24 +1,24 @@
 <template>
-  <MenuRoute :menu-route-scope="menuRouteScope" :route-menu-id="routeMenuId" />
+  <UPage>
+    <UPageBody>
+      <MenuDetail v-if="menu" :menu="menu" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
-import {
-  rootMenuRouteScope,
-  tenantMenuRouteScope,
-} from '../../../kitchen/utils/kitchen-menu-route'
+import { useMenuDetail } from '../../../menu/composables/useMenuDetail'
 
 definePageMeta({
+  layout: false,
+  title: 'Menu',
+  description: 'View Menu details.',
   middleware: ['menu-tenant-route', 'menu-projection-layout'],
   menuProjection: true,
-  name: 'MenuPage',
 })
 
-const fireux = useFireUXConfig()
 const routeMenuId = useRouteParam('menuId')
-const menuRouteScope = fireux.isTenant
-  ? tenantMenuRouteScope()
-  : rootMenuRouteScope()
+const { menu, ready } = useMenuDetail(routeMenuId)
+await ready
 </script>

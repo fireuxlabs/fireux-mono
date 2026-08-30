@@ -22,6 +22,14 @@
         <dt class="form-text-muted">Address</dt>
         <dd>{{ address }}</dd>
       </div>
+      <div v-if="place.short_name">
+        <dt class="form-text-muted">Short name</dt>
+        <dd>{{ place.short_name }}</dd>
+      </div>
+      <div v-if="place.tagline">
+        <dt class="form-text-muted">Tagline</dt>
+        <dd>{{ place.tagline }}</dd>
+      </div>
       <div v-if="currencyCode">
         <dt class="form-text-muted">Currency</dt>
         <dd>{{ currencyCode }}</dd>
@@ -59,7 +67,9 @@ const objectUrl = ref('')
 let previewedFile: File | null = null
 
 const previewSource = computed(
-  () => objectUrl.value || String(props.place.image_url || '').trim()
+  () =>
+    objectUrl.value ||
+    String(props.place.image_url || props.place.logo_image || '').trim()
 )
 
 const address = computed(() =>
@@ -72,7 +82,9 @@ const address = computed(() =>
 
 const logoLabel = computed(() => {
   if (props.imageFile) return 'Ready to upload'
-  if (String(props.place.image_url || '').trim()) return 'Existing logo'
+  if (String(props.place.image_url || props.place.logo_image || '').trim()) {
+    return 'Website logo candidate'
+  }
   return 'Skipped for now'
 })
 

@@ -6,6 +6,9 @@ export type PlaceOnboardingRequest = {
   default_currency_code?: unknown
   timezone?: unknown
   image_url?: unknown
+  logo_image?: unknown
+  short_name?: unknown
+  tagline?: unknown
   brand_palette?: unknown
 }
 

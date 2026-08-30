@@ -13,6 +13,16 @@ export type PlaceOnboardingDefaults = {
   timezone: string
 }
 
+export type PlaceOnboardingIdentity = {
+  short_name: string
+  tagline: string
+}
+
+export type PlaceOnboardingEnrichment = Partial<PlaceOnboardingIdentity> & {
+  id: string
+  generated: boolean
+}
+
 export type PlaceOnboardingPreview = {
   id: string
   existing: boolean
@@ -21,6 +31,9 @@ export type PlaceOnboardingPreview = {
   current?: Partial<PlaceOnboardingDefaults>
   suggestions?: Partial<PlaceOnboardingDefaults>
   image_url?: string
+  logo_image?: string
+  short_name?: string
+  tagline?: string
   brand_palette?: SparseBrandPalette
 }
 
@@ -36,6 +49,9 @@ export type PlaceOnboardingCompleteResult = {
 
 export type PlaceOnboardingCompleteInput = PlaceOnboardingDefaults & {
   id: string
+  short_name?: string
+  tagline?: string
+  logo_image?: string
   image_url?: string
   brand_palette?: SparseBrandPalette
 }

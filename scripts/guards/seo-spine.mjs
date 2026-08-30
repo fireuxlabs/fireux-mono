@@ -231,11 +231,11 @@ export async function run({ repoRoot }) {
   )
   const fireuxAppDetail = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Directory/App/Detail.vue'
+    'projects/fireux/fireux-app/app/components/App/Detail.vue'
   )
   const fireuxEcosystemDetail = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Directory/Ecosystem/Detail.vue'
+    'projects/fireux/fireux-app/app/components/Ecosystem/Detail.vue'
   )
   for (const [name, source] of [
     ['FireUX App Detail', fireuxAppDetail],
@@ -315,8 +315,7 @@ export async function run({ repoRoot }) {
   }
   for (const marker of [
     'isDirectoryAppIndexable',
-    'ecosystem.value.name',
-    "isIndexable.value ? 'index, follow' : 'noindex, nofollow'",
+    "isDirectoryAppIndexable(props.app.id) ? 'index, follow' : 'noindex, nofollow'",
   ]) {
     if (!fireuxAppDetail.includes(marker)) {
       violations.push(`FireUX App relationship detail must retain ${marker}.`)

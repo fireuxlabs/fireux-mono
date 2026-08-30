@@ -68,13 +68,11 @@ import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import type { Kitchen } from '../../models/kitchen.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
 import type { KitchenDetailPresentation } from '../../models/kitchen-detail.model.ts'
-import { useKitchenDetail } from '../../composables/useKitchenDetail'
 import { useKitchenSeo } from '../../composables/useKitchenSeo'
 
 const props = defineProps<{ kitchen: Kitchen }>()
-const { presentation } = useKitchenDetail(computed(() => props.kitchen.slug))
 const displayKitchen = computed<KitchenDetailPresentation | null>(
-  () => presentation.value
+  () => props.kitchen as unknown as KitchenDetailPresentation
 )
 const { isAdmin, isDeveloper } = useUser()
 const canEditPlace = computed(() => isAdmin.value || isDeveloper.value)

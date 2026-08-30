@@ -29,6 +29,7 @@ import {
   suggestions,
 } from './values'
 import { fetchVerifiedGooglePlacePayload } from '../../integration/google/details'
+import { isSameSite } from '../../integration/logo/candidates'
 
 export async function previewPlaceOnboarding(
   event: H3Event,
@@ -50,6 +51,13 @@ export async function previewPlaceOnboarding(
     const timezone = current.timezone || (await resolveTimezone(event, place))
     const suggested = suggestions(place, timezone)
     const imageUrl = storedHttpsImage(place.image_url)
+    const logoImage = storedHttpsImage(place.logo_image)
+    const shortName = String(place.short_name || '')
+      .trim()
+      .slice(0, 80)
+    const tagline = String(place.tagline || '')
+      .trim()
+      .slice(0, 180)
     const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
@@ -59,6 +67,9 @@ export async function previewPlaceOnboarding(
       ...(Object.keys(current).length ? { current } : {}),
       ...(Object.keys(suggested).length ? { suggestions: suggested } : {}),
       ...(imageUrl ? { image_url: imageUrl } : {}),
+      ...(logoImage ? { logo_image: logoImage } : {}),
+      ...(shortName ? { short_name: shortName } : {}),
+      ...(tagline ? { tagline } : {}),
       ...(Object.keys(brandPalette).length
         ? { brand_palette: brandPalette }
         : {}),
@@ -90,6 +101,17 @@ export async function completePlaceOnboarding(
   const provider = existing.exists
     ? null
     : await fetchVerifiedGooglePlacePayload(event, requested.id)
+  const sourcePlace = existing.exists ? existing.data() || {} : provider || {}
+  const logoImage =
+    'logoImage' in requested &&
+    typeof sourcePlace.website === 'string' &&
+    isSameSite(sourcePlace.website, requested.logoImage)
+      ? requested.logoImage
+      : undefined
+
+  if ('logoImage' in requested && !logoImage) {
+    badRequest('Place logo must come from the confirmed Place website.')
+  }
 
   const memberships = serverAppUsersTarget(actor.runtimeAppId)
   const places = FIRESTORE_MUTATION_TARGETS.places
@@ -112,6 +134,11 @@ export async function completePlaceOnboarding(
         ...provider,
         ...requested.defaults,
         ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
+        ...(logoImage ? { logo_image: logoImage } : {}),
+        ...('shortName' in requested
+          ? { short_name: requested.shortName }
+          : {}),
+        ...('tagline' in requested ? { tagline: requested.tagline } : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -137,6 +164,7 @@ export async function completePlaceOnboarding(
     const place = snapshot.data || {}
     const current = currentDefaults(place)
     const storedImage = storedHttpsImage(place.image_url)
+    const storedLogo = storedHttpsImage(place.logo_image)
     const currentBrandPalette = storedBrandPalette(place)
     const patch: Record<string, unknown> = {}
     if (!current.default_currency_code) {
@@ -145,6 +173,13 @@ export async function completePlaceOnboarding(
     if (!current.timezone) patch.timezone = requested.defaults.timezone
     if (!storedImage && 'imageUrl' in requested) {
       patch.image_url = requested.imageUrl
+    }
+    if (!storedLogo && logoImage) patch.logo_image = logoImage
+    if (!String(place.short_name || '').trim() && 'shortName' in requested) {
+      patch.short_name = requested.shortName
+    }
+    if (!String(place.tagline || '').trim() && 'tagline' in requested) {
+      patch.tagline = requested.tagline
     }
     if (
       !Object.keys(currentBrandPalette).length &&

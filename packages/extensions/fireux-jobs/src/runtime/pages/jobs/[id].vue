@@ -7,19 +7,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useJobDetail } from '../../job/composables/useJobDetail'
 
-definePageMeta({ layout: 'default' })
-
-const route = useRoute()
-const jobId = computed(() => {
-  const raw = route.params.id
-  return Array.isArray(raw)
-    ? (raw[0]?.toString() ?? null)
-    : (raw?.toString() ?? null)
+definePageMeta({
+  layout: 'default',
+  title: 'Job',
+  description: 'View Job details.',
 })
+
+const jobId = useRouteParam('id')
 const { job, ready } = useJobDetail(jobId)
 await ready
 </script>

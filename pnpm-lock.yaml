@@ -607,6 +607,9 @@ importers:
 
   packages/extensions/fireux-places:
     dependencies:
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../fireux-ai
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core

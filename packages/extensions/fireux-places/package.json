@@ -55,6 +55,7 @@
     "pnpm": "11.9.0"
   },
   "dependencies": {
+    "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*"
   },
   "peerDependencies": {

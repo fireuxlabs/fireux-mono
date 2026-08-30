@@ -1,6 +1,6 @@
 import { useUser } from 'fireux-core/runtime/user/composables/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, shallowRef, watch } from 'vue'
+import { computed, shallowRef, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { usePlaceFetch, usePlaceSeo } from './firestore/usePlace'
 import type {
   PlaceBusinessHoursDay,
@@ -9,8 +9,8 @@ import type {
 import { type Place } from '../models/place.model.ts'
 import { normalizePlace } from '../utils/normalize-place'
 
-export function usePlaceDetail(props: { locator: string }) {
-  const locator = computed(() => String(props.locator || '').trim())
+export function usePlaceDetail(routeLocator: MaybeRefOrGetter<string>) {
+  const locator = computed(() => String(toValue(routeLocator) || '').trim())
   const {
     place: loadedPlace,
     outcome,

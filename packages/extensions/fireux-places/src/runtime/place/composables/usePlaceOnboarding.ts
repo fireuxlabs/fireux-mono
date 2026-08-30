@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: confirm local defaults and stage optional branding before trusted completion.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage sparse brand colours without copying inherited defaults.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: expose the singular Place domain adapter over usePlaceCreate.
-import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
+import { useOnboarding } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
@@ -17,49 +17,20 @@ import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
 } from '../utils/place-spine'
+import {
+  enrichPlaceDraft,
+  hasPhysicalPlaceLocation,
+  placeOnboardingErrorMessage,
+  placeOnboardingSteps,
+  placeOnboardingText as text,
+  type PlaceOnboardingResult,
+  type PlaceOnboardingSelection,
+  type PlaceOnboardingStepId,
+} from '../utils/place-onboarding'
 
-export type PlaceOnboardingStepId =
-  | 'find'
-  | 'defaults'
-  | 'brand'
-  | 'review'
+export type { PlaceOnboardingResult, PlaceOnboardingSelection }
 
-export type PlaceOnboardingSelection = {
-  placeId: string
-  place: PlaceUpsertInput
-}
-
-export type PlaceOnboardingResult = {
-  id: string
-  path: string
-}
-
-const text = (value: unknown) => String(value ?? '').trim()
-
-function hasPhysicalLocation(place: PlaceUpsertInput | null) {
-  if (!place) return false
-  const lat = Number(place.lat)
-  const lng = Number(place.lng)
-  return Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0)
-}
-
-function errorMessage(error: unknown) {
-  if (error && typeof error === 'object') {
-    const candidate = error as {
-      data?: { statusMessage?: unknown; message?: unknown }
-      statusMessage?: unknown
-      message?: unknown
-    }
-    const message = text(
-      candidate.data?.statusMessage ||
-      candidate.data?.message ||
-      candidate.statusMessage ||
-      candidate.message
-    )
-    if (message) return message
-  }
-  return 'Unable to add this Place right now.'
-}
+export type { PlaceOnboardingStepId }
 
 export function usePlaceOnboarding() {
   const draft = ref<PlaceUpsertInput | null>(null)
@@ -72,6 +43,7 @@ export function usePlaceOnboarding() {
   let selectionSequence = 0
   const {
     completePlaceOnboarding,
+    enrichPlaceOnboarding,
     ensurePlaceExists,
     previewPlaceOnboarding,
   } = usePlaceCreate()
@@ -79,27 +51,35 @@ export function usePlaceOnboarding() {
 
   const isExisting = computed(() => selectionKind.value === 'existing')
   const canConfigure = computed(() => preview.value?.can_configure === true)
-  const needsDefaults = computed(() => Boolean(
-    preview.value &&
-    canConfigure.value &&
-    preview.value.requires_defaults
-  ))
-  const canAddBrand = computed(() => Boolean(
-    preview.value &&
-    canConfigure.value &&
-    (!preview.value.image_url || !preview.value.brand_palette)
-  ))
-  const needsEnrichment = computed(() => Boolean(
-    needsDefaults.value || canAddBrand.value
-  ))
-  const canEditImage = computed(() => Boolean(
-    canAddBrand.value && !preview.value?.image_url
-  ))
-  const canEditBrandPalette = computed(() => Boolean(
-    canAddBrand.value && !preview.value?.brand_palette
-  ))
-  const brandPalette = computed<SparseBrandPalette>(() =>
-    draft.value?.brand_palette || {}
+  const needsDefaults = computed(() =>
+    Boolean(
+      preview.value && canConfigure.value && preview.value.requires_defaults
+    )
+  )
+  const canAddBrand = computed(() =>
+    Boolean(
+      preview.value &&
+        canConfigure.value &&
+        (!preview.value.image_url || !preview.value.brand_palette)
+    )
+  )
+  const needsEnrichment = computed(() =>
+    Boolean(needsDefaults.value || needsIdentity.value || canAddBrand.value)
+  )
+  const needsIdentity = computed(() =>
+    Boolean(
+      canConfigure.value &&
+        (!text(draft.value?.short_name) || !text(draft.value?.tagline))
+    )
+  )
+  const canEditImage = computed(() =>
+    Boolean(canAddBrand.value && !preview.value?.image_url)
+  )
+  const canEditBrandPalette = computed(() =>
+    Boolean(canAddBrand.value && !preview.value?.brand_palette)
+  )
+  const brandPalette = computed<SparseBrandPalette>(
+    () => draft.value?.brand_palette || {}
   )
   const currencyCode = computed(() =>
     text(draft.value?.default_currency_code).toUpperCase().slice(0, 3)
@@ -123,7 +103,7 @@ export function usePlaceOnboarding() {
     if (!draft.value || !text(draft.value.name)) {
       return 'Place name is required.'
     }
-    if (!isExisting.value && !hasPhysicalLocation(draft.value)) {
+    if (!isExisting.value && !hasPhysicalPlaceLocation(draft.value)) {
       return 'Choose a physical Place with a confirmed location.'
     }
     return true
@@ -143,49 +123,26 @@ export function usePlaceOnboarding() {
     return result.ok ? true : result.error
   }
 
-  const steps = computed<readonly OnboardingStep<PlaceOnboardingStepId>[]>(() => [
-    {
-      id: 'find',
-      label: 'Find the Place',
-      description: 'Search the shared Place directory and Google Places.',
-      icon: 'i-lucide-search',
-      validate: validateFind,
-    },
-    ...(needsDefaults.value
-      ? [
-          {
-            id: 'defaults' as const,
-            label: 'Local defaults',
-            description: 'Confirm the currency and local timezone inherited from this Place.',
-            icon: 'i-lucide-settings-2',
-            validate: validateDefaults,
-          },
-        ]
-      : []),
-    ...(canAddBrand.value
-      ? [
-          {
-            id: 'brand' as const,
-            label: 'Brand',
-            description: 'Add an optional logo and shared Place colours.',
-            icon: 'i-lucide-palette',
-            validate: validateBrand,
-          },
-        ]
-      : []),
-    {
-      id: 'review',
-      label: 'Review',
-      description: 'Review the shared identity and confirmed local defaults.',
-      icon: 'i-lucide-check-circle-2',
-      validate: () => {
+  const steps = computed(() =>
+    placeOnboardingSteps({
+      needsDefaults: needsDefaults.value,
+      needsIdentity: needsIdentity.value,
+      canAddBrand: canAddBrand.value,
+      validateFind,
+      validateDefaults,
+      validateIdentity: () =>
+        text(draft.value?.short_name)
+          ? true
+          : 'Confirm a short name for this Place.',
+      validateBrand,
+      validateReview: () => {
         const selection = validateSelection()
         if (selection !== true) return selection
         const defaults = validateDefaults()
         return defaults === true ? validateBrand() : defaults
       },
-    },
-  ])
+    })
+  )
 
   async function finish() {
     const id = canonicalPlaceId(draft.value?.id)
@@ -200,6 +157,15 @@ export function usePlaceOnboarding() {
           id,
           default_currency_code: validatedCurrencyCode.value,
           timezone: validatedTimezone.value,
+          ...(text(draft.value?.short_name)
+            ? { short_name: text(draft.value?.short_name) }
+            : {}),
+          ...(text(draft.value?.tagline)
+            ? { tagline: text(draft.value?.tagline) }
+            : {}),
+          ...(text(draft.value?.logo_image)
+            ? { logo_image: text(draft.value?.logo_image) }
+            : {}),
           ...(Object.keys(brandPalette.value).length
             ? { brand_palette: brandPalette.value }
             : {}),
@@ -223,7 +189,7 @@ export function usePlaceOnboarding() {
       }
       return true
     } catch (error) {
-      throw new Error(errorMessage(error))
+      throw new Error(placeOnboardingErrorMessage(error))
     }
   }
 
@@ -294,14 +260,33 @@ export function usePlaceOnboarding() {
         ...(resolvedPreview.image_url
           ? { image_url: resolvedPreview.image_url }
           : {}),
+        ...(resolvedPreview.logo_image
+          ? { logo_image: resolvedPreview.logo_image }
+          : {}),
+        ...(resolvedPreview.short_name
+          ? { short_name: resolvedPreview.short_name }
+          : {}),
+        ...(resolvedPreview.tagline
+          ? { tagline: resolvedPreview.tagline }
+          : {}),
         ...(resolvedPreview.brand_palette
           ? { brand_palette: resolvedPreview.brand_palette }
           : {}),
         id,
       }
+
+      if (canConfigure.value) {
+        const enriched = await enrichPlaceDraft(
+          draft.value,
+          id,
+          enrichPlaceOnboarding
+        )
+        if (sequence !== selectionSequence) return
+        draft.value = enriched
+      }
     } catch (error) {
       if (sequence === selectionSequence) {
-        selectionError.value = errorMessage(error)
+        selectionError.value = placeOnboardingErrorMessage(error)
       }
     } finally {
       if (sequence === selectionSequence) selectionPending.value = false
@@ -333,6 +318,16 @@ export function usePlaceOnboarding() {
     draft.value = { ...draft.value, timezone: text(value) }
   }
 
+  function setShortName(value: string) {
+    if (!draft.value || !canConfigure.value) return
+    draft.value = { ...draft.value, short_name: value.slice(0, 80) }
+  }
+
+  function setTagline(value: string) {
+    if (!draft.value || !canConfigure.value) return
+    draft.value = { ...draft.value, tagline: value.slice(0, 180) }
+  }
+
   function setImageFile(value: File | null) {
     if (!canEditImage.value) return
     imageFile.value = value
@@ -361,6 +356,7 @@ export function usePlaceOnboarding() {
     imageFile,
     isExisting,
     needsEnrichment,
+    needsIdentity,
     needsDefaults,
     preview,
     selectPlace,
@@ -368,6 +364,8 @@ export function usePlaceOnboarding() {
     setBrandPalette,
     setImageFile,
     setTimezone,
+    setShortName,
+    setTagline,
     selectionError,
     selectionPending,
     timezone,

@@ -13,8 +13,7 @@ import { useUserDetail } from '../../../user/composables/useUserDetail'
 definePageMeta({
   layout: 'default',
   title: 'User',
-  description: 'View a user profile.',
-  name: 'UserDetailPage',
+  description: 'View User details.',
 })
 
 const handle = useRouteParam('handle')

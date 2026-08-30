@@ -21,14 +21,24 @@ Every Entity Detail route should:
 
 - Acquire the canonical Entity once and pass that whole record into one
   Entity-owned detail component.
+- Use the minimal page metadata contract: `layout`, the singular Entity
+  `title`, and `description: 'View Entity details.'`. Use Nuxt's generated route
+  name; retain additional metadata only when middleware or visibility consumes
+  it.
 - Let Detail acquire and compose its bounded related capabilities when they
   are not part of resolving the canonical route Entity.
+- Never reacquire the canonical root Entity inside Detail after the route has
+  passed it in. Named children may acquire bounded related Entities or
+  capabilities from the root object's stored relationship keys.
 - Use the same canonical root type as its sibling Entity Collection Page. Do not
   create `PublicX`, `PublicXDetail`, or `projectPublicX` copies of root Entities.
 - Keep secrets, private account material, App access, Finance, Team internals,
   and operational children physically under their honest owners instead of
   nesting them on an Entity root and filtering them later.
 - Delegate domain display to named domain components.
+- Name relationship children after the related Entity (`AppDetailProject`,
+  `JobDetailPlace`, `SupplierDetailCompany`) rather than hiding distinct jobs
+  behind a generic `Relations` component.
 - Keep operator/private actions separate from entity identity and content.
 - Do not introduce a generic Entity detail shell or configuration object. The
   route should remain a readable ordered composition, and named components own
@@ -97,8 +107,8 @@ The preferred order is:
 5. Further named Entity sections when the domain requires them.
 
 The one-object route boundary is guarded for the maintained App, User,
-Ecosystem, Project, Place, Kitchen, Job, Supplier, and Portfolio detail routes.
-Their internal section order remains Entity-owned.
+Ecosystem, Project, Place, Kitchen, Job, Menu, Supplier, and Portfolio detail
+routes. Their internal section order remains Entity-owned.
 
 ## Current route identity
 
@@ -115,8 +125,8 @@ Their internal section order remains Entity-owned.
 | Place                             | document id       | `accepted`: exact reads return `{ place: Place }`; the stable document id remains the route key                                                                                        |
 | Company, Job                      | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
 | Portfolio                         | document id       | `accepted`: endpoint-first exact reads use the stable root id; authored slug remains canonical content and currently matches that id                                                   |
-| Property                          | slug today        | `parked`: routable detail remains deliberately unavailable until a product decision defines a privacy-safe contract for the governance/valuation-bearing canonical root                |
-| Project                           | id                | `accepted`: the FireUX directory route resolves the canonical Project and passes its connected Apps to the Project detail component                                                    |
+| Property                          | none              | `parked`: no detail route exists until a product decision defines a privacy-safe contract for the governance/valuation-bearing canonical root                                          |
+| Project                           | id                | `accepted`: the FireUX route resolves the canonical Project; the Project detail component owns its connected-App read                                                                 |
 
 Do not mechanically rename `[id]` to `[slug]` or the reverse. A route-key
 change requires canonical redirect, 404, sitemap, stored-link, and QR impact
@@ -139,7 +149,7 @@ review.
 | Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                           |
 | Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
-| Menu route retains its projection adapter                              | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root, tenant, or Kitchen scope; `MenuRoute` resolves that grammar before the projection-owned Menu read                                    |
+| Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `useMenuDetail` resolves that grammar while the route keeps the same one-object Detail boundary                     |
 
 ## Drift and decisions
 
@@ -149,7 +159,7 @@ review.
 | Identity/profile/main ordering varies across older pages                     | `drift`      | Align when touching the page, using the emerging order and existing domain components                                                          |
 | Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                                                        |
 | Some root Entity readers still expose duplicate prefixed types               | `migration`  | Place, Supplier, and Job are reconciled; replace the remaining duplicates incrementally with canonical Entity types                            |
-| Property routable detail is deliberately unavailable                         | `parked`     | Do not expose the governance/valuation-bearing canonical root or invent a replacement entry model without an explicit product/privacy decision |
+| Property has no detail route                                                 | `parked`     | Do not expose the governance/valuation-bearing canonical root or invent a replacement entry model without an explicit product/privacy decision |
 | Kitchen route slug and stable root ID have different jobs                    | `accepted`   | Resolve the authored route key only at the bounded server boundary; keep operational relationships on the stable root ID                       |
 
 ## Alignment roadmap

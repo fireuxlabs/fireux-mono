@@ -617,17 +617,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const fireuxEcosystemDetail = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Directory/Ecosystem/Detail.vue'
+    'projects/fireux/fireux-app/app/components/Ecosystem/Detail.vue'
+  )
+  const fireuxEcosystemDetailContent = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Ecosystem/Detail/Content.vue'
   )
   assert.match(coreAppsPage, /useApps\(\)/)
   assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(fireuxEcosystemsPage, /usePublishedPlatformEcosystemDirectory/)
-  assert.match(fireuxEcosystemDetailPage, /<DirectoryEcosystemDetail/)
+  assert.match(fireuxEcosystemDetailPage, /\buseEcosystemDetail\s*\(/)
+  assert.match(fireuxEcosystemDetailPage, /<EcosystemDetail/)
   assert.match(fireuxEcosystemDetailPage, /:ecosystem="ecosystem"/)
-  assert.doesNotMatch(fireuxEcosystemDetailPage, /:apps=|:project=/)
-  assert.match(fireuxEcosystemDetail, /useApps\('\/api\/platform\/apps'\)/)
+  assert.doesNotMatch(
+    fireuxEcosystemDetailPage,
+    /EcosystemDirectoryEntry|PlatformDirectoryResponse|:apps=|:project=/
+  )
+  assert.match(fireuxEcosystemDetail, /ecosystem:\s*Ecosystem/)
+  assert.match(fireuxEcosystemDetailContent, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(
-    fireuxEcosystemDetail,
+    fireuxEcosystemDetailContent,
     /allApps\.value\.filter\(\(app\) => app\.ecosystem_id === props\.ecosystem\.id\)/
   )
 
@@ -641,18 +650,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const platformAppDetailComponent = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Directory/App/Detail.vue'
+    'projects/fireux/fireux-app/app/components/App/Detail.vue'
+  )
+  const platformAppDetailProject = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/App/Detail/Project.vue'
+  )
+  const platformAppDetailEcosystem = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/App/Detail/Ecosystem.vue'
+  )
+  const platformAppDetailReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/composables/usePlatformAppDetail.ts'
   )
   assert.match(ownerAppDetailApi, /belongsToOwner/)
   assert.match(ownerAppDetailApi, /ecosystem_id/)
-  assert.match(platformAppDetailPage, /DetailResponse<App>/)
-  assert.match(platformAppDetailPage, /\/api\/platform\/apps\//)
-  assert.match(platformAppDetailPage, /<DirectoryAppDetail/)
+  assert.match(platformAppDetailPage, /usePlatformAppDetail/)
+  assert.match(platformAppDetailReader, /DetailResponse<App>/)
+  assert.match(platformAppDetailReader, /\/api\/platform\/apps\//)
+  assert.match(platformAppDetailPage, /<AppDetail/)
   assert.match(platformAppDetailPage, /:app="app"/)
   assert.doesNotMatch(platformAppDetailPage, /:project=|:ecosystem=/)
   assert.match(platformAppDetailComponent, /app:\s*App/)
-  assert.match(platformAppDetailComponent, /useProjects\(\)/)
-  assert.match(platformAppDetailComponent, /usePlatformDirectory\(\)/)
+  assert.match(platformAppDetailProject, /useProjects\(\)/)
+  assert.match(platformAppDetailEcosystem, /usePlatformDirectory\(\)/)
   assert.doesNotMatch(
     platformAppDetailPage,
     /AppDirectoryEntry|PlatformDirectoryResponse/
@@ -816,14 +838,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const projectDirectoryDetailComponent = read(
     repoRoot,
-    'projects/fireux/fireux-app/app/components/Directory/Project/Detail.vue'
+    'projects/fireux/fireux-app/app/components/Project/Detail.vue'
   )
-  assert.match(projectDirectoryDetail, /DetailResponse<Project>/)
-  assert.match(projectDirectoryDetail, /\/api\/projects\//)
-  assert.match(projectDirectoryDetail, /<DirectoryProjectDetail/)
+  const projectDirectoryDetailContent = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/components/Project/Detail/Content.vue'
+  )
+  const projectDirectoryDetailReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/composables/usePlatformProjectDetail.ts'
+  )
+  assert.match(projectDirectoryDetail, /usePlatformProjectDetail/)
+  assert.match(projectDirectoryDetailReader, /DetailResponse<Project>/)
+  assert.match(projectDirectoryDetailReader, /\/api\/projects\//)
+  assert.match(projectDirectoryDetail, /<ProjectDetail/)
   assert.match(projectDirectoryDetail, /:project="project"/)
   assert.doesNotMatch(projectDirectoryDetail, /:apps=/)
-  assert.match(projectDirectoryDetailComponent, /app\.project_id/)
+  assert.match(projectDirectoryDetailContent, /app\.project_id/)
   assert.doesNotMatch(projectDirectoryDetail, /requiresAuth|roles:\s*\[/)
   assert.match(projectDirectory, /useProjects\(\)/)
   assert.doesNotMatch(projectDirectory, /\/workspace\/project/)

@@ -13,8 +13,7 @@ import { useUserDetail } from 'fireux-core/runtime/user/composables/useUserDetai
 definePageMeta({
   layout: 'default',
   title: 'User',
-  description: 'View a user profile.',
-  name: 'MiseboxUserDetailPage',
+  description: 'View User details.',
 })
 
 const handle = useRouteParam('handle')

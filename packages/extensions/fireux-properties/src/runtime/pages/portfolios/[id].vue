@@ -13,10 +13,10 @@ import { usePortfolioDetail } from '../../portfolio/composables/usePortfolioDeta
 definePageMeta({
   layout: 'default',
   title: 'Portfolio',
-  description: 'View a portfolio.',
-  name: 'PortfolioDetailPage',
+  description: 'View Portfolio details.',
 })
 
 const routeKey = useRouteParam('id')
-const { portfolio } = await usePortfolioDetail(routeKey)
+const { portfolio, ready } = usePortfolioDetail(routeKey)
+await ready
 </script>

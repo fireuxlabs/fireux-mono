@@ -40,6 +40,11 @@ const serverHandlers = [
     handler: './runtime/server/api/places/onboarding/preview.post',
   },
   {
+    route: '/api/places/onboarding/enrich',
+    method: 'post',
+    handler: './runtime/server/api/places/onboarding/enrich.post',
+  },
+  {
     route: '/api/places/onboarding/complete',
     method: 'post',
     handler: './runtime/server/api/places/onboarding/complete.post',

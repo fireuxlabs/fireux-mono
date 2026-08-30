@@ -40,7 +40,7 @@
     <PlaceOnboardingBrand
       v-if="activeStepId === 'brand' && draft"
       :place-name="draft.name"
-      :image-url="draft.image_url || ''"
+      :image-url="draft.image_url || draft.logo_image || ''"
       :image-file="imageFile"
       :uploading="pending"
       :image-editable="canEditImage"
@@ -48,6 +48,14 @@
       :palette-editable="canEditBrandPalette"
       @image-selected="setImageFile"
       @update:brand-palette="setBrandPalette"
+    />
+
+    <PlaceOnboardingIdentity
+      v-if="activeStepId === 'identity' && draft"
+      :short-name="draft.short_name || ''"
+      :tagline="draft.tagline || ''"
+      @update:short-name="setShortName"
+      @update:tagline="setTagline"
     />
 
     <PlaceOnboardingReview
@@ -128,6 +136,8 @@ const {
   setBrandPalette,
   setImageFile,
   setTimezone,
+  setShortName,
+  setTagline,
   selectionError,
   selectionPending,
   stepCount,

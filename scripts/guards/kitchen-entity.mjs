@@ -318,7 +318,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(detail, /place:\s*Place/)
   assert.doesNotMatch(detail, /presentation:\s*KitchenDetailPresentation/)
   assert.doesNotMatch(detail, /fulfilment:\s*KitchenFulfilment/)
-  assert.match(detail, /\buseKitchenDetail\s*\(/)
+  assert.doesNotMatch(detail, /\buseKitchenDetail\s*\(/)
+  assert.match(detail, /props\.kitchen/)
   assert.match(detail, /\buseKitchenSeo\s*\(/)
   assert.match(
     detail,

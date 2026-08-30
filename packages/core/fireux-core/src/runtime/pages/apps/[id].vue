@@ -12,10 +12,9 @@ import { useRouteParam } from '../../composables/shared/useRouteParam'
 
 definePageMeta({
   layout: 'default',
-  tenant: 'global',
   title: 'App',
-  description: 'Published app profile from the owning ecosystem.',
-  name: 'AppDetailPage',
+  description: 'View App details.',
+  tenant: 'global',
 })
 
 const appId = useRouteParam('id')
