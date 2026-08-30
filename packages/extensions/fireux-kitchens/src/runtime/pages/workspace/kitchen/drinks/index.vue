@@ -3,9 +3,9 @@
     <UDashboardPanel id="workspace-kitchen-drinks">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Drinks">
-          <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="drinks"
-          /></template>
+          <template #right>
+            <WorkspaceKitchenCapabilityContextInfo operation="drinks" />
+          </template>
         </LayoutsWorkspaceNavbar>
       </template>
 
@@ -19,22 +19,7 @@
             :action-targets="drinkActionTargets"
           />
 
-          <section class="grid gap-4" aria-labelledby="drinks-content-title">
-            <div class="grid gap-1">
-              <h2
-                id="drinks-content-title"
-                class="m-0 text-lg font-semibold text-highlighted"
-              >
-                Drinks
-              </h2>
-              <p class="m-0 text-sm text-muted">
-                Browse the selected Kitchen's drinks and open any drink for its
-                details and tools.
-              </p>
-            </div>
-
-            <WorkspaceKitchenDishesRead />
-          </section>
+          <WorkspaceKitchenDishesRead />
           <WorkspaceKitchenCapabilityGuidingLiterature operation="drinks" />
           <WorkspaceKitchenResearchSegue
             capability="Drinks"

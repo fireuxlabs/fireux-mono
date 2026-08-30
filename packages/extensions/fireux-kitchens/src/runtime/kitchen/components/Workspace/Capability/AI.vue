@@ -1,8 +1,8 @@
 <template>
-  <section
-    class="grid gap-3 rounded-xl border border-default bg-elevated/30 p-4 sm:p-5"
-  >
+  <section class="grid gap-3">
     <WorkspaceKitchenAIAssistant
+      compact
+      :show-intro="false"
       :agent="agent"
       :agent-label="agent.name"
       :title="`Work with ${title} AI`"
@@ -59,14 +59,6 @@
         </UCard>
       </div>
     </section>
-
-    <UAlert
-      v-else-if="showSuggestionCards && !suggestions.length"
-      color="neutral"
-      variant="soft"
-      title="No contextual suggestions yet"
-      description="Suggestions appear only when the current information and available tools support a specific next step. Requested tools remain roadmap context and cannot be executed."
-    />
   </section>
 </template>
 

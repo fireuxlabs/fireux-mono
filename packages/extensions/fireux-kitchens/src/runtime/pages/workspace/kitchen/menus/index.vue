@@ -3,9 +3,9 @@
     <UDashboardPanel id="workspace-kitchen-menus">
       <template #header>
         <LayoutsWorkspaceNavbar title="Kitchen Menus">
-          <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="menus"
-          /></template>
+          <template #right>
+            <WorkspaceKitchenCapabilityContextInfo operation="menus" />
+          </template>
         </LayoutsWorkspaceNavbar>
       </template>
 

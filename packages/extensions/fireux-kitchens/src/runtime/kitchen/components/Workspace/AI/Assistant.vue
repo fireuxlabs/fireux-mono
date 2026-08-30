@@ -1,5 +1,5 @@
 <template>
-  <WorkspaceAI aria-label="KitchenAI">
+  <WorkspaceAI aria-label="KitchenAI" :compact="compact">
     <WorkspaceAIIntro
       v-if="showIntro"
       :agent-label="agentLabel"
@@ -62,6 +62,7 @@ const props = withDefaults(
   defineProps<
     KitchenAIPresentationOptions & {
       kitchenId?: string
+      compact?: boolean
       showIntro?: boolean
       aiTools?: readonly KitchenAIToolNugget[]
       availableActions?: readonly string[]
@@ -76,6 +77,7 @@ const props = withDefaults(
     starters: undefined,
     operation: '',
     kitchenId: '',
+    compact: false,
     showIntro: true,
     aiTools: () => [],
     availableActions: () => [],
