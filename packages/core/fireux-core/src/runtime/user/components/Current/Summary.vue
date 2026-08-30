@@ -5,7 +5,11 @@
         size="xs"
         variant="ghost"
         :icon="view === 'preview' ? 'i-lucide-id-card' : 'i-lucide-eye'"
-        :aria-label="view === 'preview' ? 'Switch to profile view' : 'Switch to preview view'"
+        :aria-label="
+          view === 'preview'
+            ? 'Switch to profile view'
+            : 'Switch to preview view'
+        "
         :title="view === 'preview' ? 'Profile' : 'Preview'"
         @click="toggleView"
       />

@@ -5,32 +5,24 @@
       description="See the Apps connected to each Project."
     />
 
-    <div class="collection-stack" aria-label="Projects">
-      <ProjectCardsCell
-        v-for="project in projects"
-        :key="project.id"
-        :to="`/projects/${encodeURIComponent(project.id)}`"
-        :title="project.name || project.id"
-        :subtitle="project.description"
-        :image-url="project.image_url"
-        :meta="appCountLabel(project.id)"
-        link
-      />
-    </div>
+    <ProjectCollectionList :cards="cards" />
   </section>
 </template>
 
 <script setup lang="ts">
-import type { App } from '../../app/models/app.model'
+import { computed } from 'vue'
 import type { Project } from '../models/project.model'
 
 const props = defineProps<{
   projects: Project[]
-  apps: App[]
 }>()
 
-const appCountLabel = (projectId: string) => {
-  const count = props.apps.filter((app) => app.project_id === projectId).length
-  return `${count} ${count === 1 ? 'App' : 'Apps'}`
-}
+const cards = computed(() =>
+  props.projects.map((project) => ({
+    to: `/projects/${encodeURIComponent(project.id)}`,
+    title: project.name || project.id,
+    subtitle: project.description,
+    imageUrl: project.image_url,
+  }))
+)
 </script>

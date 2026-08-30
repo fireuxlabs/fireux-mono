@@ -1,27 +1,16 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="pill" :card="card" />
-    </template>
-  </div>
-
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="cell" :card="card" />
-    </template>
-  </div>
+  <ul class="collection-stack" aria-label="Users">
+    <li v-for="card in cards" :key="card.to || card.id">
+      <CollectionCell
+        :title="card.displayName"
+        :description="card.summary || card.handle"
+        :to="card.to"
+      />
+    </li>
+  </ul>
 </template>
-
 <script setup lang="ts">
-import type { UserCard } from '../../composables/useUserInterface';
-
-withDefaults(
-  defineProps<{
-    cards: UserCard.Card[]
-    variant?: 'pill' | 'cell'
-  }>(),
-  {
-    variant: 'pill',
-  }
-)
+import CollectionCell from '../../../components/Collection/Cell.vue'
+import type { UserCard } from '../../composables/useUserInterface'
+defineProps<{ cards: UserCard.Card[] }>()
 </script>

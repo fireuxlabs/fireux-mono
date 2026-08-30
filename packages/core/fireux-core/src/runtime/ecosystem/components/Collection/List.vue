@@ -1,27 +1,16 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="pill" :card="card" />
-    </template>
-  </div>
-
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="cell" :card="card" />
-    </template>
-  </div>
+  <ul class="collection-stack" aria-label="Ecosystems">
+    <li v-for="card in cards" :key="card.to || card.id">
+      <CollectionCell
+        :title="card.title"
+        :description="card.subtitle || card.meta"
+        :to="card.to"
+      />
+    </li>
+  </ul>
 </template>
-
 <script setup lang="ts">
+import CollectionCell from '../../../components/Collection/Cell.vue'
 import type { EcosystemInterfaceCard } from '../../composables/useEcosystemInterface'
-
-withDefaults(
-  defineProps<{
-    cards: EcosystemInterfaceCard[]
-    variant?: 'pill' | 'cell'
-  }>(),
-  {
-    variant: 'pill',
-  }
-)
+defineProps<{ cards: EcosystemInterfaceCard[] }>()
 </script>

@@ -1,27 +1,17 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="pill" :card="card" />
-    </template>
-  </div>
-
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="cell" :card="card" />
-    </template>
-  </div>
+  <ul class="collection-stack" aria-label="Jobs">
+    <li v-for="card in cards" :key="card.to || card.id">
+      <CollectionCell
+        :title="card.title"
+        :description="card.subtitle || card.description"
+        :to="card.to"
+      />
+    </li>
+  </ul>
 </template>
 
 <script setup lang="ts">
-import type { JobCard } from '../../composables/firestore/utils/view/useJobInterface';
-
-withDefaults(
-  defineProps<{
-    cards: JobCard.Card[]
-    variant?: 'pill' | 'cell'
-  }>(),
-  {
-    variant: 'pill',
-  }
-)
+import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import type { JobCard } from '../../composables/firestore/utils/view/useJobInterface'
+defineProps<{ cards: JobCard.Card[] }>()
 </script>

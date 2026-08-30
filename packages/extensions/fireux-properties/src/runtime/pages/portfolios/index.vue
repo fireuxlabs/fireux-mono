@@ -1,22 +1,16 @@
 <template>
-  <CollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-building-2"
-    secondary-label="Portfolio tools"
-  >
-    <PortfolioCollectionManager />
-
-    <template #secondary>
-      <PortfolioCTA />
-    </template>
-  </CollectionPage>
+  <UPage><UPageBody>
+    <PortfolioHero />
+    <PortfolioCreate />
+    <PortfolioCollection :portfolios="portfolios" />
+    <CollectionPagination :has-more="hasMore" :loading="loadingMore" @load-more="loadMore" />
+  </UPageBody></UPage>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { usePortfolioDirectory } from '../../portfolio/composables/usePortfolioDirectory'
 
 definePageMeta({
   tag: 'portfolios',
@@ -43,5 +37,6 @@ const pageTitle = 'Portfolios'
 const pageDescription =
   'Browse property portfolios and open the tools for managing one.'
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | ${pageTitle}` })
+const { portfolios, hasMore, loadingMore, loadMore } = usePortfolioDirectory()
+useSeo({ title: `${appName} | ${pageTitle}`, description: pageDescription, path: '/portfolios' })
 </script>

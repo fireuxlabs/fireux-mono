@@ -9,9 +9,7 @@
       <UCard>
         <template #header>
           <div>
-            <h2 class="font-semibold text-highlighted">
-              Create for a member
-            </h2>
+            <h2 class="font-semibold text-highlighted">Create for a member</h2>
             <p class="mt-1 text-sm text-muted">
               You remain the authenticated administrator. The selected member
               becomes the Kitchen owner.
@@ -19,29 +17,24 @@
           </div>
         </template>
 
-        <div class="space-y-5">
-          <USelect
-            v-model="ownerUserId"
-            :items="memberOptions"
-            value-key="value"
-            label-key="label"
-            placeholder="Choose an App member"
-            :loading="pending"
-            class="w-full max-w-md"
-          />
-
-          <KitchenOnboarding
-            v-if="ownerUserId"
-            :key="ownerUserId"
-            mode="root"
-            :owner-user-id="ownerUserId"
-            :select-workspace-on-complete="false"
-            return-to="/dashboard/admin/kitchens"
-            cancel-to="/dashboard/admin/kitchens"
-            @created="onProvisioned"
-          />
-        </div>
+        <USelect
+          v-model="ownerUserId"
+          :items="memberOptions"
+          value-key="value"
+          label-key="label"
+          placeholder="Choose an App member"
+          :loading="pending"
+          class="w-full max-w-md"
+        />
       </UCard>
+
+      <KitchenAdminProvision
+        v-if="ownerUserId"
+        :key="ownerUserId"
+        :owner-user-id="ownerUserId"
+        :owner-display-name="selectedOwnerName"
+        @created="onProvisioned"
+      />
 
       <DashboardAdminDomainCurationPanel
         domain="kitchen"
@@ -55,11 +48,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/ui/useToastify'
 import { useAppUserCollection } from 'fireux-core/runtime/user/composables/firestore/fetch/useAppUserCollection'
 
 const ownerUserId = ref('')
-const toast = useToastify()
 const { memberships, pending, refresh } = useAppUserCollection()
 const memberOptions = computed(() =>
   memberships.value.map((member) => {
@@ -71,11 +62,12 @@ const memberOptions = computed(() =>
     }
   })
 )
+const selectedOwnerName = computed(() => {
+  const member = memberships.value.find((item) => item.id === ownerUserId.value)
+  return member?.user?.display_name || member?.user?.handle || 'App member'
+})
 
 async function onProvisioned() {
-  const member = memberships.value.find((item) => item.id === ownerUserId.value)
-  const name = member?.user?.display_name || member?.user?.handle || 'member'
-  toast.success(`Kitchen provisioned for ${name}`)
   ownerUserId.value = ''
   await refresh()
 }
@@ -87,7 +79,8 @@ definePageMeta({
     key: 'kitchens',
     domain: 'kitchens',
     label: 'Kitchens',
-    description: 'Provision member Kitchens and curate public Kitchen surfaces.',
+    description:
+      'Provision member Kitchens and curate public Kitchen surfaces.',
     icon: 'i-lucide-chef-hat',
     order: 100,
   },

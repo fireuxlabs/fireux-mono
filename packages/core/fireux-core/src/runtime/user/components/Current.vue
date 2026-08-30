@@ -1,7 +1,7 @@
 <template>
   <section data-entity-current-family="user" class="space-y-2">
-    <UserCtaCurrent :current-user="currentUser" />
-    <UserCtaProfileChoices :current-profiles="currentProfiles" />
+    <UserCurrentSummary :current-user="currentUser" />
+    <UserCurrentProfileChoices :current-profiles="currentProfiles" />
   </section>
 </template>
 

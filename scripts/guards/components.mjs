@@ -202,12 +202,8 @@ function validateCollectionPagePresentation(repoRoot, violations) {
   const retiredSurfacePath =
     'packages/core/fireux-core/src/runtime/components/public/IndexSurface.vue'
   const ordinaryConsumers = [
-    'packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue',
     'packages/extensions/fireux-products/src/runtime/pages/products/index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/pages/ingredients/index.vue',
-    'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue',
-    'packages/extensions/fireux-properties/src/runtime/pages/portfolios/index.vue',
-    'packages/extensions/fireux-properties/src/runtime/pages/properties/index.vue',
     'packages/extensions/fireux-companies/src/runtime/pages/companies/index.vue',
     'packages/extensions/fireux-kitchens/src/runtime/menu/components/Index/Index.vue',
   ]
@@ -225,8 +221,7 @@ function validateCollectionPagePresentation(repoRoot, violations) {
     'projects/slap/yellow-velo/app/pages/products/index.vue',
     'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
   ]
-  const routeOwnedManagers = new Map([
-  ])
+  const routeOwnedManagers = new Map([])
   const composedLasagneMembers = [
     {
       route: 'packages/core/fireux-core/src/runtime/pages/apps/index.vue',
@@ -234,6 +229,8 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       component:
         'packages/core/fireux-core/src/runtime/app/components/Collection.vue',
       prop: /apps:\s*App\[\]/,
+      props: ['apps', 'scope'],
+      chain: ['<AppCollectionList', '<CollectionCell'],
     },
     {
       route: 'projects/fireux/fireux-app/app/pages/apps/index.vue',
@@ -241,26 +238,35 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       component:
         'packages/core/fireux-core/src/runtime/app/components/Collection.vue',
       prop: /apps:\s*App\[\]/,
+      props: ['apps', 'scope'],
+      chain: ['<AppCollectionList', '<CollectionCell'],
     },
     {
       route: 'packages/core/fireux-core/src/runtime/pages/users/index.vue',
       layers: ['<UserHero', '<UserCurrent', '<UserCreate', '<UserCollection'],
-      component: 'packages/core/fireux-core/src/runtime/user/components/Collection.vue',
+      component:
+        'packages/core/fireux-core/src/runtime/user/components/Collection.vue',
       prop: /users:\s*User\[\]/,
+      props: ['users'],
+      chain: ['<UserCollectionList', '<CollectionCell'],
     },
     {
       route: 'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
-      layers: ['<EcosystemHero', '<EcosystemCollection'],
+      layers: ['<EcosystemHero', '<EcosystemCreate', '<EcosystemCollection'],
       component:
         'packages/core/fireux-core/src/runtime/ecosystem/components/Collection.vue',
       prop: /ecosystems:\s*EcosystemDirectoryEntry\[\]/,
+      props: ['ecosystems'],
+      chain: ['<EcosystemCollectionList', '<CollectionCell'],
     },
     {
       route: 'projects/fireux/fireux-app/app/pages/projects/index.vue',
-      layers: ['<ProjectHero', '<ProjectCollection'],
+      layers: ['<ProjectHero', '<ProjectCreate', '<ProjectCollection'],
       component:
         'packages/core/fireux-core/src/runtime/project/components/Collection.vue',
       prop: /projects:\s*Project\[\]/,
+      props: ['projects'],
+      chain: ['<ProjectCollectionList', '<CollectionCell'],
     },
     {
       route:
@@ -269,6 +275,8 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       component:
         'packages/extensions/fireux-places/src/runtime/place/components/Collection.vue',
       prop: /places:\s*BasePlace\[\]/,
+      props: ['places'],
+      chain: ['<PlaceCollectionList', '<CollectionCell'],
     },
     {
       route:
@@ -277,7 +285,63 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       component:
         'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Collection.vue',
       prop: /kitchens:\s*KitchenCollectionRecord\[\]/,
+      props: ['kitchens'],
+      chain: ['<KitchenCollectionList', '<CollectionCell'],
     },
+    {
+      route: 'packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue',
+      layers: ['<JobHero', '<JobCreate', '<JobCollection'],
+      component:
+        'packages/extensions/fireux-jobs/src/runtime/job/components/Collection.vue',
+      prop: /jobs:\s*JobDirectoryEntry\[\]/,
+      props: ['jobs'],
+      chain: ['<JobCollectionList', '<CollectionCell'],
+    },
+    {
+      route:
+        'packages/extensions/fireux-kitchens/src/runtime/pages/menus/index.vue',
+      layers: ['<MenuHero', '<MenuCreate', '<MenuCollection'],
+      component:
+        'packages/extensions/fireux-kitchens/src/runtime/menu/components/Collection.vue',
+      prop: /menus:\s*MenuDirectoryEntry\[\]/,
+      props: ['menus'],
+      chain: ['<MenuCollectionList', '<CollectionCell'],
+    },
+    {
+      route:
+        'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue',
+      layers: ['<SupplierHero', '<SupplierCreate', '<SupplierCollection'],
+      component:
+        'packages/extensions/fireux-suppliers/src/runtime/supplier/components/Collection.vue',
+      prop: /suppliers:\s*SupplierSurface\[\]/,
+      props: ['suppliers'],
+      chain: ['<SupplierCollectionList', '<CollectionCell'],
+    },
+    {
+      route:
+        'packages/extensions/fireux-properties/src/runtime/pages/portfolios/index.vue',
+      layers: ['<PortfolioHero', '<PortfolioCreate', '<PortfolioCollection'],
+      component:
+        'packages/extensions/fireux-properties/src/runtime/portfolio/components/Collection.vue',
+      prop: /portfolios:\s*Portfolio\[\]/,
+      props: ['portfolios'],
+      chain: ['<PortfolioCollectionList', '<CollectionCell'],
+    },
+    {
+      route:
+        'packages/extensions/fireux-properties/src/runtime/pages/properties/index.vue',
+      layers: ['<PropertyHero', '<PropertyCreate', '<PropertyCollection'],
+      component:
+        'packages/extensions/fireux-properties/src/runtime/property/components/Collection.vue',
+      prop: /properties:\s*PropertyDirectoryEntry\[\]/,
+      props: ['properties'],
+      chain: ['<PropertyCollectionList', '<CollectionCell'],
+    },
+  ]
+  const retiredComposedLasagnePaths = [
+    'packages/core/fireux-core/src/runtime/app/components/Collection/Launcher.vue',
+    'packages/core/fireux-core/src/runtime/ecosystem/components/CTA.vue',
+    'packages/core/fireux-core/src/runtime/user/components/Cta',
   ]
 
   const absoluteSurfacePath = path.join(repoRoot, surfacePath)
@@ -303,8 +367,31 @@ function validateCollectionPagePresentation(repoRoot, violations) {
     )
   }
 
+  for (const retiredPath of retiredComposedLasagnePaths) {
+    if (existsSync(path.join(repoRoot, retiredPath))) {
+      violations.push(
+        `${retiredPath} (retired parallel or CTA vocabulary in the audited FL index family)`
+      )
+    }
+  }
+
   for (const member of composedLasagneMembers) {
     const routeSource = readFileSync(path.join(repoRoot, member.route), 'utf8')
+    if (
+      !routeSource.includes('<UPage>') ||
+      !routeSource.includes('<UPageBody>') ||
+      !routeSource.includes('definePageMeta({') ||
+      !/\buseSeo\s*\(/.test(routeSource)
+    ) {
+      violations.push(
+        `${member.route} (fireux-composed-lasagne must use UPage → UPageBody, definePageMeta, and useSeo)`
+      )
+    }
+    if (/<main\b|max-w-7xl gap-12 px-4 py-10/.test(routeSource)) {
+      violations.push(
+        `${member.route} (layout and Nuxt UI own the page container; repeated main/layout classes are drift)`
+      )
+    }
     let previous = -1
     for (const layer of member.layers) {
       const index = routeSource.indexOf(layer)
@@ -330,6 +417,53 @@ function validateCollectionPagePresentation(repoRoot, violations) {
         `${member.component} (fireux-composed-lasagne Collection must receive its named Entity prop)`
       )
     }
+    const propsBlock = componentSource.match(
+      /defineProps<\{([\s\S]*?)\}>\(\)/
+    )?.[1]
+    const publicProps = propsBlock
+      ? [...propsBlock.matchAll(/^\s+([A-Za-z][A-Za-z0-9]*)\??:/gm)].map(
+          (match) => match[1]
+        )
+      : []
+    if (publicProps.join(',') !== member.props.join(',')) {
+      violations.push(
+        `${member.component} (fireux-composed-lasagne Collection props must be exactly ${member.props.join(', ')})`
+      )
+    }
+    const listSource = readFileSync(
+      path.join(
+        repoRoot,
+        path.dirname(member.component),
+        'Collection/List.vue'
+      ),
+      'utf8'
+    )
+    if (
+      !componentSource.includes(member.chain[0]) ||
+      !listSource.includes(member.chain[1]) ||
+      /#pill|#cell|variant\??:\s*['"]pill/.test(listSource)
+    ) {
+      violations.push(
+        `${member.component} (FL index internals must follow ${member.chain.join(' → ')} without variant slots)`
+      )
+    }
+  }
+
+  const placeRoute = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-places/src/runtime/pages/places/index.vue'
+    ),
+    'utf8'
+  )
+  if (
+    !/<PlaceCollection :places="places"\s*\/>[\s\S]*<CollectionPagination/.test(
+      placeRoute
+    )
+  ) {
+    violations.push(
+      'packages/extensions/fireux-places/src/runtime/pages/places/index.vue (pagination must remain route-owned immediately after PlaceCollection)'
+    )
   }
 
   for (const consumerPath of ordinaryConsumers) {

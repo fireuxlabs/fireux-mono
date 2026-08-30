@@ -19,13 +19,23 @@
           </p>
         </div>
 
-        <UBadge
-          v-if="canManage"
-          label="Admin controls"
-          icon="i-lucide-shield-check"
-          color="neutral"
-          variant="soft"
-        />
+        <div v-if="canManage" class="flex flex-wrap items-center gap-2">
+          <UBadge
+            label="Admin controls"
+            icon="i-lucide-shield-check"
+            color="neutral"
+            variant="soft"
+          />
+          <UButton
+            v-if="editTo"
+            :to="editTo"
+            label="Open editor"
+            icon="i-lucide-pencil"
+            color="neutral"
+            variant="soft"
+            size="sm"
+          />
+        </div>
       </div>
 
       <template v-if="membership">
@@ -46,23 +56,8 @@
           </div>
           <div>
             <dt class="text-muted">Subscription</dt>
-            <dd class="mt-1">
-              <USelect
-                v-if="canManage"
-                :model-value="membership.subscription"
-                :items="subscriptionOptions"
-                value-key="value"
-                label-key="label"
-                size="sm"
-                class="w-36"
-                :loading="subscriptionActionPending"
-                :disabled="subscriptionActionPending"
-                :aria-label="`Subscription for ${displayName}`"
-                @update:model-value="setSubscription"
-              />
-              <span v-else class="font-medium text-highlighted">
-                {{ subscriptionLabel }}
-              </span>
+            <dd class="mt-1 font-medium text-highlighted">
+              {{ subscriptionLabel }}
             </dd>
           </div>
           <div>
@@ -72,6 +67,14 @@
             </dd>
           </div>
         </dl>
+
+        <UserAppMembershipEdit
+          v-if="canManage && onSetSubscription"
+          :display-name="displayName"
+          :membership="membership"
+          :pending="subscriptionActionPending"
+          :on-set-subscription="onSetSubscription"
+        />
       </template>
 
       <p v-else class="text-sm text-muted">
@@ -84,36 +87,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppAdminMember } from '../../app/models/app-context.model.ts'
-import {
-  isAppUserSubscription,
-  type AppUserSubscription,
-} from '../../app/models/app-user.model.ts'
+import type { AppUserSubscription } from '../../app/models/app-user.model.ts'
+import type { UserAppMembershipRecord } from '../composables/useUserAppMembership'
 
 defineOptions({ name: 'UserAppMembership' })
-
-type UserAppMembershipRecord = Pick<
-  AppAdminMember,
-  'id' | 'role' | 'subscription'
->
 
 const props = defineProps<{
   appName: string
   displayName: string
   membership: UserAppMembershipRecord | null
   canManage?: boolean
+  editTo?: string
   subscriptionActionPending?: boolean
   onSetSubscription?: (subscription: AppUserSubscription) => Promise<unknown>
 }>()
-
-const subscriptionOptions: Array<{
-  label: string
-  value: AppUserSubscription
-}> = [
-  { label: 'Free', value: 'free' },
-  { label: 'Premium', value: 'premium' },
-  { label: 'Business', value: 'business' },
-]
 
 const roleLabel = computed(() => {
   if (!props.membership) return ''
@@ -129,17 +116,4 @@ const subscriptionLabel = computed(() => {
 const canOwnMultipleKitchens = computed(
   () => props.membership?.subscription === 'business'
 )
-
-async function setSubscription(value: unknown) {
-  if (
-    !props.canManage ||
-    !props.membership ||
-    !props.onSetSubscription ||
-    !isAppUserSubscription(value) ||
-    value === props.membership.subscription
-  ) {
-    return
-  }
-  await props.onSetSubscription(value)
-}
 </script>

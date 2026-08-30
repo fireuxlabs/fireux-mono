@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <JobCollectionManager />
+      <JobCollection :jobs="directoryJobs" />
     </UCard>
   </section>
 </template>
@@ -41,6 +41,7 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useJobCollection } from '../../composables/firestore/fetch/useJobCollection'
+import { useJobDirectory } from '../../composables/useJobDirectory'
 import { Job as JobModelRuntime } from '../../models/job.model.ts'
 
 defineOptions({ name: 'DevJobSystem' })
@@ -48,6 +49,7 @@ defineOptions({ name: 'DevJobSystem' })
 const jobModelRuntime = JobModelRuntime
 
 const { appJobs } = useJobCollection()
+const { jobs: directoryJobs } = useJobDirectory()
 const jobsCollection = computed(() => appJobs.value ?? [])
 
 const {

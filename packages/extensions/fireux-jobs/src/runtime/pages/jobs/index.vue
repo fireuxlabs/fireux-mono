@@ -1,49 +1,25 @@
-<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the Directory shell with discovery before author actions. -->
 <template>
-  <CollectionPage
-    eyebrow="Open jobs, direct hiring"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-briefcase-business"
-  >
-    <template #background>
-      <JobIndexArtwork />
-    </template>
-
-    <template #actions>
-      <UButton
-        to="/jobs#open-jobs"
-        label="Browse open jobs"
-        icon="i-lucide-search"
-        size="lg"
+  <UPage>
+    <UPageBody>
+      <JobHero />
+      <JobCreate />
+      <JobCollection :jobs="jobs" />
+      <CollectionPagination
+        :has-more="hasMore"
+        :loading="loadingMore"
+        @load-more="loadMore"
       />
-      <UButton
-        to="/jobs/manage"
-        label="Post a job"
-        icon="i-lucide-circle-plus"
-        color="neutral"
-        variant="soft"
-        size="lg"
-      />
-    </template>
-
-    <template #hero>
-      <JobIndexPromise />
-    </template>
-
-    <JobCollectionManager />
-
-    <template #secondary>
-      <JobCTA />
-    </template>
-  </CollectionPage>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useJobDirectory } from '../../job/composables/useJobDirectory'
 
 const { appName } = useFireUXConfig()
+const { jobs, hasMore, loadingMore, loadMore } = useJobDirectory()
 
 const pageTitle = 'Jobs'
 const pageDescription =

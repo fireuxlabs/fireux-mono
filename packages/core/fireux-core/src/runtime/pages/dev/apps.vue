@@ -43,7 +43,10 @@
         </template>
       </UCard>
 
-      <AppCollection :apps="publicAppsController.apps.value" />
+      <AppCollection
+        :apps="publicAppsController.apps.value"
+        scope="ecosystem"
+      />
     </UPageBody>
   </UPage>
 </template>

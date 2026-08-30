@@ -23,14 +23,21 @@ The accepted flat index-page arrangement is **fireux-composed-lasagne**:
 
 ```text
 route
+├── definePageMeta and useSeo
 ├── acquire canonical Entity collection
-├── EntityHero
-├── EntityCurrent      # only when a real current Entity exists
-├── EntityCreate       # only when creation is a real action
-└── EntityCollection   # receives the named plural Entity prop
+└── UPage
+    └── UPageBody
+        ├── EntityHero
+        ├── EntityCurrent      # only when a real current Entity exists
+        ├── EntityCreate
+        ├── EntityCollection   # receives the named plural Entity prop
+        └── CollectionPagination? # route-owned acquisition control
 ```
 
-The route owns metadata, route policy, acquisition, and visible composition.
+The route owns metadata, SEO, route policy, acquisition, and visible
+composition. It uses Nuxt UI's `UPage` and `UPageBody`; the layout already owns
+the semantic `main` and `UContainer`, so an index route does not repeat a
+`main`, maximum width, padding, or spacing utility shell.
 Each layer is a flat Entity-owned component at
 `runtime/<entity>/components/{Hero,Current,Create,Collection}.vue`. The
 Collection receives canonical records through a named prop such as `apps`,
@@ -38,10 +45,36 @@ Collection receives canonical records through a named prop such as `apps`,
 interface projection, lists, and cards, but it does not fetch that primary
 collection again.
 
+The public Collection contract is exactly `XCollection :xs="xs"`. App alone
+also receives `scope="ecosystem" | "platform"` because the same App family has
+two real acquisition scopes. Titles, descriptions, links, search, filters,
+counts, variants, and record-derived badges are internal presentation choices.
+Related collections, authority, loading flags, refresh functions, and
+pagination functions are not Collection props.
+
+Inside every audited Entity, the physical presentation chain is
+`XCollection → XCollectionList → CollectionCell`. Collection derives search,
+filters, counts, and the bounded title, description, and link projection; List
+owns only semantic list layout; Core's `CollectionCell` renders the same plain
+Nuxt UI `UPageCard` for every FL index. The first baseline deliberately has no
+Entity icon, image, badge, bespoke CSS, slot, or variant. Other real consumers
+may retain Entity-owned Cell, Pill, and Preview components without changing
+this index contract.
+
+Index presentation evolves in three explicit stages: first the shared
+out-of-the-box Nuxt UI baseline, then one evidence-backed Entity delta at a
+time, and only then shared or Entity-owned chroma. A mature pre-existing card
+does not skip those stages merely because its styling already exists.
+
 Hero introduces the index. Current presents the singular Entity relevant to the
 current session. Create owns the concrete creation doorway. Collection presents
-the acquired records. Omit a layer when its responsibility is not real; do not
-replace an omission with a placeholder component.
+the acquired records. Hero, Create, and Collection are required in the audited
+FL index family. Current is optional. User deliberately renders Current or
+Create because one User identity is allowed; every other audited member renders
+Create directly. Pagination follows Collection and remains route-owned. The
+shared `CollectionPagination` is an acquisition control, not an Entity
+Collection child or page shell; it is rendered only where the reader currently
+supports pagination.
 
 This arrangement has no generic Entity shell, `CollectionPage`, page slots,
 configuration object, `CollectionManager`, outcome framework, debug contract,
@@ -49,10 +82,9 @@ or HTTP-status contract. Deeper `Collection/List` and `Cards/*` components may
 remain because they are implementation owned by the Collection layer, not page
 composition layers.
 
-Place is the visual proving reference. Job and Menu are differentiated
-siblings: Job adds an editorial promise and author actions; Menu adds route
-scope, bounded redirect policy, and a preview variant. Those differences do
-not create new page engines.
+Place is the original visual proving reference. Job and Menu keep their
+directory transports and domain-specific creation doorways without retaining
+a second page engine.
 
 ## Data authority
 
@@ -79,8 +111,8 @@ composition contract.
 | Member                                     | Classification           | Deliberate delta                                              |
 | ------------------------------------------ | ------------------------ | ------------------------------------------------------------- |
 | Place                                      | reference                | Entity-family filters, bounded pagination, operator doorway   |
-| Job                                        | differentiated sibling   | editorial hero, publication gate, author actions, pagination  |
-| Menu                                       | differentiated sibling   | tenant/Kitchen route scope, redirect policy, preview cards    |
+| Job                                        | paginated sibling        | directory transport and author doorway                         |
+| Menu                                       | paginated sibling        | tenant/Kitchen-aware directory transport                       |
 | User                                       | ordinary sibling         | canonical identity and current-user reconciliation            |
 | App                                        | controller-owned sibling | Ecosystem and platform controllers, current-user App section  |
 | Ecosystem                                  | controller-owned sibling | platform scope and aggregate App count                        |
@@ -113,13 +145,15 @@ not drift.
 
 ## Component ownership
 
-- `XHero`, optional `XCurrent`, optional `XCreate`, and `XCollection` are owned
+- `XHero`, optional `XCurrent`, `XCreate`, and `XCollection` are owned
   by the Entity package.
 - The App owns the route and visibly composes the available layers in that order.
 - `XCollection` receives its canonical collection from the route.
-- `XCollectionList` and `XCards/*` remain Entity-owned.
-- `XCreate` is present only when creation is real. Generic `XCTA` does not name
-  an index-page responsibility.
+- `XCollectionList` remains Entity-owned and maps its records into the neutral
+  Core-owned `CollectionCell`. Entity `XCards/*` remain available to other
+  consumers but do not style the FL index baseline.
+- `XCreate` is required in the audited FL index family and owns the real
+  creation doorway. Generic `XCTA` does not name an index-page responsibility.
 - Pages do not accept generic configuration objects for cards, states, or CTA
   behavior.
 - Debug presentation is outside the current composition pass.
@@ -145,17 +179,23 @@ When this family changes:
 
 ## Current decisions
 
-- App, User, Ecosystem, Project, Place, and Kitchen prove
+- App, User, Ecosystem, Project, Place, Kitchen, Job, Menu, Supplier,
+  Portfolio, and Property prove
   fireux-composed-lasagne in current source and the executable family guard.
-- These six Entity index families use visible flat composition rather than a
-  shared `CollectionPage` shell. Other index families remain unaudited by this
-  pass and are not silently claimed as aligned.
+- These eleven declared root Entity index families use visible flat composition
+  rather than a shared `CollectionPage` shell. Marketplace Store is the one
+  declared root Entity without a comparable root index; this pass does not
+  invent one.
+- Company, Ingredient, Product, profile directories, Blog, parent-scoped
+  Entities, and App-branded routes are not silently promoted into this audited
+  root-Entity family. Their existing surfaces remain separate pending their own
+  classification or product decision.
 - Entity filters, actions, card facts, read authority, and route policy remain
   legitimate domain deltas.
 - Yellow Velo and Interlaken aesthetic families remain App-owned.
-- Supplier, Portfolio, Property, and Company are aligned ordinary Entity Collection Page
-  siblings. Their collection authority and management doorways remain
-  Entity-owned.
+- Supplier, Portfolio, and Property are aligned FL siblings. Their collection
+  authority and management doorways remain Entity-owned. Company remains a
+  Place-owned Record and is not claimed as a root Entity sibling.
 - Portfolio public index transport pages canonical `Portfolio[]`; the reader
   supplies document ids and does not create a second directory-entry model.
 - Place index transport pages canonical `Place[]`; it no longer maintains a
@@ -163,8 +203,8 @@ When this family changes:
 - Kitchen index transport returns canonical `Kitchen[]` values enriched with
   each same-ID canonical Place. It does not introduce a directory-entry model;
   management surfaces authorize against root-owned Team separately.
-- App, User, Ecosystem, Project, Place, and Kitchen routes acquire their
-  collections once and pass named Entity props into their collection components.
+- Every audited route acquires its collection once and passes the named plural
+  Entity prop into its Collection component.
 - Supplier Collection Page reads canonical `Supplier[]` through its live root
   collection. Its different transport does not change the shared outcome
   anatomy.

@@ -1,22 +1,16 @@
 <template>
-  <CollectionPage
-    eyebrow="Discover"
-    :title="pageTitle"
-    :description="pageDescription"
-    icon="i-lucide-house"
-    secondary-label="Property tools"
-  >
-    <PropertyCollectionManager />
-
-    <template #secondary>
-      <PropertyCTA />
-    </template>
-  </CollectionPage>
+  <UPage><UPageBody>
+    <PropertyHero />
+    <PropertyCreate />
+    <PropertyCollection :properties="properties" />
+    <CollectionPagination :has-more="hasMore" :loading="loadingMore" @load-more="loadMore" />
+  </UPageBody></UPage>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { usePropertyDirectory } from '../../property/composables/usePropertyDirectory'
 
 definePageMeta({
   tag: 'properties',
@@ -44,5 +38,6 @@ definePageMeta({
 const pageTitle = 'Properties'
 const pageDescription = 'Browse properties available through this app.'
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | ${pageTitle}` })
+const { properties, hasMore, loadingMore, loadMore } = usePropertyDirectory()
+useSeo({ title: `${appName} | ${pageTitle}`, description: pageDescription, path: '/properties' })
 </script>

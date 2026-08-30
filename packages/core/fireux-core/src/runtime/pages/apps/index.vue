@@ -1,20 +1,18 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <AppHero :title="pageTitle" :description="pageDescription" />
-    <AppCurrent :apps="appsController.apps.value" />
-    <AppCreate :apps="appsController.apps.value" />
-    <AppCollection
-      :apps="appsController.apps.value"
-      title="Ecosystem Apps"
-      description="Browse Apps available through this Ecosystem."
-    />
-  </main>
+  <UPage>
+    <UPageBody>
+      <AppHero :title="pageTitle" :description="pageDescription" />
+      <AppCurrent :apps="apps" />
+      <AppCreate :apps="apps" />
+      <AppCollection :apps="apps" scope="ecosystem" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useApps } from '../../app/composables/useApps'
+import { useSeo } from '../../composables/fireux/seo/useSeo'
 
 definePageMeta({
   nav: {
@@ -34,10 +32,14 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const appsController = useApps()
+const { apps } = useApps()
 
 const pageTitle = 'Apps'
 const pageDescription = 'Find apps in this ecosystem, or start your app.'
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/apps',
+})
 </script>

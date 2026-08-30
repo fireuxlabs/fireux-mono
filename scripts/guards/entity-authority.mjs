@@ -611,9 +611,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/app/pages/ecosystems/index.vue'
   )
+  const fireuxEcosystemDetailPage = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue'
+  )
   assert.match(coreAppsPage, /useApps\(\)/)
   assert.match(fireuxAppsPage, /useApps\('\/api\/platform\/apps'\)/)
   assert.match(fireuxEcosystemsPage, /usePublishedPlatformEcosystemDirectory/)
+  assert.match(fireuxEcosystemDetailPage, /useApps\('\/api\/platform\/apps'\)/)
+  assert.match(
+    fireuxEcosystemDetailPage,
+    /apps\.value\.filter\(\(app\) => app\.ecosystem_id === ecosystem\.value\?\.id\)/
+  )
+  assert.match(
+    fireuxEcosystemDetailPage,
+    /<DirectoryEcosystemDetail[\s\S]*:apps="ecosystemApps"/
+  )
 
   const ownerAppDetailApi = read(
     repoRoot,
@@ -1587,11 +1600,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const userDetailPage = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/pages/users/[handle].vue'
+    'packages/core/fireux-core/src/runtime/pages/users/[handle]/index.vue'
+  )
+  const userEditPage = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/pages/users/[handle]/edit.vue'
   )
   const userAppMembership = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/user/components/AppMembership.vue'
+  )
+  const userAppMembershipEdit = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/user/components/AppMembership/Edit.vue'
+  )
+  const miseboxUserDetailPage = read(
+    repoRoot,
+    'projects/misebox/misebox-app/app/pages/users/[handle]/index.vue'
+  )
+  const kitchenAdminProvision = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Admin/Provision.vue'
+  )
+  const kitchenAdminPage = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/admin/kitchens.vue'
   )
   const appUserCollection = read(
     repoRoot,
@@ -1605,12 +1638,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(userDetailPage, /<UserProfile/)
   assert.match(userDetailPage, /<UserAppMembership/)
   assert.doesNotMatch(userDetailPage, /<UserDetail|<DevDebugPanel/)
+  assert.match(userEditPage, /<UserAppMembershipEdit/)
+  assert.match(userEditPage, /roles:\s*\['admin'\]/)
+  assert.match(userAppMembership, /<UserAppMembershipEdit/)
   assert.match(
     userAppMembership,
     /membership:\s*UserAppMembershipRecord \| null/
   )
   assert.match(userAppMembership, /subscription === 'business'/)
+  assert.match(userAppMembershipEdit, /onSetSubscription/)
+  assert.match(userAppMembershipEdit, /isAppUserSubscription/)
   assert.match(appUserCollection, /enabled\?:\s*ComputedRef<boolean>/)
+  assert.match(miseboxUserDetailPage, /\buseUserDetail\s*\(/)
+  assert.match(miseboxUserDetailPage, /<UserProfile/)
+  assert.match(miseboxUserDetailPage, /<UserAppMembership/)
+  assert.match(miseboxUserDetailPage, /<KitchenAdminProvision/)
+  assert.match(miseboxUserDetailPage, /:owner-user-id="user\.id"/)
+  assert.match(kitchenAdminProvision, /<KitchenOnboarding/)
+  assert.match(kitchenAdminProvision, /:owner-user-id="ownerUserId"/)
+  assert.match(kitchenAdminProvision, /:select-workspace-on-complete="false"/)
+  assert.match(kitchenAdminPage, /<KitchenAdminProvision/)
+  assert.doesNotMatch(kitchenAdminPage, /<KitchenOnboarding/)
 
   const entityDebugSurfaces = [
     [

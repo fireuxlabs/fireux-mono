@@ -1,14 +1,16 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <UserHero :title="pageTitle" :description="pageDescription" />
-    <UserCurrent
-      v-if="currentUser"
-      :current-user="currentUser"
-      :current-profiles="appUser?.profiles || []"
-    />
-    <UserCreate v-else />
-    <UserCollection :users="users" />
-  </main>
+  <UPage>
+    <UPageBody>
+      <UserHero :title="pageTitle" :description="pageDescription" />
+      <UserCurrent
+        v-if="currentUser"
+        :current-user="currentUser"
+        :current-profiles="appUser?.profiles || []"
+      />
+      <UserCreate v-else />
+      <UserCollection :users="users" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

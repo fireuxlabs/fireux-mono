@@ -1,14 +1,11 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <EcosystemHero />
-    <EcosystemCollection
-      :ecosystems="ecosystems"
-      title="Active Ecosystems"
-      description="Each Ecosystem groups Apps and belongs to one Project."
-      link
-      :show-variant-toggle="false"
-    />
-  </main>
+  <UPage>
+    <UPageBody>
+      <EcosystemHero />
+      <EcosystemCreate />
+      <EcosystemCollection :ecosystems="ecosystems" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

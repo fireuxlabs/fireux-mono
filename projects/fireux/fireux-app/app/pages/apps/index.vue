@@ -1,14 +1,12 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <AppHero description="Browse every App across the FireUX platform." />
-    <AppCurrent :apps="appsController.apps.value" />
-    <AppCreate :apps="appsController.apps.value" />
-    <AppCollection
-      :apps="appsController.apps.value"
-      title="Platform Apps"
-      description="All Apps from their canonical ecosystem collections."
-    />
-  </main>
+  <UPage>
+    <UPageBody>
+      <AppHero description="Browse every App across the FireUX platform." />
+      <AppCurrent :apps="apps" />
+      <AppCreate :apps="apps" />
+      <AppCollection :apps="apps" scope="platform" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -19,7 +17,7 @@ import {
 import { useApps } from 'fireux-core/runtime/app/composables/useApps'
 import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
-const appsController = useApps('/api/platform/apps')
+const { apps } = useApps('/api/platform/apps')
 
 definePageMeta({
   tag: 'apps',
@@ -51,7 +49,7 @@ useSeo({
       image: context.image,
       pageType: 'CollectionPage',
       title: context.title,
-      items: appsController.apps.value
+      items: apps.value
         .filter((app) => isDirectoryAppIndexable(app.id))
         .map((app) => ({
           name: app.name,

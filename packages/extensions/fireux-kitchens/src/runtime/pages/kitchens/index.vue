@@ -1,9 +1,11 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <KitchenHero />
-    <KitchenCreate />
-    <KitchenCollection :kitchens="kitchens" :can-view-hidden="canViewHidden" />
-  </main>
+  <UPage>
+    <UPageBody>
+      <KitchenHero />
+      <KitchenCreate />
+      <KitchenCollection :kitchens="kitchens" />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -31,7 +33,7 @@ definePageMeta({
 
 const pageTitle = 'Kitchens'
 const { appName } = useFireUXConfig()
-const { collection: kitchens, canViewHidden } = useKitchenCollection()
+const { collection: kitchens } = useKitchenCollection()
 useSeo({
   title: `${appName} | ${pageTitle}`,
   description:

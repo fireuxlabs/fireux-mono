@@ -1,27 +1,15 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="pill" :card="card" />
-    </template>
-  </div>
-
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="cell" :card="card" />
-    </template>
-  </div>
+  <ul class="collection-stack" aria-label="Properties">
+    <li v-for="card in cards" :key="card.id">
+      <CollectionCell
+        :title="card.title"
+        :description="card.subtitle || card.meta"
+      />
+    </li>
+  </ul>
 </template>
-
 <script setup lang="ts">
-import type { PropertyCard } from '../../composables/firestore/utils/view/usePropertyInterface'
-
-withDefaults(
-  defineProps<{
-    cards: PropertyCard.Card[]
-    variant?: 'pill' | 'cell'
-  }>(),
-  {
-    variant: 'pill',
-  }
-)
+import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+type PropertyCard = { id: string; to: string; title: string; subtitle: string; meta: string; imageUrl: string; status: string; badges: string[]; summary: string }
+defineProps<{ cards: PropertyCard[] }>()
 </script>

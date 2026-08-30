@@ -16,30 +16,13 @@
     </div>
 
     <div v-if="cardsFiltered.length" class="kitchen-collection__results">
-      <KitchenCollectionList :cards="cardsFiltered" :variant="variant">
-        <template #pill="{ card }">
-          <KitchenCardsPill
-            v-bind="card"
-            :link="linkEnabled"
-            :show-badges="showBadges"
-          />
-        </template>
-        <template #cell="{ card }">
-          <KitchenCardsCell
-            v-bind="card"
-            :link="linkEnabled"
-            :show-badges="showBadges"
-            directory
-          />
-        </template>
-      </KitchenCollectionList>
+      <KitchenCollectionList :cards="cardsFiltered" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { computed } from 'vue'
 import type { KitchenCollectionRecord } from '../composables/firestore/fetch/useKitchenCollection'
@@ -48,86 +31,43 @@ import type { KitchenSurface } from '../composables/firestore/utils/view/useKitc
 
 type KitchenCollectionItem = KitchenSurface
 
-const props = withDefaults(
-  defineProps<{
-    kitchens: KitchenCollectionRecord[]
-    canViewHidden?: boolean
-    title?: string
-    description?: string
-    searchPlaceholder?: string
-    showSearch?: boolean
-    showVariantToggle?: boolean
-    showCount?: boolean
-    initialVariant?: 'pill' | 'cell'
-    link?: boolean
-    showBadges?: boolean
-  }>(),
-  {
-    title: 'Kitchen collection',
-    description: '',
-    searchPlaceholder: 'Search kitchens…',
-    showSearch: true,
-    showVariantToggle: false,
-    showCount: true,
-    initialVariant: 'cell',
-    link: true,
-    showBadges: false,
-  }
-)
+const props = defineProps<{
+  kitchens: KitchenCollectionRecord[]
+}>()
 
-const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
-  surface,
-} = useKitchenInterface()
+const { interface: makeCard, surface } = useKitchenInterface()
 const collectionSurface = computed<KitchenCollectionItem[]>(() =>
   props.kitchens.flatMap((kitchen) => {
     const item = surface({ kitchen, place: kitchen.place })
     return item ? [item] : []
   })
 )
-const title = computed(() => String(props.title || 'Kitchen collection'))
-const description = computed(() =>
-  String(
-    props.description || 'Choose a Kitchen to view its profile and menus.'
-  ).trim()
-)
-const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search kitchens…')
-)
-const showSearch = computed(() => props.showSearch !== false)
-const showCount = computed(() => props.showCount !== false)
-const linkEnabled = computed(() => props.link !== false)
-const showBadges = computed(
-  () => props.showBadges !== false || props.canViewHidden
-)
+const searchPlaceholder = 'Search kitchens…'
+const showCount = true
 const collection = computed<KitchenCollectionItem[]>(() =>
   collectionSurface.value.filter((row): row is KitchenCollectionItem =>
     Boolean(makeCard(row))
   )
 )
 
-const { query, variant, visibleItems, visibleCount } = useCollectionSearch<
+const { query, visibleItems, visibleCount } = useCollectionSearch<
   KitchenCollectionItem,
   NonNullable<ReturnType<typeof makeCard>>
 >({
   items: collection,
   makeCard: (kitchen: KitchenCollectionItem) => makeCard(kitchen),
-  initialVariant: props.initialVariant,
+  initialVariant: 'cell',
 })
 
-const { cards: cardsFiltered } = useCollectionVariantCards({
-  items: visibleItems,
-  variant,
-  makeCard,
-  makePill,
-  makeCell,
-})
+const cardsFiltered = computed(() =>
+  visibleItems.value
+    .map(makeCard)
+    .filter((card): card is NonNullable<typeof card> => Boolean(card))
+)
 
 const totalCount = computed(() => collection.value.length)
 const countLabel = computed(() =>
-  showSearch.value && query.value
+  query.value
     ? `${visibleCount.value} of ${totalCount.value} kitchens`
     : `${totalCount.value} kitchen${totalCount.value === 1 ? '' : 's'}`
 )

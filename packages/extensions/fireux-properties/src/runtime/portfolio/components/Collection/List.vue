@@ -1,27 +1,16 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="pill" :card="card" />
-    </template>
-  </div>
-
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
-      <slot name="cell" :card="card" />
-    </template>
-  </div>
+  <ul class="collection-stack" aria-label="Portfolios">
+    <li v-for="card in cards" :key="card.to || card.id">
+      <CollectionCell
+        :title="card.title"
+        :description="card.subtitle"
+        :to="card.to"
+      />
+    </li>
+  </ul>
 </template>
-
 <script setup lang="ts">
+import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
 import type { PortfolioCard } from '../../composables/firestore/utils/view/usePortfolioInterface'
-
-withDefaults(
-  defineProps<{
-    cards: PortfolioCard.Card[]
-    variant?: 'pill' | 'cell'
-  }>(),
-  {
-    variant: 'pill',
-  }
-)
+defineProps<{ cards: PortfolioCard.Card[] }>()
 </script>

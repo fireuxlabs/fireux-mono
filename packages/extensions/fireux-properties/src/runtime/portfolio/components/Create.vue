@@ -1,0 +1,1 @@
+<template><UPageCTA title="Create a Portfolio" description="Open the Portfolio workspace to create and manage a portfolio." variant="naked"><template #links><UButton to="/workspace/portfolio/create" icon="i-lucide-building-2">Create Portfolio</UButton></template></UPageCTA></template>

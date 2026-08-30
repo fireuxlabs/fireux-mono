@@ -44,8 +44,10 @@ Every Entity Detail route should:
 - Canonical User detail is visibly composed in its route: the route acquires
   the canonical User and the separately authorized AppUser membership, then
   passes them to `UserProfile` and `UserAppMembership`. Missing membership is
-  not a Free subscription. Specialist profile pages remain with their owning
-  domains and are not inferred or registered through the User page.
+  not a Free subscription. The inline admin panel and `/users/:handle/edit`
+  reuse `UserAppMembershipEdit`; both routes retain the same trusted AppUser
+  mutation authority. Specialist profile pages remain with their owning domains
+  and are not inferred or registered through the User page.
 - Place owns the reference venue identity presentation. Kitchen and Supplier
   may compose that named Place presentation after their server reader has
   resolved the canonical Place relationship; they do not copy Place fields or

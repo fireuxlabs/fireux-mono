@@ -18,11 +18,7 @@
       >
         {{ profileAction.label }}
       </UButton>
-      <UButton
-        color="neutral"
-        variant="ghost"
-        @click="dismissed = true"
-      >
+      <UButton color="neutral" variant="ghost" @click="dismissed = true">
         No thanks, just browsing
       </UButton>
     </template>
@@ -46,7 +42,11 @@ const knownProfileActions = [
 ]
 const profileActions = computed(() => {
   const configuredProfiles = new Set(
-    appProfiles.map((profile) => String(profile ?? '').trim().toLowerCase())
+    appProfiles.map((profile) =>
+      String(profile ?? '')
+        .trim()
+        .toLowerCase()
+    )
   )
 
   return knownProfileActions.filter((profile) =>

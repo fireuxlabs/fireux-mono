@@ -21,7 +21,7 @@
       <DevModel :title="'Portfolios · Model'" :model="portfolioModelRuntime" />
     </UCard>
 
-    <PortfolioCollectionManager />
+    <PortfolioCollection :portfolios="portfolios" />
 
     <UCard>
       <template #header>
@@ -118,7 +118,6 @@ import {
   useDevStorageCollection,
 } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { computed, ref, watch } from 'vue'
-import PortfolioCollectionManager from '../Collection/Manager.vue'
 import {
   ROOT_PORTFOLIO_COLLECTION_PATH,
   resolvePortfolioWorkspaceCollectionPath,

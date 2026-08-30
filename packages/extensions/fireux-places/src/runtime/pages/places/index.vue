@@ -1,20 +1,22 @@
 <template>
-  <main class="mx-auto grid w-full max-w-7xl gap-12 px-4 py-10">
-    <PlaceHero />
-    <PlaceCreate />
-    <PlaceCollection
-      :places="places"
-      :has-more="hasMore"
-      :loading-more="loadingMore"
-      :load-more="loadMore"
-    />
-  </main>
+  <UPage>
+    <UPageBody>
+      <PlaceHero />
+      <PlaceCreate />
+      <PlaceCollection :places="places" />
+      <CollectionPagination
+        :has-more="hasMore"
+        :loading="loadingMore"
+        @load-more="loadMore"
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-22 16:08 CEST — Misebox operations shortcuts: expose the canonical Places index to entity discovery.
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { usePlaceCollection } from '../../place/composables/firestore/fetch/usePlaceCollection'
 
 definePageMeta({
@@ -43,5 +45,11 @@ const {
 } = usePlaceCollection()
 
 const pageTitle = 'Places'
-useHead({ title: `${appName} | ${pageTitle}` })
+const pageDescription =
+  'Explore venues, locations, and the physical places behind local services.'
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/places',
+})
 </script>

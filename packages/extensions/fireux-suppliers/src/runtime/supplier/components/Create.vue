@@ -1,0 +1,1 @@
+<template><UPageCTA title="Create a Supplier" description="Open the Supplier workspace to create and manage a supplier." variant="naked"><template #links><UButton to="/workspace/supplier/create" icon="i-lucide-truck">Create Supplier</UButton></template></UPageCTA></template>

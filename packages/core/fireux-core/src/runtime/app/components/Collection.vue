@@ -17,7 +17,7 @@
       </template>
     </CollectionHeader>
 
-    <AppCollectionLauncher v-if="cardsFiltered.length" :apps="cardsFiltered" />
+    <AppCollectionList v-if="cardsFiltered.length" :cards="cardsFiltered" />
   </section>
 </template>
 
@@ -28,41 +28,24 @@ import { useAppInterface } from '../composables/useAppInterface'
 import type { App } from '../models/app.model'
 import { useCollectionSearch } from '../../composables/shared/useCollectionSearch'
 
-const props = withDefaults(
-  defineProps<{
-    apps: App[]
-    title?: string
-    description?: string
-    searchPlaceholder?: string
-    showSearch?: boolean
-    showCount?: boolean
-  }>(),
-  {
-    title: 'Apps',
-    description: 'Browse canonical app records for the current ecosystem.',
-    searchPlaceholder: 'Search apps…',
-    showSearch: true,
-    showCount: true,
-  }
-)
+const props = defineProps<{
+  apps: App[]
+  scope: 'ecosystem' | 'platform'
+}>()
 
 const collection = computed<App[]>(() => props.apps)
-const title = computed(() => String(props.title || 'Apps'))
+const title = computed(() =>
+  props.scope === 'platform' ? 'Platform Apps' : 'Ecosystem Apps'
+)
 const description = computed(() =>
-  String(
-    props.description ||
-      'Browse canonical app records for the current ecosystem.'
-  )
+  props.scope === 'platform'
+    ? 'All Apps from their canonical ecosystem collections.'
+    : 'Browse Apps available through this Ecosystem.'
 )
-const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search apps…')
-)
-const showSearch = computed(() => props.showSearch !== false)
-const showCount = computed(() => props.showCount !== false)
+const searchPlaceholder = 'Search apps…'
+const showCount = true
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(
-  () => showSearch.value && totalCount.value > 15
-)
+const showSearchInput = computed(() => totalCount.value > 15)
 const { interface: makeCard } = useAppInterface()
 const { query, visibleItems, visibleCount } = useCollectionSearch<
   App,
