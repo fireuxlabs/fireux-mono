@@ -38,22 +38,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { usePublicBlogCollection } from 'fireux-blogs/runtime/composables/fireux/blog/public/usePublicBlogCollection'
-import type { PublicBlogPostProjection } from 'fireux-blogs/runtime/models/blogPost-public.model'
+import { useBlogDirectory } from 'fireux-blogs/runtime/composables/fireux/blog/directory/useBlogDirectory'
+import type { BlogDirectoryEntry } from 'fireux-blogs/runtime/models/blog-directory.model'
 import { futterPosts } from '../../content/futter'
 
 const { copy, language } = useInterlakenCopy()
-const { collection: blogPosts } = usePublicBlogCollection()
+const { collection: blogPosts } = useBlogDirectory()
 const blogsBySlug = computed(
-  () => new Map<string, PublicBlogPostProjection>(
-    (blogPosts.value as PublicBlogPostProjection[]).map(
-      (post: PublicBlogPostProjection) => [post.slug, post]
+  () => new Map<string, BlogDirectoryEntry>(
+    blogPosts.value.map(
+      (post: BlogDirectoryEntry) => [post.slug, post]
     )
   )
 )
-const stripHtml = (value: string) =>
-  value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-
 const resolvedFutterPosts = computed(() =>
   futterPosts.flatMap(post => {
     if (!('blogPost' in post) || !post.blogPost) {
@@ -76,7 +73,7 @@ const resolvedFutterPosts = computed(() =>
       id: post.id,
       label: copy(post.labelKey),
       title: blogPost.title,
-      body: blogPost.metaDescription || stripHtml(blogPost.content),
+      body: blogPost.metaDescription || blogPost.excerpt,
       image: blogPost.featuredImage,
       imageAlt: blogPost.title,
       to: `/blog/${blogPost.slug}`,

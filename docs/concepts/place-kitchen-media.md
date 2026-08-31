@@ -1,6 +1,6 @@
 # Place and Kitchen media
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 Ref: f3c707663
 Role: map, not canon
 
@@ -91,6 +91,17 @@ it into exact Place-owned Storage targets, reads current hours for the exact
 Google Place ID without storing Google photo content, preserves a complete
 pre-image, and updates the canonical Place only through the MCP/Skill mutation
 lane.
+
+Place onboarding now collects the discovery fields needed by the shared Place
+and Kitchen collection surfaces: factual `about` copy, bounded discovery
+`tags`, and an optional Place-owned cover image. AI may propose copy and tags
+from confirmed provider and owner evidence; the operator reviews them before
+the trusted onboarding command persists the Place. The protected live proof at
+`scripts/backfill-la-tapberne-discovery.mjs` applies the same fields using La
+Tapberne's owner-controlled tenant copy and photo. The completed exact-shell
+cleanup at `scripts/delete-misebox-junk-kitchen-shells.mjs` retains protected
+preimages and repairs AppUser Kitchen references before removing its four
+verified non-operational Kitchen/Place pairs.
 
 ## Migration
 

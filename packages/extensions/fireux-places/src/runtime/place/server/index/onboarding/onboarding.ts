@@ -58,6 +58,13 @@ export async function previewPlaceOnboarding(
     const tagline = String(place.tagline || '')
       .trim()
       .slice(0, 180)
+    const about = String(place.about || '')
+      .trim()
+      .slice(0, 900)
+    const tags = Array.isArray(place.tags)
+      ? place.tags.map((value) => String(value || '').trim()).filter(Boolean)
+      : []
+    const coverImage = storedHttpsImage(place.cover_image)
     const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
@@ -70,6 +77,9 @@ export async function previewPlaceOnboarding(
       ...(logoImage ? { logo_image: logoImage } : {}),
       ...(shortName ? { short_name: shortName } : {}),
       ...(tagline ? { tagline } : {}),
+      ...(about ? { about } : {}),
+      ...(tags.length ? { tags } : {}),
+      ...(coverImage ? { cover_image: coverImage } : {}),
       ...(Object.keys(brandPalette).length
         ? { brand_palette: brandPalette }
         : {}),
@@ -104,6 +114,7 @@ export async function completePlaceOnboarding(
   const sourcePlace = existing.exists ? existing.data() || {} : provider || {}
   const logoImage =
     'logoImage' in requested &&
+    typeof requested.logoImage === 'string' &&
     typeof sourcePlace.website === 'string' &&
     isSameSite(sourcePlace.website, requested.logoImage)
       ? requested.logoImage
@@ -139,6 +150,11 @@ export async function completePlaceOnboarding(
           ? { short_name: requested.shortName }
           : {}),
         ...('tagline' in requested ? { tagline: requested.tagline } : {}),
+        ...('about' in requested ? { about: requested.about } : {}),
+        ...('tags' in requested ? { tags: requested.tags } : {}),
+        ...('coverImage' in requested
+          ? { cover_image: requested.coverImage }
+          : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -180,6 +196,18 @@ export async function completePlaceOnboarding(
     }
     if (!String(place.tagline || '').trim() && 'tagline' in requested) {
       patch.tagline = requested.tagline
+    }
+    if (!String(place.about || '').trim() && 'about' in requested) {
+      patch.about = requested.about
+    }
+    if (
+      (!Array.isArray(place.tags) || !place.tags.length) &&
+      'tags' in requested
+    ) {
+      patch.tags = requested.tags
+    }
+    if (!storedHttpsImage(place.cover_image) && 'coverImage' in requested) {
+      patch.cover_image = requested.coverImage
     }
     if (
       !Object.keys(currentBrandPalette).length &&

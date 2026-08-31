@@ -37,7 +37,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
       | 'social_links'
     >
   > &
-    Partial<Record<`media.${keyof App['media']}`, string>>
+    Partial<Record<`media.${keyof NonNullable<App['media']>}`, string>>
 
   const updateApp = async (data: AppSettingsPatch) => {
     ensureAppId()

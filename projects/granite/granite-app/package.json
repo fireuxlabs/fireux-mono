@@ -7,7 +7,7 @@
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
     "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project granite-ecosystem --config firebase.json",
     "deploy": "node ../../../scripts/firebase-deploy.mjs --project granite-ecosystem --config firebase.json",
     "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project granite-ecosystem --config firebase.json",

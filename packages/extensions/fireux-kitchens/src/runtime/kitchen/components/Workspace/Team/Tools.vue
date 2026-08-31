@@ -1,42 +1,40 @@
 <template>
-  <section class="space-y-3" aria-labelledby="team-tools-title">
-    <div
-      class="flex items-center gap-3 rounded-xl border border-default bg-elevated/50 p-2 shadow-sm"
-    >
-      <div class="min-w-0 px-2">
-        <h2
-          id="team-tools-title"
-          class="text-xs font-semibold uppercase tracking-wide text-muted"
-        >
-          Tools
-        </h2>
-        <p class="hidden text-xs text-dimmed sm:block">Team actions</p>
-      </div>
+  <UPageGrid
+    aria-label="Team tools"
+    class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6"
+  >
+    <UPageCard
+      :as="canCreateTeamMember ? 'button' : 'div'"
+      :title="createTool.label"
+      :description="createTool.description"
+      :icon="createTool.icon"
+      class="aspect-square text-left"
+      :class="{ 'opacity-50': !canCreateTeamMember }"
+      :ui="{
+        container: 'p-4 sm:p-4',
+        title: 'line-clamp-2',
+        description: 'line-clamp-3',
+      }"
+      :spotlight="canCreateTeamMember"
+      @click="canCreateTeamMember && performAction(createTool.id)"
+    />
+  </UPageGrid>
 
-      <UButton
-        :label="createTool.label"
-        :icon="createTool.icon"
-        :disabled="!canWrite"
-        @click="performAction(createTool.id)"
+  <UModal
+    v-model:open="addMemberOpen"
+    title="Add team member"
+    description="Add an operational person record. This does not grant Misebox or Workspace access."
+    :ui="{ content: 'sm:max-w-lg' }"
+  >
+    <template #body>
+      <WorkspaceKitchenTeamWrite
+        v-if="canCreateTeamMember"
+        :kitchen-id="kitchenId"
+        @cancel="addMemberOpen = false"
+        @created="handleMemberCreated"
       />
-    </div>
-
-    <UModal
-      v-model:open="addMemberOpen"
-      title="Add team member"
-      description="Add an operational person record. This does not grant Misebox or Workspace access."
-      :ui="{ content: 'sm:max-w-lg' }"
-    >
-      <template #body>
-        <WorkspaceKitchenTeamWrite
-          v-if="canWrite"
-          :kitchen-id="kitchenId"
-          @cancel="addMemberOpen = false"
-          @created="handleMemberCreated"
-        />
-      </template>
-    </UModal>
-  </section>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
@@ -45,7 +43,7 @@ import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/use
 import { useKitchenTeamTools } from '../../../composables/workspace/team/useKitchenTeamTools'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
-const { kitchenId, canWrite } = useKitchenWorkspaceTeam()
+const { kitchenId, canCreateTeamMember } = useKitchenWorkspaceTeam()
 const toast = useToast()
 const tools = useKitchenTeamTools()
 const createTool = tools.find(

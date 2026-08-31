@@ -10,6 +10,7 @@ import type {
 import type { MediaBackdropColor } from 'fireux-places/runtime/place/utils/place-spine'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Theme } from 'fireux-core/types/theme'
+import type { Kitchen } from './kitchen.model.ts'
 
 export const KITCHEN_USER_LIMIT = 50
 
@@ -67,6 +68,7 @@ export type KitchenWorkspaceCurrentResponse = {
 export type KitchenWorkspaceIndexKitchen = {
   id: string
   place_id: string
+  status: Kitchen['status']
   identity: {
     display_name: string
     tagline: string

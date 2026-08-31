@@ -251,7 +251,10 @@ import {
 } from '../composables/fireux/workspace/workspaceRoutes'
 import { useWorkspaceNav } from '../composables/fireux/workspace/useWorkspaceNav'
 import { useWorkspaceNotifications } from '../composables/fireux/workspace/useWorkspaceNotifications'
-import { useWorkspace } from '../composables/fireux/workspace/useWorkspace'
+import {
+  useWorkspace,
+  type WorkspaceChoice,
+} from '../composables/fireux/workspace/useWorkspace'
 defineOptions({ name: 'workspace' })
 
 const open = ref(false)
@@ -306,8 +309,11 @@ const familyRootNav = computed(() =>
           `${workspaceLabel.value} Workspace`,
         image: workspaceState.activeImage.value,
         choices: workspaceState.choices.value
-          .filter((choice) => choice.id !== workspaceState.activeId.value)
-          .map((choice) => ({
+          .filter(
+            (choice: WorkspaceChoice) =>
+              choice.id !== workspaceState.activeId.value
+          )
+          .map((choice: WorkspaceChoice) => ({
             label: choice.name,
             ...(choice.image
               ? { avatar: { src: choice.image, alt: choice.name } }

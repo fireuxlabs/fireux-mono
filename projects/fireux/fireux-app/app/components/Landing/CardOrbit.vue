@@ -178,10 +178,10 @@ const directoryEcosystems = computed<readonly EcosystemDirectoryEntry[]>(
   () => publishedEcosystems.value
 )
 
-const appCards = computed<AppCard.Card[]>(() =>
+const appCards = computed<AppCard[]>(() =>
   directoryApps.value
     .map((entry) => toAppCell(entry as Parameters<typeof toAppCell>[0]))
-    .filter((card): card is AppCard.Card => Boolean(card))
+    .filter((card): card is AppCard => Boolean(card))
 )
 
 const ecosystemCards = computed<EcosystemInterfaceCard[]>(() =>

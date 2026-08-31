@@ -1,10 +1,27 @@
-import { defineEventHandler, setHeader } from 'h3'
+import { defineEventHandler, getQuery, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { useAssets } from '../app/composables/brand/useAssets'
 import { withBuildVersion } from '../utils/buildVersionUrl'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'
+const MANIFEST_ORIGIN = 'https://fireux.local'
+
+function readStartUrl(value: unknown): string {
+  const candidate = Array.isArray(value) ? value[0] : value
+  if (typeof candidate !== 'string') return '/'
+
+  const requestedPath = candidate.trim()
+  if (!requestedPath.startsWith('/') || requestedPath.startsWith('//')) return '/'
+
+  try {
+    const url = new URL(requestedPath, MANIFEST_ORIGIN)
+    if (url.origin !== MANIFEST_ORIGIN) return '/'
+    return `${url.pathname}${url.search}${url.hash}`
+  } catch {
+    return '/'
+  }
+}
 
 function readPaletteColor(
   fireux: Record<string, unknown>,
@@ -19,6 +36,7 @@ function readPaletteColor(
 }
 
 export default defineEventHandler((event) => {
+  const startUrl = readStartUrl(getQuery(event).start_url)
   const runtimeConfig = useRuntimeConfig()
   const pub = runtimeConfig.public || {}
   const fireux = (pub.fireux || {}) as Record<string, unknown>
@@ -44,12 +62,15 @@ export default defineEventHandler((event) => {
   setHeader(event, 'content-type', 'application/manifest+json')
 
   return {
-    id: '/',
+    // A route-installed surface such as a Kitchen Kiosk must remain distinct
+    // from the App's root installation and from every other installed Kiosk.
+    id: startUrl,
     name,
     short_name: shortName,
     description,
     lang: 'en',
-    start_url: '/',
+    start_url: startUrl,
+    scope: '/',
     display: 'standalone',
     background_color: backgroundColor,
     theme_color: themeColor,

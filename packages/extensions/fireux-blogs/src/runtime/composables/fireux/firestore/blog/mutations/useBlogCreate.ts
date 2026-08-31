@@ -30,11 +30,12 @@ export const BlogPayload = {
   tags: [] as string[],
   canonicalUrl: '',
   featuredImage: '',
+  featuredImageAlt: '',
   socialImage: '',
   readingTime: '',
   cta_link: '',
   cta_text: '',
-  type: '',
+  type: 'article',
   product_id: '',
   editorial_review: {
     source_kind: 'human',

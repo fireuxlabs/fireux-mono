@@ -12,10 +12,10 @@ const escapeHtml = (value: unknown) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
 
-const money = (value: unknown) =>
+const money = (value: unknown, currency: string) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: 'CHF',
+    currency,
   }).format(Number(value || 0))
 
 const orderTypeLabel = (value: string) =>
@@ -39,7 +39,12 @@ const formatCreatedAt = (value: string) => {
   }).format(date)
 }
 
-const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
+export const renderKitchenOrderReceiptHtml = (
+  receipt: CreatedMenuOrderReceipt
+) => {
+  const currency = /^[A-Z]{3}$/.test(receipt.currency)
+    ? receipt.currency
+    : 'CHF'
   const customerLines = [
     receipt.customer?.name,
     receipt.customer?.phone,
@@ -69,7 +74,7 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
               : ''
           }
         </td>
-        <td class="money">${escapeHtml(money(item.total_chf))}</td>
+        <td class="money">${escapeHtml(money(item.total_chf, currency))}</td>
       </tr>
     `
     })
@@ -183,13 +188,13 @@ const renderReceiptHtml = (receipt: CreatedMenuOrderReceipt) => {
     </section>
 
     <section class="totals">
-      <p><span>Subtotal</span><span>${escapeHtml(money(receipt.subtotal_chf))}</span></p>
+      <p><span>Subtotal</span><span>${escapeHtml(money(receipt.subtotal_chf, currency))}</span></p>
       ${
         receipt.delivery_fee_chf
-          ? `<p><span>Delivery</span><span>${escapeHtml(money(receipt.delivery_fee_chf))}</span></p>`
+          ? `<p><span>Delivery</span><span>${escapeHtml(money(receipt.delivery_fee_chf, currency))}</span></p>`
           : ''
       }
-      <p class="total"><span>Total</span><span>${escapeHtml(money(receipt.total_chf))}</span></p>
+      <p class="total"><span>Total</span><span>${escapeHtml(money(receipt.total_chf, currency))}</span></p>
     </section>
   </main>
   <script>
@@ -259,7 +264,7 @@ function printReceipt(receipt: CreatedMenuOrderReceipt) {
   if (!target) return false
 
   target.document.open()
-  target.document.write(renderReceiptHtml(receipt))
+  target.document.write(renderKitchenOrderReceiptHtml(receipt))
   target.document.close()
 
   return true

@@ -170,7 +170,7 @@ import type {
 const props = defineProps<{
   appName: string
   appShortName: string
-  appCard: AppCard.Card | null
+  appCard: AppCard | null
   appOutcome: DashboardOverviewOutcome
   membership: CurrentAppMembership | null
   membershipOutcome: DashboardOverviewOutcome

@@ -22,12 +22,11 @@ import {
   type RootMenuTarget,
   type ScopedMenuTarget,
 } from '../../../menu/server/ownership/target.ts'
+import { requireKitchenKioskSession } from '../../../kitchen/server/operations/kiosks/session.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-async function readSpecialsContent(
-  target: ScopedMenuTarget | RootMenuTarget
-) {
+async function readSpecialsContent(target: ScopedMenuTarget | RootMenuTarget) {
   const primaryMenuId = text(target.scope.primaryMenuId)
   const specialsMenuId = text(target.scope.specialsMenuId)
   if (
@@ -201,6 +200,13 @@ export default defineEventHandler(async (event) => {
     }
 
     const target = await resolveMenuTarget(menuId, kitchenSlug)
+    if (menuContext === 'kiosk') {
+      await requireKitchenKioskSession(event, {
+        appId: target.appId,
+        kitchenId: target.kitchenId,
+        menuId: target.sourceMenuId,
+      })
+    }
     if (target.kind !== 'root-doorway') {
       return await readKitchenMenu(target, menuContext, sproochliLanguage)
     }

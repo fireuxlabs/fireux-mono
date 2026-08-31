@@ -3,10 +3,37 @@
 @source '../../layouts';
 
 @layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: inherit;
+	}
+
 	html,
 	body {
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		overflow-x: clip;
+		overscroll-behavior-x: none;
 		/* Mobile app surfaces should not double-tap zoom, but pinch zoom remains allowed. */
 		touch-action: manipulation;
+	}
+
+	#__nuxt {
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		overflow-x: clip;
+	}
+
+	img,
+	picture,
+	svg,
+	video,
+	canvas {
+		max-width: 100%;
 	}
 
 	a,

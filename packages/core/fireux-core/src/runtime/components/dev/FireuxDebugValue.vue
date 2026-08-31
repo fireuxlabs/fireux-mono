@@ -201,15 +201,17 @@ const emptyLabel = computed(() => {
   return 'Empty'
 })
 const { copyText } = useDevClipboard()
-const copyValue = () =>
-  copyText(
+const copyValue = async (): Promise<void> => {
+  await copyText(
     typeof props.value === 'string'
       ? props.value
       : (JSON.stringify(props.value, null, 2) ?? String(props.value)),
     { label: props.path || props.name }
   )
-const copyPath = () =>
-  copyText(props.path || props.name, { label: 'Field path' })
+}
+const copyPath = async (): Promise<void> => {
+  await copyText(props.path || props.name, { label: 'Field path' })
+}
 const urlLabel = computed(() => {
   if (!url.value) return ''
   try {

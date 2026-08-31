@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Workspace Spine project cleanup: expose filtered Ecosystem operation outcomes.
 import { computed } from 'vue'
+import type { Ecosystem } from '../../../../../ecosystem/models/ecosystem.model'
 import { useEcosystemCollection } from '../../../../../ecosystem/composables/firestore/fetch/useEcosystemCollection'
 import { useFirestoreCollectionState } from '../../../../../composables/fireux/firestore/operations/useFirestoreCollection'
 import { useProjectWorkspace } from '../../core/useProjectWorkspace'
@@ -24,7 +25,7 @@ export function useProjectWorkspaceEcosystem() {
   const demoData = useProjectWorkspaceDemoData(
     runtime.isDemo
   )
-  const ecosystems = computed(() => {
+  const ecosystems = computed<Ecosystem[]>(() => {
     const projectId = normalizeString(selection.projectId.value)
     if (!projectId) return []
 
@@ -34,7 +35,7 @@ export function useProjectWorkspaceEcosystem() {
             ?.ecosystems ?? [])
         : (ecosystemCollection.value ?? [])
     return source.filter(
-      (entry) => normalizeString(entry.project_id) === projectId
+      (entry: Ecosystem) => normalizeString(entry.project_id) === projectId
     )
   })
   const count = computed(() => ecosystems.value.length)

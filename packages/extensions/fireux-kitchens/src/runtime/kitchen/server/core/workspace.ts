@@ -17,6 +17,7 @@ import {
 } from '../../models/kitchen-index.model.ts'
 import type { KitchenOrdersConfig } from '../../models/kitchen-configuration.model.ts'
 import type { KitchenFulfilment } from '../../models/fulfilment.model.ts'
+import type { Kitchen } from '../../models/kitchen.model.ts'
 import { readKitchenFulfilment } from './fulfilment.ts'
 import { readKitchenSproochliAttachment } from './sproochli-attachment.ts'
 import { readAppUserKitchenIds } from './user-kitchens.ts'
@@ -37,6 +38,14 @@ const record = (value: unknown): StoredRecord =>
 
 function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
+}
+
+function readKitchenStatus(root: StoredRecord): Kitchen['status'] {
+  const status = text(root.status)
+  if (status === 'active' || status === 'inactive' || status === 'archived') {
+    return status
+  }
+  conflict('Kitchen has no canonical lifecycle status.')
 }
 
 const optionalNumber = (value: unknown) => {
@@ -178,6 +187,7 @@ async function readKitchenIndexKitchen(
   return {
     id,
     place_id: placeSnapshot.exists ? id : '',
+    status: readKitchenStatus(root),
     identity: {
       display_name: text(identity.name),
       tagline: place.tagline,

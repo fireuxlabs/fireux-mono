@@ -8,6 +8,7 @@ export type PlaceOnboardingStepId =
   | 'find'
   | 'defaults'
   | 'identity'
+  | 'discovery'
   | 'brand'
   | 'review'
 
@@ -75,6 +76,12 @@ export async function enrichPlaceDraft(
     ...(!placeOnboardingText(place.tagline) && identity?.tagline
       ? { tagline: identity.tagline }
       : {}),
+    ...(!placeOnboardingText(place.about) && identity?.about
+      ? { about: identity.about }
+      : {}),
+    ...(!place.tags?.length && identity?.tags?.length
+      ? { tags: identity.tags }
+      : {}),
     ...(!placeOnboardingText(place.logo_image) && logo?.url
       ? { logo_image: logo.url }
       : {}),
@@ -84,10 +91,12 @@ export async function enrichPlaceDraft(
 export function placeOnboardingSteps(options: {
   needsDefaults: boolean
   needsIdentity: boolean
+  needsDiscovery: boolean
   canAddBrand: boolean
   validateFind: () => true | string
   validateDefaults: () => true | string
   validateIdentity: () => true | string
+  validateDiscovery: () => true | string
   validateBrand: () => true | string
   validateReview: () => true | string
 }): readonly OnboardingStep<PlaceOnboardingStepId>[] {
@@ -120,6 +129,18 @@ export function placeOnboardingSteps(options: {
               'Review the suggested short name and factual introduction.',
             icon: 'i-lucide-sparkles',
             validate: options.validateIdentity,
+          },
+        ]
+      : []),
+    ...(options.needsDiscovery
+      ? [
+          {
+            id: 'discovery' as const,
+            label: 'Discovery',
+            description:
+              'Review the public introduction, categories, and venue photography.',
+            icon: 'i-lucide-images',
+            validate: options.validateDiscovery,
           },
         ]
       : []),

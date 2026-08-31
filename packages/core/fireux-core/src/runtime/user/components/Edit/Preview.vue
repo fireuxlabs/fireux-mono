@@ -84,7 +84,7 @@
 import { computed } from 'vue'
 import type { UserCard } from '../../composables/useUserInterface'
 
-const props = defineProps<{ card: UserCard.Card }>()
+const props = defineProps<{ card: UserCard }>()
 
 const profileLabels = computed(() =>
   props.card.profiles.map((profile) =>

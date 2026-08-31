@@ -30,7 +30,7 @@ import {
 
 type PillProps = Partial<
   Pick<
-    UserCard.Card,
+    UserCard,
     'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles'
   >
 > & {

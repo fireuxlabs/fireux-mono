@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import type { User as FirebaseUser } from 'firebase/auth'
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../app/composables/config/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
@@ -153,7 +154,7 @@ const anonymousUpgradeContext = computed(() => ({
 
 watch(
   authUser,
-  (user) => {
+  (user: FirebaseUser | null) => {
     if (!user?.isAnonymous) return
     void rememberAnonymousAccountUpgrade(user, anonymousUpgradeContext.value)
   },

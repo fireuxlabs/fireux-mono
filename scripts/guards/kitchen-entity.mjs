@@ -142,9 +142,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}composables/firestore/mutations/useKitchenCreate.ts`
   )
+  const kitchenOnboardingController = read(
+    repoRoot,
+    `${kitchenBase}composables/useKitchenOnboarding.ts`
+  )
   const onboardingCommands = read(
     repoRoot,
     `${kitchenBase}server/index/onboarding/commands.ts`
+  )
+  const onboardingActor = read(
+    repoRoot,
+    `${kitchenBase}server/index/onboarding/onboarding-actor.ts`
+  )
+  const onboardingLocator = read(
+    repoRoot,
+    `${kitchenBase}server/index/onboarding/locator.ts`
   )
   const creationIdentity = read(
     repoRoot,
@@ -187,20 +199,48 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(kitchenCreate, /createKitchenShell/)
   assert.match(kitchenCreate, /intent:\s*'create_shell'/)
   assert.match(kitchenCreate, /onboarding\/shell/)
+  assert.doesNotMatch(
+    kitchenOnboardingController,
+    /\/api\/places\//,
+    'Kitchen onboarding preview must carry its bounded Place review projection without a second Place-detail request.'
+  )
   assert.match(shellCreate, /@submit\.prevent="submit"/)
   assert.match(shellCreate, /intent:\s*'create_shell'/)
   assert.doesNotMatch(shellCreate, /watch\(|usePlaceSearch|currentUser\.uid/)
   assert.match(
     kitchenOnboarding,
-    /await appContext\.refresh\(\)[\s\S]*setKitchenWorkspaceSelection\(\{ kitchenId: result\.kitchen_id \}\)[\s\S]*await router\.push\(resolvedReturnTo\.value\)/,
-    'Completed Kitchen onboarding must refresh canonical AppUser state before selecting and returning.'
+    /appContext\.applyCommittedWorkspaceMembership\(result\.app_user\)[\s\S]*await router\.push\(resolvedReturnTo\.value\)/,
+    'Completed Kitchen onboarding must reconcile its committed AppUser result before returning.'
+  )
+  assert.doesNotMatch(
+    kitchenOnboarding,
+    /appContext\.refresh\(\)|setKitchenWorkspaceSelection/,
+    'Completed Kitchen onboarding must not add a full App-context refresh or temporary browser Workspace selection to its post-submit path.'
+  )
+  assert.equal(
+    onboardingCommands.match(
+      /app_user:\s*\{ id: ownerUserId, \.\.\.workspaceState \}/g
+    )?.length,
+    2,
+    'Place and shell onboarding must return their exact committed AppUser Kitchen state.'
+  )
+  assert.equal(
+    onboardingCommands.match(/actor\(event, \{ deferMembership: true \}\)/g)
+      ?.length,
+    2,
+    'Kitchen completion commands must defer actor membership authority to their trusted transaction.'
+  )
+  assert.match(
+    onboardingActor,
+    /options\.deferMembership\s*\?\s*null\s*:\s*await membershipRef\.get\(\)/,
+    'The Kitchen onboarding actor must skip its pre-transaction membership read when authority is transaction-bound.'
   )
   assert.match(onboardingCommands, /body\.intent !== 'create_shell'/)
   assert.match(
     onboardingCommands,
     /resolveWorkspaceEntityCreationId\(\{ intent: 'create_shell', ownerUserId \}\)/
   )
-  assert.match(onboardingCommands, /intent:\s*'use_source'/)
+  assert.match(onboardingLocator, /intent:\s*'use_source'/)
   assert.match(creationIdentity, /intent:\s*'create_shell'/)
   assert.match(creationIdentity, /intent:\s*'use_source'/)
   assert.equal(

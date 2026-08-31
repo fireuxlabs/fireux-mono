@@ -27,6 +27,7 @@ import {
   type PlaceOnboardingSelection,
   type PlaceOnboardingStepId,
 } from '../utils/place-onboarding'
+import { completePlaceDraft } from '../utils/place-onboarding-completion'
 
 export type { PlaceOnboardingResult, PlaceOnboardingSelection }
 
@@ -40,6 +41,7 @@ export function usePlaceOnboarding() {
   const completion = ref<PlaceOnboardingResult | null>(null)
   const preview = ref<PlaceOnboardingPreview | null>(null)
   const imageFile = ref<File | null>(null)
+  const coverFile = ref<File | null>(null)
   let selectionSequence = 0
   const {
     completePlaceOnboarding,
@@ -63,17 +65,33 @@ export function usePlaceOnboarding() {
         (!preview.value.image_url || !preview.value.brand_palette)
     )
   )
-  const needsEnrichment = computed(() =>
-    Boolean(needsDefaults.value || needsIdentity.value || canAddBrand.value)
-  )
   const needsIdentity = computed(() =>
     Boolean(
       canConfigure.value &&
         (!text(draft.value?.short_name) || !text(draft.value?.tagline))
     )
   )
+  const needsDiscovery = computed(() =>
+    Boolean(
+      canConfigure.value &&
+        (!text(draft.value?.about) ||
+          !draft.value?.tags?.length ||
+          !text(draft.value?.cover_image))
+    )
+  )
+  const needsEnrichment = computed(() =>
+    Boolean(
+      needsDefaults.value ||
+        needsIdentity.value ||
+        needsDiscovery.value ||
+        canAddBrand.value
+    )
+  )
   const canEditImage = computed(() =>
     Boolean(canAddBrand.value && !preview.value?.image_url)
+  )
+  const canEditCover = computed(() =>
+    Boolean(canConfigure.value && !preview.value?.cover_image)
   )
   const canEditBrandPalette = computed(() =>
     Boolean(canAddBrand.value && !preview.value?.brand_palette)
@@ -127,6 +145,7 @@ export function usePlaceOnboarding() {
     placeOnboardingSteps({
       needsDefaults: needsDefaults.value,
       needsIdentity: needsIdentity.value,
+      needsDiscovery: needsDiscovery.value,
       canAddBrand: canAddBrand.value,
       validateFind,
       validateDefaults,
@@ -134,6 +153,10 @@ export function usePlaceOnboarding() {
         text(draft.value?.short_name)
           ? true
           : 'Confirm a short name for this Place.',
+      validateDiscovery: () =>
+        text(draft.value?.about)
+          ? true
+          : 'Confirm a short factual introduction for this Place.',
       validateBrand,
       validateReview: () => {
         const selection = validateSelection()
@@ -145,52 +168,19 @@ export function usePlaceOnboarding() {
   )
 
   async function finish() {
-    const id = canonicalPlaceId(draft.value?.id)
-    if (!id) throw new Error('Choose a Place before continuing.')
-
-    try {
-      if (!needsEnrichment.value) {
-        const ensured = await ensurePlaceExists({ id })
-        if (!ensured) throw new Error('The Place could not be confirmed.')
-      } else {
-        const defaults = {
-          id,
-          default_currency_code: validatedCurrencyCode.value,
-          timezone: validatedTimezone.value,
-          ...(text(draft.value?.short_name)
-            ? { short_name: text(draft.value?.short_name) }
-            : {}),
-          ...(text(draft.value?.tagline)
-            ? { tagline: text(draft.value?.tagline) }
-            : {}),
-          ...(text(draft.value?.logo_image)
-            ? { logo_image: text(draft.value?.logo_image) }
-            : {}),
-          ...(Object.keys(brandPalette.value).length
-            ? { brand_palette: brandPalette.value }
-            : {}),
-        }
-        await completePlaceOnboarding(defaults)
-
-        if (imageFile.value) {
-          const imageUrl = await uploadImage(
-            `places/${id}/avatar`,
-            imageFile.value
-          )
-          await completePlaceOnboarding({
-            ...defaults,
-            image_url: imageUrl,
-          })
-        }
-      }
-      completion.value = {
-        id,
-        path: `/places/${encodeURIComponent(id)}`,
-      }
-      return true
-    } catch (error) {
-      throw new Error(placeOnboardingErrorMessage(error))
-    }
+    completion.value = await completePlaceDraft({
+      draft: draft.value,
+      needsEnrichment: needsEnrichment.value,
+      currencyCode: validatedCurrencyCode.value,
+      timezone: validatedTimezone.value,
+      brandPalette: brandPalette.value,
+      imageFile: imageFile.value,
+      coverFile: coverFile.value,
+      ensurePlaceExists,
+      completePlaceOnboarding,
+      uploadImage,
+    })
+    return true
   }
 
   const onboarding = useOnboarding<PlaceOnboardingStepId>({
@@ -207,6 +197,7 @@ export function usePlaceOnboarding() {
     selectionPending.value = true
     preview.value = null
     imageFile.value = null
+    coverFile.value = null
 
     const id = canonicalPlaceId(selection.placeId || selection.place.id)
     const providerSelection = selection.place.source === 'google'
@@ -269,6 +260,11 @@ export function usePlaceOnboarding() {
         ...(resolvedPreview.tagline
           ? { tagline: resolvedPreview.tagline }
           : {}),
+        ...(resolvedPreview.about ? { about: resolvedPreview.about } : {}),
+        ...(resolvedPreview.tags?.length ? { tags: resolvedPreview.tags } : {}),
+        ...(resolvedPreview.cover_image
+          ? { cover_image: resolvedPreview.cover_image }
+          : {}),
         ...(resolvedPreview.brand_palette
           ? { brand_palette: resolvedPreview.brand_palette }
           : {}),
@@ -302,6 +298,7 @@ export function usePlaceOnboarding() {
     completion.value = null
     preview.value = null
     imageFile.value = null
+    coverFile.value = null
     onboarding.reset()
   }
 
@@ -328,9 +325,29 @@ export function usePlaceOnboarding() {
     draft.value = { ...draft.value, tagline: value.slice(0, 180) }
   }
 
+  function setAbout(value: string) {
+    if (!draft.value || !canConfigure.value) return
+    draft.value = { ...draft.value, about: value.slice(0, 900) }
+  }
+
+  function setTags(value: string[]) {
+    if (!draft.value || !canConfigure.value) return
+    draft.value = {
+      ...draft.value,
+      tags: Array.from(
+        new Set(value.map((tag) => text(tag).toLowerCase()).filter(Boolean))
+      ).slice(0, 8),
+    }
+  }
+
   function setImageFile(value: File | null) {
     if (!canEditImage.value) return
     imageFile.value = value
+  }
+
+  function setCoverFile(value: File | null) {
+    if (!canEditCover.value) return
+    coverFile.value = value
   }
 
   function setBrandPalette(value: SparseBrandPalette) {
@@ -351,21 +368,27 @@ export function usePlaceOnboarding() {
     canConfigure,
     canEditBrandPalette,
     canEditImage,
+    canEditCover,
     currencyCode,
     draft,
     imageFile,
+    coverFile,
     isExisting,
     needsEnrichment,
     needsIdentity,
+    needsDiscovery,
     needsDefaults,
     preview,
     selectPlace,
     setCurrencyCode,
     setBrandPalette,
     setImageFile,
+    setCoverFile,
     setTimezone,
     setShortName,
     setTagline,
+    setAbout,
+    setTags,
     selectionError,
     selectionPending,
     timezone,

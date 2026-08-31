@@ -95,7 +95,7 @@ const selectedProjectName = computed(() =>
   String(selectedProject.value?.name || '').trim() || 'Untitled'
 )
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
-  return ecosystems.value.map((value) => ({
+  return ecosystems.value.map((value: EcosystemInterfaceInput) => ({
     ...value,
     href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
     src: value.image_url,

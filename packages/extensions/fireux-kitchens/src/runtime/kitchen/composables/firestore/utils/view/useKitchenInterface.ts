@@ -153,6 +153,10 @@ export function useKitchenInterface() {
       safeString(kitchen.short_address) || formattedAddress
     )
     const imageUrl = safeString(identity?.image_url)
+    const discoveryImageUrl =
+      safeString(kitchen.food_gallery?.[0]) ||
+      safeString(kitchen.cover_image) ||
+      imageUrl
 
     const visible = kitchen.visible !== false
     const badges = visible ? [] : ['Hidden']
@@ -181,6 +185,7 @@ export function useKitchenInterface() {
         : {}),
 
       imageUrl,
+      discoveryImageUrl,
       logoImageUrl: safeString(kitchen.logo_image || kitchen.logo_image_url),
       categoryLabels: [...(kitchen.tags || []), ...(kitchen.types || [])]
         .filter(

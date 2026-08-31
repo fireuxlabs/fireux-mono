@@ -1,7 +1,11 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar
+        :src="proxiedAvatarUrl || undefined"
+        :alt="displayName"
+        size="sm"
+      />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -24,17 +28,31 @@
           {{ handle }}
         </div>
 
-        <div v-if="showBody" class="preview__body">
-          <div class="preview__line">
-            <span v-if="bioOverride || summary || bio">{{ bioOverride || summary || bio }}</span>
-            <span v-else class="italic">missing</span>
+        <div
+          v-if="
+            showBody &&
+            (bioOverride ||
+              summary ||
+              bio ||
+              title ||
+              profiles.length ||
+              appsLabel)
+          "
+          class="preview__body"
+        >
+          <div v-if="bioOverride || summary || bio" class="preview__line">
+            {{ bioOverride || summary || bio }}
           </div>
 
-          <div class="preview__line text-dimmed">
+          <div
+            v-if="title || profiles.length || appsLabel"
+            class="preview__line text-dimmed"
+          >
             <span v-if="title">{{ title }}</span>
             <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
-            <span v-else class="italic">missing</span>
-            <span v-if="appsLabel"> · {{ appsLabel }}</span>
+            <span v-if="appsLabel">
+              {{ title || profiles.length ? ` · ${appsLabel}` : appsLabel }}
+            </span>
           </div>
         </div>
       </div>
@@ -81,7 +99,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { useProxiedAvatar } = useAvatarProxy()
-const proxiedAvatarUrl = useProxiedAvatar(() =>
-  props.avatarUrl || USER_AVATAR_FALLBACK_SRC
+const proxiedAvatarUrl = useProxiedAvatar(
+  () => props.avatarUrl || USER_AVATAR_FALLBACK_SRC
 )
 </script>

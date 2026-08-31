@@ -476,6 +476,7 @@ async function startAndOpen(app) {
   const child = spawn('pnpm', [`dev:${app.key}`], {
     cwd: repoRoot,
     detached: true,
+    env: { ...process.env, NUXT_HOST: '0.0.0.0' },
     stdio: 'ignore',
   })
   child.unref()

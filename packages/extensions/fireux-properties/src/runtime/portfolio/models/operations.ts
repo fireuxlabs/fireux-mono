@@ -1,4 +1,7 @@
-import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
+import type {
+  FireuxMetaOperation,
+  WorkspaceCapabilityFamilies,
+} from 'fireux-core/config/app/meta-content'
 
 const portfolioWorkspace = {
   id: 'portfolio',
@@ -6,7 +9,40 @@ const portfolioWorkspace = {
   to: '/workspace/portfolio',
 } as const
 
-export const portfolioOperations = [
+const portfolioCapabilityFamilies = {
+  properties: {
+    surfaces: ['catalogue', 'relationship-directory'],
+    entries: ['search-connect'],
+    tools: ['record', 'relationship'],
+    scopes: ['local'],
+  },
+  compliance: {
+    surfaces: ['control-checklist', 'event-ledger'],
+    entries: [],
+    tools: ['workflow', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  documents: {
+    surfaces: ['asset-vault'],
+    entries: ['import-create'],
+    tools: ['record'],
+    scopes: ['local'],
+  },
+  tasks: {
+    surfaces: ['work-queue'],
+    entries: ['quick-create', 'derived-create'],
+    tools: ['record', 'workflow'],
+    scopes: ['local'],
+  },
+  finance: {
+    surfaces: ['report'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+} as const satisfies Record<string, WorkspaceCapabilityFamilies>
+
+const portfolioOperationDefinitions = [
   [
     'properties',
     'Properties',
@@ -37,12 +73,17 @@ export const portfolioOperations = [
     'Review financial signals for the selected portfolio.',
     'i-lucide-chart-line',
   ],
-].map(([slug, title, description, icon]) => ({
-  id: `portfolio.${slug}`,
-  slug,
-  title,
-  description,
-  to: `/workspace/portfolio/${slug}`,
-  workspace: portfolioWorkspace,
-  icon,
-})) satisfies FireuxMetaOperation[]
+] as const
+
+export const portfolioOperations = portfolioOperationDefinitions.map(
+  ([slug, title, description, icon]) => ({
+    id: `portfolio.${slug}`,
+    slug,
+    title,
+    description,
+    to: `/workspace/portfolio/${slug}`,
+    workspace: portfolioWorkspace,
+    capabilityFamilies: portfolioCapabilityFamilies[slug],
+    icon,
+  })
+) satisfies FireuxMetaOperation[]

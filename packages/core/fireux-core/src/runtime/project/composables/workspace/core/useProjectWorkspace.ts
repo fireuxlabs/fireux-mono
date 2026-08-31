@@ -26,7 +26,7 @@ function createProjectWorkspace(): ProjectWorkspace {
 
   watch(
     project,
-    (selectedProject) => {
+    (selectedProject: ProjectSurface | null) => {
       workspace.setActiveStatus(selectedProject?.status || '')
       if (!selectedProject) return
       workspace.activate(

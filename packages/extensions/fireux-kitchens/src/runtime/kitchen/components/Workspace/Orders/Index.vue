@@ -1,5 +1,6 @@
 <template>
   <section class="workspace-surface">
+    <WorkspaceKitchenOrdersKioskDoorway />
     <WorkspaceKitchenOrdersToolbar />
     <WorkspaceKitchenOrdersServiceState />
     <WorkspaceKitchenOrdersPass />

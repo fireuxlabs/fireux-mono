@@ -10,13 +10,13 @@ import type { App } from '../models/app.model'
 const safeString = (value: unknown) => String(value ?? '').trim()
 
 export type AppProfileViewModel = {
-  card: AppCard.Card
+  card: AppCard
   description: string
   appId: string
   role: string
   ecosystem: string
   creatorId: string
-  creatorCard: UserCard.Card | null
+  creatorCard: UserCard | null
   createdAtText: string
 }
 
@@ -28,7 +28,7 @@ export function useAppProfileView(
     () => safeString(appRef.value?.created?.by) || null
   )
   const card = computed(() => toProfile(appRef.value))
-  const creatorCard = computed<UserCard.Card | null>(() => null)
+  const creatorCard = computed<UserCard | null>(() => null)
   const createdAtText = computed(
     () =>
       formatFirestoreTimestamp(appRef.value?.created?.at, {

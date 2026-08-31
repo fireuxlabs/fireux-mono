@@ -1,21 +1,27 @@
 <template>
-  <ul class="collection-stack" aria-label="Projects">
-    <li v-for="card in cards" :key="card.to">
-      <CollectionCell
-        :title="card.title"
-        :description="card.subtitle"
-        :to="card.to"
-      />
+  <UPageGrid as="ul" class="list-none" aria-label="Projects">
+    <li v-for="cell in cells" :key="cell.to">
+      <CollectionCell :cell="cell" />
     </li>
-  </ul>
+  </UPageGrid>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue'
 import CollectionCell from '../../../components/Collection/Cell.vue'
+import type { CollectionCellData } from '../../../models/utils/collection-cell'
 export type ProjectCollectionCard = {
   to: string
   title: string
   subtitle?: string
   imageUrl?: string
 }
-defineProps<{ cards: ProjectCollectionCard[] }>()
+const props = defineProps<{ cards: ProjectCollectionCard[] }>()
+const cells = computed<CollectionCellData[]>(() =>
+  props.cards.map((card) => ({
+    title: card.title,
+    description: card.subtitle,
+    image: card.imageUrl,
+    to: card.to,
+  }))
+)
 </script>

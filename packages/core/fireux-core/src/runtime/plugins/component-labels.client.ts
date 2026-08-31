@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useState } from '#imports'
+import type { NuxtApp } from 'nuxt/app'
 import { watch, type ComponentPublicInstance } from 'vue'
 
 type LabelledInstance = ComponentPublicInstance & {
@@ -17,7 +18,7 @@ interface TargetLabel {
 
 const LABEL_ROOT_ID = 'fireux-component-labels'
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
   if (!import.meta.dev) return
 
   const labelsVisible = useState(
@@ -111,7 +112,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
   })
 
-  const stopWatchingVisibility = watch(labelsVisible, (visible) => {
+  const stopWatchingVisibility = watch(labelsVisible, (visible: boolean) => {
     root.hidden = !visible
     if (visible) scheduleRender()
   })
@@ -120,7 +121,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   window.addEventListener('resize', scheduleRender)
 
   nuxtApp.hook('app:beforeMount', scheduleRender)
-  nuxtApp.hook('app:unmounted', () => {
+  nuxtApp.vueApp.onUnmount(() => {
     window.removeEventListener('scroll', scheduleRender, true)
     window.removeEventListener('resize', scheduleRender)
     stopWatchingVisibility()

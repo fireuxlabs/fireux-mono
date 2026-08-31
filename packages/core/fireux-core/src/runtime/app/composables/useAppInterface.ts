@@ -4,8 +4,7 @@ import { type App } from '../models/app.model.ts'
 import { resolveAppMediaForView } from './firestore/utils/appMedia'
 import { useResolvedColorMode } from '../../composables/theme/useColorMode'
 
-export namespace AppCard {
-  export type Card = {
+export type AppCard = {
     id: string
     to: string
 
@@ -43,8 +42,7 @@ export namespace AppCard {
     // Always safe to render (empty string if none)
     wordmarkUrl: string
 
-    socialLinks: App['social_links']
-  }
+  socialLinks: App['social_links']
 }
 
 function safeMedia(app: App) {
@@ -75,10 +73,10 @@ export function useAppInterface(
   appRef?: Ref<App | null | undefined>
 ) {
   const resolvedMode = useResolvedColorMode()
-  type AppPill = AppCard.Card
-  type AppCell = AppCard.Card
-  type AppPreview = AppCard.Card
-  type AppProfile = AppCard.Card
+  type AppPill = AppCard
+  type AppCell = AppCard
+  type AppPreview = AppCard
+  type AppProfile = AppCard
 
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
@@ -89,7 +87,7 @@ export function useAppInterface(
       : media.wordmarkLightUrl
   }
 
-  function map(app: App): AppCard.Card {
+  function map(app: App): AppCard {
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
@@ -141,7 +139,7 @@ export function useAppInterface(
 
   function buildInterface(
     target?: App | null | undefined
-  ): AppCard.Card | null {
+  ): AppCard | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null
     const mapped = map(app)

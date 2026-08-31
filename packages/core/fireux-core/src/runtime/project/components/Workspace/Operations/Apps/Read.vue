@@ -56,6 +56,6 @@ const { cell: appCell } = useAppInterface()
 const cards = computed(() =>
   apps.value
     .map((app) => appCell(app))
-    .filter((card): card is AppCard.Card => Boolean(card))
+    .filter((card): card is AppCard => Boolean(card))
 )
 </script>

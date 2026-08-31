@@ -3,6 +3,8 @@
  * This is configuration input, not a persisted model or route registry.
  */
 
+import type { WorkspaceCapabilityFamilies } from './capability-families'
+
 export type FireuxMetaCta = {
   label: string
   to: string
@@ -60,6 +62,8 @@ export type FireuxMetaOperation = {
   to: string
   /** Workspace that owns the operation. */
   workspace: FireuxMetaOperationWorkspace
+  /** Product-family classification; this does not claim that a Tool is released. */
+  capabilityFamilies: WorkspaceCapabilityFamilies
   icon?: string
   /** Search-intent phrases used to map operator demand into product literature. */
   keywords?: string[]

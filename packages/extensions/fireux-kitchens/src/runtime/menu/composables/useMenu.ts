@@ -5,7 +5,7 @@ import {
   toValue,
   type MaybeRefOrGetter,
 } from 'vue'
-import { createError, useAsyncData } from '#imports'
+import { createError, useAsyncData, useRequestFetch } from '#imports'
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
@@ -93,6 +93,7 @@ export function useMenu(
   menuId: MaybeRefOrGetter<string>,
   options: UseMenuOptions
 ) {
+  const requestFetch = useRequestFetch()
   const id = computed(() => String(toValue(menuId) || '').trim())
   const routeScope = computed(() => toValue(options.routeScope))
   const kitchenSlug = computed(() =>
@@ -152,7 +153,7 @@ export function useMenu(
       if (!endpoint.value) return null
 
       try {
-        return await $fetch<MenuDetailPayload>(endpoint.value)
+        return await requestFetch<MenuDetailPayload>(endpoint.value)
       } catch (error) {
         const failure = menuLoadFailure(requestStatusCode(error))
 

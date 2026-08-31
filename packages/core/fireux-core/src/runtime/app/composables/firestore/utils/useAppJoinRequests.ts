@@ -19,7 +19,7 @@ type JoinRequestItem = {
 type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
 type CardBuilder = ComputedRef<
-  (target?: UserIdentitySummary | null | undefined) => UserCard.Card
+  (target?: UserIdentitySummary | null | undefined) => UserCard
 >
 
 type Options = {

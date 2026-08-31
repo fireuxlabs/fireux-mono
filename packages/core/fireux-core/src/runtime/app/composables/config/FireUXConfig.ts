@@ -49,6 +49,13 @@ function optString(src: AnyRecord, key: string): string | undefined {
   return v.trim()
 }
 
+function optRoutePath(src: AnyRecord, key: string): `/${string}` | undefined {
+  const value = optString(src, key)
+  return value?.startsWith('/') && !value.startsWith('//')
+    ? (value as `/${string}`)
+    : undefined
+}
+
 function optRecord(
   src: AnyRecord,
   key: string
@@ -123,7 +130,7 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
-    homePath: optString(fireux, 'homePath') || '/',
+    homePath: optRoutePath(fireux, 'homePath') || '/',
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),

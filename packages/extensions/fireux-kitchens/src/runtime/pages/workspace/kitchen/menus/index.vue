@@ -11,6 +11,7 @@
 
       <template #body>
         <section class="workspace-surface">
+          <WorkspaceKitchenMenusSelector />
           <WorkspaceKitchenCapabilityTools operation="menus" />
           <WorkspaceKitchenCapabilityAI
             operation="menus"

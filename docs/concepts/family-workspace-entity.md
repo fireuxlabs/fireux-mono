@@ -14,7 +14,8 @@ still needed to remove unexplained drift.
 - Parent: `workspace.md`
 - Child: `family-tenant-global.md`
 - Horizontal: `entities.md`, `pages.md`, `components.md`, `composables.md`,
-  `firestore-entity.md`, `runtime-filesystem.md`
+  `firestore-entity.md`, `runtime-filesystem.md`,
+  `family-operation-capability-tool.md`
 - Executable reference: `scripts/guards/workspace-indexes.mjs`
 - Server-shape reference: `scripts/guards/workspace-entity-server.mjs`
 - Authority reference: `scripts/guards/workspace-entity-authority.mjs`
@@ -273,6 +274,27 @@ Conditional names:
 Kitchen may use nested Identity sections because the sheet has Place,
 publication, theme, hours, delivery, and payment concerns. That is an accepted
 composition delta, not permission to fork the Workspace Index spine.
+
+## Workspace Focus List family
+
+A Workspace Focus List is a deliberately small working set inside one active
+Workspace Entity. People normally act on one item at a time, so a compact
+selector remains useful even when the set contains several items. Selection is
+temporary page state: the first loaded item is the default, and choosing another
+item does not create primary semantics, mutate the Entity, change the URL, or
+write browser storage.
+
+The current Kitchen proving members are Team, Menus, Stations, and Suppliers.
+A Focus List may show a create doorway only when the domain already owns a real
+Tool and command. Suppliers therefore remain selection-only until a Supplier
+connect Tool is implemented. Drinks, Dishes, Ingredients, Orders, and Waste are
+catalogue or event collections rather than Focus Lists; they need search,
+filtering, pagination, or task-specific views instead of this selector shape.
+
+Focus List is one surface-family classification. Operation, Capability, Tool,
+entry-family, Local Tool, and Compound Tool meanings are owned by
+[Operation, Capability, and Tool family](family-operation-capability-tool.md);
+this Workspace map owns only their application to active-Entity surfaces.
 
 ## Alignment roadmap
 

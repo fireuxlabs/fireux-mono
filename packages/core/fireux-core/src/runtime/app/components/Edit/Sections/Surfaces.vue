@@ -53,7 +53,7 @@
 import type { AppCard } from '../../../composables/useAppInterface';
 
 defineProps<{
-  appCard: AppCard.Card | null
+  appCard: AppCard | null
 }>()
 
 </script>

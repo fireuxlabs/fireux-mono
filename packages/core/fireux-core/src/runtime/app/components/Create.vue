@@ -1,11 +1,11 @@
 <template>
-  <UPageCTA
+  <UPageCard
     data-entity-cta-family="platform-app"
     :title="title"
     :description="description"
     orientation="horizontal"
   >
-    <template #links>
+    <template #footer>
       <div class="flex flex-wrap gap-2">
         <UButton
           color="primary"
@@ -25,7 +25,7 @@
         </UButton>
       </div>
     </template>
-  </UPageCTA>
+  </UPageCard>
 </template>
 
 <script setup lang="ts">

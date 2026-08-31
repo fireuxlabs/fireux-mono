@@ -1,19 +1,19 @@
 <!-- Concurrent edit — 2026-08-09 — Onboarding shell: own structure while each entity owns its journey. -->
 <template>
   <section
-    class="mx-auto w-full max-w-5xl py-4 sm:py-8"
+    class="mx-auto min-w-0 w-full max-w-5xl py-4 sm:py-8"
     :data-onboarding-family="family"
     :data-onboarding-step="stage.id || undefined"
   >
-    <UCard :ui="{ body: 'p-0 sm:p-0' }">
-      <div class="grid min-h-[30rem] lg:grid-cols-[0.8fr_1.2fr]">
+    <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
+      <div class="grid min-w-0 min-h-[30rem] lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <aside
-          class="border-b border-default bg-elevated/40 p-6 sm:p-8 lg:border-e lg:border-b-0"
+          class="min-w-0 border-b border-default bg-elevated/40 p-5 sm:p-8 lg:border-e lg:border-b-0"
         >
           <slot name="intro" />
         </aside>
 
-        <main class="flex min-w-0 flex-col p-6 sm:p-8">
+        <main class="flex min-w-0 flex-col p-5 sm:p-8">
           <header class="mb-7">
             <p class="text-sm font-medium text-primary">
               Step {{ stage.number }} of {{ stage.count }}
@@ -40,7 +40,7 @@
 
           <footer
             v-if="$slots.footer"
-            class="mt-8 border-t border-default pt-6"
+            class="mt-8 min-w-0 border-t border-default pt-6"
           >
             <slot name="footer" />
           </footer>

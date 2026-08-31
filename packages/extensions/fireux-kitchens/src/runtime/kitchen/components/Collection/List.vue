@@ -1,17 +1,38 @@
 <template>
-  <ul class="collection-stack" aria-label="Kitchens">
-    <li v-for="card in cards" :key="card.to || card.id">
-      <CollectionCell
-        :title="card.name"
-        :description="card.shortAddress"
-        :image="card.imageUrl"
-        :to="card.to"
-      />
+  <UPageGrid
+    as="ul"
+    class="list-none kitchen-collection-list"
+    aria-label="Kitchens"
+  >
+    <li v-for="cell in cells" :key="cell.to">
+      <CollectionCell :cell="cell" />
     </li>
-  </ul>
+  </UPageGrid>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue'
 import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 import type { KitchenCard } from '../../composables/firestore/utils/view/useKitchenInterface'
-defineProps<{ cards: KitchenCard.Card[] }>()
+
+const props = defineProps<{ cards: KitchenCard.Card[] }>()
+const cells = computed<CollectionCellData[]>(() =>
+  props.cards.map((card) => ({
+    title: card.name,
+    description: card.tagline,
+    image: card.discoveryImageUrl,
+    imageStyle: 'cover',
+    fallbackIcon: 'i-lucide-utensils',
+    meta: card.shortAddress,
+    badges: [...card.badges, ...card.categoryLabels],
+    actionLabel: 'View Kitchen',
+    to: card.to,
+  }))
+)
 </script>
+
+<style scoped>
+.kitchen-collection-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+</style>

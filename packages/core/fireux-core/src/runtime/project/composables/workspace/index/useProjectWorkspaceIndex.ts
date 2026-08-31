@@ -113,6 +113,7 @@ export function useProjectWorkspaceIndex() {
         return
       }
       workspace.activate(project.id, project.name, project.tagline, project.url)
+      workspace.setActiveStatus(current.project.value?.status || '')
     },
     { immediate: true }
   )

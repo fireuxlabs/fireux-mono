@@ -17,7 +17,16 @@ export type UseCurrentAppContextReturn = {
   membership: ComputedRef<CurrentAppMembership | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
+  applyCommittedWorkspaceMembership: (
+    patch: CommittedWorkspaceMembershipPatch
+  ) => boolean
   refresh: () => Promise<void>
+}
+
+export type CommittedWorkspaceMembershipPatch = {
+  id: string
+  kitchens: string[]
+  primary_kitchen: string
 }
 
 type CurrentAppContextState = {
@@ -60,6 +69,32 @@ export function useCurrentAppContext(): UseCurrentAppContextReturn {
   const membership = computed(() => response.value?.membership ?? null)
   const pending = computed(() => !hasAuthState.value || state.pending.value)
   const error = computed<unknown | undefined>(() => state.error.value)
+  const applyCommittedWorkspaceMembership = (
+    patch: CommittedWorkspaceMembershipPatch
+  ) => {
+    const current = state.data.value
+    const membership = current?.response.membership
+    if (
+      !current ||
+      current.requestUid !== uid.value ||
+      !membership ||
+      membership.id !== patch.id
+    ) {
+      return false
+    }
+    state.data.value = {
+      ...current,
+      response: {
+        ...current.response,
+        membership: {
+          ...membership,
+          kitchens: [...patch.kitchens],
+          primary_kitchen: patch.primary_kitchen,
+        },
+      },
+    }
+    return true
+  }
   const refresh = async () => {
     await state.refresh()
   }
@@ -70,6 +105,7 @@ export function useCurrentAppContext(): UseCurrentAppContextReturn {
     membership,
     pending,
     error,
+    applyCommittedWorkspaceMembership,
     refresh,
   }
 }

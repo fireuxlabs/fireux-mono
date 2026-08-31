@@ -26,6 +26,9 @@ export function toLogoCard(place: PlaceLogoTarget): PlaceCard.Card {
     formattedAddress,
     shortAddress,
     imageUrl,
+    coverImageUrl: (place as any).coverImageUrl ?? (place as any).cover_image ?? '',
+    description: (place as any).description ?? (place as any).about ?? '',
+    categoryLabels: (place as any).categoryLabels ?? (place as any).tags ?? [],
     source: (place as any).source,
   }
 }

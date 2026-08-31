@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceIngredients } from '../../../../composables/workspace/Ingredients/useSupplierWorkspaceIngredients'
+import { useSupplierWorkspaceIngredients } from '../../../../composables/workspace/operations/Ingredients/useSupplierWorkspaceIngredients'
 import { useSupplierIngredientInterface } from '../../../../composables/firestore/utils/view/useSupplierIngredientInterface'
 
 const {

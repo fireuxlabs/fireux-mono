@@ -63,8 +63,8 @@ export function configureNuxtRuntimeDefaults(nuxt: NuxtConfig) {
     ...(nuxt.experimental || {}),
     appManifest: process.env.NODE_ENV === 'production',
     // Nuxt 5 compatibility disables Nitro auto-imports by default, but the
-    // current server runtimes (including @nuxt/icon) still consume #imports.
-    // Keep this bridge centralized until every registered module is ready.
+    // current package server runtimes still consume Nuxt's #imports alias.
+    // Keep this bridge centralized pending the Nitro 3 migration contract.
     nitroAutoImports: true,
     scanPageMeta: true,
   }

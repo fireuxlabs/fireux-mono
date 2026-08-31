@@ -1,11 +1,12 @@
 <template>
-  <UPageCTA
+  <UPageCard
     data-entity-create-family="ecosystem"
     title="Create an Ecosystem"
     description="Start an Ecosystem from the Project workspace."
+    orientation="horizontal"
     variant="naked"
   >
-    <template #links>
+    <template #footer>
       <UButton
         to="/workspace/project/ecosystem"
         icon="i-lucide-orbit"
@@ -14,5 +15,5 @@
         Create Ecosystem
       </UButton>
     </template>
-  </UPageCTA>
+  </UPageCard>
 </template>

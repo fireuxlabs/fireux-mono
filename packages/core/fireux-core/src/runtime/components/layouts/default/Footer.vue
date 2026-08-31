@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useLayout } from '#imports'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { useNav } from '../../../composables/navigation/useNav'
 
@@ -104,12 +104,8 @@ const providerWordmarkDark = isTenant
   ? '/img/ecosystem/wordmark-dark.png'
   : '/img/core/brand/wordmark-dark.png'
 
-const route = useRoute()
-const currentLayout = computed(() =>
-  typeof route.meta?.layout === 'string' && route.meta.layout.trim().length > 0
-    ? route.meta.layout
-    : 'default'
-)
+const resolvedLayout = useLayout()
+const currentLayout = computed(() => resolvedLayout.value || 'default')
 const { items: navItems } = useNav(currentLayout)
 const footerItems = computed(() =>
   navItems.value.filter((item) => item.position === 'bottom')

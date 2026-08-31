@@ -121,6 +121,7 @@ export function useKitchenWorkspaceIndex() {
         return
       }
       workspace.activate(kitchen.id, kitchen.name, kitchen.tagline, kitchen.url)
+      workspace.setActiveStatus(current.kitchen.value?.status || '')
     },
     { immediate: true }
   )

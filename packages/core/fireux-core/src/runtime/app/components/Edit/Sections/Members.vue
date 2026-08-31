@@ -67,7 +67,7 @@ type MemberRow = {
 const props = defineProps<{
   rows: MemberRow[]
   subscriptionActionUid: string | null
-  pillFor: (row: MemberRow) => UserCard.Card
+  pillFor: (row: MemberRow) => UserCard
   onSetSubscription: (value: {
     uid: string
     subscription: AppUserSubscription

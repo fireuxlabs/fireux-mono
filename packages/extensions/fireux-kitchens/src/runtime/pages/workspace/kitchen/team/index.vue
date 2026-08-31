@@ -1,53 +1,33 @@
 <template>
   <div>
-    <NuxtPage v-if="hasMemberRoute" />
-    <UDashboardPanel v-else id="workspace-kitchen-team">
+    <UDashboardPanel
+      id="workspace-kitchen-team"
+      :ui="{ body: 'p-0 sm:p-0 gap-0 sm:gap-0' }"
+    >
       <template #header>
         <LayoutsWorkspaceNavbar title="Team">
-          <template #right
-            ><WorkspaceKitchenCapabilityContextInfo operation="team"
-          /></template>
+          <template #right>
+            <WorkspaceKitchenCapabilityContextInfo operation="team" />
+          </template>
         </LayoutsWorkspaceNavbar>
       </template>
 
       <template #body>
-        <section class="workspace-surface">
-          <div class="workspace-surface__split">
-            <main class="workspace-surface__primary">
-              <WorkspaceKitchenTeam v-if="hasTeam || teamPending" />
-              <UAlert
-                v-else
-                color="neutral"
-                variant="subtle"
-                icon="i-lucide-users"
-                title="No team members yet"
-                description="Add the first person to begin this Kitchen Team."
-              />
-            </main>
-
-            <aside class="workspace-surface__context" aria-label="Team tools">
-              <div class="workspace-surface workspace-surface--compact">
-                <WorkspaceKitchenTeamTools />
-                <WorkspaceKitchenTeamAI />
-              </div>
-            </aside>
-          </div>
-        </section>
+        <WorkspaceKitchenTeamSelector />
+        <WorkspaceKitchenTeamHero />
+        <WorkspaceKitchenTeamAI />
+        <WorkspaceKitchenTeam />
+        <WorkspaceKitchenTeamTools />
+        <WorkspaceKitchenTeamDiscovery />
       </template>
     </UDashboardPanel>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { provideKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
 
-const team = provideKitchenWorkspaceTeam()
-const hasTeam = computed(() => team.teamMembers.value.length > 0)
-const teamPending = team.pending
-const memberSlug = useRouteParam('memberSlug')
-const hasMemberRoute = computed(() => Boolean(memberSlug.value))
+provideKitchenWorkspaceTeam()
 
 definePageMeta({
   layout: 'workspace',

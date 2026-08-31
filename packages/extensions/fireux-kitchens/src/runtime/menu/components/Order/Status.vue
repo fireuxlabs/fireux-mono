@@ -44,6 +44,15 @@
       {{ responseError }}
     </p>
 
+    <button
+      v-if="printActionLabel"
+      type="button"
+      class="menu-order-status__again"
+      @click="$emit('print')"
+    >
+      {{ printActionLabel }}
+    </button>
+
     <div v-if="changesRequested" class="menu-order-status__actions">
       <button
         type="button"
@@ -88,6 +97,7 @@ const props = defineProps<{
   order: CreatedMenuOrder
   orderType: KitchenOrderType
   paymentLabel: string
+  printActionLabel?: string
   status: MenuOrderLifecycleStatus | null
   statusError?: string
   responseError?: string
@@ -96,6 +106,7 @@ const props = defineProps<{
 defineEmits<{
   (event: 'cancel'): void
   (event: 'amend'): void
+  (event: 'print'): void
   (event: 'reset'): void
 }>()
 

@@ -216,7 +216,7 @@ const fallbackUserCard = (options: {
   id: string
   displayName: string
   handle?: string
-}): UserCard.Card => {
+}): UserCard => {
   const id = options.id
   const displayName = options.displayName
   const handle = (options.handle ?? '').trim()
@@ -247,7 +247,7 @@ const fallbackUserCard = (options: {
 
 const cardForUser = (
   target?: UserIdentitySummary | null | undefined
-): UserCard.Card => {
+): UserCard => {
   const payload = userCard(target ?? undefined)
   if (payload) return payload
 

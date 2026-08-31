@@ -11,12 +11,14 @@
         :order="order.sentOrder.value"
         :order-type="orderType"
         :payment-label="order.paymentLabel.value"
+        print-action-label="Print receipt"
         :status="order.status.value"
         :status-error="order.statusError.value"
         :response-error="order.responseError.value"
         :responding="order.responsePending.value"
         @cancel="cancelOrder"
         @amend="amendOrder"
+        @print="printReceipt"
       />
     </div>
 
@@ -93,6 +95,8 @@ import {
   type MenuOrderKioskType,
 } from '../../composables/order/useMenuOrderKiosk'
 import type { MenuOrderCheckoutInput } from '../../utils/menu-order-payment'
+import { useToast } from '#imports'
+import { printKitchenOrderReceipt } from '../../../kitchen/composables/workspace/Orders/utils/useKitchenOrderReceiptPrint'
 
 const props = defineProps<{
   config: MenuOrderTypeConfig | null
@@ -113,6 +117,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'restart'): void
 }>()
+const toast = useToast()
 const scopeKey = computed(() => props.scopeKey)
 const basket = useMenuOrderBasket({
   currencyCode: computed(() => props.currencyCode),
@@ -153,7 +158,7 @@ watch(
 
 watch(
   () => order.status.value?.status || order.sentOrder.value?.status,
-  (status) => {
+  (status: string | undefined) => {
     clearTimeout(readyResetTimer)
     readyResetTimer = undefined
     if (status !== 'ready') return
@@ -215,6 +220,16 @@ async function cancelOrder() {
   basketOpen.value = false
   checkoutOpen.value = false
   basket.clear()
+}
+
+function printReceipt() {
+  if (printKitchenOrderReceipt(order.sentOrder.value)) return
+
+  toast.add({
+    title: 'Receipt could not open',
+    description: 'Allow pop-ups for this Kiosk, then try printing again.',
+    color: 'error',
+  })
 }
 </script>
 

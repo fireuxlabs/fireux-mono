@@ -1,5 +1,5 @@
 <template>
-  <UPageHero
+  <UPageHeader
     headline="Discover"
     title="Projects"
     description="Browse FireUX Projects and the Apps connected to each one."

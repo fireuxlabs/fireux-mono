@@ -142,6 +142,11 @@ decisions; it must not convert a plausible implementation into canon.
 
 ## Communication
 
+When the user asks to open source files in VS Code, use the terminal `code -r`
+command. For a side-by-side comparison, open both files this way and use the
+smallest VS Code split command needed; do not use computer-control tooling for
+ordinary file opening or editor arrangement.
+
 When the user says `canon`, `spine`, `align`, `family`, or `drift`, state before
 editing:
 

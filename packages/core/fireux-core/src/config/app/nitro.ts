@@ -13,6 +13,12 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
   const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
   const nitro = ((nuxtWithNitro.nitro ||= {}) as any)
 
+  // FireUX deploys on Node 22. Override Nitro's ES2019 transform default so
+  // modern dependency output (including bigint literals) is preserved.
+  nitro.esbuild ||= {}
+  nitro.esbuild.options ||= {}
+  nitro.esbuild.options.target = 'es2022'
+
   const isDev =
     process.env.NODE_ENV === 'development' || process.env.NUXT_DEV === 'true'
 

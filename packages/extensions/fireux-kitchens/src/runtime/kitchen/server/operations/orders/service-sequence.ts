@@ -1,4 +1,4 @@
-import { Timestamp, type DocumentData } from 'firebase-admin/firestore'
+import { Timestamp } from 'firebase-admin/firestore'
 import { randomUUID } from 'node:crypto'
 import { createError } from 'h3'
 import {
@@ -10,11 +10,17 @@ import {
   serverKitchenOrderServiceTarget,
   serverKitchenOrdersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  applyKitchenOrderServiceSequence,
+  applyKitchenOrderServiceSequenceToResponse,
+  type KitchenOrderServiceSequence,
+} from '../../../utils/order-service-sequence.ts'
 
-export type KitchenOrderServiceSequence = {
-  id: string
-  number: number
-}
+export {
+  applyKitchenOrderServiceSequence,
+  applyKitchenOrderServiceSequenceToResponse,
+  type KitchenOrderServiceSequence,
+} from '../../../utils/order-service-sequence.ts'
 
 export type KitchenOrderLinkedRecord = {
   customerUid: string
@@ -55,52 +61,6 @@ export async function nextKitchenOrderServiceSequence(
   else mutations.create(services, 'current', data)
 
   return { id, number }
-}
-
-export function applyKitchenOrderServiceSequence<
-  TResponse extends Record<string, unknown>,
->(input: {
-  payload: Record<string, unknown>
-  response: TResponse
-  sequence: KitchenOrderServiceSequence
-}) {
-  const orderNumber = String(input.sequence.number)
-  return {
-    payload: {
-      ...input.payload,
-      order_number: orderNumber,
-      service_id: input.sequence.id,
-      service_number: input.sequence.number,
-    },
-    response: applyKitchenOrderServiceSequenceToResponse(
-      input.response,
-      input.sequence
-    ),
-  }
-}
-
-export function applyKitchenOrderServiceSequenceToResponse<
-  TResponse extends Record<string, unknown>,
->(response: TResponse, sequence: KitchenOrderServiceSequence) {
-  const orderNumber = String(sequence.number)
-  const receipt = record(response.receipt)
-
-  return {
-    ...response,
-    order_number: orderNumber,
-    service_id: sequence.id,
-    service_number: sequence.number,
-    ...(Object.keys(receipt).length
-      ? {
-          receipt: {
-            ...receipt,
-            order_number: orderNumber,
-            service_id: sequence.id,
-            service_number: sequence.number,
-          },
-        }
-      : {}),
-  } as TResponse
 }
 
 export async function commitKitchenOrderWithServiceSequence<
@@ -195,10 +155,4 @@ export async function endKitchenOrderService(input: {
       previous_order_count: previousOrderCount,
     }
   })
-}
-
-function record(value: unknown): DocumentData {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as DocumentData)
-    : {}
 }

@@ -35,6 +35,7 @@ import { resolveMenuOrderItems } from '../../../../menu/server/ordering/order-it
 import { text } from '../../../../menu/server/ordering/order-request.ts'
 import { commitKitchenOrderWithServiceSequence } from '../../../../kitchen/server/operations/orders/service-sequence.ts'
 import { dispatchPreOrderWhatsApp } from '../../../../menu/server/ordering/whatsapp.ts'
+import { requireKitchenKioskSession } from '../../../../kitchen/server/operations/kiosks/session.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: dispatch the atomically snapshotted alert after Order commit.
 
@@ -77,6 +78,14 @@ export default defineEventHandler(async (event) => {
     context.operationHours
   )
   const selection = readMenuOrderSelection(body, ordering)
+  const kioskSession =
+    selection.channel === 'kiosk'
+      ? await requireKitchenKioskSession(event, {
+          appId: context.appId,
+          kitchenId: context.kitchenId,
+          menuId: context.menuId,
+        })
+      : null
   const customerUser =
     selection.channel === 'menu' ? await firebaseBearerUser(event) : null
   const actorId =
@@ -86,7 +95,9 @@ export default defineEventHandler(async (event) => {
           context,
           'Sign in before using Staff POS.'
         )
-      : 'menu'
+      : kioskSession
+        ? `kiosk:${kioskSession.kioskId}`
+        : 'menu'
   const command = prepareMenuOrderCommand({
     actorId,
     customerUid: customerUser?.uid,

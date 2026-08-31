@@ -1,4 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -51,6 +52,13 @@ export async function requireKitchenMutationAuthority(
     runtimeMembership.data?.role,
     'Current App membership is required to manage this Kitchen.'
   )
+  const subscription = runtimeMembership.data?.subscription
+  if (!isAppUserSubscription(subscription)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Current App membership has an invalid subscription.',
+    })
+  }
   const teamRole = String(teamMember.data?.role ?? '').trim()
   if (
     !teamMember.exists ||
@@ -81,6 +89,7 @@ export async function requireKitchenMutationAuthority(
     ownerAppId: actor.runtimeAppId,
     placeData: place.data || {},
     rootData,
+    subscription,
     teamRole: teamRole as 'owner' | 'operator',
   }
 }

@@ -138,6 +138,12 @@ export const metaContent = defineFireuxMeta({
         name: 'Project workspace',
         to: '/workspace/project',
       },
+      capabilityFamilies: {
+        surfaces: ['catalogue'],
+        entries: [],
+        tools: ['record'],
+        scopes: ['local'],
+      },
       icon: 'i-lucide-app-window',
     },
     {
@@ -151,6 +157,12 @@ export const metaContent = defineFireuxMeta({
         id: 'project',
         name: 'Project workspace',
         to: '/workspace/project',
+      },
+      capabilityFamilies: {
+        surfaces: ['catalogue', 'relationship-directory'],
+        entries: [],
+        tools: ['record'],
+        scopes: ['local'],
       },
       icon: 'i-lucide-orbit',
     },

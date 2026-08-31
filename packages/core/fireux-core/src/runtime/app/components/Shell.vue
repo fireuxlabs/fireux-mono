@@ -284,7 +284,7 @@ useHead({
   meta: fireuxConfig.isTenant
     ? [{ name: 'robots', content: 'noindex, nofollow' }]
     : [],
-  link: [{ rel: 'manifest', href: manifestHref }],
+  link: [{ key: 'fireux-manifest', rel: 'manifest', href: manifestHref }],
 })
 
 function goToDev() {

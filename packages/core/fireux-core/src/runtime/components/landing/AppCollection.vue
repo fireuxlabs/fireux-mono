@@ -68,7 +68,7 @@
       <UPageCard
         v-for="app in apps"
         :key="app.id"
-        :to="app.detail_url"
+        :to="`/apps/${encodeURIComponent(app.id)}`"
         variant="subtle"
         class="landing-app-collection__card"
       >

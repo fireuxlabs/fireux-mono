@@ -1,17 +1,17 @@
 <template>
   <ClientOnly>
-    <div class="mx-auto w-full max-w-4xl py-6 sm:py-10">
+    <div class="mx-auto min-w-0 w-full max-w-4xl py-6 sm:py-10">
       <UserCreateProgress :steps="steps" :active-step="activeStep" />
 
-      <UCard :ui="{ body: 'p-0 sm:p-0' }">
-        <div class="grid lg:grid-cols-[0.85fr_1.15fr]">
+      <UCard class="min-w-0 overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
+        <div class="grid min-w-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
           <UserCreateIntroduction
             :app-label="appLabel"
             :ecosystem-label="ecosystemLabel"
             :benefits="benefits"
           />
 
-          <main class="p-6 sm:p-8">
+          <main class="min-w-0 p-5 sm:p-8">
             <template v-if="isLoading">
               <div
                 class="flex min-h-72 flex-col items-center justify-center text-center"

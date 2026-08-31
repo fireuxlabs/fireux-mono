@@ -11,8 +11,7 @@ import {
 import { useAvatarProxy } from '../../composables/media/useAvatarProxy'
 import { normalizeUserHandle } from './firestore/utils/identity/useUserHandleIdentity'
 
-export namespace UserCard {
-  export type Card = {
+export type UserCard = {
     id: string
     to: string
 
@@ -38,8 +37,7 @@ export namespace UserCard {
     // IMPORTANT: do not expose user.email on public UI surfaces.
     bio: string
     profiles: string[]
-    appsLabel: string
-  }
+  appsLabel: string
 }
 
 export type UserSurfaceParts<TUser extends object = Partial<User>> = {
@@ -57,10 +55,10 @@ export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
 export function useUserInterface(
   userRef?: Ref<UserIdentitySurface | null | undefined>
 ) {
-  type UserPill = UserCard.Card
-  type UserCell = UserCard.Card
-  type UserPreview = UserCard.Card
-  type UserProfile = UserCard.Card
+  type UserPill = UserCard
+  type UserCell = UserCard
+  type UserPreview = UserCard
+  type UserProfile = UserCard
 
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
@@ -84,7 +82,7 @@ export function useUserInterface(
     return getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar))
   }
 
-  function map(user: UserIdentitySurface): UserCard.Card {
+  function map(user: UserIdentitySurface): UserCard {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
     const handleLabel = handle ? `@${handle}` : ''
@@ -121,7 +119,7 @@ export function useUserInterface(
 
   function buildInterface(
     target?: UserIdentitySurface | null | undefined
-  ): UserCard.Card | null {
+  ): UserCard | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
     const mapped = map(user)

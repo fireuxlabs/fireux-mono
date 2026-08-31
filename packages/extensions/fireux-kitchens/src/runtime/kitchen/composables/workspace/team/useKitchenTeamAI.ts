@@ -18,6 +18,12 @@ const capabilityFingerprint = kitchenTeamAgentTools
   )
   .join('|')
 
+const startingPrompts = [
+  'Who is on my Kitchen Team?',
+  'Add a Team member',
+  'How do Team invitations work?',
+]
+
 export function useKitchenTeamAI() {
   const agent = kitchenOperationAgents.find(
     (candidate) => candidate.operationSlug === 'team'
@@ -28,7 +34,7 @@ export function useKitchenTeamAI() {
   const kitchenWorkspace = useKitchenWorkspace()
   const { kitchenId, teamMembers, pending, readOnly } =
     useKitchenWorkspaceTeam()
-  const promptSuggestions = ref<string[]>([])
+  const promptSuggestions = ref<string[]>(startingPrompts)
   const suggestionCache = useState<Record<string, string[]>>(
     'kitchen-team-ai-suggestions',
     () => ({})
@@ -52,7 +58,7 @@ export function useKitchenTeamAI() {
     if (import.meta.server) return
     const key = suggestionKey.value
     if (!key) {
-      promptSuggestions.value = []
+      promptSuggestions.value = startingPrompts
       return
     }
     if (suggestionCache.value[key]) {
@@ -79,7 +85,7 @@ export function useKitchenTeamAI() {
       suggestionCache.value[key] = response.suggestions
       promptSuggestions.value = response.suggestions
     } catch {
-      if (version === requestVersion) promptSuggestions.value = []
+      if (version === requestVersion) promptSuggestions.value = startingPrompts
     }
   }
 

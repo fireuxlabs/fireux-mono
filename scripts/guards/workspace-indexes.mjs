@@ -219,6 +219,16 @@ export async function run(ctx) {
       'Kitchen Workspace index must expose state and derived while Active receives only Kitchen presentation state'
     )
   }
+  for (const [label, source] of [
+    ['Project', projectWorkspaceIndex],
+    ['Kitchen', kitchenWorkspaceIndex],
+  ]) {
+    if (!source.includes('workspace.setActiveStatus(')) {
+      violations.push(
+        `${label} Workspace index must publish canonical Entity lifecycle status for shared operational controls`
+      )
+    }
+  }
   for (const [label, source, currentReader] of [
     ['Project', projectWorkspaceIndex, 'useProjectDetail(primaryProjectId)'],
     [

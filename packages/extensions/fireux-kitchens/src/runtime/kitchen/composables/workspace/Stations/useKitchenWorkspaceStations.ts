@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo Stations without Firestore access.
-import { computed } from 'vue'
+import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
 import {
   KitchenStationStorage,
   type KitchenStation,
@@ -8,7 +8,7 @@ import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 import { useKitchenStationCollection } from './fetch/useKitchenStationCollection'
 
-export function useKitchenWorkspaceStations() {
+function createKitchenWorkspaceStations() {
   const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
@@ -28,6 +28,17 @@ export function useKitchenWorkspaceStations() {
     databaseId,
   })
   const workspaceStations = fetchedStations
+  const selectedStationId = ref('')
+  const selectedStation = computed(
+    () =>
+      workspaceStations.value.find(
+        (station) => station.id === selectedStationId.value
+      ) ?? null
+  )
+  watchEffect(() => {
+    if (selectedStation.value) return
+    selectedStationId.value = workspaceStations.value[0]?.id || ''
+  })
   const pending = stationsPending
   const collectionPath = fetchedCollectionPath
   const page = useKitchenWorkspaceReadPage<KitchenStation>({
@@ -59,7 +70,28 @@ export function useKitchenWorkspaceStations() {
     readOnly,
     canWrite,
     stations: workspaceStations,
+    selectedStation,
+    selectedStationId,
     pending,
     debug,
   }
+}
+
+export type KitchenWorkspaceStations = ReturnType<
+  typeof createKitchenWorkspaceStations
+>
+
+const kitchenWorkspaceStationsKey: InjectionKey<KitchenWorkspaceStations> =
+  Symbol('fireux-kitchen-workspace-stations')
+
+export function provideKitchenWorkspaceStations() {
+  const workspace = createKitchenWorkspaceStations()
+  provide(kitchenWorkspaceStationsKey, workspace)
+  return workspace
+}
+
+export function useKitchenWorkspaceStations() {
+  return (
+    inject(kitchenWorkspaceStationsKey, null) ?? createKitchenWorkspaceStations()
+  )
 }

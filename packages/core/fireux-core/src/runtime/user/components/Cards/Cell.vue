@@ -96,7 +96,7 @@ import {
 } from '../../composables/useUserInterface'
 
 type Props = Partial<Pick<
-  UserCard.Card,
+  UserCard,
   | 'to'
   | 'avatarUrl'
   | 'displayName'

@@ -91,7 +91,7 @@ onMounted(() => {
   mounted.value = true
 })
 
-const pillUser = computed((): UserCard.Card | undefined => {
+const pillUser = computed((): UserCard | undefined => {
   if (!mounted.value) return undefined
   if (coreOutcome.value === 'idle' || coreOutcome.value === 'pending') {
     return undefined

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: expose the typed Demo Menu without opening live collection paths.
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/place/utils/place-spine'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceIdentity } from '../identity/useKitchenWorkspaceIdentity'
@@ -73,6 +73,16 @@ export function useKitchenWorkspaceMenus() {
   )
   const rawMenus = fetchedMenus
   const activeMenus = fetchedActiveMenus
+  const selectedMenuId = ref('')
+  const selectedMenu = computed(
+    () =>
+      activeMenus.value.find((menu) => text(menu.id) === selectedMenuId.value) ??
+      null
+  )
+  watchEffect(() => {
+    if (selectedMenu.value) return
+    selectedMenuId.value = text(activeMenus.value[0]?.id)
+  })
   const pending = menusPending
   const collectionPath = fetchedCollectionPath
   const menuSources = computed(() => sortMenuSources(sourceUploads.items.value))
@@ -174,6 +184,8 @@ export function useKitchenWorkspaceMenus() {
   }
 
   return {
+    availableKitchens: kitchenWorkspace.targets.kitchens,
+    kitchensPending: kitchenWorkspace.targets.pending,
     selectedKitchen: kitchenWorkspace.selection.kitchen,
     kitchenId: kitchenWorkspace.selection.kitchenId,
     storageKitchenId,
@@ -187,6 +199,8 @@ export function useKitchenWorkspaceMenus() {
     currencyCode,
     collectionPath,
     menus: activeMenus,
+    selectedMenu,
+    selectedMenuId,
     rawMenus,
     pending,
     menuSources,
@@ -198,6 +212,7 @@ export function useKitchenWorkspaceMenus() {
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
+    selectKitchen: kitchenWorkspace.actions.selectKitchen,
     createMenu,
     menuCreateBlockedMessage,
     updateMenu,

@@ -117,6 +117,10 @@ Firestore work.
 - Free and Professional ordinarily allow one owned Kitchen; Business allows
   multiple. Invited access to another Kitchen does not consume ownership
   capacity.
+- Kitchen Team creation currently allows three active members on Free, seven
+  on Professional, and unlimited active members on Business. The trusted Team
+  create command enforces the limit; temporary page selection does not alter
+  Team membership or AppUser state.
 - Administrative/developer previews do not create domain authority exceptions.
 - Protected operational data is absent from public Kitchen/detail projections.
 - Client Firestore access remains denied where trusted commands own mutations.

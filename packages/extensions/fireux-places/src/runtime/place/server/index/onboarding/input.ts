@@ -9,6 +9,9 @@ export type PlaceOnboardingRequest = {
   logo_image?: unknown
   short_name?: unknown
   tagline?: unknown
+  about?: unknown
+  tags?: unknown
+  cover_image?: unknown
   brand_palette?: unknown
 }
 

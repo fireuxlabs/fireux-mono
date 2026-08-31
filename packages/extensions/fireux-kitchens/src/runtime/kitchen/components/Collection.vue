@@ -1,18 +1,36 @@
 <template>
   <section class="entity-collection kitchen-collection">
-    <div class="kitchen-collection__toolbar">
-      <UInput
-        v-model="query"
-        :placeholder="searchPlaceholder"
-        :aria-label="searchPlaceholder"
-        icon="i-lucide-search"
-        size="xl"
-        class="kitchen-collection__search"
-      />
+    <CollectionHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="entity-collection__search"
+        />
 
-      <span v-if="showCount" class="kitchen-collection__count">
-        {{ countLabel }}
-      </span>
+        <span v-if="showCount" class="entity-collection__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionHeader>
+
+    <div
+      v-if="categoryFilters.length > 1"
+      class="kitchen-collection__filters"
+      aria-label="Filter Kitchens by category"
+    >
+      <UButton
+        v-for="filter in categoryFilters"
+        :key="filter.value"
+        :color="selectedCategory === filter.value ? 'primary' : 'neutral'"
+        :variant="selectedCategory === filter.value ? 'soft' : 'ghost'"
+        size="sm"
+        @click="selectedCategory = filter.value"
+      >
+        {{ filter.label }}
+      </UButton>
     </div>
 
     <div v-if="cardsFiltered.length" class="kitchen-collection__results">
@@ -24,7 +42,7 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { KitchenCollectionRecord } from '../composables/firestore/fetch/useKitchenCollection'
 import { useKitchenInterface } from '../composables/firestore/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../composables/firestore/utils/view/useKitchenInterface'
@@ -43,11 +61,36 @@ const collectionSurface = computed<KitchenCollectionItem[]>(() =>
   })
 )
 const searchPlaceholder = 'Search kitchens…'
+const title = 'Kitchen directory'
+const description =
+  'Discover Kitchens, their menus, and the ways they serve their communities.'
 const showCount = true
-const collection = computed<KitchenCollectionItem[]>(() =>
+const selectedCategory = ref('all')
+const allCollection = computed<KitchenCollectionItem[]>(() =>
   collectionSurface.value.filter((row): row is KitchenCollectionItem =>
     Boolean(makeCard(row))
   )
+)
+const categoryFilters = computed(() => {
+  const categories = new Set<string>()
+  for (const kitchen of allCollection.value) {
+    const card = makeCard(kitchen)
+    for (const label of card?.categoryLabels ?? []) categories.add(label)
+  }
+  return [
+    { value: 'all', label: 'All Kitchens' },
+    ...[...categories].sort().map((category) => ({
+      value: category,
+      label: category,
+    })),
+  ]
+})
+const collection = computed<KitchenCollectionItem[]>(() =>
+  selectedCategory.value === 'all'
+    ? allCollection.value
+    : allCollection.value.filter((kitchen) =>
+        makeCard(kitchen)?.categoryLabels.includes(selectedCategory.value)
+      )
 )
 
 const { query, visibleItems, visibleCount } = useCollectionSearch<
@@ -79,42 +122,15 @@ const countLabel = computed(() =>
   gap: calc(var(--spacing) * 5);
 }
 
-.kitchen-collection__toolbar {
+.kitchen-collection__filters {
   display: flex;
-  gap: calc(var(--spacing) * 4);
-  align-items: center;
-  margin-bottom: calc(var(--spacing) * 8);
-  padding-block: calc(var(--spacing) * 4);
-  border-top: 1px solid var(--ui-border);
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.kitchen-collection__search {
-  width: min(100%, 38rem);
-}
-
-.kitchen-collection__count {
-  margin-left: auto;
-  color: var(--ui-text-muted);
-  font-size: 0.85rem;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+  margin-bottom: calc(var(--spacing) * 6);
 }
 
 .kitchen-collection__more {
   display: flex;
   justify-content: center;
-}
-
-@media (max-width: 640px) {
-  .kitchen-collection__toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .kitchen-collection__search {
-    width: 100%;
-  }
-  .kitchen-collection__count {
-    margin-left: 0;
-  }
 }
 </style>

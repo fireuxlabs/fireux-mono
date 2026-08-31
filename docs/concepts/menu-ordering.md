@@ -121,6 +121,14 @@ finished ordering funnel.
   access.
 - Must still consume the shared Menu manifest, basket rules, canonical order
   endpoint, and lifecycle.
+- Menu ordering configuration enables and presents the Kiosk projection.
+  Orders & Service owns the live-device doorway: an authorized Kitchen operator
+  activates a named tablet against one published Menu, opens that exact Kiosk,
+  and can revoke it.
+- A live Kiosk request requires a short-lived server-issued device capability
+  scoped to one App, Kitchen, Menu, and Kiosk record. Only its digest is stored;
+  the raw capability remains in an HttpOnly browser cookie. Firestore clients
+  cannot read or mutate Kiosk device authority.
 
 ### Private entries
 
@@ -180,6 +188,8 @@ The detailed state machine and operator transitions live in
 - Focused ordering routes own one order-type row at a time.
 - Kitchen configuration owns reusable fulfilment and payment capability.
 - Ordering suffix routes are projections, never configuration owners.
+- Kiosk activation and revocation are Kitchen operations, not Menu edits or
+  public route discovery.
 - Empty or inherited optional configuration should be absent rather than
   persisted as blank objects.
 - Pausing a surface is temporary operational availability, not Menu deletion or
@@ -196,6 +206,8 @@ The detailed state machine and operator transitions live in
 - Order UI: `packages/extensions/fireux-kitchens/src/runtime/menu/components/Order/`
 - Order state: `packages/extensions/fireux-kitchens/src/runtime/menu/composables/order/`
 - Canonical create endpoint: `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/[menuId]/orders.post.ts`
+- Kiosk device authority: `packages/extensions/fireux-kitchens/src/runtime/kitchen/server/operations/kiosks/`
+- Kiosk operations doorway: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/orders/kiosks.vue`
 - Kitchen order model: `packages/extensions/fireux-kitchens/src/runtime/kitchen/models/order.model.ts`
 - Workspace settings: `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/menus/[menuId]/ordering/`
 

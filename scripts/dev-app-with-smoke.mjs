@@ -338,7 +338,7 @@ if (goQrProvider) {
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
 const child = spawnPnpm(
-  ['--filter', app.filter, 'dev', '--', ...passthroughArgs],
+  ['--filter', app.filter, 'dev', ...passthroughArgs],
   {
     stdio: 'inherit',
     env: devEnv,

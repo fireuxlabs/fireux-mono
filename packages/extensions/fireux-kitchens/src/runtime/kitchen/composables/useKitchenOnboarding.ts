@@ -2,11 +2,10 @@ import {
   useOnboarding,
   type OnboardingStep,
 } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
-import type { PlaceDetailResponse } from 'fireux-places/runtime/place/models/place-read.model'
 import { computed, ref } from 'vue'
 import type {
   KitchenOnboardingCompleteResult,
+  KitchenOnboardingPlace,
   KitchenOnboardingPreview,
 } from '../models/kitchen-onboarding.model.ts'
 import { useKitchenCreate } from './firestore/mutations/useKitchenCreate'
@@ -34,7 +33,7 @@ function errorMessage(error: unknown) {
 }
 
 export function useKitchenOnboarding() {
-  const place = ref<Place | null>(null)
+  const place = ref<KitchenOnboardingPlace | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const selectionPending = ref(false)
   const selectionError = ref('')
@@ -123,16 +122,15 @@ export function useKitchenOnboarding() {
         throw new Error('Kitchen onboarding preview was invalid.')
       }
 
-      const response = await $fetch<PlaceDetailResponse>(
-        `/api/places/${encodeURIComponent(resolvedPreview.place_id)}`
-      )
-      if (sequence !== selectionSequence) return false
-      if (!response?.place || response.place.id !== resolvedPreview.place_id) {
+      if (
+        !resolvedPreview.place ||
+        resolvedPreview.place.id !== resolvedPreview.place_id
+      ) {
         throw new Error('The linked Place is unavailable.')
       }
 
       preview.value = resolvedPreview
-      place.value = response.place
+      place.value = resolvedPreview.place
       return true
     } catch (error) {
       if (sequence === selectionSequence) {

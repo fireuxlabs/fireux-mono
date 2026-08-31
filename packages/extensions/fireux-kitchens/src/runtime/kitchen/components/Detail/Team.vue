@@ -141,10 +141,10 @@ const { items: teamMembers } = useKitchenChildCollection<KitchenTeamMember>(
     kitchenCollectionPath: operatorCollectionPath,
   }
 )
-const operatorCards = computed<UserCard.Card[]>(() =>
+const operatorCards = computed<UserCard[]>(() =>
   operatorIds.value
     .map((id) => pill(operatorUserById(id)))
-    .filter((card): card is UserCard.Card => Boolean(card))
+    .filter((card): card is UserCard => Boolean(card))
 )
 const visibleTeamMembers = computed(() =>
   teamMembers.value

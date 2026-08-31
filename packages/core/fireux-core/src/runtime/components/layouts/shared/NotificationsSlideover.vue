@@ -38,7 +38,8 @@ async function markNotificationRead(notificationId: string) {
   try {
     await markRead(notificationId)
     const notification = notifications.value.find(
-      (item) => item.id === notificationId
+      (item: (typeof notifications.value)[number]) =>
+        item.id === notificationId
     )
     if (notification) notification.read = true
   } catch {

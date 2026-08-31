@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { ClientCard } from '../../../../../composables/workspace/Clients/utils/view/useClientInterface'
+import type { ClientCard } from '../../../../../composables/workspace/operations/Clients/utils/view/useClientInterface'
 
 type Props = Partial<ClientCard.Card> & {
   card?: ClientCard.Card

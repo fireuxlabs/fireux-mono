@@ -343,6 +343,17 @@ function validateCollectionPagePresentation(repoRoot, violations) {
     'packages/core/fireux-core/src/runtime/ecosystem/components/CTA.vue',
     'packages/core/fireux-core/src/runtime/user/components/Cta',
   ]
+  const richCollectionMembers = new Set(
+    composedLasagneMembers
+      .map((member) => member.component)
+      .filter(
+        (component) =>
+          component !==
+            'packages/extensions/fireux-kitchens/src/runtime/menu/components/Collection.vue' &&
+          component !==
+            'packages/extensions/fireux-properties/src/runtime/property/components/Collection.vue'
+      )
+  )
 
   const absoluteSurfacePath = path.join(repoRoot, surfacePath)
   if (!existsSync(absoluteSurfacePath)) {
@@ -438,14 +449,59 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       ),
       'utf8'
     )
+    const presentationProp = member.presentationProp ?? 'cell'
+    const presentationPropPattern = new RegExp(
+      `${member.chain[1]}[\\s\\S]{0,120}:${presentationProp}=`
+    )
     if (
       !componentSource.includes(member.chain[0]) ||
       !listSource.includes(member.chain[1]) ||
+      !presentationPropPattern.test(listSource) ||
+      (!member.presentationProp &&
+        /<CollectionCell[\s\S]{0,240}:(title|description|image|to)=/.test(
+          listSource
+        )) ||
       /#pill|#cell|variant\??:\s*['"]pill/.test(listSource)
     ) {
       violations.push(
         `${member.component} (FL index internals must follow ${member.chain.join(' → ')} without variant slots)`
       )
+    }
+    if (
+      richCollectionMembers.has(member.component) &&
+      !listSource.includes('<UPageGrid')
+    ) {
+      violations.push(
+        `${member.component} (rich FL index List must use Nuxt UI UPageGrid)`
+      )
+    }
+    if (richCollectionMembers.has(member.component)) {
+      const componentDirectory = path.dirname(member.component)
+      const heroPath = path.join(repoRoot, componentDirectory, 'Hero.vue')
+      const heroSource = readFileSync(heroPath, 'utf8')
+      if (
+        !heroSource.includes('<UPageHeader') ||
+        heroSource.includes('<UPageHero')
+      ) {
+        violations.push(
+          `${path.relative(repoRoot, heroPath)} (rich FL index Hero must use compact Nuxt UI UPageHeader)`
+        )
+      }
+      const createPath = path.join(repoRoot, componentDirectory, 'Create.vue')
+      const createSource = readFileSync(createPath, 'utf8')
+      const isKitchenCreate = member.component.includes(
+        'fireux-kitchens/src/runtime/kitchen/components/Collection.vue'
+      )
+      if (
+        (!isKitchenCreate &&
+          (!createSource.includes('<UPageCard') ||
+            createSource.includes('<UPageCTA'))) ||
+        (isKitchenCreate && !createSource.includes('<WorkspaceCta'))
+      ) {
+        violations.push(
+          `${path.relative(repoRoot, createPath)} (rich FL index Create must use a compact Nuxt UI card or the accepted Kitchen Workspace doorway)`
+        )
+      }
     }
   }
 
@@ -635,7 +691,10 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     ],
     [
       'projects/fireux/fireux-app/app/pages/projects/[id].vue',
-      ['<ProjectDetail v-if="project" :project="project"', 'usePlatformProjectDetail'],
+      [
+        '<ProjectDetail v-if="project" :project="project"',
+        'usePlatformProjectDetail',
+      ],
     ],
     [
       'packages/extensions/fireux-places/src/runtime/pages/places/[id]/index.vue',
@@ -655,11 +714,17 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     ],
     [
       'packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[slug].vue',
-      ['<SupplierDetail v-if="supplier" :supplier="supplier"', 'useSupplierDetail'],
+      [
+        '<SupplierDetail v-if="supplier" :supplier="supplier"',
+        'useSupplierDetail',
+      ],
     ],
     [
       'packages/extensions/fireux-properties/src/runtime/pages/portfolios/[id].vue',
-      ['<PortfolioDetail v-if="portfolio" :portfolio="portfolio"', 'usePortfolioDetail'],
+      [
+        '<PortfolioDetail v-if="portfolio" :portfolio="portfolio"',
+        'usePortfolioDetail',
+      ],
     ],
   ])
   for (const [routePath, [componentContract, readerContract]] of detailRoutes) {
@@ -668,7 +733,9 @@ function validateEntityDetailPresentation(repoRoot, violations) {
       violations.push(`${routePath} (missing FL one-object Detail boundary)`)
     }
     if (!source.includes(readerContract) || !source.includes('await ready')) {
-      violations.push(`${routePath} (missing FL route-owned Detail acquisition)`)
+      violations.push(
+        `${routePath} (missing FL route-owned Detail acquisition)`
+      )
     }
   }
 

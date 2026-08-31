@@ -2,9 +2,11 @@
   <ul class="collection-stack" aria-label="Menus">
     <li v-for="menu in menus" :key="menu.id">
       <CollectionCell
-        :title="menu.name"
-        :description="menu.kitchen?.name || menu.description"
-        :to="menuRoutePath({ scope: rootMenuRouteScope(), menuId: menu.id })"
+        :cell="{
+          title: menu.name,
+          description: menu.kitchen?.name || menu.description,
+          to: menuRoutePath({ scope: rootMenuRouteScope(), menuId: menu.id }),
+        }"
       />
     </li>
   </ul>

@@ -19,6 +19,8 @@ export type PlaceOnboardingIdentity = {
 }
 
 export type PlaceOnboardingEnrichment = Partial<PlaceOnboardingIdentity> & {
+  about?: string
+  tags?: string[]
   id: string
   generated: boolean
 }
@@ -34,6 +36,9 @@ export type PlaceOnboardingPreview = {
   logo_image?: string
   short_name?: string
   tagline?: string
+  about?: string
+  tags?: string[]
+  cover_image?: string
   brand_palette?: SparseBrandPalette
 }
 
@@ -51,6 +56,9 @@ export type PlaceOnboardingCompleteInput = PlaceOnboardingDefaults & {
   id: string
   short_name?: string
   tagline?: string
+  about?: string
+  tags?: string[]
+  cover_image?: string
   logo_image?: string
   image_url?: string
   brand_palette?: SparseBrandPalette

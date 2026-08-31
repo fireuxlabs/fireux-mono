@@ -52,19 +52,31 @@ counts, variants, and record-derived badges are internal presentation choices.
 Related collections, authority, loading flags, refresh functions, and
 pagination functions are not Collection props.
 
-Inside every audited Entity, the physical presentation chain is
-`XCollection → XCollectionList → CollectionCell`. Collection derives search,
-filters, counts, and the bounded title, description, and link projection; List
-owns only semantic list layout; Core's `CollectionCell` renders the same plain
-Nuxt UI `UPageCard` for every FL index. The first baseline deliberately has no
-Entity icon, image, badge, bespoke CSS, slot, or variant. Other real consumers
-may retain Entity-owned Cell, Pill, and Preview components without changing
-this index contract.
+Inside an audited Entity, the physical presentation chain is
+`XCollection → XCollectionList → presentation cell`. Collection derives search,
+filters, counts, and interface projection; List owns responsive layout and
+passes one resolved object to its presentation cell. Core's
+`CollectionCellData` and `<CollectionCell :cell="cell" />` are the shared
+boundary. Its stable semantic fields are title, description, image, meta,
+badges, action, and destination. Entity-owned Lists project their resolved
+interfaces into that object. Identity-led Apps select avatar media; physical
+Places and Kitchens select cover media. Those media treatments remain a
+presentation choice inside the one shared cell rather than parallel Entity
+cell systems.
 
-Index presentation evolves in three explicit stages: first the shared
-out-of-the-box Nuxt UI baseline, then one evidence-backed Entity delta at a
-time, and only then shared or Entity-owned chroma. A mature pre-existing card
-does not skip those stages merely because its styling already exists.
+The neutral baseline uses the Entity's available identity media and a
+small amount of useful discovery context without adding Entity-specific card
+chrome. A missing image, description, fact, or badge stays absent; the shared
+cell never manufactures one. Other real consumers may retain Entity-owned
+Cell, Pill, and Preview components without changing this index contract.
+
+Index presentation evolves from the shared out-of-the-box Nuxt UI baseline,
+then one evidence-backed Entity delta at a time, and only then shared or
+Entity-owned chroma. The FL Hero component uses compact `UPageHeader`, Create
+uses a concise horizontal doorway, and Collection keeps useful records in the
+first viewport through `UPageGrid`; these are shared information-design
+choices, not bespoke chroma. Ordinary Create children use a compact horizontal
+`UPageCard`; Kitchen retains its accepted multi-action Workspace doorway.
 
 Hero introduces the index. Current presents the singular Entity relevant to the
 current session. Create owns the concrete creation doorway. Collection presents
@@ -111,8 +123,8 @@ composition contract.
 | Member                                     | Classification           | Deliberate delta                                              |
 | ------------------------------------------ | ------------------------ | ------------------------------------------------------------- |
 | Place                                      | reference                | Entity-family filters, bounded pagination, operator doorway   |
-| Job                                        | paginated sibling        | directory transport and author doorway                         |
-| Menu                                       | paginated sibling        | tenant/Kitchen-aware directory transport                       |
+| Job                                        | paginated sibling        | directory transport and author doorway                        |
+| Menu                                       | paginated sibling        | tenant/Kitchen-aware directory transport                      |
 | User                                       | ordinary sibling         | canonical identity and current-user reconciliation            |
 | App                                        | controller-owned sibling | Ecosystem and platform controllers, current-user App section  |
 | Ecosystem                                  | controller-owned sibling | platform scope and aggregate App count                        |
@@ -149,9 +161,10 @@ not drift.
   by the Entity package.
 - The App owns the route and visibly composes the available layers in that order.
 - `XCollection` receives its canonical collection from the route.
-- `XCollectionList` remains Entity-owned and maps its records into the neutral
-  Core-owned `CollectionCell`. Entity `XCards/*` remain available to other
-  consumers but do not style the FL index baseline.
+- `XCollectionList` remains Entity-owned and passes one resolved interface
+  object into either Core's neutral `CollectionCell` or a proved Entity-owned
+  Collection Cell. The latter owns presentation only; it does not fetch or
+  change collection authority.
 - `XCreate` is required in the audited FL index family and owns the real
   creation doorway. Generic `XCTA` does not name an index-page responsibility.
 - Pages do not accept generic configuration objects for cards, states, or CTA
@@ -205,6 +218,14 @@ When this family changes:
   management surfaces authorize against root-owned Team separately.
 - Every audited route acquires its collection once and passes the named plural
   Entity prop into its Collection component.
+- App, User, Ecosystem, Project, Place, Kitchen, Job, Supplier, and Portfolio
+  use compact Nuxt UI `UPageHeader`; these indexes do not spend their first
+  viewport on a marketing-scale hero.
+- Those nine rich-baseline Lists present resolved cells in `UPageGrid`. The
+  ordinary baseline crosses the shared Core boundary through one `cell` object
+  rather than repeated scalar props. App, Place, and Kitchen now prove the rich
+  shared cell: App uses identity-led avatar media, while Place and Kitchen use
+  venue-discovery cover media. Entity Lists own projection; Core owns the frame.
 - Supplier Collection Page reads canonical `Supplier[]` through its live root
   collection. Its different transport does not change the shared outcome
   anatomy.

@@ -80,7 +80,7 @@ import type { UserCard } from '../../../user/composables/useUserInterface'
 import type { DashboardOverviewOutcome } from './types'
 
 const props = defineProps<{
-  card: UserCard.Card
+  card: UserCard
   hasCustomAvatar: boolean
   privateOutcome: DashboardOverviewOutcome
 }>()

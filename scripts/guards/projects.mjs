@@ -407,7 +407,10 @@ export function assertCorePwaCacheVersioning(repoRoot) {
 
   assert.match(shell, /withBuildVersion\(\s*'\/manifest\.webmanifest'/)
   assert.match(shell, /runtimeConfig\.app\?\.buildId/)
-  assert.match(manifestRoute, /id:\s*'\/'/)
+  assert.match(manifestRoute, /const startUrl = readStartUrl\(getQuery\(event\)\.start_url\)/)
+  assert.match(manifestRoute, /id:\s*startUrl/)
+  assert.match(manifestRoute, /start_url:\s*startUrl/)
+  assert.match(manifestRoute, /scope:\s*'\/'/)
   assert.match(manifestRoute, /readPaletteColor\(fireux,\s*'accent'\)/)
   assert.match(manifestRoute, /readPaletteColor\(fireux,\s*'canvas'\)/)
   assert.match(manifestRoute, /background_color:\s*backgroundColor/)

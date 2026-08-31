@@ -1,16 +1,24 @@
 <template>
-  <ul class="collection-stack" aria-label="Portfolios">
-    <li v-for="card in cards" :key="card.to || card.id">
-      <CollectionCell
-        :title="card.title"
-        :description="card.subtitle"
-        :to="card.to"
-      />
+  <UPageGrid as="ul" class="list-none" aria-label="Portfolios">
+    <li v-for="cell in cells" :key="cell.to">
+      <CollectionCell :cell="cell" />
     </li>
-  </ul>
+  </UPageGrid>
 </template>
 <script setup lang="ts">
+import { computed } from 'vue'
 import CollectionCell from 'fireux-core/runtime/components/Collection/Cell.vue'
+import type { CollectionCellData } from 'fireux-core/runtime/models/utils/collection-cell'
 import type { PortfolioCard } from '../../composables/firestore/utils/view/usePortfolioInterface'
-defineProps<{ cards: PortfolioCard.Card[] }>()
+const props = defineProps<{ cards: PortfolioCard.Card[] }>()
+const cells = computed<CollectionCellData[]>(() =>
+  props.cards.map((card) => ({
+    title: card.title,
+    description: card.subtitle || card.summary,
+    image: card.imageUrl,
+    meta: card.locationLabel || card.regionLabel,
+    badges: card.badges,
+    to: card.to,
+  }))
+)
 </script>

@@ -34,6 +34,8 @@
     //   completed-Order facts readable by App admins and Kitchen operators.
     // apps/{appId}/financial-facts/{factId}: immutable normalized finance
     //   facts; raw records remain server-only until bounded reports exist.
+    // kitchens/{kitchenId}/kiosks/{kioskId}: trusted-server device authority.
+    //   Contains a session digest and is never client-readable or writable.
 
     // ===============================================================
     // Shared helpers

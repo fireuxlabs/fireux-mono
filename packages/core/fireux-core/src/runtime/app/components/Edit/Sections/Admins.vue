@@ -53,7 +53,7 @@ type AdminRow = {
 defineProps<{
   rows: AdminRow[]
   actionUid: string | null
-  pillFor: (row: AdminRow) => UserCard.Card
+  pillFor: (row: AdminRow) => UserCard
   onRemoveAdmin: (uid: string) => Promise<unknown>
 }>()
 

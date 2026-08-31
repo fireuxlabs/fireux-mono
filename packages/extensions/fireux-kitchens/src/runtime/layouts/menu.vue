@@ -18,9 +18,27 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useHead, useRoute } from '#imports'
 import { useMenuExit } from '../menu/composables/useMenuExit'
 
 const { exitKind, exitLabel, exitPath, isKioskMenu, routeScope } = useMenuExit()
+const route = useRoute()
+const kioskManifestHref = computed(
+  () => `/manifest.webmanifest?start_url=${encodeURIComponent(route.fullPath)}`
+)
+
+useHead(() => ({
+  link: isKioskMenu.value
+    ? [
+        {
+          key: 'fireux-manifest',
+          rel: 'manifest',
+          href: kioskManifestHref.value,
+        },
+      ]
+    : [],
+}))
 </script>
 
 <style scoped>

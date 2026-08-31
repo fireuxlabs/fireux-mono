@@ -223,11 +223,20 @@
           }
         }
 
+        match /kiosks/{kioskId} {
+          allow get, list, create, update, delete: if false;
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
         match /{childCollection}/{childId} {
           function isGenericKitchenChildCollection() {
             return !(childCollection in [
               'ingredients',
               'integrations',
+              'kiosks',
               'dishes',
               'recipes',
               'prep-items',

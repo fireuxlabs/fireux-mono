@@ -11,6 +11,7 @@
 
       <template #body>
         <section class="workspace-surface">
+          <WorkspaceKitchenSuppliersSelector />
           <WorkspaceKitchenCapabilityTools operation="suppliers" />
           <WorkspaceKitchenCapabilityAI operation="suppliers" />
           <WorkspaceKitchenCapabilityView operation="suppliers" />
@@ -27,6 +28,10 @@
 </template>
 
 <script setup lang="ts">
+import { provideKitchenWorkspaceSuppliers } from '../../../../kitchen/composables/workspace/Suppliers/useKitchenWorkspaceSuppliers'
+
+provideKitchenWorkspaceSuppliers()
+
 definePageMeta({
   layout: 'workspace',
   workspaceSurface: 'browse',

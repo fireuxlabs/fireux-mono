@@ -58,19 +58,34 @@
       @update:tagline="setTagline"
     />
 
+    <PlaceOnboardingDiscovery
+      v-if="activeStepId === 'discovery' && draft"
+      :place-name="draft.name"
+      :about="draft.about || ''"
+      :tags="draft.tags || []"
+      :cover-image="draft.cover_image || ''"
+      :cover-file="coverFile"
+      :cover-editable="canEditCover"
+      :uploading="pending"
+      @update:about="setAbout"
+      @update:tags="setTags"
+      @cover-selected="setCoverFile"
+    />
+
     <PlaceOnboardingReview
       v-if="activeStepId === 'review' && draft"
       :place="draft"
       :currency-code="currencyCode"
       :timezone="timezone"
       :image-file="imageFile"
+      :cover-file="coverFile"
       :brand-palette="brandPalette"
     />
 
     <template #footer>
       <div
-        class="flex items-center gap-3"
-        :class="isFirstStep ? 'justify-end' : 'justify-between'"
+        class="flex min-w-0 flex-col-reverse gap-3 sm:flex-row sm:items-center"
+        :class="isFirstStep ? 'sm:justify-end' : 'sm:justify-between'"
       >
         <UButton
           v-if="!isFirstStep"
@@ -79,6 +94,7 @@
           variant="soft"
           icon="i-lucide-arrow-left"
           :disabled="pending"
+          class="w-full justify-center sm:w-auto"
           @click="onBack"
         >
           Back
@@ -89,6 +105,7 @@
           :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
           :loading="pending"
           :disabled="continueDisabled"
+          class="w-full justify-center sm:w-auto"
           @click="onContinue"
         >
           {{ continueLabel }}
@@ -115,6 +132,7 @@ const {
   brandPalette,
   canEditBrandPalette,
   canEditImage,
+  canEditCover,
   clearSelection,
   completion,
   canConfigure,
@@ -127,6 +145,7 @@ const {
   isFirstStep,
   isLastStep,
   imageFile,
+  coverFile,
   needsEnrichment,
   next,
   pending,
@@ -135,9 +154,12 @@ const {
   setCurrencyCode,
   setBrandPalette,
   setImageFile,
+  setCoverFile,
   setTimezone,
   setShortName,
   setTagline,
+  setAbout,
+  setTags,
   selectionError,
   selectionPending,
   stepCount,

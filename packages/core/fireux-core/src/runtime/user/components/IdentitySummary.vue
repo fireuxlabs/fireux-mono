@@ -18,7 +18,10 @@
     </template>
 
     <div class="profile__body">
-      <section v-if="showDescription && profileSummary" class="profile__section">
+      <section
+        v-if="showDescription && profileSummary"
+        class="profile__section"
+      >
         <div class="profile__label">About</div>
         <div class="profile__value">
           <span>{{ profileSummary }}</span>
@@ -49,25 +52,22 @@
       <section v-if="showDetails" class="profile__section">
         <div class="profile__label">Details</div>
         <div class="profile__value">
-          <div class="profile__kv">
+          <div v-if="user?.id" class="profile__kv">
             <div class="profile__k">User id</div>
             <div class="profile__v">
-              <span v-if="user?.id">{{ user.id }}</span>
-              <span v-else class="opacity-70">missing</span>
+              <span>{{ user?.id }}</span>
             </div>
           </div>
-          <div class="profile__kv">
+          <div v-if="createdAtLabel" class="profile__kv">
             <div class="profile__k">Created</div>
             <div class="profile__v">
-              <span v-if="createdAtLabel">{{ createdAtLabel }}</span>
-              <span v-else class="opacity-70">missing</span>
+              <span>{{ createdAtLabel }}</span>
             </div>
           </div>
-          <div class="profile__kv">
+          <div v-if="updatedAtLabel" class="profile__kv">
             <div class="profile__k">Updated</div>
             <div class="profile__v">
-              <span v-if="updatedAtLabel">{{ updatedAtLabel }}</span>
-              <span v-else class="opacity-70">missing</span>
+              <span>{{ updatedAtLabel }}</span>
             </div>
           </div>
         </div>
@@ -146,8 +146,12 @@ const profileSummary = computed(() =>
   String(props.bioOverride || props.summary || props.bio || '').trim()
 )
 
-const createdAtLabel = computed(() => formatTimestampLabel(props.user?.created?.at))
-const updatedAtLabel = computed(() => formatTimestampLabel(props.user?.updated?.at))
+const createdAtLabel = computed(() =>
+  formatTimestampLabel(props.user?.created?.at)
+)
+const updatedAtLabel = computed(() =>
+  formatTimestampLabel(props.user?.updated?.at)
+)
 
 function formatTimestampLabel(value: unknown): string {
   return (

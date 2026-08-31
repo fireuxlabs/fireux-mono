@@ -108,13 +108,16 @@
       />
 
       <template #footer>
-        <div class="flex items-center justify-between gap-3">
+        <div
+          class="flex min-w-0 flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
           <UButton
             type="button"
             color="neutral"
             variant="soft"
             icon="i-lucide-arrow-left"
             :disabled="pending"
+            class="w-full justify-center sm:w-auto"
             @click="onBack"
           >
             {{ backLabel }}
@@ -125,6 +128,7 @@
             :icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
             :loading="pending"
             :disabled="continueDisabled"
+            class="w-full justify-center sm:w-auto"
             @click="onContinue"
           >
             {{ continueLabel }}
@@ -141,7 +145,6 @@ import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCur
 import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/place/composables/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useKitchenWorkspaceSelection } from '../composables/workspace/core/useKitchenWorkspaceSelection'
 import { useKitchenOnboarding } from '../composables/useKitchenOnboarding'
 import type { KitchenOnboardingCompleteResult } from '../models/kitchen-onboarding.model.ts'
 
@@ -173,7 +176,6 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const appContext = useCurrentAppContext()
-const { setKitchenWorkspaceSelection } = useKitchenWorkspaceSelection()
 const {
   activeStepId,
   back,
@@ -285,8 +287,7 @@ async function onContinue() {
 
 async function finishSelection(result: KitchenOnboardingCompleteResult) {
   if (props.selectWorkspaceOnComplete) {
-    await appContext.refresh()
-    setKitchenWorkspaceSelection({ kitchenId: result.kitchen_id })
+    appContext.applyCommittedWorkspaceMembership(result.app_user)
   }
   emit('created', result)
   if (route.path !== resolvedReturnTo.value) {

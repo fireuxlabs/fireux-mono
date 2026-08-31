@@ -238,6 +238,10 @@ export async function run({ repoRoot }) {
     repoRoot,
     'projects/misebox/misebox-app/app/pages/index.vue'
   )
+  const kitchenWorkspaceNav = await source(
+    repoRoot,
+    'projects/misebox/misebox-app/app/components/Workspace/Kitchen/Nav.vue'
+  )
   if (
     !kitchenWorkspaceContent.includes('# Misebox Kitchen Workspace') ||
     !kitchenWorkspaceContent.includes('upgrade to Business') ||
@@ -247,9 +251,12 @@ export async function run({ repoRoot }) {
       `${kitchenWorkspaceContentFile}: Misebox Kitchen Workspace context must remain concise and state the Business multi-Kitchen boundary.`
     )
   }
-  if (!kitchenWorkspacePage.includes('WorkspaceKitchenInfo')) {
+  if (
+    !kitchenWorkspacePage.includes('WorkspaceKitchenNav') ||
+    !kitchenWorkspaceNav.includes('WorkspaceKitchenInfo')
+  ) {
     violations.push(
-      'projects/misebox/misebox-app/app/pages/index.vue: Misebox / must expose its KitchenAI context modal in the page header.'
+      'Misebox / must compose its Kitchen navbar and expose the KitchenAI context modal from that header.'
     )
   }
   if (

@@ -22,6 +22,9 @@ export namespace PlaceCard {
     formattedAddress: string
     shortAddress: string
     imageUrl: string
+    coverImageUrl: string
+    description: string
+    categoryLabels: string[]
     imageShade?: PlaceImageShade
     source?: PlaceSource
     collection?: string
@@ -90,6 +93,7 @@ export function usePlaceInterface() {
     const address = safeString(place.formatted_address)
     const shortAddress = sanitizeShortAddress(place.short_address)
     const image = safeString(place.image_url)
+    const coverImage = safeString(place.cover_image)
     const entityFamilies = place.entity_families
 
     return {
@@ -105,6 +109,16 @@ export function usePlaceInterface() {
       formattedAddress: address,
       shortAddress,
       imageUrl: image,
+      coverImageUrl: coverImage,
+      description: safeString(place.about || place.tagline),
+      categoryLabels: formatPlaceTypeList(
+        place.tags?.length ? place.tags : place.types
+      )
+        .filter(
+          (label) =>
+            !['establishment', 'food', 'point of interest'].includes(label)
+        )
+        .slice(0, 3),
       imageShade: place.image_shade ?? 'none',
       source: place.source,
       claimedBy: safeString(place.claimed_by),

@@ -15,7 +15,12 @@ export type BasePlace = Pick<
   | 'source'
   | 'slug'
   | 'entity_families'
-> & { image_shade?: import('../../../../utils/place-spine').PlaceImageShade }
+> &
+  Partial<
+    Pick<Place, 'cover_image' | 'about' | 'tagline' | 'tags' | 'types'>
+  > & {
+    image_shade?: import('../../../../utils/place-spine').PlaceImageShade
+  }
 
 export type BasePlaceRecord = BasePlace & { collection?: string }
 
@@ -31,4 +36,7 @@ export type SearchStage = {
   debug?: Record<string, unknown>
 }
 
-export type MapToBasePlace = (p: any, collectionOverride?: string) => BasePlaceRecord
+export type MapToBasePlace = (
+  p: any,
+  collectionOverride?: string
+) => BasePlaceRecord

@@ -10,6 +10,15 @@
       @delete="confirmDeleteMember"
     />
 
+    <UAlert
+      v-if="!pending && !teamMembers.length"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-users"
+      title="No team members yet"
+      description="Add the first person to begin this Kitchen Team."
+    />
+
     <UModal
       v-model:open="editOpen"
       title="Edit team member"
@@ -97,13 +106,6 @@
       </template>
     </UModal>
 
-    <DevDebugPanel
-      title="Kitchen team"
-      scope="workspace"
-      object-origin="fetched"
-      :objects="{ teamMembers, joinRequests }"
-      :derived="debug"
-    />
   </section>
 </template>
 
@@ -115,8 +117,7 @@ import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/
 import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'
 import type { KitchenTeamMember } from '../../../utils/team.ts'
 
-const { teamMembers, joinRequests, pending, debug, kitchenId } =
-  useKitchenWorkspaceTeam()
+const { teamMembers, pending, kitchenId } = useKitchenWorkspaceTeam()
 const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
 const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
 const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()

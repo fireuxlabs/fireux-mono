@@ -137,6 +137,10 @@ Firestore skill whenever Firestore is accessed or changed.
   bounded Tool hypotheses, capability decisions, and implemented pages. A Tool
   hypothesis is not an implemented Tool, and a capability decision is not a
   release claim.
+- Keep the product hierarchy explicit: an Operation is a stable working area,
+  a Capability is what that area or a baked-in Workspace peer can do, and a
+  Tool is one bounded action beneath a Capability. CRUD is the record-mechanics
+  floor, not a substitute for user-facing verbs or authority.
 - Use concrete product nouns and actions; avoid slogans and explanatory filler.
 - Access vocabulary must reflect actual runtime authority and subscriptions.
 - Brand, media, design-pack, and SEO ownership remain separate from Entity data.

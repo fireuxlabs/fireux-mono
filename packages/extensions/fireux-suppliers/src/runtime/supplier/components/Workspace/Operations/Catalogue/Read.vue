@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSupplierWorkspaceCatalogue } from '../../../../composables/workspace/Catalogue/useSupplierWorkspaceCatalogue'
+import { useSupplierWorkspaceCatalogue } from '../../../../composables/workspace/operations/Catalogue/useSupplierWorkspaceCatalogue'
 import { useSupplierCatalogueInterface } from '../../../../composables/firestore/utils/view/useSupplierCatalogueInterface'
 
 const {

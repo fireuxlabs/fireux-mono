@@ -68,7 +68,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-type Props = Partial<AppCard.Card> & {
+type Props = Partial<AppCard> & {
   showSubtitle?: boolean
   showBadges?: boolean
   link?: boolean

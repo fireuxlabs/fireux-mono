@@ -21,7 +21,7 @@ export type FireuxProductDemo = {
   workspace: {
     projectId: string
     projectPill: ProjectInterfaceCard
-    apps: AppCard.Card[]
+    apps: AppCard[]
     ecosystems: EcosystemInterfaceCard[]
   }
 }
@@ -55,7 +55,7 @@ export function useFireuxProductDemo() {
       const projectedProjectPill = projectPill(project)
       const apps = scenario.apps
         .map(app => appCell(app))
-        .filter((card): card is AppCard.Card => Boolean(card))
+        .filter((card): card is AppCard => Boolean(card))
       const ecosystems = scenario.ecosystems
         .map(ecosystem =>
           ecosystemCell({

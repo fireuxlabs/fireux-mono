@@ -6,6 +6,15 @@ export type KitchenOnboardingAction =
   | 'open'
   | 'request_access'
 
+export type KitchenOnboardingPlace = {
+  id: string
+  name: string
+  formatted_address: string
+  short_address: string
+  default_currency_code: string
+  timezone: string
+}
+
 export type KitchenOnboardingPreview = {
   kitchen_id: string
   place_id: string
@@ -14,6 +23,7 @@ export type KitchenOnboardingPreview = {
   connected: boolean
   can_complete: boolean
   action: KitchenOnboardingAction
+  place: KitchenOnboardingPlace
   message?: string
   display_name?: string
   published?: boolean
@@ -33,6 +43,11 @@ export type KitchenOnboardingCompleteResult = {
   action: Exclude<KitchenOnboardingAction, 'request_access'>
   created_root: boolean
   created_team_member: boolean
+  app_user: {
+    id: string
+    kitchens: string[]
+    primary_kitchen: string
+  }
   slug?: string
 }
 
@@ -43,5 +58,6 @@ export type KitchenShellCreateResult = {
   action: 'create' | 'open'
   created_root: boolean
   created_team_member: boolean
+  app_user: KitchenOnboardingCompleteResult['app_user']
   slug?: string
 }

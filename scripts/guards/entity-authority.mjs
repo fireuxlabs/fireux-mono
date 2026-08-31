@@ -71,6 +71,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     path.join(repoRoot, 'packages/core/fireux-core/src/runtime/models/utils')
   )
   assert.deepEqual(utilityModelFiles, [
+    'collection-cell.ts',
     'directory.ts',
     'entity-create.model.ts',
     'entity.model.ts',
@@ -989,6 +990,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/commands.ts'
   )
+  const kitchenOnboardingLocator = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/index/onboarding/locator.ts'
+  )
   const workspaceEntityCreationIdentity = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/utils/workspace-entity/creation-identity.ts'
@@ -1118,8 +1123,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(kitchenOnboardingCommands, /createKitchenShell/)
   assert.match(kitchenOnboardingCommands, /body\.intent !== 'create_shell'/)
-  assert.match(kitchenOnboardingCommands, /intent:\s*'use_source'/)
-  assert.match(kitchenOnboardingCommands, /resolveWorkspaceEntityCreationId/)
+  assert.match(kitchenOnboardingLocator, /intent:\s*'use_source'/)
+  assert.match(kitchenOnboardingLocator, /resolveWorkspaceEntityCreationId/)
   assert.match(
     kitchenOnboardingCommands,
     /const workspaceState = resolveAppUserKitchenState\([\s\S]*?if \(createdRoot\)/,

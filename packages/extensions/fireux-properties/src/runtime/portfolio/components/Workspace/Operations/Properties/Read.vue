@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioWorkspaceProperties } from '../../../../composables/workspace/Properties/usePortfolioWorkspaceProperties'
+import { usePortfolioWorkspaceProperties } from '../../../../composables/workspace/operations/Properties/usePortfolioWorkspaceProperties'
 
 const { properties, portfolioName, collectionPath, debug } =
   usePortfolioWorkspaceProperties()

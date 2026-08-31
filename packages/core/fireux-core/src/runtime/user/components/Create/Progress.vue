@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mb-6 flex items-center justify-center gap-2"
+    class="mb-6 flex min-w-0 items-center justify-center gap-2 overflow-hidden px-1"
     aria-label="Account setup progress"
   >
     <template v-for="(step, index) in steps" :key="step.label">
@@ -25,7 +25,7 @@
       </div>
       <span
         v-if="Number(index) < steps.length - 1"
-        class="h-px w-8 bg-border sm:w-14"
+        class="h-px min-w-3 flex-1 bg-border sm:max-w-14"
       />
     </template>
   </div>

@@ -1,5 +1,5 @@
 <template>
-  <UPageHero headline="Discover" :title="title" :description="description" />
+  <UPageHeader headline="Discover" :title="title" :description="description" />
 </template>
 
 <script setup lang="ts">

@@ -36,6 +36,8 @@ service cloud.firestore {
     //   completed-Order facts readable by App admins and Kitchen operators.
     // apps/{appId}/financial-facts/{factId}: immutable normalized finance
     //   facts; raw records remain server-only until bounded reports exist.
+    // kitchens/{kitchenId}/kiosks/{kioskId}: trusted-server device authority.
+    //   Contains a session digest and is never client-readable or writable.
 
     // ===============================================================
     // Shared helpers
@@ -1372,11 +1374,20 @@ service cloud.firestore {
           }
         }
 
+        match /kiosks/{kioskId} {
+          allow get, list, create, update, delete: if false;
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
         match /{childCollection}/{childId} {
           function isGenericKitchenChildCollection() {
             return !(childCollection in [
               'ingredients',
               'integrations',
+              'kiosks',
               'dishes',
               'recipes',
               'prep-items',

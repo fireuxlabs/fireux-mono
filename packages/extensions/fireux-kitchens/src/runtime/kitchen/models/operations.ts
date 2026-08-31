@@ -1,4 +1,7 @@
-import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
+import type {
+  FireuxMetaOperation,
+  WorkspaceCapabilityFamilies,
+} from 'fireux-core/config/app/meta-content'
 
 const kitchenWorkspace = {
   id: 'kitchen',
@@ -6,9 +9,123 @@ const kitchenWorkspace = {
   to: '/',
 } as const
 
-const defineKitchenOperation = <const T extends Omit<FireuxMetaOperation, 'workspace'>>(
+const kitchenCapabilityFamilies = {
+  menus: {
+    surfaces: ['focus-list', 'catalogue', 'structured-composer', 'asset-vault'],
+    entries: ['quick-create', 'import-create'],
+    tools: ['record', 'transform', 'lifecycle'],
+    scopes: ['local', 'compound'],
+  },
+  dishes: {
+    surfaces: ['catalogue'],
+    entries: ['quick-create'],
+    tools: ['record', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  drinks: {
+    surfaces: ['catalogue'],
+    entries: ['quick-create'],
+    tools: ['record', 'transform', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  recipes: {
+    surfaces: ['catalogue', 'structured-composer'],
+    entries: ['quick-create'],
+    tools: ['record', 'transform', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  ingredients: {
+    surfaces: ['catalogue', 'relationship-directory'],
+    entries: ['search-connect'],
+    tools: ['relationship', 'operational'],
+    scopes: ['local', 'compound'],
+  },
+  'food-safety': {
+    surfaces: ['control-checklist', 'event-ledger'],
+    entries: ['guided-create'],
+    tools: ['workflow', 'operational', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  orders: {
+    surfaces: ['work-queue', 'event-ledger'],
+    entries: ['derived-create'],
+    tools: ['operational', 'workflow'],
+    scopes: ['local', 'compound'],
+  },
+  inventory: {
+    surfaces: ['count-stocktake', 'event-ledger'],
+    entries: ['derived-create'],
+    tools: ['record', 'operational', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  purchasing: {
+    surfaces: ['work-queue', 'catalogue'],
+    entries: ['derived-create'],
+    tools: ['workflow', 'relationship', 'analysis'],
+    scopes: ['local', 'compound'],
+  },
+  receiving: {
+    surfaces: ['work-queue', 'control-checklist', 'event-ledger'],
+    entries: ['derived-create'],
+    tools: ['operational', 'workflow'],
+    scopes: ['local', 'compound'],
+  },
+  waste: {
+    surfaces: ['event-ledger'],
+    entries: ['quick-create'],
+    tools: ['record', 'operational'],
+    scopes: ['local'],
+  },
+  stations: {
+    surfaces: ['focus-list', 'configuration-sheet'],
+    entries: ['quick-create'],
+    tools: ['record', 'relationship', 'workflow'],
+    scopes: ['local', 'compound'],
+  },
+  suppliers: {
+    surfaces: ['focus-list', 'relationship-directory'],
+    entries: ['search-connect', 'resolvable-shell'],
+    tools: ['relationship', 'analysis', 'workflow'],
+    scopes: ['local', 'compound'],
+  },
+  finance: {
+    surfaces: ['report'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+  costs: {
+    surfaces: ['report'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+  'waste-report': {
+    surfaces: ['report'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+  performance: {
+    surfaces: ['report'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+} as const satisfies Record<string, WorkspaceCapabilityFamilies>
+
+const defineKitchenOperation = <
+  const T extends Omit<
+    FireuxMetaOperation,
+    'workspace' | 'capabilityFamilies'
+  > & { slug: keyof typeof kitchenCapabilityFamilies },
+>(
   operation: T
-) => ({ ...operation, workspace: kitchenWorkspace })
+) => ({
+  ...operation,
+  workspace: kitchenWorkspace,
+  capabilityFamilies: kitchenCapabilityFamilies[operation.slug],
+})
 
 export const kitchenOperations = [
   defineKitchenOperation({

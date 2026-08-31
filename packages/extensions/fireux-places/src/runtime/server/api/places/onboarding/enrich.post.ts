@@ -29,7 +29,19 @@ export default defineEventHandler(async (event) => {
 
   const currentShortName = bounded(place.short_name, 80)
   const currentTagline = bounded(place.tagline, 180)
-  if (currentShortName && currentTagline) {
+  const currentAbout = bounded(place.about, 900)
+  const currentTags = Array.isArray(place.tags)
+    ? place.tags
+        .map((value) => bounded(value, 48).toLowerCase())
+        .filter(Boolean)
+        .slice(0, 8)
+    : []
+  if (
+    currentShortName &&
+    currentTagline &&
+    currentAbout &&
+    currentTags.length
+  ) {
     return { id: actor.placeRef.id, generated: false }
   }
 
@@ -37,6 +49,8 @@ export default defineEventHandler(async (event) => {
   const response = await ai.generateJson<{
     short_name?: unknown
     tagline?: unknown
+    about?: unknown
+    tags?: unknown
   }>({
     appId: actor.runtimeAppId,
     task: 'extract_structured_data',
@@ -52,7 +66,7 @@ export default defineEventHandler(async (event) => {
     },
     context: {
       instruction:
-        'Suggest a concise recognizable short name and one restrained factual tagline. Use only the supplied facts. Do not invent cuisine, awards, ownership, quality claims, or services. Return empty strings when the facts do not support useful copy.',
+        'Suggest a concise recognizable short name, one restrained factual tagline, a short factual venue introduction, and up to five useful discovery tags. Use only the supplied facts. Tags must be reader-friendly categories supported by the supplied Google types or location, not generic provider types such as establishment, food, or point_of_interest. Do not invent cuisine, facilities, awards, ownership, quality claims, ratings, prices, or services. Return empty values when facts do not support them.',
     },
     outputSchema: {
       type: 'object',
@@ -60,8 +74,14 @@ export default defineEventHandler(async (event) => {
       properties: {
         short_name: { type: 'string', maxLength: 80 },
         tagline: { type: 'string', maxLength: 180 },
+        about: { type: 'string', maxLength: 900 },
+        tags: {
+          type: 'array',
+          maxItems: 5,
+          items: { type: 'string', maxLength: 48 },
+        },
       },
-      required: ['short_name', 'tagline'],
+      required: ['short_name', 'tagline', 'about', 'tags'],
     },
   })
 
@@ -77,5 +97,19 @@ export default defineEventHandler(async (event) => {
     ...(currentTagline || bounded(response.data?.tagline, 180)
       ? { tagline: currentTagline || bounded(response.data?.tagline, 180) }
       : {}),
+    ...(currentAbout || bounded(response.data?.about, 900)
+      ? { about: currentAbout || bounded(response.data?.about, 900) }
+      : {}),
+    tags: currentTags.length
+      ? currentTags
+      : Array.isArray(response.data?.tags)
+        ? Array.from(
+            new Set(
+              response.data.tags
+                .map((value) => bounded(value, 48).toLowerCase())
+                .filter(Boolean)
+            )
+          ).slice(0, 5)
+        : [],
   }
 })

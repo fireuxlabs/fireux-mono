@@ -1,6 +1,8 @@
 <template>
   <section v-if="compact" :aria-label="ariaLabel" class="pt-12 pb-8">
-    <slot />
+    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 sm:px-6">
+      <slot />
+    </div>
   </section>
   <UPageSection v-else :aria-label="ariaLabel">
     <slot />

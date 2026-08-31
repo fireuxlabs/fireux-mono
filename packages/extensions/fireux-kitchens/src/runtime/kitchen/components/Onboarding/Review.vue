@@ -28,12 +28,14 @@
 </template>
 
 <script setup lang="ts">
-import type { Place } from 'fireux-places/runtime/place/models/place.model'
 import { computed } from 'vue'
-import type { KitchenOnboardingPreview } from '../../models/kitchen-onboarding.model.ts'
+import type {
+  KitchenOnboardingPlace,
+  KitchenOnboardingPreview,
+} from '../../models/kitchen-onboarding.model.ts'
 
 const props = defineProps<{
-  place: Place
+  place: KitchenOnboardingPlace
   preview: KitchenOnboardingPreview
 }>()
 

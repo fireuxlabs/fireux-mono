@@ -1,0 +1,17 @@
+import { defineEventHandler, readBody } from 'h3'
+import { activateKitchenKioskDevice } from '../../../../../kitchen/server/operations/kiosks/devices.ts'
+
+type ActivateKitchenKioskBody = {
+  kitchen_id?: string
+  menu_id?: string
+  label?: string
+}
+
+export default defineEventHandler(async (event) => {
+  const body = (await readBody(event)) as ActivateKitchenKioskBody | null
+  return activateKitchenKioskDevice(event, {
+    kitchenId: String(body?.kitchen_id || ''),
+    menuId: String(body?.menu_id || ''),
+    label: String(body?.label || ''),
+  })
+})

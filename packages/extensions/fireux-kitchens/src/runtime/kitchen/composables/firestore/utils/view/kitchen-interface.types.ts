@@ -32,6 +32,7 @@ export namespace KitchenCard {
 
     // Media (empty string means unset)
     imageUrl: string
+    discoveryImageUrl?: string
     logoImageUrl: string
     categoryLabels: string[]
 

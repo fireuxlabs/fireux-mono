@@ -61,6 +61,31 @@ Tools, and AI assistance derived from the implemented children. Higher
 literature must preserve the difference between observed evidence, a hypothesis,
 a product decision, and released behavior.
 
+## Operation, Capability, and Tool
+
+These names describe different levels of the product:
+
+- An **Operation** is a stable user-facing working area inside one active
+  Workspace Entity, such as Menus, Orders, or Purchasing.
+- A **Capability** is what an Operation or baked-in Workspace peer can do, such
+  as compose a Menu or manage Team membership.
+- A **Tool** is one bounded action beneath a capability, such as Create Menu,
+  Add Menu Section, Invite Member, or Publish Menu.
+- A trusted **command** executes a Tool under its real authority.
+- **CRUD** is the record-mechanics floor. Prefer the product verb—connect,
+  publish, approve, import, calculate, receive—when that is the user's actual
+  intent.
+
+Identity and Team remain Workspace peers rather than Operations. Tools may be
+Local to one capability or Compound across several capabilities, but Compound
+Tools must preserve every Local Tool's authority and failure boundary. Human
+and AI surfaces invoke the same registered Tool contracts.
+
+Classify capabilities independently by surface family, entry or creation
+family, and Tool meaning. The complete shared classification and evidence
+requirements live in
+[Operation, Capability, and Tool family](family-operation-capability-tool.md).
+
 ## Construction rule
 
 Use:

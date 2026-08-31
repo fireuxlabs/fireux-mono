@@ -47,10 +47,10 @@ const operatorIds = computed(() =>
 )
 const { userById, pending } = useUserHydration(operatorIds)
 const { pill } = useUserInterface()
-const operatorCards = computed<UserCard.Card[]>(() =>
+const operatorCards = computed<UserCard[]>(() =>
   operatorIds.value
     .map((id) => pill(userById(id)))
-    .filter((card): card is UserCard.Card => Boolean(card))
+    .filter((card): card is UserCard => Boolean(card))
 )
 const description = computed(() =>
   operatorIds.value.length

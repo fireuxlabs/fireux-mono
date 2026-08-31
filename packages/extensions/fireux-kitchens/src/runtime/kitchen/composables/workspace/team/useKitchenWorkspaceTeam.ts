@@ -1,4 +1,5 @@
-import { computed, inject, provide, type InjectionKey } from 'vue'
+import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
+import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitchenChildCollection'
 import {
@@ -7,10 +8,15 @@ import {
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
 } from '../../../utils/team.ts'
+import {
+  canAddKitchenTeamMember,
+  kitchenTeamMemberLimit,
+} from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 
 function createKitchenWorkspaceTeam() {
+  const { membership } = useCurrentAppContext()
   const { selection, runtime } = useKitchenWorkspace()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
@@ -62,6 +68,37 @@ function createKitchenWorkspaceTeam() {
     collectionPath,
   })
   const workspaceTeamMembers = computed(() => page.collection.value.items)
+  const selectableTeamMembers = computed(() =>
+    workspaceTeamMembers.value.filter(
+      (member) => member.active !== false && member.status !== 'inactive'
+    )
+  )
+  const selectedTeamMemberId = ref('')
+  const selectedTeamMember = computed(
+    () =>
+      selectableTeamMembers.value.find(
+        (member) => member.id === selectedTeamMemberId.value
+      ) ?? null
+  )
+  watchEffect(() => {
+    if (selectedTeamMember.value) return
+    selectedTeamMemberId.value = selectableTeamMembers.value[0]?.id || ''
+  })
+  const subscription = computed(() => membership.value?.subscription || 'free')
+  const teamMemberLimit = computed(() =>
+    kitchenTeamMemberLimit(subscription.value)
+  )
+  const canCreateTeamMember = computed(
+    () =>
+      canWrite.value &&
+      canAddKitchenTeamMember(
+        subscription.value,
+        selectableTeamMembers.value.length
+      )
+  )
+  const teamMemberCapacityReached = computed(
+    () => canWrite.value && !canCreateTeamMember.value
+  )
   const joinRequests = computed<KitchenTeamJoinRequest[]>(
     () => joinRequestItems.value
   )
@@ -101,6 +138,13 @@ function createKitchenWorkspaceTeam() {
     readOnly,
     canWrite,
     teamMembers: workspaceTeamMembers,
+    selectableTeamMembers,
+    selectedTeamMember,
+    selectedTeamMemberId,
+    subscription,
+    teamMemberLimit,
+    canCreateTeamMember,
+    teamMemberCapacityReached,
     joinRequests,
     pendingJoinRequests,
     pending,

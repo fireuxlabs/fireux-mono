@@ -30,6 +30,14 @@
         <dt class="form-text-muted">Tagline</dt>
         <dd>{{ place.tagline }}</dd>
       </div>
+      <div v-if="place.about">
+        <dt class="form-text-muted">About</dt>
+        <dd>{{ place.about }}</dd>
+      </div>
+      <div v-if="place.tags?.length">
+        <dt class="form-text-muted">Discovery</dt>
+        <dd>{{ place.tags.join(', ') }}</dd>
+      </div>
       <div v-if="currencyCode">
         <dt class="form-text-muted">Currency</dt>
         <dd>{{ currencyCode }}</dd>
@@ -41,6 +49,10 @@
       <div>
         <dt class="form-text-muted">Logo</dt>
         <dd>{{ logoLabel }}</dd>
+      </div>
+      <div>
+        <dt class="form-text-muted">Cover</dt>
+        <dd>{{ coverLabel }}</dd>
       </div>
       <div>
         <dt class="form-text-muted">Colours</dt>
@@ -60,6 +72,7 @@ const props = defineProps<{
   currencyCode: string
   timezone: string
   imageFile: File | null
+  coverFile: File | null
   brandPalette: SparseBrandPalette
 }>()
 
@@ -85,6 +98,13 @@ const logoLabel = computed(() => {
   if (String(props.place.image_url || props.place.logo_image || '').trim()) {
     return 'Website logo candidate'
   }
+  return 'Skipped for now'
+})
+
+const coverLabel = computed(() => {
+  if (props.coverFile) return 'Venue photograph ready to upload'
+  if (String(props.place.cover_image || '').trim())
+    return 'Current cover preserved'
   return 'Skipped for now'
 })
 

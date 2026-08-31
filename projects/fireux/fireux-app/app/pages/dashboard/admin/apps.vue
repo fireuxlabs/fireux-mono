@@ -112,14 +112,14 @@ const selectableApps = computed(() =>
       )
     )
 )
-const selectableRows = computed<{ slug: string; card: AppCard.Card }[]>(() =>
+const selectableRows = computed<{ slug: string; card: AppCard }[]>(() =>
   selectableApps.value
     .map((app) => {
       const slug = clean(app.slug)
       const card = appCell(app as Parameters<typeof appCell>[0])
       return slug && card ? { slug, card } : null
     })
-    .filter((row): row is { slug: string; card: AppCard.Card } => Boolean(row))
+    .filter((row): row is { slug: string; card: AppCard } => Boolean(row))
 )
 
 const isSelected = (slug: string, selectedValues: string[]) =>

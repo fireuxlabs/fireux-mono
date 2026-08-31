@@ -9,6 +9,7 @@ import {
   requireKitchenMutationAuthority,
 } from '../core/mutation-authority.ts'
 import { buildKitchenTeamMemberRecord } from './member-record.ts'
+import { canAddKitchenTeamMember } from '../../utils/team.ts'
 
 export type CreateKitchenTeamMemberInput = {
   kitchenId: string
@@ -112,9 +113,20 @@ export async function createKitchenTeamMember(
     )
     const teamMembers = serverKitchenTeamMembersTarget(requested.kitchenId)
     const existingMembers = await mutations.readAll<{
+      active?: unknown
       name?: unknown
       slug?: unknown
+      status?: unknown
     }>(teamMembers, 1_000)
+    const memberCount = existingMembers.filter(
+      ({ data }) => data.active !== false && data.status !== 'inactive'
+    ).length
+    if (!canAddKitchenTeamMember(kitchen.subscription, memberCount)) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: `Your ${kitchen.subscription} subscription has reached its Team member limit.`,
+      })
+    }
     slug = allocateTeamMemberSlug(requested.name, existingMembers)
     const member = buildKitchenTeamMemberRecord({
       appId: kitchen.ownerAppId,

@@ -98,7 +98,7 @@ defineOptions({ inheritAttrs: false })
 
 type Props = Partial<Omit<
   Pick<
-    AppCard.Card,
+    AppCard,
     | 'to'
     | 'thumbnailUrl'
     | 'avatarText'

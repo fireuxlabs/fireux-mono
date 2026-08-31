@@ -75,6 +75,17 @@ export function httpsImage(value: unknown, placeId: string) {
   })
 }
 
+export function httpsCoverImage(value: unknown, placeId: string) {
+  const candidate = text(value)
+  if (!candidate) return ''
+  if (candidate.length > 2_048) badRequest('Place cover URL is too long.')
+  return requireFirebaseStorageDownloadUrl(candidate, {
+    bucketName: runtimeStorageBucketName(),
+    objectPath: `places/${placeId}/cover`,
+    label: 'Place cover',
+  })
+}
+
 export function storedHttpsImage(value: unknown) {
   const candidate = text(value)
   if (!candidate || candidate.length > 2_048) return ''
@@ -127,6 +138,9 @@ export function completeInput(value: unknown) {
     'logo_image',
     'short_name',
     'tagline',
+    'about',
+    'tags',
+    'cover_image',
     'brand_palette',
   ])
   const unsupported = Object.keys(source).find((key) => !allowed.has(key))
@@ -148,6 +162,17 @@ export function completeInput(value: unknown) {
   const logoImage = publicHttpsImage(source.logo_image)
   const shortName = boundedIdentityText(source.short_name, 80)
   const tagline = boundedIdentityText(source.tagline, 180)
+  const about = boundedIdentityText(source.about, 900)
+  const tags = Array.isArray(source.tags)
+    ? Array.from(
+        new Set(
+          source.tags
+            .map((value) => boundedIdentityText(value, 48).toLowerCase())
+            .filter(Boolean)
+        )
+      ).slice(0, 8)
+    : []
+  const coverImage = httpsCoverImage(source.cover_image, id)
   const brandPaletteResult = parseBrandPalette(source.brand_palette)
   if (!brandPaletteResult.ok) badRequest(brandPaletteResult.error)
   const brandPalette = brandPaletteResult.value
@@ -161,6 +186,9 @@ export function completeInput(value: unknown) {
     ...(logoImage ? { logoImage } : {}),
     ...(shortName ? { shortName } : {}),
     ...(tagline ? { tagline } : {}),
+    ...(about ? { about } : {}),
+    ...(tags.length ? { tags } : {}),
+    ...(coverImage ? { coverImage } : {}),
     ...(Object.keys(brandPalette).length ? { brandPalette } : {}),
   }
 }

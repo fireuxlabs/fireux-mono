@@ -11,6 +11,7 @@
 
       <template #body>
         <section class="workspace-surface">
+          <WorkspaceKitchenStationsSelector />
           <WorkspaceKitchenCapabilityTools operation="stations" />
           <WorkspaceKitchenCapabilityAI
             operation="stations"
@@ -31,10 +32,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/Stations/useKitchenWorkspaceStations'
+import { provideKitchenWorkspaceStations } from '../../../../kitchen/composables/workspace/Stations/useKitchenWorkspaceStations'
 import { buildStationSetupSuggestions } from '../../../../kitchen/models/operation-suggestions'
 
-const { kitchenId, stations, pending } = useKitchenWorkspaceStations()
+const { kitchenId, stations, pending } = provideKitchenWorkspaceStations()
 const stationSuggestions = computed(() =>
   kitchenId.value && !pending.value
     ? buildStationSetupSuggestions(stations.value)

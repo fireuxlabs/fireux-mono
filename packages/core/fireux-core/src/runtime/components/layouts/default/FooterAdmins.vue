@@ -63,7 +63,7 @@ onMounted(async () => {
 
 const adminCards = computed(() => {
   const entries = admins.value
-  const result: Array<{ key: string; card: UserCard.Card }> = []
+  const result: Array<{ key: string; card: UserCard }> = []
 
   entries.forEach((record: PublicAppAdmin, index: number) => {
     const handle = record.handle ? `@${record.handle}` : ''

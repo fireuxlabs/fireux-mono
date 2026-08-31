@@ -1,4 +1,7 @@
-import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
+import type {
+  FireuxMetaOperation,
+  WorkspaceCapabilityFamilies,
+} from 'fireux-core/config/app/meta-content'
 
 const propertyWorkspace = {
   id: 'property',
@@ -6,7 +9,22 @@ const propertyWorkspace = {
   to: '/workspace/property',
 } as const
 
-export const propertyOperations = [
+const propertyCapabilityFamilies = {
+  reservations: {
+    surfaces: ['calendar', 'work-queue'],
+    entries: ['quick-create'],
+    tools: ['record', 'workflow'],
+    scopes: ['local'],
+  },
+  calendar: {
+    surfaces: ['calendar'],
+    entries: [],
+    tools: ['analysis'],
+    scopes: ['compound'],
+  },
+} as const satisfies Record<string, WorkspaceCapabilityFamilies>
+
+const propertyOperationDefinitions = [
   [
     'reservations',
     'Reservations',
@@ -19,12 +37,17 @@ export const propertyOperations = [
     'Review property reservation dates and availability.',
     'i-lucide-calendar-range',
   ],
-].map(([slug, title, description, icon]) => ({
-  id: `property.${slug}`,
-  slug,
-  title,
-  description,
-  to: `/workspace/property/${slug}`,
-  workspace: propertyWorkspace,
-  icon,
-})) satisfies FireuxMetaOperation[]
+] as const
+
+export const propertyOperations = propertyOperationDefinitions.map(
+  ([slug, title, description, icon]) => ({
+    id: `property.${slug}`,
+    slug,
+    title,
+    description,
+    to: `/workspace/property/${slug}`,
+    workspace: propertyWorkspace,
+    capabilityFamilies: propertyCapabilityFamilies[slug],
+    icon,
+  })
+) satisfies FireuxMetaOperation[]

@@ -1,5 +1,6 @@
 import type { FireuxMetaContent } from './meta-content.types'
 
+export * from './capability-families'
 export type * from './meta-content.types'
 
 /** Type-preserving helper for authored `app/meta.ts` configuration. */

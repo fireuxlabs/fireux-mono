@@ -73,7 +73,8 @@ export function useUserNotifications() {
   )
   const unreadCount = computed(() =>
     notifications.value.reduce(
-      (count, notification) => count + (notification.read ? 0 : 1),
+      (count: number, notification: UserNotificationRecord) =>
+        count + (notification.read ? 0 : 1),
       0
     )
   )
