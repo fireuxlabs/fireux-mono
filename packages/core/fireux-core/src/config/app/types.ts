@@ -13,6 +13,17 @@ export type FireuxWorkspaceFamilyConfig = {
 
 export type FireuxWorkspaceConfig = Record<string, FireuxWorkspaceFamilyConfig>
 
+export type FireuxAppSubscriptionCapacityLimit = {
+  free: number | null
+  premium: number | null
+  business: number | null
+}
+
+export type FireuxAppSubscriptionCapacity = Record<
+  string,
+  FireuxAppSubscriptionCapacityLimit
+>
+
 export type FireuxNavOverride = {
   label?: string
   icon?: string
@@ -51,6 +62,8 @@ export type FireuxAppConfig = {
   workspaces?: string[]
   /** Optional per-workspace app behavior, e.g. whether this app may create or pin workspace targets. */
   workspaceConfig?: FireuxWorkspaceConfig
+  /** App-owned limits keyed by capability, e.g. `kitchen.team`. Null means unlimited. */
+  subscriptionCapacity?: FireuxAppSubscriptionCapacity
   /** Optional public/admin root domains this app consumes. */
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */

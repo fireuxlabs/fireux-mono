@@ -1,58 +1,75 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base font-semibold text-highlighted">Project team</h2>
-          <p class="mt-1 text-sm text-dimmed">
-            People with access to {{ projectName }} in the FireUX Workspace.
-          </p>
+  <section id="project-team-members">
+    <UCard v-if="pending || members.length" :ui="{ body: 'p-0 sm:p-0' }">
+      <template #header>
+        <div class="flex items-center gap-3">
+          <h2 class="text-base font-semibold text-highlighted">People</h2>
+          <span class="text-sm tabular-nums text-dimmed">
+            {{ members.length }}
+          </span>
         </div>
-        <UBadge color="neutral" variant="soft">{{ count }}</UBadge>
-      </div>
-    </template>
+      </template>
 
-    <div v-if="pending" class="text-sm text-dimmed">Loading team…</div>
+      <div v-if="pending" class="divide-y divide-default px-4 sm:px-6">
+        <div
+          v-for="index in 3"
+          :key="index"
+          class="flex items-center gap-3 py-4"
+        >
+          <USkeleton class="size-10 shrink-0 rounded-full" />
+          <USkeleton class="h-4 w-32" />
+        </div>
+      </div>
+
+      <ul v-else class="divide-y divide-default">
+        <li
+          v-for="member in members"
+          :key="member.id"
+          class="flex items-center gap-3 px-4 py-3 sm:px-6"
+        >
+          <UAvatar
+            :src="member.avatar || undefined"
+            :alt="member.display_name"
+            size="md"
+            class="shrink-0"
+          />
+          <div class="min-w-0 flex-1">
+            <h3 class="truncate text-sm font-medium text-highlighted">
+              {{ member.display_name || member.handle || member.id }}
+            </h3>
+            <p v-if="member.handle" class="mt-0.5 truncate text-xs text-dimmed">
+              @{{ member.handle }}
+            </p>
+          </div>
+          <UBadge color="neutral" variant="subtle">
+            {{ member.access === 'operator' ? 'Operator' : 'Team' }}
+          </UBadge>
+        </li>
+      </ul>
+    </UCard>
+
     <UAlert
-      v-else-if="error"
+      v-if="!pending && error"
       color="error"
       variant="soft"
       icon="i-lucide-circle-alert"
-      title="Project team could not be loaded"
+      title="Project Team could not be loaded"
       description="Please try again."
     />
-    <div v-else-if="members.length" class="divide-y divide-default">
-      <div
-        v-for="member in members"
-        :key="member.id"
-        class="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-      >
-        <UAvatar :src="member.avatar" :alt="member.display_name" size="md" />
-        <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-medium text-highlighted">
-            {{ member.display_name || member.handle || member.id }}
-          </p>
-          <p v-if="member.handle" class="truncate text-xs text-dimmed">
-            @{{ member.handle }}
-          </p>
-        </div>
-        <UBadge color="neutral" variant="subtle">
-          {{ member.access === 'operator' ? 'Operator' : 'Team' }}
-        </UBadge>
-      </div>
-    </div>
-    <p v-else class="text-sm text-dimmed">No Project team members found.</p>
-  </UCard>
+
+    <UAlert
+      v-else-if="!pending && !members.length"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-users"
+      title="No team members yet"
+      description="Add the first person to begin this Project Team."
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
+import { useProjectTeamContext } from '../../../composables/workspace/team/useProjectTeamContext'
 
-const { selectedProject, members, count, pending, error } =
-  useProjectWorkspaceTeam()
-const projectName = computed(
-  () =>
-    selectedProject.value?.name || selectedProject.value?.id || 'this Project'
-)
+const { members, pending, error } = useProjectTeamContext()
 </script>

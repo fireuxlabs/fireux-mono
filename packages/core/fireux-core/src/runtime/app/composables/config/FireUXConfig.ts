@@ -5,6 +5,8 @@ import type {
   FireuxAppRole,
   FireuxWorkspaceConfig,
   FireuxWorkspaceFamilyConfig,
+  FireuxAppSubscriptionCapacity,
+  FireuxAppSubscriptionCapacityLimit,
 } from '../../../../config/app/types'
 
 export type FireUXRole = FireuxAppRole
@@ -96,6 +98,35 @@ function toWorkspaceConfig(v: unknown): FireuxWorkspaceConfig {
   return Object.fromEntries(entries)
 }
 
+function toSubscriptionCapacity(v: unknown): FireuxAppSubscriptionCapacity {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
+  const entries: Array<[string, FireuxAppSubscriptionCapacityLimit]> = []
+  for (const [capability, value] of Object.entries(v as AnyRecord)) {
+    const key = capability.trim().toLowerCase()
+    if (!key || !value || typeof value !== 'object' || Array.isArray(value))
+      continue
+    const source = value as AnyRecord
+    const limit = (tier: 'free' | 'premium' | 'business') => {
+      const candidate = source[tier]
+      return candidate === null ||
+        (typeof candidate === 'number' &&
+          Number.isInteger(candidate) &&
+          candidate >= 0)
+        ? candidate
+        : 0
+    }
+    entries.push([
+      key,
+      {
+        free: limit('free'),
+        premium: limit('premium'),
+        business: limit('business'),
+      },
+    ])
+  }
+  return Object.fromEntries(entries)
+}
+
 function reqRole(src: AnyRecord): FireUXRole {
   const raw = reqString(src, 'role').toLowerCase()
   if (raw !== 'global' && raw !== 'tenant' && raw !== 'standalone') {
@@ -136,6 +167,7 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     modules: toStringArray(fireux.modules),
     workspaces: toStringArray(fireux.workspaces),
     workspaceConfig: toWorkspaceConfig(fireux.workspaceConfig),
+    subscriptionCapacity: toSubscriptionCapacity(fireux.subscriptionCapacity),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,

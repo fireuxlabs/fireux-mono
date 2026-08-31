@@ -70,12 +70,12 @@ and Project also share the Core-owned `WorkspaceAI` frame and Nuxt UI
 messages, commands, and authority; the neutral frame and prompt anatomy must
 not fork merely because one family has more mature execution.
 An unavailable command remains visibly unavailable rather than being imitated.
-Kitchen
-owns `WorkspaceKitchenHero` and the live `WorkspaceKitchen` selection,
-creation, target loading, and collection lifecycle. The Main App composes
-those directly at `/` and adds only its App-owned presentation and doorways
-from `app/components/Workspace/Kitchen`. Kitchen capability execution remains
-in the extension's `Workspace/Capability` family. Kitchen-enabled Apps receive
+Kitchen owns the live `WorkspaceKitchen` selection, creation, target loading,
+and collection lifecycle. The Main App supplies its own copy directly to the
+shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only
+its App-owned presentation and doorways from
+`app/components/Workspace/Kitchen`. Kitchen capability execution remains in
+the extension's `Workspace/Capability` family. Kitchen-enabled Apps receive
 an authenticated `/workspace/kitchen` route that mounts the direct
 Kitchen-owned Workspace and resolves available Kitchens through runtime
 authority rather than configured target ids. The shared component does not
@@ -158,10 +158,11 @@ migration verification, and protected Workspace consumer are complete.
   Blank remains on legacy App-support access until its complete Server-authority
   cutover and migration land.
 - Subscription capacity counts the AppUser Entity-id array inside the trusted
-  Create transaction. The same transaction creates the Entity root, updates
-  the User array and primary id, and may create the initial Team record for the
-  separate Team surface. Free and Professional allow one Entity in the family;
-  Business allows multiple.
+  Create transaction. Each App owns its capability-keyed limits; Core owns only
+  their runtime shape and resolver. The same transaction creates the Entity
+  root, updates the User array and primary id, and may create the initial Team
+  record for the separate Team surface. Its Workspace composable and trusted
+  command must resolve the same App capability entry.
 - Workspace Entity creation has one Core-owned identity decision in
   `runtime/server/utils/workspace-entity/creation-identity.ts`. An explicit
   first shell uses the beneficiary User UID; an explicit existing-source path
@@ -278,6 +279,27 @@ Conditional names:
 Kitchen may use nested Identity sections because the sheet has Place,
 publication, theme, hours, delivery, and payment concerns. That is an accepted
 composition delta, not permission to fork the Workspace Index spine.
+
+## Workspace selector presentation
+
+A Workspace page that exposes a bounded selectable set places that set directly
+below its Nav and before its Hero. The selector uses compact link tabs at the
+top-left, highlights the selected item, and keeps any proved create/add doorway
+beside the tabs.
+
+The current proved sources are `project.test.strings`, `user.kitchens`,
+`user.projects`, `kitchen.team.teamMembers`, and
+`project.team.teamMembers`. This is a shared presentation rule, not shared
+selection authority: Kitchen and Project selection may update the User's
+primary Entity through their trusted command, while Test and Team selection is
+temporary page focus.
+
+The plus doorway is shown only while the current AppUser subscription has
+capacity for that set. Core owns the shared capacity table: Free, Premium, and
+Business respectively allow 1, 1, and unlimited Workspace Entities; 3, 7, and
+unlimited Team members; and 2, 3, and unlimited Test strings. The table governs
+capacity only. Each domain still owns its create Tool and trusted command, and
+a plus must remain unavailable when that mutation authority is not proved.
 
 ## Workspace Focus List family
 

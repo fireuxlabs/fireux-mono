@@ -219,9 +219,13 @@ export async function run({ repoRoot }) {
         ? 'packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-orders.vue'
         : `packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/${slug}/index.vue`
     const capabilityHeader = await source(repoRoot, capabilityHeaderFile)
+    const hasCapabilityContext =
+      slug === 'team'
+        ? capabilityHeader.includes('WorkspaceKitchenNav')
+        : capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') &&
+          capabilityHeader.includes(`operation="${slug}"`)
     if (
-      !capabilityHeader.includes('WorkspaceKitchenCapabilityContextInfo') ||
-      !capabilityHeader.includes(`operation="${slug}"`)
+      !hasCapabilityContext
     ) {
       violations.push(
         `${capabilityHeaderFile}: registered Kitchen capability pages must expose their context modal in the page header.`

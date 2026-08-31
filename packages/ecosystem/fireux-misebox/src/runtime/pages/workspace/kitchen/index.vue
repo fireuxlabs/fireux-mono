@@ -10,7 +10,10 @@
 
       <template #body>
         <div class="workspace-surface grid gap-6">
-          <WorkspaceKitchenHero />
+          <WorkspaceHero
+            title="Build your Kitchen Workspace"
+            description="Manage Menus, dishes, recipes, preparation and orders."
+          />
           <WorkspaceKitchen />
         </div>
       </template>

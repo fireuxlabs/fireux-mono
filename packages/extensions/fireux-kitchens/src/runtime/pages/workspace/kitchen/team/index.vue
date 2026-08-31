@@ -1,51 +1,54 @@
 <template>
-  <div>
-    <UDashboardPanel
-      id="workspace-kitchen-team"
-      :ui="{ body: 'p-0 sm:p-0 gap-0 sm:gap-0' }"
-    >
-      <template #header>
-        <LayoutsWorkspaceNavbar title="Team">
-          <template #right>
-            <WorkspaceKitchenCapabilityContextInfo operation="team" />
-          </template>
-        </LayoutsWorkspaceNavbar>
-      </template>
-
-      <template #body>
-        <WorkspaceKitchenTeamSelector />
-        <WorkspaceKitchenTeamHero />
-        <WorkspaceKitchenTeamAI />
-        <WorkspaceKitchenTeam />
-        <WorkspaceKitchenTeamTools />
-        <WorkspaceKitchenTeamDiscovery />
-      </template>
-    </UDashboardPanel>
-  </div>
+  <UDashboardPanel id="workspace-kitchen-team">
+    <WorkspaceKitchenNav :state="state" :derived="derived" />
+    <WorkspaceKitchenTeamSelector />
+    <WorkspaceHero
+      title="Build your Kitchen Team"
+      description="Review the people connected to this Kitchen and their Team roles."
+    />
+    <WorkspaceKitchenTeamAI />
+    <WorkspaceKitchenTeam />
+    <WorkspaceKitchenTeamTools />
+    <WorkspaceKitchenTeamDiscovery />
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { provideKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
+import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
+import { appMeta } from '~/meta'
 
-provideKitchenWorkspaceTeam()
+const { state, derived, actions } = useKitchenWorkspaceTeam()
 
 definePageMeta({
   layout: 'workspace',
+  pageTransition: false,
+  workspace: 'kitchen',
   workspaceSurface: 'browse',
-  workspaceAccess: 'public-entry',
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'workspace-kitchen-team',
     label: 'Team',
     group: 'Workspace',
+    description: 'Kitchen Team',
     icon: 'i-lucide-users',
     position: 'top',
     order: 6,
+    prominent: false,
     desktop: true,
     mobile: true,
     layouts: ['workspace'],
   },
-  requiresAuth: false,
-  requiresSelection: false,
+  requiresAuth: true,
+  requiresSelection: true,
+})
+
+useAppLandingSeo({
+  title: `Team | ${appMeta.name}`,
+  description:
+    'Review the people connected to this Kitchen and their Team roles.',
+  path: '/workspace/kitchen/team',
+  logo: '/img/app/logo.png',
+  language: 'en',
 })
 </script>

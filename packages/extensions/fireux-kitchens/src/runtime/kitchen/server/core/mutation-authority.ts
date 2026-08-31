@@ -20,7 +20,12 @@ export async function readKitchenMutationActor(event: H3Event) {
     event,
     'Sign in to manage this Kitchen.'
   )
-  return { runtimeAppId, ecosystem: fireux.ecosystem, uid }
+  return {
+    runtimeAppId,
+    ecosystem: fireux.ecosystem,
+    subscriptionCapacity: fireux.subscriptionCapacity,
+    uid,
+  }
 }
 
 function requireMemberRole(exists: boolean, value: unknown, message: string) {

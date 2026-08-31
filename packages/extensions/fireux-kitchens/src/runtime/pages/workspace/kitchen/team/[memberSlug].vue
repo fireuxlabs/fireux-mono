@@ -34,10 +34,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { provideKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
+import { provideKitchenTeamContext } from '../../../../kitchen/composables/workspace/team/useKitchenTeamContext'
 import { resolveKitchenTeamMemberAnchor } from '../../../../kitchen/utils/team-member-anchor'
 
-const { teamMembers, pending } = provideKitchenWorkspaceTeam()
+const { teamMembers, pending } = provideKitchenTeamContext()
 const memberSlug = useRouteParam('memberSlug')
 const member = computed(() =>
   teamMembers.value.find(

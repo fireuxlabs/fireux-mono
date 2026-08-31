@@ -78,11 +78,11 @@
 import { useToast } from '#imports'
 import { computed, ref } from 'vue'
 import type { KitchenTeamDossierDraft } from '../../../models/team-dossier.model.ts'
-import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
 import { useKitchenTeamDossierOnboarding } from '../../../composables/workspace/team/useKitchenTeamDossierOnboarding'
 
 const emit = defineEmits<{ created: [result: { name: string }] }>()
-const { kitchenId } = useKitchenWorkspaceTeam()
+const { kitchenId } = useKitchenTeamContext()
 const { extracting, creating, extractDossier, createFromDraft } =
   useKitchenTeamDossierOnboarding()
 const toast = useToast()

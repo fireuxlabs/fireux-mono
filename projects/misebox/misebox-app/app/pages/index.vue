@@ -1,12 +1,15 @@
 <template>
-  <UDashboardPanel id="misebox-kitchen-home">
+  <UDashboardPanel id="workspace-kitchen-index">
     <WorkspaceKitchenNav :state="state" :derived="derived" />
     <WorkspaceKitchen
       :state="state"
       :derived="derived"
       :refresh="actions.refresh"
     />
-    <WorkspaceKitchenHero />
+    <WorkspaceHero
+      title="Build your Kitchen Workspace"
+      description="Build and operate your Kitchen from one Workspace."
+    />
     <WorkspaceKitchenIndexAI
       :workspace-state="state"
       :workspace-derived="derived"
@@ -20,7 +23,7 @@
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useKitchenWorkspaceIndex } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
-import { appMeta } from '../meta'
+import { appMeta } from '~/meta'
 
 const { state, derived, actions } = useKitchenWorkspaceIndex()
 
@@ -32,6 +35,7 @@ definePageMeta({
   nav: {
     key: 'workspace-kitchen',
     label: 'Kitchen',
+    group: 'Workspace',
     description: 'Kitchen Workspace',
     icon: 'i-lucide-chef-hat',
     position: 'bottom',

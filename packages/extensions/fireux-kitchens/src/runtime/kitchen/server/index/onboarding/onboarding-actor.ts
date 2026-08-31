@@ -1,4 +1,6 @@
 import { createError, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
+import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -14,6 +16,7 @@ export type KitchenOnboardingFirestore = ReturnType<typeof getRuntimeFirestore>
 type RuntimePolicy = {
   appId: string
   canCreate: boolean
+  subscriptionCapacity: FireuxAppSubscriptionCapacity
 }
 
 export type KitchenOnboardingActor = RuntimePolicy & {
@@ -58,9 +61,11 @@ export function resolveKitchenOnboardingBeneficiaryUserId(
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
   const policy = resolveWorkspaceEntityOnboardingPolicy(event, 'kitchen')
+  const fireux = useFireUXConfig(event)
   return {
     appId: policy.appId,
     canCreate: policy.canCreate,
+    subscriptionCapacity: fireux.subscriptionCapacity,
   }
 }
 

@@ -62,9 +62,10 @@ Map component folder and naming conventions.
   owns only App-specific framing, literature, and doorways. Misebox therefore
   owns `/` and its `Workspace/Kitchen/{Info,Operations,Tools,Discovery}.vue`
   presentation in `misebox-app`, while `fireux-kitchens` owns direct
-  responsibility components such as `WorkspaceKitchenHero` and
-  `WorkspaceKitchen`, including target loading, selection, and creation. The
-  App route composes those lower-owned components directly; Kitchen-enabled
+  responsibility components such as `WorkspaceKitchen`, including target
+  loading, selection, and creation. The App route supplies its Hero copy to
+  the shared `WorkspaceHero` primitive and composes lower-owned components
+  directly; Kitchen-enabled
   Apps also receive a thin authenticated `/workspace/kitchen` doorway into the
   direct Kitchen-owned Workspace without depending on the Main App.
   Read-only landing previews

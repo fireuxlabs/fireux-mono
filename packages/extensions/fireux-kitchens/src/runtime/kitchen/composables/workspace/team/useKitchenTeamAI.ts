@@ -5,7 +5,7 @@ import { kitchenOperationAgents } from '../../../models/operation-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
-import { useKitchenWorkspaceTeam } from './useKitchenWorkspaceTeam'
+import { useKitchenTeamContext } from './useKitchenTeamContext'
 
 const capabilityFingerprint = kitchenTeamAgentTools
   .map((tool) =>
@@ -33,7 +33,7 @@ export function useKitchenTeamAI() {
   const aiTools = useKitchenTeamAITools()
   const kitchenWorkspace = useKitchenWorkspace()
   const { kitchenId, teamMembers, pending, readOnly } =
-    useKitchenWorkspaceTeam()
+    useKitchenTeamContext()
   const promptSuggestions = ref<string[]>(startingPrompts)
   const suggestionCache = useState<Record<string, string[]>>(
     'kitchen-team-ai-suggestions',

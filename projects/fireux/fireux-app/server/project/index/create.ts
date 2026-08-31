@@ -1,5 +1,5 @@
-import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -7,6 +7,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { requireWorkspaceEntityMemberRole } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { isAppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import {
   FIRESTORE_MUTATION_TARGETS,
   fireuxAppUsersTarget,
@@ -37,8 +38,9 @@ function request(value: unknown) {
 export async function createProject(event: H3Event, input: unknown) {
   const { uid } = await requireFirebaseBearerUser(event)
   const { name } = request(input)
+  const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(
-    useRuntimeConfig().public?.fireux?.id,
+    fireux.appId,
     'FireUX App id'
   )
   const db = await getFirestoreDb('fireux')
@@ -75,7 +77,14 @@ export async function createProject(event: H3Event, input: unknown) {
             .filter(Boolean)
         ),
       ]
-      if (subscription !== 'business' && projects.length) {
+      if (
+        !hasAppSubscriptionCapacity(
+          fireux.subscriptionCapacity,
+          'project',
+          subscription,
+          projects.length
+        )
+      ) {
         fail(403, 'Your current subscription supports one Project.')
       }
 

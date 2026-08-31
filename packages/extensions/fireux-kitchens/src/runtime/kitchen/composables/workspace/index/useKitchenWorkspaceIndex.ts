@@ -1,6 +1,10 @@
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import {
+  appSubscriptionCapacity,
+  hasAppSubscriptionCapacity,
+} from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
@@ -67,7 +71,13 @@ export function useKitchenWorkspaceIndex() {
   const derived = computed<KitchenWorkspaceIndexDerived>(() => {
     const membership = appContext.membership.value
     const kitchens = membership?.kitchens || []
-    const canSelectMultiple = membership?.subscription === 'business'
+    const subscription = membership?.subscription || 'free'
+    const canSelectMultiple =
+      appSubscriptionCapacity(
+        fireux.subscriptionCapacity,
+        'kitchen',
+        subscription
+      ) === null
     let outcome: KitchenWorkspaceIndexDerived['outcome'] = 'idle'
     if (!mounted.value || !hasAuthState.value || appContext.pending.value)
       outcome = 'pending'
@@ -88,7 +98,12 @@ export function useKitchenWorkspaceIndex() {
           fireux.workspaceConfig,
           'kitchen'
         ) &&
-        (kitchens.length === 0 || canSelectMultiple),
+        hasAppSubscriptionCapacity(
+          fireux.subscriptionCapacity,
+          'kitchen',
+          subscription,
+          kitchens.length
+        ),
     }
   })
 

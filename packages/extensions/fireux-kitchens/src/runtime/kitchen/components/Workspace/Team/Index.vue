@@ -111,13 +111,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
 import { useKitchenMemberInvitationCreate } from '../../../composables/workspace/team/mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberUpdate'
 import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'
 import type { KitchenTeamMember } from '../../../utils/team.ts'
 
-const { teamMembers, pending, kitchenId } = useKitchenWorkspaceTeam()
+const { teamMembers, pending, kitchenId } = useKitchenTeamContext()
 const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
 const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
 const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()

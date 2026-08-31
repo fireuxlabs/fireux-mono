@@ -3,6 +3,10 @@ import test from 'node:test'
 import { resolveWorkspaceEntityCreationId } from 'fireux-core/runtime/server/utils/workspace-entity/creation-identity'
 import { resolveAppUserKitchenState } from '../../runtime/kitchen/server/core/user-kitchens.ts'
 
+const capacity = {
+  kitchen: { free: 1, premium: 1, business: null },
+}
+
 test('an explicit shell uses the beneficiary User UID', () => {
   assert.equal(
     resolveWorkspaceEntityCreationId({
@@ -49,7 +53,8 @@ test('onboarding adds the Kitchen once and makes it primary', () => {
         role: 'user',
         subscription: 'business',
       },
-      'new-kitchen'
+      'new-kitchen',
+      capacity
     ),
     {
       kitchens: ['existing-kitchen', 'new-kitchen'],
@@ -62,7 +67,8 @@ test('onboarding an existing Kitchen changes primary without duplicating it', ()
   assert.deepEqual(
     resolveAppUserKitchenState(
       { kitchens: ['first-kitchen', 'second-kitchen'] },
-      'first-kitchen'
+      'first-kitchen',
+      capacity
     ),
     {
       kitchens: ['first-kitchen', 'second-kitchen'],
@@ -76,7 +82,8 @@ test('Free and Premium may reopen their existing Kitchen', () => {
     assert.deepEqual(
       resolveAppUserKitchenState(
         { kitchens: ['existing-kitchen'], role: 'user', subscription },
-        'existing-kitchen'
+        'existing-kitchen',
+        capacity
       ),
       {
         kitchens: ['existing-kitchen'],
@@ -92,7 +99,8 @@ test('Free and Premium cannot connect a second existing Kitchen', () => {
       () =>
         resolveAppUserKitchenState(
           { kitchens: ['existing-kitchen'], role: 'user', subscription },
-          'second-kitchen'
+          'second-kitchen',
+          capacity
         ),
       /current subscription supports one Kitchen/
     )
@@ -107,7 +115,8 @@ test('Business may connect another Kitchen and make it primary', () => {
         role: 'user',
         subscription: 'business',
       },
-      'second-kitchen'
+      'second-kitchen',
+      capacity
     ),
     {
       kitchens: ['existing-kitchen', 'second-kitchen'],
@@ -128,7 +137,8 @@ test('onboarding rejects a Kitchen beyond the supported AppUser limit', () => {
           role: 'user',
           subscription: 'business',
         },
-        'one-too-many'
+        'one-too-many',
+        capacity
       ),
     /User Kitchens exceed the supported limit/
   )

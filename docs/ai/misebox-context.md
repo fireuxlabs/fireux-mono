@@ -56,9 +56,10 @@ in the ecosystem package.
   Workspace page JSON state used by the header copy control. It includes only
   direct Kitchen runtime inputs and consumed derived values; capability pages
   own any additional capability-specific page props.
-- `fireux-kitchens` owns `WorkspaceKitchenHero`, `WorkspaceKitchenAI`,
-  `WorkspaceKitchen`, target loading, selection, creation, authority, and
-  operational capability components.
+- `fireux-kitchens` owns `WorkspaceKitchenAI`, `WorkspaceKitchen`, target
+  loading, selection, creation, authority, and operational capability
+  components. Each route supplies its own Kitchen Hero copy directly to the
+  shared `WorkspaceHero` primitive.
 - Kitchen-enabled tenant Apps receive the authenticated thin
   `/workspace/kitchen` doorway. Their `/` route and brand remain App-owned.
 - Non-Kitchen Misebox Apps receive no Kitchen pages, components, plugins, or

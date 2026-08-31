@@ -89,8 +89,8 @@ const CONSOLE_ENTITY_COMPONENT_ROOTS = [
 ]
 const CONSOLE_TEAM_COMPONENT_ROOTS = CONSOLE_ENTITY_COMPONENT_ROOTS
 const CONSOLE_TEAM_COMPOSABLES = [
-  'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
-  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
+  'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectTeamContext.ts',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenTeamContext.ts',
   'packages/extensions/fireux-properties/src/runtime/portfolio/composables/workspace/team/usePortfolioWorkspaceTeam.ts',
   'packages/extensions/fireux-properties/src/runtime/property/composables/workspace/team/usePropertyWorkspaceTeam.ts',
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/team/useSupplierWorkspaceTeam.ts',
@@ -247,7 +247,7 @@ export async function run(ctx) {
         '',
         '[guard] Fix:',
         '- Every Workspace page using the shared transition has one real root DOM element; only an explicit pageTransition: false route is exempt.',
-        '- Workspace pages compose UDashboardPanel, LayoutsWorkspaceNavbar, and a body slot directly.',
+        '- Workspace pages compose UDashboardPanel with either their named Workspace Nav and direct children, or LayoutsWorkspaceNavbar plus explicit header and body slots.',
         '- Pages own body width and spacing; named domain components own domain presentation.',
         '- Header actions belong in the workspace navbar right slot.',
         '- Route access, visibility, roles, and selection requirements belong at top-level page meta; nav owns presentation only.',
@@ -306,7 +306,8 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   }
 
   if (
-    !mainPage.includes('<WorkspaceKitchenHero />') ||
+    !mainPage.includes('<WorkspaceHero') ||
+    !mainPage.includes('title="Build your Kitchen Workspace"') ||
     !mainPage.includes('<WorkspaceKitchenIndexAI') ||
     !/<WorkspaceKitchen\b/.test(mainPage)
   ) {
@@ -316,7 +317,8 @@ function validateMiseboxKitchenEntryOwnership(repoRoot, violations) {
   }
 
   if (
-    !tenantPage.includes('<WorkspaceKitchenHero />') ||
+    !tenantPage.includes('<WorkspaceHero') ||
+    !tenantPage.includes('title="Build your Kitchen Workspace"') ||
     !tenantPage.includes('<WorkspaceKitchen />') ||
     !tenantPage.includes('requiresAuth: true') ||
     tenantPage.includes("workspaceAccess: 'public-entry'")
@@ -1151,12 +1153,18 @@ function validateDirectContract(
   pageMeta,
   violations
 ) {
-  const requiredTemplateParts = [
-    ['UDashboardPanel', /<UDashboardPanel\b/],
-    ['header slot', /<template\s+#header\b/],
-    ['LayoutsWorkspaceNavbar', /<LayoutsWorkspaceNavbar\b/],
-    ['body slot', /<template\s+#body\b/],
-  ]
+  const usesWorkspaceNav = /<Workspace(?:Project|Kitchen)Nav\b/.test(template)
+  const requiredTemplateParts = usesWorkspaceNav
+    ? [
+        ['UDashboardPanel', /<UDashboardPanel\b/],
+        ['Workspace Nav', /<Workspace(?:Project|Kitchen)Nav\b/],
+      ]
+    : [
+        ['UDashboardPanel', /<UDashboardPanel\b/],
+        ['header slot', /<template\s+#header\b/],
+        ['LayoutsWorkspaceNavbar', /<LayoutsWorkspaceNavbar\b/],
+        ['body slot', /<template\s+#body\b/],
+      ]
 
   for (const [label, pattern] of requiredTemplateParts) {
     if (!pattern.test(template)) {
@@ -1233,9 +1241,10 @@ function validateException(
 function hasDirectContract(template) {
   return (
     /<UDashboardPanel\b/.test(template) &&
-    /<template\s+#header\b/.test(template) &&
-    /<LayoutsWorkspaceNavbar\b/.test(template) &&
-    /<template\s+#body\b/.test(template)
+    (/<Workspace(?:Project|Kitchen)Nav\b/.test(template) ||
+      (/<template\s+#header\b/.test(template) &&
+        /<LayoutsWorkspaceNavbar\b/.test(template) &&
+        /<template\s+#body\b/.test(template)))
   )
 }
 

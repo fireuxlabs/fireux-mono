@@ -1,6 +1,10 @@
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
+import {
+  appSubscriptionCapacity,
+  hasAppSubscriptionCapacity,
+} from '../../../../app/utils/app-subscription-capacity'
 import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
@@ -59,7 +63,13 @@ export function useProjectWorkspaceIndex() {
   const derived = computed<ProjectWorkspaceIndexDerived>(() => {
     const membership = appContext.membership.value
     const projects = membership?.projects || []
-    const canSelectMultiple = membership?.subscription === 'business'
+    const subscription = membership?.subscription || 'free'
+    const canSelectMultiple =
+      appSubscriptionCapacity(
+        fireux.subscriptionCapacity,
+        'project',
+        subscription
+      ) === null
     let outcome: ProjectWorkspaceIndexDerived['outcome'] = 'idle'
     if (!mounted.value || !hasAuthState.value || appContext.pending.value)
       outcome = 'pending'
@@ -80,7 +90,12 @@ export function useProjectWorkspaceIndex() {
           fireux.workspaceConfig,
           'project'
         ) &&
-        (projects.length === 0 || canSelectMultiple),
+        hasAppSubscriptionCapacity(
+          fireux.subscriptionCapacity,
+          'project',
+          subscription,
+          projects.length
+        ),
     }
   })
 

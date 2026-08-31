@@ -59,7 +59,12 @@ creation transactions, and legacy App-support migrations are complete. A
 trusted creation transaction updates the relevant User fields atomically with
 the Entity root. It may also create the initial Team record for the separate
 Team surface, but Team is not the Workspace index authority. Free and
-Professional allow one Entity in their family, while Business allows multiple.
+Each App declares its capability-scoped subscription capacities. Core owns only
+the config shape and resolver; it owns no product limits. The relevant
+Workspace capability composable and trusted Server command resolve the same App
+entry, such as `kitchen`, `kitchen.team`, `project`, or `project.team`. Missing
+entries fail closed. Team and local Test capacities remain separate capability
+policies and do not make their mutation authorities interchangeable.
 The persisted relationship pair is optional until that Entity family establishes
 a relationship; when present, the plural array and singular primary field must
 appear and validate together. The bounded current-App projection normalizes an

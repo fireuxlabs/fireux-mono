@@ -165,7 +165,8 @@ export async function completeKitchenOnboarding(
     }
     const workspaceState = resolveAppUserKitchenState(
       membership.data,
-      locator.kitchenId
+      locator.kitchenId,
+      current.subscriptionCapacity
     )
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
@@ -294,7 +295,8 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
     const anyShellRecord = place.exists || root.exists || teamMember.exists
     const workspaceState = resolveAppUserKitchenState(
       membership.data,
-      kitchenId
+      kitchenId,
+      current.subscriptionCapacity
     )
     if (anyShellRecord) {
       if (

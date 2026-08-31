@@ -121,7 +121,13 @@ export async function createKitchenTeamMember(
     const memberCount = existingMembers.filter(
       ({ data }) => data.active !== false && data.status !== 'inactive'
     ).length
-    if (!canAddKitchenTeamMember(kitchen.subscription, memberCount)) {
+    if (
+      !canAddKitchenTeamMember(
+        actor.subscriptionCapacity,
+        kitchen.subscription,
+        memberCount
+      )
+    ) {
       throw createError({
         statusCode: 409,
         statusMessage: `Your ${kitchen.subscription} subscription has reached its Team member limit.`,

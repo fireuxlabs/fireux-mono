@@ -5,11 +5,7 @@
     :ui="{
       container: 'workspace-hero-container',
     }"
-  >
-    <template v-if="$slots.links" #links>
-      <slot name="links" />
-    </template>
-  </UPageHero>
+  />
 </template>
 
 <script setup lang="ts">

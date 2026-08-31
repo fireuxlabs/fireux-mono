@@ -11,6 +11,10 @@ export default defineFireuxConfig({
   contactEmail: 'misebox@misebox.app',
   role: 'global',
   workspaces: ['kitchen'],
+  subscriptionCapacity: {
+    kitchen: { free: 1, premium: 1, business: null },
+    'kitchen.team': { free: 3, premium: 7, business: null },
+  },
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   selfJoinEnabled: true,

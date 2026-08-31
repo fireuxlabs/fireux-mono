@@ -5,6 +5,11 @@ import {
   FireuxWorkspaceTeamRequestModel,
 } from 'fireux-core/runtime/models/utils/workspace-entity.model'
 import type { AppUserSubscription } from 'fireux-core/runtime/app/models/app-user.model'
+import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
+import {
+  appSubscriptionCapacity,
+  hasAppSubscriptionCapacity,
+} from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import type {
   KitchenTeamJoinRequest,
   KitchenTeamJoinRequestStatus,
@@ -19,22 +24,24 @@ export type {
   KitchenTeamStatus,
 } from '../models/team.model'
 
-export const KITCHEN_TEAM_MEMBER_LIMITS = {
-  free: 3,
-  premium: 7,
-  business: null,
-} as const satisfies Record<AppUserSubscription, number | null>
-
-export function kitchenTeamMemberLimit(subscription: AppUserSubscription) {
-  return KITCHEN_TEAM_MEMBER_LIMITS[subscription]
+export function kitchenTeamMemberLimit(
+  capacity: FireuxAppSubscriptionCapacity,
+  subscription: AppUserSubscription
+) {
+  return appSubscriptionCapacity(capacity, 'kitchen.team', subscription)
 }
 
 export function canAddKitchenTeamMember(
+  capacity: FireuxAppSubscriptionCapacity,
   subscription: AppUserSubscription,
   memberCount: number
 ) {
-  const limit = kitchenTeamMemberLimit(subscription)
-  return limit === null || memberCount < limit
+  return hasAppSubscriptionCapacity(
+    capacity,
+    'kitchen.team',
+    subscription,
+    memberCount
+  )
 }
 
 /**

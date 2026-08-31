@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-08-23 CEST — Kitchen Workspace reset: resolve the signed-in user's active Kitchens.
 import { createError } from 'h3'
 import type { AppUser } from 'fireux-core/runtime/app/models/app-user.model'
+import type { FireuxAppSubscriptionCapacity } from 'fireux-core/config/app/types'
 import { resolveAppUserAccess } from 'fireux-core/runtime/app/utils/app-user-access'
+import { hasAppSubscriptionCapacity } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { KITCHEN_USER_LIMIT } from '../../models/kitchen-index.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -28,15 +30,21 @@ export function readAppUserKitchenIds(
 
 export function resolveAppUserKitchenState(
   membership: Pick<AppUser, 'kitchens'> | Record<string, unknown> | undefined,
-  kitchenId: string
+  kitchenId: string,
+  capacity: FireuxAppSubscriptionCapacity
 ) {
   const primaryKitchen = text(kitchenId)
   if (!primaryKitchen) conflict('Kitchen id is required.')
   const currentKitchenIds = readAppUserKitchenIds(membership)
+  const subscription = resolveAppUserAccess(membership).subscription
   if (
     !currentKitchenIds.includes(primaryKitchen) &&
-    currentKitchenIds.length > 0 &&
-    !resolveAppUserAccess(membership).hasBusinessSubscription
+    !hasAppSubscriptionCapacity(
+      capacity,
+      'kitchen',
+      subscription,
+      currentKitchenIds.length
+    )
   ) {
     throw createError({
       statusCode: 403,

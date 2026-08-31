@@ -5,6 +5,7 @@ import type { FireuxMetaContent } from './meta-content'
 import type {
   FireuxAppConfig,
   FireuxWorkspaceConfig,
+  FireuxAppSubscriptionCapacity,
   FireuxNavOverrides,
 } from './types'
 
@@ -13,6 +14,7 @@ type RuntimeNormalizedFields =
   | 'modules'
   | 'workspaces'
   | 'workspaceConfig'
+  | 'subscriptionCapacity'
   | 'domains'
   | 'profiles'
   | 'selfJoinEnabled'
@@ -30,6 +32,7 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   modules: readonly string[]
   workspaces: readonly string[]
   workspaceConfig: FireuxWorkspaceConfig
+  subscriptionCapacity: FireuxAppSubscriptionCapacity
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean

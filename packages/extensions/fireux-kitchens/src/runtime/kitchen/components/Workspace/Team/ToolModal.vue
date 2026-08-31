@@ -119,7 +119,7 @@
 import { computed, ref, watch } from 'vue'
 import SelectedMember from './SelectedMember.vue'
 import type { KitchenTeamMember } from '../../../utils/team.ts'
-import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
 import { useKitchenMemberInvitationCreate } from '../../../composables/workspace/team/mutations/useKitchenMemberInvitationCreate'
 import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'
 import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberUpdate'
@@ -128,7 +128,7 @@ type TeamToolMode = 'update' | 'delete' | 'invite'
 
 const props = defineProps<{ open: boolean; mode: TeamToolMode }>()
 const emit = defineEmits<{ 'update:open': [value: boolean] }>()
-const { teamMembers, kitchenId } = useKitchenWorkspaceTeam()
+const { teamMembers, kitchenId } = useKitchenTeamContext()
 const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
 const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
 const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()

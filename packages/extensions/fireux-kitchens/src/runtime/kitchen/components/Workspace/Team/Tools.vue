@@ -39,11 +39,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
 import { useKitchenTeamTools } from '../../../composables/workspace/team/useKitchenTeamTools'
 import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
 
-const { kitchenId, canCreateTeamMember } = useKitchenWorkspaceTeam()
+const { kitchenId, canCreateTeamMember } = useKitchenTeamContext()
 const toast = useToast()
 const tools = useKitchenTeamTools()
 const createTool = tools.find(

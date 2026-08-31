@@ -99,6 +99,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: moduleNames,
       workspaces: app.workspaces || [],
       workspaceConfig: app.workspaceConfig || {},
+      subscriptionCapacity: app.subscriptionCapacity || {},
       domains: app.domains || [],
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,

@@ -5,14 +5,18 @@ import {
   kitchenTeamMemberLimit,
 } from '../../runtime/kitchen/utils/team.ts'
 
-test('Kitchen Team capacity follows the current subscription policy', () => {
-  assert.equal(kitchenTeamMemberLimit('free'), 3)
-  assert.equal(kitchenTeamMemberLimit('premium'), 7)
-  assert.equal(kitchenTeamMemberLimit('business'), null)
+const capacity = {
+  'kitchen.team': { free: 3, premium: 7, business: null },
+}
 
-  assert.equal(canAddKitchenTeamMember('free', 2), true)
-  assert.equal(canAddKitchenTeamMember('free', 3), false)
-  assert.equal(canAddKitchenTeamMember('premium', 6), true)
-  assert.equal(canAddKitchenTeamMember('premium', 7), false)
-  assert.equal(canAddKitchenTeamMember('business', 10_000), true)
+test('Kitchen Team capacity follows the current subscription policy', () => {
+  assert.equal(kitchenTeamMemberLimit(capacity, 'free'), 3)
+  assert.equal(kitchenTeamMemberLimit(capacity, 'premium'), 7)
+  assert.equal(kitchenTeamMemberLimit(capacity, 'business'), null)
+
+  assert.equal(canAddKitchenTeamMember(capacity, 'free', 2), true)
+  assert.equal(canAddKitchenTeamMember(capacity, 'free', 3), false)
+  assert.equal(canAddKitchenTeamMember(capacity, 'premium', 6), true)
+  assert.equal(canAddKitchenTeamMember(capacity, 'premium', 7), false)
+  assert.equal(canAddKitchenTeamMember(capacity, 'business', 10_000), true)
 })

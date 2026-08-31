@@ -926,9 +926,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'ecosystem',
     'team',
   ]) {
+    const pagePath =
+      page === 'team'
+        ? 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue'
+        : `packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/${page}.vue`
     const source = read(
       repoRoot,
-      `packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/${page}.vue`
+      pagePath
     )
     assert.match(
       source,
@@ -1063,7 +1067,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectCreateApi, /primary_project:\s*projectId/)
   assert.match(projectCreateApi, /transaction\.update\(memberships/)
   assert.doesNotMatch(projectCreateApi, /queryCollectionGroup/)
-  assert.match(projectCreateApi, /subscription\s*!==\s*['"]business['"]/)
+  assert.match(projectCreateApi, /hasAppSubscriptionCapacity/)
+  assert.match(projectCreateApi, /'project'/)
   assert.match(projectCreateApi, /role:\s*['"]owner['"]/)
   assert.match(projectCreateApi, /status:\s*['"]inactive['"]/)
   assert.match(
