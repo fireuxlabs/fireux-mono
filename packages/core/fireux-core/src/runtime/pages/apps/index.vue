@@ -5,6 +5,15 @@
       <AppCurrent :apps="apps" />
       <AppCreate :apps="apps" />
       <AppCollection :apps="apps" scope="ecosystem" />
+      <DevDebugPanel
+        title="Apps index acquisition"
+        context="Canonical Apps passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ apps }"
+        :derived="{ count: apps.length, scope: 'ecosystem' }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

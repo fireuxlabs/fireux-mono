@@ -4,6 +4,15 @@
       <KitchenHero />
       <KitchenCreate />
       <KitchenCollection :kitchens="kitchens" />
+      <DevDebugPanel
+        title="Kitchens index acquisition"
+        context="Canonical Kitchens passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ kitchens }"
+        :derived="{ count: kitchens.length }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

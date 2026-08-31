@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <AppDetail v-if="app" :app="app" />
+      <DevDebugPanel
+        title="App detail acquisition"
+        context="Canonical platform App fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ app }"
+        :derived="{ routeId }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

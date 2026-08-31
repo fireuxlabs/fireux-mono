@@ -9,6 +9,18 @@
       />
       <UserCreate v-else />
       <UserCollection :users="users" />
+      <DevDebugPanel
+        title="Users index acquisition"
+        context="Canonical Users and current identity inputs used by the FL index surface."
+        object-origin="fetched"
+        :objects="{ users, currentUser, appUser }"
+        :derived="{
+          count: users.length,
+          currentSurface: currentUser ? 'current' : 'create',
+        }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

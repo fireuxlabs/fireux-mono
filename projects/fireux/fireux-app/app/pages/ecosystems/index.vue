@@ -4,6 +4,15 @@
       <EcosystemHero />
       <EcosystemCreate />
       <EcosystemCollection :ecosystems="ecosystems" />
+      <DevDebugPanel
+        title="Ecosystems index acquisition"
+        context="Canonical Ecosystems passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ ecosystems }"
+        :derived="{ count: ecosystems.length }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

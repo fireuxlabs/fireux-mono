@@ -169,8 +169,12 @@ export async function run({ repoRoot }) {
     ['property', 'properties'],
     ['supplier', 'suppliers'],
   ]) {
-    assert.match(userAppModel, new RegExp(`${collection}: string\\[\\]`))
-    assert.match(userAppModel, new RegExp(`primary_${family}: string`))
+    assert.match(
+      userAppModel,
+      new RegExp(
+        `AppUserEntityRelationship<'${collection}', 'primary_${family}'>`
+      )
+    )
   }
   assert.doesNotMatch(
     userAppModel,
@@ -195,7 +199,7 @@ export async function run({ repoRoot }) {
   )
   const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
-    '\nexport function membershipRepairPatch(',
+    '\nfunction requireCanonicalRelationship(',
     initialStart
   )
   const initialMembership = mutation.slice(initialStart, initialEnd)
@@ -209,8 +213,11 @@ export async function run({ repoRoot }) {
     ['property', 'properties'],
     ['supplier', 'suppliers'],
   ]) {
-    assert.match(initialMembership, new RegExp(`${collection}: \\[\\]`))
-    assert.match(initialMembership, new RegExp(`primary_${family}: ''`))
+    assert.doesNotMatch(
+      initialMembership,
+      new RegExp(`${collection}: \\[\\]|primary_${family}: ''`),
+      `New AppUser memberships must not preseed an empty ${family} relationship.`
+    )
   }
   assert.doesNotMatch(
     initialMembership,
@@ -233,6 +240,7 @@ export async function run({ repoRoot }) {
     'Runtime membership repair must not remain a legacy-shape adapter after migration.'
   )
   assert.match(mutation, /export function requireCanonicalMembership/)
+  assert.match(mutation, /function requireCanonicalRelationship/)
 
   const context = read(
     repoRoot,
@@ -246,6 +254,8 @@ export async function run({ repoRoot }) {
   )
   assert.doesNotMatch(context, /workspace_targets/)
   assert.match(context, /subscription/)
+  assert.match(context, /function relationship/)
+  assert.match(context, /if \(!hasIds\) return \{ ids: \[\], primary: '' \}/)
   assert.doesNotMatch(context, /access_tier|has_premium_access|is_premium/)
 
   const dashboardOverview = read(
@@ -519,6 +529,8 @@ export async function run({ repoRoot }) {
     assert.doesNotMatch(rules, /data\.profiles|data\.app_ids/)
     assert.doesNotMatch(rules, /workspace_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)
+    assert.match(rules, /function isValidEntityRelationship/)
+    assert.match(rules, /'kitchens'[\s\S]*'primary_kitchen'/)
     assert.match(rules, /allow create, update, delete: if false;/)
   }
 

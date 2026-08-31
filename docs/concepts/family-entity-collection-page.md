@@ -1,6 +1,6 @@
 # Entity Collection Page family
 
-Updated: 2026-08-30
+Updated: 2026-08-31
 Ref: d1a7d5eec
 Role: map, not canon
 
@@ -31,7 +31,8 @@ route
         ├── EntityCurrent      # only when a real current Entity exists
         ├── EntityCreate
         ├── EntityCollection   # receives the named plural Entity prop
-        └── CollectionPagination? # route-owned acquisition control
+        ├── CollectionPagination? # route-owned acquisition control
+        └── DevDebugPanel      # dev-only acquisition diagnostics
 ```
 
 The route owns metadata, SEO, route policy, acquisition, and visible
@@ -64,6 +65,13 @@ Places and Kitchens select cover media. Those media treatments remain a
 presentation choice inside the one shared cell rather than parallel Entity
 cell systems.
 
+The dev-only debug trail follows that ownership. The route launcher shows the
+fetched canonical collection plus acquisition-critical derived values such as
+count, scope, current-Entity choice, and pagination state. The List launcher
+shows its passed interface records and the exact final
+`CollectionCellData[]` projection. Neither panel changes the public Collection
+prop contract or moves presentation decisions into the route.
+
 The neutral baseline uses the Entity's available identity media and a
 small amount of useful discovery context without adding Entity-specific card
 chrome. A missing image, description, fact, or badge stays absent; the shared
@@ -89,10 +97,10 @@ Collection child or page shell; it is rendered only where the reader currently
 supports pagination.
 
 This arrangement has no generic Entity shell, `CollectionPage`, page slots,
-configuration object, `CollectionManager`, outcome framework, debug contract,
-or HTTP-status contract. Deeper `Collection/List` and `Cards/*` components may
-remain because they are implementation owned by the Collection layer, not page
-composition layers.
+configuration object, `CollectionManager`, outcome framework, bespoke debug
+framework, or HTTP-status contract. It reuses Core's one `DevDebugPanel`.
+Deeper `Collection/List` and `Cards/*` components may remain because they are
+implementation owned by the Collection layer, not page composition layers.
 
 Place is the original visual proving reference. Job and Menu keep their
 directory transports and domain-specific creation doorways without retaining
@@ -115,8 +123,9 @@ An Entity chooses the smallest honest read boundary:
   Entity Collection.
 
 The visual family does not dictate transport. Loading, unavailable, missing,
-refreshing, debug, and HTTP-status presentation are deliberately outside this
-composition contract.
+refreshing, and HTTP-status presentation remain outside this composition
+contract. Dev diagnostics use the bounded shared debug trail above and do not
+become public outcome presentation.
 
 ## Current members
 
@@ -165,6 +174,9 @@ not drift.
   object into either Core's neutral `CollectionCell` or a proved Entity-owned
   Collection Cell. The latter owns presentation only; it does not fetch or
   change collection authority.
+- The route owns fetched-object/acquisition debug. `XCollectionList` owns the
+  passed-interface/final-cell debug. Both use launcher-backed `DevDebugPanel`
+  and render only in development.
 - `XCreate` is required in the audited FL index family and owns the real
   creation doorway. Generic `XCTA` does not name an index-page responsibility.
 - Pages do not accept generic configuration objects for cards, states, or CTA
@@ -218,6 +230,10 @@ When this family changes:
   management surfaces authorize against root-owned Team separately.
 - Every audited route acquires its collection once and passes the named plural
   Entity prop into its Collection component.
+- Every audited route except parked Property exposes its fetched collection and
+  acquisition derivations through the shared dev-only launcher. Its List
+  exposes the passed interface records and exact final cells. App's platform
+  and ecosystem routes both retain their real scope delta.
 - App, User, Ecosystem, Project, Place, Kitchen, Job, Supplier, and Portfolio
   use compact Nuxt UI `UPageHeader`; these indexes do not spend their first
   viewport on a marketing-scale hero.

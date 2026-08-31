@@ -1,5 +1,6 @@
 <template>
   <CoreUserDetail :user="user" />
+  <KitchenUserMemberships :user="user" />
   <KitchenAdminProvision :user="user" />
 </template>
 

@@ -1316,6 +1316,11 @@ async function buildSecurityTests() {
     },
     updated: { at: writeTime, by: adminId },
   }
+  const relatedMembershipProbeData = {
+    ...sparseMembershipProbeData,
+    kitchens: ['security-rules-kitchen'],
+    primary_kitchen: 'security-rules-kitchen',
+  }
   const tests = [
     list(
       'raw public User collection listing uses projection API',
@@ -1561,7 +1566,18 @@ async function buildSecurityTests() {
       'ALLOW',
       sparseMembershipProbePath,
       adminId,
-      sparseMembershipProbeData,
+      relatedMembershipProbeData,
+      appAdminMocks(adminId, path)
+    ),
+    readResource(
+      'canonical admin cannot read an incomplete AppUser relationship',
+      'DENY',
+      sparseMembershipProbePath,
+      adminId,
+      {
+        ...sparseMembershipProbeData,
+        kitchens: ['security-rules-kitchen'],
+      },
       appAdminMocks(adminId, path)
     ),
     readResource(

@@ -11,6 +11,14 @@
         </p>
       </UCard>
     </div>
+    <DevDebugPanel
+      title="Ecosystem Apps relation"
+      context="Platform Apps fetched by this relation and filtered for the Ecosystem."
+      object-origin="fetched"
+      :objects="{ allApps }"
+      :derived="{ apps }"
+      launcher
+    />
   </section>
 </template>
 

@@ -9,6 +9,15 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
+      <DevDebugPanel
+        title="Jobs index acquisition"
+        context="Canonical Jobs and pagination inputs used by the FL index surface."
+        object-origin="fetched"
+        :objects="{ jobs }"
+        :derived="{ count: jobs.length, hasMore, loadingMore }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

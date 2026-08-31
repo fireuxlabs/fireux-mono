@@ -336,6 +336,7 @@ function validateCollectionPagePresentation(repoRoot, violations) {
       prop: /properties:\s*PropertyDirectoryEntry\[\]/,
       props: ['properties'],
       chain: ['<PropertyCollectionList', '<CollectionCell'],
+      debug: false,
     },
   ]
   const retiredComposedLasagnePaths = [
@@ -403,6 +404,19 @@ function validateCollectionPagePresentation(repoRoot, violations) {
         `${member.route} (layout and Nuxt UI own the page container; repeated main/layout classes are drift)`
       )
     }
+    if (
+      member.debug !== false &&
+      (!routeSource.includes('<DevDebugPanel') ||
+        !routeSource.includes('object-origin="fetched"') ||
+        !routeSource.includes(':objects=') ||
+        !routeSource.includes(':derived=') ||
+        !routeSource.includes('include-route') ||
+        !routeSource.includes('launcher'))
+    ) {
+      violations.push(
+        `${member.route} (FL index route must expose launcher-backed fetched objects and acquisition-derived data)`
+      )
+    }
     let previous = -1
     for (const layer of member.layers) {
       const index = routeSource.indexOf(layer)
@@ -465,6 +479,18 @@ function validateCollectionPagePresentation(repoRoot, violations) {
     ) {
       violations.push(
         `${member.component} (FL index internals must follow ${member.chain.join(' → ')} without variant slots)`
+      )
+    }
+    if (
+      member.debug !== false &&
+      (!listSource.includes('<DevDebugPanel') ||
+        !listSource.includes('object-origin="passed"') ||
+        !listSource.includes(':objects=') ||
+        !listSource.includes(':derived="{ cells }"') ||
+        !listSource.includes('launcher'))
+    ) {
+      violations.push(
+        `${member.component} (FL index List must expose passed interface data and final cells through the shared debug launcher)`
       )
     }
     if (
@@ -735,6 +761,18 @@ function validateEntityDetailPresentation(repoRoot, violations) {
     if (!source.includes(readerContract) || !source.includes('await ready')) {
       violations.push(
         `${routePath} (missing FL route-owned Detail acquisition)`
+      )
+    }
+    if (
+      !source.includes('<DevDebugPanel') ||
+      !source.includes('object-origin="fetched"') ||
+      !source.includes(':objects=') ||
+      !source.includes(':derived=') ||
+      !source.includes('include-route') ||
+      !source.includes('launcher')
+    ) {
+      violations.push(
+        `${routePath} (FL Detail route must expose launcher-backed fetched objects and route-derived data)`
       )
     }
   }

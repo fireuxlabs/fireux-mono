@@ -1,6 +1,14 @@
 <template>
   <div data-app-projection="detail" :data-app-id="app.id">
     <AppProfile v-if="model" :model="model" :show-people="false" />
+    <DevDebugPanel
+      title="App detail surface"
+      context="Passed App and the profile model derived by App Detail."
+      object-origin="passed"
+      :objects="{ app }"
+      :derived="{ model }"
+      launcher
+    />
   </div>
 </template>
 

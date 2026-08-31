@@ -9,6 +9,15 @@
         :loading="loadingMore"
         @load-more="loadMore"
       />
+      <DevDebugPanel
+        title="Places index acquisition"
+        context="Canonical Places and pagination inputs used by the FL index surface."
+        object-origin="fetched"
+        :objects="{ places }"
+        :derived="{ count: places.length, hasMore, loadingMore }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

@@ -1689,6 +1689,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Admin/Provision.vue'
   )
+  const kitchenUserMemberships = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/UserMemberships.vue'
+  )
+  const kitchenUserMembershipsServer = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/core/user-memberships.ts'
+  )
   const kitchenAdminPage = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/admin/kitchens.vue'
@@ -1711,10 +1719,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     userDetailPage,
     /:can-edit|:can-manage|:edit-to|:on-set-subscription/
   )
-  assert.doesNotMatch(
-    userDetailPage,
-    /<UserProfile|<UserAppMembership|<DevDebugPanel/
-  )
+  assert.doesNotMatch(userDetailPage, /<UserProfile|<UserAppMembership/)
   assert.match(userDetail, /<UserProfile :user="user"/)
   assert.match(userDetail, /<UserAppMembership/)
   assert.match(userDetail, /user:\s*User/)
@@ -1746,8 +1751,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /:owner-user-id|:owner-display-name|:return-to|:cancel-to/
   )
   assert.match(miseboxUserDetail, /<CoreUserDetail/)
+  assert.match(miseboxUserDetail, /<KitchenUserMemberships/)
   assert.match(miseboxUserDetail, /<KitchenAdminProvision/)
   assert.match(miseboxUserDetail, /:user="user"/)
+  assert.match(
+    kitchenUserMemberships,
+    /\buseKitchenUserMemberships\s*\(/
+  )
+  assert.match(kitchenUserMemberships, /<CollectionCell :cell="cell"/)
+  assert.match(kitchenUserMemberships, /team_state !== 'active'/)
+  assert.match(kitchenUserMembershipsServer, /\brequireFirebaseBearerUser\s*\(/)
+  assert.match(kitchenUserMembershipsServer, /\buseFireUXConfig\(event\)/)
+  assert.match(kitchenUserMembershipsServer, /\bresolveAppUserAccess\s*\(/)
+  assert.match(
+    kitchenUserMembershipsServer,
+    /`kitchens\/\$\{kitchenId\}\/team\/\$\{userId\}`/
+  )
   assert.match(kitchenAdminProvision, /<KitchenOnboarding/)
   assert.match(kitchenAdminProvision, /user:\s*Pick<User/)
   assert.match(kitchenAdminProvision, /:owner-user-id="user\.id"/)

@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <SupplierDetail v-if="supplier" :supplier="supplier" />
+      <DevDebugPanel
+        title="Supplier detail acquisition"
+        context="Canonical Supplier fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ supplier }"
+        :derived="{ routeKey }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

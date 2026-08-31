@@ -50,6 +50,27 @@
     </template>
 
     <p v-else class="menu-detail__state">Menu unavailable.</p>
+
+    <DevDebugPanel
+      title="Menu detail surface"
+      context="Menu payloads fetched by Menu Detail and the active projection derived from them."
+      object-origin="fetched"
+      :objects="{ documentMenu, detailMenu }"
+      :derived="{
+        menuId,
+        menuContext,
+        menuRouteScope,
+        renderKind,
+        documentUrl,
+        menuLanguage,
+        menuDirection,
+        isKioskMenu,
+        isStaffPosMenu,
+        themeClassName,
+        themeStyleVars,
+      }"
+      launcher
+    />
   </div>
 </template>
 

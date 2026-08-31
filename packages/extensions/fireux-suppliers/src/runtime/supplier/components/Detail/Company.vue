@@ -4,6 +4,14 @@
     <template #header>Company</template>
     {{ supplier.company_id }}
   </UCard>
+  <DevDebugPanel
+    title="Supplier Company relation"
+    context="Company Place fetched by Supplier Detail and the relationship key used to resolve it."
+    object-origin="fetched"
+    :objects="{ place }"
+    :derived="{ companyId }"
+    launcher
+  />
 </template>
 
 <script setup lang="ts">
@@ -15,5 +23,8 @@ import { useSupplierSeo } from '../../composables/useSupplierSeo'
 const props = defineProps<{ supplier: Supplier }>()
 const companyId = computed(() => props.supplier.company_id)
 const { place } = useCompanyDetail(companyId)
-useSupplierSeo(computed(() => props.supplier), place)
+useSupplierSeo(
+  computed(() => props.supplier),
+  place
+)
 </script>

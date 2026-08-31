@@ -1,10 +1,25 @@
 <template>
-  <UPage><UPageBody>
-    <PortfolioHero />
-    <PortfolioCreate />
-    <PortfolioCollection :portfolios="portfolios" />
-    <CollectionPagination :has-more="hasMore" :loading="loadingMore" @load-more="loadMore" />
-  </UPageBody></UPage>
+  <UPage>
+    <UPageBody>
+      <PortfolioHero />
+      <PortfolioCreate />
+      <PortfolioCollection :portfolios="portfolios" />
+      <CollectionPagination
+        :has-more="hasMore"
+        :loading="loadingMore"
+        @load-more="loadMore"
+      />
+      <DevDebugPanel
+        title="Portfolios index acquisition"
+        context="Canonical Portfolios and pagination inputs used by the FL index surface."
+        object-origin="fetched"
+        :objects="{ portfolios }"
+        :derived="{ count: portfolios.length, hasMore, loadingMore }"
+        include-route
+        launcher
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -38,5 +53,9 @@ const pageDescription =
   'Browse property portfolios and open the tools for managing one.'
 const { appName } = useFireUXConfig()
 const { portfolios, hasMore, loadingMore, loadMore } = usePortfolioDirectory()
-useSeo({ title: `${appName} | ${pageTitle}`, description: pageDescription, path: '/portfolios' })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/portfolios',
+})
 </script>

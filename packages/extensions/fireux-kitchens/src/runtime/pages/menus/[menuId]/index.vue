@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <MenuDetail v-if="menu" :menu="menu" />
+      <DevDebugPanel
+        title="Menu detail acquisition"
+        context="Canonical Menu fetched by the projection-aware detail route."
+        object-origin="fetched"
+        :objects="{ menu }"
+        :derived="{ routeMenuId }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

@@ -4,6 +4,14 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
+  <DevDebugPanel
+    title="Jobs collection surface"
+    context="Passed Job cards and their final shared cell projection."
+    object-origin="passed"
+    :objects="{ cards: props.cards }"
+    :derived="{ cells }"
+    launcher
+  />
 </template>
 
 <script setup lang="ts">

@@ -4,6 +4,14 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
+  <DevDebugPanel
+    title="Ecosystems collection surface"
+    context="Passed Ecosystem cards and their final shared cell projection."
+    object-origin="passed"
+    :objects="{ cards: props.cards }"
+    :derived="{ cells }"
+    launcher
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

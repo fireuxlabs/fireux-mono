@@ -2,6 +2,14 @@
   <div class="space-y-4">
     <PortfolioCardsProfile v-if="profileCard" :card="profileCard" />
     <PortfolioPublicOperatorPanel :portfolio="portfolio" />
+    <DevDebugPanel
+      title="Portfolio detail surface"
+      context="Passed Portfolio and its derived profile card."
+      object-origin="passed"
+      :objects="{ portfolio }"
+      :derived="{ profileCard }"
+      launcher
+    />
   </div>
 </template>
 

@@ -133,9 +133,8 @@ export function useUserCreate() {
       shouldEnsureMembership = await isRuntimeAppInitialized(appId)
     }
 
-    // `ensure-self` is also the canonical repair path for legacy memberships.
-    // Re-running onboarding keeps the existing role while filling required
-    // lifecycle fields such as onboarding_status.
+    // `ensure-self` creates a missing membership and validates an existing one.
+    // Existing governance and Entity relationships remain unchanged.
     const membership = shouldEnsureMembership
       ? await createAppUserMembership(appId, uid, 'user')
       : { created: false }

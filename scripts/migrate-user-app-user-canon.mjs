@@ -36,12 +36,24 @@ Apply reviewed plan:
 }
 
 const USER_FIELDS = ['avatar', 'bio', 'display_name', 'handle']
-const APP_USER_FIELDS = [
+const REQUIRED_APP_USER_FIELDS = [
   'created',
   'onboarding_status',
   'role',
   'subscription',
   'updated',
+]
+const APP_USER_RELATIONSHIPS = [
+  ['kitchens', 'primary_kitchen'],
+  ['projects', 'primary_project'],
+  ['properties', 'primary_property'],
+  ['portfolios', 'primary_portfolio'],
+  ['suppliers', 'primary_supplier'],
+  ['blanks', 'primary_blank'],
+]
+const APP_USER_FIELDS = [
+  ...REQUIRED_APP_USER_FIELDS,
+  ...APP_USER_RELATIONSHIPS.flat(),
 ]
 const MISEBOX_FREE_DEVELOPER_OVERRIDE = {
   projectId: 'misebox-78f9c',
@@ -84,6 +96,37 @@ function stableValue(value) {
 const stableJson = (value) => JSON.stringify(stableValue(value))
 const sha256 = (value) =>
   createHash('sha256').update(stableJson(value)).digest('hex')
+
+function relationshipIssues(value) {
+  return APP_USER_RELATIONSHIPS.flatMap(([idsField, primaryField]) => {
+    const hasIds = Object.hasOwn(value, idsField)
+    const hasPrimary = Object.hasOwn(value, primaryField)
+    if (hasIds !== hasPrimary) return [`${idsField}:incomplete`]
+    if (!hasIds) return []
+    const ids = value[idsField]
+    if (
+      !Array.isArray(ids) ||
+      ids.length > 500 ||
+      ids.some(
+        (entry) =>
+          typeof entry !== 'string' ||
+          entry !== entry.trim() ||
+          !entry ||
+          entry.includes('/')
+      ) ||
+      new Set(ids).size !== ids.length
+    ) {
+      return [`${idsField}:invalid`]
+    }
+    const primary = value[primaryField]
+    return typeof primary !== 'string' ||
+      primary !== primary.trim() ||
+      primary.includes('/') ||
+      (primary !== '' && !ids.includes(primary))
+      ? [`${primaryField}:invalid`]
+      : []
+  })
+}
 
 function ecosystemTargets() {
   const targets = new Map()
@@ -237,6 +280,10 @@ async function buildPlan(sessions) {
         const unknown = Object.keys(value).filter(
           (field) => !allowedBefore.includes(field)
         )
+        const missing = REQUIRED_APP_USER_FIELDS.filter(
+          (field) => !Object.hasOwn(value, field)
+        )
+        const invalidRelationships = relationshipIssues(value)
         const validStamps =
           value.created &&
           typeof value.created === 'object' &&
@@ -249,6 +296,8 @@ async function buildPlan(sessions) {
             value.onboarding_status
           ) ||
           !validStamps ||
+          missing.length ||
+          invalidRelationships.length ||
           unknown.length
         ) {
           blockers.push({
@@ -259,6 +308,8 @@ async function buildPlan(sessions) {
             subscription,
             onboarding_status: value.onboarding_status ?? null,
             validStamps: Boolean(validStamps),
+            missing,
+            invalidRelationships,
             unknown,
           })
           continue
@@ -400,16 +451,29 @@ async function verify(sessions) {
       for (const membership of memberships.docs) {
         const value = membership.data()
         const fields = Object.keys(value).sort()
+        const missing = REQUIRED_APP_USER_FIELDS.filter(
+          (field) => !Object.hasOwn(value, field)
+        )
+        const unknown = fields.filter((field) => !APP_USER_FIELDS.includes(field))
+        const invalidRelationships = relationshipIssues(value)
         if (
-          stableJson(fields) !== stableJson([...APP_USER_FIELDS].sort()) ||
+          missing.length ||
+          unknown.length ||
+          invalidRelationships.length ||
           !['user', 'admin', 'dev'].includes(value.role) ||
-          !['free', 'premium', 'business'].includes(value.subscription)
+          !['free', 'premium', 'business'].includes(value.subscription) ||
+          !['pending', 'completed', 'skipped'].includes(
+            value.onboarding_status
+          )
         ) {
           failures.push({
             projectId: session.projectId,
             databaseId: app.databaseId,
             path: membership.ref.path,
             fields,
+            missing,
+            unknown,
+            invalidRelationships,
             role: value.role,
             subscription: value.subscription,
           })

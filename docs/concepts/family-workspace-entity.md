@@ -149,6 +149,10 @@ migration verification, and protected Workspace consumer are complete.
   `primary_<family>` field used by each implemented family; no generic
   Workspace target field owns those relationships. Kitchen, Project, Portfolio,
   Property, and Supplier now prove the primary-only Index read contract.
+  Each persisted pair is optional until its family establishes a relationship;
+  if either field is present, both must be present and valid. The current-App
+  projection normalizes an absent pair to an empty array and empty primary id,
+  so runtime consumers retain a complete stable DTO without pre-seeding storage.
   Portfolio, Property, and Supplier still require separate trusted Create and
   primary-change cutovers before their legacy mutation paths can be retired.
   Blank remains on legacy App-support access until its complete Server-authority

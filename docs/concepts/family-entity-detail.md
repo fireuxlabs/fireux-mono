@@ -1,6 +1,6 @@
 # Entity Detail family
 
-Updated: 2026-08-30
+Updated: 2026-08-31
 Ref: a4729c0f2
 Role: map, not canon
 
@@ -46,9 +46,11 @@ Every Entity Detail route should:
 - Do not introduce a generic Entity detail shell or configuration object. The
   route should remain a readable ordered composition, and named components own
   domain presentation.
-- Outcome presentation, debug panels, and HTTP-status handling are outside the
-  current composition pass and may return after the basic relationship has
-  proved satisfactory.
+- Outcome and HTTP-status presentation remain outside the basic relationship.
+  Dev diagnostics reuse Core's shared launcher: the route shows the canonical
+  fetched object and route locator; a Detail owner that performs a bounded
+  related read or material projection shows that object and its own derived
+  surface data.
 - Agent, Chef, Driver, and Professional details share Core
   `PublicProfileDetailSurface`, `PublicProfileHero`, and
   `PublicProfileSection` presentation. Their named `X/Cards/Profile` roots own
@@ -65,6 +67,11 @@ Every Entity Detail route should:
   and `/users/:handle/edit` reuse `UserAppMembershipEdit`; both retain the same
   trusted AppUser mutation authority. Specialist profile pages remain with
   their owning domains and are not inferred or registered through the User page.
+  Misebox's App-owned `UserDetail` composition appends the Kitchen-owned
+  `KitchenUserMemberships` capability. That child resolves the authorized
+  AppUser-to-Kitchen relationship, canonical same-id Places, and matching
+  Kitchen Team access from the passed User; Core User remains unaware of
+  Kitchen and public visitors receive no operational membership projection.
 - Place owns the reference venue identity presentation. Kitchen and Supplier
   may compose that named Place presentation after their server reader has
   resolved the canonical Place relationship; they do not copy Place fields or
@@ -86,7 +93,8 @@ The proving FL Detail boundary is one object-driven component:
 route acquires canonical Entity
 └── UPage
     └── UPageBody
-        └── EntityDetail v-if="entity" :entity="entity"
+        ├── EntityDetail v-if="entity" :entity="entity"
+        └── DevDebugPanel # dev-only canonical fetch and route locator
 ```
 
 The route owns identity resolution, the canonical Entity read, and the single
@@ -112,6 +120,13 @@ The one-object route boundary is guarded for the maintained App, User,
 Ecosystem, Project, Place, Kitchen, Job, Menu, Supplier, and Portfolio detail
 routes. Their internal section order remains Entity-owned.
 
+The same guard requires each maintained route to expose launcher-backed
+`objects` and `derived` payloads with `object-origin="fetched"`. Related reads
+stay with the Detail component that owns them: for example User membership,
+Kitchen Place presentation, Menu projection payloads, Ecosystem/Project App
+relations, Supplier Company Place, and Portfolio profile projection. Pure
+display leaves do not invent empty debug panels.
+
 ## Current route identity
 
 | Entity family                     | Current route key | State and reason                                                                                                                                                                       |
@@ -128,7 +143,7 @@ routes. Their internal section order remains Entity-owned.
 | Company, Job                      | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
 | Portfolio                         | document id       | `accepted`: endpoint-first exact reads use the stable root id; authored slug remains canonical content and currently matches that id                                                   |
 | Property                          | none              | `parked`: no detail route exists until a product decision defines a privacy-safe contract for the governance/valuation-bearing canonical root                                          |
-| Project                           | id                | `accepted`: the FireUX route resolves the canonical Project; the Project detail component owns its connected-App read                                                                 |
+| Project                           | id                | `accepted`: the FireUX route resolves the canonical Project; the Project detail component owns its connected-App read                                                                  |
 
 Do not mechanically rename `[id]` to `[slug]` or the reverse. A route-key
 change requires canonical redirect, 404, sitemap, stored-link, and QR impact
@@ -148,10 +163,11 @@ review.
 | Place detail stays current after its server render                     | `accepted`  | The server API supplies the initial canonical Place; every browser visitor then exact-subscribes to that same record, while transient listener failures retain the last good Place                            |
 | Menu detail can render a photo/PDF root Menu or structured KitchenMenu | `accepted`  | Root Menu and scoped KitchenMenu are distinct entities sharing public doorway behavior                                                                                                                        |
 | Portfolio keeps Finance and operations outside its root                | `accepted`  | Portfolio remains the readable Entity; Finance and operational children stay in their own scoped owners                                                                                                       |
+| Misebox User detail appends Kitchen membership                         | `accepted`  | The App composes a Kitchen-owned, self/admin-authorized relationship section over canonical User identity; Core does not absorb AppUser, Kitchen, Place, or Team meaning                                     |
 | Portfolio exact and index reads return canonical Portfolio             | `accepted`  | Public SSR readers inject document ids, omit incomplete onboarding roots, and return the same normalized Portfolio used by client/workspace readers                                                           |
 | Supplier detail joins its Company/Place at the server boundary         | `accepted`  | The server reader returns canonical `supplier` and `place` objects; the browser exact-subscribes to those already-resolved roots without manufacturing a replacement Supplier DTO                             |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
-| Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `useMenuDetail` resolves that grammar while the route keeps the same one-object Detail boundary                     |
+| Menu detail reader resolves route projection                           | `accepted`  | A Menu URL selects browse, ordering, or diagnostic projection plus root or tenant scope; `useMenuDetail` resolves that grammar while the route keeps the same one-object Detail boundary                      |
 
 ## Drift and decisions
 

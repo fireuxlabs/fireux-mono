@@ -20,22 +20,19 @@ export const APP_USER_ONBOARDING_STATUSES = [
 export type AppUserOnboardingStatus =
   (typeof APP_USER_ONBOARDING_STATUSES)[number]
 
+type AppUserEntityRelationship<
+  IdsField extends string,
+  PrimaryField extends string,
+> =
+  | { [Field in IdsField | PrimaryField]?: never }
+  | ({ [Field in IdsField]: string[] } & {
+      [Field in PrimaryField]: string
+    })
+
 export type AppUser = {
   role: AppUserRole
   subscription: AppUserSubscription
   onboarding_status: AppUserOnboardingStatus
-  kitchens: string[]
-  primary_kitchen: string
-  projects: string[]
-  primary_project: string
-  properties: string[]
-  primary_property: string
-  portfolios: string[]
-  primary_portfolio: string
-  suppliers: string[]
-  primary_supplier: string
-  blanks: string[]
-  primary_blank: string
   created: {
     at: FirebaseTimestamp
     by?: string
@@ -44,4 +41,9 @@ export type AppUser = {
     at: FirebaseTimestamp
     by?: string
   }
-}
+} & AppUserEntityRelationship<'kitchens', 'primary_kitchen'>
+  & AppUserEntityRelationship<'projects', 'primary_project'>
+  & AppUserEntityRelationship<'properties', 'primary_property'>
+  & AppUserEntityRelationship<'portfolios', 'primary_portfolio'>
+  & AppUserEntityRelationship<'suppliers', 'primary_supplier'>
+  & AppUserEntityRelationship<'blanks', 'primary_blank'>

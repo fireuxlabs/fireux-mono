@@ -11,6 +11,14 @@
         </p>
       </UCard>
     </div>
+    <DevDebugPanel
+      title="Project Apps relation"
+      context="Platform Apps fetched by this relation and filtered for the Project."
+      object-origin="fetched"
+      :objects="{ allApps }"
+      :derived="{ apps }"
+      launcher
+    />
   </section>
 </template>
 

@@ -1,9 +1,20 @@
 <template>
-  <UPage><UPageBody>
-    <SupplierHero />
-    <SupplierCreate />
-    <SupplierCollection :suppliers="suppliers" />
-  </UPageBody></UPage>
+  <UPage>
+    <UPageBody>
+      <SupplierHero />
+      <SupplierCreate />
+      <SupplierCollection :suppliers="suppliers" />
+      <DevDebugPanel
+        title="Suppliers index acquisition"
+        context="Canonical Suppliers passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ suppliers }"
+        :derived="{ count: suppliers.length }"
+        include-route
+        launcher
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -33,5 +44,9 @@ const pageDescription =
   'Browse supplier identities, catalogues and delivery areas.'
 const { appName } = useFireUXConfig()
 const { suppliers } = useSupplierCollection()
-useSeo({ title: `${appName} | ${pageTitle}`, description: pageDescription, path: '/suppliers' })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/suppliers',
+})
 </script>

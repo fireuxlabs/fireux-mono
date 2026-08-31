@@ -1098,10 +1098,22 @@ service cloud.firestore {
       }
 
       match /users/{userId} {
+        function isValidEntityRelationship(data, idsField, primaryField) {
+          return
+            (!data.keys().hasAny([idsField, primaryField])) ||
+            (data.keys().hasAll([idsField, primaryField]) &&
+              data[idsField] is list &&
+              data[idsField].size() <= 500 &&
+              data[primaryField] is string &&
+              (data[primaryField] == '' ||
+                data[primaryField] in data[idsField]));
+        }
+
         function isValidAppUser(data) {
           return data.keys().hasAll([
               'role',
               'subscription',
+              'onboarding_status',
               'created',
               'updated'
             ]) &&
@@ -1109,17 +1121,39 @@ service cloud.firestore {
               'role',
               'subscription',
               'onboarding_status',
+              'kitchens',
+              'primary_kitchen',
+              'projects',
+              'primary_project',
+              'properties',
+              'primary_property',
+              'portfolios',
+              'primary_portfolio',
+              'suppliers',
+              'primary_supplier',
+              'blanks',
+              'primary_blank',
               'created',
               'updated'
             ]) &&
             data.role in ['admin', 'user', 'dev'] &&
             data.subscription in ['free', 'premium', 'business'] &&
-            (!('onboarding_status' in data) ||
-              data.onboarding_status in [
-                'pending',
-                'completed',
-                'skipped'
-            ]) &&
+            data.onboarding_status in [
+              'pending',
+              'completed',
+              'skipped'
+            ] &&
+            isValidEntityRelationship(
+              data, 'kitchens', 'primary_kitchen') &&
+            isValidEntityRelationship(
+              data, 'projects', 'primary_project') &&
+            isValidEntityRelationship(
+              data, 'properties', 'primary_property') &&
+            isValidEntityRelationship(
+              data, 'portfolios', 'primary_portfolio') &&
+            isValidEntityRelationship(
+              data, 'suppliers', 'primary_supplier') &&
+            isValidEntityRelationship(data, 'blanks', 'primary_blank') &&
             validCreatedStamp(data.created) &&
             validUpdatedStamp(data.updated);
         }

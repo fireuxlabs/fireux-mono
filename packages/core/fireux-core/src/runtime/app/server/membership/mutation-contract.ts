@@ -52,20 +52,53 @@ export function initialMembership(actorUid: string, role: AppUserRole) {
     role,
     subscription: 'free',
     onboarding_status: 'pending',
-    kitchens: [],
-    primary_kitchen: '',
-    projects: [],
-    primary_project: '',
-    properties: [],
-    primary_property: '',
-    portfolios: [],
-    primary_portfolio: '',
-    suppliers: [],
-    primary_supplier: '',
-    blanks: [],
-    primary_blank: '',
     created: stamp(actorUid),
     updated: stamp(actorUid),
+  }
+}
+
+function requireCanonicalRelationship(
+  data: DocumentData,
+  idsField: string,
+  primaryField: string
+) {
+  const hasIds = Object.hasOwn(data, idsField)
+  const hasPrimary = Object.hasOwn(data, primaryField)
+  if (hasIds !== hasPrimary) {
+    forbidden(
+      409,
+      `The App membership has an incomplete ${idsField} relationship.`
+    )
+  }
+  if (!hasIds) return
+
+  const storedIds = data[idsField]
+  const normalizedIds = normalizeMembershipStringList(storedIds)
+  if (
+    !Array.isArray(storedIds) ||
+    storedIds.length > 500 ||
+    normalizedIds.length !== storedIds.length ||
+    storedIds.some(
+      (entry: unknown, index: number) => entry !== normalizedIds[index]
+    )
+  ) {
+    forbidden(
+      409,
+      `The App membership has an invalid ${idsField} relationship.`
+    )
+  }
+
+  const storedPrimary = data[primaryField]
+  if (
+    typeof storedPrimary !== 'string' ||
+    storedPrimary !== storedPrimary.trim() ||
+    storedPrimary.includes('/') ||
+    (storedPrimary !== '' && !storedIds.includes(storedPrimary))
+  ) {
+    forbidden(
+      409,
+      `The App membership has an invalid ${primaryField} relationship.`
+    )
   }
 }
 
@@ -75,6 +108,16 @@ export function requireCanonicalMembership(data: DocumentData) {
     forbidden(409, 'The App membership has an invalid subscription.')
   if (!['pending', 'completed', 'skipped'].includes(data.onboarding_status))
     forbidden(409, 'The App membership has an invalid onboarding status.')
+  for (const [idsField, primaryField] of [
+    ['kitchens', 'primary_kitchen'],
+    ['projects', 'primary_project'],
+    ['properties', 'primary_property'],
+    ['portfolios', 'primary_portfolio'],
+    ['suppliers', 'primary_supplier'],
+    ['blanks', 'primary_blank'],
+  ]) {
+    requireCanonicalRelationship(data, idsField, primaryField)
+  }
 }
 
 export function roleFrom(data: DocumentData | undefined): AppUserRole | null {

@@ -17,12 +17,57 @@ function conflict(message: string): never {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
-const ids = (value: unknown) =>
-  Array.isArray(value) ? [...new Set(value.map(text).filter(Boolean))] : []
 const primary = (value: unknown, available: string[]) => {
   const stored = text(value)
   if (available.includes(stored)) return stored
   return available.length === 1 ? available[0]! : ''
+}
+
+function relationship(
+  membershipId: string,
+  value: Record<string, unknown>,
+  idsField: string,
+  primaryField: string
+) {
+  const hasIds = Object.hasOwn(value, idsField)
+  const hasPrimary = Object.hasOwn(value, primaryField)
+  if (hasIds !== hasPrimary) {
+    conflict(
+      `App membership ${membershipId} has an incomplete ${idsField} relationship.`
+    )
+  }
+  if (!hasIds) return { ids: [], primary: '' }
+
+  const storedIds = value[idsField]
+  if (
+    !Array.isArray(storedIds) ||
+    storedIds.length > 500 ||
+    storedIds.some(
+      (entry) =>
+        typeof entry !== 'string' ||
+        entry !== entry.trim() ||
+        !entry ||
+        entry.includes('/')
+    ) ||
+    new Set(storedIds).size !== storedIds.length
+  ) {
+    conflict(
+      `App membership ${membershipId} has an invalid ${idsField} relationship.`
+    )
+  }
+
+  const storedPrimary = value[primaryField]
+  if (
+    typeof storedPrimary !== 'string' ||
+    storedPrimary !== storedPrimary.trim() ||
+    storedPrimary.includes('/') ||
+    (storedPrimary !== '' && !storedIds.includes(storedPrimary))
+  ) {
+    conflict(
+      `App membership ${membershipId} has an invalid ${primaryField} relationship.`
+    )
+  }
+  return { ids: storedIds, primary: primary(storedPrimary, storedIds) }
 }
 
 function membershipDto(
@@ -46,30 +91,30 @@ function membershipDto(
   const role = value.role
   const subscription = value.subscription
   const onboardingStatus = value.onboarding_status
-  const kitchens = ids(value.kitchens)
-  const projects = ids(value.projects)
-  const properties = ids(value.properties)
-  const portfolios = ids(value.portfolios)
-  const suppliers = ids(value.suppliers)
-  const blanks = ids(value.blanks)
+  const kitchens = relationship(id, value, 'kitchens', 'primary_kitchen')
+  const projects = relationship(id, value, 'projects', 'primary_project')
+  const properties = relationship(id, value, 'properties', 'primary_property')
+  const portfolios = relationship(id, value, 'portfolios', 'primary_portfolio')
+  const suppliers = relationship(id, value, 'suppliers', 'primary_supplier')
+  const blanks = relationship(id, value, 'blanks', 'primary_blank')
   return {
     id,
     role,
     subscription,
     onboarding_status: onboardingStatus,
     profiles,
-    kitchens,
-    primary_kitchen: primary(value.primary_kitchen, kitchens),
-    projects,
-    primary_project: primary(value.primary_project, projects),
-    properties,
-    primary_property: primary(value.primary_property, properties),
-    portfolios,
-    primary_portfolio: primary(value.primary_portfolio, portfolios),
-    suppliers,
-    primary_supplier: primary(value.primary_supplier, suppliers),
-    blanks,
-    primary_blank: primary(value.primary_blank, blanks),
+    kitchens: kitchens.ids,
+    primary_kitchen: kitchens.primary,
+    projects: projects.ids,
+    primary_project: projects.primary,
+    properties: properties.ids,
+    primary_property: properties.primary,
+    portfolios: portfolios.ids,
+    primary_portfolio: portfolios.primary,
+    suppliers: suppliers.ids,
+    primary_supplier: suppliers.primary,
+    blanks: blanks.ids,
+    primary_blank: blanks.primary,
   }
 }
 

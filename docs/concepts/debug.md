@@ -1,6 +1,6 @@
 # Debug surface map
 
-Updated: 2026-08-26
+Updated: 2026-08-31
 Ref: 1813a2f9e
 Role: map, not canon
 
@@ -56,6 +56,22 @@ Map how debug information should appear without becoming page noise.
 - Expensive collection snapshots are active only while their panel is visible;
   closing the panel aborts the request and clears its snapshot. Parent,
   subcollection, document, and concurrency work must remain bounded.
+
+## FL Entity pages
+
+- A maintained FL index route exposes one launcher-backed acquisition panel:
+  fetched canonical collection in `objects`; count, scope, current-Entity
+  choice, and pagination state in `derived` when applicable.
+- Its Entity-owned Collection List exposes one launcher-backed presentation
+  panel: passed interface cards or records in `objects`; the exact final
+  `CollectionCellData[]` in `derived.cells`.
+- A maintained FL detail route exposes its canonical fetched Entity in
+  `objects` and its resolved route locator in `derived`.
+- A Detail component that independently fetches a related record or materially
+  transforms the root object owns a second bounded panel beside that surface.
+  The route does not aggregate those child internals.
+- These panels reuse `DevDebugPanel`, remain dev-only, start closed, and do not
+  add loading/missing/unavailable product states.
 
 ## Good debug data
 

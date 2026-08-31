@@ -4,6 +4,14 @@
       <CollectionCell :cell="cell" />
     </li>
   </UPageGrid>
+  <DevDebugPanel
+    title="Apps collection surface"
+    context="Passed App cards and their final shared cell projection."
+    object-origin="passed"
+    :objects="{ cards: props.cards }"
+    :derived="{ cells }"
+    launcher
+  />
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'

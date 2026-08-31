@@ -6,6 +6,14 @@
     <KitchenDetailMenus :kitchen="presentation" />
     <KitchenDetailFulfilment :kitchen="presentation" />
     <KitchenDetailOperatorPanel :kitchen="presentation" />
+    <DevDebugPanel
+      title="Kitchen detail surface"
+      context="Related Place fetched by Kitchen Detail and the joined presentation derived from it."
+      object-origin="fetched"
+      :objects="{ place }"
+      :derived="{ placeId, presentation }"
+      launcher
+    />
   </article>
 </template>
 

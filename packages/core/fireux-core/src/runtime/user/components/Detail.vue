@@ -1,6 +1,18 @@
 <template>
   <UserProfile :user="user" />
-  <UserAppMembership v-if="membershipVisible" :user="user" :membership="membership" />
+  <UserAppMembership
+    v-if="membershipVisible"
+    :user="user"
+    :membership="membership"
+  />
+  <DevDebugPanel
+    title="User detail membership"
+    context="App membership fetched by User Detail and the decisions derived from it."
+    object-origin="fetched"
+    :objects="{ membership }"
+    :derived="{ subjectUserId, displayName, membershipVisible }"
+    launcher
+  />
 </template>
 
 <script setup lang="ts">

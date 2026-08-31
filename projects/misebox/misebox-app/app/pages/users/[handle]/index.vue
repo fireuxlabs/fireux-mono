@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <UserDetail v-if="user" :user="user" />
+      <DevDebugPanel
+        title="User detail acquisition"
+        context="Canonical User fetched by the Misebox detail route."
+        object-origin="fetched"
+        :objects="{ user }"
+        :derived="{ handle }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

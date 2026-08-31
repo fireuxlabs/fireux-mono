@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <JobDetail v-if="job" :job="job" />
+      <DevDebugPanel
+        title="Job detail acquisition"
+        context="Canonical Job fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ job }"
+        :derived="{ jobId }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

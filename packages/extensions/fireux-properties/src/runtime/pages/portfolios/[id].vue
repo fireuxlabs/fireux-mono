@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <PortfolioDetail v-if="portfolio" :portfolio="portfolio" />
+      <DevDebugPanel
+        title="Portfolio detail acquisition"
+        context="Canonical Portfolio fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ portfolio }"
+        :derived="{ routeKey }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <PlaceDetail v-if="place" :place="place" />
+      <DevDebugPanel
+        title="Place detail acquisition"
+        context="Canonical Place fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ place }"
+        :derived="{ routeLocator }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

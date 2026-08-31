@@ -12,12 +12,24 @@ import { APP_REGISTRY } from './_lib/app-registry.mjs'
 import { resolveFirebaseAdminCredential } from './_lib/firebase-admin-credentials.mjs'
 
 const USER_FIELDS = ['avatar', 'bio', 'display_name', 'handle']
-const APP_USER_FIELDS = [
+const REQUIRED_APP_USER_FIELDS = [
   'created',
   'onboarding_status',
   'role',
   'subscription',
   'updated',
+]
+const APP_USER_RELATIONSHIPS = [
+  ['kitchens', 'primary_kitchen'],
+  ['projects', 'primary_project'],
+  ['properties', 'primary_property'],
+  ['portfolios', 'primary_portfolio'],
+  ['suppliers', 'primary_supplier'],
+  ['blanks', 'primary_blank'],
+]
+const APP_USER_FIELDS = [
+  ...REQUIRED_APP_USER_FIELDS,
+  ...APP_USER_RELATIONSHIPS.flat(),
 ]
 
 const text = (value) => String(value ?? '').trim()
@@ -72,6 +84,37 @@ function extraFields(value, allowed) {
   return Object.keys(value).filter((key) => !allowed.includes(key)).sort()
 }
 
+function relationshipIssues(value) {
+  return APP_USER_RELATIONSHIPS.flatMap(([idsField, primaryField]) => {
+    const hasIds = Object.hasOwn(value, idsField)
+    const hasPrimary = Object.hasOwn(value, primaryField)
+    if (hasIds !== hasPrimary) return [`${idsField}:incomplete`]
+    if (!hasIds) return []
+    const ids = value[idsField]
+    if (
+      !Array.isArray(ids) ||
+      ids.length > 500 ||
+      ids.some(
+        (entry) =>
+          typeof entry !== 'string' ||
+          entry !== entry.trim() ||
+          !entry ||
+          entry.includes('/')
+      ) ||
+      new Set(ids).size !== ids.length
+    ) {
+      return [`${idsField}:invalid`]
+    }
+    const primary = value[primaryField]
+    return typeof primary !== 'string' ||
+      primary !== primary.trim() ||
+      primary.includes('/') ||
+      (primary !== '' && !ids.includes(primary))
+      ? [`${primaryField}:invalid`]
+      : []
+  })
+}
+
 const sessions = []
 try {
   const report = { targets: [], users: [], apps: [] }
@@ -121,10 +164,14 @@ try {
           role: value.role ?? null,
           subscription: value.subscription ?? null,
           onboarding_status: value.onboarding_status ?? null,
+          missing: REQUIRED_APP_USER_FIELDS.filter(
+            (field) => !Object.hasOwn(value, field)
+          ),
           configuredDeveloper: Boolean(appTarget.developerId) &&
             document.id === appTarget.developerId,
           fields: Object.keys(value).sort(),
           extra: extraFields(value, APP_USER_FIELDS),
+          invalidRelationships: relationshipIssues(value),
         }
       })
       report.apps.push({

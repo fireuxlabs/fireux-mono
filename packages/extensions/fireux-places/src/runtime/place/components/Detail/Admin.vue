@@ -9,6 +9,14 @@
     />
     <PlaceDelete :place="place" />
   </div>
+  <DevDebugPanel
+    title="Place detail actions"
+    context="Viewer authority used to derive the Place management surface."
+    object-origin="fetched"
+    :objects="{ isAdmin, isDeveloper }"
+    :derived="{ canManage }"
+    launcher
+  />
 </template>
 
 <script setup lang="ts">

@@ -4,6 +4,15 @@
       <ProjectHero />
       <ProjectCreate />
       <ProjectCollection :projects="projects" />
+      <DevDebugPanel
+        title="Projects index acquisition"
+        context="Canonical Projects passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ projects }"
+        :derived="{ count: projects.length }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

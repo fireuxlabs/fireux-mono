@@ -60,6 +60,10 @@ trusted creation transaction updates the relevant User fields atomically with
 the Entity root. It may also create the initial Team record for the separate
 Team surface, but Team is not the Workspace index authority. Free and
 Professional allow one Entity in their family, while Business allows multiple.
+The persisted relationship pair is optional until that Entity family establishes
+a relationship; when present, the plural array and singular primary field must
+appear and validate together. The bounded current-App projection normalizes an
+absent pair to an empty array and empty primary id for consumers.
 FireUX Project creation is a named `fireux` Server command; ordinary
 clients call its fixed endpoint and never receive a Project Firestore writer.
 Kitchen and Project primary selection updates the AppUser field directly for
@@ -103,7 +107,8 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   plan, confirmation hash, protected pre-image, and post-write verification.
 - Canonical User and AppUser conformance:
   `scripts/audit-user-app-user-canon.mjs` reads every registered App database
-  and reports exact User identity and AppUser membership shape. The guarded
+  and reports exact User identity, required AppUser governance, optional
+  Entity-relationship pairs, and unknown fields. The guarded
   `scripts/migrate-user-app-user-canon.mjs` owns the backup-first cutover to
   independent AppUser `role` and `subscription`, including deletion of the
   retired premium boolean and exact post-write verification.

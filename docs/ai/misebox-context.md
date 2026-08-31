@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-28
+Updated: 2026-08-31
 Ref: 066bcc1c1
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -80,6 +80,12 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
   classification, price level, currency/timezone, and business hours.
 - Kitchen Team owns membership, roles, permissions, invitations, and mutation
   authority.
+- The Main App's User detail composition may append the Kitchen-owned
+  `KitchenUserMemberships` relationship surface for the viewed User. Its
+  trusted projection is limited to the User themself or a current-App
+  administrator/developer, resolves canonical Kitchen and same-id Place
+  records, and reports matching Team access without moving Kitchen meaning into
+  Core User or mutating inconsistent records.
 - Menus and Orders remain their own records beneath their proved owner.
 - Operations is a Workspace grouping, never a generic stored field.
 - Tables remain Front-of-House unless explicit ownership is proved.

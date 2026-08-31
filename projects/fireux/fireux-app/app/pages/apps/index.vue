@@ -5,6 +5,15 @@
       <AppCurrent :apps="apps" />
       <AppCreate :apps="apps" />
       <AppCollection :apps="apps" scope="platform" />
+      <DevDebugPanel
+        title="Apps index acquisition"
+        context="Platform Apps passed into the FL index surface."
+        object-origin="fetched"
+        :objects="{ apps }"
+        :derived="{ count: apps.length, scope: 'platform' }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

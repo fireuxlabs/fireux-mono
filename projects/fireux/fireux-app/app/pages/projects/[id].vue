@@ -2,6 +2,15 @@
   <UPage>
     <UPageBody>
       <ProjectDetail v-if="project" :project="project" />
+      <DevDebugPanel
+        title="Project detail acquisition"
+        context="Canonical Project fetched by the detail route."
+        object-origin="fetched"
+        :objects="{ project }"
+        :derived="{ projectId }"
+        include-route
+        launcher
+      />
     </UPageBody>
   </UPage>
 </template>

@@ -6,6 +6,14 @@
     </ULink>
     <p class="text-sm text-muted">{{ project.description }}</p>
   </UCard>
+  <DevDebugPanel
+    title="Ecosystem Project relation"
+    context="Projects fetched by this relation and the Project selected for the Ecosystem."
+    object-origin="fetched"
+    :objects="{ projects }"
+    :derived="{ projectId: ecosystem.project_id, project }"
+    launcher
+  />
 </template>
 
 <script setup lang="ts">
