@@ -5,12 +5,13 @@ import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { useProjectWorkspaceIndex } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
+import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 export type ProjectTest = { name: string }
 
 export function useProjectWorkspaceTest() {
-  const workspace = useProjectWorkspaceIndex()
+  const workspace = useProjectWorkspace()
   const fireux = useFireUXConfig()
   const { membership } = useCurrentAppContext()
   const tests = ref<ProjectTest[]>([])
@@ -21,18 +22,24 @@ export function useProjectWorkspaceTest() {
     return appSubscriptionCapacity(
       fireux.subscriptionCapacity,
       'project.test',
-      membership.value?.subscription || 'free',
+      membership.value?.subscription || 'free'
     )
   })
 
   const state = computed(() => ({
-    ...workspace.state.value,
+    project: {
+      id: normalizeString(workspace.selection.project.value?.id),
+      name: normalizeString(workspace.selection.project.value?.name),
+      tagline: normalizeString(workspace.selection.project.value?.description),
+      url: normalizeString(workspace.selection.project.value?.image_url),
+    },
     tests: tests.value,
     selectedIndex: selectedIndex.value,
     bold: bold.value,
   }))
   const derived = computed(() => ({
-    ...workspace.derived.value,
+    outcome: workspace.targets.outcome.value,
+    hasSelection: workspace.selection.hasSelection.value,
     limit: limit.value,
     canCreateTest: hasAppSubscriptionCapacity(
       fireux.subscriptionCapacity,
@@ -98,11 +105,15 @@ export function useProjectWorkspaceTest() {
     if (tests.value[selectedIndex.value]) bold.value = !bold.value
   }
 
+  async function refresh() {
+    await workspace.targets.refresh()
+  }
+
   return {
     state,
     derived,
     actions: {
-      ...workspace.actions,
+      refresh,
       create,
       select,
       update,

@@ -1,4 +1,4 @@
-import { computed, inject, provide, ref, watchEffect, type InjectionKey } from 'vue'
+import { computed, inject, provide, type InjectionKey } from 'vue'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useWorkspaceTeam } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
@@ -9,10 +9,7 @@ import {
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
 } from '../../../utils/team.ts'
-import {
-  canAddKitchenTeamMember,
-  kitchenTeamMemberLimit,
-} from '../../../utils/team.ts'
+import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
 
@@ -26,12 +23,6 @@ function createKitchenWorkspaceTeam() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const access = useWorkspaceTeam({
-    target: selectedKitchen,
-    targetId: kitchenId,
-    readOnly,
-    canWrite,
-  })
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -75,33 +66,18 @@ function createKitchenWorkspaceTeam() {
       (member) => member.active !== false && member.status !== 'inactive'
     )
   )
-  const selectedTeamMemberId = ref('')
-  const selectedTeamMember = computed(
-    () =>
-      selectableTeamMembers.value.find(
-        (member) => member.id === selectedTeamMemberId.value
-      ) ?? null
-  )
-  watchEffect(() => {
-    if (selectedTeamMember.value) return
-    selectedTeamMemberId.value = selectableTeamMembers.value[0]?.id || ''
-  })
   const subscription = computed(() => membership.value?.subscription || 'free')
   const teamMemberLimit = computed(() =>
     kitchenTeamMemberLimit(fireux.subscriptionCapacity, subscription.value)
   )
-  const canCreateTeamMember = computed(
-    () =>
-      canWrite.value &&
-      canAddKitchenTeamMember(
-        fireux.subscriptionCapacity,
-        subscription.value,
-        selectableTeamMembers.value.length
-      )
-  )
-  const teamMemberCapacityReached = computed(
-    () => canWrite.value && !canCreateTeamMember.value
-  )
+  const access = useWorkspaceTeam({
+    target: selectedKitchen,
+    targetId: kitchenId,
+    readOnly,
+    canWrite,
+    members: selectableTeamMembers,
+    memberLimit: teamMemberLimit,
+  })
   const joinRequests = computed<KitchenTeamJoinRequest[]>(
     () => joinRequestItems.value
   )
@@ -142,12 +118,12 @@ function createKitchenWorkspaceTeam() {
     canWrite,
     teamMembers: workspaceTeamMembers,
     selectableTeamMembers,
-    selectedTeamMember,
-    selectedTeamMemberId,
+    selectedTeamMember: access.selectedTeamMember,
+    selectedTeamMemberId: access.selectedTeamMemberId,
     subscription,
-    teamMemberLimit,
-    canCreateTeamMember,
-    teamMemberCapacityReached,
+    teamMemberLimit: access.memberLimit,
+    canCreateTeamMember: access.canCreateTeamMember,
+    teamMemberCapacityReached: access.teamMemberCapacityReached,
     joinRequests,
     pendingJoinRequests,
     pending,

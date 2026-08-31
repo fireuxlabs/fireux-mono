@@ -19,7 +19,7 @@ import type {
 } from 'fireux-kitchens/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex'
 
 defineProps<{
-  state: KitchenWorkspaceIndexState
-  derived: KitchenWorkspaceIndexDerived
+  state: Pick<KitchenWorkspaceIndexState, 'kitchen'>
+  derived: Pick<KitchenWorkspaceIndexDerived, 'outcome' | 'hasSelection'>
 }>()
 </script>

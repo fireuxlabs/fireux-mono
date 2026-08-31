@@ -3,8 +3,6 @@ import {
   computed,
   inject,
   provide,
-  ref,
-  watchEffect,
   type ComputedRef,
   type InjectionKey,
   type Ref,
@@ -13,11 +11,9 @@ import { useAuth } from '../../../../composables/fireux/firebase/useAuth'
 import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppContext'
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
-import {
-  appSubscriptionCapacity,
-  hasAppSubscriptionCapacity,
-} from '../../../../app/utils/app-subscription-capacity'
+import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
 import { useProjectWorkspace } from '../core/useProjectWorkspace'
+import { useWorkspaceTeam } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
 
 export type ProjectTeamMemberSummary = {
   id: string
@@ -44,7 +40,8 @@ export type ProjectWorkspaceTeam = {
   selectedTeamMemberId: Ref<string>
   subscription: ComputedRef<AppUserSubscription>
   teamMemberLimit: ComputedRef<number | null>
-  canAddTeamMember: ComputedRef<boolean>
+  canCreateTeamMember: ComputedRef<boolean>
+  teamMemberCapacityReached: ComputedRef<boolean>
   pending: ComputedRef<boolean>
   error: Ref<Error | undefined>
   refresh: () => Promise<void>
@@ -85,17 +82,7 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
   )
   const members = computed(() => data.value?.members ?? [])
   const pending = computed(() => !hasAuthState.value || requestPending.value)
-  const selectedTeamMemberId = ref('')
-  const selectedTeamMember = computed(
-    () =>
-      members.value.find(
-        (member: ProjectTeamMemberSummary) =>
-          member.id === selectedTeamMemberId.value
-      ) ?? null
-  )
-  const subscription = computed(
-    () => membership.value?.subscription || 'free'
-  )
+  const subscription = computed(() => membership.value?.subscription || 'free')
   const teamMemberLimit = computed(() =>
     appSubscriptionCapacity(
       fireux.subscriptionCapacity,
@@ -103,30 +90,26 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
       subscription.value
     )
   )
-  const canAddTeamMember = computed(() =>
-    hasAppSubscriptionCapacity(
-      fireux.subscriptionCapacity,
-      'project.team',
-      subscription.value,
-      members.value.length
-    )
-  )
-
-  watchEffect(() => {
-    if (selectedTeamMember.value) return
-    selectedTeamMemberId.value = members.value[0]?.id || ''
+  const team = useWorkspaceTeam({
+    target: selection.project,
+    targetId: selection.projectId,
+    readOnly: runtime.readOnly,
+    canWrite: runtime.canWrite,
+    members,
+    memberLimit: teamMemberLimit,
   })
 
   return {
     selectedProject: selection.project,
     projectId: selection.projectId,
-    members,
-    count: computed(() => members.value.length),
-    selectedTeamMember,
-    selectedTeamMemberId,
+    members: team.members,
+    count: team.count,
+    selectedTeamMember: team.selectedTeamMember,
+    selectedTeamMemberId: team.selectedTeamMemberId,
     subscription,
-    teamMemberLimit,
-    canAddTeamMember,
+    teamMemberLimit: team.memberLimit,
+    canCreateTeamMember: team.canCreateTeamMember,
+    teamMemberCapacityReached: team.teamMemberCapacityReached,
     pending,
     error,
     refresh,

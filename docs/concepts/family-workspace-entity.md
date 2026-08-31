@@ -1,6 +1,6 @@
 # Workspace entity family
 
-Updated: 2026-08-30
+Updated: 2026-08-31
 Ref: 6a9f64e67
 Role: map, not canon
 
@@ -295,11 +295,88 @@ primary Entity through their trusted command, while Test and Team selection is
 temporary page focus.
 
 The plus doorway is shown only while the current AppUser subscription has
-capacity for that set. Core owns the shared capacity table: Free, Premium, and
-Business respectively allow 1, 1, and unlimited Workspace Entities; 3, 7, and
-unlimited Team members; and 2, 3, and unlimited Test strings. The table governs
-capacity only. Each domain still owns its create Tool and trusted command, and
-a plus must remain unavailable when that mutation authority is not proved.
+capacity for that set. Each App owns its capability-keyed Free, Premium, and
+Business limits; Core owns only the config shape and resolver. The limit
+governs capacity only. Each domain still owns its create Tool and trusted
+command, and a plus must remain unavailable when that mutation authority is not
+proved.
+
+## Capability composable evolution
+
+Status: `to-confirm`. This is the working comparison model for evolving
+Workspace capability composables. It supports bounded implementation and
+review; it is not an established Core spine or permission to create generic
+wrappers.
+
+The intended shallow dependency direction is:
+
+```text
+App configuration
+└─ capability-keyed subscription limits
+
+useWorkspace('<entity>')
+├─ useXWorkspaceIndex
+└─ useXWorkspace
+   └─ useXWorkspaceCapability
+      └─ useWorkspaceCapabilityName
+```
+
+For the current Team proving siblings:
+
+```text
+useWorkspace('project')
+├─ useProjectWorkspaceIndex
+└─ useProjectWorkspace
+   ├─ useProjectWorkspaceTest
+   └─ useProjectWorkspaceTeam
+      ├─ Project Team records and authority
+      └─ useWorkspaceTeam
+
+useWorkspace('kitchen')
+├─ useKitchenWorkspaceIndex
+└─ useKitchenWorkspace
+   └─ useKitchenWorkspaceTeam
+      ├─ Kitchen Team records and authority
+      └─ useWorkspaceTeam
+```
+
+`useXWorkspaceIndex` belongs only to that Entity's `/` page. A capability
+composable reaches `useWorkspace('<entity>')` through the domain-owned
+`useXWorkspace` current-Entity reader rather than using the Index as a parent.
+This prevents Team, Menus, Stations, Suppliers, and future capabilities from
+loading or inheriting landing-page state they do not need.
+
+A named shared capability composable such as `useWorkspaceTeam`,
+`useWorkspaceMenus`, or `useWorkspaceStations` may own only behaviour that two
+materially different Entity families prove for the same reason. Candidate
+mechanics include temporary item selection, defaulting to the first valid
+item, count, App-configured capacity, `canCreate`, `capacityReached`, and common
+pending/error outcomes. Domain record shapes, readers, persistence, mutation
+authority, invitations, and lifecycle rules remain in `useXWorkspaceCapability`.
+
+Do not introduce a generic `useWorkspaceCapability`. If named capability
+composables later repeat smaller mechanics, compare them first; only then may a
+small Core primitive such as selection or capacity resolution be extracted.
+Shared state is passed through refs and returned derived state, not stored in a
+generic registry.
+
+Current evidence and confidence:
+
+| Seam | State | Evidence and next comparison |
+| --- | --- | --- |
+| Entity selection through `useWorkspace('<entity>')` | `accepted` | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another |
+| Project Test local scaffold | `accepted` | Its Project identity, App-configured capacity, temporary first-item focus, CRUD and string transforms run without importing the Project Index; it proves only local in-memory Test objects |
+| Named `useWorkspaceTeam` | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
+| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics |
+| Generic capability primitives | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason |
+
+Promotion requires two working Entity-family siblings, a source comparison,
+matching inputs and outputs, preserved authority boundaries, focused runtime
+verification, and a guard only for the surviving invariant. If a shared layer
+forces domain branches, unused state, duplicate readers, or pass-through
+wrappers, move that behaviour back to the named domain composables; callers
+remain stable because pages depend on `useXWorkspaceCapability`, not the
+provisional lower implementation.
 
 ## Workspace Focus List family
 

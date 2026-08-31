@@ -25,6 +25,26 @@ function createProjectWorkspace(): ProjectWorkspace {
   )
 
   watch(
+    [collection.primaryProject, collection.projects],
+    ([primaryProjectId, projects]: [string, ProjectSurface[]]) => {
+      const primaryProject = projects.find(
+        (item) => normalizeString(item.id) === normalizeString(primaryProjectId)
+      )
+      if (!primaryProject) {
+        if (!primaryProjectId) workspace.clearActive()
+        return
+      }
+      workspace.activate(
+        normalizeString(primaryProject.id),
+        normalizeString(primaryProject.name),
+        normalizeString(primaryProject.description),
+        normalizeString(primaryProject.image_url)
+      )
+    },
+    { immediate: true }
+  )
+
+  watch(
     project,
     (selectedProject: ProjectSurface | null) => {
       workspace.setActiveStatus(selectedProject?.status || '')

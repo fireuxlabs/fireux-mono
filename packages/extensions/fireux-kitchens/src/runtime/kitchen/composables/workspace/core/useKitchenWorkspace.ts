@@ -24,6 +24,26 @@ export function useKitchenWorkspace() {
   )
 
   watch(
+    [kitchens.primaryKitchenId, kitchens.kitchens],
+    ([primaryKitchenId, targets]: [string, KitchenSurface[]]) => {
+      const primaryKitchen = targets.find(
+        (item) => normalizeString(item.id) === normalizeString(primaryKitchenId)
+      )
+      if (!primaryKitchen) {
+        if (!primaryKitchenId) workspace.clearActive()
+        return
+      }
+      workspace.activate(
+        normalizeString(primaryKitchen.id),
+        normalizeString(primaryKitchen.identity?.display_name),
+        normalizeString(primaryKitchen.identity?.tagline),
+        normalizeString(primaryKitchen.identity?.image_url)
+      )
+    },
+    { immediate: true }
+  )
+
+  watch(
     kitchen,
     (selectedKitchen: KitchenSurface | null) => {
       workspace.setActiveStatus(selectedKitchen?.status || '')

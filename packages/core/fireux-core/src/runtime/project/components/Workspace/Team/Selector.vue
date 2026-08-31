@@ -14,7 +14,7 @@
     />
 
     <UButton
-      v-if="canAddTeamMember"
+      v-if="canCreateTeamMember"
       icon="i-lucide-plus"
       color="neutral"
       variant="ghost"
@@ -29,7 +29,7 @@
 import { computed } from 'vue'
 import { useProjectTeamContext } from '../../../composables/workspace/team/useProjectTeamContext'
 
-const { members, selectedTeamMemberId, canAddTeamMember } =
+const { members, selectedTeamMemberId, canCreateTeamMember } =
   useProjectTeamContext()
 const items = computed(() =>
   members.value.map((member) => ({

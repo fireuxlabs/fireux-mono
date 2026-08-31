@@ -19,7 +19,7 @@ import type {
 } from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
 
 defineProps<{
-  state: ProjectWorkspaceIndexState
-  derived: ProjectWorkspaceIndexDerived
+  state: Pick<ProjectWorkspaceIndexState, 'project'>
+  derived: Pick<ProjectWorkspaceIndexDerived, 'outcome' | 'hasSelection'>
 }>()
 </script>
