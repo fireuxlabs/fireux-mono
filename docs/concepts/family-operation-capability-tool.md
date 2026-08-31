@@ -64,6 +64,13 @@ A search phrase does not create a Tool. A Tool hypothesis is not an implemented
 Tool, a capability decision is not a release claim, and a visible control is
 not mutation authority.
 
+Public Operation discovery uses the Core-owned `/operations/[slug]` page.
+Each App supplies its own Operation title, description, Workspace destination,
+and evidence-led guiding literature through `FireuxMetaOperation`; an App does
+not fork the page merely to restate that content. The signed-in Workspace page
+may expose only the capabilities and Tools its domain authority actually
+proves.
+
 ## Three independent family axes
 
 Classify each capability separately by its surface, its entry or creation

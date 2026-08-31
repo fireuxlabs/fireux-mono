@@ -23,7 +23,11 @@ const shouldInstallDocs = (nuxt: Nuxt) => {
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
-  return fireux.id === 'fireux-app'
+  return (
+    fireux.id === 'fireux-app' &&
+    (process.env.NODE_ENV === 'production' ||
+      process.env.FIREUX_DOCS_ENABLED === 'true')
+  )
 }
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({

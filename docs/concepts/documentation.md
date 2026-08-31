@@ -121,6 +121,11 @@ docs manifest are views over this graph, never copied documentation authority.
 Each content source keeps the narrowest watch root that contains its files; a
 single root document must never make the App watch the whole repository.
 
+The FireUX host installs this docs surface in production. Ordinary local
+Workspace development leaves Nuxt Content off; set
+`FIREUX_DOCS_ENABLED=true` when the local task is specifically working on or
+verifying `/docs`.
+
 ## Family maps
 
 A family map is useful only when it distinguishes the shared spine from its

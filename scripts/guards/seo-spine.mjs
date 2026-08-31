@@ -192,8 +192,6 @@ export async function run({ repoRoot }) {
     'projects/fireux/fireux-app/app/pages/solutions/cleaning.vue',
     'projects/fireux/fireux-app/app/pages/solutions/fireux-app.vue',
     'projects/fireux/fireux-app/app/pages/solutions/fireux-template.vue',
-    'projects/fireux/fireux-app/app/pages/operations/apps.vue',
-    'projects/fireux/fireux-app/app/pages/operations/ecosystem.vue',
   ]
   for (const relative of fireuxPublicOverrides) {
     const source = read(repoRoot, relative)

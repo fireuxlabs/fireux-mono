@@ -1,17 +1,6 @@
 <template>
   <UDashboardPanel id="fireux-project-home">
-    <LayoutsWorkspaceNavbar title="Project Workspace">
-      <template
-        v-if="derived.outcome === 'pending' || derived.hasSelection"
-        #title
-      >
-        <WorkspaceProjectActive :project="state.project" />
-      </template>
-      <template #right>
-        <!-- 07 Info — LAST: explain how the completed page, context, capabilities and boundaries fit together. -->
-        <WorkspaceProjectInfo />
-      </template>
-    </LayoutsWorkspaceNavbar>
+    <WorkspaceProjectNav :state="state" :derived="derived" />
     <!-- 03 Workspace — select the active Project or create one when the subscription permits. -->
     <WorkspaceProject
       :state="state"
