@@ -1,5 +1,8 @@
 <template>
-  <UPageSection class="py-4 sm:py-4">
-    <UChatPrompt placeholder="Ask about these Tests…" disabled />
-  </UPageSection>
+  <WorkspaceAI aria-label="Project Test AI" compact>
+    <WorkspaceAIComposer
+      placeholder="Project Test AI is not connected yet."
+      aria-label="Ask Project Test AI"
+    />
+  </WorkspaceAI>
 </template>

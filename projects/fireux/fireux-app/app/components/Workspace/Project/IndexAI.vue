@@ -1,40 +1,14 @@
 <template>
   <WorkspaceAI aria-label="ProjectAI" compact>
-    <UChatPrompt
+    <WorkspaceAIComposer
       :model-value="state.prompt"
-      :placeholder="derived.placeholder"
-      variant="soft"
+      :placeholder="derived.placeholder.value"
+      :suggestions="derived.suggestions.value"
+      suggestions-aria-label="ProjectAI suggestions"
       aria-label="Ask ProjectAI"
       @update:model-value="state.prompt = $event"
-    >
-      <template #footer>
-        <div class="flex w-full items-center justify-between">
-          <UButton
-            type="button"
-            icon="i-lucide-paperclip"
-            color="neutral"
-            variant="ghost"
-            aria-label="Attach file"
-            disabled
-          />
-          <UChatPromptSubmit status="ready" disabled />
-        </div>
-      </template>
-    </UChatPrompt>
-
-    <div class="flex flex-wrap gap-2" aria-label="ProjectAI suggestions">
-      <UButton
-        v-for="suggestion in derived.suggestions"
-        :key="suggestion.label"
-        :label="suggestion.label"
-        :icon="suggestion.icon"
-        color="neutral"
-        variant="outline"
-        size="sm"
-        class="rounded-full"
-        @click="actions.selectSuggestion(suggestion.label)"
-      />
-    </div>
+      @select-suggestion="actions.selectSuggestion($event.label)"
+    />
   </WorkspaceAI>
 </template>
 

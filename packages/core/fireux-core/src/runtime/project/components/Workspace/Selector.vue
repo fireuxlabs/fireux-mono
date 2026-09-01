@@ -1,96 +1,54 @@
 <template>
-  <section v-if="items.length" aria-label="Project selector">
-    <UTabs
-      :model-value="project.id"
-      :items="items"
-      :content="false"
-      variant="link"
-      size="sm"
-      class="w-fit max-w-full"
-      @update:model-value="selectProject"
+  <section
+    id="workspace-entity-controls"
+    class="flex items-center gap-2"
+    aria-label="Project selector"
+  >
+    <template v-if="derived.outcome === 'pending'">
+      <USkeleton class="h-8 w-36 rounded-md" />
+    </template>
+    <WorkspaceProjectSelectorChoices
+      v-else-if="state.project.id || derived.canSelectMultiple"
+      :project="state.project"
+      :can-select-multiple="derived.canSelectMultiple"
+      :project-ids="state.user.projects"
+      :refresh="refresh"
     />
+    <UButton
+      v-if="derived.canSelectMultiple && derived.canCreate"
+      icon="i-lucide-plus"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      aria-label="Create Project"
+      @click="createOpen = true"
+    />
+
+    <UModal v-model:open="createOpen" title="Create Project">
+      <template #body>
+        <WorkspaceProjectCreateForm @created="created" />
+      </template>
+    </UModal>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
-import { useToast } from '#imports'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useWorkspace } from '../../../composables/fireux/workspace/useWorkspace'
-import type { ProjectWorkspaceIndexState } from '../../composables/workspace/index/useProjectWorkspaceIndex'
-import { useProjectWorkspaceChoices } from '../../composables/workspace/index/useProjectWorkspaceChoices'
+import { ref } from 'vue'
+import type {
+  ProjectWorkspaceIndexDerived,
+  ProjectWorkspaceIndexState,
+} from '../../composables/workspace/index/useProjectWorkspaceIndex'
 
 const props = defineProps<{
-  project: ProjectWorkspaceIndexState['project']
-  canSelectMultiple: boolean
-  projectIds: string[]
+  state: ProjectWorkspaceIndexState
+  derived: ProjectWorkspaceIndexDerived
   refresh: () => Promise<unknown>
 }>()
-const workspace = useWorkspace('project')
-const { currentUser } = useAuth()
-const toast = useToast()
-const showChoices = computed(
-  () => props.canSelectMultiple || props.projectIds.length > 1
-)
-const targets = useProjectWorkspaceChoices(
-  showChoices,
-  () => props.projectIds
-)
-const projects = computed(() =>
-  showChoices.value
-    ? targets.projects.value.map((item) => ({
-        id: item.id,
-        name: item.name,
-        tagline: item.description,
-        url: item.image_url,
-      }))
-    : props.project.id
-      ? [props.project]
-      : []
-)
-const items = computed(() =>
-  projects.value.map((item) => ({
-    label: item.name || item.id,
-    value: item.id,
-    avatar: {
-      src: item.url || undefined,
-      alt: item.name,
-      icon: 'i-lucide-briefcase-business',
-    },
-  }))
-)
 
-watchEffect(() => {
-  workspace.setChoices(
-    projects.value.map((item) => ({
-      id: item.id,
-      name: item.name,
-      description: item.tagline,
-      image: item.url,
-    }))
-  )
-})
+const createOpen = ref(false)
 
-async function selectProject(projectId: string | number) {
-  const selected = projects.value.find((item) => item.id === projectId)
-  if (!selected || selected.id === props.project.id) return
-  const user = currentUser.value
-  if (!user) return
-  const response = await $fetch<{ updated?: true; notified: number }>(
-    '/api/internal/control/projects/primary',
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-      body: { projectId: selected.id },
-    }
-  )
-  if (response.updated) {
-    await props.refresh()
-    return
-  }
-  toast.add({
-    title: 'Primary Project change requested',
-    description: 'An App administrator has been notified.',
-  })
+async function created() {
+  await props.refresh()
+  createOpen.value = false
 }
 </script>

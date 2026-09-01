@@ -63,62 +63,12 @@
                       <USkeleton class="size-5 shrink-0 rounded-full" />
                       <USkeleton v-if="!collapsed" class="h-4 flex-1" />
                     </div>
-                    <UDropdownMenu
-                      v-else-if="item.choices.length"
-                      :items="[item.choices]"
-                      :content="{ align: 'center', collisionPadding: 12 }"
-                      :ui="{
-                        content: collapsed
-                          ? 'w-48'
-                          : 'w-(--reka-dropdown-menu-trigger-width)',
-                      }"
-                    >
-                      <UButton
-                        :label="collapsed ? undefined : item.label"
-                        :icon="item.image ? undefined : item.icon"
-                        :trailing-icon="
-                          collapsed ? undefined : 'i-lucide-chevrons-up-down'
-                        "
-                        color="neutral"
-                        variant="ghost"
-                        size="sm"
-                        block
-                        :square="collapsed"
-                        class="data-[state=open]:bg-elevated"
-                        :ui="{ trailingIcon: 'text-dimmed' }"
-                        :aria-label="item.description || item.label"
-                      >
-                        <template v-if="item.image" #leading>
-                          <UAvatar
-                            :src="item.image"
-                            :alt="item.label"
-                            size="2xs"
-                          />
-                        </template>
-                      </UButton>
-                    </UDropdownMenu>
-                    <UButton
+                    <WorkspaceEntitySwitcher
                       v-else
-                      :to="item.to"
-                      :label="collapsed ? undefined : item.label"
-                      :icon="item.image ? undefined : item.icon"
-                      color="neutral"
-                      variant="ghost"
-                      size="sm"
-                      block
-                      :square="collapsed"
-                      class="data-[state=open]:bg-elevated"
-                      :ui="{ trailingIcon: 'text-dimmed' }"
-                      :aria-label="item.description || item.label"
-                    >
-                      <template v-if="item.image" #leading>
-                        <UAvatar
-                          :src="item.image"
-                          :alt="item.label"
-                          size="2xs"
-                        />
-                      </template>
-                    </UButton>
+                      :item="item"
+                      :collapsed="collapsed ?? false"
+                      :workspace-label="workspaceLabel"
+                    />
                   </template>
                   <template #fallback>
                     <div
@@ -158,58 +108,12 @@
                     <USkeleton class="size-5 shrink-0 rounded-full" />
                     <USkeleton v-if="!collapsed" class="h-4 flex-1" />
                   </div>
-                  <UDropdownMenu
-                    v-else-if="item.choices.length"
-                    :items="[item.choices]"
-                    :content="{ align: 'center', collisionPadding: 12 }"
-                    :ui="{
-                      content: collapsed
-                        ? 'w-48'
-                        : 'w-(--reka-dropdown-menu-trigger-width)',
-                    }"
-                  >
-                    <UButton
-                      :label="collapsed ? undefined : item.label"
-                      :icon="item.image ? undefined : item.icon"
-                      :trailing-icon="
-                        collapsed ? undefined : 'i-lucide-chevrons-up-down'
-                      "
-                      color="neutral"
-                      variant="ghost"
-                      size="sm"
-                      block
-                      :square="collapsed"
-                      class="data-[state=open]:bg-elevated"
-                      :ui="{ trailingIcon: 'text-dimmed' }"
-                      :aria-label="item.description || item.label"
-                    >
-                      <template v-if="item.image" #leading>
-                        <UAvatar
-                          :src="item.image"
-                          :alt="item.label"
-                          size="2xs"
-                        />
-                      </template>
-                    </UButton>
-                  </UDropdownMenu>
-                  <UButton
+                  <WorkspaceEntitySwitcher
                     v-else
-                    :to="item.to"
-                    :label="collapsed ? undefined : item.label"
-                    :icon="item.image ? undefined : item.icon"
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    block
-                    :square="collapsed"
-                    class="data-[state=open]:bg-elevated"
-                    :ui="{ trailingIcon: 'text-dimmed' }"
-                    :aria-label="item.description || item.label"
-                  >
-                    <template v-if="item.image" #leading>
-                      <UAvatar :src="item.image" :alt="item.label" size="2xs" />
-                    </template>
-                  </UButton>
+                    :item="item"
+                    :collapsed="collapsed ?? false"
+                    :workspace-label="workspaceLabel"
+                  />
                 </template>
                 <template #fallback>
                   <div
@@ -291,6 +195,7 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Workspace Spine pass: pre-create family workspace and selection state for layout guards.
 import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
+import WorkspaceEntitySwitcher from '../components/Workspace/EntitySwitcher.vue'
 import {
   workspaceFamilyFromRouteContext,
   toWorkspaceFamilyLabel,
@@ -349,12 +254,14 @@ const familyRootNav = computed(() =>
       if (!activeName)
         return {
           ...item,
+          to: '/',
           image: '',
           choices: [],
           pending: workspaceState.pending.value,
         }
       return {
         ...item,
+        to: '/',
         pending: workspaceState.pending.value,
         label: activeName,
         description:

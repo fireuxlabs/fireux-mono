@@ -31,64 +31,43 @@
       @change="selectFile"
     />
 
-    <UChatPrompt
+    <WorkspaceAIComposer
       :model-value="modelValue"
       :placeholder="placeholder"
-      :loading="submitting"
       :aria-label="ariaLabel"
+      :submitting="submitting"
+      can-submit
+      :suggestions="contextualSuggestions"
+      suggestions-aria-label="Suggested Kitchen actions"
       @update:model-value="emit('update:modelValue', $event)"
       @submit.prevent="emit('submit')"
+      @select-suggestion="emit('update:modelValue', $event.label)"
     >
-      <template #footer>
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-1">
-            <UButton
-              v-if="allowFile"
-              type="button"
-              icon="i-lucide-paperclip"
-              color="neutral"
-              variant="ghost"
-              aria-label="Upload your existing menu"
-              @click="fileInput?.click()"
-            />
-            <UButton
-              v-if="mounted && voice.supported.value"
-              type="button"
-              :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
-              :color="voice.recording.value ? 'error' : 'neutral'"
-              :variant="voice.recording.value ? 'soft' : 'ghost'"
-              :loading="transcribing"
-              :disabled="submitting || transcribing"
-              :aria-label="
-                voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
-              "
-              @click="toggleVoice"
-            />
-          </div>
-          <UChatPromptSubmit
-            :status="submitting ? 'submitted' : 'ready'"
-            label="Send"
-          />
-        </div>
+      <template #leading>
+        <UButton
+          v-if="allowFile"
+          type="button"
+          icon="i-lucide-paperclip"
+          color="neutral"
+          variant="ghost"
+          aria-label="Upload your existing menu"
+          @click="fileInput?.click()"
+        />
+        <UButton
+          v-if="mounted && voice.supported.value"
+          type="button"
+          :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
+          :color="voice.recording.value ? 'error' : 'neutral'"
+          :variant="voice.recording.value ? 'soft' : 'ghost'"
+          :loading="transcribing"
+          :disabled="submitting || transcribing"
+          :aria-label="
+            voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
+          "
+          @click="toggleVoice"
+        />
       </template>
-    </UChatPrompt>
-
-    <div
-      v-if="contextualActions.length"
-      class="flex flex-wrap gap-2"
-      aria-label="Suggested Kitchen actions"
-    >
-      <UButton
-        v-for="action in contextualActions"
-        :key="action"
-        :label="action"
-        color="neutral"
-        variant="outline"
-        size="sm"
-        class="rounded-full"
-        @click="emit('update:modelValue', action)"
-      />
-    </div>
+    </WorkspaceAIComposer>
 
     <p
       v-if="voice.recording.value || transcribing || voiceError"
@@ -145,6 +124,9 @@ const transcribing = ref(false)
 const transcriptionError = ref('')
 const voiceError = computed(() => transcriptionError.value || voice.error.value)
 const contextualActions = computed(() => props.suggestions.slice(0, 4))
+const contextualSuggestions = computed(() =>
+  contextualActions.value.map((label) => ({ label }))
+)
 let recordingTimeout: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {

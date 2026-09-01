@@ -22,7 +22,7 @@ export function useDevUi() {
       '/suppliers/create',
       '/workspace/supplier',
       '/workspace/supplier/create',
-      '/workspace/project',
+      '/',
     ].includes(route.path)
   )
 

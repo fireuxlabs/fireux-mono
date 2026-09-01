@@ -1,6 +1,6 @@
 <template>
   <UPageSection title="Tests" class="py-4 sm:py-4">
-    <WorkspaceProjectCrudToolbar
+    <WorkspaceCrudToolbar
       label="Project Test"
       :available="available"
       @create="createOpen = true"
@@ -159,7 +159,6 @@ const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
     ...(selected.value ? (['read', 'update', 'delete'] as const) : []),
   ]
 )
-
 function create() {
   const value = name.value.trim()
   if (!value) return

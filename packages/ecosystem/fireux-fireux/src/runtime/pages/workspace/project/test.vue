@@ -1,23 +1,27 @@
 <template>
   <UDashboardPanel id="workspace-project-test">
-    <WorkspaceProjectNav :state="state" :derived="derived" />
-    <WorkspaceProjectTestSelector
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceHero
-      title="Build your Project Tests"
-      description="Create and manage simple named objects inside this Project."
-    />
-    <WorkspaceProjectTestAI />
-    <WorkspaceProjectTest
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceProjectTestTools :state="state" :actions="actions" />
-    <WorkspaceProjectTestDiscovery />
+    <template #header>
+      <WorkspaceProjectNav :state="state" :derived="derived" />
+    </template>
+    <template #body>
+      <WorkspaceProjectTestSelector
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceHero
+        title="Build your Project Tests"
+        description="Create and manage simple named objects inside this Project."
+      />
+      <WorkspaceProjectTestAI />
+      <WorkspaceProjectTest
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceProjectTestTools :state="state" :actions="actions" />
+      <WorkspaceProjectTestDiscovery />
+    </template>
   </UDashboardPanel>
 </template>
 

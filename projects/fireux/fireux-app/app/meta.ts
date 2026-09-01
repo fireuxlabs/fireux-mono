@@ -136,7 +136,7 @@ export const metaContent = defineFireuxMeta({
       workspace: {
         id: 'project',
         name: 'Project workspace',
-        to: '/workspace/project',
+        to: '/',
       },
       capabilityFamilies: {
         surfaces: ['catalogue'],
@@ -156,7 +156,7 @@ export const metaContent = defineFireuxMeta({
       workspace: {
         id: 'project',
         name: 'Project workspace',
-        to: '/workspace/project',
+        to: '/',
       },
       capabilityFamilies: {
         surfaces: ['catalogue', 'relationship-directory'],

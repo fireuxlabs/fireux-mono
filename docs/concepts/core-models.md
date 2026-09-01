@@ -83,8 +83,9 @@ and `/projects/:id` reads the same strict entity shape from its exact Server
 endpoint. `useProjectCollection` separately reads the caller's target-bounded
 control-plane scope for the private Workspace. There is no
 `ProjectDirectoryEntry`, browser Firestore read, or browser mutation entrypoint;
-presentation mapping remains in `useProjectInterface` and private selection and
-operations remain under `/workspace/project`.
+presentation mapping remains in `useProjectInterface`; `/` owns the FireUX App
+Project Workspace landing and private operations remain under
+`/workspace/project/*`.
 
 The Project Workspace may expose capabilities backed by existing authority and
 one thin empty-shell Create doorway. Its Team sheet reads the selected

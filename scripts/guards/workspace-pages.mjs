@@ -65,6 +65,10 @@ const NON_DIRECT_PAGES = new Map([
     'redirect',
   ],
   [
+    'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue',
+    'redirect',
+  ],
+  [
     'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/identity.vue',
     'router',
   ],
@@ -101,11 +105,15 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     label: 'Project landing',
     page: 'projects/fireux/fireux-app/app/pages/index.vue',
     markers: [
-      '<WorkspaceProject',
+      '<template #header',
+      '<WorkspaceProjectNav',
+      '<template #body',
+      '<WorkspaceProjectSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectIndexAI',
-      '<WorkspaceProjectOperations />',
+      '<WorkspaceProject\n',
       '<WorkspaceProjectTools',
+      '<WorkspaceProjectOperations />',
       '<WorkspaceProjectDiscovery />',
     ],
   },
@@ -113,11 +121,15 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     label: 'Kitchen landing',
     page: 'projects/misebox/misebox-app/app/pages/index.vue',
     markers: [
-      '<WorkspaceKitchen',
+      '<template #header',
+      '<WorkspaceKitchenNav',
+      '<template #body',
+      '<WorkspaceKitchenSelector',
       '<WorkspaceHero',
       '<WorkspaceKitchenIndexAI',
-      '<WorkspaceKitchenOperations />',
+      '<WorkspaceKitchen\n',
       '<WorkspaceKitchenTools',
+      '<WorkspaceKitchenOperations />',
       '<WorkspaceKitchenDiscovery />',
     ],
   },
@@ -125,6 +137,9 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     label: 'Project Test',
     page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test.vue',
     markers: [
+      '<template #header',
+      '<WorkspaceProjectNav',
+      '<template #body',
       '<WorkspaceProjectTestSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectTestAI />',
@@ -137,6 +152,9 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     label: 'Project Team',
     page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
     markers: [
+      '<template #header',
+      '<WorkspaceProjectNav',
+      '<template #body',
       '<WorkspaceProjectTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceProjectTeamAI',
@@ -149,6 +167,9 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
     label: 'Kitchen Team',
     page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
     markers: [
+      '<template #header',
+      '<WorkspaceKitchenNav',
+      '<template #body',
       '<WorkspaceKitchenTeamSelector',
       '<WorkspaceHero',
       '<WorkspaceKitchenTeamAI',
@@ -157,6 +178,19 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
       '<WorkspaceKitchenTeamDiscovery',
     ],
   },
+]
+const WORKSPACE_CRUD_SURFACES = [
+  'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Index.vue',
+  'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Index.vue',
+  'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Index.vue',
+]
+const WORKSPACE_CRUD_PRIMITIVE =
+  'packages/core/fireux-core/src/runtime/components/Workspace/CrudToolbar.vue'
+const WORKSPACE_CRUD_OPERATIONS = [
+  ['create', 'WorkspaceCrudCreate'],
+  ['read', 'WorkspaceCrudRead'],
+  ['update', 'WorkspaceCrudUpdate'],
+  ['delete', 'WorkspaceCrudDelete'],
 ]
 const CONSOLE_OPERATION_CONTRACTS = {
   project: {
@@ -339,6 +373,90 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
         continue
       }
       previousIndex = markerIndex
+    }
+  }
+
+  const primitive = readFileSync(
+    path.join(repoRoot, WORKSPACE_CRUD_PRIMITIVE),
+    'utf8'
+  )
+  let previousOperation = -1
+  for (const [operation, component] of WORKSPACE_CRUD_OPERATIONS) {
+    const operationPath = `packages/core/fireux-core/src/runtime/components/Workspace/Crud/${operation[0].toUpperCase()}${operation.slice(1)}.vue`
+    const operationSource = readFileSync(path.join(repoRoot, operationPath), 'utf8')
+    if (!operationSource.includes(`label="${operation[0].toUpperCase()}${operation.slice(1)}"`)) {
+      violations.push(
+        `${operationPath} (CRUD operation must own its ${operation} presentation)`
+      )
+    }
+    const operationIndex = primitive.indexOf(`<${component}`, previousOperation + 1)
+    if (operationIndex < 0) {
+      violations.push(
+        `${WORKSPACE_CRUD_PRIMITIVE} (must compose ${component} in canonical order)`
+      )
+      continue
+    }
+    previousOperation = operationIndex
+  }
+
+  for (const surface of WORKSPACE_CRUD_SURFACES) {
+    const source = readFileSync(path.join(repoRoot, surface), 'utf8')
+    if (!source.includes('<WorkspaceCrudToolbar')) {
+      violations.push(
+        `${surface} (Workspace CRUD surface must compose WorkspaceCrudToolbar)`
+      )
+    }
+  }
+
+  const indexContracts = [
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Index.vue',
+      '<WorkspaceProjectCrud',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue',
+      '<WorkspaceKitchenCrud',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
+      '<WorkspaceProjectSelectorChoices',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue',
+      '<WorkspaceKitchenSelectorChoices',
+    ],
+  ]
+  for (const [sourcePath, marker] of indexContracts) {
+    const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
+    if (!source.includes(marker)) {
+      violations.push(`${sourcePath} (must compose ${marker})`)
+    }
+  }
+
+  const selectorPlusContracts = [
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue',
+  ]
+  for (const sourcePath of selectorPlusContracts) {
+    const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
+    if (
+      !source.includes('derived.canSelectMultiple && derived.canCreate') ||
+      !source.includes('icon="i-lucide-plus"')
+    ) {
+      violations.push(
+        `${sourcePath} (selector plus must require business selection entitlement and creation authority)`
+      )
+    }
+  }
+
+  const rootCrudSurfaces = [
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue',
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
+  ]
+  for (const surface of rootCrudSurfaces) {
+    const source = readFileSync(path.join(repoRoot, surface), 'utf8')
+    if (!source.includes("'create',")) {
+      violations.push(`${surface} (root Workspace CRUD Create must remain visible)`)
     }
   }
 }
@@ -893,11 +1011,23 @@ function validateWorkspaceAIContracts(repoRoot, violations) {
     },
     {
       file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/AI/Composer.vue',
-      expected: ['<UChatPrompt'],
+      expected: ['<WorkspaceAIComposer'],
     },
     {
       file: 'projects/fireux/fireux-app/app/components/Workspace/Project/IndexAI.vue',
-      expected: ['<WorkspaceAI', '<UChatPrompt'],
+      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
+    },
+    {
+      file: 'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/IndexAI.vue',
+      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
+    },
+    {
+      file: 'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/AI.vue',
+      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
+    },
+    {
+      file: 'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Team/AI.vue',
+      expected: ['<WorkspaceAI', '<WorkspaceAIComposer'],
     },
   ]
 

@@ -103,7 +103,7 @@ const projectWorkspaceCopy = {
     'Develop and monitor your Project, its Apps, Ecosystem and users from one Workspace.',
   items: ['Apps', 'Ecosystem', 'Users', 'Project identity'],
   action: 'Open Project Workspace',
-  to: '/workspace/project',
+  to: '/',
 } as const
 
 const solutions = landingSolutions
@@ -159,7 +159,7 @@ const content = {
     },
     secondaryAction: {
       label: 'Go to workspace',
-      to: '/workspace/project',
+      to: '/',
       icon: 'i-lucide-layout-dashboard',
     },
     trustItems: [],

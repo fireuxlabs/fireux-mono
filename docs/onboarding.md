@@ -5,8 +5,9 @@ This is the practical playbook for shared Core entity onboarding journeys.
 ## Project onboarding boundary
 
 - Project is a FireUX control-plane entity. `/projects` publishes only active
-  identity and presentation; its private operational entry point is the
-  admin-only `/workspace/project`.
+  identity and presentation; the FireUX App's `/` route is its Project
+  Workspace landing, while private operations remain under
+  `/workspace/project/*`.
 - Canonical `fireux/projects/{projectId}` owns Project identity and
   presentation. Each Firebase host keeps one bounded
   `(default)/project/{projectId}` ProjectMeta routing projection.

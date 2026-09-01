@@ -32,7 +32,7 @@ export const fireuxSolutions: FireuxMetaSolution[] = [
       ],
       cta: {
         label: 'Open Project Workspace',
-        to: '/workspace/project',
+        to: '/',
         icon: 'i-lucide-arrow-right',
       },
       keywords: [

@@ -1,22 +1,31 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-index">
-    <WorkspaceKitchenNav :state="state" :derived="derived" />
-    <WorkspaceKitchen
-      :state="state"
-      :derived="derived"
-      :refresh="actions.refresh"
-    />
-    <WorkspaceHero
-      title="Build your Kitchen Workspace"
-      description="Build and operate your Kitchen from one Workspace."
-    />
-    <WorkspaceKitchenIndexAI
-      :workspace-state="state"
-      :workspace-derived="derived"
-    />
-    <WorkspaceKitchenOperations />
-    <WorkspaceKitchenTools :state="state" :derived="derived" />
-    <WorkspaceKitchenDiscovery />
+    <template #header>
+      <WorkspaceKitchenNav :state="state" :derived="derived" />
+    </template>
+    <template #body>
+      <WorkspaceKitchenSelector
+        :state="state"
+        :derived="derived"
+        :refresh="actions.refresh"
+      />
+      <WorkspaceHero
+        title="Build your Kitchen Workspace"
+        description="Build and operate your Kitchen from one Workspace."
+      />
+      <WorkspaceKitchenIndexAI
+        :workspace-state="state"
+        :workspace-derived="derived"
+      />
+      <WorkspaceKitchen
+        :state="state"
+        :derived="derived"
+        :refresh="actions.refresh"
+      />
+      <WorkspaceKitchenTools :state="state" :derived="derived" />
+      <WorkspaceKitchenOperations />
+      <WorkspaceKitchenDiscovery />
+    </template>
   </UDashboardPanel>
 </template>
 

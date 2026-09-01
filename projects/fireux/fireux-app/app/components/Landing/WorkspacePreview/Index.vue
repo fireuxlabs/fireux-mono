@@ -4,7 +4,7 @@
     :items="operations"
     label="Interactive Project Workspace preview"
     navigation-label="Project Workspace"
-    workspace-to="/workspace/project"
+    workspace-to="/"
     open-workspace-aria-label="Open the full Project Workspace"
     @update:model-value="selectedSurfaceId = $event"
     @open-workspace="openFullProjectWorkspace"
@@ -99,6 +99,6 @@ const openFullProjectWorkspace = async (event: MouseEvent) => {
       type: 'demo',
     })
   }
-  await navigateTo('/workspace/project')
+  await navigateTo('/')
 }
 </script>

@@ -177,7 +177,7 @@ export async function run(ctx) {
   const projectWorkspaceSelector = readFileSync(
     path.join(
       repoRoot,
-      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector/Choices.vue'
     ),
     'utf8'
   )
@@ -191,7 +191,7 @@ export async function run(ctx) {
   const kitchenWorkspaceSelector = readFileSync(
     path.join(
       repoRoot,
-      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector/Choices.vue'
     ),
     'utf8'
   )

@@ -340,10 +340,13 @@ Inside `runtime/<entity>/components`:
 The entity-scoped destination is:
 
 - `runtime/<entity>/components/Workspace/Index.vue` for the Entity Workspace
-  controls and their composition
-- `runtime/<entity>/components/Workspace/Active.vue` for the selected Entity presentation
-- `runtime/<entity>/components/Workspace/Selector.vue` for the selectable Entity collection
-- `runtime/<entity>/components/Workspace/Create.vue` for the bounded creation doorway
+  main section and its composition
+- `runtime/<entity>/components/Workspace/Active.vue` for optional compact
+  selected-Entity presentation outside the main index body, such as a navbar title
+- `runtime/<entity>/components/Workspace/Selector.vue` for the complete Entity
+  selector shell; a nested `Selector/Choices.vue` may own the selectable collection
+- `runtime/<entity>/components/Workspace/Crud.vue` for domain composition of the
+  shared CRUD operations, including the bounded creation doorway
 - `runtime/<entity>/components/Workspace/Overview`
 - `runtime/<entity>/components/Workspace/Identity`
 - `runtime/<entity>/components/Workspace/Team`

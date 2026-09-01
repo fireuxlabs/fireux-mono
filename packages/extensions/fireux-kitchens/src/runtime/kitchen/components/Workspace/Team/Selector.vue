@@ -13,16 +13,6 @@
       class="w-fit max-w-full"
       @update:model-value="actions.selectTeamMember(String($event))"
     />
-
-    <UButton
-      v-if="derived.canCreateTeamMember"
-      icon="i-lucide-plus"
-      color="neutral"
-      variant="ghost"
-      aria-label="Add Team member"
-      title="Add Team member"
-      @click="actions.openCreateTeamMember"
-    />
   </section>
 </template>
 

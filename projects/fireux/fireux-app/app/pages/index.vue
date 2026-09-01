@@ -1,22 +1,31 @@
 <template>
   <UDashboardPanel id="workspace-project-index">
-    <WorkspaceProjectNav :state="state" :derived="derived" />
-    <WorkspaceProject
-      :state="state"
-      :derived="derived"
-      :refresh="actions.refresh"
-    />
-    <WorkspaceHero
-      title="Build your Project Workspace"
-      description="Build and operate your Project from one Workspace."
-    />
-    <WorkspaceProjectIndexAI
-      :workspace-state="state"
-      :workspace-derived="derived"
-    />
-    <WorkspaceProjectOperations />
-    <WorkspaceProjectTools :state="state" :derived="derived" />
-    <WorkspaceProjectDiscovery />
+    <template #header>
+      <WorkspaceProjectNav :state="state" :derived="derived" />
+    </template>
+    <template #body>
+      <WorkspaceProjectSelector
+        :state="state"
+        :derived="derived"
+        :refresh="actions.refresh"
+      />
+      <WorkspaceHero
+        title="Build your Project Workspace"
+        description="Build and operate your Project from one Workspace."
+      />
+      <WorkspaceProjectIndexAI
+        :workspace-state="state"
+        :workspace-derived="derived"
+      />
+      <WorkspaceProject
+        :state="state"
+        :derived="derived"
+        :refresh="actions.refresh"
+      />
+      <WorkspaceProjectTools :state="state" :derived="derived" />
+      <WorkspaceProjectOperations />
+      <WorkspaceProjectDiscovery />
+    </template>
   </UDashboardPanel>
 </template>
 

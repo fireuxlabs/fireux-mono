@@ -8,7 +8,7 @@
   >
     <template #footer>
       <UButton
-        to="/workspace/project"
+        to="/"
         icon="i-lucide-folder-plus"
         color="primary"
       >

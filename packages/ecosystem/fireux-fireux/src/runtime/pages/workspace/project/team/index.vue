@@ -1,35 +1,39 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
-    <WorkspaceProjectNav :state="state" :derived="derived" />
-    <WorkspaceProjectTeamSelector
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceHero
-      title="Build your Project Team"
-      description="Review the people connected to this Project and their Team roles."
-    />
-    <WorkspaceProjectTeamAI
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceProjectTeam
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceProjectTeamTools
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
-    <WorkspaceProjectTeamDiscovery
-      :state="state"
-      :derived="derived"
-      :actions="actions"
-    />
+    <template #header>
+      <WorkspaceProjectNav :state="state" :derived="derived" />
+    </template>
+    <template #body>
+      <WorkspaceProjectTeamSelector
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceHero
+        title="Build your Project Team"
+        description="Review the people connected to this Project and their Team roles."
+      />
+      <WorkspaceProjectTeamAI
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceProjectTeam
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceProjectTeamTools
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+      <WorkspaceProjectTeamDiscovery
+        :state="state"
+        :derived="derived"
+        :actions="actions"
+      />
+    </template>
   </UDashboardPanel>
 </template>
 

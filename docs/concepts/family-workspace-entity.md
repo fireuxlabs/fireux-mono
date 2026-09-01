@@ -65,13 +65,15 @@ field on either root or a generic owner of their records.
 Their Index introductions also prove the shared `WorkspaceHero` structural
 seam. Core owns its Nuxt UI page-header anatomy; each domain or ecosystem
 surface owns its copy, actions, and state beneath its actual owner. Kitchen
-and Project also share the Core-owned `WorkspaceAI` frame and Nuxt UI
-`UChatPrompt` interaction seam. Domains supply context, connected controls,
+and Project also share the Core-owned `WorkspaceAI` frame and
+`WorkspaceAIComposer` interaction seam. Root, Team, and Test surfaces use the
+same soft prompt, footer, submit, and suggestion-chip anatomy. Domains supply
+context, connected controls,
 messages, commands, and authority; the neutral frame and prompt anatomy must
 not fork merely because one family has more mature execution.
 An unavailable command remains visibly unavailable rather than being imitated.
-Kitchen owns the live `WorkspaceKitchen` selection, creation, target loading,
-and collection lifecycle. The Main App supplies its own copy directly to the
+Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
+target loading, and collection lifecycle. The Main App supplies its own copy directly to the
 shared `WorkspaceHero`, composes the Kitchen Workspace at `/`, and adds only
 its App-owned presentation and doorways from
 `app/components/Workspace/Kitchen`. Kitchen capability execution remains in
@@ -197,7 +199,8 @@ migration verification, and protected Workspace consumer are complete.
   Kitchen-owned. Domain
   packages own their transactions, so Core does not enumerate present or
   future Workspace families.
-- Index establishes the active Entity and owns its Create doorway. Overview,
+- Index establishes the active Entity. Its selector owns only selection; the
+  main `WorkspaceX` section owns `WorkspaceXCrud` and its Create doorway. Overview,
   Identity, Team, and Operations remain separate current-workspace concerns;
   Create is never a current-workspace menu peer.
   A family adds only sheets backed by a real lifecycle.
@@ -241,6 +244,14 @@ migration verification, and protected Workspace consumer are complete.
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
+Core owns one presentation primitive for each basic record operation:
+`WorkspaceCrudCreate`, `WorkspaceCrudRead`, `WorkspaceCrudUpdate`, and
+`WorkspaceCrudDelete`. `WorkspaceCrudToolbar` only composes those four in the
+fixed CRUD order; it is not the primitive boundary. Unavailable operations
+remain visible and disabled. The owning capability still decides availability,
+commands, modal content, authority, and any non-CRUD Tools. Project Test,
+Project Team, and Kitchen Team are the guarded proving consumers.
+
 ## Migration and drift register
 
 | Difference                                                                          | State      | Required direction                                                                                                                   |
@@ -255,8 +266,10 @@ Index outcome contract.
 Shared source names and their generated entry components:
 
 - `Workspace/Index.vue` → `WorkspaceX`
-- `WorkspaceXIndexActive`
-- `WorkspaceXIndexTargets`
+- `Workspace/Selector.vue` → `WorkspaceXSelector`
+- `Workspace/Selector/Choices.vue` → `WorkspaceXSelectorChoices`
+- `Workspace/Crud.vue` → `WorkspaceXCrud`
+- `Workspace/Active.vue` → `WorkspaceXActive`
 - `WorkspaceXOverview`
 - `useXWorkspace`
 - `useXWorkspaceIndex`
@@ -288,10 +301,13 @@ composition delta, not permission to fork the Workspace Index spine.
 
 ## Workspace selector presentation
 
-A Workspace page that exposes a bounded selectable set places that set directly
-below its Nav and before its Hero. The selector uses compact link tabs at the
-top-left, highlights the selected item, and keeps any proved create/add doorway
-beside the tabs.
+A Workspace index that exposes a bounded selectable set places
+`WorkspaceXSelector` directly below its Nav and before its Hero. The selector
+uses compact link tabs at the top-left and highlights the selected item; it
+does not own Create or other record operations. After Hero and AI,
+`WorkspaceX` owns `WorkspaceXCrud`; the Index does not add a second selected-
+Entity presentation between AI and CRUD. Tools, Operations, and Discovery
+follow in that order.
 
 The current proved sources are `project.test.strings`, `user.kitchens`,
 `user.projects`, `kitchen.team.teamMembers`, and
@@ -300,12 +316,12 @@ selection authority: Kitchen and Project selection may update the User's
 primary Entity through their trusted command, while Test and Team selection is
 temporary page focus.
 
-The plus doorway is shown only while the current AppUser subscription has
-capacity for that set. Each App owns its capability-keyed Free, Premium, and
-Business limits; Core owns only the config shape and resolver. The limit
-governs capacity only. Each domain still owns its create Tool and trusted
-command, and a plus must remain unavailable when that mutation authority is not
-proved.
+The selector plus doorway is shown only when the current AppUser has the
+Business/unbounded selection entitlement and the domain proves remaining
+creation capacity and mutation authority. Each App owns its capability-keyed
+Free, Premium, and Business limits; Core owns only the config shape and
+resolver. The CRUD Create operation remains visible while its future guard is
+unproved; this presentation rule does not bypass the trusted creation command.
 
 ## Capability composable evolution
 

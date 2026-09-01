@@ -1732,7 +1732,7 @@ export async function run(ctx) {
     'label="Interactive Project Workspace preview"',
     ':items="operations"',
     'navigation-label="Project Workspace"',
-    'workspace-to="/workspace/project"',
+    'workspace-to="/"',
     'open-workspace-aria-label="Open the full Project Workspace"',
     '<UAvatar',
     'v-if="projectPill"',
@@ -1743,7 +1743,7 @@ export async function run(ctx) {
     'useProjectWorkspaceSelection',
     "type: 'demo'",
     'if (projectId)',
-    "await navigateTo('/workspace/project')",
+    "await navigateTo('/')",
   ]) {
     if (!fireuxWorkspacePreview.includes(required)) {
       violations.push(
@@ -2197,7 +2197,7 @@ export async function run(ctx) {
         "label: 'Get started'",
         "label: 'Go to workspace'",
         "to: '/get-started'",
-        "to: '/workspace/project'",
+        "to: '/'",
       ],
       forbidden: ['#specifics', '#tools', 'toolsCatalogue', "to: '/tools"],
     },

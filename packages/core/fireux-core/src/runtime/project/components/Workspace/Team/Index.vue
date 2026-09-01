@@ -1,6 +1,6 @@
 <template>
   <UPageSection id="project-team-members" title="Team" class="py-4 sm:py-4">
-    <WorkspaceProjectCrudToolbar
+    <WorkspaceCrudToolbar
       label="Project Team"
       :available="derived.hasSelection ? ['read'] : []"
       @read="actions.refresh"

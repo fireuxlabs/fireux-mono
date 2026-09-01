@@ -87,7 +87,7 @@ export const sourceMeta = {
         'FireUX also publishes the Apps, Ecosystems, Modules, Solutions, and Operations that make up the wider platform.',
       primaryAction: {
         label: 'Open Project Workspace',
-        to: '/workspace/project',
+        to: '/',
       },
       secondaryAction: {
         label: 'Browse modules',
@@ -255,7 +255,7 @@ export const sourceMeta = {
         { label: 'Workspace Entry', path: '/workspace', kind: 'workspace' },
         {
           label: 'Project Workspace',
-          path: '/workspace/project',
+          path: '/',
           kind: 'workspace',
         },
         {

@@ -1,27 +1,16 @@
 <template>
   <div
     v-if="pending || sortedMembers.length"
-    ref="peopleCollection"
     tabindex="-1"
     class="outline-none"
   >
     <UCard :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <h2 class="text-base font-semibold text-highlighted">People</h2>
-            <span class="text-sm tabular-nums text-dimmed">
-              {{ sortedMembers.length }}
-            </span>
-          </div>
-          <div role="toolbar" aria-label="People tools">
-            <UNavigationMenu
-              :items="readTools"
-              orientation="horizontal"
-              content-orientation="vertical"
-              aria-label="People read tools"
-            />
-          </div>
+        <div class="flex items-center gap-3">
+          <h2 class="text-base font-semibold text-highlighted">People</h2>
+          <span class="text-sm tabular-nums text-dimmed">
+            {{ sortedMembers.length }}
+          </span>
         </div>
       </template>
 
@@ -70,14 +59,6 @@
 
           <div class="flex shrink-0 items-center gap-1">
             <UButton
-              label="Edit"
-              icon="i-lucide-pencil"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              @click="emit('edit', member)"
-            />
-            <UButton
               v-if="!member.user_id"
               label="Invite"
               icon="i-lucide-link"
@@ -88,17 +69,6 @@
               :disabled="Boolean(invitingMemberId)"
               @click="emit('invite', member)"
             />
-            <UButton
-              v-if="member.role !== 'owner'"
-              label="Deactivate"
-              icon="i-lucide-user-minus"
-              color="error"
-              variant="ghost"
-              size="sm"
-              :loading="deletingMemberId === member.id"
-              :disabled="Boolean(deletingMemberId)"
-              @click="emit('delete', member)"
-            />
           </div>
         </li>
       </ul>
@@ -107,8 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { KitchenTeamMember } from '../../../utils/team.ts'
 import { resolveKitchenTeamMemberAnchor } from '../../../utils/team-member-anchor'
 
@@ -117,43 +86,17 @@ const props = withDefaults(
     members?: KitchenTeamMember[]
     pending?: boolean
     invitingMemberId?: string
-    deletingMemberId?: string
   }>(),
   {
     members: () => [],
     pending: false,
     invitingMemberId: '',
-    deletingMemberId: '',
   }
 )
 
 const emit = defineEmits<{
-  edit: [member: KitchenTeamMember]
   invite: [member: KitchenTeamMember]
-  delete: [member: KitchenTeamMember]
 }>()
-
-const peopleCollection = ref<HTMLElement | null>(null)
-const readTools: NavigationMenuItem[] = [
-  {
-    label: 'Read',
-    icon: 'i-lucide-eye',
-    children: [
-      {
-        label: 'View people',
-        description: 'View the current Kitchen Team collection.',
-        icon: 'i-lucide-users',
-        onSelect: () => {
-          peopleCollection.value?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          })
-          peopleCollection.value?.focus({ preventScroll: true })
-        },
-      },
-    ],
-  },
-]
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const memberName = (member: KitchenTeamMember) => normalizeString(member.name)

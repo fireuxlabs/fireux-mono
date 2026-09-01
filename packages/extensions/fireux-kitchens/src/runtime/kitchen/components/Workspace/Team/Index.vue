@@ -1,21 +1,18 @@
 <template>
   <UPageSection title="Team" class="py-4 sm:py-4">
-    <pre>
-CRUD:
-Create:
-Read:
-Update:
-Delete:
-Main local tools:</pre
-    >
+    <WorkspaceCrudToolbar
+      label="Kitchen Team"
+      :available="available"
+      @create="actions.openCreateTeamMember"
+      @read="actions.refresh"
+      @update="selectedMember && editMember(selectedMember)"
+      @delete="selectedMember && confirmDeleteMember(selectedMember)"
+    />
     <WorkspaceKitchenTeamRead
       :members="teamMembers"
       :pending="pending"
       :inviting-member-id="invitingMemberId"
-      :deleting-member-id="deletingMemberId"
-      @edit="editMember"
       @invite="inviteMember"
-      @delete="confirmDeleteMember"
     />
 
     <UAlert
@@ -141,6 +138,21 @@ const props = defineProps<{
 
 const teamMembers = computed(() => props.state.team.members)
 const pending = computed(() => props.derived.outcome === 'pending')
+const selectedMember = computed(() =>
+  teamMembers.value.find(
+    (member) => member.id === props.state.team.selectedTeamMemberId
+  )
+)
+const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
+  () => [
+    ...(props.derived.canCreateTeamMember ? (['create'] as const) : []),
+    ...(props.derived.hasSelection ? (['read'] as const) : []),
+    ...(selectedMember.value ? (['update'] as const) : []),
+    ...(selectedMember.value?.role !== 'owner' && selectedMember.value
+      ? (['delete'] as const)
+      : []),
+  ]
+)
 const toast = useToast()
 const editOpen = ref(false)
 const editingMember = ref<KitchenTeamMember | null>(null)

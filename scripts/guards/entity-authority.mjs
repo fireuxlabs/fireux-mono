@@ -977,15 +977,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const projectCreateComponent = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Create.vue'
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue'
   )
   const projectSelector = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector/Choices.vue'
   )
   const kitchenSelector = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector/Choices.vue'
   )
   const kitchenOnboardingCommands = read(
     repoRoot,
@@ -1089,7 +1089,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /useWorkspace\(|workspace\.activate\(/
   )
   assert.doesNotMatch(projectCreateClient, /useProjectWorkspace\(/)
-  assert.match(projectCreateComponent, /await props\.refresh\?\.\(\)/)
+  assert.match(projectCreateComponent, /await props\.refresh\(\)/)
   assert.doesNotMatch(
     projectCreateClient,
     /useFirestore|setDoc|addDoc|updateDoc/
@@ -1107,9 +1107,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const kitchenWorkspaceCreate = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Create.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue'
   )
-  assert.match(kitchenWorkspaceCreate, /to="\/workspace\/kitchen\/create"/)
+  assert.match(kitchenWorkspaceCreate, /navigateTo\('\/workspace\/kitchen\/create'\)/)
   assert.doesNotMatch(
     kitchenWorkspaceCreate,
     /useKitchenCreate|usePlaceUpdate|useFirestore|watch\(/
@@ -1118,7 +1118,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Index.vue'
   )
-  assert.match(kitchenWorkspaceIndex, /v-if="derived\.canCreate"/)
+  assert.match(kitchenWorkspaceCreate, /['"]create['"],/)
   assert.doesNotMatch(kitchenWorkspaceIndex, /incompleteKitchen|placeId/)
   assert.equal(
     kitchenOnboardingCommands.match(/resolveAppUserKitchenState\(/g)?.length,
