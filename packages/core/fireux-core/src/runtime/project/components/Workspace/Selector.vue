@@ -17,8 +17,8 @@ import { computed, watchEffect } from 'vue'
 import { useToast } from '#imports'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useWorkspace } from '../../../composables/fireux/workspace/useWorkspace'
-import { useProjectCollection } from '../../composables/useProjectCollection'
 import type { ProjectWorkspaceIndexState } from '../../composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspaceChoices } from '../../composables/workspace/index/useProjectWorkspaceChoices'
 
 const props = defineProps<{
   project: ProjectWorkspaceIndexState['project']
@@ -32,11 +32,10 @@ const toast = useToast()
 const showChoices = computed(
   () => props.canSelectMultiple || props.projectIds.length > 1
 )
-const targets = useProjectCollection({
-  filter: computed(() =>
-    showChoices.value ? { ids: props.projectIds } : { ids: [] }
-  ),
-})
+const targets = useProjectWorkspaceChoices(
+  showChoices,
+  () => props.projectIds
+)
 const projects = computed(() =>
   showChoices.value
     ? targets.projects.value.map((item) => ({

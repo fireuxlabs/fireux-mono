@@ -20,7 +20,11 @@ export async function deleteKitchenTeamMember(
   const actor = await readKitchenMutationActor(event)
   let name = ''
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      mutations,
+      actor,
+      kitchenId
+    )
     const members = serverKitchenTeamMembersTarget(kitchenId)
     const member = await mutations.read<Record<string, unknown>>(
       members,
@@ -31,11 +35,20 @@ export async function deleteKitchenTeamMember(
         statusCode: 404,
         statusMessage: 'Team member not found.',
       })
-    if (text(member.data?.user_id)) {
+    if (text(member.data?.role) === 'owner') {
       throw createError({
         statusCode: 409,
         statusMessage:
-          'Linked Team members cannot be deleted. Unlinking access requires a separate capability.',
+          'The Kitchen owner cannot be deactivated through Team management.',
+      })
+    }
+    if (
+      text(member.data?.user_id) === actor.uid &&
+      authority.teamRole !== 'owner'
+    ) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'An operator cannot deactivate their own access.',
       })
     }
     name = text(member.data?.name) || 'Team member'
@@ -57,7 +70,14 @@ export async function deleteKitchenTeamMember(
         })
       }
     }
-    mutations.delete(members, memberId)
+    mutations.update(members, memberId, {
+      active: false,
+      status: 'inactive',
+      user_id: '',
+      deactivated_by: actor.uid,
+      deactivated_at: serverAuditStamp({ by: actor.uid }).at,
+      updated: serverAuditStamp({ by: actor.uid }),
+    })
   })
-  return { ok: true as const, memberId, name }
+  return { ok: true as const, memberId, name, status: 'inactive' as const }
 }

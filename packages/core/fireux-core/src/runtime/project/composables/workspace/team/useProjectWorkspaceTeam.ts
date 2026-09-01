@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { provideProjectTeamContext } from 'fireux-core/runtime/project/composables/workspace/team/useProjectTeamContext'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from '../../../../utils/string'
+import { provideProjectTeamContext } from './useProjectTeamContext'
 
 export function useProjectWorkspaceTeam() {
   const team = provideProjectTeamContext()
@@ -25,11 +25,24 @@ export function useProjectWorkspaceTeam() {
         : team.selectedProject.value
           ? ('ready' as const)
           : ('empty' as const),
+    error: team.error.value?.message || '',
     hasSelection: Boolean(team.selectedProject.value),
     teamMemberLimit: team.teamMemberLimit.value,
     canCreateTeamMember: team.canCreateTeamMember.value,
     teamMemberCapacityReached: team.teamMemberCapacityReached.value,
   }))
 
-  return { state, derived, actions: { refresh: team.refresh } }
+  function selectTeamMember(memberId: string) {
+    team.selectedTeamMemberId.value = team.members.value.some(
+      (member) => member.id === memberId
+    )
+      ? memberId
+      : ''
+  }
+
+  return {
+    state,
+    derived,
+    actions: { refresh: team.refresh, selectTeamMember },
+  }
 }

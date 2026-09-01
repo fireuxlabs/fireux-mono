@@ -1,4 +1,4 @@
-import { useCookie, useState } from '#imports'
+import { onNuxtReady, useCookie, useNuxtApp, useState } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../../app/composables/config/FireUXConfig'
 import { normalizeString } from '../../../utils/string'
@@ -15,6 +15,7 @@ export type WorkspaceChoice = {
 }
 
 export function useWorkspace(workspace: string) {
+  const nuxtApp = useNuxtApp()
   const appId = normalizeWorkspace(useFireUXConfig().appId) || 'app'
   const workspaceId = normalizeWorkspace(workspace)
   const key = `fireux-workspace-${appId}-${workspaceId}`
@@ -30,20 +31,32 @@ export function useWorkspace(workspace: string) {
   )
   const activeImage = useState<string>(`${key}-current-image`, () => '')
   const activeStatus = useState<string>(`${key}-current-status`, () => '')
+  const resolved = useState<boolean>(`${key}-resolved`, () => false)
   const requestedId = useState<string>(`${key}-requested-id`, () => '')
   const choices = useState<WorkspaceChoice[]>(`${key}-choices`, () => [])
+
+  const afterHydration = (publish: () => void) => {
+    if (import.meta.client && nuxtApp.isHydrating) {
+      onNuxtReady(publish)
+      return
+    }
+    publish()
+  }
 
   const activate = (id: string, name = '', description = '', image = '') => {
     const value = normalizeString(id)
     const nextName = normalizeString(name)
     const nextDescription = normalizeString(description)
     const nextImage = normalizeString(image)
-    if (activeId.value !== value) activeStatus.value = ''
-    activeId.value = value
-    activeName.value = value ? nextName : ''
-    activeDescription.value = value ? nextDescription : ''
-    activeImage.value = value ? nextImage : ''
-    cookie.value = value
+    afterHydration(() => {
+      if (activeId.value !== value) activeStatus.value = ''
+      activeId.value = value
+      activeName.value = value ? nextName : ''
+      activeDescription.value = value ? nextDescription : ''
+      activeImage.value = value ? nextImage : ''
+      cookie.value = value
+      resolved.value = true
+    })
   }
 
   return {
@@ -52,6 +65,7 @@ export function useWorkspace(workspace: string) {
     activeDescription: computed(() => activeDescription.value),
     activeImage: computed(() => activeImage.value),
     activeStatus: computed(() => activeStatus.value),
+    pending: computed(() => !resolved.value),
     requestedId: computed(() => requestedId.value),
     choices: computed(() => choices.value),
     activate,
@@ -65,11 +79,16 @@ export function useWorkspace(workspace: string) {
       choices.value = nextChoices
     },
     setActiveStatus: (status: string) => {
-      activeStatus.value = activeId.value ? normalizeString(status) : ''
+      const value = normalizeString(status)
+      afterHydration(() => {
+        activeStatus.value = activeId.value ? value : ''
+      })
     },
     clearActive: () => {
       activate('')
-      activeStatus.value = ''
+      afterHydration(() => {
+        activeStatus.value = ''
+      })
     },
   }
 }

@@ -29,6 +29,7 @@ const props = defineProps<{
 }>()
 
 const entityTools = computed(() => {
+  if (props.derived.outcome === 'pending') return []
   const tools = []
   if (props.derived.hasSelection) {
     tools.push({

@@ -169,8 +169,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(
     kitchenModel.replace(/\s+/g, ' ').trim(),
-    "export type Kitchen = { id: string slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
-    'Kitchen must retain only its minimal shell identity; Place and capability data belong to their own models.'
+    "export const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const export type KitchenIdentitySource = (typeof KITCHEN_IDENTITY_SOURCES)[number] export type Kitchen = { id: string identity_source: KitchenIdentitySource slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
+    'Kitchen must retain only its minimal shell identity and identity relationship source; Place and capability data belong to their own models.'
   )
   assert.match(workspaceCreate, /to="\/workspace\/kitchen\/create"/)
   const workspaceCreatePage = read(
@@ -199,6 +199,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(kitchenCreate, /createKitchenShell/)
   assert.match(kitchenCreate, /intent:\s*'create_shell'/)
   assert.match(kitchenCreate, /onboarding\/shell/)
+  assert.match(
+    onboardingCommands,
+    /identity_source:\s*'place'/,
+    'Place-selected Kitchen onboarding must persist place-owned identity provenance.'
+  )
+  assert.match(
+    onboardingCommands,
+    /identity_source:\s*'user'/,
+    'Explicit Kitchen shell creation must persist user-owned identity provenance.'
+  )
   assert.doesNotMatch(
     kitchenOnboardingController,
     /\/api\/places\//,

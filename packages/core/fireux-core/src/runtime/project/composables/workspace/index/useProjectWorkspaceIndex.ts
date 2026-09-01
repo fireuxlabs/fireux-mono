@@ -118,11 +118,14 @@ export function useProjectWorkspaceIndex() {
   })
 
   watch(
-    () => [primaryProjectId.value, state.value.project] as const,
-    ([primaryId, project]: readonly [
+    () =>
+      [derived.value.outcome, primaryProjectId.value, state.value.project] as const,
+    ([outcome, primaryId, project]: readonly [
+      ProjectWorkspaceIndexDerived['outcome'],
       string,
       ProjectWorkspaceIndexState['project'],
     ]) => {
+      if (outcome === 'pending') return
       if (!primaryId || project.id !== primaryId) {
         if (!primaryId) workspace.clearActive()
         return

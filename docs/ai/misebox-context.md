@@ -72,9 +72,11 @@ Registration is guarded by `scripts/guards/ecosystem.mjs`,
 
 ## Kitchen and Place
 
-- Canonical Kitchen domain identity is exactly `id`, `slug`, `status`, and
-  `visibility`; audit stamps and proved Kitchen operation configuration remain
-  separate root concerns.
+- Canonical Kitchen domain identity is exactly `id`, `identity_source`, `slug`,
+  `status`, and `visibility`; audit stamps and proved Kitchen operation
+  configuration remain separate root concerns. `identity_source` is `user` for
+  an explicitly created shell and `place` when onboarding selects a Place; it
+  is independent of Place classification.
 - A name-only Kitchen shell may use a generated id while being manifested, but
   its name is persisted on the same-id Place rather than copied onto Kitchen.
 - Same-id Place owns venue name, tagline/presentation, address/geo, media,

@@ -34,6 +34,16 @@
 </template>
 
 <script setup lang="ts">
+import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+
+defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const links = [
   { label: 'Evidence', to: '/search-demand' },
   { label: 'Analysis', to: '/search-demand/analysis' },

@@ -8,7 +8,6 @@
       :image-shade="place.image_shade"
       :name="place.name"
       :formatted-address="address"
-      :source="place.source"
       :show-badges="false"
       :show-body="false"
     />

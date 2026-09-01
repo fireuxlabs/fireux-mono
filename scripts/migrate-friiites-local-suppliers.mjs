@@ -222,7 +222,6 @@ const stamp = { at: now, by: ACTOR }
 for (const supplier of manifest.suppliers) {
   const place = supplier.place
   await mcpSkillCreate(app, targetFor('places', ['create']), place.id, {
-    source: 'fireux',
     name: place.name,
     short_name: supplier.organization_name,
     about: supplier.summary,

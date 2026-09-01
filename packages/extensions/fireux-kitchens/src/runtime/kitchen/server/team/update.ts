@@ -10,6 +10,7 @@ import {
 
 export type KitchenTeamMemberChanges = {
   name: string
+  role?: 'operator' | 'member'
 }
 
 export type UpdateKitchenTeamMemberInput = {
@@ -50,7 +51,20 @@ function parseUpdate(input: KitchenTeamMemberUpdate) {
       statusMessage: 'Team member name must be 120 characters or fewer.',
     })
   }
-  return { memberId, changes: { name } }
+  const rawRole = String(input?.changes?.role ?? '').trim()
+  if (rawRole && rawRole !== 'operator' && rawRole !== 'member') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Team member role must be operator or member.',
+    })
+  }
+  return {
+    memberId,
+    changes: {
+      name,
+      ...(rawRole ? { role: rawRole as 'operator' | 'member' } : {}),
+    },
+  }
 }
 
 export async function updateKitchenTeamMember(
@@ -95,7 +109,11 @@ export async function updateKitchenTeamMembers(
 
   const actor = await readKitchenMutationActor(event)
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    await requireKitchenMutationAuthority(mutations, actor, kitchenId)
+    const authority = await requireKitchenMutationAuthority(
+      mutations,
+      actor,
+      kitchenId
+    )
     const members = serverKitchenTeamMembersTarget(kitchenId)
     const existing = await Promise.all(
       updates.map((update) => mutations.read(members, update.memberId))
@@ -106,10 +124,35 @@ export async function updateKitchenTeamMembers(
         statusMessage: 'One or more Team members no longer exist.',
       })
     }
-    for (const update of updates) {
+    for (const [index, update] of updates.entries()) {
+      const currentRole = String(existing[index]?.data?.role ?? '').trim()
+      const currentUserId = String(existing[index]?.data?.user_id ?? '').trim()
+      if (currentRole === 'owner' && currentUserId !== actor.uid) {
+        throw createError({
+          statusCode: 403,
+          statusMessage:
+            'Only the Kitchen owner can update their owner record.',
+        })
+      }
+      if (update.changes.role && currentRole === 'owner') {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'The Kitchen owner role cannot be changed here.',
+        })
+      }
+      if (
+        (currentRole === 'operator' || update.changes.role === 'operator') &&
+        authority.teamRole !== 'owner'
+      ) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'Only the Kitchen owner can grant operator access.',
+        })
+      }
       mutations.update(members, update.memberId, {
         name: update.changes.name,
         display_name: update.changes.name,
+        ...(update.changes.role ? { role: update.changes.role } : {}),
         updated: serverAuditStamp({ by: actor.uid }),
       })
     }

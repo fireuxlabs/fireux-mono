@@ -2,7 +2,9 @@ import { useAsyncData } from '#imports'
 import {
   computed,
   inject,
+  nextTick,
   provide,
+  watch,
   type ComputedRef,
   type InjectionKey,
   type Ref,
@@ -12,8 +14,11 @@ import { useCurrentAppContext } from '../../../../app/composables/useCurrentAppC
 import { useFireUXConfig } from '../../../../app/composables/config/FireUXConfig'
 import type { AppUserSubscription } from '../../../../app/models/app-user.model'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
-import { useProjectWorkspace } from '../core/useProjectWorkspace'
+import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspaceTeam } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
+import { normalizeString } from '../../../../utils/string'
+import type { Project } from '../../../models/project.model'
+import { useProjectDetail } from '../../useProjectDetail'
 
 export type ProjectTeamMemberSummary = {
   id: string
@@ -29,12 +34,10 @@ type ProjectTeamResponse = {
   members: ProjectTeamMemberSummary[]
 }
 
-type ProjectWorkspace = ReturnType<typeof useProjectWorkspace>
-
 export type ProjectWorkspaceTeam = {
-  selectedProject: ProjectWorkspace['selection']['project']
-  projectId: ProjectWorkspace['selection']['projectId']
-  members: ComputedRef<ProjectTeamMemberSummary[]>
+  selectedProject: ReturnType<typeof useProjectDetail>['project']
+  projectId: ComputedRef<string>
+  members: ComputedRef<readonly ProjectTeamMemberSummary[]>
   count: ComputedRef<number>
   selectedTeamMember: ComputedRef<ProjectTeamMemberSummary | null>
   selectedTeamMemberId: Ref<string>
@@ -43,33 +46,60 @@ export type ProjectWorkspaceTeam = {
   canCreateTeamMember: ComputedRef<boolean>
   teamMemberCapacityReached: ComputedRef<boolean>
   pending: ComputedRef<boolean>
-  error: Ref<Error | undefined>
+  error: ComputedRef<Error | undefined>
   refresh: () => Promise<void>
 }
 
 function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
-  const { selection, runtime } = useProjectWorkspace()
   const { currentUser, hasAuthState } = useAuth()
-  const { membership } = useCurrentAppContext()
+  const appContext = useCurrentAppContext()
+  const membership = appContext.membership
+  const workspace = useWorkspace('project')
   const fireux = useFireUXConfig()
+  const primaryProjectId = computed(
+    () => membership.value?.primary_project || ''
+  )
+  const current = useProjectDetail(primaryProjectId)
+  const selectedProject = current.project
+  const projectId = computed(() => normalizeString(selectedProject.value?.id))
+
+  watch(
+    [primaryProjectId, selectedProject],
+    ([primaryId, project]: [string, Project | null]) => {
+      if (!primaryId || project?.id !== primaryId) {
+        if (!primaryId) workspace.clearActive()
+        return
+      }
+      workspace.activate(
+        normalizeString(project.id),
+        normalizeString(project.name),
+        normalizeString(project.description),
+        normalizeString(project.image_url)
+      )
+      workspace.setActiveStatus(project.status || '')
+    },
+    { immediate: true }
+  )
+
   const requestKey = computed(
-    () => `project-team-${selection.projectId.value || 'none'}`
+    () =>
+      `project-team-${currentUser.value?.uid || 'anonymous'}-${projectId.value || 'none'}`
   )
   const {
     data,
     pending: requestPending,
-    error,
-    refresh,
+    error: requestError,
+    refresh: refreshTeam,
   } = useAsyncData<ProjectTeamResponse>(
     requestKey,
     async () => {
       const user = currentUser.value
-      const projectId = selection.projectId.value
-      if (!user || !projectId || runtime.isDemo.value) {
-        return { ok: true, project_id: projectId, members: [] }
+      const id = projectId.value
+      if (!user || !id) {
+        return { ok: true, project_id: id, members: [] }
       }
       return $fetch<ProjectTeamResponse>(
-        `/api/internal/control/projects/${encodeURIComponent(projectId)}/team`,
+        `/api/internal/control/projects/${encodeURIComponent(id)}/team`,
         {
           headers: { authorization: `Bearer ${await user.getIdToken()}` },
         }
@@ -77,11 +107,23 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
     },
     {
       server: false,
-      watch: [currentUser, hasAuthState, selection.projectId, runtime.isDemo],
+      watch: [currentUser, hasAuthState, projectId],
     }
   )
   const members = computed(() => data.value?.members ?? [])
-  const pending = computed(() => !hasAuthState.value || requestPending.value)
+  const pending = computed(
+    () =>
+      !hasAuthState.value ||
+      appContext.pending.value ||
+      current.pending.value ||
+      requestPending.value
+  )
+  const error = computed<Error | undefined>(() => {
+    const cause =
+      requestError.value ?? appContext.error.value ?? current.error.value
+    if (!cause) return undefined
+    return cause instanceof Error ? cause : new Error(String(cause))
+  })
   const subscription = computed(() => membership.value?.subscription || 'free')
   const teamMemberLimit = computed(() =>
     appSubscriptionCapacity(
@@ -90,18 +132,25 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
       subscription.value
     )
   )
-  const team = useWorkspaceTeam({
-    target: selection.project,
-    targetId: selection.projectId,
-    readOnly: runtime.readOnly,
-    canWrite: runtime.canWrite,
+  const team = useWorkspaceTeam<ProjectTeamMemberSummary>({
+    target: selectedProject,
+    targetId: projectId,
+    readOnly: computed(() => true),
+    canWrite: computed(() => false),
     members,
     memberLimit: teamMemberLimit,
   })
 
+  async function refresh() {
+    await appContext.refresh()
+    await nextTick()
+    await current.refresh()
+    await refreshTeam()
+  }
+
   return {
-    selectedProject: selection.project,
-    projectId: selection.projectId,
+    selectedProject,
+    projectId,
     members: team.members,
     count: team.count,
     selectedTeamMember: team.selectedTeamMember,

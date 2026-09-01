@@ -106,7 +106,7 @@ const humanTools = [
     complete: false,
   },
   {
-    name: 'Delete member',
+    name: 'Deactivate member',
     placement: 'Record or detail page',
     complete: false,
   },

@@ -192,6 +192,7 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       const stamp = serverAuditStamp({ by: current.uid, appId: current.appId })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+        identity_source: 'place',
         slug,
         status: 'active',
         visibility: false,
@@ -319,12 +320,12 @@ export async function createKitchenShell(event: H3Event, input: unknown) {
         name,
         slug,
         place_type: 'non_physical',
-        source: 'manual',
         entity_families: ['kitchen'],
         created,
         updated: serverAuditStamp({ by: current.uid }),
       })
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId, {
+        identity_source: 'user',
         slug,
         status: 'active',
         visibility: false,

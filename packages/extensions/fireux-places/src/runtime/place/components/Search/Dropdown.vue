@@ -16,7 +16,6 @@
         :address="resolveAddress(cell)"
         :image-url="resolveImageUrl(cell)"
         :image-shade="cell.imageShade"
-        :source="cell.source || 'fireux'"
         @select="onSelect(cell)"
       />
     </template>
@@ -40,8 +39,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { PlaceCard } from '../../composables/firestore/utils/view/usePlaceInterface';
-import type { PlaceSource } from '../../models/place.model.ts'
-import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import type { BasePlace, PlaceSearchSource } from '../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../utils/place-spine'
 
 
@@ -92,7 +90,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     image_shade: (card.imageShade as PlaceImageShade) ?? 'none',
     claimed_by: (card.claimedBy as string) ?? '',
     slug: String((card as any).slug || ''),
-    source: (card.source as PlaceSource) ?? 'fireux',
+    source: (card.source as PlaceSearchSource) ?? 'fireux',
     entity_families: [],
   }
 }

@@ -226,7 +226,6 @@ export async function fetchVerifiedGooglePlacePayload(
   const priceLevel = Number(result.price_level)
 
   return {
-    source: 'fireux',
     name,
     lat,
     lng,

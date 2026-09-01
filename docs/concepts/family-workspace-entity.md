@@ -83,9 +83,11 @@ receive Entity names, subscription rules, or capability configuration.
 
 Canonical storage follows the Entity boundary. Project owns
 `projects/{projectId}/team/{uid}`. Kitchen owns
-`kitchens/{kitchenId}/team/{uid}` while its five-field root remains exactly
-`id`, `name`, `slug`, `status`, and `visibility`. A Place-backed Kitchen uses
-its same-ID Place for venue identity; a name-only shell may be enriched later.
+`kitchens/{kitchenId}/team/{uid}` while its five-field domain model remains
+exactly `id`, `identity_source`, `slug`, `status`, and `visibility`. A
+Place-backed Kitchen uses its same-ID Place for venue identity; a name-only
+shell may be enriched later. `identity_source` records `user` or `place`
+onboarding and is independent of Place classification.
 A Kitchen capability owns its configuration and records beneath the
 Kitchen only after that destination and its consumers are proved. Existing
 Kitchen root fields and App-nested support are migration preimages, not a
@@ -123,8 +125,12 @@ migration verification, and protected Workspace consumer are complete.
   not move under Workspace merely because it consumes them.
 
 - `useWorkspace(workspace)` persists only one active Entity id and exposes
-  activate/clear actions. It owns no directory, authority query, source mode,
-  storage routing, runtime anatomy, or debug projection.
+  activate/clear actions. It begins unresolved and those actions resolve the
+  shared Workspace presentation, so direct capability routes inherit the same
+  loading contract without page-owned pending flags. Core defers presentation
+  publication until client hydration completes. It owns no directory,
+  authority query, source mode, storage routing, runtime anatomy, or debug
+  projection.
 - Each domain's `useXWorkspaceIndex` proves access through its authoritative
   AppUser relationship, reuses the current App context for the explicit Entity
   id array and `primary_<family>` id, and reads at most that primary Entity.
@@ -222,15 +228,15 @@ migration verification, and protected Workspace consumer are complete.
 
 ## Accepted deltas
 
-| Delta                                                        | State      | Why it exists                                                                                                                                                                    | Evidence or owner                                                                                             |
-| ------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration         | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                             |
-| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list                                                    | `useKitchenWorkspaceTeam` and `Workspace/Kitchen/Team`                                                        |
-| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                               | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
-| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                                     | `projects/fireux/fireux-blank`                                                                                |
-| Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's owner Team authority; publication and further product composition remain separate lifecycles          | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
-| Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in Team access to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate | Shared Workspace state/Navbar plus family Workspace readers                                                   |
-| Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                  | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
+| Delta                                                        | State      | Why it exists                                                                                                                                                                                                                                       | Evidence or owner                                                                                             |
+| ------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Place-backed Kitchen identity uses its same-id Place         | `accepted` | A Place-backed Kitchen is the operation at one Place; a name-only Kitchen shell may begin without Place identity, while capability records own operational configuration                                                                            | Kitchen and Place models plus `scripts/guards/kitchen-entity.mjs`                                             |
+| Kitchen Team adds operational roles to shared Team authority | `accepted` | Kitchen uses the same access-granting Team record and adds kitchen-specific people/role fields without another authority list. Deactivation revokes invitations and linked access while preserving the operational member record and audit history. | `useKitchenWorkspaceTeam`, Kitchen Team server commands, and `Workspace/Kitchen/Team`                         |
+| Supplier, Portfolio, and Property Team are minimal today     | `accepted` | Their current Team pages expose root-owned Team truth without inventing domain people collections or edit controls                                                                                                                                  | family `useXWorkspaceTeam` adapters and `WorkspaceTeamPanel`                                                  |
+| Blank has no child Operations                                | `accepted` | Blank is a structural harness; its baked-in Team sheet projects existing access authority without inventing membership tools                                                                                                                        | `projects/fireux/fireux-blank`                                                                                |
+| Project Create produces an inactive empty shell              | `accepted` | The trusted FireUX command creates only the canonical Project and caller's owner Team authority; publication and further product composition remain separate lifecycles                                                                             | Project entity declaration, internal control-plane APIs, and Project Workspace Create                         |
+| Active root gates operational top-bar controls               | `accepted` | Calendar and Notifications require signed-in Team access to a selected root that completed its family onboarding lifecycle; presentation and publication readiness stay separate                                                                    | Shared Workspace state/Navbar plus family Workspace readers                                                   |
+| Capability families differ by domain                         | `accepted` | Each Workspace Entity exposes only capabilities backed by its own product records and authority                                                                                                                                                     | current source uses direct `components/Workspace/<Capability>` and `composables/workspace/<Capability>` paths |
 
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
@@ -326,25 +332,25 @@ For the current Team proving siblings:
 ```text
 useWorkspace('project')
 ├─ useProjectWorkspaceIndex
-└─ useProjectWorkspace
-   ├─ useProjectWorkspaceTest
-   └─ useProjectWorkspaceTeam
-      ├─ Project Team records and authority
-      └─ useWorkspaceTeam
+├─ useProjectWorkspaceTest
+└─ useProjectWorkspaceTeam
+   ├─ Project Team records and authority
+   └─ useWorkspaceTeam
 
 useWorkspace('kitchen')
 ├─ useKitchenWorkspaceIndex
-└─ useKitchenWorkspace
-   └─ useKitchenWorkspaceTeam
-      ├─ Kitchen Team records and authority
-      └─ useWorkspaceTeam
+└─ useKitchenWorkspaceTeam
+   ├─ Kitchen Team records and authority
+   └─ useWorkspaceTeam
 ```
 
 `useXWorkspaceIndex` belongs only to that Entity's `/` page. A capability
-composable reaches `useWorkspace('<entity>')` through the domain-owned
-`useXWorkspace` current-Entity reader rather than using the Index as a parent.
-This prevents Team, Menus, Stations, Suppliers, and future capabilities from
-loading or inheriting landing-page state they do not need.
+composable composes `useWorkspace('<entity>')`, the AppUser's canonical primary
+Entity id, and the domain's bounded current-Entity reader directly rather than
+using the Index or collection-backed `useXWorkspace` as a parent. Project Test
+and Project/Kitchen Team prove this shallow path. Other capability runtimes
+that still instantiate collection-backed `useXWorkspace` remain migration
+candidates and are not aligned by this proof.
 
 A named shared capability composable such as `useWorkspaceTeam`,
 `useWorkspaceMenus`, or `useWorkspaceStations` may own only behaviour that two
@@ -362,13 +368,13 @@ generic registry.
 
 Current evidence and confidence:
 
-| Seam | State | Evidence and next comparison |
-| --- | --- | --- |
-| Entity selection through `useWorkspace('<entity>')` | `accepted` | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another |
-| Project Test local scaffold | `accepted` | Its Project identity, App-configured capacity, temporary first-item focus, CRUD and string transforms run without importing the Project Index; it proves only local in-memory Test objects |
-| Named `useWorkspaceTeam` | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
-| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics |
-| Generic capability primitives | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason |
+| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                            |
+| Project Test local scaffold                                          | `accepted`   | Its Project identity, App-configured capacity, temporary first-item focus, CRUD and string transforms run without importing the Project Index; it proves only local in-memory Test objects                                                                              |
+| Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
+| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
+| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
 
 Promotion requires two working Entity-family siblings, a source comparison,
 matching inputs and outputs, preserved authority boundaries, focused runtime

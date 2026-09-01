@@ -1,21 +1,41 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
     <WorkspaceProjectNav :state="state" :derived="derived" />
-    <WorkspaceProjectTeamSelector />
+    <WorkspaceProjectTeamSelector
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
     <WorkspaceHero
       title="Build your Project Team"
       description="Review the people connected to this Project and their Team roles."
     />
-    <WorkspaceProjectTeamAI />
-    <WorkspaceProjectTeam />
-    <WorkspaceProjectTeamTools />
-    <WorkspaceProjectTeamDiscovery />
+    <WorkspaceProjectTeamAI
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceProjectTeam
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceProjectTeamTools
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceProjectTeamDiscovery
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectWorkspaceTeam } from '../../../../project/composables/workspace/team/useProjectWorkspaceTeam'
+import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
 import { appMeta } from '~/meta'
 
 const { state, derived, actions } = useProjectWorkspaceTeam()

@@ -84,7 +84,7 @@ type Props = {
   imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
-  source?: 'google' | 'fireux' | 'manual'
+  source?: 'google' | 'fireux'
   prop?: string
   showBadges?: boolean
   showBody?: boolean
@@ -110,11 +110,9 @@ const avatarShadeClass = computed(() => {
 const sourceLabel = computed(() =>
   props.source === 'fireux'
     ? 'FireUX'
-    : props.source === 'manual'
-      ? 'Manual'
-      : props.source === 'google'
-        ? 'Google'
-        : ''
+    : props.source === 'google'
+      ? 'Google'
+      : ''
 )
 
 const formatValue = (value?: string | number | null) => {

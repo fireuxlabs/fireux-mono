@@ -32,12 +32,13 @@ export function useKitchenDevSystem() {
     collection: kitchensCollectionValue,
     runtimeModel: {
       id: '',
+      identity_source: 'place',
       slug: '',
       status: 'active',
       visibility: false,
     },
     driftMode: 'extras-only',
-    requiredPaths: ['id', 'slug', 'status', 'visibility'],
+    requiredPaths: ['id', 'identity_source', 'slug', 'status', 'visibility'],
   })
 
   const hydratedById = computed(
@@ -146,6 +147,7 @@ export function useKitchenDevSystem() {
   return {
     kitchenModelRuntime: {
       id: '',
+      identity_source: 'place' as const,
       slug: '',
       status: 'active' as const,
       visibility: false,

@@ -5,16 +5,17 @@
   >
     <UTabs
       v-if="items.length"
-      v-model="selectedTeamMemberId"
+      :model-value="state.team.selectedTeamMemberId"
       :items="items"
       :content="false"
       variant="link"
       size="sm"
       class="w-fit max-w-full"
+      @update:model-value="actions.selectTeamMember(String($event))"
     />
 
     <UButton
-      v-if="canCreateTeamMember"
+      v-if="derived.canCreateTeamMember"
       icon="i-lucide-plus"
       color="neutral"
       variant="ghost"
@@ -27,12 +28,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProjectTeamContext } from '../../../composables/workspace/team/useProjectTeamContext'
+import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
 
-const { members, selectedTeamMemberId, canCreateTeamMember } =
-  useProjectTeamContext()
+type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+
+const props = defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const items = computed(() =>
-  members.value.map((member) => ({
+  props.state.team.members.map((member) => ({
     label: String(member.display_name || member.handle || member.id).trim(),
     value: member.id,
   }))

@@ -7,10 +7,15 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   confirmation: 'required',
   context: {
     target: 'KitchenTeamMember',
-    instruction: 'Update the name of an existing Kitchen Team member.',
+    instruction:
+      'Update the name or responsibility of an existing Kitchen Team member.',
     outcome:
       'Preserves member identity while updating the supported name field.',
-    constraints: ['Only the name field is currently supported.'],
+    constraints: [
+      'Supported responsibilities are member and operator.',
+      'Only the Kitchen owner may grant operator access.',
+      'The owner role cannot be changed here.',
+    ],
   },
   inputSchema: {
     type: 'object',
@@ -27,6 +32,7 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
               type: 'object',
               properties: {
                 name: { type: 'string', minLength: 1, maxLength: 120 },
+                role: { type: 'string', enum: ['member', 'operator'] },
               },
               required: ['name'],
               additionalProperties: false,
@@ -43,12 +49,13 @@ export const kitchenTeamMemberUpdateTool = defineKitchenTeamTool({
   ai: {
     baked: {
       purpose:
-        'Update the supported name field for selected Kitchen Team members.',
+        'Update the supported name and responsibility fields for selected Kitchen Team members.',
       knows: [
         'The selected Kitchen, current member identities and proposed names.',
       ],
       constraints: [
-        'Only the name field is currently supported.',
+        'Only member and operator responsibilities are supported.',
+        'Only the Kitchen owner may grant operator access.',
         'Do not replace member identity or infer additional profile changes.',
       ],
       evidence: [

@@ -10,6 +10,10 @@ const memberName = (value: unknown) =>
   String(value ?? '')
     .trim()
     .replace(/\s+/g, ' ')
+const memberRole = (value: unknown) => {
+  const role = String(value ?? '').trim()
+  return role === 'operator' || role === 'member' ? role : ''
+}
 
 function selectedChanges(
   input: unknown,
@@ -17,17 +21,26 @@ function selectedChanges(
 ) {
   const updates = record(input).updates
   const requested = new Map(
-    (Array.isArray(updates) ? updates : [])
-      .map(record)
-      .map((update) => [
+    (Array.isArray(updates) ? updates : []).map(record).map((update) => {
+      const changes = record(update.changes)
+      return [
         String(update.memberId ?? '').trim(),
-        memberName(record(update.changes).name),
-      ])
+        {
+          name: memberName(changes.name),
+          role: memberRole(changes.role),
+        },
+      ] as const
+    })
   )
   return members.flatMap((member) => {
-    const name = requested.get(member.memberId)
-    return name && name.length <= 120 && name !== member.name
-      ? [{ memberId: member.memberId, previousName: member.name, name }]
+    const changes = requested.get(member.memberId)
+    const name = changes?.name || member.name
+    const role = changes?.role || member.role
+    return changes &&
+      name.length <= 120 &&
+      (name !== member.name || role !== member.role) &&
+      member.role !== 'owner'
+      ? [{ memberId: member.memberId, previousName: member.name, name, role }]
       : []
   })
 }
@@ -41,13 +54,15 @@ export const kitchenTeamMemberUpdateExecutor = {
       id: definition.id,
       name: 'Team member names',
       input: {
-        updates: changes.map(({ memberId, name }) => ({
+        updates: changes.map(({ memberId, name, role }) => ({
           memberId,
-          changes: { name },
+          changes: { name, role },
         })),
       },
       confirmation: `Update ${changes
-        .map((change) => `${change.previousName} → ${change.name}`)
+        .map(
+          (change) => `${change.previousName} → ${change.name} (${change.role})`
+        )
         .join(', ')}?`,
     }
   },
@@ -59,7 +74,14 @@ export const kitchenTeamMemberUpdateExecutor = {
         .map(record)
         .map((update) => ({
           memberId: String(update.memberId ?? '').trim(),
-          changes: { name: memberName(record(update.changes).name) },
+          changes: (() => {
+            const changes = record(update.changes)
+            const role = memberRole(changes.role)
+            return {
+              name: memberName(changes.name),
+              ...(role ? { role } : {}),
+            }
+          })(),
         })),
     })
     return {

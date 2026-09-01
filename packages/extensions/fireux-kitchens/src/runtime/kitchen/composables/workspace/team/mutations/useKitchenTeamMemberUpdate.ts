@@ -6,6 +6,7 @@ type UpdateKitchenTeamMemberInput = {
   memberId: string
   changes: {
     name: string
+    role?: 'operator' | 'member'
   }
 }
 
@@ -31,9 +32,13 @@ export function useKitchenTeamMemberUpdate() {
     const kitchenId = normalizeString(input.kitchenId)
     const memberId = normalizeString(input.memberId)
     const name = normalizeString(input.changes.name)
+    const role = normalizeString(input.changes.role)
     if (!kitchenId) throw new Error('Kitchen id is required')
     if (!memberId) throw new Error('Team member id is required')
     if (!name) throw new Error('Team member name is required')
+    if (role && role !== 'operator' && role !== 'member') {
+      throw new Error('Team member role must be operator or member')
+    }
 
     const user = await useRequireUser()
     const token = await user.getIdToken()
@@ -42,7 +47,10 @@ export function useKitchenTeamMemberUpdate() {
       {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
-        body: { kitchenId, changes: { name } },
+        body: {
+          kitchenId,
+          changes: { name, ...(role ? { role } : {}) },
+        },
       }
     )
     if (result.ok !== true || result.memberId !== memberId) {

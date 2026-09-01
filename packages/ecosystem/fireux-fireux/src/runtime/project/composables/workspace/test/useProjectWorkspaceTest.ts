@@ -1,22 +1,47 @@
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
   appSubscriptionCapacity,
   hasAppSubscriptionCapacity,
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
-import { useProjectWorkspace } from 'fireux-core/runtime/project/composables/workspace/core/useProjectWorkspace'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useProjectDetail } from 'fireux-core/runtime/project/composables/useProjectDetail'
+import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 export type ProjectTest = { name: string }
 
 export function useProjectWorkspaceTest() {
-  const workspace = useProjectWorkspace()
+  const { currentUser, hasAuthState } = useAuth()
+  const appContext = useCurrentAppContext()
+  const workspace = useWorkspace('project')
   const fireux = useFireUXConfig()
-  const { membership } = useCurrentAppContext()
+  const membership = appContext.membership
+  const projectId = computed(() => membership.value?.primary_project || '')
+  const current = useProjectDetail(projectId)
   const tests = ref<ProjectTest[]>([])
   const selectedIndex = ref(-1)
   const bold = ref(false)
+
+  watch(
+    [projectId, current.project],
+    ([primaryProjectId, project]: [string, Project | null]) => {
+      if (!primaryProjectId || project?.id !== primaryProjectId) {
+        if (!primaryProjectId) workspace.clearActive()
+        return
+      }
+      workspace.activate(
+        normalizeString(project.id),
+        normalizeString(project.name),
+        normalizeString(project.description),
+        normalizeString(project.image_url)
+      )
+      workspace.setActiveStatus(project.status || '')
+    },
+    { immediate: true }
+  )
 
   const limit = computed(() => {
     return appSubscriptionCapacity(
@@ -28,26 +53,36 @@ export function useProjectWorkspaceTest() {
 
   const state = computed(() => ({
     project: {
-      id: normalizeString(workspace.selection.project.value?.id),
-      name: normalizeString(workspace.selection.project.value?.name),
-      tagline: normalizeString(workspace.selection.project.value?.description),
-      url: normalizeString(workspace.selection.project.value?.image_url),
+      id: normalizeString(current.project.value?.id),
+      name: normalizeString(current.project.value?.name),
+      tagline: normalizeString(current.project.value?.description),
+      url: normalizeString(current.project.value?.image_url),
     },
     tests: tests.value,
     selectedIndex: selectedIndex.value,
     bold: bold.value,
   }))
-  const derived = computed(() => ({
-    outcome: workspace.targets.outcome.value,
-    hasSelection: workspace.selection.hasSelection.value,
-    limit: limit.value,
-    canCreateTest: hasAppSubscriptionCapacity(
-      fireux.subscriptionCapacity,
-      'project.test',
-      membership.value?.subscription || 'free',
-      tests.value.length
-    ),
-  }))
+  const derived = computed(() => {
+    let outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready' = 'idle'
+    if (!hasAuthState.value || appContext.pending.value) outcome = 'pending'
+    else if (appContext.error.value || current.error.value) outcome = 'error'
+    else if (!currentUser.value) outcome = 'idle'
+    else if (!projectId.value) outcome = 'empty'
+    else if (current.pending.value) outcome = 'pending'
+    else outcome = current.project.value ? 'ready' : 'error'
+
+    return {
+      outcome,
+      hasSelection: Boolean(current.project.value),
+      limit: limit.value,
+      canCreateTest: hasAppSubscriptionCapacity(
+        fireux.subscriptionCapacity,
+        'project.test',
+        membership.value?.subscription || 'free',
+        tests.value.length
+      ),
+    }
+  })
 
   function select(index: number) {
     selectedIndex.value = tests.value[index] ? index : -1
@@ -106,7 +141,9 @@ export function useProjectWorkspaceTest() {
   }
 
   async function refresh() {
-    await workspace.targets.refresh()
+    await appContext.refresh()
+    await nextTick()
+    await current.refresh()
   }
 
   return {

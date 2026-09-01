@@ -5,7 +5,9 @@ import { kitchenOperationAgents } from '../../../models/operation-agents'
 import { kitchenTeamAgentTools } from '../../../tools/team'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
-import { useKitchenTeamContext } from './useKitchenTeamContext'
+import type { useKitchenWorkspaceTeam } from './useKitchenWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
 const capabilityFingerprint = kitchenTeamAgentTools
   .map((tool) =>
@@ -24,7 +26,12 @@ const startingPrompts = [
   'How do Team invitations work?',
 ]
 
-export function useKitchenTeamAI() {
+export function useKitchenTeamAI(
+  workspace: () => {
+    state: Workspace['state']['value']
+    derived: Workspace['derived']['value']
+  }
+) {
   const agent = kitchenOperationAgents.find(
     (candidate) => candidate.operationSlug === 'team'
   )
@@ -32,15 +39,17 @@ export function useKitchenTeamAI() {
 
   const aiTools = useKitchenTeamAITools()
   const kitchenWorkspace = useKitchenWorkspace()
-  const { kitchenId, teamMembers, pending, readOnly } =
-    useKitchenTeamContext()
+  const page = computed(workspace)
+  const kitchenId = computed(() => page.value.state.kitchen.id)
+  const teamMembers = computed(() => page.value.state.team.members)
+  const pending = computed(() => page.value.derived.outcome === 'pending')
   const promptSuggestions = ref<string[]>(startingPrompts)
   const suggestionCache = useState<Record<string, string[]>>(
     'kitchen-team-ai-suggestions',
     () => ({})
   )
   const suggestionKey = computed(() => {
-    if (!kitchenId.value || pending.value || readOnly.value) return ''
+    if (!kitchenId.value || pending.value) return ''
     const memberState = teamMembers.value
       .map((member) => `${member.id}:${member.name}:${member.user_id}`)
       .sort()

@@ -1,5 +1,13 @@
 <template>
-  <section>
+  <UPageSection title="Team" class="py-4 sm:py-4">
+    <pre>
+CRUD:
+Create:
+Read:
+Update:
+Delete:
+Main local tools:</pre
+    >
     <WorkspaceKitchenTeamRead
       :members="teamMembers"
       :pending="pending"
@@ -22,7 +30,7 @@
     <UModal
       v-model:open="editOpen"
       title="Edit team member"
-      description="Update the name shown in this Kitchen. Their link and account connection stay the same."
+      description="Update the person’s name and Kitchen responsibility. Account linking remains separate."
       :ui="{ content: 'sm:max-w-md' }"
     >
       <template #body>
@@ -34,6 +42,16 @@
               autocomplete="off"
               maxlength="120"
               autofocus
+              class="w-full"
+            />
+          </UFormField>
+          <UFormField label="Responsibility">
+            <USelect
+              v-model="editRole"
+              :items="roleItems"
+              value-key="value"
+              label-key="label"
+              :disabled="editingMember?.role === 'owner'"
               class="w-full"
             />
           </UFormField>
@@ -57,8 +75,8 @@
 
     <UModal
       v-model:open="deleteOpen"
-      :title="`Delete ${deletingMember?.display_name || deletingMember?.name || 'team member'}?`"
-      description="This removes the named member and revokes their pending invitations. It cannot be undone."
+      :title="`Deactivate ${deletingMember?.display_name || deletingMember?.name || 'team member'}?`"
+      description="This revokes linked Kitchen access and pending invitations while preserving the member’s operational history."
       :ui="{ content: 'sm:max-w-md' }"
     >
       <template #body>
@@ -70,9 +88,9 @@
             @click="deleteOpen = false"
           />
           <UButton
-            label="Delete member"
+            label="Deactivate member"
             color="error"
-            icon="i-lucide-trash-2"
+            icon="i-lucide-user-minus"
             :loading="Boolean(deletingMemberId)"
             @click="deleteMember"
           />
@@ -105,26 +123,33 @@
         </div>
       </template>
     </UModal>
-
-  </section>
+  </UPageSection>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
-import { useKitchenMemberInvitationCreate } from '../../../composables/workspace/team/mutations/useKitchenMemberInvitationCreate'
-import { useKitchenTeamMemberUpdate } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberUpdate'
-import { useKitchenTeamMemberDelete } from '../../../composables/workspace/team/mutations/useKitchenTeamMemberDelete'
+import { computed, ref } from 'vue'
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 import type { KitchenTeamMember } from '../../../utils/team.ts'
 
-const { teamMembers, pending, kitchenId } = useKitchenTeamContext()
-const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
-const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
-const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+
+const props = defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
+const teamMembers = computed(() => props.state.team.members)
+const pending = computed(() => props.derived.outcome === 'pending')
 const toast = useToast()
 const editOpen = ref(false)
 const editingMember = ref<KitchenTeamMember | null>(null)
 const editName = ref('')
+const editRole = ref<'owner' | 'operator' | 'member'>('member')
+const roleItems = [
+  { label: 'Team member', value: 'member' },
+  { label: 'Operator', value: 'operator' },
+] as const
 const editError = ref('')
 const savingMember = ref(false)
 const invitingMemberId = ref('')
@@ -137,6 +162,7 @@ const deletingMemberId = ref('')
 function editMember(member: KitchenTeamMember) {
   editingMember.value = member
   editName.value = String(member.display_name || member.name || '').trim()
+  editRole.value = member.role || 'member'
   editError.value = ''
   editOpen.value = true
 }
@@ -152,10 +178,10 @@ async function saveMember() {
   savingMember.value = true
   editError.value = ''
   try {
-    await updateKitchenTeamMember({
-      kitchenId: kitchenId.value,
+    await props.actions.updateTeamMember({
       memberId: member.id,
-      changes: { name },
+      name,
+      ...(editRole.value === 'owner' ? {} : { role: editRole.value }),
     })
     editOpen.value = false
     toast.add({ title: `${name} updated`, color: 'success' })
@@ -170,10 +196,7 @@ async function inviteMember(member: KitchenTeamMember) {
   if (invitingMemberId.value) return
   invitingMemberId.value = member.id
   try {
-    invitation.value = await createKitchenMemberInvitation({
-      kitchenId: kitchenId.value,
-      memberId: member.id,
-    })
+    invitation.value = await props.actions.createTeamMemberInvitation(member.id)
     inviteOpen.value = true
   } catch (error) {
     toast.add({
@@ -202,13 +225,13 @@ async function deleteMember() {
   if (!member || deletingMemberId.value) return
   deletingMemberId.value = member.id
   try {
-    const result = await deleteKitchenTeamMember(kitchenId.value, member.id)
+    const result = await props.actions.deactivateTeamMember(member.id)
     deleteOpen.value = false
     deletingMember.value = null
-    toast.add({ title: `${result.name} deleted`, color: 'success' })
+    toast.add({ title: `${result.name} deactivated`, color: 'success' })
   } catch (error) {
     toast.add({
-      title: 'Team member could not be deleted',
+      title: 'Team member could not be deactivated',
       description: error instanceof Error ? error.message : 'Try again.',
       color: 'error',
     })

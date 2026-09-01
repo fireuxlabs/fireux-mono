@@ -33,7 +33,6 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
     short_name: seed.name,
     tagline: seed.tagline,
     place_type: 'physical',
-    source: 'manual',
     formatted_address: `${seed.postalCode} ${seed.city}, Switzerland`,
     short_address: seed.city,
     image_url: seed.imageUrl,
@@ -115,7 +114,6 @@ for (const item of companyDemoTargets) {
     !item.place.name ||
     !item.place.image_url ||
     item.place.place_type !== 'physical' ||
-    item.place.source !== 'manual' ||
     Object.keys(item.company)
       .sort()
       .some((key, index) => key !== companyKeys[index]) ||

@@ -139,7 +139,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'short_name',
     'slug',
     'social_links',
-    'source',
     'tagline',
     'tags',
     'timezone',
@@ -155,6 +154,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.deepEqual(typeFields(kitchenModel, 'Kitchen'), [
     'id',
+    'identity_source',
     'slug',
     'status',
     'visibility',
@@ -930,10 +930,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       page === 'team'
         ? 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue'
         : `packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/${page}.vue`
-    const source = read(
-      repoRoot,
-      pagePath
-    )
+    const source = read(repoRoot, pagePath)
     assert.match(
       source,
       /requiresAuth:\s*true/,
@@ -1007,7 +1004,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /useFirestoreRead|firestoreFetchCollection/
   )
   assert.match(projectCollection, /\/api\/internal\/control\/projects/)
-  assert.match(projectDetail, /useProjectCollection/)
+  assert.match(projectDetail, /\/api\/internal\/control\/projects/)
+  assert.match(projectDetail, /project_id:\s*requestedId/)
   assert.doesNotMatch(projectDetail, /useFirestoreRead|firestoreFetch/)
   assert.match(projectInterface, /\/projects\/\$\{encodeURIComponent\(id\)\}/)
   for (const retiredProjectComposable of [
@@ -1759,10 +1757,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(miseboxUserDetail, /<KitchenUserMemberships/)
   assert.match(miseboxUserDetail, /<KitchenAdminProvision/)
   assert.match(miseboxUserDetail, /:user="user"/)
-  assert.match(
-    kitchenUserMemberships,
-    /\buseKitchenUserMemberships\s*\(/
-  )
+  assert.match(kitchenUserMemberships, /\buseKitchenUserMemberships\s*\(/)
   assert.match(kitchenUserMemberships, /<CollectionCell :cell="cell"/)
   assert.match(kitchenUserMemberships, /team_state !== 'active'/)
   assert.match(kitchenUserMembershipsServer, /\brequireFirebaseBearerUser\s*\(/)

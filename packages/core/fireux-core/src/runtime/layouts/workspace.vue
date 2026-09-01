@@ -50,12 +50,116 @@
 
             <div class="space-y-2">
               <div v-if="familyRootNav.length" class="space-y-2">
+                <ClientOnly>
+                  <template
+                    v-for="item in familyRootNav"
+                    :key="item.key || item.to"
+                  >
+                    <div
+                      v-if="item.pending"
+                      class="flex h-8 items-center gap-2 px-2"
+                      aria-label="Loading Workspace"
+                    >
+                      <USkeleton class="size-5 shrink-0 rounded-full" />
+                      <USkeleton v-if="!collapsed" class="h-4 flex-1" />
+                    </div>
+                    <UDropdownMenu
+                      v-else-if="item.choices.length"
+                      :items="[item.choices]"
+                      :content="{ align: 'center', collisionPadding: 12 }"
+                      :ui="{
+                        content: collapsed
+                          ? 'w-48'
+                          : 'w-(--reka-dropdown-menu-trigger-width)',
+                      }"
+                    >
+                      <UButton
+                        :label="collapsed ? undefined : item.label"
+                        :icon="item.image ? undefined : item.icon"
+                        :trailing-icon="
+                          collapsed ? undefined : 'i-lucide-chevrons-up-down'
+                        "
+                        color="neutral"
+                        variant="ghost"
+                        size="sm"
+                        block
+                        :square="collapsed"
+                        class="data-[state=open]:bg-elevated"
+                        :ui="{ trailingIcon: 'text-dimmed' }"
+                        :aria-label="item.description || item.label"
+                      >
+                        <template v-if="item.image" #leading>
+                          <UAvatar
+                            :src="item.image"
+                            :alt="item.label"
+                            size="2xs"
+                          />
+                        </template>
+                      </UButton>
+                    </UDropdownMenu>
+                    <UButton
+                      v-else
+                      :to="item.to"
+                      :label="collapsed ? undefined : item.label"
+                      :icon="item.image ? undefined : item.icon"
+                      color="neutral"
+                      variant="ghost"
+                      size="sm"
+                      block
+                      :square="collapsed"
+                      class="data-[state=open]:bg-elevated"
+                      :ui="{ trailingIcon: 'text-dimmed' }"
+                      :aria-label="item.description || item.label"
+                    >
+                      <template v-if="item.image" #leading>
+                        <UAvatar
+                          :src="item.image"
+                          :alt="item.label"
+                          size="2xs"
+                        />
+                      </template>
+                    </UButton>
+                  </template>
+                  <template #fallback>
+                    <div
+                      class="flex h-8 items-center gap-2 px-2"
+                      aria-label="Loading Workspace"
+                    >
+                      <USkeleton class="size-5 shrink-0 rounded-full" />
+                      <USkeleton v-if="!collapsed" class="h-4 flex-1" />
+                    </div>
+                  </template>
+                </ClientOnly>
+              </div>
+
+              <LayoutsSharedSideBarFooter
+                :collapsed="collapsed ?? false"
+                :show-home="false"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer="{ collapsed }">
+        <div class="hidden flex-col gap-3 lg:flex">
+          <div class="space-y-2">
+            <div v-if="familyRootNav.length" class="space-y-2">
+              <ClientOnly>
                 <template
                   v-for="item in familyRootNav"
                   :key="item.key || item.to"
                 >
+                  <div
+                    v-if="item.pending"
+                    class="flex h-8 items-center gap-2 px-2"
+                    aria-label="Loading Workspace"
+                  >
+                    <USkeleton class="size-5 shrink-0 rounded-full" />
+                    <USkeleton v-if="!collapsed" class="h-4 flex-1" />
+                  </div>
                   <UDropdownMenu
-                    v-if="item.choices.length"
+                    v-else-if="item.choices.length"
                     :items="[item.choices]"
                     :content="{ align: 'center', collisionPadding: 12 }"
                     :ui="{
@@ -107,74 +211,16 @@
                     </template>
                   </UButton>
                 </template>
-              </div>
-
-              <LayoutsSharedSideBarFooter
-                :collapsed="collapsed ?? false"
-                :show-home="false"
-              />
-            </div>
-          </div>
-        </div>
-      </template>
-
-      <template #footer="{ collapsed }">
-        <div class="hidden flex-col gap-3 lg:flex">
-          <div class="space-y-2">
-            <div v-if="familyRootNav.length" class="space-y-2">
-              <template
-                v-for="item in familyRootNav"
-                :key="item.key || item.to"
-              >
-                <UDropdownMenu
-                  v-if="item.choices.length"
-                  :items="[item.choices]"
-                  :content="{ align: 'center', collisionPadding: 12 }"
-                  :ui="{
-                    content: collapsed
-                      ? 'w-48'
-                      : 'w-(--reka-dropdown-menu-trigger-width)',
-                  }"
-                >
-                  <UButton
-                    :label="collapsed ? undefined : item.label"
-                    :icon="item.image ? undefined : item.icon"
-                    :trailing-icon="
-                      collapsed ? undefined : 'i-lucide-chevrons-up-down'
-                    "
-                    color="neutral"
-                    variant="ghost"
-                    size="sm"
-                    block
-                    :square="collapsed"
-                    class="data-[state=open]:bg-elevated"
-                    :ui="{ trailingIcon: 'text-dimmed' }"
-                    :aria-label="item.description || item.label"
+                <template #fallback>
+                  <div
+                    class="flex h-8 items-center gap-2 px-2"
+                    aria-label="Loading Workspace"
                   >
-                    <template v-if="item.image" #leading>
-                      <UAvatar :src="item.image" :alt="item.label" size="2xs" />
-                    </template>
-                  </UButton>
-                </UDropdownMenu>
-                <UButton
-                  v-else
-                  :to="item.to"
-                  :label="collapsed ? undefined : item.label"
-                  :icon="item.image ? undefined : item.icon"
-                  color="neutral"
-                  variant="ghost"
-                  size="sm"
-                  block
-                  :square="collapsed"
-                  class="data-[state=open]:bg-elevated"
-                  :ui="{ trailingIcon: 'text-dimmed' }"
-                  :aria-label="item.description || item.label"
-                >
-                  <template v-if="item.image" #leading>
-                    <UAvatar :src="item.image" :alt="item.label" size="2xs" />
-                  </template>
-                </UButton>
-              </template>
+                    <USkeleton class="size-5 shrink-0 rounded-full" />
+                    <USkeleton v-if="!collapsed" class="h-4 flex-1" />
+                  </div>
+                </template>
+              </ClientOnly>
             </div>
 
             <LayoutsSharedSideBarFooter
@@ -300,9 +346,16 @@ const familyRootNav = computed(() =>
     .filter((item) => workspaceNav.resolveItemPosition(item) === 'bottom')
     .map((item) => {
       const activeName = workspaceState.activeName.value
-      if (!activeName) return { ...item, image: '', choices: [] }
+      if (!activeName)
+        return {
+          ...item,
+          image: '',
+          choices: [],
+          pending: workspaceState.pending.value,
+        }
       return {
         ...item,
+        pending: workspaceState.pending.value,
         label: activeName,
         description:
           workspaceState.activeDescription.value ||

@@ -241,7 +241,6 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     id: g.id,
     name: g.name,
     place_type: 'physical',
-    source: 'fireux',
     search_term,
     ...(Object.keys(address).length ? { address } : {}),
     ...(g.formatted_address ? { formatted_address: g.formatted_address } : {}),

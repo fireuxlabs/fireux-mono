@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceSource } from '../../../models/place.model.ts'
+import type { PlaceSearchSource } from '../../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../../utils/place-spine'
 
 type Props = {
@@ -36,7 +36,7 @@ type Props = {
   address: string
   imageUrl?: string
   imageShade?: PlaceImageShade
-  source?: PlaceSource
+  source?: PlaceSearchSource
   loading?: boolean
 }
 

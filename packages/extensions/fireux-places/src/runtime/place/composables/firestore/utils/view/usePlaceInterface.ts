@@ -5,9 +5,8 @@ import {
 import type {
   Place as PlaceShape,
   PlaceSocialLinks,
-  PlaceSource,
 } from '../../../../models/place.model.ts'
-import type { BasePlace } from '../../fetch/search/types'
+import type { BasePlace, PlaceSearchSource } from '../../fetch/search/types'
 import type { PlaceImageShade } from '../../../../utils/place-spine'
 
 export namespace PlaceCard {
@@ -26,7 +25,7 @@ export namespace PlaceCard {
     description: string
     categoryLabels: string[]
     imageShade?: PlaceImageShade
-    source?: PlaceSource
+    source?: PlaceSearchSource
     collection?: string
     claimedBy?: string
   }
@@ -38,7 +37,7 @@ type PlaceCellResolved = Pick<
   PlaceCard.Card,
   'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
-  source?: PlaceSource
+  source?: PlaceSearchSource
   prop?: string
 }
 
@@ -47,7 +46,7 @@ type PlacePreview = {
   imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
-  source?: PlaceSource
+  source?: PlaceSearchSource
   prop?: string
 }
 
@@ -71,7 +70,6 @@ export type PlaceProfile = {
   verified?: boolean
   timezone?: string
   defaultCurrencyCode?: string
-  source?: PlaceSource
 }
 
 export function formatPlaceTypeLabel(value: unknown) {
@@ -182,7 +180,6 @@ export function usePlaceInterface() {
   ): PlaceProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
-    const source = target.source
     const tags = target.tags
     const types = target.types
     const phone = target.phone
@@ -217,7 +214,6 @@ export function usePlaceInterface() {
       verified: target.verified,
       timezone: target.timezone,
       defaultCurrencyCode: target.default_currency_code,
-      source,
     }
   }
 

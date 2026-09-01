@@ -12,7 +12,6 @@ export type BasePlace = Pick<
   | 'lng'
   | 'image_url'
   | 'claimed_by'
-  | 'source'
   | 'slug'
   | 'entity_families'
 > &
@@ -20,7 +19,10 @@ export type BasePlace = Pick<
     Pick<Place, 'cover_image' | 'about' | 'tagline' | 'tags' | 'types'>
   > & {
     image_shade?: import('../../../../utils/place-spine').PlaceImageShade
+    source?: PlaceSearchSource
   }
+
+export type PlaceSearchSource = 'fireux' | 'google'
 
 export type BasePlaceRecord = BasePlace & { collection?: string }
 

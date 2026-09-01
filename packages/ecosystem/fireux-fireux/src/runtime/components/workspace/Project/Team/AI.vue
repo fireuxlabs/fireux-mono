@@ -31,6 +31,16 @@
 </template>
 
 <script setup lang="ts">
+import type { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+
+defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const suggestions = [
   'Who is on my Project Team?',
   'Add a Team member',

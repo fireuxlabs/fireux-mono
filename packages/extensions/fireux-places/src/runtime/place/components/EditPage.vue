@@ -342,17 +342,13 @@ const editableFields = computed(() => {
     claimed_by: v.claimed_by,
   })
 
-  if (v.source === 'manual') {
-    return compact({
-      ...base,
-      name: v.name,
-      formatted_address: v.formatted_address,
-      search_term: v.search_term,
-      lat: v.lat,
-      lng: v.lng,
-    })
-  }
-
-  return base
+  return compact({
+    ...base,
+    name: v.name,
+    formatted_address: v.formatted_address,
+    search_term: v.search_term,
+    lat: v.lat,
+    lng: v.lng,
+  })
 })
 </script>

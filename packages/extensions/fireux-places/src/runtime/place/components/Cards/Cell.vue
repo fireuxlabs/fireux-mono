@@ -85,7 +85,7 @@ type Props = Pick<
   PlaceCard.Card,
   'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
 > & {
-  source?: 'google' | 'fireux' | 'manual'
+  source?: 'google' | 'fireux'
   prop?: string
   showSubtitle?: boolean
   showSource?: boolean
@@ -125,11 +125,9 @@ const avatarShadeClass = computed(() => {
 const sourceLabel = computed(() =>
   props.source === 'fireux'
     ? 'FireUX'
-    : props.source === 'manual'
-      ? 'Manual'
-      : props.source === 'google'
-        ? 'Google'
-        : ''
+    : props.source === 'google'
+      ? 'Google'
+      : ''
 )
 </script>
 

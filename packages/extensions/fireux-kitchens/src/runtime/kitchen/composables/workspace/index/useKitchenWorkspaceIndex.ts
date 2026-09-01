@@ -126,11 +126,14 @@ export function useKitchenWorkspaceIndex() {
   })
 
   watch(
-    () => [primaryKitchenId.value, state.value.kitchen] as const,
-    ([primaryId, kitchen]: readonly [
+    () =>
+      [derived.value.outcome, primaryKitchenId.value, state.value.kitchen] as const,
+    ([outcome, primaryId, kitchen]: readonly [
+      KitchenWorkspaceIndexDerived['outcome'],
       string,
       KitchenWorkspaceIndexState['kitchen'],
     ]) => {
+      if (outcome === 'pending') return
       if (!primaryId || kitchen.id !== primaryId) {
         if (!primaryId) workspace.clearActive()
         return

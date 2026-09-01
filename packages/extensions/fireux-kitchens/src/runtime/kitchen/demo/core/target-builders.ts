@@ -54,6 +54,7 @@ export type DemoPlaceInput = {
 export const kitchen = (input: DemoKitchenInput) => ({
   kitchen: {
     id: input.identity.kitchenId,
+    identity_source: 'place',
     slug: input.identity.kitchenSlug,
     status: 'active',
     visibility: true,
@@ -124,7 +125,6 @@ export const place = (input: DemoPlaceInput): Place => ({
   verified: false,
   slug: input.identity.kitchenSlug,
   entity_families: ['kitchen'],
-  source: 'manual',
   search_term: `${input.name} ${input.city}`,
   created: {
     at: kitchenDemoCreated(input.identity).at,

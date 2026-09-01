@@ -8,7 +8,7 @@
     >
       <template #default>
         <UBadge v-if="showSource" variant="soft" color="neutral" size="xs">
-          {{ sourceLabel }}
+          FireUX
         </UBadge>
       </template>
     </UUser>
@@ -25,7 +25,6 @@ type Props = {
   address: string
   imageUrl?: string
   imageShade?: PlaceImageShade
-  source: 'fireux' | 'manual'
   showSource?: boolean
 }
 
@@ -50,5 +49,4 @@ const avatarClass = computed(() => {
 
 const primaryLabel = computed(() => props.shortName || props.name)
 
-const sourceLabel = computed(() => (props.source === 'manual' ? 'Manual' : 'FireUX'))
 </script>

@@ -4,19 +4,19 @@
     class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6"
   >
     <UPageCard
-      :as="canCreateTeamMember ? 'button' : 'div'"
+      :as="derived.canCreateTeamMember ? 'button' : 'div'"
       :title="createTool.label"
       :description="createTool.description"
       :icon="createTool.icon"
       class="aspect-square text-left"
-      :class="{ 'opacity-50': !canCreateTeamMember }"
+      :class="{ 'opacity-50': !derived.canCreateTeamMember }"
       :ui="{
         container: 'p-4 sm:p-4',
         title: 'line-clamp-2',
         description: 'line-clamp-3',
       }"
-      :spotlight="canCreateTeamMember"
-      @click="canCreateTeamMember && performAction(createTool.id)"
+      :spotlight="derived.canCreateTeamMember"
+      @click="derived.canCreateTeamMember && actions.openCreateTeamMember()"
     />
   </UPageGrid>
 
@@ -28,8 +28,8 @@
   >
     <template #body>
       <WorkspaceKitchenTeamWrite
-        v-if="canCreateTeamMember"
-        :kitchen-id="kitchenId"
+        v-if="derived.canCreateTeamMember"
+        :kitchen-id="state.kitchen.id"
         @cancel="addMemberOpen = false"
         @created="handleMemberCreated"
       />
@@ -39,26 +39,30 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenTeamContext } from '../../../composables/workspace/team/useKitchenTeamContext'
 import { useKitchenTeamTools } from '../../../composables/workspace/team/useKitchenTeamTools'
-import { useKitchenCapabilityTools } from '../../../composables/workspace/useKitchenCapabilityTools'
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
 
-const { kitchenId, canCreateTeamMember } = useKitchenTeamContext()
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+
+const props = defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const toast = useToast()
 const tools = useKitchenTeamTools()
 const createTool = tools.find(
   (candidate) => candidate.id === 'kitchen.team.create-member'
 )!
-const { activeToolId, performAction, closeTool } =
-  useKitchenCapabilityTools('team')
 const addMemberOpen = computed({
-  get: () => activeToolId.value === createTool.id,
+  get: () => props.state.team.activeToolId === createTool.id,
   set: (value: boolean) => {
-    if (!value) closeTool()
+    if (!value) props.actions.closeCreateTeamMember()
   },
 })
 const handleMemberCreated = (result: { name: string }) => {
-  addMemberOpen.value = false
+  props.actions.closeCreateTeamMember()
   toast.add({
     title: `${result.name} added`,
     description: 'The new member is now part of this Kitchen team.',

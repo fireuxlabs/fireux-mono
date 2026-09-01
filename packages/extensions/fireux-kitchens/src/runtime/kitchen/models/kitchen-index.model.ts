@@ -16,6 +16,7 @@ export const KITCHEN_USER_LIMIT = 50
 
 export type KitchenWorkspaceKitchen = {
   id: string
+  identity_source: Kitchen['identity_source']
   place_id: string
   can_write: boolean
   slug: string
@@ -67,7 +68,9 @@ export type KitchenWorkspaceCurrentResponse = {
 
 export type KitchenWorkspaceIndexKitchen = {
   id: string
+  identity_source: Kitchen['identity_source']
   place_id: string
+  can_write: boolean
   status: Kitchen['status']
   identity: {
     display_name: string

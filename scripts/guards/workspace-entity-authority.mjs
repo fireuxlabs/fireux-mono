@@ -113,6 +113,39 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     kitchenTeam.includes('kitchens/{kitchenId}/team/{memberId}'),
     'Kitchen Team must declare its Kitchen-owned canonical path.'
   )
+  const kitchenTeamDeactivate = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/delete.ts'
+  )
+  const kitchenTeamInvitation = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/member-invitation.ts'
+  )
+  const kitchenTeamUpdate = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/kitchen/server/team/update.ts'
+  )
+  assert.match(kitchenTeamDeactivate, /status:\s*'inactive'/)
+  assert.match(kitchenTeamDeactivate, /user_id:\s*''/)
+  assert.match(kitchenTeamDeactivate, /deactivated_by:/)
+  assert.doesNotMatch(
+    kitchenTeamDeactivate,
+    /mutations\.delete\(members/,
+    'Kitchen Team deactivation must preserve the operational member record.'
+  )
+  assert.match(kitchenTeamInvitation, /member\.data\?\.active === false/)
+  assert.match(
+    kitchenTeamInvitation,
+    /text\(member\.data\?\.status\) !== 'active'/
+  )
+  assert.match(
+    kitchenTeamUpdate,
+    /Only the Kitchen owner can grant operator access/
+  )
+  assert.match(
+    kitchenTeamUpdate,
+    /The Kitchen owner role cannot be changed here/
+  )
 
   for (const [name, model, root, team, teamModel] of families) {
     const source = [

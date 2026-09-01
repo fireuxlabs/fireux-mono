@@ -8,6 +8,9 @@ import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { resolveWorkspaceEntityOnboardingPolicy } from 'fireux-core/runtime/server/utils/workspace-entity/onboarding-authority'
 import { readPlacePresentation } from 'fireux-places/runtime/place/utils/place-spine'
 import {
+  readKitchenIdentitySource,
+} from '../../utils/normalize-kitchen.ts'
+import {
   type KitchenWorkspaceCurrentResponse,
   type KitchenWorkspaceChoicesResponse,
   type KitchenWorkspaceIndexKitchen,
@@ -87,6 +90,7 @@ function projectKitchen(input: {
 
   return {
     id: input.id,
+    identity_source: readKitchenIdentitySource(input.root.identity_source),
     place_id: input.place ? input.id : '',
     can_write: input.canWrite,
     slug: readRecordString(input.root, 'slug'),
@@ -186,7 +190,9 @@ async function readKitchenIndexKitchen(
   const place = readPlacePresentation(placeData)
   return {
     id,
+    identity_source: readKitchenIdentitySource(root.identity_source),
     place_id: placeSnapshot.exists ? id : '',
+    can_write: true,
     status: readKitchenStatus(root),
     identity: {
       display_name: text(identity.name),

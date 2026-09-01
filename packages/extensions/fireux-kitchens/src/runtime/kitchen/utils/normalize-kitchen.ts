@@ -8,6 +8,12 @@ const record = (value: unknown): Record<string, unknown> =>
     ? (value as Record<string, unknown>)
     : {}
 
+export function readKitchenIdentitySource(
+  value: unknown
+): Kitchen['identity_source'] {
+  return value === 'user' ? 'user' : 'place'
+}
+
 export function normalizeKitchen(
   idValue: unknown,
   value: unknown,
@@ -26,6 +32,7 @@ export function normalizeKitchen(
   if (!['active', 'inactive', 'archived'].includes(status)) return null
   return {
     id,
+    identity_source: readKitchenIdentitySource(source.identity_source),
     slug,
     status: status as Kitchen['status'],
     visibility: readKitchenVisibility(source),

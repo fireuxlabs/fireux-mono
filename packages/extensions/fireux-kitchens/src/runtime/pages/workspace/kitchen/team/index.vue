@@ -1,15 +1,35 @@
 <template>
   <UDashboardPanel id="workspace-kitchen-team">
     <WorkspaceKitchenNav :state="state" :derived="derived" />
-    <WorkspaceKitchenTeamSelector />
+    <WorkspaceKitchenTeamSelector
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
     <WorkspaceHero
       title="Build your Kitchen Team"
       description="Review the people connected to this Kitchen and their Team roles."
     />
-    <WorkspaceKitchenTeamAI />
-    <WorkspaceKitchenTeam />
-    <WorkspaceKitchenTeamTools />
-    <WorkspaceKitchenTeamDiscovery />
+    <WorkspaceKitchenTeamAI
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceKitchenTeam
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceKitchenTeamTools
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
+    <WorkspaceKitchenTeamDiscovery
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
   </UDashboardPanel>
 </template>
 

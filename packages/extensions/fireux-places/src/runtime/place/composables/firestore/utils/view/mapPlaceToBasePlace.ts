@@ -1,13 +1,6 @@
-import type { PlaceSource } from '../../../../models/place.model.ts'
 import type { PlaceImageShade } from '../../../../utils/place-spine'
 import { canonicalPlaceId } from '../../fetch/google/usePlacesGoogle'
 import type { BasePlace, BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
-
-function toSource(value: unknown): PlaceSource {
-  const v = String(value ?? '').toLowerCase().trim()
-  if (v === 'google' || v === 'manual' || v === 'fireux') return v
-  return 'fireux'
-}
 
 function toShade(value: unknown): PlaceImageShade {
   const v = String(value ?? 'none').toLowerCase().trim()
@@ -33,7 +26,10 @@ function toStrings(value: unknown): string[] {
 export const mapPlaceToBasePlace = (): MapToBasePlace => {
   return (p: any, collectionOverride?: string): BasePlaceRecord => {
     const id = canonicalPlaceId(toString(p?.place_id ?? p?.id)) ?? ''
-    const source = toSource(p?.source)
+    const source =
+      collectionOverride === 'places' || p?.source !== 'google'
+        ? 'fireux'
+        : 'google'
 
     const base: BasePlace = {
       id,

@@ -4,7 +4,6 @@
     class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6"
   >
     <UPageCard
-      as="a"
       :title="tool.label"
       :description="tool.description"
       :icon="tool.icon"
@@ -21,6 +20,16 @@
 </template>
 
 <script setup lang="ts">
+import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+
+defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const tool = {
   label: 'View Team',
   description: 'Review the people connected to this Project.',

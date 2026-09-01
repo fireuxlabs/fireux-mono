@@ -100,9 +100,11 @@ Workspace Entities.
 
 - The root document owns only the fields declared by its canonical entity
   model. A Place-backed Workspace Entity uses the same document id as its Place;
-  Place owns the shared venue identity. Kitchen therefore stores only
-  `id`, `slug`, `status`, and `visibility`: it must not copy Place identity,
-  store `place_id`, or absorb capability configuration.
+  Place owns the shared venue identity. Kitchen therefore stores only `id`,
+  `identity_source`, `slug`, `status`, and `visibility`: it must not copy Place
+  identity, store `place_id`, or absorb capability configuration.
+  `identity_source` records whether onboarding began from a user shell or a
+  Place and never classifies the Place as physical or non-physical.
 - `management` selects the hosting product relationship: `root`, `workspace`,
   or a dedicated `app`. It never relocates the Entity.
 - `team/{uid}` is Workspace membership and access authority. A Team record may
@@ -157,6 +159,10 @@ root Workspace Entity even when one App is its current management host.
 - A root Entity document is the canonical readable Entity. Firestore cannot
   redact nested fields, so protected material lives in a separately authorized
   child record under its honest owner.
+- A persisted Place is already FireUX-owned by its `places/{placeId}` path and
+  therefore stores no discovery `source`. Place search results may transiently
+  identify `fireux` or `google`; merged results deduplicate by Place id and
+  prefer the persisted FireUX Place.
 - A parent-owned Entity or Record uses a path beneath its parent. KitchenMenu,
   Recipe, KitchenPrepItem, Dish, KitchenOrder, MenuSection, MenuItem,
   KitchenStation, SupplierItem, and similar children follow this rule.

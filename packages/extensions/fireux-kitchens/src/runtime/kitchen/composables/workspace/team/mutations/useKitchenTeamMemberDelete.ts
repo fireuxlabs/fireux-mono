@@ -8,14 +8,16 @@ export function useKitchenTeamMemberDelete() {
     requireWritableData()
     const user = await useRequireUser()
     const token = await user.getIdToken()
-    return $fetch<{ ok: true; memberId: string; name: string }>(
-      `/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`,
-      {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-        query: { kitchenId },
-      }
-    )
+    return $fetch<{
+      ok: true
+      memberId: string
+      name: string
+      status: 'inactive'
+    }>(`/api/workspace/kitchen/team/members/${encodeURIComponent(memberId)}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+      query: { kitchenId },
+    })
   }
 
   return { deleteKitchenTeamMember }

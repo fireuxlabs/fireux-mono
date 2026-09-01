@@ -106,13 +106,14 @@ function toSubscriptionCapacity(v: unknown): FireuxAppSubscriptionCapacity {
     if (!key || !value || typeof value !== 'object' || Array.isArray(value))
       continue
     const source = value as AnyRecord
-    const limit = (tier: 'free' | 'premium' | 'business') => {
+    const limit = (
+      tier: 'free' | 'premium' | 'business'
+    ): FireuxAppSubscriptionCapacityLimit['free'] => {
       const candidate = source[tier]
-      return candidate === null ||
-        candidate === '' ||
-        (typeof candidate === 'number' &&
-          Number.isInteger(candidate) &&
-          candidate >= 0)
+      if (candidate === null || candidate === '') return null
+      return typeof candidate === 'number' &&
+        Number.isInteger(candidate) &&
+        candidate >= 0
         ? candidate
         : 0
     }

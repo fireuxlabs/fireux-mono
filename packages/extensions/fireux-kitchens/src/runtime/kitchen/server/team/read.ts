@@ -20,6 +20,7 @@ export async function readKitchenTeamMembers(
     name: string
     slug: string
     linked: boolean
+    role: 'owner' | 'operator' | 'member'
   }[] = []
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     await requireKitchenMutationAuthority(mutations, actor, kitchenId)
@@ -27,12 +28,24 @@ export async function readKitchenTeamMembers(
       serverKitchenTeamMembersTarget(kitchenId),
       200
     )
-    members = records.map((record) => ({
-      memberId: record.id,
-      name: text(record.data.name) || 'Team member',
-      slug: text(record.data.slug),
-      linked: Boolean(text(record.data.user_id)),
-    }))
+    members = records
+      .filter(
+        (record) =>
+          record.data.active !== false && text(record.data.status) === 'active'
+      )
+      .map((record) => {
+        const role = text(record.data.role)
+        return {
+          memberId: record.id,
+          name: text(record.data.name) || 'Team member',
+          slug: text(record.data.slug),
+          linked: Boolean(text(record.data.user_id)),
+          role:
+            role === 'owner' || role === 'operator'
+              ? role
+              : ('member' as const),
+        }
+      })
   })
   return { ok: true as const, members }
 }

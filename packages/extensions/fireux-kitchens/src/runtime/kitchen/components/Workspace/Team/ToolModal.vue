@@ -29,8 +29,8 @@
         <UAlert
           color="error"
           variant="soft"
-          title="Delete this member?"
-          description="This also revokes pending invitations and cannot be undone."
+          title="Deactivate this member?"
+          description="This revokes linked Kitchen access and pending invitations while preserving operational history."
         />
         <div class="flex justify-end gap-2">
           <UButton
@@ -40,9 +40,9 @@
             @click="confirmingDelete = false"
           />
           <UButton
-            label="Delete member"
+            label="Deactivate member"
             color="error"
-            icon="i-lucide-trash-2"
+            icon="i-lucide-user-minus"
             :loading="working"
             @click="deleteMember"
           />
@@ -64,11 +64,21 @@
             class="w-full"
           />
         </UFormField>
+        <UFormField label="Responsibility">
+          <USelect
+            v-model="role"
+            :items="roleItems"
+            value-key="value"
+            label-key="label"
+            :disabled="selectedMember.role === 'owner'"
+            class="w-full"
+          />
+        </UFormField>
         <div class="flex items-center justify-between gap-2">
           <UButton
-            v-if="!selectedMember.user_id"
-            label="Delete member"
-            icon="i-lucide-trash-2"
+            v-if="selectedMember.role !== 'owner'"
+            label="Deactivate member"
+            icon="i-lucide-user-minus"
             color="error"
             variant="ghost"
             type="button"
@@ -135,6 +145,11 @@ const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
 const toast = useToast()
 const selectedMember = ref<KitchenTeamMember | null>(null)
 const name = ref('')
+const role = ref<'owner' | 'operator' | 'member'>('member')
+const roleItems = [
+  { label: 'Team member', value: 'member' },
+  { label: 'Operator', value: 'operator' },
+] as const
 const error = ref('')
 const working = ref(false)
 const invitation = ref<{ memberName: string; link: string } | null>(null)
@@ -146,8 +161,8 @@ const tools = {
     description: 'Select a Team member to update.',
   },
   delete: {
-    title: 'Delete a member',
-    description: 'Select an unlinked Team member to delete.',
+    title: 'Deactivate a member',
+    description: 'Select a Team member to deactivate and revoke access.',
   },
   invite: {
     title: 'Create an invitation',
@@ -165,14 +180,14 @@ const selectableMembers = computed(() =>
   props.mode === 'invite'
     ? activeMembers.value.filter((member) => !member.user_id)
     : props.mode === 'delete'
-      ? activeMembers.value.filter((member) => !member.user_id)
+      ? activeMembers.value.filter((member) => member.role !== 'owner')
       : activeMembers.value
 )
 const emptyDescription = computed(() =>
   props.mode === 'invite'
     ? 'Every current member is linked to an account.'
     : props.mode === 'delete'
-      ? 'There are no unlinked members to delete.'
+      ? 'There are no eligible members to deactivate.'
       : 'Add a member before using this tool.'
 )
 const memberName = (member: KitchenTeamMember) =>
@@ -187,6 +202,7 @@ const initials = (member: KitchenTeamMember) =>
 function clearSelection() {
   selectedMember.value = null
   name.value = ''
+  role.value = 'member'
   error.value = ''
   confirmingDelete.value = false
 }
@@ -194,6 +210,7 @@ function clearSelection() {
 function selectMember(member: KitchenTeamMember) {
   selectedMember.value = member
   name.value = memberName(member)
+  role.value = member.role || 'member'
   if (props.mode === 'invite') void createInvitation()
   if (props.mode === 'delete') confirmingDelete.value = true
 }
@@ -210,7 +227,10 @@ async function updateMember() {
     await updateKitchenTeamMember({
       kitchenId: kitchenId.value,
       memberId: selectedMember.value.id,
-      changes: { name: normalizedName },
+      changes: {
+        name: normalizedName,
+        ...(role.value === 'owner' ? {} : { role: role.value }),
+      },
     })
     toast.add({ title: `${normalizedName} updated`, color: 'success' })
     emit('update:open', false)
@@ -249,11 +269,11 @@ async function deleteMember() {
       kitchenId.value,
       selectedMember.value.id
     )
-    toast.add({ title: `${result.name} deleted`, color: 'success' })
+    toast.add({ title: `${result.name} deactivated`, color: 'success' })
     emit('update:open', false)
   } catch (cause) {
     toast.add({
-      title: 'Team member could not be deleted',
+      title: 'Team member could not be deactivated',
       description: cause instanceof Error ? cause.message : 'Try again.',
       color: 'error',
     })

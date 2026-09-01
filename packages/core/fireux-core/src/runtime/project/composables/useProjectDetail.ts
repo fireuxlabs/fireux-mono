@@ -1,15 +1,17 @@
-import { computed, isRef, type ComputedRef, type Ref } from 'vue'
-import {
-  useProjectCollection,
-  type UseProjectCollectionReturn,
-} from './useProjectCollection'
+import { computed, isRef, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import type { Project } from '../models/project.model'
+
+type ProjectDetailResponse = {
+  ok: true
+  items: Project[]
+}
 
 export type UseProjectDetailReturn = {
   project: ComputedRef<Project | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
-  refresh: UseProjectCollectionReturn['refresh']
+  refresh: () => Promise<void>
   statusCode: ComputedRef<number>
   missing: ComputedRef<boolean>
   failed: ComputedRef<boolean>
@@ -19,20 +21,62 @@ export type UseProjectDetailReturn = {
 export function useProjectDetail(
   id: string | Ref<string>
 ): UseProjectDetailReturn {
+  const { currentUser, hasAuthState } = useAuth()
   const projectId = computed(() => String(isRef(id) ? id.value : id).trim())
-  const collection = useProjectCollection({
-    filter: computed(() => ({ ids: projectId.value ? [projectId.value] : [] })),
+  const projectValue = ref<Project | null>(null)
+  const pendingValue = ref(false)
+  const errorValue = ref<unknown>()
+  let requestSequence = 0
+
+  async function load() {
+    const user = currentUser.value
+    const requestedId = projectId.value
+    if (!import.meta.client || !hasAuthState.value || !user || !requestedId) {
+      projectValue.value = null
+      pendingValue.value = false
+      errorValue.value = undefined
+      return
+    }
+
+    const sequence = ++requestSequence
+    pendingValue.value = true
+    errorValue.value = undefined
+    try {
+      const response = await $fetch<ProjectDetailResponse>(
+        '/api/internal/control/projects',
+        {
+          headers: { authorization: `Bearer ${await user.getIdToken()}` },
+          query: { project_id: requestedId },
+        }
+      )
+      if (sequence !== requestSequence) return
+      projectValue.value =
+        response.items.find((project) => project.id === requestedId) ?? null
+    } catch (cause) {
+      if (sequence !== requestSequence) return
+      projectValue.value = null
+      errorValue.value = cause
+    } finally {
+      if (sequence === requestSequence) pendingValue.value = false
+    }
+  }
+
+  watch([currentUser, hasAuthState, projectId], () => void load(), {
+    immediate: true,
   })
-  const project = computed(() => collection.projects.value[0] ?? null)
+
+  const project = computed(() => projectValue.value)
+  const pending = computed(() => pendingValue.value)
+  const error = computed(() => errorValue.value)
   const missing = computed(
-    () => !collection.pending.value && !collection.error.value && !project.value
+    () => !pending.value && !error.value && !project.value
   )
-  const failed = computed(() => Boolean(collection.error.value))
+  const failed = computed(() => Boolean(error.value))
   const statusCode = computed(() =>
     failed.value ? 503 : missing.value ? 404 : project.value ? 200 : 0
   )
   const outcome = computed(() => {
-    if (collection.pending.value) return 'pending' as const
+    if (pending.value) return 'pending' as const
     if (failed.value) return 'error' as const
     if (missing.value) return 'missing' as const
     return 'ready' as const
@@ -40,9 +84,9 @@ export function useProjectDetail(
 
   return {
     project,
-    pending: collection.pending,
-    error: collection.error,
-    refresh: collection.refresh,
+    pending,
+    error,
+    refresh: load,
     statusCode,
     missing,
     failed,

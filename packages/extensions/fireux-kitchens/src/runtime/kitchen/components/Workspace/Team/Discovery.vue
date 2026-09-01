@@ -34,6 +34,16 @@
 </template>
 
 <script setup lang="ts">
+import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
+
+type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
+
+defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
 const links = [
   { label: 'Evidence', to: '/workspace/kitchen/team/search-demand' },
   { label: 'Analysis', to: '/workspace/kitchen/team/search-demand/analysis' },

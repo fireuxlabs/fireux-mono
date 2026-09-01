@@ -4,7 +4,7 @@ import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.
 import type { Place } from './place.model.ts'
 
 export type PlaceUpsertInput = Partial<Place> &
-  Pick<Place, 'id' | 'name' | 'place_type' | 'source'> & {
+  Pick<Place, 'id' | 'name' | 'place_type'> & {
     image_shade?: 'light' | 'dark' | 'none'
   }
 

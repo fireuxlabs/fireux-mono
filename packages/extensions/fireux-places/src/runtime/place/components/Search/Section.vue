@@ -61,9 +61,8 @@ import {
   usePlaceLogoState,
 } from '../../composables/firestore/utils/view/usePlaceLogos'
 import { usePlaceInterface } from '../../composables/firestore/utils/view/usePlaceInterface'
-import type { PlaceSource } from '../../models/place.model.ts'
 import type { PlaceUpsertInput } from '../../models/place-onboarding.model.ts'
-import type { BasePlace } from '../../composables/firestore/fetch/search/types'
+import type { BasePlace, PlaceSearchSource } from '../../composables/firestore/fetch/search/types'
 import type { PlaceImageShade } from '../../utils/place-spine'
 import PlaceCardsDropdownSelected from '../Cards/Dropdown/Selected.vue'
 
@@ -107,11 +106,9 @@ const {
 
 const selectedPlace = computed(() => selected.value as BasePlace | null)
 
-const selectedSource = computed<PlaceSource>(() => {
+const selectedSource = computed<PlaceSearchSource>(() => {
   const src = (selectedPlace.value as any)?.source
-  return src === 'google' || src === 'manual' || src === 'fireux'
-    ? src
-    : 'fireux'
+  return src === 'google' ? 'google' : 'fireux'
 })
 
 const typeLabel = computed(() => {
@@ -214,7 +211,6 @@ function toDraft(
 
   const draft = {
     id: placeId,
-    source: selectedSource.value,
     name,
     short_name: String((place as any)?.short_name ?? '').trim(),
     formatted_address: formatted,
@@ -295,7 +291,6 @@ async function onConfirmClick() {
     if (import.meta.dev) {
       console.log('[places][confirm] draft', {
         placeId,
-        source: draft.source,
         draft_image: draft.image_url,
         draft_shade: draft.image_shade,
       })

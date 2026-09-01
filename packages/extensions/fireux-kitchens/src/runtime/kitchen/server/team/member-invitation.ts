@@ -210,7 +210,12 @@ export async function inspectKitchenMemberInvitation(
     .collection(`kitchens/${parsed.locator.kitchenId}/team`)
     .doc(memberId)
     .get()
-  if (!memberSnapshot.exists || text(memberSnapshot.data()?.user_id)) {
+  if (
+    !memberSnapshot.exists ||
+    text(memberSnapshot.data()?.user_id) ||
+    memberSnapshot.data()?.active === false ||
+    text(memberSnapshot.data()?.status) !== 'active'
+  ) {
     throw createError({
       statusCode: 410,
       statusMessage: 'This invitation is no longer available.',
@@ -269,6 +274,15 @@ export async function acceptKitchenMemberInvitation(
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen member not found.',
+      })
+    }
+    if (
+      member.data?.active === false ||
+      text(member.data?.status) !== 'active'
+    ) {
+      throw createError({
+        statusCode: 410,
+        statusMessage: 'This invitation is no longer available.',
       })
     }
     const linkedUserId = text(member.data?.user_id)

@@ -3,14 +3,15 @@ import { defineKitchenTeamTool } from './types'
 export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   id: 'kitchen.team.delete-member',
   mode: 'write',
-  risk: 'destructive',
+  risk: 'write',
   confirmation: 'required',
   context: {
     target: 'KitchenTeamMember',
     instruction:
-      'Delete an existing unlinked Kitchen Team member and revoke pending invitations.',
-    outcome: 'Permanently removes the unlinked member from the selected Team.',
-    constraints: ['A member linked to a User cannot be deleted by this tool.'],
+      'Deactivate an existing Kitchen Team member, revoke pending invitations and remove linked software access.',
+    outcome:
+      'Preserves the member record and operational history while ending active Team access.',
+    constraints: ['The Kitchen owner cannot be deactivated by this tool.'],
   },
   inputSchema: {
     type: 'object',
@@ -23,14 +24,15 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
   ai: {
     baked: {
       purpose:
-        'Permanently remove an unlinked member from the selected Kitchen Team.',
+        'Deactivate a member while preserving their Kitchen Team history.',
       knows: ['The selected Kitchen, selected member and current link state.'],
       constraints: [
-        'Do not delete a member linked to a User.',
+        'Revoke linked access without deleting the historical member record.',
+        'Do not deactivate the Kitchen owner.',
         'Do not proceed without explicit confirmation.',
       ],
       evidence: [
-        'Return the deleted member identity and invitation revocation outcome.',
+        'Return the deactivated member identity and access-revocation outcome.',
       ],
     },
     runtime: {
@@ -43,8 +45,8 @@ export const kitchenTeamMemberDeleteTool = defineKitchenTeamTool({
     human: {
       placement: 'toolbar',
       group: 'update',
-      label: 'Delete a member',
-      description: 'Delete an unlinked member and revoke pending invitations.',
+      label: 'Deactivate a member',
+      description: 'End access while preserving the Team member’s history.',
       icon: 'i-lucide-user-minus',
     },
     agent: { callable: true },

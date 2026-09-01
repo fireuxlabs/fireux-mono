@@ -87,7 +87,6 @@ try {
           name,
           slug: text(kitchen.slug) || root.id.toLowerCase(),
           place_type: 'non_physical',
-          source: 'manual',
           entity_families: ['kitchen'],
           ...(kitchen.created ? { created: stable(kitchen.created) } : {}),
           ...(kitchen.updated ? { updated: stable(kitchen.updated) } : {}),

@@ -6,7 +6,8 @@ export function appSubscriptionCapacity(
   capability: string,
   subscription: AppUserSubscription
 ) {
-  return capacity[capability]?.[subscription] ?? 0
+  const limit = capacity[capability]?.[subscription]
+  return limit === undefined ? 0 : limit
 }
 
 export function hasAppSubscriptionCapacity(

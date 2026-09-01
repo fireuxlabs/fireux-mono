@@ -1,7 +1,7 @@
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
-import type { Place, PlaceSource, PlaceStamp } from '../models/place.model.ts'
+import type { Place, PlaceStamp } from '../models/place.model.ts'
 import {
   normalizePlaceBusinessHours,
   readMediaBackdropColor,
@@ -54,7 +54,6 @@ export const PlaceDefaults: Place = {
   business_hours: { windows: [] },
   claimed_by: '',
   verified: false,
-  source: 'fireux',
   created: { at: {} as FirebaseTimestamp },
   updated: { at: {} as FirebaseTimestamp },
 }
@@ -79,13 +78,6 @@ const stamp = (value: unknown): PlaceStamp => {
     ...(text(source.app_id) ? { app_id: text(source.app_id) } : {}),
   }
 }
-const placeSource = (value: unknown): PlaceSource => {
-  const source = text(value)
-  return source === 'google' || source === 'manual' || source === 'fireux'
-    ? source
-    : 'fireux'
-}
-
 /**
  * Resolve sparse stored Place truth into the one canonical runtime Place.
  * Unknown stored fields remain available; defaults only complete known fields.
@@ -155,7 +147,6 @@ export function normalizePlace(idValue: unknown, value: unknown): Place | null {
     },
     claimed_by: text(source.claimed_by),
     verified: source.verified === true,
-    source: placeSource(source.source),
     created: stamp(source.created),
     updated: stamp(source.updated),
   }

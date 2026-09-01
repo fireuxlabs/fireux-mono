@@ -96,6 +96,68 @@ const CONSOLE_TEAM_COMPOSABLES = [
   'packages/extensions/fireux-suppliers/src/runtime/supplier/composables/workspace/team/useSupplierWorkspaceTeam.ts',
   'projects/fireux/fireux-blank/app/composables/fireux/workspace/blank/team/useBlankWorkspaceTeam.ts',
 ]
+const WORKSPACE_FAMILY_PAGE_ANATOMY = [
+  {
+    label: 'Project landing',
+    page: 'projects/fireux/fireux-app/app/pages/index.vue',
+    markers: [
+      '<WorkspaceProject',
+      '<WorkspaceHero',
+      '<WorkspaceProjectIndexAI',
+      '<WorkspaceProjectOperations />',
+      '<WorkspaceProjectTools',
+      '<WorkspaceProjectDiscovery />',
+    ],
+  },
+  {
+    label: 'Kitchen landing',
+    page: 'projects/misebox/misebox-app/app/pages/index.vue',
+    markers: [
+      '<WorkspaceKitchen',
+      '<WorkspaceHero',
+      '<WorkspaceKitchenIndexAI',
+      '<WorkspaceKitchenOperations />',
+      '<WorkspaceKitchenTools',
+      '<WorkspaceKitchenDiscovery />',
+    ],
+  },
+  {
+    label: 'Project Test',
+    page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test.vue',
+    markers: [
+      '<WorkspaceProjectTestSelector',
+      '<WorkspaceHero',
+      '<WorkspaceProjectTestAI />',
+      '<WorkspaceProjectTest',
+      '<WorkspaceProjectTestTools',
+      '<WorkspaceProjectTestDiscovery />',
+    ],
+  },
+  {
+    label: 'Project Team',
+    page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
+    markers: [
+      '<WorkspaceProjectTeamSelector',
+      '<WorkspaceHero',
+      '<WorkspaceProjectTeamAI',
+      '<WorkspaceProjectTeam',
+      '<WorkspaceProjectTeamTools',
+      '<WorkspaceProjectTeamDiscovery',
+    ],
+  },
+  {
+    label: 'Kitchen Team',
+    page: 'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/index.vue',
+    markers: [
+      '<WorkspaceKitchenTeamSelector',
+      '<WorkspaceHero',
+      '<WorkspaceKitchenTeamAI',
+      '<WorkspaceKitchenTeam',
+      '<WorkspaceKitchenTeamTools',
+      '<WorkspaceKitchenTeamDiscovery',
+    ],
+  },
+]
 const CONSOLE_OPERATION_CONTRACTS = {
   project: {
     catalogue: 'projects/fireux/fireux-app/app/meta.ts',
@@ -218,6 +280,7 @@ export async function run(ctx) {
   validateWorkspaceNavigationLifecycle(repoRoot, violations)
   validateWorkspaceOperationAIPlaceholder(repoRoot, violations)
   validateWorkspaceEntityComponentHierarchy(repoRoot, violations)
+  validateWorkspaceFamilyPageAnatomy(repoRoot, violations)
   validateWorkspaceMenuCanon(repoRoot, violations)
   validateWorkspaceOperationContracts(repoRoot, violations)
   validateWorkspaceAIContracts(repoRoot, violations)
@@ -258,6 +321,26 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ workspace pages use the explicit page contract')
+}
+
+function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
+  for (const contract of WORKSPACE_FAMILY_PAGE_ANATOMY) {
+    const source = readFileSync(path.join(repoRoot, contract.page), 'utf8')
+    let previousIndex = -1
+
+    for (const marker of contract.markers) {
+      const markerIndex = source.indexOf(marker, previousIndex + 1)
+      if (markerIndex < 0) {
+        violations.push(
+          source.includes(marker)
+            ? `${contract.page} (${contract.label} Workspace anatomy is out of order at ${marker})`
+            : `${contract.page} (${contract.label} must compose ${marker})`
+        )
+        continue
+      }
+      previousIndex = markerIndex
+    }
+  }
 }
 
 function validateMiseboxWorkspaceDoorway(repoRoot, violations) {

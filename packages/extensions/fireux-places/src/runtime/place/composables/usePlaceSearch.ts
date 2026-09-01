@@ -1,9 +1,9 @@
 import { ref, watch, type Ref } from 'vue'
-import type { PlaceSource } from '../models/place.model.ts'
 import type {
   BasePlace,
   BasePlaceRecord,
   PlaceSearchLocation,
+  PlaceSearchSource,
 } from './firestore/fetch/search/types'
 import type { PlaceImageShade } from '../utils/place-spine'
 import { mapPlaceToBasePlace } from './firestore/utils/view/mapPlaceToBasePlace'
@@ -47,7 +47,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
     const shortAddress = String(base.short_address ?? '').trim()
     const imageUrl = String(base.image_url ?? '').trim()
     const imageShade = base.image_shade as PlaceImageShade | undefined
-    const source = base.source as PlaceSource | undefined
+    const source = base.source as PlaceSearchSource | undefined
     const claimedBy = String(base.claimed_by ?? '').trim()
     const collection = String(base.collection ?? '').trim() || undefined
     const lat = Number(base.lat)
@@ -261,7 +261,7 @@ export type PlaceSearchCell = {
   shortAddress: string
   imageUrl: string
   imageShade?: PlaceImageShade
-  source?: PlaceSource
+  source?: PlaceSearchSource
   claimedBy?: string
   collection?: string
   lat?: number

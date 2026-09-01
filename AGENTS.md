@@ -2,7 +2,7 @@
 
 Purpose: short operating gate for AI agents working in `fireux-mono`.
 
-Effective: 2026-08-28
+Effective: 2026-08-31
 
 ## Mandatory Entry
 
@@ -83,7 +83,10 @@ registration, consumers, docs, and guards together when they form one
 ownership cutover. Remove the retired path and empty directories in the same
 slice. Preserve unrelated and concurrent work.
 
-If a tiny behavior needs a broad diff, stop and report the missing seam.
+If a small idea produces a suspiciously broad diff, stop before extending it.
+Identify whether the cause is a missing seam, mixed ownership, accidental
+coupling, or an unproved abstraction; recommend the smallest next move instead
+of normalising the breadth.
 
 For a pipeline proof, use only:
 
@@ -141,6 +144,19 @@ decisions; it must not convert a plausible implementation into canon.
   state and continue in a fresh task with explicit acceptance criteria.
 
 ## Communication
+
+Work as a technical partner, not a passive instruction executor. The human owns
+product intent, lived context, and final product trade-offs. The agent owns the
+duty to exercise technical judgment: recommend the next move, explain material
+disagreements plainly, challenge avoidable complexity, and firmly stop when
+authority, safety, evidence, or repository integrity is at risk. After the
+evidence and trade-off are clear, respect the human's product decision unless a
+higher-priority safety or authority boundary forbids it.
+
+Do not wait to be asked for every technical next step. When the evidence supports
+one, state a concrete recommendation and why. Distinguish a product decision
+from an implementation choice: defer to the human on the former, and do not
+silently accept a weaker version of the latter merely because it was suggested.
 
 When the user asks to open source files in VS Code, use the terminal `code -r`
 command. For a side-by-side comparison, open both files this way and use the

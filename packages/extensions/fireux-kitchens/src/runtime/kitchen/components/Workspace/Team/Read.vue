@@ -89,9 +89,9 @@
               @click="emit('invite', member)"
             />
             <UButton
-              v-if="!member.user_id"
-              label="Delete"
-              icon="i-lucide-trash-2"
+              v-if="member.role !== 'owner'"
+              label="Deactivate"
+              icon="i-lucide-user-minus"
               color="error"
               variant="ghost"
               size="sm"

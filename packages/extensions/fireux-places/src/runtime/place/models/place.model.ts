@@ -1,7 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 
-export type PlaceSource = 'google' | 'fireux' | 'manual'
 export type PlaceType = 'physical' | 'non_physical'
 
 export type PlaceAddress = {
@@ -80,7 +79,6 @@ export type Place = {
   business_hours: PlaceBusinessHours
   claimed_by: string
   verified: boolean
-  source: PlaceSource
   created: PlaceStamp
   updated: PlaceStamp
 }

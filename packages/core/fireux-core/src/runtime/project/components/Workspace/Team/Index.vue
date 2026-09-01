@@ -1,11 +1,19 @@
 <template>
-  <section id="project-team-members">
-    <UCard v-if="pending || members.length" :ui="{ body: 'p-0 sm:p-0' }">
+  <UPageSection id="project-team-members" title="Team" class="py-4 sm:py-4">
+    <WorkspaceProjectCrudToolbar
+      label="Project Team"
+      :available="derived.hasSelection ? ['read'] : []"
+      @read="actions.refresh"
+    />
+    <UCard
+      v-if="pending || state.team.members.length"
+      :ui="{ body: 'p-0 sm:p-0' }"
+    >
       <template #header>
         <div class="flex items-center gap-3">
           <h2 class="text-base font-semibold text-highlighted">People</h2>
           <span class="text-sm tabular-nums text-dimmed">
-            {{ members.length }}
+            {{ state.team.members.length }}
           </span>
         </div>
       </template>
@@ -23,7 +31,7 @@
 
       <ul v-else class="divide-y divide-default">
         <li
-          v-for="member in members"
+          v-for="member in state.team.members"
           :key="member.id"
           class="flex items-center gap-3 px-4 py-3 sm:px-6"
         >
@@ -49,7 +57,7 @@
     </UCard>
 
     <UAlert
-      v-if="!pending && error"
+      v-if="!pending && derived.error"
       color="error"
       variant="soft"
       icon="i-lucide-circle-alert"
@@ -58,18 +66,27 @@
     />
 
     <UAlert
-      v-else-if="!pending && !members.length"
+      v-else-if="!pending && !state.team.members.length"
       color="neutral"
       variant="subtle"
       icon="i-lucide-users"
       title="No team members yet"
       description="Add the first person to begin this Project Team."
     />
-  </section>
+  </UPageSection>
 </template>
 
 <script setup lang="ts">
-import { useProjectTeamContext } from '../../../composables/workspace/team/useProjectTeamContext'
+import { computed } from 'vue'
+import type { useProjectWorkspaceTeam } from '../../../composables/workspace/team/useProjectWorkspaceTeam'
 
-const { members, pending, error } = useProjectTeamContext()
+type Workspace = ReturnType<typeof useProjectWorkspaceTeam>
+
+const props = defineProps<{
+  state: Workspace['state']['value']
+  derived: Workspace['derived']['value']
+  actions: Workspace['actions']
+}>()
+
+const pending = computed(() => props.derived.outcome === 'pending')
 </script>

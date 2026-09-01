@@ -16,12 +16,12 @@ export const kitchenTeamMemberDeleteExecutor = {
     const member = members.find(
       (candidate) => candidate.memberId === memberId(input)
     )
-    return member && !member.linked
+    return member && member.role !== 'owner'
       ? {
           id: definition.id,
           input: { memberId: member.memberId },
           name: member.name,
-          confirmation: `Permanently delete ${member.name}?`,
+          confirmation: `Deactivate ${member.name} and revoke their Kitchen access?`,
         }
       : null
   },
@@ -31,7 +31,7 @@ export const kitchenTeamMemberDeleteExecutor = {
       memberId: memberId(prepared.input),
     })
     return {
-      answer: `${result.name} has been deleted.`,
+      answer: `${result.name} has been deactivated and their Kitchen access has been revoked.`,
       result,
     }
   },

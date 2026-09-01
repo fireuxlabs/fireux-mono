@@ -1,13 +1,13 @@
 <template>
 	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: route manual edits through authorized sparse Place mutations. -->
-	<UCard v-if="isManual">
+	<UCard v-if="hasPlace">
 		<template #header>
 			<div>
 				<div class="text-base font-semibold text-highlighted">
-					Manual location
+					Location
 				</div>
 				<p class="text-sm text-dimmed">
-					Only manual places edit stored map and address facts here.
+					Edit the stored Place name, address and map location.
 				</p>
 			</div>
 		</template>
@@ -67,7 +67,7 @@ const props = defineProps<{
 }>()
 const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
-const isManual = computed(() => place.value?.source === 'manual')
+const hasPlace = computed(() => Boolean(place.value))
 const toast = useToastify()
 const {
 	updateFormattedAddress,
