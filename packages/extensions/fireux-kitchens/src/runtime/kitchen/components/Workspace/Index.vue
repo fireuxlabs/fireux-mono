@@ -1,6 +1,13 @@
 <template>
-  <section class="workspace-surface workspace-surface--compact" aria-label="Kitchen">
-    <WorkspaceKitchenCrud :state="state" :derived="derived" />
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Kitchen"
+  >
+    <WorkspaceKitchenCrud
+      :state="state"
+      :derived="derived"
+      :refresh="refresh"
+    />
   </section>
 </template>
 

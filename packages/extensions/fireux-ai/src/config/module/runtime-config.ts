@@ -15,13 +15,19 @@ function readEnvFile(rootDir: string): Record<string, string> {
     const eq = trimmed.indexOf('=')
     if (eq <= 0) continue
     const key = trimmed.slice(0, eq).trim()
-    const value = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '')
+    const value = trimmed
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, '')
     if (key) out[key] = value
   }
   return out
 }
 
-function envFlag(name: string, envFile: Record<string, string>): boolean | undefined {
+function envFlag(
+  name: string,
+  envFile: Record<string, string>
+): boolean | undefined {
   const raw = process.env[name] ?? envFile[name]
   if (typeof raw !== 'string') return undefined
   const value = raw.trim().toLowerCase()
@@ -30,7 +36,10 @@ function envFlag(name: string, envFile: Record<string, string>): boolean | undef
   return undefined
 }
 
-function optEnv(name: string, envFile: Record<string, string>): string | undefined {
+function optEnv(
+  name: string,
+  envFile: Record<string, string>
+): string | undefined {
   const value = process.env[name] ?? envFile[name]
   if (typeof value !== 'string') return undefined
   const trimmed = value.trim()
@@ -67,6 +76,8 @@ export function configureRuntime(nuxt: Nuxt, options: ModuleOptions) {
   publicFireux.ai = {
     enabled,
     mode,
+    provider,
+    model,
     ...(publicFireux.ai && typeof publicFireux.ai === 'object'
       ? publicFireux.ai
       : {}),

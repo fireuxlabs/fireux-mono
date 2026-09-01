@@ -45,15 +45,6 @@
     >
       <template #leading>
         <UButton
-          v-if="allowFile"
-          type="button"
-          icon="i-lucide-paperclip"
-          color="neutral"
-          variant="ghost"
-          aria-label="Upload your existing menu"
-          @click="fileInput?.click()"
-        />
-        <UButton
           v-if="mounted && voice.supported.value"
           type="button"
           :icon="voice.recording.value ? 'i-lucide-square' : 'i-lucide-mic'"
@@ -65,6 +56,15 @@
             voice.recording.value ? 'Stop recording' : 'Speak to Kitchen AI'
           "
           @click="toggleVoice"
+        />
+        <UButton
+          v-if="allowFile"
+          type="button"
+          icon="i-lucide-paperclip"
+          color="neutral"
+          variant="ghost"
+          aria-label="Upload your existing menu"
+          @click="fileInput?.click()"
         />
       </template>
     </WorkspaceAIComposer>

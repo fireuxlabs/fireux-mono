@@ -1109,7 +1109,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue'
   )
-  assert.match(kitchenWorkspaceCreate, /navigateTo\('\/workspace\/kitchen\/create'\)/)
+  assert.match(kitchenWorkspaceCreate, /@create="createOpen = true"/)
+  assert.match(kitchenWorkspaceCreate, /<WorkspaceKitchenCreateModal/)
+  assert.doesNotMatch(
+    kitchenWorkspaceCreate,
+    /navigateTo\('\/workspace\/kitchen\/create'\)/
+  )
   assert.doesNotMatch(
     kitchenWorkspaceCreate,
     /useKitchenCreate|usePlaceUpdate|useFirestore|watch\(/

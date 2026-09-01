@@ -22,12 +22,15 @@
       variant="soft"
       size="sm"
       aria-label="Create Kitchen"
-      @click="navigateTo('/workspace/kitchen/create')"
+      @click="createOpen = true"
     />
+
+    <WorkspaceKitchenCreateModal v-model:open="createOpen" :refresh="refresh" />
   </section>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
@@ -38,4 +41,6 @@ defineProps<{
   derived: KitchenWorkspaceIndexDerived
   refresh: () => Promise<unknown>
 }>()
+
+const createOpen = ref(false)
 </script>

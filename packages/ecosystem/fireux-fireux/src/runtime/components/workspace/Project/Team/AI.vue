@@ -1,7 +1,7 @@
 <template>
   <WorkspaceAI aria-label="Project Team AI" compact>
     <WorkspaceAIComposer
-      placeholder="Project Team AI is not connected yet."
+      placeholder="Ask Project Team AI…"
       :suggestions="suggestions"
       suggestions-aria-label="Suggested Project actions"
       suggestions-disabled

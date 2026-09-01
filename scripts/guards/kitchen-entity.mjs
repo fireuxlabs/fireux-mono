@@ -130,6 +130,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}components/Workspace/Crud.vue`
   )
+  const workspaceCreateModal = read(
+    repoRoot,
+    `${kitchenBase}components/Workspace/CreateModal.vue`
+  )
   const shellCreate = read(
     repoRoot,
     `${kitchenBase}components/Onboarding/ShellCreate.vue`
@@ -172,7 +176,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     "export const KITCHEN_IDENTITY_SOURCES = ['user', 'place'] as const export type KitchenIdentitySource = (typeof KITCHEN_IDENTITY_SOURCES)[number] export type Kitchen = { id: string identity_source: KitchenIdentitySource slug: string status: 'active' | 'inactive' | 'archived' visibility: boolean }",
     'Kitchen must retain only its minimal shell identity and identity relationship source; Place and capability data belong to their own models.'
   )
-  assert.match(workspaceCreate, /navigateTo\('\/workspace\/kitchen\/create'\)/)
+  assert.match(workspaceCreate, /@create="createOpen = true"/)
+  assert.match(workspaceCreate, /<WorkspaceKitchenCreateModal/)
+  assert.doesNotMatch(
+    workspaceCreate,
+    /navigateTo\('\/workspace\/kitchen\/create'\)/
+  )
+  assert.match(workspaceCreateModal, /<KitchenOnboarding/)
   const workspaceCreatePage = read(
     repoRoot,
     `${base}pages/workspace/kitchen/create.vue`

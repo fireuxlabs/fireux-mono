@@ -1,15 +1,19 @@
 <template>
-  <WorkspaceCrudToolbar
-    label="Kitchen"
-    :available="available"
-    @create="navigateTo('/workspace/kitchen/create')"
-    @read="openKitchen"
-    @update="editKitchen"
-  />
+  <div>
+    <WorkspaceCrudToolbar
+      label="Kitchen"
+      :available="available"
+      @create="createOpen = true"
+      @read="openKitchen"
+      @update="editKitchen"
+    />
+
+    <WorkspaceKitchenCreateModal v-model:open="createOpen" :refresh="refresh" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
@@ -18,15 +22,18 @@ import type {
 const props = defineProps<{
   state: KitchenWorkspaceIndexState
   derived: KitchenWorkspaceIndexDerived
+  refresh: () => Promise<unknown>
 }>()
 
+const createOpen = ref(false)
 const available = computed<Array<'create' | 'read' | 'update'>>(() => [
   'create',
   ...(props.derived.hasSelection ? (['read', 'update'] as const) : []),
 ])
 
 async function openKitchen() {
-  if (props.state.kitchen.id) await navigateTo(`/kitchens/${props.state.kitchen.id}`)
+  if (props.state.kitchen.id)
+    await navigateTo(`/kitchens/${props.state.kitchen.id}`)
 }
 
 async function editKitchen() {
