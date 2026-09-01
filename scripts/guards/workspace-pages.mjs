@@ -135,14 +135,14 @@ const WORKSPACE_FAMILY_PAGE_ANATOMY = [
   },
   {
     label: 'Project Test',
-    page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test.vue',
+    page: 'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue',
     markers: [
       '<template #header',
       '<WorkspaceProjectNav',
       '<template #body',
       '<WorkspaceProjectTestSelector',
       '<WorkspaceHero',
-      '<WorkspaceProjectTestAI />',
+      '<WorkspaceProjectTestAI',
       '<WorkspaceProjectTest',
       '<WorkspaceProjectOperations />',
       '<WorkspaceProjectTestDiscovery />',
@@ -211,7 +211,7 @@ const WORKSPACE_CRUD_CREATE_SURFACES = [
 const PROJECT_TEST_READ_MODAL =
   'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud/Read.vue'
 const PROJECT_TEST_DETAIL_PAGE =
-  'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/[testIndex].vue'
+  'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/[testId].vue'
 const WORKSPACE_CRUD_PRIMITIVE =
   'packages/core/fireux-core/src/runtime/components/Workspace/CrudToolbar.vue'
 const WORKSPACE_CRUD_OPERATIONS = [
@@ -413,10 +413,142 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
     }
   }
 
+  const pageStateContracts = [
+    {
+      label: 'project',
+      source:
+        'packages/core/fireux-core/src/runtime/project/composables/workspace/index/useProjectWorkspaceIndex.ts',
+      keys: ['user', 'appUser', 'project', 'derived'],
+    },
+    {
+      label: 'project.team',
+      source:
+        'packages/core/fireux-core/src/runtime/project/composables/workspace/team/useProjectWorkspaceTeam.ts',
+      keys: ['project', 'team', 'derived'],
+    },
+    {
+      label: 'project.tests',
+      source:
+        'packages/ecosystem/fireux-fireux/src/runtime/project/composables/workspace/test/useProjectWorkspaceTest.ts',
+      keys: ['tests', 'derived'],
+    },
+    {
+      label: 'kitchen',
+      source:
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/index/useKitchenWorkspaceIndex.ts',
+      keys: ['user', 'appUser', 'kitchen', 'derived'],
+    },
+    {
+      label: 'kitchen.team',
+      source:
+        'packages/extensions/fireux-kitchens/src/runtime/kitchen/composables/workspace/team/useKitchenWorkspaceTeam.ts',
+      keys: ['kitchen', 'team', 'derived'],
+    },
+  ]
+  for (const contract of pageStateContracts) {
+    const source = readFileSync(path.join(repoRoot, contract.source), 'utf8')
+    if (
+      !source.includes('useWorkspacePageState(') ||
+      !source.includes('pageState.publish({') ||
+      contract.keys.some(
+        (key) =>
+          !source.includes(`${key}: state.value.${key}`) && key !== 'derived'
+      ) ||
+      !source.includes('derived: derived.value') ||
+      !source.includes('status') ||
+      !source.includes('create: {') ||
+      !source.includes('allowed:') ||
+      !source.includes('limit:')
+    ) {
+      violations.push(
+        `${contract.source} (${contract.label} must publish only its accepted page-facing state)`
+      )
+    }
+  }
+
   const primitive = readFileSync(
     path.join(repoRoot, WORKSPACE_CRUD_PRIMITIVE),
     'utf8'
   )
+
+  const readPrimitiveContracts = [
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Read.vue',
+      'WorkspaceProjectCrudRead',
+      '/workspace/project/',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud/Read.vue',
+      'WorkspaceKitchenCrudRead',
+      '/workspace/kitchen/',
+    ],
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud.vue',
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Crud/Read.vue',
+      'WorkspaceProjectTeamCrudRead',
+      '/workspace/project/team/',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud.vue',
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Crud/Read.vue',
+      'WorkspaceKitchenTeamCrudRead',
+      '/workspace/kitchen/team/',
+    ],
+    [
+      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Crud/Read.vue',
+      'WorkspaceProjectTestCrudRead',
+      '/workspace/project/test/',
+    ],
+  ]
+
+  const workspaceTeamCore = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/composables/fireux/workspace/useWorkspaceTeam.ts'
+    ),
+    'utf8'
+  )
+  for (const field of ['id', 'userId', 'name', 'avatar', 'role', 'status']) {
+    if (!workspaceTeamCore.includes(`${field}:`)) {
+      violations.push(
+        `useWorkspaceTeam.ts (Core Workspace Team member contract must own ${field})`
+      )
+    }
+  }
+  for (const [crudPath, readPath, modal, route] of readPrimitiveContracts) {
+    const crud = readFileSync(path.join(repoRoot, crudPath), 'utf8')
+    const read = readFileSync(path.join(repoRoot, readPath), 'utf8')
+    if (
+      !crud.includes('@read="readOpen = true"') ||
+      !crud.includes(`<${modal}`) ||
+      !read.includes('<UModal') ||
+      !read.includes('v-for=') ||
+      !read.includes(route)
+    ) {
+      violations.push(
+        `${crudPath} (Read must open its collection modal and each record must link to an individual detail route)`
+      )
+    }
+  }
+
+  const readDetailPages = [
+    'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/[projectId].vue',
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/[kitchenId].vue',
+    'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/[memberId].vue',
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/[memberId].vue',
+    'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/[testId].vue',
+  ]
+  for (const detailPage of readDetailPages) {
+    if (!existsSync(path.join(repoRoot, detailPage))) {
+      violations.push(
+        `${detailPage} (Read primitive record detail route missing)`
+      )
+    }
+  }
+
   let previousOperation = -1
   for (const [operation, component] of WORKSPACE_CRUD_OPERATIONS) {
     const operationPath = `packages/core/fireux-core/src/runtime/components/Workspace/Crud/${operation[0].toUpperCase()}${operation.slice(1)}.vue`
@@ -577,11 +709,50 @@ function validateWorkspaceFamilyPageAnatomy(repoRoot, violations) {
   for (const sourcePath of selectorPlusContracts) {
     const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
     if (
-      !source.includes('derived.canSelectMultiple && derived.canCreate') ||
+      !source.includes('derived.create.allowed') ||
       !source.includes('icon="i-lucide-plus"')
     ) {
       violations.push(
         `${sourcePath} (selector plus must require business selection entitlement and creation authority)`
+      )
+    }
+  }
+
+  const projectTestSelector = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/ecosystem/fireux-fireux/src/runtime/components/workspace/Project/Test/Selector.vue'
+    ),
+    'utf8'
+  )
+  if (
+    !projectTestSelector.includes('v-if="derived.create.allowed"') ||
+    !projectTestSelector.includes('icon="i-lucide-plus"') ||
+    !projectTestSelector.includes('<WorkspaceProjectTestCrudCreate')
+  ) {
+    violations.push(
+      'Project Test selector plus must require Test subscription capacity and open its domain Create modal'
+    )
+  }
+
+  const teamSelectorPlusContracts = [
+    [
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Team/Selector.vue',
+      'derived.create.allowed',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Selector.vue',
+      'derived.create.allowed',
+    ],
+  ]
+  for (const [sourcePath, condition] of teamSelectorPlusContracts) {
+    const source = readFileSync(path.join(repoRoot, sourcePath), 'utf8')
+    if (
+      !source.includes(`v-if="${condition}"`) ||
+      !source.includes('icon="i-lucide-plus"')
+    ) {
+      violations.push(
+        `${sourcePath} (Team selector plus must follow Team subscription capacity)`
       )
     }
   }

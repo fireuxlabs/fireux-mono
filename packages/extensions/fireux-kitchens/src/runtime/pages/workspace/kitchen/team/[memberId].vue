@@ -35,15 +35,11 @@
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { provideKitchenTeamContext } from '../../../../kitchen/composables/workspace/team/useKitchenTeamContext'
-import { resolveKitchenTeamMemberAnchor } from '../../../../kitchen/utils/team-member-anchor'
 
 const { teamMembers, pending } = provideKitchenTeamContext()
-const memberSlug = useRouteParam('memberSlug')
+const memberId = useRouteParam('memberId')
 const member = computed(() =>
-  teamMembers.value.find(
-    (candidate) =>
-      resolveKitchenTeamMemberAnchor(candidate) === memberSlug.value
-  )
+  teamMembers.value.find((candidate) => candidate.id === memberId.value)
 )
 
 definePageMeta({

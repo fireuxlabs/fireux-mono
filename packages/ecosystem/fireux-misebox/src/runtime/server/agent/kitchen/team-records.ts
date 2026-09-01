@@ -14,5 +14,9 @@ export async function readKitchenTeamToolMembers(
     memberId: document.id,
     name: readRecordString(document.data(), 'name'),
     linked: Boolean(readRecordString(document.data(), 'user_id')),
+    role: (() => {
+      const role = readRecordString(document.data(), 'role')
+      return role === 'owner' || role === 'operator' ? role : 'member'
+    })(),
   }))
 }

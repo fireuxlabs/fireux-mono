@@ -4,15 +4,17 @@
       label="Project"
       :available="available"
       @create="createOpen = true"
-      @read="openProject"
+      @read="readOpen = true"
     />
 
     <WorkspaceProjectCrudCreate v-model:open="createOpen" :refresh="refresh" />
+    <WorkspaceProjectCrudRead v-model:open="readOpen" :state="state" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceProjectCrudRead from './Crud/Read.vue'
 import type {
   ProjectWorkspaceIndexDerived,
   ProjectWorkspaceIndexState,
@@ -25,13 +27,9 @@ const props = defineProps<{
 }>()
 
 const createOpen = ref(false)
+const readOpen = ref(false)
 const available = computed<Array<'create' | 'read'>>(() => [
   'create',
-  ...(props.derived.hasSelection ? (['read'] as const) : []),
+  ...(props.state.appUser.projects.length ? (['read'] as const) : []),
 ])
-
-async function openProject() {
-  if (props.state.project.id)
-    await navigateTo(`/projects/${props.state.project.id}`)
-}
 </script>

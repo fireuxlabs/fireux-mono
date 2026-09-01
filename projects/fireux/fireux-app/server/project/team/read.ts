@@ -13,47 +13,60 @@ export async function readProjectTeam(event: H3Event, projectIdInput: unknown) {
   const memberRecords = team.docs
     .map((member) => ({
       id: member.id,
+      name: text(member.data().name),
+      avatar: text(member.data().avatar),
       role: text(member.data().role),
       userId: text(member.data().user_id),
       status: text(member.data().status),
     }))
     .filter(
       (member) =>
-        member.id === member.userId &&
         member.status === 'active' &&
+        !member.id.includes('/') &&
         !member.userId.includes('/')
     )
-  const users = memberRecords.length
+  const linkedRecords = memberRecords.filter((member) => member.userId)
+  const users = linkedRecords.length
     ? await db.getAll(
-        ...memberRecords.map((member) =>
+        ...linkedRecords.map((member) =>
           db.collection('users').doc(member.userId)
         )
       )
     : []
   const memberById = new Map(
-    memberRecords.map((member) => [member.userId, member])
+    linkedRecords.map((member) => [member.userId, member])
   )
-  const members = users
+  const linkedMembers = users
     .filter((user) => user.exists)
     .map((user) => {
       const data = user.data() || {}
       const role = memberById.get(user.id)?.role
       return {
-        id: user.id,
-        handle: text(data.handle),
-        display_name: text(data.display_name),
+        id: memberById.get(user.id)?.id || user.id,
+        userId: user.id,
+        name: text(data.display_name) || text(data.handle) || user.id,
         avatar: text(data.avatar),
-        access:
-          role === 'owner' || role === 'operator'
-            ? ('operator' as const)
-            : ('team' as const),
+        role:
+          role === 'owner' || role === 'operator' ? role : ('member' as const),
+        status: 'active' as const,
       }
     })
-    .sort((left, right) =>
-      (left.display_name || left.handle || left.id).localeCompare(
-        right.display_name || right.handle || right.id
-      )
-    )
+  const unlinkedMembers = memberRecords
+    .filter((member) => !member.userId)
+    .map((member) => ({
+      id: member.id,
+      userId: '',
+      name: member.name || member.id,
+      avatar: member.avatar,
+      role:
+        member.role === 'owner' || member.role === 'operator'
+          ? member.role
+          : ('member' as const),
+      status: 'active' as const,
+    }))
+  const members = [...linkedMembers, ...unlinkedMembers].sort((left, right) =>
+    left.name.localeCompare(right.name)
+  )
 
   return { ok: true as const, project_id: projectId, members }
 }

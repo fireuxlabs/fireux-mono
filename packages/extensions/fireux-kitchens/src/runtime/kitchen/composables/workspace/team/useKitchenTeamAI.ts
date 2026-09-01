@@ -2,7 +2,10 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useState } from '#imports'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { kitchenOperationAgents } from '../../../models/operation-agents'
-import { kitchenTeamAgentTools } from '../../../tools/team'
+import {
+  kitchenTeamAgentToolIds,
+  kitchenTeamAgentTools,
+} from '../../../tools/team'
 import { useKitchenWorkspace } from '../core/useKitchenWorkspace'
 import { useKitchenTeamAITools } from './useKitchenTeamAITools'
 import type { useKitchenWorkspaceTeam } from './useKitchenWorkspaceTeam'
@@ -21,9 +24,10 @@ const capabilityFingerprint = kitchenTeamAgentTools
   .join('|')
 
 const startingPrompts = [
-  'Who is on my Kitchen Team?',
-  'Add a Team member',
-  'How do Team invitations work?',
+  'Create a Team member',
+  'Read the Kitchen Team',
+  'Find and link an existing User',
+  'Add an unlinked named person',
 ]
 
 export function useKitchenTeamAI(
@@ -42,7 +46,7 @@ export function useKitchenTeamAI(
   const page = computed(workspace)
   const kitchenId = computed(() => page.value.state.kitchen.id)
   const teamMembers = computed(() => page.value.state.team.members)
-  const pending = computed(() => page.value.derived.outcome === 'pending')
+  const pending = computed(() => page.value.derived.status === 'loading')
   const promptSuggestions = ref<string[]>(startingPrompts)
   const suggestionCache = useState<Record<string, string[]>>(
     'kitchen-team-ai-suggestions',
@@ -51,7 +55,7 @@ export function useKitchenTeamAI(
   const suggestionKey = computed(() => {
     if (!kitchenId.value || pending.value) return ''
     const memberState = teamMembers.value
-      .map((member) => `${member.id}:${member.name}:${member.user_id}`)
+      .map((member) => `${member.id}:${member.name}:${member.userId}`)
       .sort()
       .join('|')
     return [
@@ -109,6 +113,7 @@ export function useKitchenTeamAI(
     description: 'Ask about the people working with this Kitchen.',
     placeholder: 'Ask about your Team…',
     aiTools,
+    availableActions: kitchenTeamAgentToolIds,
     get promptSuggestions() {
       return promptSuggestions.value
     },

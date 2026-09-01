@@ -1,4 +1,4 @@
-import { computed, nextTick, watch } from 'vue'
+import { computed, nextTick, watch, watchEffect } from 'vue'
 import { useAsyncData, useState } from '#imports'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
@@ -8,6 +8,7 @@ import {
 } from 'fireux-core/runtime/app/utils/app-subscription-capacity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
 import { useProjectDetail } from 'fireux-core/runtime/project/composables/useProjectDetail'
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -24,6 +25,7 @@ export function useProjectWorkspaceTest() {
   const { currentUser, hasAuthState } = useAuth()
   const appContext = useCurrentAppContext()
   const workspace = useWorkspace('project')
+  const pageState = useWorkspacePageState('project')
   const fireux = useFireUXConfig()
   const membership = appContext.membership
   const projectId = computed(() => membership.value?.primary_project || '')
@@ -85,6 +87,14 @@ export function useProjectWorkspaceTest() {
   })
 
   const state = computed(() => ({
+    user: {
+      id: currentUser.value?.uid || '',
+      anonymous: Boolean(currentUser.value?.isAnonymous),
+    },
+    appUser: {
+      projects: membership.value?.projects || [],
+      primaryProject: membership.value?.primary_project || '',
+    },
     project: {
       id: normalizeString(current.project.value?.id),
       name: normalizeString(current.project.value?.name),
@@ -96,24 +106,25 @@ export function useProjectWorkspaceTest() {
     bold: bold.value,
   }))
   const derived = computed(() => {
-    let outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready' = 'idle'
-    if (!hasAuthState.value || appContext.pending.value || testsPending.value) outcome = 'pending'
-    else if (appContext.error.value || current.error.value || testsError.value) outcome = 'error'
-    else if (!currentUser.value) outcome = 'idle'
-    else if (!projectId.value) outcome = 'empty'
-    else if (current.pending.value) outcome = 'pending'
-    else outcome = current.project.value ? 'ready' : 'error'
+    let status: 'idle' | 'loading' | 'error' | 'empty' | 'ready' = 'idle'
+    if (!hasAuthState.value || appContext.pending.value || testsPending.value) status = 'loading'
+    else if (appContext.error.value || current.error.value || testsError.value) status = 'error'
+    else if (!currentUser.value) status = 'idle'
+    else if (!projectId.value) status = 'empty'
+    else if (current.pending.value) status = 'loading'
+    else status = current.project.value ? 'ready' : 'error'
 
     return {
-      outcome,
-      hasSelection: Boolean(current.project.value),
-      limit: limit.value,
-      canCreateTest: hasAppSubscriptionCapacity(
-        fireux.subscriptionCapacity,
-        'project.test',
-        membership.value?.subscription || 'free',
-        tests.value.length
-      ),
+      status,
+      create: {
+        allowed: hasAppSubscriptionCapacity(
+          fireux.subscriptionCapacity,
+          'project.test',
+          membership.value?.subscription || 'free',
+          tests.value.length
+        ),
+        limit: limit.value,
+      },
     }
   })
 
@@ -188,6 +199,13 @@ export function useProjectWorkspaceTest() {
   function toggleBold() {
     if (tests.value[selectedIndex.value]) bold.value = !bold.value
   }
+
+  watchEffect(() => {
+    pageState.publish({
+      tests: state.value.tests,
+      derived: derived.value,
+    })
+  })
 
   async function refresh() {
     await appContext.refresh()

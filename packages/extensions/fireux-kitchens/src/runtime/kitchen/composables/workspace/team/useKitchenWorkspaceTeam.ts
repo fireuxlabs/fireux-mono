@@ -1,4 +1,6 @@
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
+import { useWorkspacePageState } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspacePageState'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { provideKitchenTeamContext } from './useKitchenTeamContext'
 import { useKitchenMemberInvitationCreate } from './mutations/useKitchenMemberInvitationCreate'
@@ -8,10 +10,21 @@ import { useKitchenCapabilityTools } from '../useKitchenCapabilityTools'
 
 export function useKitchenWorkspaceTeam() {
   const team = provideKitchenTeamContext()
+  const pageState = useWorkspacePageState('kitchen')
   const capabilityTools = useKitchenCapabilityTools('team')
   const { createKitchenMemberInvitation } = useKitchenMemberInvitationCreate()
   const { updateKitchenTeamMember } = useKitchenTeamMemberUpdate()
   const { deleteKitchenTeamMember } = useKitchenTeamMemberDelete()
+  const members = computed<WorkspaceTeamMember[]>(() =>
+    team.selectableTeamMembers.value.map((member) => ({
+      id: member.id,
+      userId: member.user_id || '',
+      name: member.display_name || member.name || member.id,
+      avatar: team.memberAvatarById.value.get(member.id) || '',
+      role: member.role,
+      status: member.status,
+    }))
+  )
 
   const state = computed(() => ({
     kitchen: {
@@ -21,27 +34,27 @@ export function useKitchenWorkspaceTeam() {
       url: normalizeString(team.selectedKitchen.value?.identity?.image_url),
     },
     team: {
-      members: team.selectableTeamMembers.value,
+      members: members.value,
       selectedTeamMemberId: team.selectedTeamMemberId.value,
       activeToolId: capabilityTools.activeToolId.value,
     },
   }))
   const derived = computed(() => ({
-    outcome: team.pending.value
-      ? ('pending' as const)
+    status: team.pending.value
+      ? ('loading' as const)
       : team.error.value
         ? ('error' as const)
         : team.selectedKitchen.value
           ? ('ready' as const)
           : ('empty' as const),
-    hasSelection: Boolean(team.selectedKitchen.value),
-    teamMemberLimit: team.teamMemberLimit.value,
-    canCreateTeamMember: team.canCreateTeamMember.value,
-    teamMemberCapacityReached: team.teamMemberCapacityReached.value,
+    create: {
+      allowed: team.canCreateTeamMember.value,
+      limit: team.teamMemberLimit.value,
+    },
   }))
 
   function selectTeamMember(memberId: string) {
-    team.selectedTeamMemberId.value = team.selectableTeamMembers.value.some(
+    team.selectedTeamMemberId.value = members.value.some(
       (member) => member.id === memberId
     )
       ? memberId
@@ -78,6 +91,14 @@ export function useKitchenWorkspaceTeam() {
       memberId,
     })
   }
+
+  watchEffect(() => {
+    pageState.publish({
+      kitchen: state.value.kitchen,
+      team: state.value.team,
+      derived: derived.value,
+    })
+  })
 
   return {
     state,

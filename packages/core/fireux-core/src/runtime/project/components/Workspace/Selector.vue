@@ -4,18 +4,18 @@
     class="flex items-center gap-2"
     aria-label="Project selector"
   >
-    <template v-if="derived.outcome === 'pending'">
+    <template v-if="derived.status === 'loading'">
       <USkeleton class="h-8 w-36 rounded-md" />
     </template>
     <WorkspaceProjectSelectorChoices
-      v-else-if="state.project.id || derived.canSelectMultiple"
+      v-else-if="state.project.id || state.appUser.projects.length"
       :project="state.project"
-      :can-select-multiple="derived.canSelectMultiple"
-      :project-ids="state.user.projects"
+      :can-select-multiple="state.appUser.projects.length > 1"
+      :project-ids="state.appUser.projects"
       :refresh="refresh"
     />
     <UButton
-      v-if="derived.canSelectMultiple && derived.canCreate"
+      v-if="derived.create.allowed"
       icon="i-lucide-plus"
       color="neutral"
       variant="soft"

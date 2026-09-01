@@ -10,11 +10,25 @@
       class="w-fit max-w-full"
       @update:model-value="actions.select(Number($event))"
     />
+    <UButton
+      v-if="derived.create.allowed"
+      icon="i-lucide-plus"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      aria-label="Create Test"
+      @click="createOpen = true"
+    />
+
+    <WorkspaceProjectTestCrudCreate
+      v-model:open="createOpen"
+      :actions="actions"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type {
   ProjectTest,
   useProjectWorkspaceTest,
@@ -27,6 +41,8 @@ const props = defineProps<{
   derived: Workspace['derived']['value']
   actions: Workspace['actions']
 }>()
+
+const createOpen = ref(false)
 
 const items = computed(() =>
   props.state.tests.map((test: ProjectTest, index: number) => ({

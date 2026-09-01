@@ -16,6 +16,8 @@ export type ProjectWorkspaceIndexState = {
   user: {
     id: string
     anonymous: boolean
+  }
+  appUser: {
     projects: string[]
     primaryProject: string
   }
@@ -23,10 +25,8 @@ export type ProjectWorkspaceIndexState = {
 }
 
 export type ProjectWorkspaceIndexDerived = {
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
-  hasSelection: boolean
-  canCreate: boolean
-  canSelectMultiple: boolean
+  status: 'idle' | 'loading' | 'error' | 'empty' | 'ready'
+  create: { allowed: boolean; limit: number | null }
 }
 
 export function useProjectWorkspaceIndex() {
@@ -48,6 +48,8 @@ export function useProjectWorkspaceIndex() {
       user: {
         id: currentUser.value?.uid || '',
         anonymous: Boolean(currentUser.value?.isAnonymous),
+      },
+      appUser: {
         projects: membership?.projects || [],
         primaryProject: primaryProjectId.value,
       },
@@ -64,38 +66,39 @@ export function useProjectWorkspaceIndex() {
     const membership = appContext.membership.value
     const projects = membership?.projects || []
     const subscription = membership?.subscription || 'free'
-    const canSelectMultiple =
-      appSubscriptionCapacity(
-        fireux.subscriptionCapacity,
-        'project',
-        subscription
-      ) === null
-    let outcome: ProjectWorkspaceIndexDerived['outcome'] = 'idle'
+    const limit = appSubscriptionCapacity(
+      fireux.subscriptionCapacity,
+      'project',
+      subscription
+    )
+    const count = projects.length
+    let status: ProjectWorkspaceIndexDerived['status'] = 'idle'
     if (!mounted.value || !hasAuthState.value || appContext.pending.value)
-      outcome = 'pending'
-    else if (appContext.error.value || current.error.value) outcome = 'error'
-    else if (!currentUser.value) outcome = 'idle'
-    else if (!primaryProjectId.value) outcome = 'empty'
-    else if (current.pending.value) outcome = 'pending'
-    else outcome = current.project.value ? 'ready' : 'error'
+      status = 'loading'
+    else if (appContext.error.value || current.error.value) status = 'error'
+    else if (!currentUser.value) status = 'idle'
+    else if (!primaryProjectId.value) status = 'empty'
+    else if (current.pending.value) status = 'loading'
+    else status = current.project.value ? 'ready' : 'error'
 
     return {
-      outcome,
-      hasSelection: Boolean(current.project.value),
-      canSelectMultiple,
-      canCreate:
-        Boolean(membership) &&
-        resolveWorkspaceCanCreate(
-          fireux.role,
-          fireux.workspaceConfig,
-          'project'
-        ) &&
-        hasAppSubscriptionCapacity(
-          fireux.subscriptionCapacity,
-          'project',
-          subscription,
-          projects.length
-        ),
+      status,
+      create: {
+        allowed:
+          Boolean(membership) &&
+          resolveWorkspaceCanCreate(
+            fireux.role,
+            fireux.workspaceConfig,
+            'project'
+          ) &&
+          hasAppSubscriptionCapacity(
+            fireux.subscriptionCapacity,
+            'project',
+            subscription,
+            count
+          ),
+        limit,
+      },
     }
   })
 
@@ -112,6 +115,7 @@ export function useProjectWorkspaceIndex() {
   watchEffect(() => {
     pageState.publish({
       user: state.value.user,
+      appUser: state.value.appUser,
       project: state.value.project,
       derived: derived.value,
     })
@@ -120,16 +124,16 @@ export function useProjectWorkspaceIndex() {
   watch(
     () =>
       [
-        derived.value.outcome,
+        derived.value.status,
         primaryProjectId.value,
         state.value.project,
       ] as const,
     ([outcome, primaryId, project]: readonly [
-      ProjectWorkspaceIndexDerived['outcome'],
+      ProjectWorkspaceIndexDerived['status'],
       string,
       ProjectWorkspaceIndexState['project'],
     ]) => {
-      if (outcome === 'pending') return
+      if (outcome === 'loading') return
       if (!primaryId || project.id !== primaryId) {
         if (!primaryId) workspace.clearActive()
         return

@@ -13,7 +13,7 @@
         title="Build your Project Tests"
         description="Create and manage simple named objects inside this Project."
       />
-      <WorkspaceProjectTestAI />
+      <WorkspaceProjectTestAI :state="state" :derived="derived" />
       <WorkspaceProjectTest
         :state="state"
         :derived="derived"
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { useProjectWorkspaceTest } from '../../../project/composables/workspace/test/useProjectWorkspaceTest'
+import { useProjectWorkspaceTest } from '../../../../project/composables/workspace/test/useProjectWorkspaceTest'
 
 const { state, derived, actions } = useProjectWorkspaceTest()
 const { appName } = useFireUXConfig()

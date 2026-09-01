@@ -16,22 +16,31 @@ export function useKitchenAIIndex(
   const state = reactive({ prompt })
   const derived = reactive({
     placeholder: computed(() =>
-      workspace.value.derived.hasSelection || workspace.value.state.kitchen.name
+      workspace.value.state.kitchen.id || workspace.value.state.kitchen.name
         ? 'Ask Kitchen AI…'
         : 'Tell us about your Kitchen…'
     ),
     submitting: false,
     suggestions: computed(() => {
-      const { state, derived: workspaceDerived } = workspace.value
+      const { state, derived } = workspace.value
+      const primitives = [
+        ...(derived.create.allowed
+          ? [{ label: 'Create a Kitchen', icon: 'i-lucide-plus' }]
+          : []),
+        ...(state.appUser.kitchens.length
+          ? [{ label: 'Read my Kitchens', icon: 'i-lucide-list' }]
+          : []),
+      ]
       const onboarding =
         state.user.anonymous ||
-        !workspaceDerived.hasSelection ||
+        !state.kitchen.id ||
         !state.kitchen.name ||
         !state.kitchen.tagline ||
         !state.kitchen.url
 
       if (onboarding) {
         return [
+          ...primitives,
           {
             label: 'Help me build my Kitchen Workspace',
             icon: 'i-lucide-sparkles',
@@ -41,10 +50,11 @@ export function useKitchenAIIndex(
             label: 'Help me describe my Kitchen',
             icon: 'i-lucide-message-square-text',
           },
-        ]
+        ].slice(0, 4)
       }
 
       return [
+        ...primitives,
         {
           label: 'What needs attention today?',
           icon: 'i-lucide-sun',
@@ -57,7 +67,7 @@ export function useKitchenAIIndex(
           label: 'Help me organise my Dishes',
           icon: 'i-lucide-utensils',
         },
-      ]
+      ].slice(0, 4)
     }),
   })
 

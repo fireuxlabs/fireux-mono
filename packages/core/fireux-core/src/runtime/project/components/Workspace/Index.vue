@@ -9,7 +9,7 @@
       :refresh="refresh"
     />
     <UAlert
-      v-if="derived.outcome !== 'pending' && !derived.hasSelection"
+      v-if="derived.status !== 'loading' && !state.project.id"
       color="neutral"
       variant="subtle"
       icon="i-lucide-briefcase-business"

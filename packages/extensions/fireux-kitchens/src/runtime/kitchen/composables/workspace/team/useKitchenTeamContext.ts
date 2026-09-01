@@ -7,6 +7,7 @@ import {
   type InjectionKey,
 } from 'vue'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { readRuntimeFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useWorkspace } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspace'
@@ -16,6 +17,7 @@ import { useKitchenChildCollection } from '../../firestore/utils/paths/useKitche
 import type { KitchenSurface } from '../../firestore/utils/view/useKitchenInterface'
 import {
   KitchenTeamJoinRequestStorage,
+  KitchenTeamMemberDefaults,
   KitchenTeamMemberStorage,
   type KitchenTeamJoinRequest,
   type KitchenTeamMember,
@@ -23,9 +25,24 @@ import {
 import { kitchenTeamMemberLimit } from '../../../utils/team.ts'
 import { useKitchenWorkspaceCurrent } from '../index/useKitchenWorkspaceCurrent'
 import { useKitchenWorkspaceReadPage } from '../useKitchenWorkspaceReadPage'
+import { useAsyncData } from '#imports'
+
+type KitchenTeamResponse = {
+  ok: true
+  members: Array<{
+    memberId: string
+    name: string
+    avatar: string
+    slug: string
+    userId: string
+    linked: boolean
+    role: 'owner' | 'operator' | 'member'
+  }>
+}
 
 function createKitchenWorkspaceTeam() {
   const appContext = useCurrentAppContext()
+  const { currentUser, hasAuthState } = useAuth()
   const membership = appContext.membership
   const fireux = useFireUXConfig()
   const workspace = useWorkspace('kitchen')
@@ -73,20 +90,55 @@ function createKitchenWorkspaceTeam() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
+  const collectionPath = computed(() => `kitchens/${fetchKitchenId.value}/team`)
+  const requestKey = computed(
+    () =>
+      `kitchen-team-${currentUser.value?.uid || 'anonymous'}-${fetchKitchenId.value || 'none'}`
+  )
   const {
-    items: fetchedTeamMembers,
-    pending: fetchedTeamPending,
-    collectionPath,
-  } = useKitchenChildCollection<KitchenTeamMember>(
-    KitchenTeamMemberStorage.collection,
-    fetchKitchenId,
+    data: teamResponse,
+    pending: teamPending,
+    error: teamError,
+    refresh: refreshTeam,
+  } = useAsyncData<KitchenTeamResponse>(
+    requestKey,
+    async () => {
+      const user = currentUser.value
+      const kitchenId = fetchKitchenId.value
+      if (!user || !kitchenId) return { ok: true, members: [] }
+      return $fetch<KitchenTeamResponse>(
+        '/api/workspace/kitchen/team/members',
+        {
+          query: { kitchenId },
+          headers: { authorization: `Bearer ${await user.getIdToken()}` },
+        }
+      )
+    },
     {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
+      server: false,
+      watch: [currentUser, hasAuthState, fetchKitchenId],
     }
   )
-  const teamMembers = fetchedTeamMembers
-  const teamPending = fetchedTeamPending
+  const teamMembers = computed<Array<KitchenTeamMember & { avatar: string }>>(
+    () =>
+      (teamResponse.value?.members || []).map(
+        (member: KitchenTeamResponse['members'][number]) => ({
+          ...KitchenTeamMemberDefaults,
+          id: member.memberId,
+          user_id: member.userId,
+          name: member.name,
+          display_name: member.name,
+          avatar: member.avatar,
+          slug: member.slug,
+          role: member.role,
+          status: 'active',
+          active: true,
+        })
+      )
+  )
+  const memberAvatarById = computed(
+    () => new Map(teamMembers.value.map((member) => [member.id, member.avatar]))
+  )
   const {
     items: joinRequestItems,
     pending: joinRequestItemsPending,
@@ -138,7 +190,11 @@ function createKitchenWorkspaceTeam() {
       page.collection.value.pending
   )
   const error = computed(
-    () => appContext.error.value ?? current.error.value ?? undefined
+    () =>
+      teamError.value ??
+      appContext.error.value ??
+      current.error.value ??
+      undefined
   )
   const joinRequestsPending = computed(() => joinRequestItemsPending.value)
   const debug = computed(() => ({
@@ -163,6 +219,7 @@ function createKitchenWorkspaceTeam() {
     await appContext.refresh()
     await nextTick()
     await current.refresh()
+    await refreshTeam()
   }
 
   return {
@@ -178,6 +235,7 @@ function createKitchenWorkspaceTeam() {
     readOnly,
     canWrite,
     teamMembers: workspaceTeamMembers,
+    memberAvatarById,
     selectableTeamMembers,
     selectedTeamMember: access.selectedTeamMember,
     selectedTeamMemberId: access.selectedTeamMemberId,

@@ -4,7 +4,11 @@
     class="workspace-surface workspace-surface--compact"
     aria-label="Project Team"
   >
-    <WorkspaceProjectTeamCrud :derived="derived" :actions="actions" />
+    <WorkspaceProjectTeamCrud
+      :state="state"
+      :derived="derived"
+      :actions="actions"
+    />
     <UCard
       v-if="pending || state.team.members.length"
       :ui="{ body: 'p-0 sm:p-0' }"
@@ -37,27 +41,24 @@
         >
           <UAvatar
             :src="member.avatar || undefined"
-            :alt="member.display_name"
+            :alt="member.name"
             size="md"
             class="shrink-0"
           />
           <div class="min-w-0 flex-1">
             <h3 class="truncate text-sm font-medium text-highlighted">
-              {{ member.display_name || member.handle || member.id }}
+              {{ member.name }}
             </h3>
-            <p v-if="member.handle" class="mt-0.5 truncate text-xs text-dimmed">
-              @{{ member.handle }}
-            </p>
           </div>
           <UBadge color="neutral" variant="subtle">
-            {{ member.access === 'operator' ? 'Operator' : 'Team' }}
+            {{ member.role }}
           </UBadge>
         </li>
       </ul>
     </UCard>
 
     <UAlert
-      v-if="!pending && derived.error"
+      v-if="!pending && derived.status === 'error'"
       color="error"
       variant="soft"
       icon="i-lucide-circle-alert"
@@ -88,5 +89,5 @@ const props = defineProps<{
   actions: Workspace['actions']
 }>()
 
-const pending = computed(() => props.derived.outcome === 'pending')
+const pending = computed(() => props.derived.status === 'loading')
 </script>

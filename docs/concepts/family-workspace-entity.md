@@ -71,6 +71,10 @@ same soft prompt, footer, submit, and suggestion-chip anatomy. Domains supply
 context, connected controls,
 messages, commands, and authority; the neutral frame and prompt anatomy must
 not fork merely because one family has more mature execution.
+Each page AI receives only the CRUD primitives currently available on that
+page. Composer-only AI surfaces may present those primitives as contextual
+prompts but must not imply execution; a connected agent receives only its
+registered action ids and still obeys domain authority and confirmation.
 An unavailable command remains visibly unavailable rather than being imitated.
 Kitchen owns the live `WorkspaceKitchenSelector`, `WorkspaceKitchen`, creation,
 target loading, and collection lifecycle. The Main App supplies its own copy directly to the
@@ -221,13 +225,46 @@ migration verification, and protected Workspace consumer are complete.
   may move onto an App-owned Workspace landing only after that Entity's
   onboarding prerequisites are explicit and satisfied.
 - The shared Workspace header may copy a bounded page-runtime JSON envelope.
-  `state.user` contains only user inputs read directly by the page,
-  `state.entity` contains only selected Entity inputs read directly, and
+  `state.user` contains only authenticated User identity inputs,
+  `state.appUser` contains the current AppUser's Entity-id relationship and
+  persisted primary Entity id, `state.entity` contains only selected Entity
+  inputs read directly, and
   `state.derived` contains values the page computes and consumes from those
   inputs. Family `useXWorkspaceIndex` readers publish the common Workspace state;
   capability pages must explicitly extend or replace it when they require
   narrower capability props. Tokens, Firestore internals, unused root fields,
   and broad debug objects are never part of this contract.
+
+The current Project/Kitchen proving graph is deliberately small:
+
+```text
+User
+├─ appUser.projects[] + appUser.primary_project
+│  └─ project → ActiveProject
+│     ├─ project
+│     ├─ project.team
+│     └─ project.tests
+└─ appUser.kitchens[] + appUser.primary_kitchen
+   └─ kitchen → ActiveKitchen
+      ├─ kitchen
+      └─ kitchen.team
+```
+
+Each named page publishes only the runtime state directly consumed by that
+page-facing capability. Workspace-shell context may still be used internally
+for selection, fetching, and authority, but it is not repeated in a capability's
+copied JSON unless that capability directly consumes it. Capability pages never
+inherit or leave behind another page's copied JSON. For example,
+`project.tests` publishes `tests` and `derived`; its internal Project context is
+not part of the Test capability's page-facing state.
+
+The five proving pages expose one small page-facing `derived` vocabulary:
+`status` and `create.{allowed,limit}`. `status` is the page lifecycle
+(`idle`, `loading`, `error`, `empty`, or `ready`); it is not subscription
+capacity. Selection is read from the Entity id, record count from the owned
+array, and capacity exhaustion from record count plus `create.limit`; those
+facts are not duplicated in `derived`. Domain internals may keep narrower
+names, but page JSON and page components use this shared vocabulary.
 
 ## Accepted deltas
 
@@ -260,10 +297,32 @@ page-level siblings. `4.1 CRUD` owns Create, Read, Update, and Delete. `4.2
 Natives` owns tiny domain-native actions such as the Test pipeline's Bold,
 Capitalize, Uppercase, and Lowercase transforms. This is a bounded rule for
 these five proving pages, not a universal Workspace page contract. Each enabled
-Create doorway composes a domain-owned `Crud/Create.vue` modal; a family member
-without real Create authority keeps Create disabled instead of adding an empty
-action scaffold. A later numbered stage is omitted when that domain has no real
-implementation; alignment must not manufacture an empty placeholder.
+Create doorway composes a domain-owned `Crud/Create.vue` modal when its action
+is connected. During the current primitive-building pass, CRUD primitives are
+kept visibly aligned even where a domain command is not connected; availability
+is not a release claim. Selector plus controls remain conditional on the owning
+subscription-capacity decision. A later pass will apply that same condition to
+the CRUD primitive with explicit disabled-state presentation.
+
+Within these five proving capabilities, Read is a two-stage CRUD primitive.
+The Read toolbar action opens a domain-owned modal containing that capability's
+collection; selecting a record in the modal opens its individual detail route.
+The toolbar action must not navigate directly, and refresh alone is not Read
+evidence. Project, Kitchen, Project Team, Kitchen Team, and Project Test keep
+their own collection labels, record identity, and detail presentation while
+sharing this interaction chain.
+Team record detail routes use the stable record parameter `memberId` in both
+Project and Kitchen families. Display slugs may own labels or document anchors;
+they do not replace record identity in Workspace CRUD routing.
+
+Core owns the page-facing Workspace Team member vocabulary:
+`{ id, userId, name, avatar, role, status }`. `id` is always the stable
+Entity-owned Team record id; `userId` is an optional account relationship and
+is an empty string for an operational person without an account. Domain
+adapters map their storage records into this contract. They may retain richer
+private records for domain commands and detail presentation, but Workspace Team
+selectors, CRUD collections, copied page state, and shared mechanics do not
+invent domain-specific aliases for these six fields.
 
 Persistent Workspace navigation is not owned by any page stage. Core's named
 Entity navigation controller owns active identity, alternative Entity choices,
@@ -408,15 +467,22 @@ small Core primitive such as selection or capacity resolution be extracted.
 Shared state is passed through refs and returned derived state, not stored in a
 generic registry.
 
+Team Create follows one Core-owned interaction: search the current App's
+eligible User directory, choose an existing User when found, or create an
+unlinked named member when no suitable User exists. Project and Kitchen own
+their trusted create commands, duplicate-link checks, records, and authority.
+Choosing a User links identity to the Team record; Workspace access remains an
+explicit domain onboarding or authority action rather than a UI side effect.
+
 Current evidence and confidence:
 
-| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                            |
-| -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                            |
+| Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                                                                                                                                                           |
 | Project Test pipeline                                                | `accepted`   | Its Project identity and App-configured capacity remain independent of Project Index. Create and Read now use the trusted FireUX server boundary and `projects/{projectId}/tests` in the named `fireux` database; refresh-safe list and ID-based detail routing are the persisted proof. Update, Delete, and native transforms remain unproved persistence work and must not be described as complete. |
-| Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
-| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
-| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
+| Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved                                                                                                                                |
+| `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                                                                                                                                                             |
+| Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                                                                                                                                                              |
 
 Promotion requires two working Entity-family siblings, a source comparison,
 matching inputs and outputs, preserved authority boundaries, focused runtime

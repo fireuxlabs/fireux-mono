@@ -1,7 +1,7 @@
 <template>
   <LayoutsWorkspaceNavbar title="Kitchen Workspace">
     <template
-      v-if="derived.outcome === 'pending' || derived.hasSelection"
+      v-if="derived.status === 'loading' || state.kitchen.id"
       #title
     >
       <WorkspaceKitchenActive :kitchen="state.kitchen" />
@@ -20,6 +20,6 @@ import type {
 
 defineProps<{
   state: Pick<KitchenWorkspaceIndexState, 'kitchen'>
-  derived: Pick<KitchenWorkspaceIndexDerived, 'outcome' | 'hasSelection'>
+  derived: Pick<KitchenWorkspaceIndexDerived, 'status'>
 }>()
 </script>

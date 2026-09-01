@@ -16,17 +16,12 @@ import type { AppUserSubscription } from '../../../../app/models/app-user.model'
 import { appSubscriptionCapacity } from '../../../../app/utils/app-subscription-capacity'
 import { useWorkspace } from '../../../../composables/fireux/workspace/useWorkspace'
 import { useWorkspaceTeam } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
+import type { WorkspaceTeamMember } from '../../../../composables/fireux/workspace/useWorkspaceTeam'
 import { normalizeString } from '../../../../utils/string'
 import type { Project } from '../../../models/project.model'
 import { useProjectDetail } from '../../useProjectDetail'
 
-export type ProjectTeamMemberSummary = {
-  id: string
-  handle: string
-  display_name: string
-  avatar: string
-  access: 'operator' | 'team'
-}
+export type ProjectTeamMemberSummary = WorkspaceTeamMember
 
 type ProjectTeamResponse = {
   ok: true
@@ -135,8 +130,10 @@ function createProjectWorkspaceTeam(): ProjectWorkspaceTeam {
   const team = useWorkspaceTeam<ProjectTeamMemberSummary>({
     target: selectedProject,
     targetId: projectId,
-    readOnly: computed(() => true),
-    canWrite: computed(() => false),
+    readOnly: computed(() => false),
+    canWrite: computed(
+      () => Boolean(currentUser.value && selectedProject.value && !error.value)
+    ),
     members,
     memberLimit: teamMemberLimit,
   })

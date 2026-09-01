@@ -54,8 +54,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
-import type { KitchenTeamMember } from '../../../utils/team.ts'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
@@ -66,13 +66,13 @@ const props = defineProps<{
 }>()
 
 const teamMembers = computed(() => props.state.team.members)
-const pending = computed(() => props.derived.outcome === 'pending')
+const pending = computed(() => props.derived.status === 'loading')
 const toast = useToast()
 const invitingMemberId = ref('')
 const inviteOpen = ref(false)
 const invitation = ref<{ memberName: string; link: string } | null>(null)
 
-async function inviteMember(member: KitchenTeamMember) {
+async function inviteMember(member: WorkspaceTeamMember) {
   if (invitingMemberId.value) return
   invitingMemberId.value = member.id
   try {

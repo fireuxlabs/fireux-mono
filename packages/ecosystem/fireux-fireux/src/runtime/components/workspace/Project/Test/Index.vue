@@ -9,7 +9,7 @@
       :actions="actions"
     />
     <WorkspaceProjectTestNatives :state="state" :actions="actions" />
-    <template v-if="derived.outcome === 'pending'">
+    <template v-if="derived.status === 'loading'">
       <USkeleton class="h-8 w-full max-w-lg rounded-md" />
       <USkeleton class="h-4 w-20" />
     </template>
@@ -51,8 +51,8 @@ const props = defineProps<{
 
 const selected = computed(() => props.state.tests[props.state.selectedIndex])
 const capacity = computed(() =>
-  props.derived.limit !== null
-    ? `${props.state.tests.length} of ${props.derived.limit}`
+  props.derived.create.limit !== null
+    ? `${props.state.tests.length} of ${props.derived.create.limit}`
     : `${props.state.tests.length} Tests`
 )
 </script>

@@ -181,6 +181,13 @@ export async function run(ctx) {
     ),
     'utf8'
   )
+  const projectWorkspaceSelectorSurface = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector.vue'
+    ),
+    'utf8'
+  )
   const projectWorkspaceNavigation = readFileSync(
     path.join(
       repoRoot,
@@ -199,6 +206,13 @@ export async function run(ctx) {
     path.join(
       repoRoot,
       'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector/Choices.vue'
+    ),
+    'utf8'
+  )
+  const kitchenWorkspaceSelectorSurface = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Selector.vue'
     ),
     'utf8'
   )
@@ -237,6 +251,16 @@ export async function run(ctx) {
     ['Project', projectWorkspaceIndex],
     ['Kitchen', kitchenWorkspaceIndex],
   ]) {
+    if (
+      !source.includes('appUser: {') ||
+      !source.includes('user: state.value.user') ||
+      !source.includes('appUser: state.value.appUser') ||
+      /user:\s*\{[^}]*?(?:projects|kitchens):/.test(source)
+    ) {
+      violations.push(
+        `${label} Workspace index must keep Auth User identity separate from AppUser Entity relationships`
+      )
+    }
     if (!source.includes('workspace.setActiveStatus(')) {
       violations.push(
         `${label} Workspace index must publish canonical Entity lifecycle status for shared operational controls`
@@ -274,6 +298,7 @@ export async function run(ctx) {
     !projectWorkspaceNavigation.includes('canSelectMultiple.value') ||
     !projectWorkspaceNavigation.includes('projectIds.value.length > 1') ||
     !projectWorkspaceSelector.includes('workspace.requestActivation(') ||
+    !projectWorkspaceSelectorSurface.includes('state.appUser.projects') ||
     !projectWorkspaceChoices.includes('toValue(projectIds)') ||
     !projectWorkspaceChoices.includes('new Map(') ||
     !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||
@@ -282,6 +307,7 @@ export async function run(ctx) {
     !kitchenWorkspaceChoices.includes('toValue(kitchenIds)') ||
     !kitchenWorkspaceChoices.includes('new Map(response.items.map') ||
     !kitchenWorkspaceSelector.includes('props.canSelectMultiple') ||
+    !kitchenWorkspaceSelectorSurface.includes('state.appUser.kitchens') ||
     !kitchenWorkspaceSelector.includes('props.hasMultipleKitchens')
   ) {
     violations.push(

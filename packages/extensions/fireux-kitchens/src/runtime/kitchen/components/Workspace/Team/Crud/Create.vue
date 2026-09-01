@@ -2,13 +2,13 @@
   <UModal
     :open="open"
     title="Add team member"
-    description="Add an operational person record. This does not grant Misebox or Workspace access."
+    description="Find an existing Misebox User, or add an unlinked name when the person is not here yet."
     :ui="{ content: 'sm:max-w-lg' }"
     @update:open="emit('update:open', $event)"
   >
     <template #body>
       <WorkspaceKitchenTeamWrite
-        v-if="derived.canCreateTeamMember"
+        v-if="derived.create.allowed"
         :kitchen-id="state.kitchen.id"
         @cancel="emit('update:open', false)"
         @created="handleMemberCreated"

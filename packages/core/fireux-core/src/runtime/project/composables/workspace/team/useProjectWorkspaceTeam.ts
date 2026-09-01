@@ -1,9 +1,11 @@
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
+import { useWorkspacePageState } from '../../../../composables/fireux/workspace/useWorkspacePageState'
 import { normalizeString } from '../../../../utils/string'
 import { provideProjectTeamContext } from './useProjectTeamContext'
 
 export function useProjectWorkspaceTeam() {
   const team = provideProjectTeamContext()
+  const pageState = useWorkspacePageState('project')
 
   const state = computed(() => ({
     project: {
@@ -18,18 +20,17 @@ export function useProjectWorkspaceTeam() {
     },
   }))
   const derived = computed(() => ({
-    outcome: team.pending.value
-      ? ('pending' as const)
+    status: team.pending.value
+      ? ('loading' as const)
       : team.error.value
         ? ('error' as const)
         : team.selectedProject.value
           ? ('ready' as const)
           : ('empty' as const),
-    error: team.error.value?.message || '',
-    hasSelection: Boolean(team.selectedProject.value),
-    teamMemberLimit: team.teamMemberLimit.value,
-    canCreateTeamMember: team.canCreateTeamMember.value,
-    teamMemberCapacityReached: team.teamMemberCapacityReached.value,
+    create: {
+      allowed: team.canCreateTeamMember.value,
+      limit: team.teamMemberLimit.value,
+    },
   }))
 
   function selectTeamMember(memberId: string) {
@@ -39,6 +40,14 @@ export function useProjectWorkspaceTeam() {
       ? memberId
       : ''
   }
+
+  watchEffect(() => {
+    pageState.publish({
+      project: state.value.project,
+      team: state.value.team,
+      derived: derived.value,
+    })
+  })
 
   return {
     state,

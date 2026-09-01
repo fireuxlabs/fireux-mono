@@ -13,6 +13,14 @@
       class="w-fit max-w-full"
       @update:model-value="actions.selectTeamMember(String($event))"
     />
+    <UButton
+      v-if="derived.create.allowed"
+      icon="i-lucide-plus"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      aria-label="Create Project Team member"
+    />
   </section>
 </template>
 
@@ -30,7 +38,7 @@ const props = defineProps<{
 
 const items = computed(() =>
   props.state.team.members.map((member) => ({
-    label: String(member.display_name || member.handle || member.id).trim(),
+    label: member.name,
     value: member.id,
   }))
 )

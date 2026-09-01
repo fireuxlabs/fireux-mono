@@ -5,9 +5,21 @@ import {
   targetTeamIds,
 } from './useWorkspaceAccess'
 
-type WorkspaceTeamMember = { id: string }
+export type WorkspaceTeamMemberRole = 'owner' | 'operator' | 'member'
+export type WorkspaceTeamMemberStatus = 'active' | 'inactive'
 
-type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMember> = {
+export type WorkspaceTeamMember = {
+  id: string
+  userId: string
+  name: string
+  avatar: string
+  role: WorkspaceTeamMemberRole
+  status: WorkspaceTeamMemberStatus
+}
+
+type WorkspaceTeamMemberIdentity = Pick<WorkspaceTeamMember, 'id'>
+
+type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMemberIdentity> = {
   target: Ref<unknown | null | undefined>
   targetId?: Ref<string | null | undefined>
   readOnly?: Ref<boolean>
@@ -16,7 +28,7 @@ type UseWorkspaceTeamOptions<Member extends WorkspaceTeamMember> = {
   memberLimit?: Ref<number | null>
 }
 
-export function useWorkspaceTeam<Member extends WorkspaceTeamMember>(
+export function useWorkspaceTeam<Member extends WorkspaceTeamMemberIdentity>(
   options: UseWorkspaceTeamOptions<Member>
 ) {
   const teamIds = computed(() => targetTeamIds(options.target.value))

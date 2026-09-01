@@ -4,19 +4,19 @@
     class="grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6"
   >
     <UPageCard
-      :as="derived.canCreateTeamMember ? 'button' : 'div'"
+      :as="derived.create.allowed ? 'button' : 'div'"
       :title="createTool.label"
       :description="createTool.description"
       :icon="createTool.icon"
       class="aspect-square text-left"
-      :class="{ 'opacity-50': !derived.canCreateTeamMember }"
+      :class="{ 'opacity-50': !derived.create.allowed }"
       :ui="{
         container: 'p-4 sm:p-4',
         title: 'line-clamp-2',
         description: 'line-clamp-3',
       }"
-      :spotlight="derived.canCreateTeamMember"
-      @click="derived.canCreateTeamMember && actions.openCreateTeamMember()"
+      :spotlight="derived.create.allowed"
+      @click="derived.create.allowed && actions.openCreateTeamMember()"
     />
   </UPageGrid>
 </template>

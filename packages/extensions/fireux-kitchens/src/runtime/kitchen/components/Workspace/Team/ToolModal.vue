@@ -149,7 +149,7 @@ const role = ref<'owner' | 'operator' | 'member'>('member')
 const roleItems = [
   { label: 'Team member', value: 'member' },
   { label: 'Operator', value: 'operator' },
-] as const
+]
 const error = ref('')
 const working = ref(false)
 const invitation = ref<{ memberName: string; link: string } | null>(null)

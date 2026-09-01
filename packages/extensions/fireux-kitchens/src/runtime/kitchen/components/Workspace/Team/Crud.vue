@@ -4,7 +4,7 @@
       label="Kitchen Team"
       :available="available"
       @create="createOpen = true"
-      @read="actions.refresh"
+      @read="readOpen = true"
       @update="selectedMember && editMember(selectedMember)"
       @delete="selectedMember && confirmDeleteMember(selectedMember)"
     />
@@ -14,6 +14,7 @@
       :state="state"
       :derived="derived"
     />
+    <WorkspaceKitchenTeamCrudRead v-model:open="readOpen" :state="state" />
 
     <UModal
       v-model:open="editOpen"
@@ -90,8 +91,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceKitchenTeamCrudRead from './Crud/Read.vue'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 import type { useKitchenWorkspaceTeam } from '../../../composables/workspace/team/useKitchenWorkspaceTeam'
-import type { KitchenTeamMember } from '../../../utils/team.ts'
 
 type Workspace = ReturnType<typeof useKitchenWorkspaceTeam>
 
@@ -109,8 +111,8 @@ const selectedMember = computed(() =>
 )
 const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
   () => [
-    ...(props.derived.canCreateTeamMember ? (['create'] as const) : []),
-    ...(props.derived.hasSelection ? (['read'] as const) : []),
+    ...(props.derived.create.allowed ? (['create'] as const) : []),
+    ...(props.state.kitchen.id ? (['read'] as const) : []),
     ...(selectedMember.value ? (['update'] as const) : []),
     ...(selectedMember.value?.role !== 'owner' && selectedMember.value
       ? (['delete'] as const)
@@ -119,6 +121,7 @@ const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
 )
 const toast = useToast()
 const createRequested = ref(false)
+const readOpen = ref(false)
 const createOpen = computed({
   get: () =>
     createRequested.value ||
@@ -134,22 +137,22 @@ const createOpen = computed({
   },
 })
 const editOpen = ref(false)
-const editingMember = ref<KitchenTeamMember | null>(null)
+const editingMember = ref<WorkspaceTeamMember | null>(null)
 const editName = ref('')
 const editRole = ref<'owner' | 'operator' | 'member'>('member')
 const roleItems = [
   { label: 'Team member', value: 'member' },
   { label: 'Operator', value: 'operator' },
-] as const
+]
 const editError = ref('')
 const savingMember = ref(false)
 const deleteOpen = ref(false)
-const deletingMember = ref<KitchenTeamMember | null>(null)
+const deletingMember = ref<WorkspaceTeamMember | null>(null)
 const deletingMemberId = ref('')
 
-function editMember(member: KitchenTeamMember) {
+function editMember(member: WorkspaceTeamMember) {
   editingMember.value = member
-  editName.value = String(member.display_name || member.name || '').trim()
+  editName.value = member.name
   editRole.value = member.role || 'member'
   editError.value = ''
   editOpen.value = true
@@ -180,7 +183,7 @@ async function saveMember() {
   }
 }
 
-function confirmDeleteMember(member: KitchenTeamMember) {
+function confirmDeleteMember(member: WorkspaceTeamMember) {
   deletingMember.value = member
   deleteOpen.value = true
 }

@@ -4,6 +4,7 @@ import { useWorkspaceWriteGuard } from 'fireux-core/runtime/composables/fireux/w
 type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
+  userId?: string
   role?: string
   station?: string
   certifications?: string[]
@@ -41,6 +42,7 @@ export function useKitchenTeamMemberCreate() {
         body: {
           kitchenId,
           name,
+          userId: normalizeString(input.userId),
           role: normalizeString(input.role),
           station: normalizeString(input.station),
           certifications: input.certifications || [],

@@ -9,7 +9,7 @@
       :refresh="refresh"
     />
     <UAlert
-      v-if="derived.outcome !== 'pending' && !derived.hasSelection"
+      v-if="derived.status !== 'loading' && !state.kitchen.id"
       color="neutral"
       variant="subtle"
       icon="i-lucide-cooking-pot"

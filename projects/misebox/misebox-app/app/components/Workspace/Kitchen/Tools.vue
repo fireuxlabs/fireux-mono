@@ -31,9 +31,9 @@ const props = defineProps<{
 }>()
 
 const entityTools = computed(() => {
-  if (props.derived.outcome === 'pending') return []
+  if (props.derived.status === 'loading') return []
   const tools = []
-  if (props.derived.hasSelection) {
+  if (props.state.kitchen.id) {
     tools.push({
       id: 'kitchen.view',
       label: 'View Kitchen',
@@ -42,7 +42,7 @@ const entityTools = computed(() => {
       to: '#workspace-entity-controls',
     })
   }
-  if (props.derived.canCreate) {
+  if (props.derived.create.allowed) {
     tools.push({
       id: 'kitchen.create',
       label: 'Create Kitchen',
@@ -66,20 +66,12 @@ const entityTools = computed(() => {
       to: '#workspace-entity-controls',
     })
   }
-  if (props.state.user.kitchens.length > 1) {
+  if (props.state.appUser.kitchens.length > 1) {
     tools.push({
-      id: props.derived.canSelectMultiple
-        ? 'kitchen.select-primary'
-        : 'kitchen.request-primary-change',
-      label: props.derived.canSelectMultiple
-        ? 'Select primary Kitchen'
-        : 'Request primary Kitchen change',
-      description: props.derived.canSelectMultiple
-        ? 'Choose the Workspace Kitchen.'
-        : 'Request a primary Kitchen change.',
-      icon: props.derived.canSelectMultiple
-        ? 'i-lucide-list-checks'
-        : 'i-lucide-send',
+      id: 'kitchen.change-primary',
+      label: 'Change primary Kitchen',
+      description: 'Choose the Workspace Kitchen.',
+      icon: 'i-lucide-list-checks',
       to: '#workspace-entity-controls',
     })
   }

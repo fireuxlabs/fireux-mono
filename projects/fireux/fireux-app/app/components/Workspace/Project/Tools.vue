@@ -29,9 +29,9 @@ const props = defineProps<{
 }>()
 
 const entityTools = computed(() => {
-  if (props.derived.outcome === 'pending') return []
+  if (props.derived.status === 'loading') return []
   const tools = []
-  if (props.derived.hasSelection) {
+  if (props.state.project.id) {
     tools.push({
       id: 'project.view',
       label: 'View Project',
@@ -40,7 +40,7 @@ const entityTools = computed(() => {
       to: '#workspace-entity-controls',
     })
   }
-  if (props.derived.canCreate) {
+  if (props.derived.create.allowed) {
     tools.push({
       id: 'project.create',
       label: 'Create Project',
@@ -49,20 +49,12 @@ const entityTools = computed(() => {
       to: '#workspace-entity-controls',
     })
   }
-  if (props.state.user.projects.length > 1) {
+  if (props.state.appUser.projects.length > 1) {
     tools.push({
-      id: props.derived.canSelectMultiple
-        ? 'project.select-primary'
-        : 'project.request-primary-change',
-      label: props.derived.canSelectMultiple
-        ? 'Select primary Project'
-        : 'Request primary Project change',
-      description: props.derived.canSelectMultiple
-        ? 'Choose the Workspace Project.'
-        : 'Request a primary Project change.',
-      icon: props.derived.canSelectMultiple
-        ? 'i-lucide-list-checks'
-        : 'i-lucide-send',
+      id: 'project.change-primary',
+      label: 'Change primary Project',
+      description: 'Choose the Workspace Project.',
+      icon: 'i-lucide-list-checks',
       to: '#workspace-entity-controls',
     })
   }

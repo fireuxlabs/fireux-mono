@@ -16,6 +16,8 @@ export type KitchenWorkspaceIndexState = {
   user: {
     id: string
     anonymous: boolean
+  }
+  appUser: {
     kitchens: string[]
     primaryKitchen: string
   }
@@ -29,10 +31,8 @@ export type KitchenWorkspaceIndexState = {
 }
 
 export type KitchenWorkspaceIndexDerived = {
-  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
-  hasSelection: boolean
-  canCreate: boolean
-  canSelectMultiple: boolean
+  status: 'idle' | 'loading' | 'error' | 'empty' | 'ready'
+  create: { allowed: boolean; limit: number | null }
 }
 
 export function useKitchenWorkspaceIndex() {
@@ -55,6 +55,8 @@ export function useKitchenWorkspaceIndex() {
       user: {
         id: currentUser.value?.uid || '',
         anonymous: Boolean(currentUser.value?.isAnonymous),
+      },
+      appUser: {
         kitchens: membership?.kitchens || [],
         primaryKitchen: primaryKitchenId.value,
       },
@@ -72,38 +74,39 @@ export function useKitchenWorkspaceIndex() {
     const membership = appContext.membership.value
     const kitchens = membership?.kitchens || []
     const subscription = membership?.subscription || 'free'
-    const canSelectMultiple =
-      appSubscriptionCapacity(
-        fireux.subscriptionCapacity,
-        'kitchen',
-        subscription
-      ) === null
-    let outcome: KitchenWorkspaceIndexDerived['outcome'] = 'idle'
+    const limit = appSubscriptionCapacity(
+      fireux.subscriptionCapacity,
+      'kitchen',
+      subscription
+    )
+    const count = kitchens.length
+    let status: KitchenWorkspaceIndexDerived['status'] = 'idle'
     if (!mounted.value || !hasAuthState.value || appContext.pending.value)
-      outcome = 'pending'
-    else if (appContext.error.value || current.error.value) outcome = 'error'
-    else if (!currentUser.value) outcome = 'idle'
-    else if (!primaryKitchenId.value) outcome = 'empty'
-    else if (current.pending.value) outcome = 'pending'
-    else outcome = current.kitchen.value ? 'ready' : 'error'
+      status = 'loading'
+    else if (appContext.error.value || current.error.value) status = 'error'
+    else if (!currentUser.value) status = 'idle'
+    else if (!primaryKitchenId.value) status = 'empty'
+    else if (current.pending.value) status = 'loading'
+    else status = current.kitchen.value ? 'ready' : 'error'
 
     return {
-      outcome,
-      hasSelection: Boolean(current.kitchen.value),
-      canSelectMultiple,
-      canCreate:
-        Boolean(membership) &&
-        resolveWorkspaceCanCreate(
-          fireux.role,
-          fireux.workspaceConfig,
-          'kitchen'
-        ) &&
-        hasAppSubscriptionCapacity(
-          fireux.subscriptionCapacity,
-          'kitchen',
-          subscription,
-          kitchens.length
-        ),
+      status,
+      create: {
+        allowed:
+          Boolean(membership) &&
+          resolveWorkspaceCanCreate(
+            fireux.role,
+            fireux.workspaceConfig,
+            'kitchen'
+          ) &&
+          hasAppSubscriptionCapacity(
+            fireux.subscriptionCapacity,
+            'kitchen',
+            subscription,
+            count
+          ),
+        limit,
+      },
     }
   })
 
@@ -120,6 +123,7 @@ export function useKitchenWorkspaceIndex() {
   watchEffect(() => {
     pageState.publish({
       user: state.value.user,
+      appUser: state.value.appUser,
       kitchen: state.value.kitchen,
       derived: derived.value,
     })
@@ -127,13 +131,13 @@ export function useKitchenWorkspaceIndex() {
 
   watch(
     () =>
-      [derived.value.outcome, primaryKitchenId.value, state.value.kitchen] as const,
+      [derived.value.status, primaryKitchenId.value, state.value.kitchen] as const,
     ([outcome, primaryId, kitchen]: readonly [
-      KitchenWorkspaceIndexDerived['outcome'],
+      KitchenWorkspaceIndexDerived['status'],
       string,
       KitchenWorkspaceIndexState['kitchen'],
     ]) => {
-      if (outcome === 'pending') return
+      if (outcome === 'loading') return
       if (!primaryId || kitchen.id !== primaryId) {
         if (!primaryId) workspace.clearActive()
         return

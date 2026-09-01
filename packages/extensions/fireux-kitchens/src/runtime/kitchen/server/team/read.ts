@@ -1,7 +1,9 @@
 import type { H3Event } from 'h3'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { serverKitchenTeamMembersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { normalizeUser } from 'fireux-core/runtime/user/utils/normalize-user'
 import {
   readKitchenMutationActor,
   requireKitchenMutationAuthority,
@@ -18,34 +20,68 @@ export async function readKitchenTeamMembers(
   let members: {
     memberId: string
     name: string
+    avatar: string
     slug: string
+    userId: string
     linked: boolean
     role: 'owner' | 'operator' | 'member'
   }[] = []
+  let records: Array<{
+    id: string
+    data: Record<string, unknown>
+  }> = []
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     await requireKitchenMutationAuthority(mutations, actor, kitchenId)
-    const records = await mutations.readAll<Record<string, unknown>>(
+    records = await mutations.readAll<Record<string, unknown>>(
       serverKitchenTeamMembersTarget(kitchenId),
       200
     )
-    members = records
-      .filter(
-        (record) =>
-          record.data.active !== false && text(record.data.status) === 'active'
+  })
+
+  const activeRecords = records.filter(
+    (record) =>
+      record.data.active !== false && text(record.data.status) === 'active'
+  )
+  const requestedUserIds = [
+    ...new Set(
+      activeRecords.map((record) => text(record.data.user_id)).filter(Boolean)
+    ),
+  ]
+  const identityDb = getRuntimeIdentityFirestore()
+  const userSnapshots = requestedUserIds.length
+    ? await identityDb.getAll(
+        ...requestedUserIds.map((userId) =>
+          identityDb.collection('users').doc(userId)
+        )
       )
-      .map((record) => {
-        const role = text(record.data.role)
-        return {
-          memberId: record.id,
-          name: text(record.data.name) || 'Team member',
-          slug: text(record.data.slug),
-          linked: Boolean(text(record.data.user_id)),
-          role:
-            role === 'owner' || role === 'operator'
-              ? role
-              : ('member' as const),
-        }
-      })
+    : []
+  const usersById = new Map(
+    userSnapshots.flatMap((snapshot) => {
+      const user = snapshot.exists
+        ? normalizeUser(snapshot.id, snapshot.data())
+        : null
+      return user ? [[user.id, user] as const] : []
+    })
+  )
+
+  members = activeRecords.map((record) => {
+    const role = text(record.data.role)
+    const storedUserId = text(record.data.user_id)
+    const user = usersById.get(storedUserId)
+    return {
+      memberId: record.id,
+      name:
+        user?.display_name ||
+        user?.handle ||
+        text(record.data.name) ||
+        'Team member',
+      avatar: user?.avatar || '',
+      slug: text(record.data.slug),
+      userId: user?.id || '',
+      linked: Boolean(user),
+      role:
+        role === 'owner' || role === 'operator' ? role : ('member' as const),
+    }
   })
   return { ok: true as const, members }
 }

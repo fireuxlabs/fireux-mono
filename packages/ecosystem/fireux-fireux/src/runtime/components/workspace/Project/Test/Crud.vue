@@ -103,7 +103,7 @@ const deleteOpen = ref(false)
 const selected = computed(() => props.state.tests[props.state.selectedIndex])
 const available = computed<Array<'create' | 'read' | 'update' | 'delete'>>(
   () => [
-    ...(props.derived.canCreateTest ? (['create'] as const) : []),
+    ...(props.derived.create.allowed ? (['create'] as const) : []),
     ...(props.state.tests.length ? (['read'] as const) : []),
   ]
 )

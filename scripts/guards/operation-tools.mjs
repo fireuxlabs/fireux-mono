@@ -428,13 +428,15 @@ export async function run({ repoRoot }) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Team/Read.vue'
   )
   const teamDetailPage =
-    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/[memberSlug].vue'
+    'packages/extensions/fireux-kitchens/src/runtime/pages/workspace/kitchen/team/[memberId].vue'
   if (
-    !teamRead.includes('`/workspace/kitchen/team/${memberAnchor(member)}`') ||
+    !teamRead.includes(
+      '`/workspace/kitchen/team/${encodeURIComponent(member.id)}`'
+    ) ||
     !existsSync(join(repoRoot, teamDetailPage))
   ) {
     violations.push(
-      'Read member must link the Team collection to its canonical slug detail route.'
+      'Read member must link the Team collection to its canonical member-id detail route.'
     )
   }
 

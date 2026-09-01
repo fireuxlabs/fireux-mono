@@ -189,7 +189,7 @@ const DOMAIN_ROOTS = [
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
-      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test/index.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue',
     ],

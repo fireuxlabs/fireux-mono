@@ -16,7 +16,7 @@ import { useProjectWorkspaceTest } from '../../../../project/composables/workspa
 
 const route = useRoute()
 const { state } = useProjectWorkspaceTest()
-const testId = computed(() => String(route.params.testIndex || ''))
+const testId = computed(() => String(route.params.testId || ''))
 const test = computed(
   () => state.value.tests.find((candidate) => candidate.id === testId.value) || null
 )

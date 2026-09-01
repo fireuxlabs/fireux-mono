@@ -4,16 +4,18 @@
       label="Kitchen"
       :available="available"
       @create="createOpen = true"
-      @read="openKitchen"
+      @read="readOpen = true"
       @update="editKitchen"
     />
 
     <WorkspaceKitchenCrudCreate v-model:open="createOpen" :refresh="refresh" />
+    <WorkspaceKitchenCrudRead v-model:open="readOpen" :state="state" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import WorkspaceKitchenCrudRead from './Crud/Read.vue'
 import type {
   KitchenWorkspaceIndexDerived,
   KitchenWorkspaceIndexState,
@@ -26,15 +28,12 @@ const props = defineProps<{
 }>()
 
 const createOpen = ref(false)
+const readOpen = ref(false)
 const available = computed<Array<'create' | 'read' | 'update'>>(() => [
   'create',
-  ...(props.derived.hasSelection ? (['read', 'update'] as const) : []),
+  ...(props.state.appUser.kitchens.length ? (['read'] as const) : []),
+  ...(props.state.kitchen.id ? (['update'] as const) : []),
 ])
-
-async function openKitchen() {
-  if (props.state.kitchen.id)
-    await navigateTo(`/kitchens/${props.state.kitchen.id}`)
-}
 
 async function editKitchen() {
   if (props.state.kitchen.id) {

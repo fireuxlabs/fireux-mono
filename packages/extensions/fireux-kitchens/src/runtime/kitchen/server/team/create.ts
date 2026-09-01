@@ -10,10 +10,17 @@ import {
 } from '../core/mutation-authority.ts'
 import { buildKitchenTeamMemberRecord } from './member-record.ts'
 import { canAddKitchenTeamMember } from '../../utils/team.ts'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  userBelongsToDirectoryScope,
+  resolveUserDirectoryScope,
+} from 'fireux-core/runtime/user/server/directory/scope'
+import { normalizeUser } from 'fireux-core/runtime/user/utils/normalize-user'
 
 export type CreateKitchenTeamMemberInput = {
   kitchenId: string
   name: string
+  userId?: string
   role?: string
   station?: string
   certifications?: string[]
@@ -64,6 +71,9 @@ function parseInput(input: CreateKitchenTeamMemberInput) {
   }
   return {
     kitchenId,
+    userId: input?.userId
+      ? requireFirestoreDocumentId(input.userId, 'User id')
+      : '',
     name,
     role: normalizeOptional(input?.role, 120),
     station: normalizeOptional(input?.station, 120),
@@ -105,6 +115,27 @@ export async function createKitchenTeamMember(
   const memberId = randomUUID()
   let slug = ''
 
+  if (requested.userId) {
+    const allowed = await userBelongsToDirectoryScope(
+      resolveUserDirectoryScope(),
+      requested.userId
+    )
+    const identity = await getRuntimeIdentityFirestore()
+      .collection('users')
+      .doc(requested.userId)
+      .get()
+    const user = identity.exists
+      ? normalizeUser(identity.id, identity.data())
+      : null
+    if (!allowed || !user?.handle) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'User is not available in this App.',
+      })
+    }
+    requested.name = user.display_name || user.handle
+  }
+
   await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const kitchen = await requireKitchenMutationAuthority(
       mutations,
@@ -117,10 +148,22 @@ export async function createKitchenTeamMember(
       name?: unknown
       slug?: unknown
       status?: unknown
+      user_id?: unknown
     }>(teamMembers, 1_000)
     const memberCount = existingMembers.filter(
       ({ data }) => data.active !== false && data.status !== 'inactive'
     ).length
+    if (
+      requested.userId &&
+      existingMembers.some(
+        ({ data }) => String(data.user_id || '').trim() === requested.userId
+      )
+    ) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'This User is already on the Kitchen Team.',
+      })
+    }
     if (
       !canAddKitchenTeamMember(
         actor.subscriptionCapacity,
@@ -140,6 +183,7 @@ export async function createKitchenTeamMember(
       kitchenId: requested.kitchenId,
       memberId,
       name: requested.name,
+      userId: requested.userId,
       slug,
       jobTitle: requested.role,
       station: requested.station,

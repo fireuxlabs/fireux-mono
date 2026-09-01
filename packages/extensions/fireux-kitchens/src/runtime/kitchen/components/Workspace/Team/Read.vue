@@ -28,7 +28,7 @@
       <ul v-else-if="sortedMembers.length" class="divide-y divide-default">
         <li
           v-for="member in sortedMembers"
-          :id="memberAnchor(member)"
+          :id="`team-member-${member.id}`"
           :key="member.id"
           class="flex scroll-mt-6 items-center gap-3 px-4 py-3 transition-colors target:bg-primary/5 sm:px-6"
         >
@@ -37,7 +37,8 @@
             class="flex min-w-0 flex-1 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <UAvatar
-              :alt="memberDisplayName(member)"
+              :src="member.avatar || undefined"
+              :alt="member.name"
               :text="memberInitials(member)"
               size="md"
               class="shrink-0"
@@ -45,10 +46,10 @@
 
             <div class="min-w-0 flex-1">
               <h3 class="truncate text-sm font-medium text-highlighted">
-                {{ memberDisplayName(member) }}
+                {{ member.name }}
               </h3>
               <p
-                v-if="member.user_id"
+                v-if="member.userId"
                 class="mt-0.5 flex items-center gap-1 text-xs text-success"
               >
                 <UIcon name="i-lucide-circle-check" class="size-3.5" />
@@ -59,7 +60,7 @@
 
           <div class="flex shrink-0 items-center gap-1">
             <UButton
-              v-if="!member.user_id"
+              v-if="!member.userId"
               label="Invite"
               icon="i-lucide-link"
               color="neutral"
@@ -78,12 +79,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenTeamMember } from '../../../utils/team.ts'
-import { resolveKitchenTeamMemberAnchor } from '../../../utils/team-member-anchor'
+import type { WorkspaceTeamMember } from 'fireux-core/runtime/composables/fireux/workspace/useWorkspaceTeam'
 
 const props = withDefaults(
   defineProps<{
-    members?: KitchenTeamMember[]
+    members?: WorkspaceTeamMember[]
     pending?: boolean
     invitingMemberId?: string
   }>(),
@@ -95,35 +95,20 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  invite: [member: KitchenTeamMember]
+  invite: [member: WorkspaceTeamMember]
 }>()
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const memberName = (member: KitchenTeamMember) => normalizeString(member.name)
-const memberDisplayName = (member: KitchenTeamMember) =>
-  normalizeString(member.display_name) || memberName(member) || 'Team member'
-const memberInitials = (member: KitchenTeamMember) =>
-  memberDisplayName(member)
+const memberInitials = (member: WorkspaceTeamMember) =>
+  member.name
     .split(/\s+/)
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join('')
-const memberAnchor = (member: KitchenTeamMember) =>
-  resolveKitchenTeamMemberAnchor(member)
-const memberPath = (member: KitchenTeamMember) =>
-  `/workspace/kitchen/team/${memberAnchor(member)}`
-const sortOrder = (member: KitchenTeamMember) => {
-  const value = Number(member.sort_order)
-  return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
-}
+const memberPath = (member: WorkspaceTeamMember) =>
+  `/workspace/kitchen/team/${encodeURIComponent(member.id)}`
 const sortedMembers = computed(() =>
   props.members
-    .filter((member) => member.active !== false && member.status !== 'inactive')
-    .sort((left, right) => {
-      const byOrder = sortOrder(left) - sortOrder(right)
-      if (byOrder) return byOrder
-
-      return memberDisplayName(left).localeCompare(memberDisplayName(right))
-    })
+    .filter((member) => member.status === 'active')
+    .sort((left, right) => left.name.localeCompare(right.name))
 )
 </script>
