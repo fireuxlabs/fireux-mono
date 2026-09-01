@@ -241,6 +241,17 @@ export const fireuxProjectTeamMembersTarget = (projectId: string) => {
   })
 }
 
+export const fireuxProjectTestsTarget = (projectId: string) => {
+  const project = segment(projectId, 'projectId')
+  return defineFirestoreMutationTarget({
+    key: 'fireux.projects.tests',
+    lane: 'server',
+    verbs,
+    database: { kind: 'named', databaseId: 'fireux' },
+    collectionPath: `projects/${project}/tests`,
+  })
+}
+
 export function serverUserTargetsTarget(userId: string) {
   const id = segment(userId, 'userId')
   return defineFirestoreMutationTarget({

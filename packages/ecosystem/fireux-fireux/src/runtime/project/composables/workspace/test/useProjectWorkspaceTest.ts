@@ -1,4 +1,5 @@
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, watch } from 'vue'
+import { useAsyncData, useState } from '#imports'
 import { useCurrentAppContext } from 'fireux-core/runtime/app/composables/useCurrentAppContext'
 import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import {
@@ -11,7 +12,13 @@ import { useProjectDetail } from 'fireux-core/runtime/project/composables/usePro
 import type { Project } from 'fireux-core/runtime/project/models/project.model'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 
-export type ProjectTest = { name: string }
+export type ProjectTest = { id: string; name: string }
+
+type ProjectTestsResponse = {
+  ok: true
+  project_id: string
+  tests: ProjectTest[]
+}
 
 export function useProjectWorkspaceTest() {
   const { currentUser, hasAuthState } = useAuth()
@@ -21,9 +28,35 @@ export function useProjectWorkspaceTest() {
   const membership = appContext.membership
   const projectId = computed(() => membership.value?.primary_project || '')
   const current = useProjectDetail(projectId)
-  const tests = ref<ProjectTest[]>([])
-  const selectedIndex = ref(-1)
-  const bold = ref(false)
+  const selectedIndex = useState<number>(
+    'fireux-project-test-selected-index',
+    () => -1
+  )
+  const bold = useState<boolean>('fireux-project-test-bold', () => false)
+
+  const requestKey = computed(
+    () =>
+      `project-tests-${currentUser.value?.uid || 'anonymous'}-${projectId.value || 'none'}`
+  )
+  const {
+    data: testResponse,
+    pending: testsPending,
+    error: testsError,
+    refresh: refreshTests,
+  } = useAsyncData<ProjectTestsResponse>(
+    requestKey,
+    async () => {
+      const user = currentUser.value
+      const id = projectId.value
+      if (!user || !id) return { ok: true, project_id: id, tests: [] }
+      return $fetch<ProjectTestsResponse>(
+        `/api/internal/control/projects/${encodeURIComponent(id)}/tests`,
+        { headers: { authorization: `Bearer ${await user.getIdToken()}` } }
+      )
+    },
+    { server: false, watch: [currentUser, hasAuthState, projectId] }
+  )
+  const tests = computed(() => testResponse.value?.tests ?? [])
 
   watch(
     [projectId, current.project],
@@ -64,8 +97,8 @@ export function useProjectWorkspaceTest() {
   }))
   const derived = computed(() => {
     let outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready' = 'idle'
-    if (!hasAuthState.value || appContext.pending.value) outcome = 'pending'
-    else if (appContext.error.value || current.error.value) outcome = 'error'
+    if (!hasAuthState.value || appContext.pending.value || testsPending.value) outcome = 'pending'
+    else if (appContext.error.value || current.error.value || testsError.value) outcome = 'error'
     else if (!currentUser.value) outcome = 'idle'
     else if (!projectId.value) outcome = 'empty'
     else if (current.pending.value) outcome = 'pending'
@@ -89,10 +122,14 @@ export function useProjectWorkspaceTest() {
     bold.value = false
   }
 
-  function create(name: string) {
+  async function create(name: string) {
     const value = name.trim()
+    const user = currentUser.value
+    const id = projectId.value
     if (
       !value ||
+      !user ||
+      !id ||
       !hasAppSubscriptionCapacity(
         fireux.subscriptionCapacity,
         'project.test',
@@ -100,20 +137,29 @@ export function useProjectWorkspaceTest() {
         tests.value.length
       )
     )
-      return
-    tests.value.push({ name: value })
+      return false
+    await $fetch(`/api/internal/control/projects/${encodeURIComponent(id)}/tests`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${await user.getIdToken()}` },
+      body: { name: value },
+    })
+    await refreshTests()
     selectedIndex.value = tests.value.length - 1
+    return true
   }
 
   function update(name: string) {
     const value = name.trim()
     if (!value || !tests.value[selectedIndex.value]) return
-    tests.value[selectedIndex.value] = { name: value }
+    testResponse.value!.tests[selectedIndex.value] = {
+      ...tests.value[selectedIndex.value],
+      name: value,
+    }
   }
 
   function remove() {
     if (!tests.value[selectedIndex.value]) return
-    tests.value.splice(selectedIndex.value, 1)
+    testResponse.value!.tests.splice(selectedIndex.value, 1)
     selectedIndex.value = tests.value.length ? 0 : -1
     bold.value = false
   }
@@ -121,7 +167,10 @@ export function useProjectWorkspaceTest() {
   function transform(change: (name: string) => string) {
     const selected = tests.value[selectedIndex.value]
     if (!selected) return
-    tests.value[selectedIndex.value] = { name: change(selected.name) }
+    testResponse.value!.tests[selectedIndex.value] = {
+      ...selected,
+      name: change(selected.name),
+    }
   }
 
   function capitalize() {
@@ -144,6 +193,7 @@ export function useProjectWorkspaceTest() {
     await appContext.refresh()
     await nextTick()
     await current.refresh()
+    await refreshTests()
   }
 
   return {

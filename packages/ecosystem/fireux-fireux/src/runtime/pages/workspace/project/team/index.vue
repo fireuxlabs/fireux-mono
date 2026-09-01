@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-project-team">
     <template #header>
-      <WorkspaceProjectNav :state="state" :derived="derived" />
+      <WorkspaceProjectNav />
     </template>
     <template #body>
       <WorkspaceProjectTeamSelector
@@ -28,6 +28,7 @@
         :derived="derived"
         :actions="actions"
       />
+      <WorkspaceProjectOperations />
       <WorkspaceProjectTeamDiscovery
         :state="state"
         :derived="derived"
@@ -38,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTeam } from 'fireux-core/runtime/project/composables/workspace/team/useProjectWorkspaceTeam'
-import { appMeta } from '~/meta'
 
 const { state, derived, actions } = useProjectWorkspaceTeam()
+const { appName } = useFireUXConfig()
 
 definePageMeta({
   layout: 'workspace',
@@ -68,7 +70,7 @@ definePageMeta({
 })
 
 useAppLandingSeo({
-  title: `Team | ${appMeta.name}`,
+  title: `Team | ${appName}`,
   description:
     'Review the people connected to this Project and their Team roles.',
   path: '/workspace/project/team',

@@ -23,11 +23,8 @@
         :derived="derived"
         :actions="actions"
       />
-      <WorkspaceKitchenTeamTools
-        :state="state"
-        :derived="derived"
-        :actions="actions"
-      />
+      <WorkspaceKitchenTeamTools :derived="derived" :actions="actions" />
+      <WorkspaceKitchenOperations />
       <WorkspaceKitchenTeamDiscovery
         :state="state"
         :derived="derived"
@@ -38,11 +35,12 @@
 </template>
 
 <script setup lang="ts">
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useKitchenWorkspaceTeam } from '../../../../kitchen/composables/workspace/team/useKitchenWorkspaceTeam'
-import { appMeta } from '~/meta'
 
 const { state, derived, actions } = useKitchenWorkspaceTeam()
+const { appName } = useFireUXConfig()
 
 definePageMeta({
   layout: 'workspace',
@@ -68,7 +66,7 @@ definePageMeta({
 })
 
 useAppLandingSeo({
-  title: `Team | ${appMeta.name}`,
+  title: `Team | ${appName}`,
   description:
     'Review the people connected to this Kitchen and their Team roles.',
   path: '/workspace/kitchen/team',

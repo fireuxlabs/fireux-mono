@@ -181,6 +181,13 @@ export async function run(ctx) {
     ),
     'utf8'
   )
+  const projectWorkspaceNavigation = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/project/composables/workspace/navigation/useProjectWorkspaceNavigation.ts'
+    ),
+    'utf8'
+  )
   const projectWorkspaceChoices = readFileSync(
     path.join(
       repoRoot,
@@ -262,10 +269,11 @@ export async function run(ctx) {
     }
   }
   if (
-    !projectWorkspaceSelector.includes('useProjectWorkspaceChoices(') ||
-    !projectWorkspaceSelector.includes('() => props.projectIds') ||
-    !projectWorkspaceSelector.includes('props.canSelectMultiple') ||
-    !projectWorkspaceSelector.includes('props.projectIds.length > 1') ||
+    !projectWorkspaceNavigation.includes('useProjectWorkspaceChoices(') ||
+    !projectWorkspaceNavigation.includes('shouldLoadChoices') ||
+    !projectWorkspaceNavigation.includes('canSelectMultiple.value') ||
+    !projectWorkspaceNavigation.includes('projectIds.value.length > 1') ||
+    !projectWorkspaceSelector.includes('workspace.requestActivation(') ||
     !projectWorkspaceChoices.includes('toValue(projectIds)') ||
     !projectWorkspaceChoices.includes('new Map(') ||
     !kitchenWorkspaceSelector.includes('useKitchenWorkspaceChoices(') ||

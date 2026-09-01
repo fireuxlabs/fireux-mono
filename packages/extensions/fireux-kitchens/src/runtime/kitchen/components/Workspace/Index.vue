@@ -8,6 +8,14 @@
       :derived="derived"
       :refresh="refresh"
     />
+    <UAlert
+      v-if="derived.outcome !== 'pending' && !derived.hasSelection"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-cooking-pot"
+      title="No Kitchen selected"
+      description="Create or select a Kitchen to begin this Workspace."
+    />
   </section>
 </template>
 

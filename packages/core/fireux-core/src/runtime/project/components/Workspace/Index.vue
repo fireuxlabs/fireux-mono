@@ -1,9 +1,20 @@
 <template>
-  <section class="workspace-surface workspace-surface--compact" aria-label="Project">
+  <section
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Project"
+  >
     <WorkspaceProjectCrud
       :state="state"
       :derived="derived"
       :refresh="refresh"
+    />
+    <UAlert
+      v-if="derived.outcome !== 'pending' && !derived.hasSelection"
+      color="neutral"
+      variant="subtle"
+      icon="i-lucide-briefcase-business"
+      title="No Project selected"
+      description="Create or select a Project to begin this Workspace."
     />
   </section>
 </template>

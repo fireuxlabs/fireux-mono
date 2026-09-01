@@ -1,10 +1,10 @@
 <template>
-  <UPageSection id="project-team-members" title="Team" class="py-4 sm:py-4">
-    <WorkspaceCrudToolbar
-      label="Project Team"
-      :available="derived.hasSelection ? ['read'] : []"
-      @read="actions.refresh"
-    />
+  <section
+    id="project-team-members"
+    class="workspace-surface workspace-surface--compact"
+    aria-label="Project Team"
+  >
+    <WorkspaceProjectTeamCrud :derived="derived" :actions="actions" />
     <UCard
       v-if="pending || state.team.members.length"
       :ui="{ body: 'p-0 sm:p-0' }"
@@ -73,7 +73,7 @@
       title="No team members yet"
       description="Add the first person to begin this Project Team."
     />
-  </UPageSection>
+  </section>
 </template>
 
 <script setup lang="ts">

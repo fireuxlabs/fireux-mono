@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-project-index">
     <template #header>
-      <WorkspaceProjectNav :state="state" :derived="derived" />
+      <WorkspaceProjectNav />
     </template>
     <template #body>
       <WorkspaceProjectSelector

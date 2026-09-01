@@ -7,11 +7,7 @@
       @read="openProject"
     />
 
-    <UModal v-model:open="createOpen" title="Create Project">
-      <template #body>
-        <WorkspaceProjectCreateForm @created="created" />
-      </template>
-    </UModal>
+    <WorkspaceProjectCrudCreate v-model:open="createOpen" :refresh="refresh" />
   </div>
 </template>
 
@@ -34,12 +30,8 @@ const available = computed<Array<'create' | 'read'>>(() => [
   ...(props.derived.hasSelection ? (['read'] as const) : []),
 ])
 
-async function created() {
-  await props.refresh()
-  createOpen.value = false
-}
-
 async function openProject() {
-  if (props.state.project.id) await navigateTo(`/projects/${props.state.project.id}`)
+  if (props.state.project.id)
+    await navigateTo(`/projects/${props.state.project.id}`)
 }
 </script>

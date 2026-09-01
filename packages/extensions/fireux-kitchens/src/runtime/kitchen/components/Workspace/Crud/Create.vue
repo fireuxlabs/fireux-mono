@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model.ts'
+import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model.ts'
 
 const props = defineProps<{
   open: boolean

@@ -25,7 +25,7 @@
       @click="createOpen = true"
     />
 
-    <WorkspaceKitchenCreateModal v-model:open="createOpen" :refresh="refresh" />
+    <WorkspaceKitchenCrudCreate v-model:open="createOpen" :refresh="refresh" />
   </section>
 </template>
 

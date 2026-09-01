@@ -8,7 +8,7 @@
       @update="editKitchen"
     />
 
-    <WorkspaceKitchenCreateModal v-model:open="createOpen" :refresh="refresh" />
+    <WorkspaceKitchenCrudCreate v-model:open="createOpen" :refresh="refresh" />
   </div>
 </template>
 

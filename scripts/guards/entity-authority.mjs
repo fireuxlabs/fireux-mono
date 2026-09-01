@@ -963,6 +963,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/fireux-app/server/project/team/read.ts'
   )
+  const projectAuthority = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/project/core/authority.ts'
+  )
   const projectCreateApi = read(
     repoRoot,
     'projects/fireux/fireux-app/server/project/index/create.ts'
@@ -977,11 +981,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const projectCreateComponent = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud.vue'
+    'packages/core/fireux-core/src/runtime/project/components/Workspace/Crud/Create.vue'
   )
   const projectSelector = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/project/components/Workspace/Selector/Choices.vue'
+  )
+  const projectNavigation = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/project/composables/workspace/navigation/useProjectWorkspaceNavigation.ts'
   )
   const kitchenSelector = read(
     repoRoot,
@@ -1034,16 +1042,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /test-projects|getQuery\(event\)\.source/
   )
   assert.doesNotMatch(projectControlApi, /operator_ids|team_ids/)
-  assert.match(projectTeamApi, /requireFirebaseBearerUser/)
-  assert.match(projectTeamApi, /appRef\.collection\(['"]users['"]\)/)
-  assert.match(projectTeamApi, /membership\.data\(\)\?\.role/)
-  assert.match(projectTeamApi, /!==\s*['"]admin['"]/)
-  assert.match(projectTeamApi, /!==\s*['"]user['"]/)
-  assert.match(projectTeamApi, /projectRef\.collection\(['"]team['"]\)/)
-  assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.user_id/)
-  assert.match(projectTeamApi, /currentTeamMember\.data\(\)\?\.status/)
-  assert.match(projectTeamApi, /teamRole !== 'owner'/)
-  assert.match(projectTeamApi, /teamRole !== 'operator'/)
+  assert.match(projectTeamApi, /requireProjectOperator/)
+  assert.match(projectAuthority, /requireFirebaseBearerUser/)
+  assert.match(projectAuthority, /appRef\.collection\(['"]users['"]\)/)
+  assert.match(projectAuthority, /requireWorkspaceEntityMemberRole/)
+  assert.match(projectAuthority, /membership\.data\(\)\?\.projects/)
+  assert.match(projectAuthority, /projectIds\.includes\(projectId\)/)
+  assert.match(projectAuthority, /projectRef\.collection\(['"]team['"]\)/)
+  assert.match(projectAuthority, /teamMember\.data\(\)\?\.user_id/)
+  assert.match(projectAuthority, /teamMember\.data\(\)\?\.status/)
+  assert.match(projectAuthority, /teamRole !== 'owner'/)
+  assert.match(projectAuthority, /teamRole !== 'operator'/)
   assert.doesNotMatch(projectTeamApi, /project_ids|operator_ids|team_ids/)
   assert.match(projectTeamApi, /collection\(['"]users['"]\)/)
 
@@ -1095,8 +1104,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /useFirestore|setDoc|addDoc|updateDoc/
   )
   assert.match(
-    projectSelector,
-    /\/api\/internal\/control\/projects\/primary[\s\S]*response\.updated[\s\S]*await props\.refresh\(\)/
+    projectNavigation,
+    /\/api\/internal\/control\/projects\/primary[\s\S]*response\.updated[\s\S]*await appContext\.refresh\(\)/
   )
   assert.match(
     kitchenSelector,
@@ -1110,7 +1119,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/kitchen/components/Workspace/Crud.vue'
   )
   assert.match(kitchenWorkspaceCreate, /@create="createOpen = true"/)
-  assert.match(kitchenWorkspaceCreate, /<WorkspaceKitchenCreateModal/)
+  assert.match(kitchenWorkspaceCreate, /<WorkspaceKitchenCrudCreate/)
   assert.doesNotMatch(
     kitchenWorkspaceCreate,
     /navigateTo\('\/workspace\/kitchen\/create'\)/

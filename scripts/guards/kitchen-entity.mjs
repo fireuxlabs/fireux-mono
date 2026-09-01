@@ -132,7 +132,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const workspaceCreateModal = read(
     repoRoot,
-    `${kitchenBase}components/Workspace/CreateModal.vue`
+    `${kitchenBase}components/Workspace/Crud/Create.vue`
   )
   const shellCreate = read(
     repoRoot,
@@ -177,7 +177,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen must retain only its minimal shell identity and identity relationship source; Place and capability data belong to their own models.'
   )
   assert.match(workspaceCreate, /@create="createOpen = true"/)
-  assert.match(workspaceCreate, /<WorkspaceKitchenCreateModal/)
+  assert.match(workspaceCreate, /<WorkspaceKitchenCrudCreate/)
   assert.doesNotMatch(
     workspaceCreate,
     /navigateTo\('\/workspace\/kitchen\/create'\)/

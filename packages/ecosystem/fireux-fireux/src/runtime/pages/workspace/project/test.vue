@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="workspace-project-test">
     <template #header>
-      <WorkspaceProjectNav :state="state" :derived="derived" />
+      <WorkspaceProjectNav />
     </template>
     <template #body>
       <WorkspaceProjectTestSelector
@@ -19,18 +19,19 @@
         :derived="derived"
         :actions="actions"
       />
-      <WorkspaceProjectTestTools :state="state" :actions="actions" />
+      <WorkspaceProjectOperations />
       <WorkspaceProjectTestDiscovery />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import { useFireUXConfig } from 'fireux-core/runtime/app/composables/config/FireUXConfig'
 import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useProjectWorkspaceTest } from '../../../project/composables/workspace/test/useProjectWorkspaceTest'
-import { appMeta } from '~/meta'
 
 const { state, derived, actions } = useProjectWorkspaceTest()
+const { appName } = useFireUXConfig()
 
 definePageMeta({
   layout: 'workspace',
@@ -56,7 +57,7 @@ definePageMeta({
 })
 
 useAppLandingSeo({
-  title: `Test | ${appMeta.name}`,
+  title: `Test | ${appName}`,
   description: 'Create and manage simple named objects inside this Project.',
   path: '/workspace/project/test',
   logo: '/img/app/logo.png',

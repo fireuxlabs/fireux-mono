@@ -1,0 +1,20 @@
+import type { H3Event } from 'h3'
+import { requireProjectTestAuthority } from './authority'
+
+const text = (value: unknown) => String(value ?? '').trim()
+
+export async function readProjectTests(event: H3Event, projectIdInput: unknown) {
+  const { projectId, projectRef } = await requireProjectTestAuthority(
+    event,
+    projectIdInput
+  )
+  const snapshot = await projectRef.collection('tests').orderBy('created_at').limit(150).get()
+  return {
+    ok: true as const,
+    project_id: projectId,
+    tests: snapshot.docs.map((document) => ({
+      id: document.id,
+      name: text(document.data().name),
+    })),
+  }
+}

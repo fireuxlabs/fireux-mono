@@ -13,6 +13,7 @@ const ALLOWED_SLICES = new Set([
   'team',
   'operations',
   'ai',
+  'test',
 ])
 
 const ENTITY_ROOTS = [

@@ -1,10 +1,7 @@
 <template>
   <LayoutsWorkspaceNavbar title="Project Workspace">
-    <template
-      v-if="derived.outcome === 'pending' || derived.hasSelection"
-      #title
-    >
-      <WorkspaceProjectActive :project="state.project" />
+    <template v-if="workspace.pending.value || workspace.activeId.value" #title>
+      <WorkspaceProjectActive :project="project" />
     </template>
     <template #right>
       <WorkspaceProjectInfo />
@@ -13,13 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  ProjectWorkspaceIndexDerived,
-  ProjectWorkspaceIndexState,
-} from 'fireux-core/runtime/project/composables/workspace/index/useProjectWorkspaceIndex'
+import { useProjectWorkspaceNavigation } from 'fireux-core/runtime/project/composables/workspace/navigation/useProjectWorkspaceNavigation'
 
-defineProps<{
-  state: Pick<ProjectWorkspaceIndexState, 'project'>
-  derived: Pick<ProjectWorkspaceIndexDerived, 'outcome' | 'hasSelection'>
-}>()
+const { project, workspace } = useProjectWorkspaceNavigation()
 </script>

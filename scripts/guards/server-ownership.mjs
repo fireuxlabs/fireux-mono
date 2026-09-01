@@ -94,6 +94,16 @@ const ADAPTERS = [
   },
   {
     route:
+      'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId]/tests.get.ts',
+    owner: 'project/test/read',
+  },
+  {
+    route:
+      'projects/fireux/fireux-app/server/api/internal/control/projects/[projectId]/tests.post.ts',
+    owner: 'project/test/create',
+  },
+  {
+    route:
       'packages/extensions/fireux-kitchens/src/runtime/server/api/customer/orders.get.ts',
     owner: 'customer/orders/read',
   },
@@ -173,12 +183,13 @@ const DOMAIN_ROOTS = [
   },
   {
     root: 'projects/fireux/fireux-app/server/project',
-    slices: ['core', 'identity', 'index', 'team'],
+    slices: ['core', 'identity', 'index', 'team', 'test'],
     surfaces: [
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/index.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/overview.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/identity.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/team/index.vue',
+      'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/test.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/apps.vue',
       'packages/ecosystem/fireux-fireux/src/runtime/pages/workspace/project/ecosystem.vue',
     ],

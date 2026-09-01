@@ -119,7 +119,11 @@ export function useProjectWorkspaceIndex() {
 
   watch(
     () =>
-      [derived.value.outcome, primaryProjectId.value, state.value.project] as const,
+      [
+        derived.value.outcome,
+        primaryProjectId.value,
+        state.value.project,
+      ] as const,
     ([outcome, primaryId, project]: readonly [
       ProjectWorkspaceIndexDerived['outcome'],
       string,
@@ -135,22 +139,6 @@ export function useProjectWorkspaceIndex() {
     },
     { immediate: true }
   )
-
-  watch(workspace.requestedId, async (projectId: string) => {
-    if (!projectId) return
-    const user = currentUser.value
-    try {
-      if (!user) return
-      await $fetch('/api/internal/control/projects/primary', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-        body: { projectId },
-      })
-      await refresh()
-    } finally {
-      workspace.clearRequestedActivation()
-    }
-  })
 
   return { state, derived, actions: { refresh } }
 }

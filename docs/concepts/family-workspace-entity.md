@@ -244,6 +244,32 @@ migration verification, and protected Workspace consumer are complete.
 Accepted deltas change domain content or authority. They do not change the
 Index outcome contract.
 
+At the current proving stage, Project landing, Kitchen landing, Project Test,
+Project Team, and Kitchen Team use this page anatomy in order:
+
+1. Selector
+2. Hero
+3. AI
+4. Main
+5. Tools
+6. Operations
+7. Discovery
+
+Main owns the capability's primitive composition; those primitives are not
+page-level siblings. `4.1 CRUD` owns Create, Read, Update, and Delete. `4.2
+Natives` owns tiny domain-native actions such as the Test pipeline's Bold,
+Capitalize, Uppercase, and Lowercase transforms. This is a bounded rule for
+these five proving pages, not a universal Workspace page contract. Each enabled
+Create doorway composes a domain-owned `Crud/Create.vue` modal; a family member
+without real Create authority keeps Create disabled instead of adding an empty
+action scaffold. A later numbered stage is omitted when that domain has no real
+implementation; alignment must not manufacture an empty placeholder.
+
+Persistent Workspace navigation is not owned by any page stage. Core's named
+Entity navigation controller owns active identity, alternative Entity choices,
+and selection requests so the app-owned navbar remains a thin presentation
+adapter and behaves identically on landing and capability routes.
+
 Core owns one presentation primitive for each basic record operation:
 `WorkspaceCrudCreate`, `WorkspaceCrudRead`, `WorkspaceCrudUpdate`, and
 `WorkspaceCrudDelete`. `WorkspaceCrudToolbar` only composes those four in the
@@ -387,7 +413,7 @@ Current evidence and confidence:
 | Seam                                                                 | State        | Evidence and next comparison                                                                                                                                                                                                                                            |
 | -------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Entity selection through `useWorkspace('<entity>')`                  | `accepted`   | Kitchen and Project domain readers now prime it from the canonical primary Entity, so Index and capability pages share one active selection without depending on one another                                                                                            |
-| Project Test local scaffold                                          | `accepted`   | Its Project identity, App-configured capacity, temporary first-item focus, CRUD and string transforms run without importing the Project Index; it proves only local in-memory Test objects                                                                              |
+| Project Test pipeline                                                | `accepted`   | Its Project identity and App-configured capacity remain independent of Project Index. Create and Read now use the trusted FireUX server boundary and `projects/{projectId}/tests` in the named `fireux` database; refresh-safe list and ID-based detail routing are the persisted proof. Update, Delete, and native transforms remain unproved persistence work and must not be described as complete. |
 | Named `useWorkspaceTeam`                                             | `to-confirm` | Kitchen and Project Team now share first-member focus, count and capacity. Kitchen empty-state runtime passed; Project Team remains blocked by its existing owner/operator Team authority for the current Project, so the complete sibling comparison is not yet proved |
 | `useWorkspaceMenus`, `useWorkspaceStations`, `useWorkspaceSuppliers` | `to-confirm` | Kitchen has named domain capabilities, but a second real Entity family has not yet proved shared mechanics                                                                                                                                                              |
 | Generic capability primitives                                        | `to-confirm` | Extract only after at least two named capability composables repeat the same contract for the same reason                                                                                                                                                               |
